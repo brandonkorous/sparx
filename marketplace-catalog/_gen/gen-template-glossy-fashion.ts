@@ -38,6 +38,7 @@ import { productsBlock } from '../../packages/silica-catalog/src/commerce';
 import { blogPostGrid } from '../../packages/silica-catalog/src/cms';
 import { safeParseBlueprint } from '../../packages/blueprints/src/validate';
 
+import { contactSection } from './shared/contact-section';
 import { emitBundle, type TemplateSiteSpec } from './template-sites/harness';
 import { writeTemplatePreview } from './template-sites/preview';
 import {
@@ -439,23 +440,14 @@ const ABOUT: Node[] = [
 ];
 
 const CONTACT: Node[] = [
-  el('section', 'bg-base-100 @container px-6 py-20 text-center', {
-    children: [
-      el('div', 'mx-auto flex w-full max-w-xl flex-col items-center gap-5', {
-        children: [
-          el('h1', 'text-5xl font-normal tracking-tight text-base-content @2xl:text-6xl', {
-            text: 'Get in Touch',
-          }),
-          el('p', 'text-lg leading-relaxed text-base-content', {
-            text: 'A story to pitch, a collection to show us, or a correction to make? The editors read everything, and we answer the good ones. For press and stockist enquiries, the same address reaches the desk.',
-          }),
-          el('a', 'btn btn-primary btn-lg', {
-            attrs: { href: 'mailto:editors@modeandobject.example' },
-            text: 'Email the editors',
-          }),
-        ],
-      }),
-    ],
+  // The page's own words, over the shared contact band: the business's phone and email
+  // (each hidden until set in Site settings — never an invented number) and a working
+  // enquiry form that reaches the tenant's Form submissions inbox. This used to end at a
+  // `mailto:` to a placeholder domain, which was the only way to reach the business.
+  contactSection({
+    heading: 'Get in Touch',
+    intro: 'A story to pitch, a collection to show us, or a correction to make? The editors read everything, and we answer the good ones. For press and stockist enquiries, the same address reaches the desk.',
+    submitLabel: 'Email the editors',
   }),
 ];
 

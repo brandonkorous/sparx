@@ -11,7 +11,7 @@ import assets from './assets.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-handyman-pro',
-  version: '1.1.0',
+  version: '1.2.0',
   name: 'sparx — Handyman (Pro)',
   summary:
     'A dependable handyman site — a sturdy navy-and-amber palette on an off-white ground with a solid slab display, photo-led throughout. Installs a working booking flow: a real visit menu (free estimates, TV mounting, furniture assembly, drywall repair, half-day honey-do lists), three handymen dispatched by skill with their own hours, and a 24-hour reschedule policy. Ships as "Ace & Able Handyman", an all-around home-repair pro where one call fixes it all.',

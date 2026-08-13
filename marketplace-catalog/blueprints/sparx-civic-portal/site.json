@@ -22,7 +22,7 @@
                   "props": {
                     "show": "both"
                   },
-                  "id": "ae54ab01-12b4-446b-9b54-8dde60cf8454",
+                  "id": "59eeb248-5347-49fb-86e3-09186c7bea7a",
                   "ord": "a0"
                 },
                 {
@@ -43,7 +43,7 @@
                         "type": "link",
                         "label": "Product"
                       },
-                      "id": "fe13c3d4-af31-46f0-ae40-571fd75e5b18",
+                      "id": "565b5ea5-050a-4787-8b85-f494140c8ef8",
                       "ord": "a0"
                     },
                     {
@@ -59,7 +59,7 @@
                         "type": "link",
                         "label": "Pricing"
                       },
-                      "id": "08a52862-89a6-4e13-a47f-de2007c4fb58",
+                      "id": "386fef0e-fbe5-4875-8896-c297f8f78108",
                       "ord": "a1"
                     },
                     {
@@ -75,7 +75,7 @@
                         "type": "link",
                         "label": "Docs"
                       },
-                      "id": "2e8f132d-a12c-417f-8158-260cc8eef12a",
+                      "id": "8cbfd09d-79e2-4c6f-8284-7e35048e576c",
                       "ord": "a2"
                     },
                     {
@@ -91,11 +91,11 @@
                         "type": "link",
                         "label": "Company"
                       },
-                      "id": "e17cb426-18ef-47b7-a563-6cc1ff560935",
+                      "id": "667133ea-7615-40d0-8765-be6c4885b4b7",
                       "ord": "a3"
                     }
                   ],
-                  "id": "f51ce3be-f649-4845-a1b8-c65e4d5e9b0c",
+                  "id": "f61f5bbc-e3b7-4adb-bcc1-ca7079bee10c",
                   "ord": "a1"
                 },
                 {
@@ -116,14 +116,14 @@
                         "type": "link",
                         "label": "Secondary link"
                       },
-                      "id": "d9406602-1854-4750-a031-5e28907737d3",
+                      "id": "95d6fd66-7c95-4de1-b6fb-7b8f852fa519",
                       "ord": "a0"
                     },
                     {
                       "kind": "host",
                       "component": "site.theme-toggle",
                       "class": "inline-flex items-center",
-                      "id": "0736de60-7421-4a5e-a1e2-663371a680a4",
+                      "id": "e2cd7617-2f41-4c71-9566-b003ead41b94",
                       "ord": "a1"
                     },
                     {
@@ -141,20 +141,20 @@
                           "props": {
                             "name": "menu"
                           },
-                          "id": "bc1abe55-f827-4e10-92f2-aba983dc205e",
+                          "id": "15fc4278-7c47-4212-9d71-5d3d4a83eec7",
                           "ord": "a0"
                         }
                       ],
                       "part": "trigger",
-                      "id": "1903b4c3-0ba7-4e4e-b8fd-af15a6edf3f1",
+                      "id": "bfd576d8-b00d-4771-a2b4-e5bb7e25dda3",
                       "ord": "a2"
                     }
                   ],
-                  "id": "cce97828-4a79-46f5-a71f-4522d3a62fb6",
+                  "id": "0bbdc60b-403f-4d71-858e-04082350498f",
                   "ord": "a2"
                 }
               ],
-              "id": "e05ae39c-23d3-41c5-bf73-06416f7b458b",
+              "id": "67bee694-8ee1-4c1c-828a-57cc7ebe636d",
               "ord": "a0"
             },
             {
@@ -178,7 +178,7 @@
                     "type": "link",
                     "label": "Product"
                   },
-                  "id": "687e5e4c-13dd-4504-b0b4-d6eaf0775271",
+                  "id": "18fad25f-967d-46b3-ab93-3f9c8f753b5e",
                   "ord": "a0"
                 },
                 {
@@ -194,7 +194,7 @@
                     "type": "link",
                     "label": "Pricing"
                   },
-                  "id": "60851d86-52f5-423b-bf56-0fa25b615bf0",
+                  "id": "fd820461-83e8-4ee1-b744-29c0f9e592c1",
                   "ord": "a1"
                 },
                 {
@@ -210,7 +210,7 @@
                     "type": "link",
                     "label": "Docs"
                   },
-                  "id": "793800d8-9013-4248-b790-360afa72312c",
+                  "id": "13811099-78d2-4209-ba07-256dd64d1423",
                   "ord": "a2"
                 },
                 {
@@ -226,7 +226,7 @@
                     "type": "link",
                     "label": "Company"
                   },
-                  "id": "5420bef4-49b9-46a5-af86-f50abfa481d2",
+                  "id": "4bfd5780-bcc8-479c-bb58-6e7b794f36d5",
                   "ord": "a3"
                 },
                 {
@@ -242,19 +242,19 @@
                     "type": "link",
                     "label": "Secondary link"
                   },
-                  "id": "9b214584-b961-426d-a3d2-73d072cac3c9",
+                  "id": "00869847-3196-4a2d-a4df-74921a3ab24e",
                   "ord": "a4"
                 }
               ],
               "part": "panel",
-              "id": "fc546096-2794-4149-9f09-a7b0e7675cdd",
+              "id": "c20fc2ed-424d-40fd-8b33-c5984015f3ac",
               "ord": "a1"
             }
           ],
           "behavior": {
             "type": "disclosure"
           },
-          "id": "e8bfad24-fb18-4724-9d58-5c870ac2acc6",
+          "id": "f842d562-f137-4e8b-8a69-157554f8fda2",
           "ord": "a0"
         },
         {
@@ -270,7 +270,7 @@
               "kind": "outlet"
             }
           ],
-          "id": "e01d8386-cbdd-47af-bc48-3d96cb299ec1",
+          "id": "51203089-6fcd-4470-a0f2-ce24d279332d",
           "ord": "a1"
         },
         {
@@ -300,7 +300,7 @@
                           "props": {
                             "show": "both"
                           },
-                          "id": "0a5d680e-9495-4e76-b3ce-6884ec24923d",
+                          "id": "cdc1119c-735c-4a64-a468-873071cfbfa3",
                           "ord": "a0"
                         },
                         {
@@ -316,7 +316,7 @@
                           "attrs": {
                             "href": "/"
                           },
-                          "id": "ab7bce9e-9660-40a2-8fef-a22f207876cd",
+                          "id": "6d214443-6e94-4253-8109-5d2da0856308",
                           "ord": "a1"
                         },
                         {
@@ -324,11 +324,11 @@
                           "tag": "ul",
                           "class": "mt-2 flex items-center gap-5",
                           "children": [],
-                          "id": "ba173e9d-53e0-4c49-8cf0-517e2636a5f4",
+                          "id": "76ee524b-3e0a-44fe-8ec2-c2f96acfb016",
                           "ord": "a2"
                         }
                       ],
-                      "id": "6ed8400a-7e01-4b73-b3da-a7eb1a8c5343",
+                      "id": "af97c172-a68e-405d-806c-59cf6f35221c",
                       "ord": "a0"
                     },
                     {
@@ -349,7 +349,7 @@
                           "attrs": {
                             "href": "/"
                           },
-                          "id": "515ba6da-f12e-4843-9848-651f94b17e7b",
+                          "id": "f832c198-fb1d-4322-8e86-74cb3de21d94",
                           "ord": "a0"
                         },
                         {
@@ -374,11 +374,11 @@
                                     "type": "link",
                                     "label": "Features"
                                   },
-                                  "id": "77a7fb8e-950d-4632-bb67-65202d12083e",
+                                  "id": "06b18cde-b872-4e94-a330-936bcd40d520",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "e22dc53b-2d01-4b48-be93-daf662fcf4f3",
+                              "id": "ccf19a87-356e-4ac1-98f3-bc251c874523",
                               "ord": "a0"
                             },
                             {
@@ -398,11 +398,11 @@
                                     "type": "link",
                                     "label": "Pricing"
                                   },
-                                  "id": "5549373c-c57f-45fc-a9f1-02457d559d59",
+                                  "id": "a1e95d4b-5475-482f-97f3-74ee17f07cfc",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "cbd1cd65-2db8-4cfb-be37-8844413fe019",
+                              "id": "cca066a6-2531-4f70-8cd9-26d1916fcca5",
                               "ord": "a1"
                             },
                             {
@@ -422,11 +422,11 @@
                                     "type": "link",
                                     "label": "Integrations"
                                   },
-                                  "id": "f0dc55fd-ecbd-4891-911e-46ce6bedbfa5",
+                                  "id": "b1645be1-c68c-4841-ab3b-0a5eb0045d3d",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "64063905-b822-485d-b27e-ba31f2f34687",
+                              "id": "6c3d5011-051d-4aec-96b6-d5418a6c8e00",
                               "ord": "a2"
                             },
                             {
@@ -446,11 +446,11 @@
                                     "type": "link",
                                     "label": "Changelog"
                                   },
-                                  "id": "3b5f9547-ceba-46ee-915d-245ec33a4d02",
+                                  "id": "6e8db6f4-ac52-473b-b316-e7b4f7a859cb",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "62c0447f-c3bd-4d41-934e-e63e3acf6565",
+                              "id": "1880146e-32cb-40c9-ab59-75c955443fe5",
                               "ord": "a3"
                             },
                             {
@@ -465,19 +465,19 @@
                                     "href": "/search"
                                   },
                                   "children": ["Search"],
-                                  "id": "445f6184-69bf-4b8d-baaa-c75c7d78ff25",
+                                  "id": "1eb3408a-9962-40f4-8cfd-731ea5a5e99b",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "e08a5595-dc1b-4c8b-aa27-1f9a8b6db12a",
+                              "id": "a85a2c4b-3bcf-4693-bd0a-0fd0e069dda1",
                               "ord": "a4"
                             }
                           ],
-                          "id": "007ce083-7dca-4e15-8188-df9c8ccc701a",
+                          "id": "5e39c9c3-70f2-4e8e-a76e-104baddf2df8",
                           "ord": "a1"
                         }
                       ],
-                      "id": "c7641101-d26b-4a11-bffe-af285a5bcb01",
+                      "id": "d0db5695-188a-48d1-a39a-4145d5faba72",
                       "ord": "a1"
                     },
                     {
@@ -498,7 +498,7 @@
                           "attrs": {
                             "href": "/account"
                           },
-                          "id": "0180758a-abcf-430e-9132-d7dae35388e5",
+                          "id": "87eabf39-7e12-4bc3-aebb-dfb8acd6e90f",
                           "ord": "a0"
                         },
                         {
@@ -523,11 +523,11 @@
                                     "type": "link",
                                     "label": "About"
                                   },
-                                  "id": "e20b5c2f-c6b0-4a13-83d9-43ce064852ed",
+                                  "id": "66ee3e0c-f7ad-442f-a7d6-0c498280b078",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "307f9eac-3a55-4fe2-bb86-141348a63974",
+                              "id": "a95e053e-45de-49ae-b8d2-f5d5de285fd5",
                               "ord": "a0"
                             },
                             {
@@ -547,11 +547,11 @@
                                     "type": "link",
                                     "label": "Careers"
                                   },
-                                  "id": "ec67159e-0939-4001-b25b-48fc82e0a7cd",
+                                  "id": "bab30240-8bd8-4a65-9744-e7602459c4e0",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "3516bd69-ebf7-4d7f-a6db-7760316cf9f9",
+                              "id": "d40864c4-205c-4faf-b3d1-41be83db8977",
                               "ord": "a1"
                             },
                             {
@@ -571,19 +571,19 @@
                                     "type": "link",
                                     "label": "Blog"
                                   },
-                                  "id": "9744f2eb-519f-40a1-a88b-23daa8e93f16",
+                                  "id": "fda2ab18-9498-4932-9da0-25ce6cb6eaee",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "4ef81353-43a9-4b66-99bb-ede51c393bd7",
+                              "id": "60ee4265-a67d-4ce9-b678-0bd9f5c3ebb8",
                               "ord": "a2"
                             }
                           ],
-                          "id": "0cc52135-bd8e-4c54-93db-c09ab24f274b",
+                          "id": "82b6d215-633f-467d-bc80-cd738f09ae1e",
                           "ord": "a1"
                         }
                       ],
-                      "id": "dbc6b620-2f3c-4f68-a74c-c1c59581df26",
+                      "id": "a276a643-2ad8-45a2-9853-248213dc399b",
                       "ord": "a2"
                     },
                     {
@@ -607,23 +607,23 @@
                                   "props": {
                                     "heading": "Legal"
                                   },
-                                  "id": "a2a489ba-1431-4eb8-ad5e-aefc15d2e51d",
+                                  "id": "43cecdf0-70da-4a80-b515-caf0d835774c",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "69edbc6f-38c7-4263-8296-3f676ce7ffba",
+                              "id": "bf5620b7-d722-435f-b50a-69fe9a2dd4cb",
                               "ord": "a0"
                             }
                           ],
-                          "id": "04b9488f-1a67-471b-b294-4f2db1ecc8c9",
+                          "id": "68f14179-75c3-4240-b3b8-fbbd10fcc6db",
                           "ord": "a0"
                         }
                       ],
-                      "id": "92511a04-891e-488a-b128-e50d248a1386",
+                      "id": "5f02a063-5710-48cd-a4a9-7fa463167c24",
                       "ord": "a3"
                     }
                   ],
-                  "id": "64813a3e-255c-4a2f-b825-a80547c64e0d",
+                  "id": "84458a95-7221-441d-9701-dfe5a9337bca",
                   "ord": "a0"
                 },
                 {
@@ -646,11 +646,11 @@
                             "kind": "value",
                             "ref": "site.identity.name"
                           },
-                          "id": "b81cbdda-6849-4046-96d8-709da8bb6095",
+                          "id": "755a5ba8-f8da-490a-a615-44a8d5fa4520",
                           "ord": "a0"
                         }
                       ],
-                      "id": "84c31e51-bc93-400e-8f1b-a3142439fe26",
+                      "id": "047feb44-cad3-4829-8f21-01a72c5147a1",
                       "ord": "a0"
                     },
                     {
@@ -658,23 +658,23 @@
                       "tag": "ul",
                       "class": "flex flex-wrap items-center gap-x-6 gap-y-2",
                       "children": [],
-                      "id": "0b0df1fa-8612-4519-a389-2dd7e6b71386",
+                      "id": "0b4f04f3-b00b-4d1c-8a2e-af28beacbb62",
                       "ord": "a1"
                     }
                   ],
-                  "id": "7fc6bb5e-ee0c-4a02-b5dc-d61d10c3dc95",
+                  "id": "f1a7b239-0336-4336-b500-1678d9d2f973",
                   "ord": "a1"
                 }
               ],
-              "id": "f92e9799-3522-47d8-a00f-bc21c296ded7",
+              "id": "16a84ba4-15f5-4e35-9dd9-22df1ee5dd5b",
               "ord": "a0"
             }
           ],
-          "id": "8e0b1df0-6b8e-4277-a4c5-c371cf3dad69",
+          "id": "8223b665-7a05-4c08-96ff-963e78ee9f3e",
           "ord": "a2"
         }
       ],
-      "id": "62613f1b-493f-4dc6-8c0c-91f4e42ba73d"
+      "id": "f15413d4-c3f6-48c8-9690-035773ae3bea"
     }
   },
   "pages": [
@@ -688,7 +688,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "2f7f7f69-34a4-4818-ae33-3e28908ceaba",
+        "id": "9486871c-0a1e-440d-8838-6d950e2a4e86",
         "children": [
           {
             "kind": "element",
@@ -710,7 +710,7 @@
                         "tag": "h1",
                         "class": "text-4xl font-bold leading-tight tracking-tight text-primary @3xl:text-5xl",
                         "children": ["Welcome to the City of Rivermark"],
-                        "id": "f2e28a1c-0e3f-493a-9632-18578f8fdc71",
+                        "id": "d4de21c6-ee04-424e-bbed-b27f70201b12",
                         "ord": "a0"
                       },
                       {
@@ -720,7 +720,7 @@
                         "children": [
                           "Your city, online. Pay a bill, apply for a permit, find a meeting, or report a problem — the things residents do most, all in one clear place."
                         ],
-                        "id": "a933574e-c196-4751-bd4a-1e89f965ef06",
+                        "id": "3c78179e-ce6e-4ac7-9535-9bb874274942",
                         "ord": "a1"
                       },
                       {
@@ -736,7 +736,7 @@
                               "href": "/shop"
                             },
                             "children": ["Pay a utility bill"],
-                            "id": "7efa0af3-372f-46cb-8b08-a12244a64371",
+                            "id": "c2e92995-9714-42f3-8159-bf01b7eb1e78",
                             "ord": "a0"
                           },
                           {
@@ -747,15 +747,15 @@
                               "href": "/contact"
                             },
                             "children": ["Report an issue"],
-                            "id": "43e4114a-ca47-4ac4-81bd-ba0f81765be2",
+                            "id": "643da547-2b9c-44b2-8014-8481aacef097",
                             "ord": "a1"
                           }
                         ],
-                        "id": "1efa37c6-ccdb-4d13-82d3-819b01aee9b4",
+                        "id": "807d2454-40b3-49b5-aca2-5339d3e98d7c",
                         "ord": "a2"
                       }
                     ],
-                    "id": "8a06337c-9cb4-4148-a336-c49fe962fde0",
+                    "id": "695f19e0-e1a2-46f5-9a4c-e76183e9cb11",
                     "ord": "a0"
                   },
                   {
@@ -767,15 +767,15 @@
                       "alt": "The colonnade of the Rivermark city hall",
                       "loading": "lazy"
                     },
-                    "id": "8b8a46b4-7db2-43a0-8f5b-ed8c37791999",
+                    "id": "d77784f1-4cdf-4d46-85e4-b287e37a392e",
                     "ord": "a1"
                   }
                 ],
-                "id": "d66d090a-00eb-4495-8665-88806ee9a196",
+                "id": "86f283f3-f2a8-4c1f-933f-34bc32a9b6d0",
                 "ord": "a0"
               }
             ],
-            "id": "6e6f1c9f-2bc5-41a9-b191-626e967ca0b1",
+            "id": "9cc29ee4-9dee-4282-a8ee-763e645081e6",
             "ord": "a0"
           },
           {
@@ -798,7 +798,7 @@
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
                         "children": ["City services"],
-                        "id": "66611b2f-2880-4663-943e-c6e2c34e6dad",
+                        "id": "a3730dc2-3351-450d-a9d7-33f1945893b3",
                         "ord": "a0"
                       },
                       {
@@ -808,11 +808,11 @@
                         "children": [
                           "Everything the city does for residents, grouped so you can find your task without knowing which department owns it."
                         ],
-                        "id": "dbdbbf61-9e26-4651-a99b-65a763459540",
+                        "id": "dd86e8e2-a159-4331-8aed-b8a4e293dc10",
                         "ord": "a1"
                       }
                     ],
-                    "id": "e4ca7420-b61a-47c0-9999-7618031d1aab",
+                    "id": "0e7410dc-4e3c-49c4-be46-9d228d5f2fec",
                     "ord": "a0"
                   },
                   {
@@ -830,7 +830,7 @@
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
                             "children": ["Permits & licenses"],
-                            "id": "0d8495df-ae16-43e6-8779-25232e36ca90",
+                            "id": "8411a477-83a5-422c-99d4-d59327c73c4b",
                             "ord": "a0"
                           },
                           {
@@ -851,11 +851,11 @@
                                       "href": "/contact"
                                     },
                                     "children": ["Apply for a building permit"],
-                                    "id": "9d1ad875-8f63-4b89-8111-38064d92fa58",
+                                    "id": "57233980-b20d-407e-8c6a-dbc4d8ffc5a4",
                                     "ord": "a0"
                                   }
                                 ],
-                                "id": "5673de1f-ebaf-42df-a1af-39216173f20e",
+                                "id": "b72a3a04-4418-41fe-8837-fa790913bf80",
                                 "ord": "a0"
                               },
                               {
@@ -871,11 +871,11 @@
                                       "href": "/contact"
                                     },
                                     "children": ["Business licenses & registrations"],
-                                    "id": "eb406964-e4d7-43f8-b0cd-4031d7c26dc8",
+                                    "id": "ccafe073-2974-4209-9b0e-aece0ffe4e68",
                                     "ord": "a0"
                                   }
                                 ],
-                                "id": "1b40b513-971b-4939-b169-977683f71006",
+                                "id": "e273d2dd-63a5-4f52-a11d-79e267a0840b",
                                 "ord": "a1"
                               },
                               {
@@ -891,19 +891,19 @@
                                       "href": "/contact"
                                     },
                                     "children": ["Request public records"],
-                                    "id": "be41b698-0100-45d4-aaa0-ebfed433ee85",
+                                    "id": "686e3d06-d256-4856-8b53-61f25b6a28cc",
                                     "ord": "a0"
                                   }
                                 ],
-                                "id": "def85cdd-dcd5-4f1c-bf02-a4b3af4e9da3",
+                                "id": "3408149c-57bd-4c23-b4ae-fcdb5a95eace",
                                 "ord": "a2"
                               }
                             ],
-                            "id": "af220b16-6074-4fb9-a44f-0c140b27ff7b",
+                            "id": "c556e6e3-207c-42ea-b095-b9d477c20451",
                             "ord": "a1"
                           }
                         ],
-                        "id": "12b5c5c9-fc2c-44da-b917-67f6fb996de2",
+                        "id": "faeac343-205d-4f37-ae71-db6bea1c62f5",
                         "ord": "a0"
                       },
                       {
@@ -916,7 +916,7 @@
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
                             "children": ["Utilities & payments"],
-                            "id": "031f8f11-fa6e-4bab-ae42-2884c7922fe2",
+                            "id": "b7f6ab5e-a78b-42ab-a50d-8a130c57dba4",
                             "ord": "a0"
                           },
                           {
@@ -937,11 +937,11 @@
                                       "href": "/shop"
                                     },
                                     "children": ["Pay a water or sewer bill"],
-                                    "id": "1092d552-940a-4b64-8540-5521a842fd46",
+                                    "id": "9b6e526f-e615-4c94-9040-d7368fa18f00",
                                     "ord": "a0"
                                   }
                                 ],
-                                "id": "46f49c30-09f4-4353-99be-03da4e2ab479",
+                                "id": "c82eb941-0cb8-436d-8f2d-7b9d398efb19",
                                 "ord": "a0"
                               },
                               {
@@ -957,11 +957,11 @@
                                       "href": "/contact"
                                     },
                                     "children": ["Start or stop service"],
-                                    "id": "40c3833a-1bd9-481f-845d-ea1877c0edb7",
+                                    "id": "c946d032-2738-4b98-9849-f38daede8371",
                                     "ord": "a0"
                                   }
                                 ],
-                                "id": "e4bc9a8e-c95c-4d44-b403-55dc02d3758f",
+                                "id": "92ad0f7d-6cd8-4416-995c-963bb2ccded9",
                                 "ord": "a1"
                               },
                               {
@@ -977,19 +977,19 @@
                                       "href": "/contact"
                                     },
                                     "children": ["Report an outage"],
-                                    "id": "e603aa3f-44ac-4b37-88bb-5dda8ba9eb6c",
+                                    "id": "49a28c2c-754d-4490-ae43-d79bd7f01642",
                                     "ord": "a0"
                                   }
                                 ],
-                                "id": "6dc1be99-71bb-47aa-abed-f11f40fbfc25",
+                                "id": "3b648f7d-4831-4198-970d-7c70dd641fad",
                                 "ord": "a2"
                               }
                             ],
-                            "id": "85c03842-3867-43c2-b216-a680d565aa9c",
+                            "id": "d7ac76c9-7698-4449-9fff-910f07235845",
                             "ord": "a1"
                           }
                         ],
-                        "id": "6f2dadfc-5b20-4122-8578-1fee3bce5dad",
+                        "id": "2d92880f-4a06-4959-bd6d-0bbaa2010259",
                         "ord": "a1"
                       },
                       {
@@ -1002,7 +1002,7 @@
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
                             "children": ["Transit & streets"],
-                            "id": "a7465d98-5c14-453e-841a-e43d1b3bcae5",
+                            "id": "7c5ede02-fcb5-47f0-9d29-b78f81606db1",
                             "ord": "a0"
                           },
                           {
@@ -1023,11 +1023,11 @@
                                       "href": "/shop"
                                     },
                                     "children": ["Buy a monthly transit pass"],
-                                    "id": "cd2d4471-f262-4ffb-8ecd-485e955e098e",
+                                    "id": "a0d4084b-337f-4269-8c5d-d32f3e91845f",
                                     "ord": "a0"
                                   }
                                 ],
-                                "id": "4cdccf7b-2a1f-412b-bbfd-232435461b88",
+                                "id": "8d033863-4f59-4a31-a367-f73a60411f4d",
                                 "ord": "a0"
                               },
                               {
@@ -1043,11 +1043,11 @@
                                       "href": "/contact"
                                     },
                                     "children": ["Report a pothole or streetlight"],
-                                    "id": "2642348d-0886-46d7-9342-7aa97643cc49",
+                                    "id": "05062fae-8190-4fc4-993a-9ef37af9b4c0",
                                     "ord": "a0"
                                   }
                                 ],
-                                "id": "fa61bd17-4217-4c79-bae8-108d46a19fb8",
+                                "id": "f10e6575-238a-4dc3-820d-7fba1aafb803",
                                 "ord": "a1"
                               },
                               {
@@ -1063,19 +1063,19 @@
                                       "href": "/journal"
                                     },
                                     "children": ["Schedules & road detours"],
-                                    "id": "5abe51d4-ba3c-4b5f-b618-e17c065b01d4",
+                                    "id": "ac788cdf-cf34-4e9d-bbbf-48c49eb97331",
                                     "ord": "a0"
                                   }
                                 ],
-                                "id": "a5faa3b3-b66d-4624-b74c-e7a42e6956f9",
+                                "id": "5a90ec87-ebdf-458d-a018-6e146bf22274",
                                 "ord": "a2"
                               }
                             ],
-                            "id": "9f45bc0f-a475-416b-bcaa-1721cdc9e61b",
+                            "id": "d68d1f63-01e7-4d44-802b-9c83284f7810",
                             "ord": "a1"
                           }
                         ],
-                        "id": "390a8ea2-a17f-4c8d-aa00-f0ee9b78ae28",
+                        "id": "fc20568f-c1ba-424c-b983-db38c1d29fdb",
                         "ord": "a2"
                       },
                       {
@@ -1088,7 +1088,7 @@
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
                             "children": ["Parks & recreation"],
-                            "id": "324a1b44-13a1-4598-aefe-366e3c649b52",
+                            "id": "641b573f-a6bd-4ba4-9b0f-8fd8764ca496",
                             "ord": "a0"
                           },
                           {
@@ -1109,11 +1109,11 @@
                                       "href": "/contact"
                                     },
                                     "children": ["Reserve a park shelter"],
-                                    "id": "cd352c92-3168-45c2-b53f-40f8589d3bc1",
+                                    "id": "14ce6200-00a8-4fec-be90-a776e2235b2c",
                                     "ord": "a0"
                                   }
                                 ],
-                                "id": "fafb6942-86a5-48fd-8eb2-cb9e56606309",
+                                "id": "475d3be7-b18c-4c3b-81cb-6fe55e3faf26",
                                 "ord": "a0"
                               },
                               {
@@ -1129,11 +1129,11 @@
                                       "href": "/shop"
                                     },
                                     "children": ["Get an annual parks pass"],
-                                    "id": "a7307e4b-4e10-4f26-90ee-6cfa7d5a9270",
+                                    "id": "b87bc164-f608-4a89-8f9c-c4da874c04f0",
                                     "ord": "a0"
                                   }
                                 ],
-                                "id": "1597e4d6-b279-4b0e-aa43-56902710b7a8",
+                                "id": "67e7745e-1363-4493-ba00-69040804e3c9",
                                 "ord": "a1"
                               },
                               {
@@ -1149,31 +1149,31 @@
                                       "href": "/journal"
                                     },
                                     "children": ["Program & class registration"],
-                                    "id": "7870ab1d-79b6-4ac9-a75d-e56034b1577c",
+                                    "id": "b4ec2a1c-cedb-4999-b352-2a340b1c81ef",
                                     "ord": "a0"
                                   }
                                 ],
-                                "id": "d61a6075-2d03-44ea-8a19-9dc0c464c6ab",
+                                "id": "32f1b5df-e43c-4b26-9846-e84fc3229d43",
                                 "ord": "a2"
                               }
                             ],
-                            "id": "a7f76ca6-0476-46c8-a6c5-081211780757",
+                            "id": "8514225f-a152-4463-8cd0-7a739f19b474",
                             "ord": "a1"
                           }
                         ],
-                        "id": "8bd68e19-dcb5-48dd-978c-78222b9dccd5",
+                        "id": "1a42fe6f-25eb-4e4c-9c70-4c66b59a165b",
                         "ord": "a3"
                       }
                     ],
-                    "id": "ee9ed9e8-c8d2-4094-88b6-8954af850978",
+                    "id": "f19e1d22-627c-492f-9dec-ae9de73a976f",
                     "ord": "a1"
                   }
                 ],
-                "id": "184cbadd-6a97-4df4-93b5-f83a0fd89d2b",
+                "id": "1065e2fa-d512-45fb-b2ea-3f8dc4eb5eee",
                 "ord": "a0"
               }
             ],
-            "id": "fb085052-1761-45f8-bad9-fc68d4e42cf9",
+            "id": "81087e5f-990b-4cb7-ad05-0e351f3dc979",
             "ord": "a1"
           },
           {
@@ -1196,7 +1196,7 @@
                         "tag": "span",
                         "class": "w-fit rounded-field bg-accent px-3 py-1 text-sm font-bold uppercase tracking-wide text-accent-content",
                         "children": ["Alert"],
-                        "id": "94a424f4-b41e-4bb4-a3d4-5ac0da87d40c",
+                        "id": "73b3d4f7-292c-4a63-aaf9-b2dfccfe7883",
                         "ord": "a0"
                       },
                       {
@@ -1206,7 +1206,7 @@
                         "children": [
                           "Boil-water advisory in effect for the Highlands until further notice. Bring water to a rolling boil before drinking."
                         ],
-                        "id": "39d9d757-f061-4e00-a023-b8ff202f05ed",
+                        "id": "48d38915-500e-4373-aba9-c8985ae33d87",
                         "ord": "a1"
                       },
                       {
@@ -1217,11 +1217,11 @@
                           "href": "/journal"
                         },
                         "children": ["Read the advisory"],
-                        "id": "ca20f197-f3fe-4f54-9022-240b01f8b2a9",
+                        "id": "0c5fe035-304e-46c2-b983-d4116b4bc146",
                         "ord": "a2"
                       }
                     ],
-                    "id": "f08ee0fc-1b0b-4cc8-aa4d-23aacfed1062",
+                    "id": "f03c5e2b-a3e7-473c-a181-feea94f91ad9",
                     "ord": "a0"
                   },
                   {
@@ -1234,7 +1234,7 @@
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
                         "children": ["Public notices"],
-                        "id": "ec20a02c-1658-4f98-aee3-c225ca8a8bf1",
+                        "id": "5176d155-13bd-40f2-a315-6d05e7e2b7b5",
                         "ord": "a0"
                       },
                       {
@@ -1244,7 +1244,7 @@
                         "children": [
                           "Hearings, agendas, and bid postings, published as the public record — newest first."
                         ],
-                        "id": "5241a342-7846-428c-ba1a-64f4e347820a",
+                        "id": "2a86f599-d857-4b39-b58f-d2ce71b9278c",
                         "ord": "a1"
                       },
                       {
@@ -1270,7 +1270,7 @@
                                     "tag": "span",
                                     "class": "w-fit rounded-field border border-primary px-3 py-1 text-sm font-semibold uppercase tracking-wide text-primary",
                                     "children": ["Hearing"],
-                                    "id": "52269bb0-4b62-4a84-be88-dd6ced8a216b",
+                                    "id": "765851cf-5959-46b5-a882-8d65414bdabb",
                                     "ord": "a0"
                                   },
                                   {
@@ -1280,7 +1280,7 @@
                                     "children": [
                                       "Notice of public hearing: proposed 4th Street rezoning"
                                     ],
-                                    "id": "c1b3078c-f783-496c-83cb-0037366e84cd",
+                                    "id": "8343d30c-64cf-4160-be86-808b3be945a7",
                                     "ord": "a1"
                                   },
                                   {
@@ -1288,15 +1288,15 @@
                                     "tag": "span",
                                     "class": "text-sm font-medium text-base-content",
                                     "children": ["Posted 5 August"],
-                                    "id": "df9b7179-6bde-421e-b5a3-08f41b09e8ac",
+                                    "id": "fb7f1f71-576e-4cb8-8772-c0e471450840",
                                     "ord": "a2"
                                   }
                                 ],
-                                "id": "04495c0c-5871-419b-ab1a-d88be646a95c",
+                                "id": "caad3c25-9a1b-4233-bcac-fad8ed9a38fc",
                                 "ord": "a0"
                               }
                             ],
-                            "id": "d449f1db-d84d-48ee-b105-1f4dce727bde",
+                            "id": "acf32da5-430c-4924-863a-231593158334",
                             "ord": "a0"
                           },
                           {
@@ -1317,7 +1317,7 @@
                                     "tag": "span",
                                     "class": "w-fit rounded-field border border-primary px-3 py-1 text-sm font-semibold uppercase tracking-wide text-primary",
                                     "children": ["Notice"],
-                                    "id": "d4001ee6-5eac-48eb-9ca3-8260cebe521f",
+                                    "id": "9112ad90-edf2-4d69-bca5-7412fb7f5be2",
                                     "ord": "a0"
                                   },
                                   {
@@ -1327,7 +1327,7 @@
                                     "children": [
                                       "Snow-route parking rules take effect across the North Ward"
                                     ],
-                                    "id": "a6438566-5888-4f64-95f2-fceddea66316",
+                                    "id": "412940b2-e5f7-4caa-a833-bdf4e64733f6",
                                     "ord": "a1"
                                   },
                                   {
@@ -1335,15 +1335,15 @@
                                     "tag": "span",
                                     "class": "text-sm font-medium text-base-content",
                                     "children": ["Posted 4 August"],
-                                    "id": "809af100-27df-4ed7-9953-c0fbc9e67991",
+                                    "id": "18fdd6e8-35da-46d8-927d-7dec04eaa8b9",
                                     "ord": "a2"
                                   }
                                 ],
-                                "id": "0ab0184e-4a13-4441-a8a1-66c78215c13d",
+                                "id": "a816aeac-a589-4ac0-a94a-f39cd0fc7787",
                                 "ord": "a0"
                               }
                             ],
-                            "id": "5bd62b8a-8570-49b5-a57c-dfa7488c96c2",
+                            "id": "ef9a6deb-d60b-4b55-b0b9-474f75966977",
                             "ord": "a1"
                           },
                           {
@@ -1364,7 +1364,7 @@
                                     "tag": "span",
                                     "class": "w-fit rounded-field border border-primary px-3 py-1 text-sm font-semibold uppercase tracking-wide text-primary",
                                     "children": ["RFP"],
-                                    "id": "390b7a5a-2a56-4bb6-82e9-c977e354f601",
+                                    "id": "a4e21cac-937b-49d9-aa17-7cf4b7ad3066",
                                     "ord": "a0"
                                   },
                                   {
@@ -1374,7 +1374,7 @@
                                     "children": [
                                       "Bid posting: street resurfacing program (RFP-27-014)"
                                     ],
-                                    "id": "86eaa151-386c-481b-8e24-166775c4f288",
+                                    "id": "034766a8-8d5c-49e4-ba42-4ed6a19b06a5",
                                     "ord": "a1"
                                   },
                                   {
@@ -1382,15 +1382,15 @@
                                     "tag": "span",
                                     "class": "text-sm font-medium text-base-content",
                                     "children": ["Posted 2 August"],
-                                    "id": "a898fbc1-778c-4fb3-a241-1f36aca8a27d",
+                                    "id": "03d27d73-8ba7-4317-b8f7-46f56bdacbf6",
                                     "ord": "a2"
                                   }
                                 ],
-                                "id": "ae5a2959-ad02-4f6b-b5b4-f7791ac29d73",
+                                "id": "0858558d-2965-4e5b-a78d-5b79778d959e",
                                 "ord": "a0"
                               }
                             ],
-                            "id": "f2a6c738-ac7d-4f11-bdf8-9e220013396b",
+                            "id": "4040c843-9a56-4939-9816-0689379a8a73",
                             "ord": "a2"
                           },
                           {
@@ -1411,7 +1411,7 @@
                                     "tag": "span",
                                     "class": "w-fit rounded-field border border-primary px-3 py-1 text-sm font-semibold uppercase tracking-wide text-primary",
                                     "children": ["Agenda"],
-                                    "id": "63750de1-34b0-4b3e-9742-ecc02139c4ed",
+                                    "id": "76a71cfd-0dbb-4e9a-8beb-1e36d63f198a",
                                     "ord": "a0"
                                   },
                                   {
@@ -1421,7 +1421,7 @@
                                     "children": [
                                       "City Council regular meeting agenda — 12 August, 6:00pm"
                                     ],
-                                    "id": "e3e78b0d-1815-496a-a154-1bc7fa008258",
+                                    "id": "179dde1f-1e40-4c8c-bb38-4c5b21a3e792",
                                     "ord": "a1"
                                   },
                                   {
@@ -1429,31 +1429,31 @@
                                     "tag": "span",
                                     "class": "text-sm font-medium text-base-content",
                                     "children": ["Posted 1 August"],
-                                    "id": "24b80d8e-126f-42f9-bfc3-9f9166ca9e7f",
+                                    "id": "dbab43e8-9b5b-452b-8f80-02d8eec7dfaf",
                                     "ord": "a2"
                                   }
                                 ],
-                                "id": "35a8775f-dc7e-444e-b35f-3fe9dbb1f071",
+                                "id": "fb8c63fe-acc8-4883-ac2c-b455970b2053",
                                 "ord": "a0"
                               }
                             ],
-                            "id": "155fbb43-a17d-4095-9740-9648a3d6b06a",
+                            "id": "c2297269-aa5a-4d85-b1ab-d6af7c43995a",
                             "ord": "a3"
                           }
                         ],
-                        "id": "e18dceb6-d84c-436f-b34c-e6f7e578cd88",
+                        "id": "72be5843-15d3-4884-923b-5a6b28025154",
                         "ord": "a2"
                       }
                     ],
-                    "id": "9da31666-02bf-4f7f-b46c-95e8af67b493",
+                    "id": "4d142601-59c8-4518-8985-305efcfdeda5",
                     "ord": "a1"
                   }
                 ],
-                "id": "ed468d87-2a80-4aac-b3c4-970b7ece1985",
+                "id": "5103ad9d-5842-4a63-a7be-6641d5ecb8bf",
                 "ord": "a0"
               }
             ],
-            "id": "8676a759-de99-45ac-ba37-5300207b43bb",
+            "id": "463d0532-7d5b-4f90-9de6-fe26d20ac477",
             "ord": "a2"
           },
           {
@@ -1471,7 +1471,7 @@
                     "tag": "h2",
                     "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
                     "children": ["City news & updates"],
-                    "id": "c108acc2-ffd5-450e-a2f5-c4417e204d75",
+                    "id": "dc35e210-36c6-4d5d-9299-442eb25d0fa8",
                     "ord": "a0"
                   },
                   {
@@ -1479,15 +1479,15 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": ["Announcements and service changes from City Hall."],
-                    "id": "f94608a6-0d68-4fb7-9165-097c927096dc",
+                    "id": "3fe7bdee-b3ec-4ef1-b0fd-2bb1e9a5e0c2",
                     "ord": "a1"
                   }
                 ],
-                "id": "43aebecb-64f0-4c74-a4df-8f00f4d11203",
+                "id": "824788c9-7c32-46f5-85ff-f0f85e00f8bf",
                 "ord": "a0"
               }
             ],
-            "id": "daa8ec65-74dd-420e-8b1e-f22188bb3317",
+            "id": "da13b771-5edc-49dd-a806-aa855219e8ce",
             "ord": "a3"
           },
           {
@@ -1525,7 +1525,7 @@
                               "kind": "value",
                               "ref": "featuredImage"
                             },
-                            "id": "9c32ce16-6e71-4ccf-ae92-0ca66de8c9f8",
+                            "id": "78e16e87-0b3d-4056-b4ba-8d95b4e90cec",
                             "ord": "a0"
                           },
                           {
@@ -1537,7 +1537,7 @@
                               "kind": "value",
                               "ref": "date"
                             },
-                            "id": "3a9675fd-f32e-4aa9-9abe-4e5d67232113",
+                            "id": "518f7ad4-4857-4035-97d2-01cc94c557df",
                             "ord": "a1"
                           },
                           {
@@ -1549,7 +1549,7 @@
                               "kind": "value",
                               "ref": "title"
                             },
-                            "id": "eb5670c2-1a10-4b80-957d-b59f3de1a8d2",
+                            "id": "c7094ee3-e542-4bcd-95a4-d3ad5bca3558",
                             "ord": "a2"
                           },
                           {
@@ -1561,7 +1561,7 @@
                               "kind": "value",
                               "ref": "excerpt"
                             },
-                            "id": "f9a7ba67-2cd0-438b-8196-55648092be28",
+                            "id": "fc2c2d99-7887-404c-b6ee-ba457f1094ea",
                             "ord": "a3"
                           }
                         ],
@@ -1570,7 +1570,7 @@
                           "ref": "url",
                           "attr": "href"
                         },
-                        "id": "9ba40505-c732-4e9f-9e68-cff3a13cfd4a",
+                        "id": "ac62e388-c11c-43cb-a1b0-17110687780b",
                         "ord": "a0"
                       }
                     ],
@@ -1578,15 +1578,15 @@
                       "kind": "collection",
                       "ref": "cms.blog_post"
                     },
-                    "id": "2285052d-cc94-417d-997d-ea4c1a68148e",
+                    "id": "18991209-4906-42d2-ac8e-647463761de8",
                     "ord": "a0"
                   }
                 ],
-                "id": "37dedb29-2cd9-4233-bb03-a6e30c5dd528",
+                "id": "c51fb53b-28b7-49f4-bb14-68e34ff895c0",
                 "ord": "a0"
               }
             ],
-            "id": "233556d9-2b62-4672-9d23-114eca15d733",
+            "id": "55d0dd69-e898-4da6-b1f3-ac90925fab79",
             "ord": "a4"
           },
           {
@@ -1604,7 +1604,7 @@
                     "tag": "h2",
                     "class": "text-2xl font-semibold text-base-content",
                     "children": ["Publications & Passes"],
-                    "id": "886ea1da-1f20-4436-95eb-62ee2af24836",
+                    "id": "a4e8d549-f82c-4b86-9eef-2466cde067c5",
                     "ord": "a0"
                   },
                   {
@@ -1628,12 +1628,12 @@
                             "props": {
                               "name": "arrow-left"
                             },
-                            "id": "6b438f97-8d41-4344-9deb-5ce2b308e38c",
+                            "id": "9dc5fef5-c468-4fa8-be22-6a58851ee4d6",
                             "ord": "a0"
                           }
                         ],
                         "part": "prev",
-                        "id": "24181cf6-33fe-4954-bad9-deaa76392fec",
+                        "id": "3112cea0-4e12-4f35-b26b-d580ed8bdac2",
                         "ord": "a0"
                       },
                       {
@@ -1652,20 +1652,20 @@
                             "props": {
                               "name": "arrow-right"
                             },
-                            "id": "fef64143-f81f-4220-8744-438cc969b03d",
+                            "id": "666a531b-dd97-47e8-ad72-12618afc1131",
                             "ord": "a0"
                           }
                         ],
                         "part": "next",
-                        "id": "077f9e51-0505-4d7c-bebd-fe0a14d3507d",
+                        "id": "7c05fa85-b240-4c72-b647-40cdd3607a9a",
                         "ord": "a1"
                       }
                     ],
-                    "id": "b4c39c97-bb1e-4e91-bc0f-07d758412c05",
+                    "id": "1786b5df-4028-41f1-af7b-29661cf509de",
                     "ord": "a1"
                   }
                 ],
-                "id": "72e5a635-f06a-4afc-af11-0865f315c94e",
+                "id": "4fa34497-a32a-4372-b83f-4a328c32fb06",
                 "ord": "a0"
               },
               {
@@ -1690,7 +1690,7 @@
                           "kind": "value",
                           "ref": "image"
                         },
-                        "id": "d07acef1-f1d7-42e9-8c4e-52dcf052a567",
+                        "id": "c985fe68-0398-49fa-9292-809881bf84d5",
                         "ord": "a0"
                       },
                       {
@@ -1707,7 +1707,7 @@
                               "kind": "value",
                               "ref": "title"
                             },
-                            "id": "1de8fea1-7d95-45fd-99e1-8a41f6ec29fd",
+                            "id": "2d940778-bab2-45b7-ad4c-eb0e0972e662",
                             "ord": "a0"
                           },
                           {
@@ -1719,11 +1719,11 @@
                               "kind": "value",
                               "ref": "price"
                             },
-                            "id": "47994881-46f8-4f9a-8bc8-b331b3d3071e",
+                            "id": "af75c3be-d4d7-448c-9b7e-7ce745ab1fe7",
                             "ord": "a1"
                           }
                         ],
-                        "id": "9c5af1d2-64f1-4175-8b26-7df1909c4543",
+                        "id": "cb766cdd-58ed-45a7-8e4d-6e5374342af1",
                         "ord": "a1"
                       }
                     ],
@@ -1733,7 +1733,7 @@
                       "attr": "href"
                     },
                     "part": "slide",
-                    "id": "a3e686f9-2be7-4b32-96ac-69e928bc9736",
+                    "id": "55fa2d33-84d7-4b44-8da5-31c8ffd26e3e",
                     "ord": "a0"
                   }
                 ],
@@ -1742,14 +1742,14 @@
                   "kind": "collection",
                   "ref": "commerce.featured"
                 },
-                "id": "90b37707-017b-439e-b05a-fdf4486a631d",
+                "id": "839b4702-1508-4742-b73a-11bfa002ff06",
                 "ord": "a1"
               }
             ],
             "behavior": {
               "type": "carousel"
             },
-            "id": "59ae4b54-edef-4f0b-812b-60566b26e027",
+            "id": "be614f37-7b3b-4474-a6b9-403e6f333b69",
             "ord": "a5"
           }
         ]
@@ -1766,7 +1766,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "16e7af68-7188-491b-b25d-8dc13163798b",
+        "id": "dada5b94-2dc4-4e40-8500-228668a15921",
         "children": [
           {
             "kind": "element",
@@ -1783,7 +1783,7 @@
                     "tag": "h1",
                     "class": "text-4xl font-bold tracking-tight text-base-content @2xl:text-5xl",
                     "children": ["Shop"],
-                    "id": "cba4b75c-66cb-4b07-a1a5-4e6dc92619d0",
+                    "id": "f8ca3380-d662-4a0b-8f22-8a8171795151",
                     "ord": "a0"
                   },
                   {
@@ -1791,15 +1791,15 @@
                     "tag": "p",
                     "class": "mt-4 max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": ["Everything we currently have available."],
-                    "id": "9e809e48-0fa1-4fa3-a559-a9e86e67c225",
+                    "id": "22a2d8f5-01ac-4066-bf44-c53050c83cdc",
                     "ord": "a1"
                   }
                 ],
-                "id": "deb5a3e8-70e4-42f4-9aaf-d09ead5b9cc4",
+                "id": "1cbfe9ed-0c7f-4e6c-9dac-1a43668f9acf",
                 "ord": "a0"
               }
             ],
-            "id": "c3f14109-f99e-4577-beab-c0fdb65d4041",
+            "id": "1154d87d-4ba9-4a68-bec5-e7f30923b720",
             "ord": "a0"
           },
           {
@@ -1807,7 +1807,7 @@
             "component": "commerce.plp",
             "class": "mx-auto w-full max-w-6xl px-6 py-6",
             "locked": "host",
-            "id": "ee2b469d-2437-49ea-98a2-1f648174c35f",
+            "id": "b28cdbd4-d586-490f-8fae-8560f1d57fe3",
             "ord": "a1"
           }
         ]
@@ -1824,7 +1824,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "8bd7cd57-681a-425a-9fa1-6aeabd8a65fa",
+        "id": "19cf044a-3e6d-4d13-b1b5-ed3673c189f0",
         "children": [
           {
             "kind": "element",
@@ -1832,15 +1832,23 @@
             "class": "bg-base-100 @container",
             "children": [
               {
+                "kind": "element",
+                "tag": "h1",
+                "class": "mb-6 px-6 pt-10 text-3xl font-semibold text-base-content",
+                "children": ["Collections"],
+                "id": "dd6c8584-a642-4a1d-877e-327e45ac2499",
+                "ord": "a0"
+              },
+              {
                 "kind": "host",
                 "component": "commerce.collections",
                 "class": "mx-auto w-full max-w-6xl px-6 py-6",
                 "locked": "host",
-                "id": "bfff4dfd-6ec6-4680-9a87-6a20fdd84f4d",
-                "ord": "a0"
+                "id": "288dddd0-5d4b-499b-bb76-2e1d9eb8f2cb",
+                "ord": "a1"
               }
             ],
-            "id": "7430f239-8a1d-4b0d-8b74-b8a8f08ce1f7",
+            "id": "c27cc637-75a5-4604-9703-2550f923bb79",
             "ord": "a0"
           }
         ]
@@ -1857,7 +1865,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "8bb96148-de38-43ce-941c-043172ab84a3",
+        "id": "7699fc5a-3e8a-42d9-977b-213fab4aa7fd",
         "children": [
           {
             "kind": "element",
@@ -1869,7 +1877,7 @@
                 "tag": "h1",
                 "class": "mb-6 px-6 pt-10 text-3xl font-semibold text-base-content",
                 "children": ["Your cart"],
-                "id": "054ed4b6-127b-4f3a-94e9-7d726c2ef47a",
+                "id": "470e2111-76b2-4646-b0e2-26173d4385f8",
                 "ord": "a0"
               },
               {
@@ -1877,11 +1885,11 @@
                 "component": "commerce.cart",
                 "class": "mx-auto w-full max-w-4xl px-6 py-10",
                 "locked": "host",
-                "id": "8d62aace-9e5a-47b0-b8da-83635e3e7730",
+                "id": "93cd1df6-8578-4fa1-9251-c9075b27061c",
                 "ord": "a1"
               }
             ],
-            "id": "9594f9a9-c471-4e7f-ba34-435cc302699f",
+            "id": "7b41510e-589f-48e4-9f11-77facf2da4cc",
             "ord": "a0"
           }
         ]
@@ -1898,7 +1906,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "f3539ec2-7fab-4401-91e3-351deb7f0828",
+        "id": "fa11a254-bbec-4ca5-a4b0-f2e34d65f53a",
         "children": [
           {
             "kind": "element",
@@ -1910,7 +1918,7 @@
                 "tag": "h1",
                 "class": "mb-6 px-6 pt-10 text-3xl font-semibold text-base-content",
                 "children": ["Search"],
-                "id": "04b98c3e-798b-4008-b5ed-4af1de8702d5",
+                "id": "56181be7-d0db-4ef3-b45c-91aea84e28e4",
                 "ord": "a0"
               },
               {
@@ -1918,11 +1926,11 @@
                 "component": "commerce.search",
                 "class": "mx-auto w-full max-w-6xl px-6 py-6",
                 "locked": "host",
-                "id": "9b5b17da-e895-42a0-bf86-c09e24b331ce",
+                "id": "a9db6698-75cd-4909-adf2-ec7038887e73",
                 "ord": "a1"
               }
             ],
-            "id": "582cf799-c371-4366-9acc-19a8f78a070b",
+            "id": "839fe2c8-d8a0-4bf8-a960-125737e7bbd7",
             "ord": "a0"
           }
         ]
@@ -1939,7 +1947,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "84fd51ef-6e24-4f81-99d9-c0e1b733609b",
+        "id": "46fe43ac-18fa-41fb-a339-c42bf5b34304",
         "children": [
           {
             "kind": "element",
@@ -1956,7 +1964,7 @@
                     "tag": "h1",
                     "class": "text-4xl font-bold leading-tight tracking-tight text-primary @3xl:text-6xl",
                     "children": ["City news & notices"],
-                    "id": "61bdebba-278f-4fed-8417-2341c100d503",
+                    "id": "ce9c4cf0-5a11-440a-a947-c6de70ad45ee",
                     "ord": "a0"
                   },
                   {
@@ -1966,15 +1974,15 @@
                     "children": [
                       "Announcements, service changes, and the public record from the City of Rivermark, in plain language, newest first."
                     ],
-                    "id": "fbbc662d-8c7c-46ac-8270-517d3b9ad374",
+                    "id": "e9c177ec-9dbc-4e96-b05a-c8da3d2f4740",
                     "ord": "a1"
                   }
                 ],
-                "id": "28b97784-e337-443a-9813-5e9cde987d22",
+                "id": "9b38a74c-8db5-42cf-8040-116fef3cd235",
                 "ord": "a0"
               }
             ],
-            "id": "c66a11e3-ff1c-4fb5-bce1-1db5fe2fb9f3",
+            "id": "64beecac-d38f-4aaa-aeea-af3bbe30909e",
             "ord": "a0"
           },
           {
@@ -2012,7 +2020,7 @@
                               "kind": "value",
                               "ref": "featuredImage"
                             },
-                            "id": "0758ec54-9ded-48a1-9db3-2f16fbb7fd73",
+                            "id": "2977feb2-bac8-46ab-b55a-f8d57dd57b09",
                             "ord": "a0"
                           },
                           {
@@ -2024,7 +2032,7 @@
                               "kind": "value",
                               "ref": "date"
                             },
-                            "id": "3f4eb205-c6bd-4597-80b5-ecbc300bd43f",
+                            "id": "36477da3-092e-4d31-b387-b992e69b0809",
                             "ord": "a1"
                           },
                           {
@@ -2036,7 +2044,7 @@
                               "kind": "value",
                               "ref": "title"
                             },
-                            "id": "7e6383df-ca3f-4bd6-9c39-f6ace3ea66ed",
+                            "id": "9faa889f-13ea-407b-9e93-25ff8e22b1ef",
                             "ord": "a2"
                           },
                           {
@@ -2048,7 +2056,7 @@
                               "kind": "value",
                               "ref": "excerpt"
                             },
-                            "id": "afbefcca-a2a6-4470-8afc-4af9cbdffe67",
+                            "id": "3780c3f1-5b30-4cf0-b65e-dd9214f22d0f",
                             "ord": "a3"
                           }
                         ],
@@ -2057,7 +2065,7 @@
                           "ref": "url",
                           "attr": "href"
                         },
-                        "id": "3c2314d0-a5fc-496d-81e7-b81ddbac5aa1",
+                        "id": "ebca07cd-d401-4286-a5a0-9917e95b02da",
                         "ord": "a0"
                       }
                     ],
@@ -2065,15 +2073,15 @@
                       "kind": "collection",
                       "ref": "cms.blog_post"
                     },
-                    "id": "3ab8b9c2-e8ec-41b7-9908-3e0c02be6eaa",
+                    "id": "e05024e4-34e0-4c01-b575-f79769091336",
                     "ord": "a0"
                   }
                 ],
-                "id": "f8162493-ba52-4a2f-82e6-a763600000bb",
+                "id": "2d525a02-6082-4977-8f0a-079d60d1f12d",
                 "ord": "a0"
               }
             ],
-            "id": "07d2468d-eb9c-4c5d-b887-fdd5bc372146",
+            "id": "d265e72b-34c4-4dae-88ab-47c166109f60",
             "ord": "a1"
           }
         ]
@@ -2090,7 +2098,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "eade57f4-8899-4a5d-94cb-2d19adc0d1f5",
+        "id": "d83334b4-452b-4b8a-b3f3-cba393105954",
         "children": [
           {
             "kind": "element",
@@ -2107,7 +2115,7 @@
                     "tag": "h1",
                     "class": "text-4xl font-bold tracking-tight text-primary @2xl:text-5xl",
                     "children": ["About the City of Rivermark"],
-                    "id": "16d540b5-ba3f-4a11-9810-4fbd3df1499c",
+                    "id": "bece9e17-d886-4674-bcd4-c2567e2a3b07",
                     "ord": "a0"
                   },
                   {
@@ -2117,7 +2125,7 @@
                     "children": [
                       "Rivermark is a mid-size city of roughly 118,000 residents on the west bank of the Clearwater River. This site is the front door to city government: the services residents use, the meetings that decide how the city is run, and the notices we are required to publish."
                     ],
-                    "id": "36229611-f2ad-412b-b725-a1fccf4242f3",
+                    "id": "4c58c9c1-aaa6-4841-b817-4c9767ad645d",
                     "ord": "a1"
                   },
                   {
@@ -2127,7 +2135,7 @@
                     "children": [
                       "We built this portal around one idea — that finding a city service should not require knowing which department owns it. Everything here is written in plain language, tested against accessibility standards, and organized around the tasks residents actually come to do."
                     ],
-                    "id": "382a8367-eaf0-4b10-83b3-3c6caf95c265",
+                    "id": "72ba80e6-5fb7-47dc-8410-e82b260d5efa",
                     "ord": "a2"
                   },
                   {
@@ -2137,15 +2145,15 @@
                     "children": [
                       "City Hall is at 200 Riverside Plaza and is open Monday through Friday, 8:00am to 5:00pm. Council meetings are open to the public and streamed live; agendas are posted at least 72 hours in advance under Public notices."
                     ],
-                    "id": "b5bf6962-ad4b-40c0-9c13-629abb652f6c",
+                    "id": "03b52f78-89dc-4337-baf9-9c367b6c3ead",
                     "ord": "a3"
                   }
                 ],
-                "id": "621e909c-7ca0-42fc-bbac-e41b7fbd9822",
+                "id": "0f62472f-1f25-4489-8c5f-dc8a90488044",
                 "ord": "a0"
               }
             ],
-            "id": "298e0ec9-f9b3-4f37-a795-b98416167409",
+            "id": "8d0832e7-02ee-4b4a-9512-880a592d2cc4",
             "ord": "a0"
           }
         ]
@@ -2162,53 +2170,297 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "a5727852-219e-4774-8326-45387c1d5dcc",
+        "id": "618cf9f6-4e6a-4ae2-b008-c4443d6d6781",
         "children": [
           {
             "kind": "element",
             "tag": "section",
-            "class": "bg-base-100 @container px-6 py-20 text-center",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-20",
             "children": [
               {
                 "kind": "element",
                 "tag": "div",
-                "class": "mx-auto flex w-full max-w-xl flex-col items-center gap-5",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-8",
                 "children": [
                   {
                     "kind": "element",
-                    "tag": "h1",
-                    "class": "text-4xl font-bold tracking-tight text-primary @2xl:text-5xl",
-                    "children": ["Contact the city"],
-                    "id": "a282cce4-a9e7-419e-8c3e-51bc857104d4",
+                    "tag": "div",
+                    "class": "flex flex-col gap-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h1",
+                        "class": "text-4xl font-bold tracking-tight text-base-content @3xl:text-5xl",
+                        "children": ["Contact the city"],
+                        "id": "33daa2c7-67b2-4c4c-8d02-eee2b8da3af9",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Reach City Hall at 200 Riverside Plaza, Monday through Friday, 8:00am to 5:00pm. For a non-emergency issue — a pothole, a streetlight, a missed pickup — the fastest route is the online service request, staffed during business hours. In an emergency, always call 911."
+                        ],
+                        "id": "636a7897-50c8-46cc-acef-7f1d631896b1",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "0f89f37d-683c-4392-b564-30b1e76e2fe4",
                     "ord": "a0"
                   },
                   {
                     "kind": "element",
-                    "tag": "p",
-                    "class": "text-lg leading-relaxed text-base-content",
+                    "tag": "div",
+                    "class": "flex flex-col gap-1",
                     "children": [
-                      "Reach City Hall at 200 Riverside Plaza, Monday through Friday, 8:00am to 5:00pm. For a non-emergency issue — a pothole, a streetlight, a missed pickup — the fastest route is the online service request, staffed during business hours. In an emergency, always call 911."
+                      {
+                        "kind": "element",
+                        "tag": "span",
+                        "class": "text-base font-medium text-base-content",
+                        "children": ["Call us"],
+                        "id": "543b76ea-4154-4d96-9de0-10b593f6b11b",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "text-lg font-semibold text-base-content underline underline-offset-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "children": ["(555) 123-4567"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "site.identity.phone"
+                            },
+                            "id": "4d1e7d73-2510-49a1-a83b-8629eddbe481",
+                            "ord": "a0"
+                          }
+                        ],
+                        "data": {
+                          "kind": "value",
+                          "ref": "site.identity.phoneHref",
+                          "attr": "href"
+                        },
+                        "id": "0d039671-9f62-49ed-9be7-9408a3bd70c3",
+                        "ord": "a1"
+                      }
                     ],
-                    "id": "d6f8c930-a162-4599-8241-0ec05e2f7aab",
+                    "data": {
+                      "kind": "visible",
+                      "ref": "site.identity.phone"
+                    },
+                    "id": "51d9b28b-3b0a-4d25-b61c-904f26039271",
                     "ord": "a1"
                   },
                   {
                     "kind": "element",
-                    "tag": "a",
-                    "class": "btn btn-primary btn-lg",
-                    "attrs": {
-                      "href": "mailto:help@rivermark.example"
+                    "tag": "div",
+                    "class": "flex flex-col gap-1",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "span",
+                        "class": "text-base font-medium text-base-content",
+                        "children": ["Email us"],
+                        "id": "4a550deb-b684-4086-9506-35e9fc23d811",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "text-lg font-semibold text-base-content underline underline-offset-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "children": ["hello@yourbusiness.com"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "site.identity.email"
+                            },
+                            "id": "7698c093-bfd6-4a67-bca6-69f30fd9fccd",
+                            "ord": "a0"
+                          }
+                        ],
+                        "data": {
+                          "kind": "value",
+                          "ref": "site.identity.emailHref",
+                          "attr": "href"
+                        },
+                        "id": "5cd12a16-f789-426d-a062-9eb0b32a5038",
+                        "ord": "a1"
+                      }
+                    ],
+                    "data": {
+                      "kind": "visible",
+                      "ref": "site.identity.email"
                     },
-                    "children": ["Email the city help desk"],
-                    "id": "9bb85797-313f-470f-ba4a-1f648b0078c2",
+                    "id": "d4ad3507-057a-4c2b-8700-c83a1ad791fc",
                     "ord": "a2"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-1",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "span",
+                        "class": "text-base font-medium text-base-content",
+                        "children": ["Visit us"],
+                        "id": "d59ba8c9-bfc9-4e6b-86c1-8b6961817599",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "address",
+                        "class": "text-lg leading-relaxed whitespace-pre-line not-italic text-base-content",
+                        "children": ["123 Main Street\nPortland, OR 97204"],
+                        "data": {
+                          "kind": "value",
+                          "ref": "site.identity.address"
+                        },
+                        "id": "39090d2c-8f6d-47ce-ba7d-02e95f8884d7",
+                        "ord": "a1"
+                      }
+                    ],
+                    "data": {
+                      "kind": "visible",
+                      "ref": "site.identity.address"
+                    },
+                    "id": "f3932ab3-9fec-4316-a039-52924790c668",
+                    "ord": "a3"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "form",
+                    "class": "flex w-full max-w-xl flex-col gap-5",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "label",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-base font-medium text-base-content",
+                            "children": ["Your name"],
+                            "id": "d75d4be1-f371-49b6-ac52-9bf6ad041044",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "input",
+                            "class": "input input-bordered w-full",
+                            "attrs": {
+                              "type": "text",
+                              "name": "name",
+                              "required": true
+                            },
+                            "id": "f0aec2d7-b017-46a4-8ee1-3c3416823796",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "f11b8e85-34f3-4090-9dc9-f92515636ed9",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "label",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-base font-medium text-base-content",
+                            "children": ["Email address"],
+                            "id": "ac1bcbc7-4dbd-486f-8229-73964c81cdfe",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "input",
+                            "class": "input input-bordered w-full",
+                            "attrs": {
+                              "type": "email",
+                              "name": "email",
+                              "required": true
+                            },
+                            "id": "79974890-7216-47c3-a60e-7e616066b38c",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "0593019f-967f-4150-b11d-9e4bd14e57db",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "label",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-base font-medium text-base-content",
+                            "children": ["How can we help?"],
+                            "id": "03c06cbc-76c5-42d2-bca2-63fb53ff3bb0",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "textarea",
+                            "class": "textarea textarea-bordered min-h-32 w-full",
+                            "attrs": {
+                              "name": "message"
+                            },
+                            "id": "f37fe1c8-6f1b-4d1f-8f5f-902b3399f087",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "a0568ba4-776c-4541-b9be-3e4ab322cf40",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-wrap items-center gap-3",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "button",
+                            "class": "btn btn-primary btn-lg",
+                            "attrs": {
+                              "type": "submit"
+                            },
+                            "children": ["Email the city help desk"],
+                            "id": "02673142-03d5-4b41-a4f7-10e51f309b74",
+                            "ord": "a0"
+                          }
+                        ],
+                        "id": "67c50ccc-8750-40a2-b227-831e70c9e76b",
+                        "ord": "a3"
+                      }
+                    ],
+                    "behavior": {
+                      "type": "form"
+                    },
+                    "data": {
+                      "kind": "action",
+                      "ref": "submit"
+                    },
+                    "id": "73c4fd99-1b6a-43ea-a2d1-1a8d954b6db0",
+                    "ord": "a4"
                   }
                 ],
-                "id": "f5a53e23-d228-4a11-a8a4-e20a6eae86b7",
+                "id": "dc9d8b5b-15ea-4dab-a9c5-dcb330a1abe9",
                 "ord": "a0"
               }
             ],
-            "id": "a1a4ccf7-7ac8-4c4c-9481-856ca4de114b",
+            "id": "d86d6557-a55e-4442-80b8-bff8795b2b52",
             "ord": "a0"
           }
         ]
@@ -2253,18 +2505,18 @@
                             "kind": "element",
                             "tag": "span",
                             "children": ["←"],
-                            "id": "edbd395c-08d4-4da3-b0ea-e3884052292d",
+                            "id": "d43ef44b-4c4a-40a9-b2a9-56b860955cb7",
                             "ord": "a0"
                           },
                           {
                             "kind": "element",
                             "tag": "span",
                             "children": ["All news & notices"],
-                            "id": "42d3133c-9ed8-40bc-82f9-0275ea1dcc35",
+                            "id": "408c6b60-02b9-47ea-8805-a0f8272f1e64",
                             "ord": "a1"
                           }
                         ],
-                        "id": "c88b1247-5304-40fc-b2b7-7c925662c789",
+                        "id": "052fc0d9-b975-4174-8139-c6c76cee66dc",
                         "ord": "a0"
                       },
                       {
@@ -2276,7 +2528,7 @@
                           "kind": "visible",
                           "ref": "category"
                         },
-                        "id": "741cf610-0893-4de6-95c3-aed14329b5ce",
+                        "id": "d3f03b7e-8a7c-43df-acc1-caa0c1955895",
                         "ord": "a1"
                       },
                       {
@@ -2288,7 +2540,7 @@
                           "kind": "value",
                           "ref": "title"
                         },
-                        "id": "dc48e92b-c555-4088-b910-eb1e836ed3e4",
+                        "id": "b14ff3ef-709b-4bba-a6d8-561b2d4837d1",
                         "ord": "a2"
                       },
                       {
@@ -2300,7 +2552,7 @@
                           "kind": "value",
                           "ref": "excerpt"
                         },
-                        "id": "3dced8f9-6f3f-4edc-bb93-41fef4e94340",
+                        "id": "598f3229-7bab-4248-a7a5-462e6d50b52d",
                         "ord": "a3"
                       },
                       {
@@ -2320,7 +2572,7 @@
                               "kind": "visible",
                               "ref": "authorAvatar"
                             },
-                            "id": "68aa19b5-4493-4d67-9f85-62046e0af46d",
+                            "id": "d728e96d-3ee6-4dff-a22d-6b34a03cbeb2",
                             "ord": "a0"
                           },
                           {
@@ -2337,7 +2589,7 @@
                                   "kind": "visible",
                                   "ref": "authorName"
                                 },
-                                "id": "8ad449cd-ab6c-4907-b679-092f0daebec2",
+                                "id": "3bfcf4f0-b993-4a18-9585-8f2ecd67e303",
                                 "ord": "a0"
                               },
                               {
@@ -2349,23 +2601,23 @@
                                   "kind": "value",
                                   "ref": "date"
                                 },
-                                "id": "27b6e5ba-a1f6-4776-8e86-ff50aa12401a",
+                                "id": "7d10d8e0-a069-49b6-a314-0e5dcb112100",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "80b41a1c-f90d-4db6-a4de-a10b13a5cb1d",
+                            "id": "f46a7708-bcf7-4622-9c53-28c1043883e3",
                             "ord": "a1"
                           }
                         ],
-                        "id": "3517f21c-9ff4-42f4-adfa-25c748327028",
+                        "id": "bebf2cc7-c856-4490-aaef-51325e1c6257",
                         "ord": "a4"
                       }
                     ],
-                    "id": "51a60c98-a11e-47cc-957b-755e339ef135",
+                    "id": "8d7e7cec-892e-4fcf-87f0-cfeb9040e39c",
                     "ord": "a0"
                   }
                 ],
-                "id": "3880b96b-9852-4d08-a573-46187f1f4a42",
+                "id": "4ad4bb5d-9fbd-4d47-9766-ae4da01df9a3",
                 "ord": "a0"
               },
               {
@@ -2390,19 +2642,19 @@
                           "kind": "value",
                           "ref": "featuredImage"
                         },
-                        "id": "982f1b30-5eef-4432-a259-7758cc49cd4f",
+                        "id": "a6d91754-56fa-41dd-b220-fa8f8a68d31c",
                         "ord": "a0"
                       }
                     ],
-                    "id": "4fea3ec6-d0ae-4ae4-bfc3-8ac671386e63",
+                    "id": "9daa2a82-8cc2-4eb0-9f5f-b70197c166bd",
                     "ord": "a0"
                   }
                 ],
-                "id": "c4392e1e-c556-470e-8412-593801825a3f",
+                "id": "e951be9c-0954-4bab-abf4-d3feddb74b77",
                 "ord": "a1"
               }
             ],
-            "id": "a4c7110f-bb6f-4adc-88f6-d2a09017d7f1",
+            "id": "1043a2a5-b63f-4ec7-b4af-fff760ecd01f",
             "ord": "a0"
           },
           {
@@ -2420,15 +2672,15 @@
                     "component": "cms.article-body",
                     "class": "w-full",
                     "locked": "host",
-                    "id": "11baed57-748f-40da-bb03-3072a1cfea9d",
+                    "id": "40a6b9f8-1732-475d-85e8-3519cd387ca2",
                     "ord": "a0"
                   }
                 ],
-                "id": "65967137-8366-48f0-b5b6-d3a1034227ac",
+                "id": "1986415b-a5ec-4a9c-8f84-2812b1476a4c",
                 "ord": "a0"
               }
             ],
-            "id": "b8508db8-13b6-484e-837f-5ea4f5c32cc4",
+            "id": "64d423a2-01d9-4cb0-b012-f846c57fa637",
             "ord": "a1"
           },
           {
@@ -2458,7 +2710,7 @@
                           "kind": "visible",
                           "ref": "authorAvatar"
                         },
-                        "id": "bf31e58d-bc41-4ddb-8b55-0e14931b3e35",
+                        "id": "8b4df539-63e3-4933-89bf-92852192dcdc",
                         "ord": "a0"
                       },
                       {
@@ -2475,7 +2727,7 @@
                               "kind": "value",
                               "ref": "authorName"
                             },
-                            "id": "cc06e84b-7c16-4657-a66d-7ae69d80a361",
+                            "id": "8561d15e-e0cc-4873-b2f7-0a6f574719f9",
                             "ord": "a0"
                           },
                           {
@@ -2487,11 +2739,11 @@
                               "kind": "value",
                               "ref": "authorBio"
                             },
-                            "id": "de3ed415-6de3-49e7-ad85-cc47ddfc51b8",
+                            "id": "ebeb460f-a13a-4df5-be60-68b5fb38cf75",
                             "ord": "a1"
                           }
                         ],
-                        "id": "b8c09021-d70a-4184-9e94-fa235d85e317",
+                        "id": "f2f665ee-37a9-40d5-8c22-945fd637bf25",
                         "ord": "a1"
                       }
                     ],
@@ -2499,15 +2751,15 @@
                       "kind": "visible",
                       "ref": "authorBio"
                     },
-                    "id": "f2697e73-7daf-4b00-af6b-146a6cb594f0",
+                    "id": "1677dc26-ccf2-4802-bcb0-11faf9012e00",
                     "ord": "a0"
                   }
                 ],
-                "id": "03729294-4854-4a99-9427-bc0001769477",
+                "id": "12d43105-28d5-4ee6-bc41-678709774586",
                 "ord": "a0"
               }
             ],
-            "id": "f56c406f-3c90-46a2-9ab8-16cea437e299",
+            "id": "5f852ce1-d88c-4b07-a03e-d48b73c3ce3b",
             "ord": "a2"
           },
           {
@@ -2530,7 +2782,7 @@
                         "tag": "h2",
                         "class": "text-2xl font-bold tracking-tight text-base-content @2xl:text-3xl",
                         "children": ["Keep reading"],
-                        "id": "605a780f-7b5e-4156-a10e-60f9b0f31262",
+                        "id": "d543e159-bd74-47b8-a030-d1a6cb40b370",
                         "ord": "a0"
                       },
                       {
@@ -2545,23 +2797,23 @@
                               "href": "/journal"
                             },
                             "children": ["More stories"],
-                            "id": "7879fd6c-cd71-4451-856d-4a8768ab7b37",
+                            "id": "ad287e5a-94d8-4e73-86c9-f9aae648de12",
                             "ord": "a0"
                           }
                         ],
-                        "id": "d5743cce-4be3-4168-9e45-2cb07ad2a9ef",
+                        "id": "d94ef1b6-c0e3-4abe-8d3a-bc32f5642d4d",
                         "ord": "a1"
                       }
                     ],
-                    "id": "70afd028-3336-4b5b-8261-de9cc1f1c52f",
+                    "id": "3cf0d93a-6833-43cc-aa7d-ae7f83b1b048",
                     "ord": "a0"
                   }
                 ],
-                "id": "5595e6a2-4632-46c4-ab52-6da9d10a243b",
+                "id": "c54160ed-dddf-4d7d-948c-57f154e8bb92",
                 "ord": "a0"
               }
             ],
-            "id": "802d0afc-758e-48d6-ae6e-2e383459816c",
+            "id": "eb6d7efc-e056-443f-b6d2-32b0e1d46984",
             "ord": "a3"
           }
         ],
@@ -2569,7 +2821,7 @@
           "kind": "collection",
           "ref": "blog_post"
         },
-        "id": "5790ea18-d515-4af3-8695-5121128e34a7"
+        "id": "228429de-11a8-479f-8d41-bf3f04aefcf9"
       }
     }
   ],

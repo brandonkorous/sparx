@@ -16,7 +16,7 @@ import welcomeEmail2 from './welcome-email-2.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-signal',
-  version: '1.1.0',
+  version: '1.2.0',
   name: 'sparx — Signal',
   summary:
     'The complete sparx starter — a faceted shop, a journal, a booking page, and a wholesale page — in the Signal look, tuned for software, apps, and subscriptions. Install it, make it yours, and launch a polished working site in minutes.',
@@ -42,7 +42,7 @@ const blueprint = {
   },
 
   // The provisioned SiteTheme the installer creates + applies — the 'signal'
-  // look as a tenant-editable saved theme (base preset signal + this theme's brand look).
+  // look as a tenant-editable saved theme (base preset apex + this theme's brand look).
   theme: {
     name: 'signal',
     basePresetKey: 'signal',

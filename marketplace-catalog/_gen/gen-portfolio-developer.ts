@@ -32,6 +32,7 @@ import {
 } from '../../packages/silica-catalog/node_modules/@wizeworks/silicaui-html/dist/index.js';
 import { safeParseBlueprint } from '../../packages/blueprints/src/validate';
 
+import { contactSection } from './shared/contact-section';
 import { emitPortfolioBundle, type PortfolioSiteSpec } from './portfolio-sites/harness';
 import { writePortfolioPreview } from './portfolio-sites/preview';
 import {
@@ -506,51 +507,15 @@ const ABOUT: Node[] = [
 ];
 
 const CONTACT: Node[] = [
-  el('section', 'bg-base-100 @container px-6 py-20', {
-    children: [
-      el('div', 'mx-auto flex w-full max-w-2xl flex-col gap-6', {
-        children: [
-          el('h1', 'text-5xl font-bold tracking-tight text-base-content @2xl:text-6xl', {
-            text: 'Let’s build something',
-          }),
-          el('p', 'text-lg leading-relaxed text-base-content', {
-            text: 'I’m open to select WebGL, interactive and tooling work. A good first message tells me what you’re trying to make, roughly when, and where it has to run — but a half-formed idea and a deadline is a fine place to start too.',
-          }),
-          // The console sign-off — email is the real channel; "the usual places" without
-          // inventing handles or URLs I don't own.
-          el('div', 'flex flex-col gap-2 rounded-box border border-base-300 bg-base-200 px-5 py-4', {
-            children: [
-              el('div', 'flex items-center gap-3', {
-                children: [
-                  el('span', 'text-base font-semibold text-primary', { text: '❯' }),
-                  el('span', 'text-base text-base-content', { text: 'contact --kade' }),
-                ],
-              }),
-              el('div', 'flex items-center gap-3', {
-                children: [
-                  el('span', 'text-base font-semibold text-accent', { text: '~' }),
-                  el('span', 'text-base text-secondary', {
-                    text: 'email me, or find me on the usual places — repos, feeds, the odd conference hallway.',
-                  }),
-                ],
-              }),
-            ],
-          }),
-          el('div', 'flex flex-wrap gap-3', {
-            children: [
-              el('a', 'btn btn-primary btn-lg', {
-                attrs: { href: 'mailto:kade@voidbuilds.example' },
-                text: 'Email me',
-              }),
-              el('a', 'btn btn-neutral btn-outline btn-lg', {
-                attrs: { href: '/work' },
-                text: 'See the builds first',
-              }),
-            ],
-          }),
-        ],
-      }),
-    ],
+  // The page's own words, over the shared contact band: the business's phone and email
+  // (each hidden until set in Site settings — never an invented number) and a working
+  // enquiry form that reaches the tenant's Form submissions inbox. This used to end at a
+  // `mailto:` to a placeholder domain, which was the only way to reach the business.
+  contactSection({
+    heading: 'Let’s build something',
+    intro: 'I’m open to select WebGL, interactive and tooling work. A good first message tells me what you’re trying to make, roughly when, and where it has to run — but a half-formed idea and a deadline is a fine place to start too.',
+    submitLabel: 'Email me',
+    secondary: { label: 'See the builds first', href: '/work' },
   }),
 ];
 

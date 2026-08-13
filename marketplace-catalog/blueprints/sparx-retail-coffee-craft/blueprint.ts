@@ -15,7 +15,7 @@ import emails from './emails.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-retail-coffee-craft',
-  version: '1.3.0',
+  version: '1.4.0',
   name: 'sparx — Coffee Roaster (Craft)',
   summary:
     'A complete, working shop for a small-batch coffee roaster: a real catalogue of single-origin bags, blends, decaf, brew gear and a flexible subscription, with categories, collections, a bespoke coffee-shop PDP and a full merchandised home page. Warm roastery theme — cream paper, deep coffee-brown, a terracotta accent. Shipped as Cairn Coffee Roasters.',

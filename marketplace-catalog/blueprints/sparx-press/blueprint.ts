@@ -16,7 +16,7 @@ import welcomeEmail2 from './welcome-email-2.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-press',
-  version: '1.1.0',
+  version: '1.2.0',
   name: 'sparx — Press',
   summary:
     'The complete sparx starter — a faceted shop, a journal, a booking page, and a wholesale page — in the Press look, tuned for publishers, newsletters, and blogs. Install it, make it yours, and launch a polished working site in minutes.',
@@ -42,7 +42,7 @@ const blueprint = {
   },
 
   // The provisioned SiteTheme the installer creates + applies — the 'press'
-  // look as a tenant-editable saved theme (base preset press + this theme's brand look).
+  // look as a tenant-editable saved theme (base preset apex + this theme's brand look).
   theme: {
     name: 'press',
     basePresetKey: 'press',

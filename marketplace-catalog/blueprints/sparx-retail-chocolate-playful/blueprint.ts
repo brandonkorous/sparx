@@ -15,7 +15,7 @@ import emails from './emails.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-retail-chocolate-playful',
-  version: '1.3.0',
+  version: '1.4.0',
   name: 'sparx — Chocolate & Sweets (Playful)',
   summary:
     'A complete, working shop for a bright, gift-forward chocolate & sweets maker: colourful bonbon boxes, a build-your-own selection, hot-cocoa bombs, dipped treats, a birthday box, a kids’ bundle and a flexible subscription, with categories, collections, a bespoke PDP and a fully merchandised home page. Joyful sweet-shop theme — vanilla cream, a raspberry candy primary, a berry-grape pop accent, a rounded display and playful hovers. Shipped as Sweet Tooth Co.',

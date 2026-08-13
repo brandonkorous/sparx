@@ -3,7 +3,7 @@
   "category": "blueprint",
   "slug": "sparx-brand-newsroom",
   "name": "sparx — Brand Newsroom",
-  "version": "1.1.0",
+  "version": "1.4.0",
   "tagline": "A dark, cover-art brand-newsroom template for a studio that ships and sells.",
   "description": "A first-party brand newsroom for a product studio — a big latest-release feature over a live launch feed, a release-notes changelog, a spotlight drop, and a bound store carousel, on a true-dark ground with one electric-violet accent. Modelled on the brand-community-newsroom archetype; shipped as Launch Notes. Ships a light studio store (merch) to demonstrate content + commerce together.",
   "payload": "blueprint.ts",

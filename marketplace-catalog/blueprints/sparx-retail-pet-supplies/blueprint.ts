@@ -15,7 +15,7 @@ import emails from './emails.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-retail-pet-supplies',
-  version: '1.3.0',
+  version: '1.4.0',
   name: 'sparx — Pet Supplies (Premium)',
   summary:
     'A complete, working shop for a premium modern pet brand: a real catalogue of a hand-stitched leather collar and matching lead, an adventure harness, an orthopedic dog bed, a ceramic bowl, natural treats, a rope toy, a travel bottle, a grooming brush and a flexible subscription box, with categories, collections, a bespoke pet-shop PDP and a full merchandised home page. Warm, friendly-but-premium theme — a cream ground, a deep teal primary and a warm coral accent. Shipped as Barkwell.',

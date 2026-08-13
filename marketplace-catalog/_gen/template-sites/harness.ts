@@ -42,6 +42,7 @@ import { TEMPLATE_THEME_BY_SLUG } from '../../../packages/silica-catalog/src/tem
 import { CONTENT_THEME_BY_SLUG } from '../../../packages/silica-catalog/src/content-themes';
 import { colorToHex } from '../../../packages/site-themes/src/v2/color';
 import { blueprintEmailDoc } from '../shared/blueprint-email';
+import { contactSection } from '../shared/contact-section';
 
 /** The bespoke theme for a template slug, from EITHER shelf — the ten commerce looks
  *  (`TEMPLATE_THEME_BY_SLUG`, keyed by the `docs/templates/*` slug) OR the ten content
@@ -62,7 +63,7 @@ const blueprintsDir = join(here, '..', '..', 'blueprints');
  *  is the full 9-page sites (bespoke PDP + Collections/Cart/Search/Journal framing) over the
  *  original 1.0.0 home-only pass. Both the blueprint.ts and sparx.json versions read this, so
  *  they can't disagree (the loader cross-checks them). */
-const BUNDLE_VERSION = '1.3.0';
+const BUNDLE_VERSION = '1.4.0';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -344,7 +345,11 @@ export function composeTemplateSite(spec: TemplateSiteSpec): Record<string, unkn
   const shopBody = [...(spec.shop ?? [shopHeader()]), hostCore(HOST_KEYS.commercePlp)];
   const collectionsBody = spec.collections
     ? [...spec.collections, hostCore(HOST_KEYS.commerceCollections)]
-    : [functionalShell(HOST_KEYS.commerceCollections)];
+    : // `heading` passed, like Cart and Search below. Without it `functionalShell` emits
+      // the bare core and nothing else, so ten shipped bundles had a Collections page
+      // with NO heading of any level on it — a page a screen reader announces as
+      // untitled, and a search result with nothing to title it.
+      [functionalShell(HOST_KEYS.commerceCollections, { heading: 'Collections' })];
   const cartBody = spec.cart
     ? [...spec.cart, hostCore(HOST_KEYS.commerceCart)]
     : [functionalShell(HOST_KEYS.commerceCart, { heading: 'Your cart' })];
@@ -366,6 +371,10 @@ export function composeTemplateSite(spec: TemplateSiteSpec): Record<string, unkn
     // The journal INDEX at `/journal` (not `/blog` — see `frameForBundle`).
     singleton('Journal', 'journal', journalBody, seo.journal),
     singleton('About', 'about', pageBody(spec.about ?? defaultAbout(spec)), seo.about),
+    // Each template authors its own Contact copy (its heading and its voice) as a
+    // `contactSection(…)` call — the SHAPE (bound channels + working form) is shared,
+    // only the words are per-template. `defaultContact` is the same section with neutral
+    // wording, for a spec that authors none.
     singleton('Contact', 'contact', pageBody(spec.contact ?? defaultContact()), seo.contact),
     // The BESPOKE product-detail template, when the template authors one. A collection page
     // (`kind:'collection'`, `recordType:'commerce.product'`, `isDefault`) the installer lands
@@ -636,24 +645,18 @@ function aboutBand(businessName: string): Node {
   });
 }
 
+/** The Contact page. The business's own channels (each hidden until set in Site settings)
+ *  over a working enquiry form that reaches the tenant's Form submissions inbox.
+ *
+ *  It used to be a heading, a paragraph telling the OWNER to add a contact method, and a
+ *  button pointing at `mailto:hello@example.com` — a placeholder domain that shipped live
+ *  on 66 storefronts as the single way to reach the business, next to a form pipeline the
+ *  platform already had. See shared/contact-section.ts for the full finding. */
 function contactBand(): Node {
-  return el('section', 'bg-base-100 @container px-6 py-20 text-center', {
-    children: [
-      el('div', 'mx-auto flex w-full max-w-xl flex-col items-center gap-5', {
-        children: [
-          el('h1', 'text-4xl font-semibold tracking-tight text-base-content @2xl:text-5xl', {
-            text: 'Get in touch',
-          }),
-          el('p', 'text-lg leading-relaxed text-base-content', {
-            text: 'Have a question or want to work together? Tell visitors the best way to reach you — an email, a phone number, or a form you add from the builder.',
-          }),
-          el('a', 'btn btn-primary btn-lg', {
-            attrs: { href: 'mailto:hello@example.com' },
-            text: 'Email us',
-          }),
-        ],
-      }),
-    ],
+  return contactSection({
+    heading: 'Get in touch',
+    intro: 'Questions about an order, a wholesale enquiry, or something you would like us to make? Send a note and a real person will reply.',
+    submitLabel: 'Send message',
   });
 }
 

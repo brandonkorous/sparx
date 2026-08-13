@@ -22,7 +22,7 @@
                   "props": {
                     "show": "both"
                   },
-                  "id": "eab0128b-9497-48e7-8497-c382c2dff24a",
+                  "id": "fc5aeaec-1316-471d-94ee-9a302bbd81ce",
                   "ord": "a0"
                 },
                 {
@@ -43,7 +43,7 @@
                         "type": "link",
                         "label": "Product"
                       },
-                      "id": "5c8fa94f-0292-4377-89e8-f10ddd715b61",
+                      "id": "f5ce3afb-9741-4d65-904e-42aaec487ee6",
                       "ord": "a0"
                     },
                     {
@@ -59,7 +59,7 @@
                         "type": "link",
                         "label": "Pricing"
                       },
-                      "id": "541ffe30-274d-4d45-8d62-fd44df47aa59",
+                      "id": "b82886eb-9ffc-4e9e-abaa-ab804b4c3ef2",
                       "ord": "a1"
                     },
                     {
@@ -75,7 +75,7 @@
                         "type": "link",
                         "label": "Docs"
                       },
-                      "id": "728eac95-f8d2-4d11-894b-8a7ad5639267",
+                      "id": "fddcd403-0ae9-4931-808b-ee26e3b02d24",
                       "ord": "a2"
                     },
                     {
@@ -91,11 +91,11 @@
                         "type": "link",
                         "label": "Company"
                       },
-                      "id": "b3086ed9-9bc5-447a-a9ac-a7155b063494",
+                      "id": "497124f8-7fbb-4c1b-972c-80d1621cb8ff",
                       "ord": "a3"
                     }
                   ],
-                  "id": "8b5b69b1-c801-4b23-9ef1-348c991985db",
+                  "id": "1681b008-968f-4e20-97ad-7129fc3bb4ed",
                   "ord": "a1"
                 },
                 {
@@ -116,14 +116,14 @@
                         "type": "link",
                         "label": "Secondary link"
                       },
-                      "id": "bb3ee33f-ef2e-482c-90b2-6bc4a5ddedf2",
+                      "id": "7fa1007b-099a-4c57-8ce6-cca3f4feb5fb",
                       "ord": "a0"
                     },
                     {
                       "kind": "host",
                       "component": "site.theme-toggle",
                       "class": "inline-flex items-center",
-                      "id": "51498fd0-b73f-464a-9ed7-5a9a248ce653",
+                      "id": "85dfeaa0-5adf-4854-839e-440428ab197f",
                       "ord": "a1"
                     },
                     {
@@ -139,7 +139,7 @@
                         "type": "link",
                         "label": "Primary action"
                       },
-                      "id": "b24558e9-d346-4ca0-96ed-d2cf624f786f",
+                      "id": "6be540c6-b377-40fc-9cc6-41fe78dedd31",
                       "ord": "a2"
                     },
                     {
@@ -157,20 +157,20 @@
                           "props": {
                             "name": "menu"
                           },
-                          "id": "444c8c95-fa0a-4138-9f8a-3646a92c36ff",
+                          "id": "c58f55fb-83c3-4308-84ed-76a479953d26",
                           "ord": "a0"
                         }
                       ],
                       "part": "trigger",
-                      "id": "d079f214-a675-4e3e-86ac-2114fd11f688",
+                      "id": "0e04bcf2-fcb1-4d12-a5c4-3e4a23c73bcd",
                       "ord": "a3"
                     }
                   ],
-                  "id": "82c69905-a1e9-4be6-88e4-4e22e86d21fe",
+                  "id": "52d0c583-d6f9-45ed-a68f-bcb93dcd4745",
                   "ord": "a2"
                 }
               ],
-              "id": "41232437-3898-44d6-844f-b8c7988c7a8d",
+              "id": "3f47f5a0-b861-49ad-b0f0-c382eeb28bd3",
               "ord": "a0"
             },
             {
@@ -194,7 +194,7 @@
                     "type": "link",
                     "label": "Product"
                   },
-                  "id": "9ec4112a-5789-427f-a0a3-a4f9d06b0194",
+                  "id": "5e84a299-1921-44cc-bd3d-f1be40562c89",
                   "ord": "a0"
                 },
                 {
@@ -210,7 +210,7 @@
                     "type": "link",
                     "label": "Pricing"
                   },
-                  "id": "5bee8ecd-8c87-4393-8dd6-23ccaf9da2d9",
+                  "id": "6a149163-5e37-483f-b05f-17721b44bbdd",
                   "ord": "a1"
                 },
                 {
@@ -226,7 +226,7 @@
                     "type": "link",
                     "label": "Docs"
                   },
-                  "id": "59bcb39d-af86-4bf8-8276-6d2c9dabb5ec",
+                  "id": "a0bfe9a5-3d4a-4f37-9308-943c0e4e727a",
                   "ord": "a2"
                 },
                 {
@@ -242,7 +242,7 @@
                     "type": "link",
                     "label": "Company"
                   },
-                  "id": "fb146135-c460-479d-9b07-7220b21e1a5d",
+                  "id": "b79e7498-b8df-402f-b8e7-b9c32ceb8202",
                   "ord": "a3"
                 },
                 {
@@ -258,7 +258,7 @@
                     "type": "link",
                     "label": "Secondary link"
                   },
-                  "id": "ba75419a-2003-4bff-82d3-31cfb28a9dc1",
+                  "id": "fcc21b1b-8985-4eb1-8cac-890ce9e8dba3",
                   "ord": "a4"
                 },
                 {
@@ -274,19 +274,19 @@
                     "type": "link",
                     "label": "Primary action"
                   },
-                  "id": "e5bb7a6f-548f-4caf-bd2f-3464fbc6c3f1",
+                  "id": "57b7d8e4-44ee-4d82-ab1a-ffdf5442719f",
                   "ord": "a5"
                 }
               ],
               "part": "panel",
-              "id": "930c26fc-27a5-4ae9-826e-c4408ae16643",
+              "id": "c9cdb620-0715-4afa-9fcd-db87bb053ae0",
               "ord": "a1"
             }
           ],
           "behavior": {
             "type": "disclosure"
           },
-          "id": "4747203c-2a5b-4ac4-9f13-642153760093",
+          "id": "13856b4c-b561-4a81-95c7-1ea1d6870ea9",
           "ord": "a0"
         },
         {
@@ -302,7 +302,7 @@
               "kind": "outlet"
             }
           ],
-          "id": "239eb367-a52f-4462-b453-2f8d0b9ee4d8",
+          "id": "2a45aa7b-d16a-48dc-a846-3e9d54bceca1",
           "ord": "a1"
         },
         {
@@ -332,7 +332,7 @@
                           "props": {
                             "show": "both"
                           },
-                          "id": "32dd5cab-67bd-43b1-8cbe-9297ce4968d7",
+                          "id": "e07e91a2-fcdd-44d3-9897-d29259fba454",
                           "ord": "a0"
                         },
                         {
@@ -350,7 +350,7 @@
                           "attrs": {
                             "href": "/"
                           },
-                          "id": "db3ad050-37ee-420d-ae0b-729dfa41d3f7",
+                          "id": "dfc49192-d1da-46c3-a725-0713af15b746",
                           "ord": "a1"
                         },
                         {
@@ -371,7 +371,7 @@
                                 "placeholder": "you@example.com",
                                 "required": true
                               },
-                              "id": "7360bf21-534e-4a87-b84a-354733fdbe69",
+                              "id": "b4b9c2fe-7173-47eb-9e73-13e6123ff2ae",
                               "ord": "a0"
                             },
                             {
@@ -387,11 +387,11 @@
                                 "type": "text",
                                 "label": "Button label"
                               },
-                              "id": "4f4a624b-1b3c-4e93-83cf-6fcdfa87f906",
+                              "id": "338450de-dd94-4f25-b2c5-0a45972294c0",
                               "ord": "a1"
                             }
                           ],
-                          "id": "9266b30b-ee92-4a13-b8f5-b81ea56d7d80",
+                          "id": "949ef003-b27b-4510-9b06-3977bca365b4",
                           "ord": "a2"
                         },
                         {
@@ -404,11 +404,11 @@
                             "type": "text",
                             "label": "Reassurance line"
                           },
-                          "id": "818eb6fb-2769-41a8-9c31-4d05db24b5e5",
+                          "id": "5419599b-fa86-4649-9184-11fdd80440d8",
                           "ord": "a3"
                         }
                       ],
-                      "id": "db322164-cd72-4cfc-a7a7-ecb1000265c9",
+                      "id": "ea2f9bc0-32a4-42f5-b8e7-c6b8a2fc0f49",
                       "ord": "a0"
                     },
                     {
@@ -434,7 +434,7 @@
                               "attrs": {
                                 "href": "/"
                               },
-                              "id": "9890953b-3809-4c59-ab34-df7397c835eb",
+                              "id": "d49db977-b8f8-40d2-8a9d-2c2ce0c96f06",
                               "ord": "a0"
                             },
                             {
@@ -459,11 +459,11 @@
                                         "type": "link",
                                         "label": "Features"
                                       },
-                                      "id": "51d31ee1-db28-4154-b0b7-f9489a0a270b",
+                                      "id": "a58dc2a8-6557-4f77-8858-4a8204a6f67d",
                                       "ord": "a0"
                                     }
                                   ],
-                                  "id": "f9f1c723-28eb-450a-8b9c-09504c2c025e",
+                                  "id": "d3a5c8d9-65aa-4d45-b510-7147dd87ade7",
                                   "ord": "a0"
                                 },
                                 {
@@ -483,11 +483,11 @@
                                         "type": "link",
                                         "label": "Pricing"
                                       },
-                                      "id": "f4013d1f-32a6-4092-b481-9bfd6e64d54b",
+                                      "id": "e62a0330-ec08-47e8-a06a-b07648fd8476",
                                       "ord": "a0"
                                     }
                                   ],
-                                  "id": "c1fc393e-b8c0-4e68-9531-c997348e2861",
+                                  "id": "946fbbb5-6384-4743-af81-0ca7cf3651ef",
                                   "ord": "a1"
                                 },
                                 {
@@ -507,11 +507,11 @@
                                         "type": "link",
                                         "label": "Changelog"
                                       },
-                                      "id": "79eba15d-d786-4545-aa64-acc7258be319",
+                                      "id": "221ad201-3679-47f7-98a5-3381819f5ba8",
                                       "ord": "a0"
                                     }
                                   ],
-                                  "id": "0366e608-81db-4adc-a9a7-4c1976aa5c43",
+                                  "id": "3f802ff4-5d78-443c-a1cc-ab419aba510b",
                                   "ord": "a2"
                                 },
                                 {
@@ -531,11 +531,11 @@
                                         "type": "link",
                                         "label": "Roadmap"
                                       },
-                                      "id": "bedcbe99-56a4-4b32-8e76-40c3e33a5616",
+                                      "id": "5b6d4d65-d3c5-411f-88ff-07f728d58f46",
                                       "ord": "a0"
                                     }
                                   ],
-                                  "id": "7189fe52-daea-4532-9a21-b52734bd247d",
+                                  "id": "2e5c2ad3-248a-441e-887a-f4c6f4985d59",
                                   "ord": "a3"
                                 },
                                 {
@@ -550,19 +550,19 @@
                                         "href": "/search"
                                       },
                                       "children": ["Search"],
-                                      "id": "afb5b2db-f328-48e7-a344-36b49ed4208f",
+                                      "id": "5dfb90d8-6e07-4f7d-bb46-216d31c809eb",
                                       "ord": "a0"
                                     }
                                   ],
-                                  "id": "1d6f8f86-3caa-4ad7-949a-136d5c3a4b78",
+                                  "id": "210f643c-4ba2-41da-9406-d08b91434174",
                                   "ord": "a4"
                                 }
                               ],
-                              "id": "4e91812d-f3e4-40d0-ad7d-49592c0746d0",
+                              "id": "4fd1849d-2ccb-4b60-8510-3b157064112a",
                               "ord": "a1"
                             }
                           ],
-                          "id": "9b45b515-ccec-407d-a541-531dac414cd6",
+                          "id": "ec6adc66-5626-41d2-8e7f-8287026583cc",
                           "ord": "a0"
                         },
                         {
@@ -583,7 +583,7 @@
                               "attrs": {
                                 "href": "/account"
                               },
-                              "id": "84cbe91b-d32e-4ea0-9869-7be31c8a4b36",
+                              "id": "a1491e75-16d3-4862-886e-6f000a27d870",
                               "ord": "a0"
                             },
                             {
@@ -608,11 +608,11 @@
                                         "type": "link",
                                         "label": "About"
                                       },
-                                      "id": "9c64e22a-3b8c-4fbc-b425-eed2b2e80c70",
+                                      "id": "f791944f-d44b-4a20-a310-f0becf919d5b",
                                       "ord": "a0"
                                     }
                                   ],
-                                  "id": "263413fe-179f-4dfe-a6d0-2a498fd34c0c",
+                                  "id": "f36205b9-5826-49de-91c4-863f9ec21df4",
                                   "ord": "a0"
                                 },
                                 {
@@ -632,11 +632,11 @@
                                         "type": "link",
                                         "label": "Careers"
                                       },
-                                      "id": "b8c0b946-149b-4d5e-b2ed-d74bed9e9f2b",
+                                      "id": "2ca2f9e6-7f57-4cc7-be92-641a8e75056c",
                                       "ord": "a0"
                                     }
                                   ],
-                                  "id": "99c103e5-81b2-44a9-8081-25a87af77f77",
+                                  "id": "27102c16-32d3-445a-9670-910fc1c2bef4",
                                   "ord": "a1"
                                 },
                                 {
@@ -656,27 +656,27 @@
                                         "type": "link",
                                         "label": "Press"
                                       },
-                                      "id": "523b1203-13ff-4d29-bec0-5af272fd02c9",
+                                      "id": "7885d4c6-951c-4eee-bd86-a31ddfa02d52",
                                       "ord": "a0"
                                     }
                                   ],
-                                  "id": "45ab6496-dcf1-46d2-80bc-6f400b0d98f4",
+                                  "id": "a5339121-3df9-4df2-bb96-f7bc100118b4",
                                   "ord": "a2"
                                 }
                               ],
-                              "id": "79ae0b0a-da53-4699-b8f7-ce264e006574",
+                              "id": "19702241-fff1-4afb-9213-6e281fcdfb9c",
                               "ord": "a1"
                             }
                           ],
-                          "id": "c4481d0c-6674-4bc8-88cc-82d2667e8301",
+                          "id": "efcb5fcb-9f71-42cb-83f3-afa19b64c48f",
                           "ord": "a1"
                         }
                       ],
-                      "id": "f7fec515-f2d3-46fb-87da-3d891729f741",
+                      "id": "d4059876-eb2f-4bcd-b212-6e11fa52b050",
                       "ord": "a1"
                     }
                   ],
-                  "id": "a2b99bbd-95bd-4a30-bcc8-9bc8afa88ce3",
+                  "id": "b70ae412-bcf0-4f79-885c-eca05b9455b2",
                   "ord": "a0"
                 },
                 {
@@ -699,11 +699,11 @@
                             "kind": "value",
                             "ref": "site.identity.name"
                           },
-                          "id": "8bee82da-c793-439f-85d3-71ee5682ff39",
+                          "id": "9b5b1b1f-dbd2-490d-8f7b-81ac3c2378ff",
                           "ord": "a0"
                         }
                       ],
-                      "id": "efbbd90b-a74c-454e-a0f9-bb41fd5ad101",
+                      "id": "d6bb4543-c81c-4c10-abe9-e43de5e6de3b",
                       "ord": "a0"
                     },
                     {
@@ -711,23 +711,23 @@
                       "tag": "ul",
                       "class": "flex items-center gap-5",
                       "children": [],
-                      "id": "4580acee-216d-4701-a297-5cbe6355dc53",
+                      "id": "7537bfa9-9943-4c6c-8a97-f7a5d8e70af5",
                       "ord": "a1"
                     }
                   ],
-                  "id": "ff5f5d95-039b-4d0f-8452-cff814193aea",
+                  "id": "64774f31-61e4-43d5-92cc-fcce87ac8638",
                   "ord": "a1"
                 }
               ],
-              "id": "7d370392-5437-4588-9719-8ed4ad74d52f",
+              "id": "4ec5346c-c765-4ae8-8994-cc59fdb51e87",
               "ord": "a0"
             }
           ],
-          "id": "235a271c-6f6d-4a56-8668-069f24125995",
+          "id": "7e9f5495-bb35-435c-bf9f-6f1bc75202ba",
           "ord": "a2"
         }
       ],
-      "id": "1c5bf735-c385-4f88-8551-d3309c15d35e"
+      "id": "d3298365-2c92-43bf-a7d4-8ea492ac004a"
     }
   },
   "pages": [
@@ -741,7 +741,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "07b4ca9d-c21f-46a0-b92a-66f4101c62da",
+        "id": "8e6a6750-5929-45fe-bada-ba60daf909e5",
         "children": [
           {
             "kind": "element",
@@ -770,7 +770,7 @@
                           "alt": "A festival crowd lit hot red under the stage lights",
                           "loading": "lazy"
                         },
-                        "id": "2bdf9ac3-637a-403f-a47b-cbba4cec552a",
+                        "id": "78371b92-a90c-4ee3-a585-e01f0adfa936",
                         "ord": "a0"
                       },
                       {
@@ -783,7 +783,7 @@
                             "tag": "span",
                             "class": "text-sm font-semibold uppercase tracking-wide text-primary",
                             "children": ["The cover story"],
-                            "id": "40b28e65-e0ce-488f-9746-775123219e5c",
+                            "id": "68e17d90-668c-4b46-892f-ed225813aecc",
                             "ord": "a0"
                           },
                           {
@@ -791,7 +791,7 @@
                             "tag": "h1",
                             "class": "text-3xl font-bold uppercase leading-none tracking-tight text-base-content @2xl:text-5xl @3xl:text-6xl",
                             "children": ["The year the underground got loud again"],
-                            "id": "8f58459a-2e1e-4661-8461-1dd255fecf75",
+                            "id": "4cc5832a-fbf0-40d3-974e-c8dc0d6e2372",
                             "ord": "a1"
                           },
                           {
@@ -801,7 +801,7 @@
                             "children": [
                               "Guitar bands were supposed to be finished. Instead they packed out every 200-cap room in the country. We spent a summer on the floor to find out what actually changed."
                             ],
-                            "id": "062be65e-1e03-459d-9fbd-c9c64f5422d6",
+                            "id": "9a2e69a5-4906-4073-8d7a-6a463052e82e",
                             "ord": "a2"
                           },
                           {
@@ -809,15 +809,15 @@
                             "tag": "p",
                             "class": "text-sm text-base-content",
                             "children": ["By Jules Vega · 6 August"],
-                            "id": "d5c5601d-b47a-4aa3-8f50-3286874f8927",
+                            "id": "bff3ca45-58bc-43df-8b29-6c8ccc782530",
                             "ord": "a3"
                           }
                         ],
-                        "id": "dea52603-a302-410e-a056-0c74cf132982",
+                        "id": "c4080d53-3c13-487b-884f-44b937bfed80",
                         "ord": "a1"
                       }
                     ],
-                    "id": "738d71de-791d-4793-b063-d6f7b84f690d",
+                    "id": "843fbd41-aa33-490e-aad6-69b16302e2c2",
                     "ord": "a0"
                   },
                   {
@@ -838,7 +838,7 @@
                             "tag": "span",
                             "class": "text-sm font-semibold uppercase tracking-wide text-primary",
                             "children": ["Screen"],
-                            "id": "2e21e802-552b-4446-b2ad-6856a7a4688f",
+                            "id": "b150fad9-f4bb-42e6-a4c7-a63888d987aa",
                             "ord": "a0"
                           },
                           {
@@ -848,7 +848,7 @@
                             "children": [
                               "The prestige musical finally learned how to shoot a song"
                             ],
-                            "id": "ac05a820-f14b-4bc2-8e09-56ee20b4f632",
+                            "id": "1429407b-5a05-4ccd-bad7-7cd4fa658345",
                             "ord": "a1"
                           },
                           {
@@ -856,11 +856,11 @@
                             "tag": "p",
                             "class": "text-sm text-base-content",
                             "children": ["By Theo Marsh · 5 August"],
-                            "id": "a38e8345-4824-4354-a8e5-6118cd1ef242",
+                            "id": "a11686f4-c4a6-4206-b298-894115868b4f",
                             "ord": "a2"
                           }
                         ],
-                        "id": "0ef93be1-c774-4ae2-a5f4-405355ba1ef1",
+                        "id": "d0073503-8b2d-4455-b0fd-2235c0f615f9",
                         "ord": "a0"
                       },
                       {
@@ -876,7 +876,7 @@
                             "tag": "span",
                             "class": "text-sm font-semibold uppercase tracking-wide text-primary",
                             "children": ["Culture"],
-                            "id": "df91f71b-0959-4cec-a897-5da7f3e2b1cc",
+                            "id": "11305308-170e-42cb-a747-c89d1903130c",
                             "ord": "a0"
                           },
                           {
@@ -884,7 +884,7 @@
                             "tag": "h2",
                             "class": "text-lg font-bold uppercase leading-tight tracking-tight text-base-content",
                             "children": ["How a leaked demo became the sound of the summer"],
-                            "id": "616b6873-73bc-4dc7-842f-ee41378e9400",
+                            "id": "2f25072c-67a7-473e-b6c8-e0ff28706ccf",
                             "ord": "a1"
                           },
                           {
@@ -892,11 +892,11 @@
                             "tag": "p",
                             "class": "text-sm text-base-content",
                             "children": ["By Nia Okonkwo · 5 August"],
-                            "id": "0fb68366-6d11-49b2-93b4-8b1c1f4b0ee5",
+                            "id": "6e00e3a9-3094-4994-8c6d-2dd67c6d061a",
                             "ord": "a2"
                           }
                         ],
-                        "id": "86b50082-2bf8-4e71-8d43-010c8ac1537f",
+                        "id": "93841cc2-aeb2-4866-b1a5-50bab85a7143",
                         "ord": "a1"
                       },
                       {
@@ -912,7 +912,7 @@
                             "tag": "span",
                             "class": "text-sm font-semibold uppercase tracking-wide text-primary",
                             "children": ["Music"],
-                            "id": "c469972d-c55f-422c-8927-1a8e50bb9f81",
+                            "id": "cd73cfef-4b77-43cd-ba1c-5028f402fad4",
                             "ord": "a0"
                           },
                           {
@@ -922,7 +922,7 @@
                             "children": [
                               "Inside the reissue machine turning old tapes into new hits"
                             ],
-                            "id": "97767908-bc4d-4ea8-962c-5ef9e7fbcb0b",
+                            "id": "8270ebc9-d852-43b4-9741-dc60ab19b1d3",
                             "ord": "a1"
                           },
                           {
@@ -930,23 +930,23 @@
                             "tag": "p",
                             "class": "text-sm text-base-content",
                             "children": ["By Jules Vega · 4 August"],
-                            "id": "858e18af-9606-4e93-a7a2-640aa554d709",
+                            "id": "77f0d970-b1bb-463a-9b54-996a0909891d",
                             "ord": "a2"
                           }
                         ],
-                        "id": "d917a794-8b02-488b-9385-4ce9ae51426a",
+                        "id": "c2dc62b2-3fd8-4dc8-97af-821bdbb97ca3",
                         "ord": "a2"
                       }
                     ],
-                    "id": "c29af001-5bfa-4947-847f-cd3af597144e",
+                    "id": "307593f2-e5fa-4dd6-897e-14e824b9f203",
                     "ord": "a1"
                   }
                 ],
-                "id": "0f249adf-070c-49c1-a51d-aabdd60819e4",
+                "id": "39819e14-2cb1-4219-ba71-77c36d93ee24",
                 "ord": "a0"
               }
             ],
-            "id": "bfb2d2fc-7b34-46b4-9ff1-3e6bcfcf460c",
+            "id": "2f451f10-af12-44ab-aefa-a4e806108c56",
             "ord": "a0"
           },
           {
@@ -964,7 +964,7 @@
                     "tag": "h2",
                     "class": "text-3xl font-bold uppercase tracking-tight text-base-content @3xl:text-4xl",
                     "children": ["The latest"],
-                    "id": "14d76b07-2131-4816-8ff3-ec7e42099a8d",
+                    "id": "b2ce0b1f-b72b-4cad-b3b4-2a49a3e23143",
                     "ord": "a0"
                   },
                   {
@@ -974,15 +974,15 @@
                     "children": [
                       "New music writing, screen takes and culture from the Static desk — loud, on purpose."
                     ],
-                    "id": "e4f6d378-bdfd-486c-aef0-ba450bf464d1",
+                    "id": "2d8761a4-7e08-448c-80a2-44d0dd32ac3f",
                     "ord": "a1"
                   }
                 ],
-                "id": "b420c2da-6e17-4de9-adab-95a1a56f9a90",
+                "id": "85671fdf-ea35-41b9-a8f7-736227f05953",
                 "ord": "a0"
               }
             ],
-            "id": "fbea875f-c2ec-4529-a47a-fe42df6296b8",
+            "id": "889edba5-b9c4-4082-8cb0-7ebef34d22d5",
             "ord": "a1"
           },
           {
@@ -1020,7 +1020,7 @@
                               "kind": "value",
                               "ref": "featuredImage"
                             },
-                            "id": "83063c26-eb05-44ba-b518-c7399825dbd2",
+                            "id": "37a4a4cd-326b-4ea6-bda8-1e6652c4fd61",
                             "ord": "a0"
                           },
                           {
@@ -1032,7 +1032,7 @@
                               "kind": "value",
                               "ref": "date"
                             },
-                            "id": "dd394fb4-f5f5-41ae-a8b4-726651d58955",
+                            "id": "872ece08-8763-4415-988d-a34d4047ed3d",
                             "ord": "a1"
                           },
                           {
@@ -1044,7 +1044,7 @@
                               "kind": "value",
                               "ref": "title"
                             },
-                            "id": "a55c6130-de6e-4164-961f-7f70155382de",
+                            "id": "93d69968-780c-42ef-9cc2-fd39fcb6f4c9",
                             "ord": "a2"
                           },
                           {
@@ -1056,7 +1056,7 @@
                               "kind": "value",
                               "ref": "excerpt"
                             },
-                            "id": "44cdd358-71c3-4cdc-8889-f403fbb1ae1b",
+                            "id": "0ce0f9a9-4e34-478b-9818-1f9920b3c554",
                             "ord": "a3"
                           }
                         ],
@@ -1065,7 +1065,7 @@
                           "ref": "url",
                           "attr": "href"
                         },
-                        "id": "3239bae8-f34a-4919-9029-50d5996bd88d",
+                        "id": "cf97325f-2998-4b0a-9400-24522f93b9cd",
                         "ord": "a0"
                       }
                     ],
@@ -1073,15 +1073,15 @@
                       "kind": "collection",
                       "ref": "cms.blog_post"
                     },
-                    "id": "b3c50988-b646-4532-a8d4-3fb9a5f517ab",
+                    "id": "702ac86c-bebe-45ff-a5c4-9e57a6818d81",
                     "ord": "a0"
                   }
                 ],
-                "id": "fa44345a-3f9d-432f-928d-4ac4896b976b",
+                "id": "b795e82a-59c2-430b-8853-4d756c3dd165",
                 "ord": "a0"
               }
             ],
-            "id": "a65d3dfc-1c9f-4feb-b6e8-7f860892078a",
+            "id": "2da5c04b-884a-48c2-903c-0bd7620152d6",
             "ord": "a2"
           },
           {
@@ -1099,7 +1099,7 @@
                     "tag": "h2",
                     "class": "text-3xl font-bold uppercase tracking-tight text-base-content @3xl:text-4xl",
                     "children": ["Most read"],
-                    "id": "f378372a-dab9-4dc1-ba41-ef887aaa35bd",
+                    "id": "4e6f63ad-fa99-454f-b0ae-03a98f061e4b",
                     "ord": "a0"
                   },
                   {
@@ -1125,7 +1125,7 @@
                                 "tag": "span",
                                 "class": "text-4xl font-bold leading-none text-primary @2xl:text-5xl",
                                 "children": ["1"],
-                                "id": "bad1abcd-5167-4a44-8ded-e9828761aa99",
+                                "id": "5e9f67d7-5d88-4b42-888c-763dcb47efcb",
                                 "ord": "a0"
                               },
                               {
@@ -1138,7 +1138,7 @@
                                     "tag": "span",
                                     "class": "text-sm font-semibold uppercase tracking-wide text-primary",
                                     "children": ["Music"],
-                                    "id": "a6cae811-2d35-4e6e-8b49-edb751e1614e",
+                                    "id": "0a25a7ba-8795-4f6f-82f3-5de8d9d6e486",
                                     "ord": "a0"
                                   },
                                   {
@@ -1146,19 +1146,19 @@
                                     "tag": "span",
                                     "class": "text-lg font-bold uppercase leading-tight tracking-tight text-base-content",
                                     "children": ["The year the underground got loud again"],
-                                    "id": "74e545e3-e32b-48dc-84bf-28f1792484e7",
+                                    "id": "4bf5c291-4cc8-4719-84d7-afe5fe40d506",
                                     "ord": "a1"
                                   }
                                 ],
-                                "id": "8999a3b8-f9c3-4d9f-b270-58a37d7eaa02",
+                                "id": "ff3251f8-cdf7-4c94-8c37-acc33210b378",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "5d5f551f-6a76-4ec6-b2e9-509b7146b836",
+                            "id": "cc33efcd-fb4c-4a3c-aaf6-c661f68eed08",
                             "ord": "a0"
                           }
                         ],
-                        "id": "ed2f52e7-f1a1-490b-9249-c1e6edb1e274",
+                        "id": "030d8987-070f-493f-ba63-17f587ad21e7",
                         "ord": "a0"
                       },
                       {
@@ -1179,7 +1179,7 @@
                                 "tag": "span",
                                 "class": "text-4xl font-bold leading-none text-primary @2xl:text-5xl",
                                 "children": ["2"],
-                                "id": "56e790b8-4b1a-4ee2-b5e0-44d2104bae30",
+                                "id": "b6cf5e92-ecb5-4a2b-a522-a635e89ef50e",
                                 "ord": "a0"
                               },
                               {
@@ -1192,7 +1192,7 @@
                                     "tag": "span",
                                     "class": "text-sm font-semibold uppercase tracking-wide text-primary",
                                     "children": ["Culture"],
-                                    "id": "8af7b2b4-0841-4d54-aa0e-4cdce639d9ed",
+                                    "id": "e939a436-7a5d-4ee9-acbf-43d9bb62f3ff",
                                     "ord": "a0"
                                   },
                                   {
@@ -1202,19 +1202,19 @@
                                     "children": [
                                       "How a leaked demo became the sound of the summer"
                                     ],
-                                    "id": "fb971919-a9cf-4231-b0b6-d58bbeedd6d6",
+                                    "id": "ab0f6fb0-bb3f-48aa-abd5-79e837b23766",
                                     "ord": "a1"
                                   }
                                 ],
-                                "id": "296258da-60d4-4846-b7cc-729f4ff47ece",
+                                "id": "8dea0a14-9d97-4e49-ae49-97b60e310b16",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "0fe9756d-5fab-4af1-a7a7-ea7d0ca74909",
+                            "id": "c7bc9b90-1cef-4380-8ad9-7c78ec715d1f",
                             "ord": "a0"
                           }
                         ],
-                        "id": "8dc6ae32-992d-46ae-9316-7bb41e0cbc52",
+                        "id": "96fff2ad-8e81-4d4d-9e29-d09bb040a92f",
                         "ord": "a1"
                       },
                       {
@@ -1235,7 +1235,7 @@
                                 "tag": "span",
                                 "class": "text-4xl font-bold leading-none text-primary @2xl:text-5xl",
                                 "children": ["3"],
-                                "id": "c72744f4-f4f1-4ac9-8f32-0727bd365283",
+                                "id": "ba9a3124-1686-480b-a29c-2ccc3fd9a043",
                                 "ord": "a0"
                               },
                               {
@@ -1248,7 +1248,7 @@
                                     "tag": "span",
                                     "class": "text-sm font-semibold uppercase tracking-wide text-primary",
                                     "children": ["Lists"],
-                                    "id": "816f7b48-3642-4d51-b8f6-8de455a1a3b7",
+                                    "id": "79e5116c-3cef-40ff-b27c-664aece92d70",
                                     "ord": "a0"
                                   },
                                   {
@@ -1256,19 +1256,19 @@
                                     "tag": "span",
                                     "class": "text-lg font-bold uppercase leading-tight tracking-tight text-base-content",
                                     "children": ["The 50 greatest debut albums, ranked"],
-                                    "id": "2f6e9203-ee31-4d98-a9b9-a73a2c551113",
+                                    "id": "b6ec03ec-74dd-4bb5-9fa2-60ffb953804d",
                                     "ord": "a1"
                                   }
                                 ],
-                                "id": "0ac9c677-e9f2-4d95-84ec-cfcd30b6d76c",
+                                "id": "a7f8fb93-e994-4868-a9a9-754208a32920",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "2165fdc9-d631-4498-a8ba-75d49dea77e4",
+                            "id": "53623827-9e18-4cab-9467-c0dd130638ff",
                             "ord": "a0"
                           }
                         ],
-                        "id": "88244524-4892-44f6-8be3-b26a058d9166",
+                        "id": "38eaf2aa-78dc-41f8-8723-afc85a491476",
                         "ord": "a2"
                       },
                       {
@@ -1289,7 +1289,7 @@
                                 "tag": "span",
                                 "class": "text-4xl font-bold leading-none text-primary @2xl:text-5xl",
                                 "children": ["4"],
-                                "id": "9b9ebd03-87c4-4781-8b7a-f7612a805a73",
+                                "id": "ca6c6f26-ea72-483e-b5e1-fd5e6e02f845",
                                 "ord": "a0"
                               },
                               {
@@ -1302,7 +1302,7 @@
                                     "tag": "span",
                                     "class": "text-sm font-semibold uppercase tracking-wide text-primary",
                                     "children": ["Screen"],
-                                    "id": "9f237bc3-b7aa-49b4-b908-0636529f2765",
+                                    "id": "b4bd7509-6b86-479d-a3c0-e738a66221ae",
                                     "ord": "a0"
                                   },
                                   {
@@ -1312,19 +1312,19 @@
                                     "children": [
                                       "The prestige musical finally learned how to shoot a song"
                                     ],
-                                    "id": "16dfad9d-f353-49fd-bfed-7593bbb4f156",
+                                    "id": "8363f36f-5a84-4d9e-9b52-e355158bd998",
                                     "ord": "a1"
                                   }
                                 ],
-                                "id": "d9a8f4a8-ebb9-4e51-8b8e-227cece3e951",
+                                "id": "97ae1035-dd05-4c60-ba4e-222e78df6a04",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "181a63cb-d1fa-4eb7-ac2d-63e6bda758f2",
+                            "id": "9355e79e-9600-409e-80ac-094195a9aaf8",
                             "ord": "a0"
                           }
                         ],
-                        "id": "5a4c4361-4f31-497f-96a4-ea9a4e4273dd",
+                        "id": "84748ebe-e31a-4874-8425-24723172496b",
                         "ord": "a3"
                       },
                       {
@@ -1345,7 +1345,7 @@
                                 "tag": "span",
                                 "class": "text-4xl font-bold leading-none text-primary @2xl:text-5xl",
                                 "children": ["5"],
-                                "id": "f26905c1-1b9d-49cd-a97c-61fcbd731a54",
+                                "id": "f9c95604-8fc2-465f-8907-6f1b385c539b",
                                 "ord": "a0"
                               },
                               {
@@ -1358,7 +1358,7 @@
                                     "tag": "span",
                                     "class": "text-sm font-semibold uppercase tracking-wide text-primary",
                                     "children": ["Music"],
-                                    "id": "7cd957f5-d22c-4dfe-86ae-b07e09745a8b",
+                                    "id": "b58f5108-408c-4603-bf46-1939c1893d06",
                                     "ord": "a0"
                                   },
                                   {
@@ -1368,31 +1368,31 @@
                                     "children": [
                                       "Inside the reissue machine turning old tapes into new hits"
                                     ],
-                                    "id": "5e169575-e1a6-42b4-9e3d-119195bf9ade",
+                                    "id": "0c49c349-3f5f-4bff-bad4-24d5aec1ef8d",
                                     "ord": "a1"
                                   }
                                 ],
-                                "id": "2f225613-8612-4d20-9388-7d70cef4abbf",
+                                "id": "47d15f85-7749-40ad-a8ad-bd0e6142aebb",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "e53f1eda-abb2-4165-b558-2960b2ae9583",
+                            "id": "ce2ecdc7-2069-42ef-b5b6-62ab835b04df",
                             "ord": "a0"
                           }
                         ],
-                        "id": "9e7a850e-fde1-4a1e-aa1e-03b6b6ea6723",
+                        "id": "27439c87-9bb6-4260-8cf1-005392c536ab",
                         "ord": "a4"
                       }
                     ],
-                    "id": "52fba8c8-c6da-4244-a4a7-82ca12a2e4d8",
+                    "id": "c9e0ba5c-230b-417c-9473-dea48b4bc785",
                     "ord": "a1"
                   }
                 ],
-                "id": "ca32aff5-45c7-4080-b6a2-177d8d5a190f",
+                "id": "dfaf5d29-4518-401b-9ddf-639525ccc1ca",
                 "ord": "a0"
               }
             ],
-            "id": "c8bab440-9d49-4cbf-8042-9c15b3697e30",
+            "id": "129e5a67-51ec-408d-bac1-ed8c63f8dcfb",
             "ord": "a3"
           },
           {
@@ -1410,7 +1410,7 @@
                     "tag": "h2",
                     "class": "text-2xl font-semibold text-base-content",
                     "children": ["The Static Store"],
-                    "id": "13d576a8-dfec-4e14-a28a-aabe3c0dd4dc",
+                    "id": "0640bb75-8db3-4689-999d-163281c7a146",
                     "ord": "a0"
                   },
                   {
@@ -1434,12 +1434,12 @@
                             "props": {
                               "name": "arrow-left"
                             },
-                            "id": "6d42b74c-5f9c-4d4d-9b67-acb64c352857",
+                            "id": "06088183-1669-48df-8709-7927bbeac93b",
                             "ord": "a0"
                           }
                         ],
                         "part": "prev",
-                        "id": "d324fa67-8e9a-493c-bb68-5fe23be389a8",
+                        "id": "e58f9389-1282-4fa8-9886-c143a5feb5dc",
                         "ord": "a0"
                       },
                       {
@@ -1458,20 +1458,20 @@
                             "props": {
                               "name": "arrow-right"
                             },
-                            "id": "8cf17b8e-e695-43ee-942d-085dbf50d20e",
+                            "id": "63dbdcad-5744-47b3-bffb-2b9c3fa3c479",
                             "ord": "a0"
                           }
                         ],
                         "part": "next",
-                        "id": "3e1358bb-9b0b-4726-8df3-54987530bfa0",
+                        "id": "457d9971-7f4b-4174-a816-e0d73bc579d9",
                         "ord": "a1"
                       }
                     ],
-                    "id": "6f684856-8f44-4b4d-b81e-4672dc1244ae",
+                    "id": "00e3cb4b-9c1b-4018-99d5-7ba5c84814c9",
                     "ord": "a1"
                   }
                 ],
-                "id": "4b7c13b3-3270-4210-a5cd-6dab74c8d1e6",
+                "id": "94f4c93b-b885-4e9f-8fa4-ae104f1c6587",
                 "ord": "a0"
               },
               {
@@ -1496,7 +1496,7 @@
                           "kind": "value",
                           "ref": "image"
                         },
-                        "id": "8f3189ab-7acc-4867-b477-ce696554cf38",
+                        "id": "01b2a01f-0e13-4a63-8569-a22567884803",
                         "ord": "a0"
                       },
                       {
@@ -1513,7 +1513,7 @@
                               "kind": "value",
                               "ref": "title"
                             },
-                            "id": "c405ccb3-25e2-49a5-9042-2fc50904770e",
+                            "id": "db1cb08e-3f12-4276-887e-dcd7e9a6427b",
                             "ord": "a0"
                           },
                           {
@@ -1525,11 +1525,11 @@
                               "kind": "value",
                               "ref": "price"
                             },
-                            "id": "b444776c-e816-41ff-ba70-ccced3cfc679",
+                            "id": "cd703755-cdd2-405c-b699-5fc9f536deb2",
                             "ord": "a1"
                           }
                         ],
-                        "id": "1e3a68d4-45bf-47fa-b9d7-4790a8f30a1f",
+                        "id": "bc90be3d-441f-4918-aa43-a54fd40d07a8",
                         "ord": "a1"
                       }
                     ],
@@ -1539,7 +1539,7 @@
                       "attr": "href"
                     },
                     "part": "slide",
-                    "id": "752ffebc-2e32-4146-979b-64f4b49edcfe",
+                    "id": "2f251e7c-ff0e-47b1-91e3-e15a0a828558",
                     "ord": "a0"
                   }
                 ],
@@ -1548,14 +1548,14 @@
                   "kind": "collection",
                   "ref": "commerce.featured"
                 },
-                "id": "351e423a-937a-4a2e-b4a5-44644c3a8d56",
+                "id": "bbadb51b-f9e2-47b5-9902-9e1d84a830b2",
                 "ord": "a1"
               }
             ],
             "behavior": {
               "type": "carousel"
             },
-            "id": "6592bebc-aa52-4a41-992f-9f7cd76997bb",
+            "id": "c1648ce9-f16d-491f-bbf2-4c183249e4d8",
             "ord": "a4"
           }
         ]
@@ -1572,7 +1572,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "4eceb6c0-50b9-4e45-9316-b816ff7f7b85",
+        "id": "3c95d332-273c-4bfc-af3e-efdb9d479d44",
         "children": [
           {
             "kind": "element",
@@ -1589,7 +1589,7 @@
                     "tag": "h1",
                     "class": "text-4xl font-bold tracking-tight text-base-content @2xl:text-5xl",
                     "children": ["Shop"],
-                    "id": "fd422039-9a2d-4266-a49d-4ac261bc0e2e",
+                    "id": "36c6a11c-afc0-453a-b968-365add9f12a5",
                     "ord": "a0"
                   },
                   {
@@ -1597,15 +1597,15 @@
                     "tag": "p",
                     "class": "mt-4 max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": ["Everything we currently have available."],
-                    "id": "dbb2cf57-d8fc-49a1-bafd-b6176480a758",
+                    "id": "40295df7-5b40-4929-b033-d2207f26e6ba",
                     "ord": "a1"
                   }
                 ],
-                "id": "2801ea20-c0a6-4d23-81cf-d6d6d7a5121d",
+                "id": "77ebc125-0e9e-49a8-8bdd-f40c441583c7",
                 "ord": "a0"
               }
             ],
-            "id": "6d08ce12-9349-440c-9e6e-7a33aa1274ce",
+            "id": "662ceafa-941b-44fc-8dce-21d45666e66c",
             "ord": "a0"
           },
           {
@@ -1613,7 +1613,7 @@
             "component": "commerce.plp",
             "class": "mx-auto w-full max-w-6xl px-6 py-6",
             "locked": "host",
-            "id": "42c1a115-2341-4580-8c70-b0a7997400b4",
+            "id": "e5edfe5d-e49e-463a-b3d3-95f468b6de64",
             "ord": "a1"
           }
         ]
@@ -1630,7 +1630,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "e9df4f9e-04f4-4882-b534-7190a6d0a214",
+        "id": "f61dfdf4-c780-41b3-83e3-b3b322c11856",
         "children": [
           {
             "kind": "element",
@@ -1638,15 +1638,23 @@
             "class": "bg-base-100 @container",
             "children": [
               {
+                "kind": "element",
+                "tag": "h1",
+                "class": "mb-6 px-6 pt-10 text-3xl font-semibold text-base-content",
+                "children": ["Collections"],
+                "id": "5b2ebf00-4748-4b18-a7e1-20f0acf3db7d",
+                "ord": "a0"
+              },
+              {
                 "kind": "host",
                 "component": "commerce.collections",
                 "class": "mx-auto w-full max-w-6xl px-6 py-6",
                 "locked": "host",
-                "id": "b9c471dd-4bbe-4b9d-b3fd-f1da384b3e60",
-                "ord": "a0"
+                "id": "7941e3b5-fbe7-4bb0-91d0-da3caf6d971a",
+                "ord": "a1"
               }
             ],
-            "id": "44eee72a-353a-49d1-8f31-dd2ddb02ae3e",
+            "id": "6448cbad-f853-4cfa-bf30-fed40cdc6fb1",
             "ord": "a0"
           }
         ]
@@ -1663,7 +1671,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "c337bf38-4995-4558-81ed-17220af23995",
+        "id": "28c77c54-ad1f-4733-8435-0ea915763e6f",
         "children": [
           {
             "kind": "element",
@@ -1675,7 +1683,7 @@
                 "tag": "h1",
                 "class": "mb-6 px-6 pt-10 text-3xl font-semibold text-base-content",
                 "children": ["Your cart"],
-                "id": "8ab8c593-881f-44e1-a390-2cb1d7ee95ca",
+                "id": "8108b887-7021-400f-b5b3-cb0301292ed8",
                 "ord": "a0"
               },
               {
@@ -1683,11 +1691,11 @@
                 "component": "commerce.cart",
                 "class": "mx-auto w-full max-w-4xl px-6 py-10",
                 "locked": "host",
-                "id": "845bbbcb-aad0-4838-ab82-75f95234df4c",
+                "id": "37a08c5e-dadb-4aa0-b7c1-3a8923f821a2",
                 "ord": "a1"
               }
             ],
-            "id": "086dd1f9-5b41-4487-8a8c-3704e209733e",
+            "id": "287824e9-2d14-4089-a86b-f9cd4e83182a",
             "ord": "a0"
           }
         ]
@@ -1704,7 +1712,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "2f1bea82-8ab0-466d-b1bb-646194f51236",
+        "id": "5c9c02d0-4b0d-445c-8ebd-0392684a47ac",
         "children": [
           {
             "kind": "element",
@@ -1716,7 +1724,7 @@
                 "tag": "h1",
                 "class": "mb-6 px-6 pt-10 text-3xl font-semibold text-base-content",
                 "children": ["Search"],
-                "id": "ae4ef182-7a0d-472a-9188-74f69cc1b697",
+                "id": "2f8a60f2-4005-43b8-831a-9a8890d47e01",
                 "ord": "a0"
               },
               {
@@ -1724,11 +1732,11 @@
                 "component": "commerce.search",
                 "class": "mx-auto w-full max-w-6xl px-6 py-6",
                 "locked": "host",
-                "id": "8051649c-a055-46c2-b089-9f6a358dcc0e",
+                "id": "051fc84c-39ce-407c-874e-899e0972eb4a",
                 "ord": "a1"
               }
             ],
-            "id": "8f7beb63-83b1-4b95-ac03-f845cd5bc440",
+            "id": "eea2e7e1-f700-492c-acd7-3c4d23922e75",
             "ord": "a0"
           }
         ]
@@ -1745,7 +1753,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "7b95a261-4e29-4e86-9570-d5a9097bca6b",
+        "id": "6e8aa54f-037c-4dfc-9a4c-0338230958fb",
         "children": [
           {
             "kind": "element",
@@ -1762,7 +1770,7 @@
                     "tag": "h1",
                     "class": "text-5xl font-bold uppercase leading-none tracking-tight text-base-content @3xl:text-7xl",
                     "children": ["Static"],
-                    "id": "09a5d777-ec4d-4e0d-be12-db5061c307a7",
+                    "id": "59a7040b-5e1e-4244-8279-35683841d254",
                     "ord": "a0"
                   },
                   {
@@ -1772,15 +1780,15 @@
                     "children": [
                       "Music, screen and culture — reported loud, updated all day. Everything the desk is playing, watching and arguing about, newest first."
                     ],
-                    "id": "97b4fe72-4f04-41a1-bd77-a60ed89a6985",
+                    "id": "0b0fc82b-9dfe-4a6d-8c3f-25b687304bc8",
                     "ord": "a1"
                   }
                 ],
-                "id": "b8b24808-3e49-4a96-b7ed-6f2a60ea9637",
+                "id": "4b055677-a692-4f7b-90f2-2df63a35adfb",
                 "ord": "a0"
               }
             ],
-            "id": "f7dff485-2af1-4f34-9d25-7c07f4f19ffa",
+            "id": "f682c467-3789-442a-9d13-d107e7a8ee31",
             "ord": "a0"
           },
           {
@@ -1818,7 +1826,7 @@
                               "kind": "value",
                               "ref": "featuredImage"
                             },
-                            "id": "10b0dd3c-11f2-41e0-8545-ca2c70b22464",
+                            "id": "0159c097-5682-49af-bc4a-58cc108e5250",
                             "ord": "a0"
                           },
                           {
@@ -1830,7 +1838,7 @@
                               "kind": "value",
                               "ref": "date"
                             },
-                            "id": "bcf2e85f-b675-4ca3-83f1-4ed30abf7065",
+                            "id": "1fc10cc0-7b4a-420a-857c-83d6285aec0e",
                             "ord": "a1"
                           },
                           {
@@ -1842,7 +1850,7 @@
                               "kind": "value",
                               "ref": "title"
                             },
-                            "id": "bfe6c2d9-0aa0-4f16-a198-7776f3f0d916",
+                            "id": "5acb5c9d-f4db-430e-a9c6-455c457dd45e",
                             "ord": "a2"
                           },
                           {
@@ -1854,7 +1862,7 @@
                               "kind": "value",
                               "ref": "excerpt"
                             },
-                            "id": "146e8086-d124-4643-9589-5ee78f793404",
+                            "id": "ccbd9d72-9457-44c0-81a0-a14e7619b2c3",
                             "ord": "a3"
                           }
                         ],
@@ -1863,7 +1871,7 @@
                           "ref": "url",
                           "attr": "href"
                         },
-                        "id": "6f98dca8-9a80-47d3-90df-564b8baa9068",
+                        "id": "43d6c97b-466c-4e09-9cac-0495ae980d8b",
                         "ord": "a0"
                       }
                     ],
@@ -1871,15 +1879,15 @@
                       "kind": "collection",
                       "ref": "cms.blog_post"
                     },
-                    "id": "a39dbf90-6098-4f6c-8054-7b02eead0845",
+                    "id": "95f78740-8cb3-4a19-9707-0539b734adf6",
                     "ord": "a0"
                   }
                 ],
-                "id": "e97495e3-00a1-40d2-bd9c-ea9a70a04c04",
+                "id": "4226af4e-445a-4458-ad45-04c4c617722b",
                 "ord": "a0"
               }
             ],
-            "id": "d61d0a17-a889-4b6c-9299-b55e627befbb",
+            "id": "0a80007f-4be4-4db2-98a9-3edae79adfba",
             "ord": "a1"
           }
         ]
@@ -1896,7 +1904,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "6a3a44c9-11c9-4c8e-b447-d0e4b9e7cde6",
+        "id": "43ed6126-f66c-4fdc-978e-bbf3a95e15c2",
         "children": [
           {
             "kind": "element",
@@ -1913,7 +1921,7 @@
                     "tag": "h1",
                     "class": "text-5xl font-bold uppercase tracking-tight text-base-content @2xl:text-6xl",
                     "children": ["About Static"],
-                    "id": "99e267df-fbd6-477c-95af-808928385acf",
+                    "id": "64baa930-3936-4d3a-a560-bf33fb6354dd",
                     "ord": "a0"
                   },
                   {
@@ -1923,7 +1931,7 @@
                     "children": [
                       "Static is a music and pop-culture magazine for people who still turn it up. We cover the records, the shows, the films and the arguments that actually move the needle — not the ones a press release told us to care about."
                     ],
-                    "id": "0a48d592-77ba-44b7-b26d-c5b486f05ce9",
+                    "id": "5086ca5e-3665-4760-b34a-830de1b86c2c",
                     "ord": "a1"
                   },
                   {
@@ -1933,15 +1941,15 @@
                     "children": [
                       "We started in a basement venue with a laptop and a merch table, and we have kept the same rule ever since: go to the room, talk to the people making the thing, and write it down while it is still loud. We are opinionated on purpose. If everyone already agrees, it is not a story."
                     ],
-                    "id": "27108fc8-9b82-4b6f-aebd-85915f320878",
+                    "id": "fce44ec7-ea1a-4546-9d03-6723dc909917",
                     "ord": "a2"
                   }
                 ],
-                "id": "840e7396-f846-4939-aa9d-8343dd565c4e",
+                "id": "024c296b-b4ef-4789-9dac-ae1a47e66380",
                 "ord": "a0"
               }
             ],
-            "id": "deb2d689-9559-42fd-b6e6-678a834b9a7d",
+            "id": "6ad048d1-081a-4cd6-b198-1b8683b2d5e8",
             "ord": "a0"
           }
         ]
@@ -1958,53 +1966,297 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "6e5380bb-7185-4d24-8db3-a55172ec3d15",
+        "id": "77cf494e-a6d6-4c9c-b9f3-732bcfa97cfa",
         "children": [
           {
             "kind": "element",
             "tag": "section",
-            "class": "bg-base-100 @container px-6 py-20 text-center",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-20",
             "children": [
               {
                 "kind": "element",
                 "tag": "div",
-                "class": "mx-auto flex w-full max-w-xl flex-col items-center gap-5",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-8",
                 "children": [
                   {
                     "kind": "element",
-                    "tag": "h1",
-                    "class": "text-5xl font-bold uppercase tracking-tight text-base-content @2xl:text-6xl",
-                    "children": ["Reach the desk"],
-                    "id": "1ba1ccde-2611-4a9b-a83a-2cc4d4e053a3",
+                    "tag": "div",
+                    "class": "flex flex-col gap-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h1",
+                        "class": "text-4xl font-bold tracking-tight text-base-content @3xl:text-5xl",
+                        "children": ["Reach the desk"],
+                        "id": "30e4614d-5852-4917-a499-8fe082931fcb",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Got a tip, a demo, a show we should be at, or a take you think we got wrong? We read everything, we go to the gigs, and we answer the good ones. Send it over."
+                        ],
+                        "id": "a510afad-0fad-4de7-b09a-47933586d8b6",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "0f821600-8610-4e59-93c3-607a387fc8b7",
                     "ord": "a0"
                   },
                   {
                     "kind": "element",
-                    "tag": "p",
-                    "class": "text-lg leading-relaxed text-base-content",
+                    "tag": "div",
+                    "class": "flex flex-col gap-1",
                     "children": [
-                      "Got a tip, a demo, a show we should be at, or a take you think we got wrong? We read everything, we go to the gigs, and we answer the good ones. Send it over."
+                      {
+                        "kind": "element",
+                        "tag": "span",
+                        "class": "text-base font-medium text-base-content",
+                        "children": ["Call us"],
+                        "id": "21826843-2059-4a08-a910-29b8d902b5db",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "text-lg font-semibold text-base-content underline underline-offset-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "children": ["(555) 123-4567"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "site.identity.phone"
+                            },
+                            "id": "edd68d6e-01d2-4bd0-b3a5-23dba70cee97",
+                            "ord": "a0"
+                          }
+                        ],
+                        "data": {
+                          "kind": "value",
+                          "ref": "site.identity.phoneHref",
+                          "attr": "href"
+                        },
+                        "id": "a680478a-2ce7-4a08-85ef-58630bd30fac",
+                        "ord": "a1"
+                      }
                     ],
-                    "id": "7e8f60a7-b91c-4c34-99a6-b76716631afa",
+                    "data": {
+                      "kind": "visible",
+                      "ref": "site.identity.phone"
+                    },
+                    "id": "667c307a-7365-44ce-979a-0b86da7d18b8",
                     "ord": "a1"
                   },
                   {
                     "kind": "element",
-                    "tag": "a",
-                    "class": "btn btn-primary btn-lg",
-                    "attrs": {
-                      "href": "mailto:desk@static.example"
+                    "tag": "div",
+                    "class": "flex flex-col gap-1",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "span",
+                        "class": "text-base font-medium text-base-content",
+                        "children": ["Email us"],
+                        "id": "a6a387d4-b89c-442e-b87b-692d863bf84d",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "text-lg font-semibold text-base-content underline underline-offset-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "children": ["hello@yourbusiness.com"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "site.identity.email"
+                            },
+                            "id": "502ea242-6cee-4423-8afb-6218690b266b",
+                            "ord": "a0"
+                          }
+                        ],
+                        "data": {
+                          "kind": "value",
+                          "ref": "site.identity.emailHref",
+                          "attr": "href"
+                        },
+                        "id": "a453aa54-8a54-4fd9-b2b6-180ff89f3739",
+                        "ord": "a1"
+                      }
+                    ],
+                    "data": {
+                      "kind": "visible",
+                      "ref": "site.identity.email"
                     },
-                    "children": ["Email the desk"],
-                    "id": "6c923ef0-67c3-41e6-b859-8b91c0c0040d",
+                    "id": "d9e2ad97-007d-4468-8de6-dfaca632644f",
                     "ord": "a2"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-1",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "span",
+                        "class": "text-base font-medium text-base-content",
+                        "children": ["Visit us"],
+                        "id": "c5526f78-ba10-447a-bc1b-7441ab980ca2",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "address",
+                        "class": "text-lg leading-relaxed whitespace-pre-line not-italic text-base-content",
+                        "children": ["123 Main Street\nPortland, OR 97204"],
+                        "data": {
+                          "kind": "value",
+                          "ref": "site.identity.address"
+                        },
+                        "id": "24c39127-c511-4427-88d9-52d57d5f4c24",
+                        "ord": "a1"
+                      }
+                    ],
+                    "data": {
+                      "kind": "visible",
+                      "ref": "site.identity.address"
+                    },
+                    "id": "31223baf-929c-4cfe-82e0-9e640439d7a1",
+                    "ord": "a3"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "form",
+                    "class": "flex w-full max-w-xl flex-col gap-5",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "label",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-base font-medium text-base-content",
+                            "children": ["Your name"],
+                            "id": "d2149d06-7637-4c82-8b7e-c12579436824",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "input",
+                            "class": "input input-bordered w-full",
+                            "attrs": {
+                              "type": "text",
+                              "name": "name",
+                              "required": true
+                            },
+                            "id": "77c8e2dd-a864-4006-bf31-f098b96117d0",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "fee3f111-a92b-4362-bd2f-1a390329e4e5",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "label",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-base font-medium text-base-content",
+                            "children": ["Email address"],
+                            "id": "c435e963-c2d7-48b8-a3f7-4f158bcc66e2",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "input",
+                            "class": "input input-bordered w-full",
+                            "attrs": {
+                              "type": "email",
+                              "name": "email",
+                              "required": true
+                            },
+                            "id": "1bee3098-8868-4929-8add-4454823ed6d5",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "fa2b45fd-30b1-4b3c-a496-9c3a37854b06",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "label",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-base font-medium text-base-content",
+                            "children": ["How can we help?"],
+                            "id": "fb87eac6-70b8-4797-adaf-f235e54e4663",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "textarea",
+                            "class": "textarea textarea-bordered min-h-32 w-full",
+                            "attrs": {
+                              "name": "message"
+                            },
+                            "id": "257c2f02-4033-47f7-8ea7-9ecf94ef0ba2",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "9b2fc5ae-b8a5-4b81-aaf1-acd9d22f38d8",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-wrap items-center gap-3",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "button",
+                            "class": "btn btn-primary btn-lg",
+                            "attrs": {
+                              "type": "submit"
+                            },
+                            "children": ["Email the desk"],
+                            "id": "a6c408bf-1b3c-4d34-a139-28be0e44cba1",
+                            "ord": "a0"
+                          }
+                        ],
+                        "id": "cb818a77-41bc-4475-b714-90952d01b2fc",
+                        "ord": "a3"
+                      }
+                    ],
+                    "behavior": {
+                      "type": "form"
+                    },
+                    "data": {
+                      "kind": "action",
+                      "ref": "submit"
+                    },
+                    "id": "16903d71-cd7b-4f38-a279-5f7d06ff0be6",
+                    "ord": "a4"
                   }
                 ],
-                "id": "6c70f3cf-385c-47e4-b831-beccea4f3d40",
+                "id": "37cc87ee-cac1-4fd1-b008-239b0c22de07",
                 "ord": "a0"
               }
             ],
-            "id": "3bb2f1f1-a6c8-408b-a670-f1643d1b29a5",
+            "id": "017614f0-0dfd-4778-926f-ce49a4b236a5",
             "ord": "a0"
           }
         ]
@@ -2049,18 +2301,18 @@
                             "kind": "element",
                             "tag": "span",
                             "children": ["←"],
-                            "id": "c06ca58c-9c35-41c0-aa93-654e370cd06c",
+                            "id": "8712414f-fe40-4c60-9e24-414a4c81acec",
                             "ord": "a0"
                           },
                           {
                             "kind": "element",
                             "tag": "span",
                             "children": ["All stories"],
-                            "id": "e26d1c8b-38d5-4d70-bfb2-c9f63ba1239b",
+                            "id": "11cb9ebc-e2c4-4135-bdea-8abe9ba4daf3",
                             "ord": "a1"
                           }
                         ],
-                        "id": "ea52493f-cd2d-446b-b78c-93652e20d181",
+                        "id": "09aaf2ad-b216-4404-8974-b9f386f9d7c9",
                         "ord": "a0"
                       },
                       {
@@ -2072,7 +2324,7 @@
                           "kind": "visible",
                           "ref": "category"
                         },
-                        "id": "046de796-a140-4ee5-a6f9-7335cadf090f",
+                        "id": "93e9b3b0-00e7-4e09-a009-2cce64d4b0b4",
                         "ord": "a1"
                       },
                       {
@@ -2084,7 +2336,7 @@
                           "kind": "value",
                           "ref": "title"
                         },
-                        "id": "c558e937-dd5d-434c-8080-a4fd0cc431e3",
+                        "id": "dc94b737-7dd8-4bd5-a36a-f5f74d2de896",
                         "ord": "a2"
                       },
                       {
@@ -2096,7 +2348,7 @@
                           "kind": "value",
                           "ref": "excerpt"
                         },
-                        "id": "6aed1e58-63a4-4a62-8dc9-140e01b36a41",
+                        "id": "828e6ae4-0d62-4ac9-9f58-04f2be9569f1",
                         "ord": "a3"
                       },
                       {
@@ -2116,7 +2368,7 @@
                               "kind": "visible",
                               "ref": "authorAvatar"
                             },
-                            "id": "be020558-db76-4676-b6e9-39c93075f280",
+                            "id": "a849248c-7549-4115-80b9-4ca201ea628e",
                             "ord": "a0"
                           },
                           {
@@ -2133,7 +2385,7 @@
                                   "kind": "visible",
                                   "ref": "authorName"
                                 },
-                                "id": "206640c0-28d8-446b-ab94-dc7724bbf552",
+                                "id": "52e3b85e-d2f9-4ec5-bd29-d1eaf071961a",
                                 "ord": "a0"
                               },
                               {
@@ -2145,23 +2397,23 @@
                                   "kind": "value",
                                   "ref": "date"
                                 },
-                                "id": "faba7578-0b6c-4336-a0a3-392d4fa2c430",
+                                "id": "a8b6c6a7-906c-4572-b55b-bfc8ed75e3fa",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "64e34f37-9cdb-4709-a79e-29be7a4ad8cf",
+                            "id": "2218fd05-69ae-4300-902d-a71b4946468d",
                             "ord": "a1"
                           }
                         ],
-                        "id": "fecc7ab2-0638-4012-b721-c090baf3ee3c",
+                        "id": "511b6268-d9b4-4576-ab59-c271ad4b9e83",
                         "ord": "a4"
                       }
                     ],
-                    "id": "f31e20e1-715b-4911-a293-2eb4f8b52c42",
+                    "id": "b64476d5-b55b-4d7c-84d1-9fe7ac48e3ac",
                     "ord": "a0"
                   }
                 ],
-                "id": "8b5bfccb-da31-4ae2-a06b-b20f7071aa69",
+                "id": "f7cdd062-d807-403a-a64b-c3eba0bca54a",
                 "ord": "a0"
               },
               {
@@ -2186,19 +2438,19 @@
                           "kind": "value",
                           "ref": "featuredImage"
                         },
-                        "id": "119edd79-4da6-4aaa-abed-97c319d6d9d0",
+                        "id": "1fcdd02d-ca64-45d3-b3e8-ca996db11e61",
                         "ord": "a0"
                       }
                     ],
-                    "id": "cb69c6ab-976f-437e-8df8-52c53a56bf8b",
+                    "id": "59a61448-d5d3-4e2b-bf7f-2c34b3334afc",
                     "ord": "a0"
                   }
                 ],
-                "id": "90904dff-220c-461e-b7cb-fd5bcdee668e",
+                "id": "dd8932c3-c183-4251-bdfb-7791e5afa454",
                 "ord": "a1"
               }
             ],
-            "id": "b4693d9d-e12c-4ac8-9ddf-41bca14b786e",
+            "id": "d66e8b1d-b642-4b90-8994-7ce8a2b562cb",
             "ord": "a0"
           },
           {
@@ -2216,15 +2468,15 @@
                     "component": "cms.article-body",
                     "class": "w-full",
                     "locked": "host",
-                    "id": "08ab6ca4-6ff1-4aa4-bf61-1239293ddd51",
+                    "id": "be428fd7-50c4-47d6-802c-d0a8a1f1fd61",
                     "ord": "a0"
                   }
                 ],
-                "id": "3a1bdee3-de0e-45f3-95c1-cfae83f833b6",
+                "id": "95002484-0946-4cd1-a347-1a259f088f1b",
                 "ord": "a0"
               }
             ],
-            "id": "664aa77f-2aa5-47fc-8514-e1fd6c9eb098",
+            "id": "b34e61fd-857e-446d-a032-652d256e972a",
             "ord": "a1"
           },
           {
@@ -2254,7 +2506,7 @@
                           "kind": "visible",
                           "ref": "authorAvatar"
                         },
-                        "id": "7b7deefd-3bb9-4f1d-9ce9-4146bd2adba1",
+                        "id": "c0e2e560-a021-4f31-9355-439baf1caa10",
                         "ord": "a0"
                       },
                       {
@@ -2271,7 +2523,7 @@
                               "kind": "value",
                               "ref": "authorName"
                             },
-                            "id": "b4f6bf99-129e-4ff0-ad01-a5e6801e553d",
+                            "id": "2673a075-faf3-4da5-970e-275f73044dcb",
                             "ord": "a0"
                           },
                           {
@@ -2283,11 +2535,11 @@
                               "kind": "value",
                               "ref": "authorBio"
                             },
-                            "id": "3d366925-8a6c-4dbe-b8d5-e66c1be3b959",
+                            "id": "6ee4e24a-4912-4b58-8fab-e77f308941f8",
                             "ord": "a1"
                           }
                         ],
-                        "id": "e051cf66-1411-4b0d-9e29-6a64ee21739b",
+                        "id": "75da7b33-993a-4d64-aba1-f125ab8f5c2a",
                         "ord": "a1"
                       }
                     ],
@@ -2295,15 +2547,15 @@
                       "kind": "visible",
                       "ref": "authorBio"
                     },
-                    "id": "47956276-d5e1-4f4c-89c6-fb049c585cec",
+                    "id": "d9b77498-2d55-4b88-ac83-ac700a7fedb2",
                     "ord": "a0"
                   }
                 ],
-                "id": "e94ac7f5-16e9-4846-be68-f559a722385f",
+                "id": "9755b058-3f38-4b41-9d3c-b1d7b92eb19f",
                 "ord": "a0"
               }
             ],
-            "id": "ee14997e-e4f0-4155-872a-787e649d17d0",
+            "id": "1cf03c53-9968-477a-8b69-4608e66b830f",
             "ord": "a2"
           },
           {
@@ -2326,7 +2578,7 @@
                         "tag": "h2",
                         "class": "text-2xl font-bold tracking-tight text-base-content @2xl:text-3xl",
                         "children": ["Keep reading"],
-                        "id": "dd9ab1c9-f2fb-4e9f-97b6-0cf93aa63ab2",
+                        "id": "485ebef0-938e-430f-832c-6b5bced33ee7",
                         "ord": "a0"
                       },
                       {
@@ -2341,23 +2593,23 @@
                               "href": "/journal"
                             },
                             "children": ["More stories"],
-                            "id": "528a2bee-eb35-4932-a9f8-2e7d23788417",
+                            "id": "80fc58a7-e074-42e9-a561-fea71d9932fe",
                             "ord": "a0"
                           }
                         ],
-                        "id": "7a296057-e556-4364-ad7c-9b4f2da31378",
+                        "id": "7ccf0729-79e3-446a-9bec-0085e2c07149",
                         "ord": "a1"
                       }
                     ],
-                    "id": "76106ab4-c225-467d-bd64-39c0db2d2596",
+                    "id": "862b6677-6a4c-4622-9c13-4cd9548a57f1",
                     "ord": "a0"
                   }
                 ],
-                "id": "57da5c7a-7cd6-4a64-bf0e-4471d6b805e0",
+                "id": "b4137e8f-353b-4857-a522-f1027c6c0403",
                 "ord": "a0"
               }
             ],
-            "id": "4d3ce7c0-bb79-4017-86fa-057b7914088d",
+            "id": "89caf691-2363-42fa-a5cf-b8caf38d8675",
             "ord": "a3"
           }
         ],
@@ -2365,7 +2617,7 @@
           "kind": "collection",
           "ref": "blog_post"
         },
-        "id": "0d9a502b-0821-4ab7-b55a-e579a557491b"
+        "id": "8b822928-cb49-403c-9421-e5dd8b9ca3ce"
       }
     }
   ],

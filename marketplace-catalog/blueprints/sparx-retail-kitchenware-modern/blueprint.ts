@@ -15,7 +15,7 @@ import emails from './emails.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-retail-kitchenware-modern',
-  version: '1.3.0',
+  version: '1.4.0',
   name: 'sparx — Kitchenware (Modern)',
   summary:
     'A complete, working shop for a modern kitchen-design studio: a real catalogue of ceramic nonstick cookware, a precision kettle, a clean knife set, nesting prep bowls, a digital scale, silicone tools and modular storage, with categories, collections, a bespoke PDP and a full merchandised home page. Sleek modern theme — crisp cool-grey ground, near-black controls, an electric cobalt accent, clean grotesk type. Shipped as Edge.',

@@ -22,7 +22,7 @@
                   "props": {
                     "show": "both"
                   },
-                  "id": "6810eb21-23ff-44a1-a865-c286de29ae28",
+                  "id": "cfbc392a-7fbe-423f-a973-a7714db479f8",
                   "ord": "a0"
                 },
                 {
@@ -43,7 +43,7 @@
                         "type": "link",
                         "label": "Product"
                       },
-                      "id": "a8d066da-f359-4df1-9d0c-6f8ee65f2023",
+                      "id": "00cbec52-6bc5-4aa6-8001-c951308ffbff",
                       "ord": "a0"
                     },
                     {
@@ -59,7 +59,7 @@
                         "type": "link",
                         "label": "Pricing"
                       },
-                      "id": "c7990fe0-a4d3-4431-ac50-57738a84fb3d",
+                      "id": "3d0a3f9d-2e87-4d70-8d6a-d82dad7c4cf4",
                       "ord": "a1"
                     },
                     {
@@ -75,11 +75,11 @@
                         "type": "link",
                         "label": "Docs"
                       },
-                      "id": "d6a44167-0d9b-48a9-9e9e-4b15199e9332",
+                      "id": "758c09b9-f865-4d71-ab03-4ba8cba60dd3",
                       "ord": "a2"
                     }
                   ],
-                  "id": "461b01cd-e007-4f28-9efd-81622a2697d3",
+                  "id": "0f31e525-6a4e-49f6-afcd-01421df75f86",
                   "ord": "a1"
                 },
                 {
@@ -100,14 +100,14 @@
                         "type": "link",
                         "label": "Secondary link"
                       },
-                      "id": "9b634589-6370-4cbd-a00b-8a4940591e9b",
+                      "id": "a14532a5-596d-4b9f-91a9-5be6a84ead40",
                       "ord": "a0"
                     },
                     {
                       "kind": "host",
                       "component": "site.theme-toggle",
                       "class": "inline-flex items-center",
-                      "id": "e3c6a44f-37de-4b83-a530-d3eadcda7598",
+                      "id": "9930de1c-0c14-4424-a9e9-fd7d70a17ba5",
                       "ord": "a1"
                     },
                     {
@@ -123,7 +123,7 @@
                         "type": "link",
                         "label": "Primary action"
                       },
-                      "id": "13ad538a-1b88-483e-a0e6-b386d3082377",
+                      "id": "c2c88c89-42bc-4c02-a6a0-09b97cf107e5",
                       "ord": "a2"
                     },
                     {
@@ -141,20 +141,20 @@
                           "props": {
                             "name": "menu"
                           },
-                          "id": "1e64a49a-4fc3-474c-8602-92e5d2cfc027",
+                          "id": "c275e380-a198-49f3-91a5-f0916ad78d37",
                           "ord": "a0"
                         }
                       ],
                       "part": "trigger",
-                      "id": "3a7ed64f-2c57-4a69-bd4c-e6a2c15bd9f9",
+                      "id": "6684feaf-3d18-4cb1-a386-eb4ac1186fb7",
                       "ord": "a3"
                     }
                   ],
-                  "id": "78bc29ff-1c33-4b66-bdbe-4df9822baf77",
+                  "id": "75181951-371c-4f2c-b1c4-2c13f2992dde",
                   "ord": "a2"
                 }
               ],
-              "id": "cb9c3af2-2a59-4516-a58a-66ade1b3ce48",
+              "id": "4b8f55f1-a538-4911-9d4a-73f97eeebfd8",
               "ord": "a0"
             },
             {
@@ -178,7 +178,7 @@
                     "type": "link",
                     "label": "Product"
                   },
-                  "id": "b0c2693a-60d7-493e-ac8f-2fa8823d62a8",
+                  "id": "ae1c12ab-cda8-42f8-b898-32a777655100",
                   "ord": "a0"
                 },
                 {
@@ -194,7 +194,7 @@
                     "type": "link",
                     "label": "Pricing"
                   },
-                  "id": "e2928867-a6a7-4bcb-95cc-f9ceb16bdf14",
+                  "id": "e5119e40-24ff-41f5-b264-85a59230dccc",
                   "ord": "a1"
                 },
                 {
@@ -210,7 +210,7 @@
                     "type": "link",
                     "label": "Docs"
                   },
-                  "id": "694fa17c-af04-4b68-82c1-b13661d49c04",
+                  "id": "cdf36872-e370-4ca4-8d7a-a0bc13b8ea09",
                   "ord": "a2"
                 },
                 {
@@ -226,7 +226,7 @@
                     "type": "link",
                     "label": "Secondary link"
                   },
-                  "id": "d6919882-dd03-4b82-9d30-7b088bd52359",
+                  "id": "fe416790-f68e-4271-9968-8ac50b52bf78",
                   "ord": "a3"
                 },
                 {
@@ -242,19 +242,19 @@
                     "type": "link",
                     "label": "Primary action"
                   },
-                  "id": "822f98e9-52ab-48ba-b4cb-f7b262439ead",
+                  "id": "4e6c281a-5fb2-44b6-9b9c-046d3f2ccfa6",
                   "ord": "a4"
                 }
               ],
               "part": "panel",
-              "id": "0d45a121-f520-4e65-bdac-e1b274094db0",
+              "id": "18943185-b6ad-47eb-8296-8fb1037da97c",
               "ord": "a1"
             }
           ],
           "behavior": {
             "type": "disclosure"
           },
-          "id": "c39c950b-0798-46d5-ab6d-d0223dbc1476",
+          "id": "3bae6cf6-826a-411f-90da-b38f7a375f1b",
           "ord": "a0"
         },
         {
@@ -270,7 +270,7 @@
               "kind": "outlet"
             }
           ],
-          "id": "d455a971-2de6-4a17-ab46-b0ccc92c96dc",
+          "id": "7a4e2325-81a7-4170-921a-0e79b6d4d588",
           "ord": "a1"
         },
         {
@@ -300,7 +300,7 @@
                           "props": {
                             "show": "both"
                           },
-                          "id": "7fc5f807-fd59-484c-b2a7-3edb129b59a9",
+                          "id": "14f935ec-6dcd-4f0f-87b0-aedc74df9207",
                           "ord": "a0"
                         },
                         {
@@ -316,7 +316,7 @@
                           "attrs": {
                             "href": "/"
                           },
-                          "id": "48ff3ba5-c24e-4652-84de-30c3477a9857",
+                          "id": "a02e6656-2fb6-4003-b907-1d5fbf18d76f",
                           "ord": "a1"
                         },
                         {
@@ -324,11 +324,11 @@
                           "tag": "ul",
                           "class": "mt-2 flex items-center gap-5",
                           "children": [],
-                          "id": "9729dbb4-deee-4ec0-9e6b-a9af68374a5e",
+                          "id": "9c4d386b-5984-4cc3-85cd-23419f200c19",
                           "ord": "a2"
                         }
                       ],
-                      "id": "3232bba7-890c-4cf8-aec5-a1e25683eeb4",
+                      "id": "8a9570d2-9ad8-4e97-a903-c7e0c4c8daa0",
                       "ord": "a0"
                     },
                     {
@@ -349,7 +349,7 @@
                           "attrs": {
                             "href": "/"
                           },
-                          "id": "2d8c7c91-4b2d-46e6-8d67-2f08a88bb8f1",
+                          "id": "6f9be7dd-b467-42b6-98e6-c45b137e6675",
                           "ord": "a0"
                         },
                         {
@@ -374,11 +374,11 @@
                                     "type": "link",
                                     "label": "Features"
                                   },
-                                  "id": "cc2d29c8-401b-486e-99b8-ae3cde4cbb5a",
+                                  "id": "4234675a-d20d-44d5-a2a5-5558f32a813b",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "d1d4e3df-c7dd-402f-b85c-a060c0778764",
+                              "id": "5f4a0633-de95-4b6f-83e4-3bd74ba6ee4a",
                               "ord": "a0"
                             },
                             {
@@ -398,11 +398,11 @@
                                     "type": "link",
                                     "label": "Pricing"
                                   },
-                                  "id": "4adfafb3-0694-4120-90af-3771b266e455",
+                                  "id": "60679567-0a41-49dc-9d71-bfd31c1c2641",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "8183efad-24f8-4b60-91f7-59b8bebff16d",
+                              "id": "918b9848-1214-4bab-aa75-80d5aa99deaf",
                               "ord": "a1"
                             },
                             {
@@ -422,11 +422,11 @@
                                     "type": "link",
                                     "label": "Integrations"
                                   },
-                                  "id": "d66a66c6-73c2-4c15-828e-a54053f265d4",
+                                  "id": "45531fa6-69a7-4c35-a637-47a990ded404",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "739c995f-c116-4251-9da9-2c65bcb934de",
+                              "id": "ff1fda53-e9c7-4a26-9558-3bf6df97bc33",
                               "ord": "a2"
                             },
                             {
@@ -446,19 +446,19 @@
                                     "type": "link",
                                     "label": "Changelog"
                                   },
-                                  "id": "56c9eb21-308d-4932-89c1-df54b2585cc4",
+                                  "id": "1b7c557b-575e-40f8-a5eb-b91abd5126fe",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "86295a5c-98f8-40d9-a0a8-44d6439dac61",
+                              "id": "85577799-d73a-4640-9051-3056bc1a76ef",
                               "ord": "a3"
                             }
                           ],
-                          "id": "2ecede4f-8d34-42d7-b911-e03d43757d82",
+                          "id": "a0c93705-bf14-415f-acb1-0a0b27f2e930",
                           "ord": "a1"
                         }
                       ],
-                      "id": "36528705-b4c2-4369-bf15-4a36b0b922e0",
+                      "id": "ce52b958-013e-4bc5-a4af-d9edc2f499bc",
                       "ord": "a1"
                     },
                     {
@@ -471,11 +471,11 @@
                           "tag": "ul",
                           "class": "flex flex-col gap-2",
                           "children": [],
-                          "id": "5f9531bc-cccc-46a7-806e-3a5af884abfd",
+                          "id": "70757990-fd72-4efe-9196-4c7c2b819b3d",
                           "ord": "a0"
                         }
                       ],
-                      "id": "e59efd8b-0c0d-4d47-979f-03fc1ed80183",
+                      "id": "e3a35c50-30d5-4191-8fbc-619574236201",
                       "ord": "a2"
                     },
                     {
@@ -499,23 +499,23 @@
                                   "props": {
                                     "heading": "Legal"
                                   },
-                                  "id": "8b8a5a69-d4ac-4ceb-ad00-b5faa8eba6f8",
+                                  "id": "fc336c6d-ec8b-4e92-a10f-1bf5844b545b",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "f416e1e5-ae89-46f1-b92e-ed1899714344",
+                              "id": "30d89d0e-1471-40f4-8ad9-33cbb65dc783",
                               "ord": "a0"
                             }
                           ],
-                          "id": "f6407cf3-bf76-466b-9dee-f8824e7db0df",
+                          "id": "36be189f-f6ce-4307-9451-c7e3206d4957",
                           "ord": "a0"
                         }
                       ],
-                      "id": "a69acca0-f216-4559-9a4e-6b9aae06521c",
+                      "id": "f95b2468-ff62-40b3-b65e-f29797f9886e",
                       "ord": "a3"
                     }
                   ],
-                  "id": "27b0a5f7-e899-49b5-a295-94adb9c509c4",
+                  "id": "c45cbc0a-098d-452e-b409-6802dd9728a0",
                   "ord": "a0"
                 },
                 {
@@ -538,11 +538,11 @@
                             "kind": "value",
                             "ref": "site.identity.name"
                           },
-                          "id": "5aec2f4b-323d-439d-aa2a-3990ead505e7",
+                          "id": "cdd6143b-5bc2-4ab3-bed8-5514a59c91b5",
                           "ord": "a0"
                         }
                       ],
-                      "id": "0116d894-02dd-4d77-a025-94b8dbec88c5",
+                      "id": "29f20b6f-538d-4dd1-8ab7-8cef54b5927f",
                       "ord": "a0"
                     },
                     {
@@ -550,23 +550,23 @@
                       "tag": "ul",
                       "class": "flex flex-wrap items-center gap-x-6 gap-y-2",
                       "children": [],
-                      "id": "2efa4200-82ce-4308-8f3c-002a68c88c2d",
+                      "id": "b9104dfc-1f5d-4086-b4fa-66bc8bd53121",
                       "ord": "a1"
                     }
                   ],
-                  "id": "19068377-2948-4278-b7bd-4dacc06368c9",
+                  "id": "0cb45384-0c61-4f8a-8b8e-c8306ccf5dfb",
                   "ord": "a1"
                 }
               ],
-              "id": "c4ee34af-652a-4498-a95f-9e549993282d",
+              "id": "0846a6f3-736d-4fc3-b9b7-5851cdb1e27e",
               "ord": "a0"
             }
           ],
-          "id": "6319b51d-502a-4518-b495-a75cfce09c60",
+          "id": "689ce2f7-f819-45e6-92bc-d25c21cacc38",
           "ord": "a2"
         }
       ],
-      "id": "2e4d8334-ab5f-46af-99de-4ea6b28ba958"
+      "id": "a0e5abdd-44c5-421a-a621-aee1b272fe9c"
     }
   },
   "pages": [
@@ -580,7 +580,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "6f2df23d-c0a1-4ab6-8fdd-7ce9046e866e",
+        "id": "ab182c32-6042-43ae-aa92-eba3a99893fe",
         "children": [
           {
             "kind": "element",
@@ -596,14 +596,14 @@
                   "alt": "A therapist working along a client’s back with focused, deliberate pressure",
                   "loading": "eager"
                 },
-                "id": "f8ed78bd-9a21-4c5c-961d-afed0fd2134b",
+                "id": "8f0d2048-e77a-459e-8b0b-51e59b40196b",
                 "ord": "a0"
               },
               {
                 "kind": "element",
                 "tag": "div",
                 "class": "absolute inset-0 bg-black/65",
-                "id": "109bed29-a326-4f05-9577-02fa5a945923",
+                "id": "983ffb51-03ea-41ff-bcbb-f74982239ae0",
                 "ord": "a1"
               },
               {
@@ -616,7 +616,7 @@
                     "tag": "h1",
                     "class": "max-w-3xl text-4xl font-bold leading-tight tracking-tight @2xl:text-5xl @3xl:text-6xl",
                     "children": ["Fix the thing that hurts"],
-                    "id": "7a66ece9-5db8-4d3c-b6b7-2b38858d9c9e",
+                    "id": "4baefc75-6b27-4625-8361-b67c6aec57ca",
                     "ord": "a0"
                   },
                   {
@@ -626,7 +626,7 @@
                     "children": [
                       "Meridian Bodywork is a therapeutic massage practice — licensed therapists, a real assessment first, and treatment that targets the pain instead of talking around it."
                     ],
-                    "id": "90551eb6-bfdd-4f04-a8cb-9debb04137e9",
+                    "id": "d674c174-34d8-46a5-9d3b-b4c5f556a15d",
                     "ord": "a1"
                   },
                   {
@@ -642,7 +642,7 @@
                           "href": "/book"
                         },
                         "children": ["Book a session"],
-                        "id": "710cb02f-7ea1-467f-91ad-ef2a8666123f",
+                        "id": "2e3fb644-f654-4ae5-a8ee-65d0dfbdbf5a",
                         "ord": "a0"
                       },
                       {
@@ -653,19 +653,19 @@
                           "href": "/book"
                         },
                         "children": ["See treatments"],
-                        "id": "46f61c5e-95b1-4995-8116-6522a0608c92",
+                        "id": "2dc27e05-25fb-461f-8971-00de82efb335",
                         "ord": "a1"
                       }
                     ],
-                    "id": "603a9424-b341-4569-8e4e-1a16a467ca7d",
+                    "id": "c939d2d4-2b00-485d-9b59-173a79173df4",
                     "ord": "a2"
                   }
                 ],
-                "id": "b46d2dee-2601-472f-8106-0ab4b69402c5",
+                "id": "bfd1d5ba-b15a-40f3-ad1a-1acf5d9e119b",
                 "ord": "a2"
               }
             ],
-            "id": "3f9d020b-1ed7-41fc-90f7-155488ed055c",
+            "id": "c2b57c1c-6789-438f-a58a-c6be79059056",
             "ord": "a0"
           },
           {
@@ -693,7 +693,7 @@
                             "tag": "h2",
                             "class": "text-xl font-semibold text-base-content",
                             "children": ["Licensed therapists, every session"],
-                            "id": "b5a1e4f3-dcab-4f4d-b8eb-3a67279293a1",
+                            "id": "64519733-5b12-47f4-886f-ed63f17a14b0",
                             "ord": "a0"
                           },
                           {
@@ -703,11 +703,11 @@
                             "children": [
                               "You’re in the hands of a state-licensed massage therapist (LMT) trained in clinical work — not a rotating list of names. You book the person, and you keep seeing them."
                             ],
-                            "id": "36db682e-505a-4b68-94fa-11835c2608b5",
+                            "id": "8ae2f84c-40ba-41da-a2b7-62252a1a3c03",
                             "ord": "a1"
                           }
                         ],
-                        "id": "2a823e56-583a-484d-8bfc-c1574492af70",
+                        "id": "dbb87ac5-b6e2-4744-b497-922858d74efa",
                         "ord": "a0"
                       },
                       {
@@ -720,7 +720,7 @@
                             "tag": "h2",
                             "class": "text-xl font-semibold text-base-content",
                             "children": ["We assess before we treat"],
-                            "id": "56d8cc4d-860b-466d-bbf5-b43b38a9d32c",
+                            "id": "02b8c3a4-0694-4368-ab53-ef9fd1a1a182",
                             "ord": "a0"
                           },
                           {
@@ -730,11 +730,11 @@
                             "children": [
                               "Every first visit starts with real questions and a movement check. We find where the pain actually comes from, then build the session around it."
                             ],
-                            "id": "f5c985a6-304d-4aab-8982-c038219413df",
+                            "id": "72df667f-ea4a-442f-b42d-eee8bc58571b",
                             "ord": "a1"
                           }
                         ],
-                        "id": "60a22a26-be57-4bdc-a757-51cbfcbda878",
+                        "id": "97b34dde-0337-435a-9352-3f5fbd2e781f",
                         "ord": "a1"
                       },
                       {
@@ -747,7 +747,7 @@
                             "tag": "h2",
                             "class": "text-xl font-semibold text-base-content",
                             "children": ["Superbills for HSA & insurance"],
-                            "id": "6548f3c6-f3b8-44fc-891e-91334fe1c946",
+                            "id": "d1d26b4b-c08a-469a-a64b-dd7b9be1db6f",
                             "ord": "a0"
                           },
                           {
@@ -757,23 +757,23 @@
                             "children": [
                               "Ask and we’ll provide an itemized superbill you can submit to your insurer or pay for with an HSA/FSA card. Recovery is a health expense, and we treat it like one."
                             ],
-                            "id": "a88024c4-1545-432f-9675-a9d1c53cdbff",
+                            "id": "33590395-a7f9-46b5-a276-c00d6b01cc22",
                             "ord": "a1"
                           }
                         ],
-                        "id": "eaf2c219-95ba-4628-834b-2c79e4a66e72",
+                        "id": "dc16b310-279e-40d5-b22f-9e9a1469cb53",
                         "ord": "a2"
                       }
                     ],
-                    "id": "7c1ad620-0d80-4086-b64e-0ceb5e985c8e",
+                    "id": "a88e75d5-dc01-4d10-8eca-099361d5cf07",
                     "ord": "a0"
                   }
                 ],
-                "id": "1d0edc97-43a3-4310-8067-bd800c833b39",
+                "id": "aab1e88e-1fe8-4de5-a285-472a6255c33e",
                 "ord": "a0"
               }
             ],
-            "id": "af568ecc-f550-42ca-bd98-88a3f897c24d",
+            "id": "c2b573a5-4efc-4458-861b-b65b94c9ac72",
             "ord": "a1"
           },
           {
@@ -796,7 +796,7 @@
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
                         "children": ["Treatment by concern"],
-                        "id": "19e921b4-6fb2-48cd-9dbf-b7595cd19d57",
+                        "id": "27fd6cf9-ab44-45fe-ba7a-e73739a232f5",
                         "ord": "a0"
                       },
                       {
@@ -806,11 +806,11 @@
                         "children": [
                           "Booked by what you need to fix, not by scented add-ons. Full prices and live availability are on the booking page."
                         ],
-                        "id": "93f64973-665e-4b24-b1aa-c700633d5228",
+                        "id": "5b4d92e1-58e5-4b3e-a121-e7398b4fe29a",
                         "ord": "a1"
                       }
                     ],
-                    "id": "b6dc5d33-fe6a-4a3c-b6de-c36b696c89ef",
+                    "id": "03e0d9ee-6b11-47e6-a7a8-81b73f42b19d",
                     "ord": "a0"
                   },
                   {
@@ -836,7 +836,7 @@
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
                                 "children": ["Deep tissue"],
-                                "id": "66242c73-f96d-447a-91c0-7040a6a2b358",
+                                "id": "b0260ded-bd34-43dc-9048-ee22f78d7f62",
                                 "ord": "a0"
                               },
                               {
@@ -844,11 +844,11 @@
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-bold text-base-content",
                                 "children": ["$110"],
-                                "id": "10041a5a-ee1d-4d1d-9cd0-14db4d16a5ca",
+                                "id": "ba4ccef9-c90a-4fb7-b89e-3480967b67ed",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "5b311a9f-d4ae-40ef-ae94-847ee9fc327d",
+                            "id": "f4429d60-73b4-4a51-8bb1-61a59d5ff07a",
                             "ord": "a0"
                           },
                           {
@@ -856,7 +856,7 @@
                             "tag": "p",
                             "class": "text-sm font-medium uppercase tracking-wide text-secondary",
                             "children": ["1 hr"],
-                            "id": "bae3c666-b31f-4641-ba00-e5af9863eb11",
+                            "id": "eae55f26-adca-4389-83a1-549ec724b076",
                             "ord": "a1"
                           },
                           {
@@ -866,11 +866,11 @@
                             "children": [
                               "Firm, focused work into the layers that hold chronic tension."
                             ],
-                            "id": "fdceb530-f6a6-43ca-a617-35dee93bfcaf",
+                            "id": "1f045531-2bdc-4ec6-91e1-30a4ff5fc3eb",
                             "ord": "a2"
                           }
                         ],
-                        "id": "e1fc3849-7e8e-4abe-acdc-07b590fdb10c",
+                        "id": "b32d4854-2894-4346-8df1-0405c4184bdc",
                         "ord": "a0"
                       },
                       {
@@ -891,7 +891,7 @@
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
                                 "children": ["Sports & recovery"],
-                                "id": "094c0085-cc33-4495-8f31-635d6829c61c",
+                                "id": "568f89c9-1eb2-4821-a318-188bdd3c4a94",
                                 "ord": "a0"
                               },
                               {
@@ -899,11 +899,11 @@
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-bold text-base-content",
                                 "children": ["$165"],
-                                "id": "64709faa-e76b-4366-abaf-d8af8a33c45d",
+                                "id": "9dafee9c-62a3-4d4b-82f8-9c364c9c2287",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "0e0f4767-d42f-4ca9-b856-abbd381d9537",
+                            "id": "8c4ce575-4513-4a59-87ff-cb50c829518b",
                             "ord": "a0"
                           },
                           {
@@ -911,7 +911,7 @@
                             "tag": "p",
                             "class": "text-sm font-medium uppercase tracking-wide text-secondary",
                             "children": ["1 hr 30 min"],
-                            "id": "5df312d3-2d43-425a-a37c-882b3e3949b9",
+                            "id": "3d9c738f-e24c-4276-a0a9-397eedfa20ca",
                             "ord": "a1"
                           },
                           {
@@ -921,11 +921,11 @@
                             "children": [
                               "Assisted stretching and targeted release for training and injury."
                             ],
-                            "id": "0975d05d-3c3e-4717-aa5f-b7070a237279",
+                            "id": "80111361-ed46-48d5-8d29-37619df2c6fd",
                             "ord": "a2"
                           }
                         ],
-                        "id": "860ccf7a-4691-4f53-83d2-4fd4f498dcfd",
+                        "id": "010480dc-c0be-406f-9688-5c09cc85247c",
                         "ord": "a1"
                       },
                       {
@@ -946,7 +946,7 @@
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
                                 "children": ["Trigger-point therapy"],
-                                "id": "cce0c302-6baf-439f-adbb-7be2eca7e5f0",
+                                "id": "47d31888-5dde-44bc-8b2c-379c8e0c70e1",
                                 "ord": "a0"
                               },
                               {
@@ -954,11 +954,11 @@
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-bold text-base-content",
                                 "children": ["$120"],
-                                "id": "1be9f092-3aa4-4e8a-9070-7770d06fe10e",
+                                "id": "f1702c67-4d71-4ece-a275-a932a4db0051",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "96cecf94-ddd1-4d9e-b1cc-46fcaebc432a",
+                            "id": "2d0687ce-265c-451b-b604-a89eb701778c",
                             "ord": "a0"
                           },
                           {
@@ -966,7 +966,7 @@
                             "tag": "p",
                             "class": "text-sm font-medium uppercase tracking-wide text-secondary",
                             "children": ["1 hr"],
-                            "id": "963a7897-c9bc-4493-a977-20de0034f30d",
+                            "id": "d25fbdb7-ec44-47ec-8c33-65c7d388d0ec",
                             "ord": "a1"
                           },
                           {
@@ -974,11 +974,11 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": ["Pinpoint work on the knots that refer pain elsewhere."],
-                            "id": "6c7bdaa1-aef9-41aa-8d04-2163c8ab9301",
+                            "id": "6f7ec158-d7e2-42ee-aaff-5e44b6dd5482",
                             "ord": "a2"
                           }
                         ],
-                        "id": "1aff788e-fa72-4082-91bf-7774ada9877d",
+                        "id": "ad19711c-5e32-416d-a6d8-20e325c78a5b",
                         "ord": "a2"
                       },
                       {
@@ -999,7 +999,7 @@
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
                                 "children": ["Prenatal massage"],
-                                "id": "6b46c94f-5e0a-4c45-9f6a-3e49db657df7",
+                                "id": "9c070a95-912b-4e46-aef6-aced857364dd",
                                 "ord": "a0"
                               },
                               {
@@ -1007,11 +1007,11 @@
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-bold text-base-content",
                                 "children": ["$110"],
-                                "id": "176ee0c5-8cb9-4539-8246-af30c22e6aa4",
+                                "id": "f0f48fac-d052-48d1-8b51-55724d45c6a9",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "b6511489-c6fb-476c-a746-b084989a1140",
+                            "id": "d61687aa-4731-4ddc-895e-b20d0e87b822",
                             "ord": "a0"
                           },
                           {
@@ -1019,7 +1019,7 @@
                             "tag": "p",
                             "class": "text-sm font-medium uppercase tracking-wide text-secondary",
                             "children": ["1 hr"],
-                            "id": "bb5f4bbc-f522-4f0e-8a4a-2832fcc2a75f",
+                            "id": "99d730c9-cd0c-4c5c-9f44-2731dc098af4",
                             "ord": "a1"
                           },
                           {
@@ -1029,11 +1029,11 @@
                             "children": [
                               "Safe, side-lying work for the back, hips and legs of pregnancy."
                             ],
-                            "id": "e474c347-ef95-4978-95af-d7709b325ba2",
+                            "id": "aa6bee6a-a35e-47a6-8bd5-075b52f32667",
                             "ord": "a2"
                           }
                         ],
-                        "id": "a8ef7a82-9533-4f73-8573-173e56f0c917",
+                        "id": "ab22cdf8-0f4b-4a64-97d5-8bedfcac48b4",
                         "ord": "a3"
                       },
                       {
@@ -1054,7 +1054,7 @@
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
                                 "children": ["Cupping & myofascial"],
-                                "id": "cc224664-6dfb-487d-8d85-7f510f7a5ee8",
+                                "id": "96113da6-4aa6-4b02-bfcd-3ce54fc4fa45",
                                 "ord": "a0"
                               },
                               {
@@ -1062,11 +1062,11 @@
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-bold text-base-content",
                                 "children": ["$125"],
-                                "id": "8f93f67b-96e2-4799-8e95-ae3834786bad",
+                                "id": "66f18fa8-cd1e-4d02-adb6-109523b21d40",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "883eab7c-4c90-4152-a3d4-367c232ed088",
+                            "id": "22c0c6ea-848f-4565-8b74-24341330f5af",
                             "ord": "a0"
                           },
                           {
@@ -1074,7 +1074,7 @@
                             "tag": "p",
                             "class": "text-sm font-medium uppercase tracking-wide text-secondary",
                             "children": ["1 hr"],
-                            "id": "9d33699a-edcf-440c-acaf-0e1a1fa9f4fb",
+                            "id": "0d4706c2-4e21-4109-8490-b4558e2b5554",
                             "ord": "a1"
                           },
                           {
@@ -1084,11 +1084,11 @@
                             "children": [
                               "Decompression cupping paired with hands-on fascial release."
                             ],
-                            "id": "329685df-7bb1-4573-945a-cb344d7900af",
+                            "id": "c727b1b9-1407-44a8-95f9-439eea2568e1",
                             "ord": "a2"
                           }
                         ],
-                        "id": "eab02efc-d7e3-4c65-befa-d41f9d85e125",
+                        "id": "d48f53dd-60b9-4f1e-a82f-f5fba0a3e2b8",
                         "ord": "a4"
                       },
                       {
@@ -1109,7 +1109,7 @@
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
                                 "children": ["Medical & rehab intake"],
-                                "id": "de405dff-0e49-44d3-ada6-9c0206ff45e3",
+                                "id": "4afd275f-999b-4e0c-b3db-91d73ac5fc15",
                                 "ord": "a0"
                               },
                               {
@@ -1117,11 +1117,11 @@
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-bold text-base-content",
                                 "children": ["$210"],
-                                "id": "837fb515-cd6b-4533-8b54-a47013a5de4b",
+                                "id": "97bf34ff-3994-4bc0-bfb8-715e0d7beb06",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "ed24bfee-262f-49ea-a4ed-e043009e6833",
+                            "id": "6cea77c0-340f-40f0-83f1-6d37194588b5",
                             "ord": "a0"
                           },
                           {
@@ -1129,7 +1129,7 @@
                             "tag": "p",
                             "class": "text-sm font-medium uppercase tracking-wide text-secondary",
                             "children": ["2 hr"],
-                            "id": "67e17c5c-68a6-4bfc-8be3-b3fc7eae820a",
+                            "id": "169a3648-d373-4e70-af18-7438ccde810d",
                             "ord": "a1"
                           },
                           {
@@ -1139,15 +1139,15 @@
                             "children": [
                               "Full assessment and first treatment for post-injury recovery."
                             ],
-                            "id": "d7ca4ea6-055b-40b4-aa3c-f46f10067167",
+                            "id": "0e2ac6e0-e55b-4dcc-b520-44e3c0631402",
                             "ord": "a2"
                           }
                         ],
-                        "id": "cc7833d9-b306-48d3-9c48-ffb90888edeb",
+                        "id": "617dca86-8267-4161-b89e-cff01b0fcb86",
                         "ord": "a5"
                       }
                     ],
-                    "id": "7c8f31b1-4073-4f8b-8e66-b3393cb8ade0",
+                    "id": "0664c49b-dcd2-44c7-8540-f3a934dc80b5",
                     "ord": "a1"
                   },
                   {
@@ -1163,19 +1163,19 @@
                           "href": "/book"
                         },
                         "children": ["See everything & book"],
-                        "id": "44f0695e-dd7d-4263-9801-f62295c15e83",
+                        "id": "3b8ed0f6-4ef7-4df1-8720-0e4935d3091c",
                         "ord": "a0"
                       }
                     ],
-                    "id": "39802a75-b1e7-453c-a0dc-6c359f64c2b4",
+                    "id": "94c3d27b-dfe4-4146-909a-aeb1add51ba4",
                     "ord": "a2"
                   }
                 ],
-                "id": "4156ed14-afc6-44aa-9db3-5acdb01315ab",
+                "id": "02d1d657-d485-42a2-95f1-46def1d2f640",
                 "ord": "a0"
               }
             ],
-            "id": "d9fc5f60-c94c-4828-aaaf-97463ed68cf6",
+            "id": "f13916a4-2cfc-4199-b0b4-00f0de3f3db8",
             "ord": "a2"
           },
           {
@@ -1197,7 +1197,7 @@
                       "alt": "A therapist assessing a client’s shoulder range of motion before treatment",
                       "loading": "lazy"
                     },
-                    "id": "f5e15e3d-5e12-47c6-8277-6c0be3b0343a",
+                    "id": "dba60046-c3f5-49d4-8323-1b63ed47513b",
                     "ord": "a0"
                   },
                   {
@@ -1210,7 +1210,7 @@
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
                         "children": ["Assessment first, guesswork never"],
-                        "id": "d51535f4-2ae9-4dc8-a083-9349ab6297f4",
+                        "id": "0e4b9601-dc4d-4017-a14e-58c0f94f6f0a",
                         "ord": "a0"
                       },
                       {
@@ -1220,7 +1220,7 @@
                         "children": [
                           "Most massage starts the moment you lie down. Ours starts with a conversation — what hurts, when it started, what makes it worse, and how it’s stopping you. Then we check how you actually move."
                         ],
-                        "id": "2d58287d-a7b4-4370-ac0e-3a8f23cdb613",
+                        "id": "02e344d5-06c3-4abd-9762-0162a4e3a7c4",
                         "ord": "a1"
                       },
                       {
@@ -1230,7 +1230,7 @@
                         "children": [
                           "That assessment becomes a plan: which tissue to work, how hard, how often, and what to do between visits. You leave knowing what we found and what comes next — not just relaxed for an afternoon."
                         ],
-                        "id": "82a3bac4-9c67-4f85-8ddc-cd7ae7d3b13b",
+                        "id": "da38052d-6dd2-41cf-a0df-3a3a6059c511",
                         "ord": "a2"
                       },
                       {
@@ -1246,23 +1246,23 @@
                               "href": "/book"
                             },
                             "children": ["Start with an assessment"],
-                            "id": "8137df06-61ec-4a0f-8ad3-621588a089b8",
+                            "id": "e7fcbf4a-dda8-46f1-8073-0b9842e1ce65",
                             "ord": "a0"
                           }
                         ],
-                        "id": "526f6e3b-b44a-4551-9930-1601c4208818",
+                        "id": "97c49b81-10af-4c56-bff1-019c1efb7785",
                         "ord": "a3"
                       }
                     ],
-                    "id": "c0dd3d16-893d-4fa4-b496-a5768c6c9743",
+                    "id": "093fcd41-8a01-4ba8-b636-bfb39d9bfb71",
                     "ord": "a1"
                   }
                 ],
-                "id": "1f5f275c-f427-4d1f-82f6-e8e4cc4e1020",
+                "id": "fb295687-a1bc-4b1d-9bf2-50e040f5da9f",
                 "ord": "a0"
               }
             ],
-            "id": "c0ae45d0-9998-4a46-a0f1-a7df7d1b73c5",
+            "id": "d5cfa41e-8974-4977-b694-7861085f1b36",
             "ord": "a3"
           },
           {
@@ -1285,7 +1285,7 @@
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
                         "children": ["Your therapists"],
-                        "id": "e75c69af-a002-46ec-a64c-400134e1ccf3",
+                        "id": "def5f1f3-8773-40c4-8735-086f1ed6f369",
                         "ord": "a0"
                       },
                       {
@@ -1295,11 +1295,11 @@
                         "children": [
                           "Book by name and modality — you’ll see the same licensed therapist each visit."
                         ],
-                        "id": "79ffbcc2-c71a-4263-b5e8-9abb2f270bc4",
+                        "id": "5fa3ca6a-cc78-422b-9b6e-ee84bab17b9e",
                         "ord": "a1"
                       }
                     ],
-                    "id": "e92ecb31-df11-498f-930f-12e5a5e7674e",
+                    "id": "06d8dc0a-cd2d-4238-afe4-b1330dea93f4",
                     "ord": "a0"
                   },
                   {
@@ -1321,7 +1321,7 @@
                               "alt": "Dana Okafor, licensed massage therapist",
                               "loading": "lazy"
                             },
-                            "id": "1c968add-d698-4344-a804-fca463f42ffb",
+                            "id": "4f90f732-b744-43b4-bad9-648cd91161da",
                             "ord": "a0"
                           },
                           {
@@ -1334,7 +1334,7 @@
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
                                 "children": ["Dana Okafor, LMT"],
-                                "id": "d8c2cdc4-5f17-4d74-8f82-de5889471065",
+                                "id": "1c4d3858-53de-4239-826d-90ee66fb8c40",
                                 "ord": "a0"
                               },
                               {
@@ -1342,7 +1342,7 @@
                                 "tag": "p",
                                 "class": "text-sm font-medium uppercase tracking-wide text-secondary",
                                 "children": ["Deep tissue · Sports · Trigger-point"],
-                                "id": "1666278a-58a1-4b74-a17a-664402e57b96",
+                                "id": "899e92ec-04be-4cb3-9865-382e3bd000b2",
                                 "ord": "a1"
                               },
                               {
@@ -1352,15 +1352,15 @@
                                 "children": [
                                   "Ten years of clinical deep-tissue and sports work. Dana leads the practice and the runners, lifters and desk-bound necks that come with it."
                                 ],
-                                "id": "2430ee2f-211a-4090-8722-1d9c459536ef",
+                                "id": "fc0ce198-289b-44e7-a8ef-df75a7fe5eba",
                                 "ord": "a2"
                               }
                             ],
-                            "id": "2d4ab7c7-eab7-48b9-8c38-e2694e7b6240",
+                            "id": "bff89d04-e0af-4c6e-9289-e84c699e60b7",
                             "ord": "a1"
                           }
                         ],
-                        "id": "1d6b2075-39cd-424b-babf-493061b56fe9",
+                        "id": "f684de69-ee8d-47ca-8685-38d3c126eb13",
                         "ord": "a0"
                       },
                       {
@@ -1377,7 +1377,7 @@
                               "alt": "Marisol Reyes, licensed massage therapist",
                               "loading": "lazy"
                             },
-                            "id": "22134718-8635-4b68-9efa-1a77eeed6b2b",
+                            "id": "f2953808-2fa5-43b0-9225-48edcdb9afae",
                             "ord": "a0"
                           },
                           {
@@ -1390,7 +1390,7 @@
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
                                 "children": ["Marisol Reyes, LMT"],
-                                "id": "3c9205f8-d4ab-4ada-8d4a-0c51b4c1e8bb",
+                                "id": "cce49099-f154-4361-9535-db987c66af40",
                                 "ord": "a0"
                               },
                               {
@@ -1398,7 +1398,7 @@
                                 "tag": "p",
                                 "class": "text-sm font-medium uppercase tracking-wide text-secondary",
                                 "children": ["Prenatal · Swedish · Cupping"],
-                                "id": "e71273a2-3ab3-4da9-b2d8-6caba57716ae",
+                                "id": "3e5493f1-5e45-46a8-98c6-e31127ff828a",
                                 "ord": "a1"
                               },
                               {
@@ -1408,15 +1408,15 @@
                                 "children": [
                                   "Certified in prenatal and perinatal bodywork, with a gentle, methodical hand for pregnancy, recovery and fascial release."
                                 ],
-                                "id": "446382bb-9eea-47d5-87fe-baea4dc5725c",
+                                "id": "fff3d362-d104-4a06-bae6-a82a3df84239",
                                 "ord": "a2"
                               }
                             ],
-                            "id": "0beba7e8-6ee9-4a35-bee0-7815f70d992d",
+                            "id": "9578c200-882d-48dd-a931-acc89689c359",
                             "ord": "a1"
                           }
                         ],
-                        "id": "ac9e0dc6-f0b0-4231-b9a2-5b0839eabc5e",
+                        "id": "1179479c-9d17-46f1-b45a-d7020af7c11e",
                         "ord": "a1"
                       },
                       {
@@ -1433,7 +1433,7 @@
                               "alt": "Theo Lindqvist, licensed massage therapist",
                               "loading": "lazy"
                             },
-                            "id": "314b9db2-2056-45d1-af0c-6569a5a34fdf",
+                            "id": "0380fb84-3922-4828-9a07-93564026d975",
                             "ord": "a0"
                           },
                           {
@@ -1446,7 +1446,7 @@
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
                                 "children": ["Theo Lindqvist, LMT"],
-                                "id": "c7468225-54e7-4931-9c2b-42c2972ee77e",
+                                "id": "6616989c-8913-4540-b419-308060ff3492",
                                 "ord": "a0"
                               },
                               {
@@ -1454,7 +1454,7 @@
                                 "tag": "p",
                                 "class": "text-sm font-medium uppercase tracking-wide text-secondary",
                                 "children": ["Deep tissue · Medical · Sports"],
-                                "id": "64befadd-43a4-4f5f-8b55-4fea2fd02e12",
+                                "id": "7bca1b42-f0f5-47da-aba1-73628cbd9266",
                                 "ord": "a1"
                               },
                               {
@@ -1464,27 +1464,27 @@
                                 "children": [
                                   "Works closely with local physios on post-injury and post-surgical rehab — the therapist you want when there’s a diagnosis attached."
                                 ],
-                                "id": "cda6b4e8-7cd1-48cd-a7d2-f1fd6c17815f",
+                                "id": "b93cc899-4b06-40ac-9605-5259b3ca5347",
                                 "ord": "a2"
                               }
                             ],
-                            "id": "2cd2a4d3-bf7e-46d2-9388-16fd23b181a0",
+                            "id": "0ccf9693-378f-4ceb-9a95-97b65df35f2f",
                             "ord": "a1"
                           }
                         ],
-                        "id": "a571aa92-7df3-48fd-bf69-cb9a38512328",
+                        "id": "0cbfc05b-10d5-48c5-8a40-ae3540189aac",
                         "ord": "a2"
                       }
                     ],
-                    "id": "1900a41e-5cfc-48e3-a6cc-7ab2c34dad9d",
+                    "id": "0179c8c7-1ffc-4c68-ae52-497347641230",
                     "ord": "a1"
                   }
                 ],
-                "id": "0fed7c95-b3a8-479e-b302-5f41435106d0",
+                "id": "e60e677b-6dfc-442e-a44f-6bdbf1c967e8",
                 "ord": "a0"
               }
             ],
-            "id": "907ea274-6aa8-49e3-a153-5839299b4af7",
+            "id": "47ea23f6-f859-4efe-9af3-6a03020dc84c",
             "ord": "a4"
           },
           {
@@ -1504,7 +1504,7 @@
                     "children": [
                       "“I’d had lower-back pain for two years and had stopped running. Theo actually assessed it, gave me a plan, and six weeks later I ran a 10K. This isn’t a spa — it’s treatment that worked.”"
                     ],
-                    "id": "20d75679-725c-489f-a4e6-7877a9df91e9",
+                    "id": "933eb4fc-c097-4b3a-82b2-d2c80d905d1a",
                     "ord": "a0"
                   },
                   {
@@ -1512,15 +1512,15 @@
                     "tag": "p",
                     "class": "text-sm font-semibold uppercase tracking-wide opacity-80",
                     "children": ["Marcus, client since 2024"],
-                    "id": "2ab74f3f-1e08-43be-bcaa-eb167ea672e4",
+                    "id": "7ddecd61-cabf-47f9-9a5c-43d8d0727357",
                     "ord": "a1"
                   }
                 ],
-                "id": "d9ebcb61-7e9b-4a22-995c-9887ba5f2de3",
+                "id": "f4964847-0d87-4e29-b0cf-a1d4001b7c89",
                 "ord": "a0"
               }
             ],
-            "id": "2e64e025-7d05-47c5-8a8d-c13cc6625798",
+            "id": "541e3812-d421-4071-9c2e-00f5d9a680c3",
             "ord": "a5"
           },
           {
@@ -1538,7 +1538,7 @@
                     "tag": "h2",
                     "class": "text-3xl font-bold tracking-tight @3xl:text-4xl",
                     "children": ["Stop working around the pain"],
-                    "id": "ec4fd9aa-06a4-4359-b4b8-5798668536ea",
+                    "id": "4fe940d5-e27a-4f22-ace3-611ef51f0c59",
                     "ord": "a0"
                   },
                   {
@@ -1548,7 +1548,7 @@
                     "children": [
                       "Pick a treatment, choose your therapist and see live times. Book in about a minute."
                     ],
-                    "id": "3ada051c-7586-4343-a5db-3f1bb28481f7",
+                    "id": "71bfc235-fcc4-4650-b1f4-b38f7909c57f",
                     "ord": "a1"
                   },
                   {
@@ -1559,15 +1559,15 @@
                       "href": "/book"
                     },
                     "children": ["Book a session"],
-                    "id": "684adce0-093c-4a68-bf49-faf1035c101b",
+                    "id": "ad28baae-00f8-46ab-bf62-9b2c3fd3d00d",
                     "ord": "a2"
                   }
                 ],
-                "id": "1e400d41-01fe-4dda-a61f-ad3db680e1da",
+                "id": "b2f7a848-74e5-4afe-abf1-ebddd7fcfe50",
                 "ord": "a0"
               }
             ],
-            "id": "754c4f5b-89f7-4ff2-a30e-18af2c0d2555",
+            "id": "53312bdc-4dcb-4d9d-b7e5-55f10a435189",
             "ord": "a6"
           }
         ]
@@ -1584,7 +1584,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "51e1e9eb-eba2-4d5f-83d9-a579e4b2223c",
+        "id": "9f16f693-34af-488b-8f3d-22def25c1cd5",
         "children": [
           {
             "kind": "element",
@@ -1600,14 +1600,14 @@
                   "alt": "A calm, clinical treatment room with a dressed table and warm light",
                   "loading": "eager"
                 },
-                "id": "c4c7150a-2645-4867-9d90-c11dcb859fbd",
+                "id": "3670cb74-312b-438f-b74b-c54b2b6785e1",
                 "ord": "a0"
               },
               {
                 "kind": "element",
                 "tag": "div",
                 "class": "absolute inset-0 bg-black/65",
-                "id": "12890e06-37db-4965-99c2-af2d7bdda63d",
+                "id": "406ca160-e844-4de3-b85c-afab8095d1dd",
                 "ord": "a1"
               },
               {
@@ -1620,7 +1620,7 @@
                     "tag": "h1",
                     "class": "max-w-3xl text-4xl font-bold leading-tight tracking-tight @2xl:text-5xl @3xl:text-6xl",
                     "children": ["Book your session"],
-                    "id": "ca679840-b738-4d39-b455-d172023b5a2a",
+                    "id": "8701fb00-5960-4249-9767-b4b913a7c039",
                     "ord": "a0"
                   },
                   {
@@ -1630,7 +1630,7 @@
                     "children": [
                       "Choose a treatment to see prices and live availability, then pick your therapist and time. First visit? Start with an assessment."
                     ],
-                    "id": "6d53882d-7dc5-4a6d-a28e-40b8d18328c1",
+                    "id": "e5005e75-9030-4303-b7cd-19eba9d03f15",
                     "ord": "a1"
                   },
                   {
@@ -1646,19 +1646,19 @@
                           "href": "/book"
                         },
                         "children": ["See treatments below"],
-                        "id": "9840ad74-7769-4ed9-a818-efcc5f3c883a",
+                        "id": "0d890f06-3cd5-4e9f-9475-b5122590bcc3",
                         "ord": "a0"
                       }
                     ],
-                    "id": "a67785e3-7aef-4d23-acfa-ab4c9454a5bb",
+                    "id": "9199ecad-b5f8-4ff8-8405-2a23377a0347",
                     "ord": "a2"
                   }
                 ],
-                "id": "e8ea1a52-54b2-4e04-a86d-3beae7416f8d",
+                "id": "777edd44-302b-4638-882e-d23616c54e31",
                 "ord": "a2"
               }
             ],
-            "id": "ed02fb22-d366-4978-a4b7-c7aac819c2e9",
+            "id": "1e0727ba-076f-43b7-a6d9-def247de2f55",
             "ord": "a0"
           },
           {
@@ -1666,8 +1666,134 @@
             "component": "scheduling.services",
             "class": "mx-auto w-full max-w-5xl px-6 py-8",
             "locked": "host",
-            "id": "4cb03ad4-89fd-4557-8cfa-0fef02544b77",
+            "id": "6650fdd3-7ada-4c38-9871-1b8bb8bdc79d",
             "ord": "a1"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-8",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["Good to know"],
+                        "id": "a29a3af1-b745-4c3c-8e67-a79a3c21712e",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "What happens once you pick a time — and how to change it if something comes up."
+                        ],
+                        "id": "1d201b51-6e50-40db-800c-8f988836dd91",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "f4f5f7a9-5cf2-4a0b-8889-686b48f9d09c",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-6 @3xl:grid-cols-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-3 rounded-box border border-base-300 bg-base-100 p-6",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Standard booking"],
+                            "id": "095f3b04-8910-4a8b-86a1-afc115419aab",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Please give us at least 24 hours’ notice to change or cancel. We text a reminder the day before and two hours ahead so the time is never wasted."
+                            ],
+                            "id": "ad87782f-3012-4e0a-b90a-d1779fc2ca5e",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base font-medium text-base-content",
+                            "children": [
+                              "No deposit to book. Change or cancel free up to 24 hours before."
+                            ],
+                            "id": "d67d4869-67b4-4989-be4d-44c04c2bb47d",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "117c50c1-86c0-49c0-826e-82c67eda8fd8",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-3 rounded-box border border-base-300 bg-base-100 p-6",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Card-on-file hold"],
+                            "id": "f718ddfa-ebab-4b47-a573-ec89d652e838",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Longer sessions and rehab intakes hold a card on file — nothing is charged unless you no-show or cancel inside 24 hours. It keeps a two-hour room block open for the person who needs it."
+                            ],
+                            "id": "5fb3dcf1-ed6b-4a1e-b68f-413420e3da8a",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base font-medium text-base-content",
+                            "children": ["Change or cancel free up to 24 hours before."],
+                            "id": "a1d81107-e847-4c1a-952a-229f47c70a57",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "b81dd2f0-a47c-4193-b0a0-29a6f31e58db",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "35aa815c-ab8c-4097-9a21-6167ae231c95",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "6f7654ae-bca7-43dc-96a9-a3865b0dfb27",
+                "ord": "a0"
+              }
+            ],
+            "id": "6dbdd93a-d232-4c9d-9299-08923b26e9b5",
+            "ord": "a2"
           }
         ]
       }
@@ -1683,7 +1809,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "bdbb3062-d8f9-4863-84ce-d867c2193d0f",
+        "id": "022fc72a-ac6f-4db9-a847-e6f4ad5be688",
         "children": [
           {
             "kind": "element",
@@ -1704,7 +1830,7 @@
                       "alt": "A therapist working along a client’s back with focused, deliberate pressure",
                       "loading": "lazy"
                     },
-                    "id": "403286cd-d802-4cbb-8744-d930a919aec2",
+                    "id": "5be9ba8c-5c1e-4573-b091-b5730bdef316",
                     "ord": "a0"
                   },
                   {
@@ -1714,10 +1840,10 @@
                     "children": [
                       {
                         "kind": "element",
-                        "tag": "h2",
+                        "tag": "h1",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
                         "children": ["About Meridian Bodywork"],
-                        "id": "ef73f4e7-fef3-4a23-ba91-26a2d235a1a0",
+                        "id": "d6e3a6cc-4848-4898-9771-51209c5c0e02",
                         "ord": "a0"
                       },
                       {
@@ -1727,7 +1853,7 @@
                         "children": [
                           "We opened Meridian Bodywork because good therapeutic massage is hard to find — the kind that treats a problem instead of selling an hour of quiet. Every therapist here is state-licensed and trained in clinical work."
                         ],
-                        "id": "e3cc199d-7009-4b29-8662-52278322d4bf",
+                        "id": "1a7b5af3-7787-409e-94b7-c3f1573d4ddf",
                         "ord": "a1"
                       },
                       {
@@ -1737,7 +1863,7 @@
                         "children": [
                           "We keep the day unhurried, the rooms private and the plan honest. If we’re not the right care for what you’re dealing with, we’ll tell you and point you to who is. The goal is always the same: less pain, more movement, fewer visits over time."
                         ],
-                        "id": "ef0f6280-290f-4f22-9bc3-66751525ddec",
+                        "id": "71eb7b1f-f19c-455a-8222-3139a169453a",
                         "ord": "a2"
                       },
                       {
@@ -1753,23 +1879,23 @@
                               "href": "/book"
                             },
                             "children": ["Book a session"],
-                            "id": "e283f20c-8a69-4940-9cb3-9109aa144f7e",
+                            "id": "65ea3620-b655-47cc-8b9a-02fcd2486dbe",
                             "ord": "a0"
                           }
                         ],
-                        "id": "85165361-6c16-473c-acaf-11b1880b5016",
+                        "id": "869a9687-7ad3-4415-b7cb-b07a0f7bb48c",
                         "ord": "a3"
                       }
                     ],
-                    "id": "d48e12db-3aaa-445c-be66-4e32ad7df0cd",
+                    "id": "48002321-8674-429b-851d-d21e1f4201e6",
                     "ord": "a1"
                   }
                 ],
-                "id": "291f5597-653e-4953-88c2-0abdc0e96407",
+                "id": "2bf89c73-d785-4c4f-9a48-6d3e74805c97",
                 "ord": "a0"
               }
             ],
-            "id": "62051693-1feb-48e5-802b-88d53e90d1be",
+            "id": "12cf40ea-484e-4424-b0c1-939c615b1ceb",
             "ord": "a0"
           },
           {
@@ -1787,7 +1913,7 @@
                     "tag": "h2",
                     "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
                     "children": ["How we work"],
-                    "id": "682240e3-aaa5-43b7-aa97-cb5531e4c868",
+                    "id": "f53c3b4f-9030-49e9-bbd3-d99d9c948bf5",
                     "ord": "a0"
                   },
                   {
@@ -1805,7 +1931,7 @@
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
                             "children": ["Assessment, then treatment"],
-                            "id": "5c743bbc-8a0d-4b6b-9b63-6043622decf0",
+                            "id": "eb36bb16-fcf8-440c-8b85-56f2aa589f3a",
                             "ord": "a0"
                           },
                           {
@@ -1815,11 +1941,11 @@
                             "children": [
                               "Every first visit includes a history and a movement check. We treat the cause we find, not just the spot that aches."
                             ],
-                            "id": "48294864-85e1-4467-a27c-d69e21c4a220",
+                            "id": "f659f96e-96ff-46ed-805c-fbd57b674cf5",
                             "ord": "a1"
                           }
                         ],
-                        "id": "7d8f6d73-faec-482f-901f-319f89bb7283",
+                        "id": "7f792cbc-beb4-4476-9e7e-33586300b64f",
                         "ord": "a0"
                       },
                       {
@@ -1832,7 +1958,7 @@
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
                             "children": ["A plan you can keep"],
-                            "id": "2cab0921-d6b9-433a-912e-952cd730f994",
+                            "id": "566f34bc-ede4-40e5-a981-e1dfbfb2f9b6",
                             "ord": "a0"
                           },
                           {
@@ -1842,11 +1968,11 @@
                             "children": [
                               "You leave with what we worked on, what to expect, and a short list of things to do between sessions so the progress holds."
                             ],
-                            "id": "7fa6fb86-9432-43d3-9748-a496491f0e03",
+                            "id": "83a1f1e0-9899-4889-8627-ccda1dbdbebc",
                             "ord": "a1"
                           }
                         ],
-                        "id": "6b5ec3d4-a459-4c1a-a7a4-13902819d055",
+                        "id": "d7d20ce9-b5bb-487a-bef1-a5b0e388c7de",
                         "ord": "a1"
                       },
                       {
@@ -1859,7 +1985,7 @@
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
                             "children": ["Paperwork that helps"],
-                            "id": "1a916d5b-ac46-41bb-94b7-a162d6d7ff06",
+                            "id": "d1e132d2-cd9e-49cc-b5b1-ea777cbda5d9",
                             "ord": "a0"
                           },
                           {
@@ -1869,23 +1995,23 @@
                             "children": [
                               "Superbills on request for insurance and HSA/FSA, clear notes, and coordination with your physio or physician when it matters."
                             ],
-                            "id": "4d0222b0-bcd6-4a48-aa99-92ae9a38e9dd",
+                            "id": "a104ae45-9e0a-404f-84b3-ae9cd32eeebf",
                             "ord": "a1"
                           }
                         ],
-                        "id": "2feef650-4302-4e68-8ebc-115d2ed7c519",
+                        "id": "2ddc1d2e-8274-411f-85e8-b22cc211211a",
                         "ord": "a2"
                       }
                     ],
-                    "id": "234da885-387f-4b4a-9799-499400273a26",
+                    "id": "0b5a2e90-f4c7-47e0-b6b0-4c8e7242c371",
                     "ord": "a1"
                   }
                 ],
-                "id": "ab10e473-f020-4ccf-a482-f09744e5be66",
+                "id": "9ae58d7e-fc7f-43ad-849a-78aaac68f73e",
                 "ord": "a0"
               }
             ],
-            "id": "c11ba714-9354-46cf-b15d-67aa52d66a52",
+            "id": "36e2f72a-7b37-45a0-98c6-6d6305d13aea",
             "ord": "a1"
           }
         ]
@@ -1902,8 +2028,294 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "151ba213-9f71-4743-b9e5-cafddc881c91",
+        "id": "2bb5560d-4f90-430b-879d-f6a1eccbd898",
         "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-8",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h1",
+                        "class": "text-4xl font-bold tracking-tight text-base-content @3xl:text-5xl",
+                        "children": ["Get in touch"],
+                        "id": "f71a0112-0a0b-4de3-b6a5-a746bd8b4f39",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Questions before you book? Send a note and Meridian Bodywork will get back to you — usually the same day."
+                        ],
+                        "id": "8dbc52be-0679-47b2-9bff-67d396044e38",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "3e6ce795-4362-4c9f-bfb1-29acd04ce8ad",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-1",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "span",
+                        "class": "text-base font-medium text-base-content",
+                        "children": ["Call us"],
+                        "id": "cba85b02-fc15-420d-92ca-f7d03b796186",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "text-lg font-semibold text-base-content underline underline-offset-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "children": ["(555) 123-4567"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "site.identity.phone"
+                            },
+                            "id": "4cfeb325-06ba-4eae-ad37-d6bb3797ce0a",
+                            "ord": "a0"
+                          }
+                        ],
+                        "data": {
+                          "kind": "value",
+                          "ref": "site.identity.phoneHref",
+                          "attr": "href"
+                        },
+                        "id": "13a88940-4b7a-460d-84d7-5fbb98012f1f",
+                        "ord": "a1"
+                      }
+                    ],
+                    "data": {
+                      "kind": "visible",
+                      "ref": "site.identity.phone"
+                    },
+                    "id": "b6b11059-7734-4fa4-b0bb-cb9020de5da4",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-1",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "span",
+                        "class": "text-base font-medium text-base-content",
+                        "children": ["Email us"],
+                        "id": "a45574d5-7e84-4546-9c12-82291a315a21",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "text-lg font-semibold text-base-content underline underline-offset-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "children": ["hello@yourbusiness.com"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "site.identity.email"
+                            },
+                            "id": "4c089162-51c7-45df-a62c-dbef46ef3af0",
+                            "ord": "a0"
+                          }
+                        ],
+                        "data": {
+                          "kind": "value",
+                          "ref": "site.identity.emailHref",
+                          "attr": "href"
+                        },
+                        "id": "203fb2e3-c543-4804-91dc-8fc813a6b59f",
+                        "ord": "a1"
+                      }
+                    ],
+                    "data": {
+                      "kind": "visible",
+                      "ref": "site.identity.email"
+                    },
+                    "id": "54596146-2b1e-4d24-9649-c8075f9eae3e",
+                    "ord": "a2"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "form",
+                    "class": "flex w-full max-w-xl flex-col gap-5",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "label",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-base font-medium text-base-content",
+                            "children": ["Your name"],
+                            "id": "bf59512b-e7b4-42f3-8b1b-26540e4938ec",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "input",
+                            "class": "input input-bordered w-full",
+                            "attrs": {
+                              "type": "text",
+                              "name": "name",
+                              "required": true
+                            },
+                            "id": "a32705fa-ad97-4194-b107-b1b8503bdbdc",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "d1a60681-49cc-46ff-bc0f-f6897e54be9b",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "label",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-base font-medium text-base-content",
+                            "children": ["Email address"],
+                            "id": "93ad749b-589e-4231-9fb7-b35740fd1800",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "input",
+                            "class": "input input-bordered w-full",
+                            "attrs": {
+                              "type": "email",
+                              "name": "email",
+                              "required": true
+                            },
+                            "id": "86b48e4b-13e5-45c6-8d27-bca07804d516",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "e0e71267-56f0-4cf8-8186-a63625acbe84",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "label",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-base font-medium text-base-content",
+                            "children": ["Phone number"],
+                            "id": "99d8ec54-1300-4ad4-86ea-a67929a77213",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "input",
+                            "class": "input input-bordered w-full",
+                            "attrs": {
+                              "type": "tel",
+                              "name": "phone"
+                            },
+                            "id": "7d7121f7-135b-46a4-9f3c-ec153c3b1b3f",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "2028969f-44a4-4fea-8fdc-702bf2f0460c",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "label",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-base font-medium text-base-content",
+                            "children": ["How can we help?"],
+                            "id": "aa26091c-bf9c-4f0d-ab03-00b12a35301b",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "textarea",
+                            "class": "textarea textarea-bordered min-h-32 w-full",
+                            "attrs": {
+                              "name": "message"
+                            },
+                            "id": "6cddd335-376b-4fc5-9813-a3ad587a07f9",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "faba02e5-a3cf-4745-81e2-da6a7a38d47a",
+                        "ord": "a3"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-wrap items-center gap-3",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "button",
+                            "class": "btn btn-primary btn-lg",
+                            "attrs": {
+                              "type": "submit"
+                            },
+                            "children": ["Send my request"],
+                            "id": "00c641f3-f16d-4327-b61f-8b2f320bcd87",
+                            "ord": "a0"
+                          }
+                        ],
+                        "id": "8dbb9c94-e698-45cf-9ed7-805d2d0df5f2",
+                        "ord": "a4"
+                      }
+                    ],
+                    "behavior": {
+                      "type": "form"
+                    },
+                    "data": {
+                      "kind": "action",
+                      "ref": "submit"
+                    },
+                    "id": "8cb59418-0eda-401c-9e47-d5fab4e4f979",
+                    "ord": "a3"
+                  }
+                ],
+                "id": "7e6eaca8-e42b-45bf-b3d1-5d5b7b861a70",
+                "ord": "a0"
+              }
+            ],
+            "id": "7e4d2a94-b0f8-4545-a7ef-60c1f1cb4b77",
+            "ord": "a0"
+          },
           {
             "kind": "element",
             "tag": "section",
@@ -1924,40 +2336,21 @@
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
                         "children": ["Visit the practice"],
-                        "id": "4310faa7-be37-4bc0-9793-a51689974a19",
+                        "id": "95d20135-8243-4027-87d6-cb0b1228e1e7",
                         "ord": "a0"
                       },
                       {
                         "kind": "element",
-                        "tag": "div",
-                        "class": "flex flex-col gap-1",
+                        "tag": "address",
+                        "class": "text-lg leading-relaxed whitespace-pre-line not-italic text-base-content",
                         "children": [
-                          {
-                            "kind": "element",
-                            "tag": "p",
-                            "class": "text-lg leading-relaxed text-base-content",
-                            "children": ["Meridian Bodywork"],
-                            "id": "9025b172-ac4f-47cf-a550-00f5a2fdc064",
-                            "ord": "a0"
-                          },
-                          {
-                            "kind": "element",
-                            "tag": "p",
-                            "class": "text-lg leading-relaxed text-base-content",
-                            "children": ["340 Cascade Avenue"],
-                            "id": "089e06a8-a368-42e8-b97f-6ac85e9f388a",
-                            "ord": "a1"
-                          },
-                          {
-                            "kind": "element",
-                            "tag": "p",
-                            "class": "text-lg leading-relaxed text-base-content",
-                            "children": ["Suite 3 · Portland, OR 97214"],
-                            "id": "fcdae40f-252c-44ca-8eef-e023033c8f93",
-                            "ord": "a2"
-                          }
+                          "Meridian Bodywork\n340 Cascade Avenue\nSuite 3 · Portland, OR 97214"
                         ],
-                        "id": "f21cdd6b-d32d-4441-bd60-3ccc6b977a59",
+                        "data": {
+                          "kind": "value",
+                          "ref": "site.identity.address"
+                        },
+                        "id": "f04d9899-dc03-47cf-b89a-f2d269556236",
                         "ord": "a1"
                       },
                       {
@@ -1975,7 +2368,7 @@
                                 "tag": "span",
                                 "class": "font-medium text-base-content",
                                 "children": ["Monday – Friday"],
-                                "id": "d5afdb23-926a-4265-bad5-37060f4acd20",
+                                "id": "27721543-0373-4759-a2bc-de405facb3c5",
                                 "ord": "a0"
                               },
                               {
@@ -1983,11 +2376,11 @@
                                 "tag": "span",
                                 "class": "text-base-content",
                                 "children": ["8:00 – 7:00"],
-                                "id": "71d65018-b9c2-437c-8bfa-7363b074d8bb",
+                                "id": "11d87365-1bfa-4eda-9d99-25ddae4550ec",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "23e3145c-301a-4e02-a26c-14667ccac288",
+                            "id": "6eedc7cd-081f-47a4-a12a-16f010a48ba1",
                             "ord": "a0"
                           },
                           {
@@ -2000,7 +2393,7 @@
                                 "tag": "span",
                                 "class": "font-medium text-base-content",
                                 "children": ["Saturday"],
-                                "id": "5dbc1104-4fbf-4350-874b-d7dbdff0f232",
+                                "id": "87565b98-ea32-4389-ac81-3addeb84f989",
                                 "ord": "a0"
                               },
                               {
@@ -2008,11 +2401,11 @@
                                 "tag": "span",
                                 "class": "text-base-content",
                                 "children": ["9:00 – 5:00"],
-                                "id": "c1e297a1-0171-4b0f-b8e3-112886cc6d61",
+                                "id": "7b44bfbd-e24e-4d62-9be6-5673a83c37b7",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "a9be2af9-426a-4f35-90b0-29b5a9af0ec7",
+                            "id": "f4893e08-951c-4eaf-8e1a-9833972fdbbd",
                             "ord": "a1"
                           },
                           {
@@ -2025,7 +2418,7 @@
                                 "tag": "span",
                                 "class": "font-medium text-base-content",
                                 "children": ["Sunday"],
-                                "id": "ce9ebd4f-4054-4bb3-872d-2c8e1cf621e1",
+                                "id": "94bacf06-0d01-4748-9a85-f52db6c9d013",
                                 "ord": "a0"
                               },
                               {
@@ -2033,19 +2426,19 @@
                                 "tag": "span",
                                 "class": "text-base-content",
                                 "children": ["Closed"],
-                                "id": "d0ce625c-1046-476b-8be4-0d55103ec64c",
+                                "id": "e2821af6-1a69-48da-af12-e9a14a508c08",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "fdd12c56-4ca9-4158-8425-0901e14c37e2",
+                            "id": "afe47105-753d-4335-8fb2-6f3545fb0bc6",
                             "ord": "a2"
                           }
                         ],
-                        "id": "7d2fd3d2-94f9-4dd0-895b-607f9bacaaeb",
+                        "id": "79e78305-496a-4a01-8c59-bac7a2656d88",
                         "ord": "a2"
                       }
                     ],
-                    "id": "a03a4266-2611-4304-8079-9bd222927bf9",
+                    "id": "02c2cc75-afa4-460d-b58f-df3538b4338b",
                     "ord": "a0"
                   },
                   {
@@ -2058,16 +2451,16 @@
                       "zoom": 15,
                       "ratio": "classic"
                     },
-                    "id": "dbbad3ff-f3b7-465e-83c7-274c7b2b37d1",
+                    "id": "76a4254a-d21f-4f58-b8ff-a57ab93b8a0b",
                     "ord": "a1"
                   }
                 ],
-                "id": "f7a0689f-25b4-4ee2-8924-53a90e714067",
+                "id": "eeef8948-d3d3-4110-8d3a-68eedc29923d",
                 "ord": "a0"
               }
             ],
-            "id": "c43c4e3c-eeb5-436c-bf5e-0246d501dc4d",
-            "ord": "a0"
+            "id": "180b97bd-a3fb-4bf4-bc54-86c63c931642",
+            "ord": "a1"
           },
           {
             "kind": "element",
@@ -2084,7 +2477,7 @@
                     "tag": "h2",
                     "class": "text-3xl font-bold tracking-tight @3xl:text-4xl",
                     "children": ["Rather book than call?"],
-                    "id": "5dd87585-0d95-4773-b758-50d0b2685598",
+                    "id": "76740a48-c424-4fbf-92b5-e533ccc7d96f",
                     "ord": "a0"
                   },
                   {
@@ -2094,7 +2487,7 @@
                     "children": [
                       "See live availability and reserve your therapist and room online — no phone tag."
                     ],
-                    "id": "9c95ec5f-a60e-4b88-b8a1-f0c27f6f49f7",
+                    "id": "f73ea585-4d99-4871-a996-f3147967e75c",
                     "ord": "a1"
                   },
                   {
@@ -2105,16 +2498,16 @@
                       "href": "/book"
                     },
                     "children": ["Book a session"],
-                    "id": "3918550e-37f1-461d-b063-a7d957ab5c15",
+                    "id": "b1095127-1d43-41e4-8bdb-b77fea8613b9",
                     "ord": "a2"
                   }
                 ],
-                "id": "a17c9b1d-3e59-4c55-ba1d-9b2558b449ca",
+                "id": "8aa2103c-ed65-4baf-bd28-b6ee549d89ae",
                 "ord": "a0"
               }
             ],
-            "id": "0e63b17d-0878-4dc7-854a-8d59632193a6",
-            "ord": "a1"
+            "id": "7176ec6b-86d6-42b3-b68f-32686bfffad0",
+            "ord": "a2"
           }
         ]
       }

@@ -22,7 +22,7 @@
                   "props": {
                     "show": "both"
                   },
-                  "id": "5c75b0a2-0184-4b21-a3db-d9c2be7b1e29",
+                  "id": "caa435af-8085-4a7e-b710-fe3327724fe1",
                   "ord": "a0"
                 },
                 {
@@ -43,7 +43,7 @@
                         "type": "link",
                         "label": "Product"
                       },
-                      "id": "e12d7fc0-6b8f-4c50-b573-3c2fed369c42",
+                      "id": "20fa5bc7-0288-4e1e-9ad3-6b5c42da3cc6",
                       "ord": "a0"
                     },
                     {
@@ -59,7 +59,7 @@
                         "type": "link",
                         "label": "Pricing"
                       },
-                      "id": "d77ea887-0997-47d7-a2d3-20619a4b4f70",
+                      "id": "378667de-abab-4eeb-ba57-d046069988e4",
                       "ord": "a1"
                     },
                     {
@@ -75,7 +75,7 @@
                         "type": "link",
                         "label": "Docs"
                       },
-                      "id": "28c09885-aa8f-49e3-8f9c-32c6a8ee55ad",
+                      "id": "af814566-cbd1-4f07-b127-b3fc10b42bc2",
                       "ord": "a2"
                     },
                     {
@@ -91,11 +91,11 @@
                         "type": "link",
                         "label": "Company"
                       },
-                      "id": "f2b00d0c-d47d-41a1-9bec-708b278f159a",
+                      "id": "ec6ef8eb-e99c-4b54-8deb-7d1d6c39ef36",
                       "ord": "a3"
                     }
                   ],
-                  "id": "8e5c47b6-035e-4acf-9a7f-d60e6a32288c",
+                  "id": "5fbecf03-380e-458a-beb8-668079682166",
                   "ord": "a1"
                 },
                 {
@@ -116,14 +116,14 @@
                         "type": "link",
                         "label": "Secondary link"
                       },
-                      "id": "a507a124-1eab-49a2-9143-76dd2e33006f",
+                      "id": "39d457fd-9522-4294-a1ed-b71b41d629b2",
                       "ord": "a0"
                     },
                     {
                       "kind": "host",
                       "component": "site.theme-toggle",
                       "class": "inline-flex items-center",
-                      "id": "8b198113-9a0f-4f9b-a429-467725c9d18a",
+                      "id": "e8583c4c-6a44-4a85-adc5-a34aeecd13e7",
                       "ord": "a1"
                     },
                     {
@@ -139,7 +139,7 @@
                         "type": "link",
                         "label": "Primary action"
                       },
-                      "id": "218f147d-e527-4039-b088-f7b7facf9b4d",
+                      "id": "919a9626-26cd-49c8-a9bb-ce664560c228",
                       "ord": "a2"
                     },
                     {
@@ -157,20 +157,20 @@
                           "props": {
                             "name": "menu"
                           },
-                          "id": "f2fdfc46-48b5-4dff-a80b-f8bba0a9e83d",
+                          "id": "a999589a-d2aa-41a8-b4e8-554c15f523c1",
                           "ord": "a0"
                         }
                       ],
                       "part": "trigger",
-                      "id": "3a10a00c-0e87-444d-8d48-2953dff974b3",
+                      "id": "f8096a1e-a58f-4ba9-b2f2-8a6865202880",
                       "ord": "a3"
                     }
                   ],
-                  "id": "38290d92-34c7-4ba5-8246-aaf3f77fef41",
+                  "id": "7f8ae48c-cf38-4be1-ad41-f4bff04b5ee7",
                   "ord": "a2"
                 }
               ],
-              "id": "cbab5adb-0f97-4b15-92d8-23dfbe804b4c",
+              "id": "ff95216e-40a0-46de-8027-5036f2fa0ff4",
               "ord": "a0"
             },
             {
@@ -194,7 +194,7 @@
                     "type": "link",
                     "label": "Product"
                   },
-                  "id": "bf20d5d5-3016-4b9c-885f-e847b0b2d1d8",
+                  "id": "f24c7f3a-7423-4921-b2bc-c0ecdf118ace",
                   "ord": "a0"
                 },
                 {
@@ -210,7 +210,7 @@
                     "type": "link",
                     "label": "Pricing"
                   },
-                  "id": "0f7a6af9-d11d-4875-ad22-fa5452d36cae",
+                  "id": "6b25d779-c441-443f-9647-bbbc11a2c713",
                   "ord": "a1"
                 },
                 {
@@ -226,7 +226,7 @@
                     "type": "link",
                     "label": "Docs"
                   },
-                  "id": "290ba8d8-ed28-44b5-a714-658405648a21",
+                  "id": "ee7d6113-ab6b-4146-9ae8-06cd8e9256f0",
                   "ord": "a2"
                 },
                 {
@@ -242,7 +242,7 @@
                     "type": "link",
                     "label": "Company"
                   },
-                  "id": "c00a1d17-5348-4dc8-ab0d-68e4fd8eb570",
+                  "id": "8f9104a0-7b06-4160-aa5d-940467810209",
                   "ord": "a3"
                 },
                 {
@@ -258,7 +258,7 @@
                     "type": "link",
                     "label": "Secondary link"
                   },
-                  "id": "23e36226-85e6-42aa-b089-d01e2ecbf768",
+                  "id": "af080b0d-ba79-406e-8d7a-b2a65334071f",
                   "ord": "a4"
                 },
                 {
@@ -274,19 +274,19 @@
                     "type": "link",
                     "label": "Primary action"
                   },
-                  "id": "f06c1ba8-99b2-45d6-9e23-d801b8ca3fdc",
+                  "id": "61ca7997-9834-4ad3-8d64-cafba3a38bae",
                   "ord": "a5"
                 }
               ],
               "part": "panel",
-              "id": "3b9e1d0e-d996-4a23-acb1-fc6f9f47e494",
+              "id": "57f88971-f8c4-4642-acb9-3991478c1ba4",
               "ord": "a1"
             }
           ],
           "behavior": {
             "type": "disclosure"
           },
-          "id": "42183e1a-81c7-4433-a5ca-ff0862e4b49d",
+          "id": "ff237936-fafc-407b-963d-ef0e480080c6",
           "ord": "a0"
         },
         {
@@ -302,7 +302,7 @@
               "kind": "outlet"
             }
           ],
-          "id": "a3c16be1-e6e4-4534-9742-07debdb7035a",
+          "id": "801b4d65-cc70-4aa2-b6f8-983fd379ff51",
           "ord": "a1"
         },
         {
@@ -332,7 +332,7 @@
                           "props": {
                             "show": "both"
                           },
-                          "id": "83ce9699-42c1-4379-b398-bc29b28741a9",
+                          "id": "771778e7-5ac6-4ea7-8ffd-fe32ab50cbe9",
                           "ord": "a0"
                         },
                         {
@@ -348,7 +348,7 @@
                           "attrs": {
                             "href": "/"
                           },
-                          "id": "e17dfad0-a157-4a60-abaf-891055ab4da3",
+                          "id": "9df9a8e9-02bb-463d-a9e7-1662dcd66602",
                           "ord": "a1"
                         },
                         {
@@ -356,11 +356,11 @@
                           "tag": "ul",
                           "class": "mt-2 flex items-center gap-5",
                           "children": [],
-                          "id": "4a2a76c9-9d30-4b14-8a58-993c6f8d2038",
+                          "id": "662e8bf4-9d4d-4698-9607-02cbbf30d820",
                           "ord": "a2"
                         }
                       ],
-                      "id": "cd2bb3b1-1caa-4ba7-9298-8247d4ea7300",
+                      "id": "abe42bcf-8362-4067-9fe6-6b7533397961",
                       "ord": "a0"
                     },
                     {
@@ -381,7 +381,7 @@
                           "attrs": {
                             "href": "/"
                           },
-                          "id": "6d4de0f4-3455-4263-a776-4097ad54c503",
+                          "id": "1e43d7db-793e-4d68-967c-4e5d6af9ecf1",
                           "ord": "a0"
                         },
                         {
@@ -406,11 +406,11 @@
                                     "type": "link",
                                     "label": "Features"
                                   },
-                                  "id": "689a6733-90dd-4fef-922b-d0ed04bfd118",
+                                  "id": "f8b1150d-bf25-498b-bf94-2d0f3ae50652",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "24e7628c-de07-48ac-a52a-fb89d7610834",
+                              "id": "715885e1-f337-4d66-9f0f-d4c82b4251cb",
                               "ord": "a0"
                             },
                             {
@@ -430,11 +430,11 @@
                                     "type": "link",
                                     "label": "Pricing"
                                   },
-                                  "id": "6679be03-ea37-4318-a3b2-6273771e79e1",
+                                  "id": "b1219485-ac9f-4937-b98c-3818a633595f",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "8745bf2b-65a7-4857-8ef3-8d864787a8c8",
+                              "id": "d17d1e2c-670a-4942-90da-bcf6981f1fc8",
                               "ord": "a1"
                             },
                             {
@@ -454,11 +454,11 @@
                                     "type": "link",
                                     "label": "Integrations"
                                   },
-                                  "id": "78aaf914-118c-4bae-a3ef-3a2b9d294ca0",
+                                  "id": "119b6e25-dddc-463e-956e-29f21ba5d9c5",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "5d9609e0-86c2-49e1-826b-9e7ecb6dffa8",
+                              "id": "b9abf11a-0d25-41ed-8d09-437da0a561bf",
                               "ord": "a2"
                             },
                             {
@@ -478,11 +478,11 @@
                                     "type": "link",
                                     "label": "Changelog"
                                   },
-                                  "id": "d7f1770d-afe5-4300-a8fc-02ddf2c17ebd",
+                                  "id": "7148931e-072c-4c6a-9af3-7d1baf8e9d34",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "68237fdb-a5de-400a-a83b-414227c28b4c",
+                              "id": "3bc4a41e-4f1e-4610-8dff-7d8ff24fd71e",
                               "ord": "a3"
                             },
                             {
@@ -497,19 +497,19 @@
                                     "href": "/search"
                                   },
                                   "children": ["Search"],
-                                  "id": "32e8c50a-ecac-49d8-ae03-2adebe4d05dd",
+                                  "id": "5adb8eb0-1a81-4fec-a237-b31306de91d5",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "096f9fdb-5acb-4d16-acb9-3dfb973ebaf6",
+                              "id": "fd0a99be-5c4b-43f7-a74d-4b7411d40569",
                               "ord": "a4"
                             }
                           ],
-                          "id": "7f818296-cacb-4116-892c-ff83ae8d7653",
+                          "id": "4f0eda8e-b44c-4da0-be47-f5e42c40e555",
                           "ord": "a1"
                         }
                       ],
-                      "id": "e73b96ef-2ce8-4745-a9e8-d024e83ce10c",
+                      "id": "4cf9584f-d6c9-49bb-b7d4-97088ea492e8",
                       "ord": "a1"
                     },
                     {
@@ -530,7 +530,7 @@
                           "attrs": {
                             "href": "/account"
                           },
-                          "id": "646d44ee-bd1e-45a3-bef3-2be8251cdc61",
+                          "id": "4db0f11d-ff15-4498-bb2d-322947783623",
                           "ord": "a0"
                         },
                         {
@@ -555,11 +555,11 @@
                                     "type": "link",
                                     "label": "About"
                                   },
-                                  "id": "2e47fb02-1db8-4fd1-b492-164e83b6fde5",
+                                  "id": "2a6d5a16-48ef-4439-9e5c-36cc266b446a",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "e6a4ab3e-fd5d-4d83-92be-4a2d8d6b3e57",
+                              "id": "4e3b15ed-4fb3-4989-8655-1a02fe37d108",
                               "ord": "a0"
                             },
                             {
@@ -579,11 +579,11 @@
                                     "type": "link",
                                     "label": "Careers"
                                   },
-                                  "id": "15bea377-e67e-405c-be63-86e4272ee209",
+                                  "id": "667a4118-7dcb-4f0a-a5c4-0fad6d5791c8",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "4a2b7187-83ba-49c5-aa4f-3c362ea31d21",
+                              "id": "436f9892-ac69-4635-a062-765897ef05ef",
                               "ord": "a1"
                             },
                             {
@@ -603,19 +603,19 @@
                                     "type": "link",
                                     "label": "Blog"
                                   },
-                                  "id": "04304b34-7951-4ad9-9fbc-e442ee5a107b",
+                                  "id": "4d3b87f5-8022-490f-8f01-f19c8edbaa39",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "233a47c5-75f9-4d87-99ea-6d37c9f95e89",
+                              "id": "9773fcb1-c39d-423a-82ca-4e899b312a12",
                               "ord": "a2"
                             }
                           ],
-                          "id": "957c9404-4ec8-4211-8586-d6d53bad0633",
+                          "id": "3b768677-2700-4a6d-a93a-e018a69ab71c",
                           "ord": "a1"
                         }
                       ],
-                      "id": "518a0012-9ce3-4f0e-8ffe-2fdc6382f6a7",
+                      "id": "4929a9cf-6275-4d7a-a351-6fd44d366f10",
                       "ord": "a2"
                     },
                     {
@@ -639,23 +639,23 @@
                                   "props": {
                                     "heading": "Legal"
                                   },
-                                  "id": "524c0dd1-a563-4312-b25d-9fab3ca52035",
+                                  "id": "6c979428-fa1a-4f64-9d5b-62e06240e0a0",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "8dc29eee-55b8-49da-ab1e-f8ffb7ec277b",
+                              "id": "b9659794-844e-4ece-bf53-6a0604d46538",
                               "ord": "a0"
                             }
                           ],
-                          "id": "942a9aac-6bd1-4abe-b5cb-01145ca1f780",
+                          "id": "e4989003-3461-4fcc-a41a-2cf6031100bc",
                           "ord": "a0"
                         }
                       ],
-                      "id": "1935a1aa-b55c-4fca-ab70-39252c90497b",
+                      "id": "80b5e949-15e8-4adb-ac3d-4b4678ebe704",
                       "ord": "a3"
                     }
                   ],
-                  "id": "95525111-0c57-4a28-8574-eeab8934cb35",
+                  "id": "d9f3fb04-01cc-4802-ac7f-87bfdb8e67fc",
                   "ord": "a0"
                 },
                 {
@@ -678,11 +678,11 @@
                             "kind": "value",
                             "ref": "site.identity.name"
                           },
-                          "id": "63a67513-d968-4e5e-a7f8-61e19e5e5bc1",
+                          "id": "3719a37b-ee31-4ea6-9902-e7f94dc80ad1",
                           "ord": "a0"
                         }
                       ],
-                      "id": "99361470-4781-4e90-9837-1a58769788dc",
+                      "id": "dcfd93b0-c395-47fe-98f8-5f1b69ad788f",
                       "ord": "a0"
                     },
                     {
@@ -690,23 +690,23 @@
                       "tag": "ul",
                       "class": "flex flex-wrap items-center gap-x-6 gap-y-2",
                       "children": [],
-                      "id": "55565792-c7a7-43dd-aba1-6df4429a696c",
+                      "id": "40deb75d-61a0-47be-8bc8-bd368eab8e22",
                       "ord": "a1"
                     }
                   ],
-                  "id": "f2e95dd5-200c-4145-9265-5e8eb7e55bb5",
+                  "id": "1b9203ad-71c9-45f9-9ddb-76ebd78690ef",
                   "ord": "a1"
                 }
               ],
-              "id": "8d6b05a5-0f36-461e-a373-ece3d047c0b8",
+              "id": "5ee8c54f-a64d-4982-ab0a-a6fa46015cae",
               "ord": "a0"
             }
           ],
-          "id": "3559e749-a3a7-45ed-b51a-2d7137e95c24",
+          "id": "306a6e1c-cca3-4b0e-9fb1-c4b5a3d725eb",
           "ord": "a2"
         }
       ],
-      "id": "6902e2d5-4dbb-4161-98fb-fe2f18edf6ea"
+      "id": "04712da6-9514-47b4-83cf-aedeb064ad34"
     }
   },
   "pages": [
@@ -720,7 +720,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "70e971d9-ab95-4ea8-8ca2-ed53c33044b6",
+        "id": "3a26c358-3104-4051-9be7-b7cb7449a507",
         "children": [
           {
             "kind": "element",
@@ -736,7 +736,7 @@
                   "alt": "A wholesale food supply warehouse",
                   "loading": "lazy"
                 },
-                "id": "caeff136-61af-4306-8f25-2d45a598d06f",
+                "id": "85a31f9f-d33d-4b83-a4d0-de38e6cc98af",
                 "ord": "a0"
               },
               {
@@ -754,7 +754,7 @@
                         "tag": "h1",
                         "class": "text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl",
                         "children": ["The pantry behind your kitchen."],
-                        "id": "b49c100b-1782-498f-ac05-3be6ece2ba8f",
+                        "id": "31aca958-4d61-4120-8878-2f97c8f71082",
                         "ord": "a0"
                       },
                       {
@@ -764,7 +764,7 @@
                         "children": [
                           "The Larder Supply Co. keeps cafes, restaurants and canteens stocked — bulk pantry, oils and staples, packaging and disposables, all by the case at trade prices. One supplier, one delivery, one invoice a month."
                         ],
-                        "id": "36762f23-73cc-4018-8905-55d7730c7282",
+                        "id": "9299e312-ece8-4229-bdf8-0e1b2915aff3",
                         "ord": "a1"
                       },
                       {
@@ -780,7 +780,7 @@
                               "href": "/shop"
                             },
                             "children": ["Browse the catalogue"],
-                            "id": "021f68ef-c7fe-454a-bb21-6812dcbb8550",
+                            "id": "09e7323c-0a13-4f7e-ade2-5d619117673b",
                             "ord": "a0"
                           },
                           {
@@ -791,23 +791,23 @@
                               "href": "/contact"
                             },
                             "children": ["Open a trade account"],
-                            "id": "c3d3dfa1-f32e-45ef-bb0d-422176bb37f3",
+                            "id": "efce7e22-7161-4718-bac6-f4e3d0c4a923",
                             "ord": "a1"
                           }
                         ],
-                        "id": "b06c0749-6a21-4638-8e62-b9b22b1e504f",
+                        "id": "617e01d5-89f1-49e7-b705-710ed52fd0ef",
                         "ord": "a2"
                       }
                     ],
-                    "id": "4677f895-9532-436c-8c59-db515e5d32e4",
+                    "id": "b7a798f3-d6c6-4034-b0d7-ee7231654e61",
                     "ord": "a0"
                   }
                 ],
-                "id": "45713331-08fe-4eba-8294-08684896fe90",
+                "id": "827e0e33-12b9-4784-b109-126c52604d2e",
                 "ord": "a1"
               }
             ],
-            "id": "0259c1fc-a348-4781-83c4-fc20af83b757",
+            "id": "9a067e89-460f-42e5-a4c5-1042188cf0a0",
             "ord": "a0"
           },
           {
@@ -825,7 +825,7 @@
                     "tag": "h2",
                     "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
                     "children": ["Order by department"],
-                    "id": "81c81c74-6b47-45f1-b10c-9be7173d1c37",
+                    "id": "24e3a5b1-b66a-441a-b072-0aa122beef3e",
                     "ord": "a0"
                   },
                   {
@@ -850,7 +850,7 @@
                               "alt": "Sacks of flour and cases of tinned goods",
                               "loading": "lazy"
                             },
-                            "id": "12dd7563-551c-43d9-a50b-697abb7fb671",
+                            "id": "c7a83531-a1cd-42f3-a10d-f7af88d43425",
                             "ord": "a0"
                           },
                           {
@@ -858,11 +858,11 @@
                             "tag": "span",
                             "class": "text-center text-base font-semibold text-base-content",
                             "children": ["Pantry"],
-                            "id": "ba8b4d47-7b01-4674-826a-f6ba2021b5fc",
+                            "id": "03d9b2a3-c06a-449e-be5e-a8db49ad7d24",
                             "ord": "a1"
                           }
                         ],
-                        "id": "9cb42b26-0344-4dfd-bc22-881bb6b68954",
+                        "id": "bd073825-5d15-49f7-ba13-937bffbf0b19",
                         "ord": "a0"
                       },
                       {
@@ -882,7 +882,7 @@
                               "alt": "Catering tins of oil and a sack of coffee",
                               "loading": "lazy"
                             },
-                            "id": "e5c90006-8cf9-4ea5-94a8-4dc6411d9f0b",
+                            "id": "2d9f3e26-cb03-4732-8f38-fe2a3badbc79",
                             "ord": "a0"
                           },
                           {
@@ -890,11 +890,11 @@
                             "tag": "span",
                             "class": "text-center text-base font-semibold text-base-content",
                             "children": ["Oils & staples"],
-                            "id": "aa514ef3-d030-40c9-8eba-0994b55db4a8",
+                            "id": "73a3e349-171f-474e-8a68-483bf1025255",
                             "ord": "a1"
                           }
                         ],
-                        "id": "19535db3-5e76-4a5a-a9e4-c1306e6036a5",
+                        "id": "4f4414a4-6b07-4b5e-85ac-d7803af23abd",
                         "ord": "a1"
                       },
                       {
@@ -914,7 +914,7 @@
                               "alt": "Kraft takeaway boxes and paper cups",
                               "loading": "lazy"
                             },
-                            "id": "857449e5-78ae-40b7-abe0-553995982d95",
+                            "id": "2bbef8b0-f7d1-42cb-8927-95e20f098145",
                             "ord": "a0"
                           },
                           {
@@ -922,11 +922,11 @@
                             "tag": "span",
                             "class": "text-center text-base font-semibold text-base-content",
                             "children": ["Packaging"],
-                            "id": "b3a037b5-ad0f-4076-b98f-8fb9df046cff",
+                            "id": "c2362f99-220c-4d16-89f2-0745672c3cec",
                             "ord": "a1"
                           }
                         ],
-                        "id": "52c39d13-d496-49d8-83a7-cd05bad2f3fc",
+                        "id": "8a81c270-e0bc-4b9c-9a4a-36b1ab7b6765",
                         "ord": "a2"
                       },
                       {
@@ -946,7 +946,7 @@
                               "alt": "Cartons of napkins and boxes of gloves",
                               "loading": "lazy"
                             },
-                            "id": "daefc3e5-cf69-46c2-b80b-680c9b6f530e",
+                            "id": "42edd1bb-c300-4b3c-a77b-1fb27e53c0e3",
                             "ord": "a0"
                           },
                           {
@@ -954,23 +954,23 @@
                             "tag": "span",
                             "class": "text-center text-base font-semibold text-base-content",
                             "children": ["Disposables"],
-                            "id": "2ac637a3-ca56-43fb-a45b-7ea755f881b8",
+                            "id": "252181cf-aab1-44d8-98e4-72a2eadf03c9",
                             "ord": "a1"
                           }
                         ],
-                        "id": "3090d153-6090-4416-8000-16611f036005",
+                        "id": "dd966ea0-5963-41b2-b396-79aafcc8ea08",
                         "ord": "a3"
                       }
                     ],
-                    "id": "128de05e-9855-4e69-822b-a0a386e63b07",
+                    "id": "2bcedcf0-8d67-4b83-8ed8-9e3a4995deec",
                     "ord": "a1"
                   }
                 ],
-                "id": "a030da41-22fe-48f6-ba6e-2c98006c3d76",
+                "id": "b6555cd8-dce9-48ef-8839-b2fc53718f3d",
                 "ord": "a0"
               }
             ],
-            "id": "86f072d1-062d-4c1f-b9e4-f9aedafa1396",
+            "id": "d5389a63-ee43-41d1-941a-14081c3d94a1",
             "ord": "a1"
           },
           {
@@ -988,7 +988,7 @@
                     "tag": "h2",
                     "class": "text-2xl font-semibold text-base-content",
                     "children": ["Trade favourites"],
-                    "id": "fe84a55a-7e0c-4a04-8b27-9ad89b59bb67",
+                    "id": "02338b3a-4ccf-46e9-86f7-4bf19be6412a",
                     "ord": "a0"
                   },
                   {
@@ -1012,12 +1012,12 @@
                             "props": {
                               "name": "arrow-left"
                             },
-                            "id": "b92c0b91-9ab6-4a6a-a28f-554118394d37",
+                            "id": "cd07fdd5-c17f-4782-bda9-c7f88dd592c3",
                             "ord": "a0"
                           }
                         ],
                         "part": "prev",
-                        "id": "bf3c5742-a280-458e-87d1-f0baec4ce5d7",
+                        "id": "c3caa24e-9c77-457d-9d51-c99d1adb99c7",
                         "ord": "a0"
                       },
                       {
@@ -1036,20 +1036,20 @@
                             "props": {
                               "name": "arrow-right"
                             },
-                            "id": "0fb8bdd0-e2d5-4ffb-88c9-d5e15360f860",
+                            "id": "c56e0fb5-9984-4561-894a-8ede33ad3ea4",
                             "ord": "a0"
                           }
                         ],
                         "part": "next",
-                        "id": "601e297c-73d8-4700-b014-6ea78203c609",
+                        "id": "d3db8f9c-42fe-4eb6-9d38-7ca41949d784",
                         "ord": "a1"
                       }
                     ],
-                    "id": "16e3d603-75e5-4371-98c7-5ef406c60af0",
+                    "id": "6a4b30e5-5505-4040-819a-aa4d19b63fe3",
                     "ord": "a1"
                   }
                 ],
-                "id": "9712b1ad-79e9-454b-a282-25451a28de1f",
+                "id": "97b946b3-af06-4666-b1f3-64cf2be08a69",
                 "ord": "a0"
               },
               {
@@ -1074,7 +1074,7 @@
                           "kind": "value",
                           "ref": "image"
                         },
-                        "id": "95e480b9-5bbe-4c61-a6fc-c50e6fb44ad9",
+                        "id": "5afa6382-79e4-4ba4-96b1-73c1717ea97a",
                         "ord": "a0"
                       },
                       {
@@ -1091,7 +1091,7 @@
                               "kind": "value",
                               "ref": "title"
                             },
-                            "id": "7b73502e-1f91-4b58-81d9-7bb9ea774505",
+                            "id": "45dc8038-0d48-4acb-93ff-4dc21f41c15d",
                             "ord": "a0"
                           },
                           {
@@ -1103,11 +1103,11 @@
                               "kind": "value",
                               "ref": "price"
                             },
-                            "id": "c7955ed7-0e73-4840-be62-c640e8ec3775",
+                            "id": "3c7e2590-ab3f-46b7-a3cf-4bee643daf41",
                             "ord": "a1"
                           }
                         ],
-                        "id": "df2a7b42-13b0-4988-97f0-439eebe0fa90",
+                        "id": "a7315fae-6604-4998-bedd-0f20afc080f1",
                         "ord": "a1"
                       }
                     ],
@@ -1117,7 +1117,7 @@
                       "attr": "href"
                     },
                     "part": "slide",
-                    "id": "40a605cb-9e82-4377-9b66-aada78e71482",
+                    "id": "be16ded1-d444-4114-b089-a35c90e8d5ef",
                     "ord": "a0"
                   }
                 ],
@@ -1126,14 +1126,14 @@
                   "kind": "collection",
                   "ref": "commerce.featured"
                 },
-                "id": "be3feda7-b499-4d17-aa08-c5135b6c3266",
+                "id": "3947b983-9071-4141-b2cf-a022f3bba6c6",
                 "ord": "a1"
               }
             ],
             "behavior": {
               "type": "carousel"
             },
-            "id": "7019faf3-8855-42ab-81ea-4478821d5a51",
+            "id": "81e1bbda-c670-4e6e-9196-ee046eb67970",
             "ord": "a2"
           },
           {
@@ -1156,7 +1156,7 @@
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
                         "children": ["How wholesale ordering works"],
-                        "id": "aa5db532-afbb-4eba-8b87-36c969f37d77",
+                        "id": "a586863a-bab0-4e19-8d16-cfd38f5274d0",
                         "ord": "a0"
                       },
                       {
@@ -1166,11 +1166,11 @@
                         "children": [
                           "Buying by the case should be simple. Open an account, order what you need, and let us handle the rest — here is exactly what to expect."
                         ],
-                        "id": "b4079d46-e779-476d-903a-e8bf3288b3d0",
+                        "id": "16f80d1b-b32b-414d-bb7b-5a5d1820f19b",
                         "ord": "a1"
                       }
                     ],
-                    "id": "b7f57dd4-bafb-4b0e-9e25-6041f36680dd",
+                    "id": "48c80905-dae8-4d95-b52a-471a7b10187c",
                     "ord": "a0"
                   },
                   {
@@ -1188,7 +1188,7 @@
                             "tag": "h3",
                             "class": "text-lg font-semibold tracking-tight text-base-content",
                             "children": ["Trade pricing"],
-                            "id": "7d5a927d-a06e-490a-990c-aff8e1fb8bb4",
+                            "id": "24b52d64-3805-4e77-8998-348a1946fd08",
                             "ord": "a0"
                           },
                           {
@@ -1198,11 +1198,11 @@
                             "children": [
                               "Every price on the site is the trade price per case, sack or carton — no consumer markup. Volume breaks kick in automatically once you order in quantity, and contract pricing is available on lines you buy every week."
                             ],
-                            "id": "1f885689-ced9-4fab-b65f-d61761f32ac8",
+                            "id": "5287db03-3866-48a7-983a-90f32e2e19a9",
                             "ord": "a1"
                           }
                         ],
-                        "id": "efb21cfe-1b28-4af8-a222-3caaef8a711e",
+                        "id": "6037c005-f829-41ee-9ded-771ac29a2a60",
                         "ord": "a0"
                       },
                       {
@@ -1215,7 +1215,7 @@
                             "tag": "h3",
                             "class": "text-lg font-semibold tracking-tight text-base-content",
                             "children": ["Minimum order"],
-                            "id": "dd115f26-84ba-4ee4-9d4c-5c79c9076524",
+                            "id": "015cd950-b33d-4d44-a538-5b428e322968",
                             "ord": "a0"
                           },
                           {
@@ -1225,11 +1225,11 @@
                             "children": [
                               "Orders start at a £250 minimum for delivery, and most lines carry a small minimum order quantity shown on the product. It keeps the truck full and the price low — build a standing order and you will clear it without thinking."
                             ],
-                            "id": "74e2c85e-4b01-44dd-aa96-6bbee24f3bad",
+                            "id": "2c7daee6-0e00-4045-a106-16fa85a9f025",
                             "ord": "a1"
                           }
                         ],
-                        "id": "22f62d54-3d83-48ee-b6a1-50ae5d76294b",
+                        "id": "0092801a-2999-4d91-9610-d2db5a2091c0",
                         "ord": "a1"
                       },
                       {
@@ -1242,7 +1242,7 @@
                             "tag": "h3",
                             "class": "text-lg font-semibold tracking-tight text-base-content",
                             "children": ["Delivery schedule"],
-                            "id": "46200a14-cf94-42d0-9ccf-1aa8bfe1db8a",
+                            "id": "f8aa663e-1d80-406a-b3f5-4dac3d8823ae",
                             "ord": "a0"
                           },
                           {
@@ -1252,11 +1252,11 @@
                             "children": [
                               "We run set delivery days by area — order by 2pm the day before and it is on the next scheduled run. Chilled and ambient come on the same truck, so one drop covers the whole order."
                             ],
-                            "id": "9f948d9d-308e-4a7b-b66c-0daa7a3ebbb1",
+                            "id": "e21781a1-7083-4ca1-b979-67bb772a4bb2",
                             "ord": "a1"
                           }
                         ],
-                        "id": "a4b0f511-99cb-423e-a145-ce0f1e290c0e",
+                        "id": "9f645be6-61ec-49e6-80a7-0e5aa2c7b79a",
                         "ord": "a2"
                       },
                       {
@@ -1269,7 +1269,7 @@
                             "tag": "h3",
                             "class": "text-lg font-semibold tracking-tight text-base-content",
                             "children": ["Net-30 terms"],
-                            "id": "f63cf47c-f800-4493-87b2-222b6dc22cd4",
+                            "id": "4fe130c1-880e-4094-95fa-26eaf7ee13bd",
                             "ord": "a0"
                           },
                           {
@@ -1279,11 +1279,11 @@
                             "children": [
                               "Approved accounts pay on net-30 terms with a single statement at month end, not a card charge per order. Apply once; we run a quick credit check and set your limit."
                             ],
-                            "id": "9976d5b7-824b-4a57-8bc1-25cf5121a28c",
+                            "id": "1329225d-0eb5-4370-b240-2d0e8d883f78",
                             "ord": "a1"
                           }
                         ],
-                        "id": "bec4fd2b-b62c-4fc2-9ac4-e7f9640301bb",
+                        "id": "05156362-b367-4c75-9220-e4decc666815",
                         "ord": "a3"
                       },
                       {
@@ -1296,7 +1296,7 @@
                             "tag": "h3",
                             "class": "text-lg font-semibold tracking-tight text-base-content",
                             "children": ["Your account manager"],
-                            "id": "32ccd7ed-4877-4089-b3e1-0cb70c530980",
+                            "id": "8ec81a7c-99b6-46ab-b633-8c58bf308913",
                             "ord": "a0"
                           },
                           {
@@ -1306,11 +1306,11 @@
                             "children": [
                               "You get a named account manager who knows your kitchen — someone to call about a substitution, a rush, or a new line, who will actually pick up. Not a call centre."
                             ],
-                            "id": "6304d255-4741-4951-8c62-d1e11d653bd8",
+                            "id": "39976830-0d61-49ca-923d-db9466d822c1",
                             "ord": "a1"
                           }
                         ],
-                        "id": "f36e792d-cf4a-40b6-a1cf-1f80b6b37776",
+                        "id": "8230025d-9379-4661-906a-6494c0b12c1d",
                         "ord": "a4"
                       },
                       {
@@ -1323,7 +1323,7 @@
                             "tag": "h3",
                             "class": "text-lg font-semibold tracking-tight text-base-content",
                             "children": ["One monthly invoice"],
-                            "id": "fb77b34d-bd27-4d2b-abcd-11cb0cbb72be",
+                            "id": "bf20d5f6-994b-4bf9-aadf-cc65bd9e6eec",
                             "ord": "a0"
                           },
                           {
@@ -1333,23 +1333,23 @@
                             "children": [
                               "Every delivery lands on one rolling statement, itemised by order and reconciled to your POs. Your bookkeeper gets one clean invoice a month instead of a drawer full of dockets."
                             ],
-                            "id": "83cb8e4c-f9ed-4f26-ae52-82559cb2eff2",
+                            "id": "dc2951e2-35d6-4c01-aad9-8291f2d16f7c",
                             "ord": "a1"
                           }
                         ],
-                        "id": "21b671e6-e51a-4960-a894-51a6473fa720",
+                        "id": "ff796915-e18f-4155-b8c3-f81bd344a6cd",
                         "ord": "a5"
                       }
                     ],
-                    "id": "2235ff96-1474-45b3-8bb9-0864d6f5154e",
+                    "id": "c55a70c8-6037-4a02-8821-d240ef231db6",
                     "ord": "a1"
                   }
                 ],
-                "id": "5e940596-12fb-40bb-9790-9ffd08eb2255",
+                "id": "6fd871c2-1829-4e77-a708-ed4d340e222d",
                 "ord": "a0"
               }
             ],
-            "id": "71a08ff8-fd92-4d3c-a1cd-b13f478531ed",
+            "id": "894fad01-5274-4978-9e4d-a43f8ed3aedb",
             "ord": "a3"
           },
           {
@@ -1366,7 +1366,7 @@
                   "alt": "A delivery driver wheeling cases into a kitchen",
                   "loading": "lazy"
                 },
-                "id": "d19c0d67-4f20-407a-8786-386f0522f2a9",
+                "id": "4a8ff563-50a0-493a-bba8-d598b45a2e11",
                 "ord": "a0"
               },
               {
@@ -1384,7 +1384,7 @@
                         "tag": "h2",
                         "class": "text-4xl font-bold leading-none tracking-tight text-base-content @3xl:text-5xl",
                         "children": ["One delivery, one invoice"],
-                        "id": "b59b653a-4ccd-4a1f-aadd-32b41dbff725",
+                        "id": "349ed33b-0dbc-40d9-ac75-ebd76fd93092",
                         "ord": "a0"
                       },
                       {
@@ -1394,7 +1394,7 @@
                         "children": [
                           "Stop juggling six suppliers and a stack of dockets. We carry the pantry, the oils, the packaging and the disposables on one truck, on your delivery day, reconciled to one statement at month end."
                         ],
-                        "id": "a3cfc24d-3150-4971-8f52-a84b959a416f",
+                        "id": "0497cf25-b9fa-439a-a8dd-db57299290ce",
                         "ord": "a1"
                       },
                       {
@@ -1405,19 +1405,19 @@
                           "href": "/blog/a-standing-order-that-runs-itself"
                         },
                         "children": ["See how ordering works"],
-                        "id": "911a5592-ecfe-4441-95c0-8ec6ebaeefa2",
+                        "id": "23d29045-a727-4e5b-a564-9b64d5ba77c7",
                         "ord": "a2"
                       }
                     ],
-                    "id": "853ce924-a5bd-4f17-8cad-a9ed8c0a6d80",
+                    "id": "b1a8145e-a765-44de-a7ab-442f041046ea",
                     "ord": "a0"
                   }
                 ],
-                "id": "46d0bed5-f289-4333-8475-4e1d0eeb80bc",
+                "id": "d30311e6-eb53-44cc-8617-7fd2a184c98d",
                 "ord": "a1"
               }
             ],
-            "id": "25df6efa-256f-45b8-a51b-8d55a8007dcc",
+            "id": "fcbe76f3-37d6-4ed2-a011-21223b9b2925",
             "ord": "a4"
           },
           {
@@ -1435,7 +1435,7 @@
                     "tag": "h2",
                     "class": "text-2xl font-semibold text-base-content",
                     "children": ["Pantry, by the sack"],
-                    "id": "64f79c76-1626-4e8d-a886-53de90e91984",
+                    "id": "b0fcbf28-4c36-428b-a671-4ab717bc3458",
                     "ord": "a0"
                   },
                   {
@@ -1459,12 +1459,12 @@
                             "props": {
                               "name": "arrow-left"
                             },
-                            "id": "3f5fb892-fb6b-4fa4-a80d-c56294047fe9",
+                            "id": "8917d94a-ff03-43fb-b622-93a5510a446e",
                             "ord": "a0"
                           }
                         ],
                         "part": "prev",
-                        "id": "db9aae3d-fd38-4a40-b457-1db4ba2bf9eb",
+                        "id": "6f65acde-9da6-4189-9227-14d1f8c049ca",
                         "ord": "a0"
                       },
                       {
@@ -1483,20 +1483,20 @@
                             "props": {
                               "name": "arrow-right"
                             },
-                            "id": "f47ad1ef-2785-4b53-bc93-dbcfa097c158",
+                            "id": "f167d3f4-48b2-4a81-af3e-95ed90e12983",
                             "ord": "a0"
                           }
                         ],
                         "part": "next",
-                        "id": "14c39c46-9f86-47d8-a343-972defefc950",
+                        "id": "64865d05-6cde-4875-b44e-172083165254",
                         "ord": "a1"
                       }
                     ],
-                    "id": "b5582b9d-c4b5-4bcd-9cca-98f849b72565",
+                    "id": "fa20230d-e0c5-4033-b4eb-d406971b5572",
                     "ord": "a1"
                   }
                 ],
-                "id": "bf8939e8-25ca-4794-b098-52b4ce8613af",
+                "id": "df049820-9279-4150-a8b9-443370e9b1f0",
                 "ord": "a0"
               },
               {
@@ -1521,7 +1521,7 @@
                           "kind": "value",
                           "ref": "image"
                         },
-                        "id": "82f4827d-6a1b-4ad0-9dac-f920a4528c55",
+                        "id": "94a82eaa-6a44-4599-8037-9ee9dde350ac",
                         "ord": "a0"
                       },
                       {
@@ -1538,7 +1538,7 @@
                               "kind": "value",
                               "ref": "title"
                             },
-                            "id": "cc5479f9-b327-49cb-94c1-0683cb0045b7",
+                            "id": "3c024d80-8f78-4656-b0bf-5ca31ba1b807",
                             "ord": "a0"
                           },
                           {
@@ -1550,11 +1550,11 @@
                               "kind": "value",
                               "ref": "price"
                             },
-                            "id": "93e50ce0-d04f-417b-b10d-895e92b7c81d",
+                            "id": "7a723fbb-7194-4b47-9438-c743aaa98bc7",
                             "ord": "a1"
                           }
                         ],
-                        "id": "04c49406-a21b-48d6-87a3-4602edef4307",
+                        "id": "a56f60c2-65e0-407b-a9d8-9688ef74d8dc",
                         "ord": "a1"
                       }
                     ],
@@ -1564,7 +1564,7 @@
                       "attr": "href"
                     },
                     "part": "slide",
-                    "id": "bd62c6c0-e8f9-4118-8422-7ab217332d58",
+                    "id": "bffe4aba-ecb7-40d1-9b96-4f141adb68ce",
                     "ord": "a0"
                   }
                 ],
@@ -1573,14 +1573,14 @@
                   "kind": "collection",
                   "ref": "commerce.category.pantry"
                 },
-                "id": "ff874171-d09c-447a-ac9d-30145a914f00",
+                "id": "0e147bd2-2d8a-4761-964d-e38b496ed9c7",
                 "ord": "a1"
               }
             ],
             "behavior": {
               "type": "carousel"
             },
-            "id": "a4bc68c7-5c2a-4d5e-883d-5022668617b5",
+            "id": "7a0ddca7-b174-4e11-a9c6-de6eb8bbeec1",
             "ord": "a5"
           },
           {
@@ -1597,7 +1597,7 @@
                   "alt": "A chef and a supplier rep reviewing an order sheet",
                   "loading": "lazy"
                 },
-                "id": "998af9de-5ec9-4b01-83db-fb2743a1dbd9",
+                "id": "e7fcae3a-6050-4ec3-8849-a3a258dbf180",
                 "ord": "a0"
               },
               {
@@ -1615,7 +1615,7 @@
                         "tag": "h2",
                         "class": "text-4xl font-bold leading-none tracking-tight text-base-content @3xl:text-5xl",
                         "children": ["A supplier that picks up the phone"],
-                        "id": "013a5557-9768-49c5-ab9f-09a52e6af023",
+                        "id": "c1b26f55-18bc-456d-a044-75548fb8dc33",
                         "ord": "a0"
                       },
                       {
@@ -1625,7 +1625,7 @@
                         "children": [
                           "Every account gets a named manager who knows your kitchen — for a substitution, a rush order or a new line. Open a trade account and get trade pricing, net-30 terms and someone who answers."
                         ],
-                        "id": "30b9477c-14c3-4eb2-99f7-a0a81df36726",
+                        "id": "35db199f-2f88-4b88-bee4-567162008187",
                         "ord": "a1"
                       },
                       {
@@ -1636,19 +1636,19 @@
                           "href": "/contact"
                         },
                         "children": ["Open a trade account"],
-                        "id": "dcc782f3-b5fb-495a-bfa1-9bee13d4a2f0",
+                        "id": "68ed3c44-765b-4eb3-a663-fe816d1fa8d2",
                         "ord": "a2"
                       }
                     ],
-                    "id": "6a7145a3-d5fd-4126-b908-9ab7eafc5c00",
+                    "id": "4b1ac373-a4b9-4ca6-889a-8541f83217f7",
                     "ord": "a0"
                   }
                 ],
-                "id": "575256c2-6dc8-433e-96af-d320809f97db",
+                "id": "f62c8729-d266-4214-8368-7d71133f9c82",
                 "ord": "a1"
               }
             ],
-            "id": "c39c14e9-a83a-4792-8c8a-44d27b249de2",
+            "id": "cf196be1-8f96-43cb-9d9e-4d9662fa4112",
             "ord": "a6"
           }
         ]
@@ -1665,7 +1665,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "aced878b-efd7-4dbc-abb4-8cc557f89ebc",
+        "id": "c43fecda-ea5d-41e2-8496-2ac786abf222",
         "children": [
           {
             "kind": "element",
@@ -1682,7 +1682,7 @@
                     "tag": "h1",
                     "class": "text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl",
                     "children": ["The trade catalogue"],
-                    "id": "c9f366a1-0eb9-4e2c-b5ad-f0fd8f37be79",
+                    "id": "c262d3f0-047e-4bca-9355-04f83ea2ef9d",
                     "ord": "a0"
                   },
                   {
@@ -1692,15 +1692,15 @@
                     "children": [
                       "Everything we carry, by the case, sack and carton — pantry, oils and staples, packaging and disposables. Every price is the trade price; filter by department or search for a line, and build your order. Minimum order £250 for delivery."
                     ],
-                    "id": "73ed23f4-c058-492b-8341-c95ce3ebbcde",
+                    "id": "ba9372c4-e253-4b95-beee-889cf7c3783c",
                     "ord": "a1"
                   }
                 ],
-                "id": "f1ceec75-861a-4a00-a92d-23543c44cff5",
+                "id": "d79d114d-b493-4e35-a679-d2d4087968c8",
                 "ord": "a0"
               }
             ],
-            "id": "5654a745-3ae0-496f-9410-43f11a54b84b",
+            "id": "9ef796d6-ecf9-4bb2-b5bf-c6c6a7c4bed0",
             "ord": "a0"
           },
           {
@@ -1708,7 +1708,7 @@
             "component": "commerce.plp",
             "class": "mx-auto w-full max-w-6xl px-6 py-6",
             "locked": "host",
-            "id": "2cccbac9-b0b8-4943-83db-9fb5305d3de8",
+            "id": "bc565a66-8ac3-4411-8b94-8f308789ad0f",
             "ord": "a1"
           }
         ]
@@ -1725,7 +1725,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "e901bcab-f53b-49c9-9eaa-474315190355",
+        "id": "a8b1f2e3-55ac-4287-b2f6-8b6fe2379d0f",
         "children": [
           {
             "kind": "element",
@@ -1742,7 +1742,7 @@
                     "tag": "h1",
                     "class": "text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl",
                     "children": ["Order guides"],
-                    "id": "a38465fb-b24c-43ec-82bd-03ba51cc7c9d",
+                    "id": "845a1783-2387-48df-9400-4371d98dab6b",
                     "ord": "a0"
                   },
                   {
@@ -1752,15 +1752,15 @@
                     "children": [
                       "The catalogue grouped the way a kitchen actually orders — trade favourites, the essentials a new account starts with, the dry-store staples, and the back-of-house packaging and disposables run."
                     ],
-                    "id": "9ffdacc4-a4c3-4258-b9ca-9fdab18e06a8",
+                    "id": "68fe1e4b-3314-40a4-a44f-d356b08bf591",
                     "ord": "a1"
                   }
                 ],
-                "id": "2c8fa782-3eae-46cf-a4eb-7dc023f82b96",
+                "id": "bf9c7a29-ce05-4920-9f18-92b6b8611686",
                 "ord": "a0"
               }
             ],
-            "id": "2893d0ed-5c1f-48b7-825f-6d64539337da",
+            "id": "6afce522-2833-4bf9-a07a-1a560b80e8f9",
             "ord": "a0"
           },
           {
@@ -1768,7 +1768,7 @@
             "component": "commerce.collections",
             "class": "mx-auto w-full max-w-6xl px-6 py-6",
             "locked": "host",
-            "id": "f51a3401-7bc0-4e6b-a5e8-d693c9c944c0",
+            "id": "22d9f0c2-4a11-4daa-a22e-e5447c386648",
             "ord": "a1"
           }
         ]
@@ -1785,7 +1785,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "528e4d3c-b0fe-4bb3-be89-cf8eb5b34367",
+        "id": "4b0fdcce-b483-4e55-9337-c85622588418",
         "children": [
           {
             "kind": "element",
@@ -1802,7 +1802,7 @@
                     "tag": "h1",
                     "class": "text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl",
                     "children": ["Your order"],
-                    "id": "d40770b2-859a-471a-b31a-f3f8cb2fc1ed",
+                    "id": "7cd0a830-3784-408e-932a-4c82f0092880",
                     "ord": "a0"
                   },
                   {
@@ -1812,15 +1812,15 @@
                     "children": [
                       "Delivery starts at a £250 minimum and lands on your area’s set day when you order by 2pm the day before. Approved accounts check out on net-30 terms — one statement at month end, not a charge per order."
                     ],
-                    "id": "f2366e5a-f022-44ce-b7ea-e8479e3b3ce4",
+                    "id": "b9e8b6af-286b-454c-8df1-1df0b06c1cd6",
                     "ord": "a1"
                   }
                 ],
-                "id": "0695c811-9ace-47cf-9332-c8b966f21191",
+                "id": "476d8966-334f-43d7-9aee-bebc7d0dcac9",
                 "ord": "a0"
               }
             ],
-            "id": "d4f7f31f-1a2d-4d61-aa2d-5998e41fa654",
+            "id": "7add0cd2-128e-419a-af35-7863fd170dbd",
             "ord": "a0"
           },
           {
@@ -1828,7 +1828,7 @@
             "component": "commerce.cart",
             "class": "mx-auto w-full max-w-4xl px-6 py-10",
             "locked": "host",
-            "id": "653ed582-e10f-44b5-9bfb-c8e9993f15d8",
+            "id": "e8c78e02-2663-4f30-9c02-d3435de74557",
             "ord": "a1"
           }
         ]
@@ -1845,7 +1845,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "4b7e8f10-34fb-43e8-8931-3fb6e9053c81",
+        "id": "a61a5b0a-1ef7-48bc-8afe-e2c9ff3acc3f",
         "children": [
           {
             "kind": "element",
@@ -1862,7 +1862,7 @@
                     "tag": "h1",
                     "class": "text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl",
                     "children": ["Search the catalogue"],
-                    "id": "6cbdf9b6-37ac-489c-91e5-eec4cdd42062",
+                    "id": "1ce2bfc1-d1c6-4a56-a723-18ffef47a472",
                     "ord": "a0"
                   },
                   {
@@ -1872,15 +1872,15 @@
                     "children": [
                       "Looking for a line, a case size or a delivery detail? Search the whole trade catalogue and the journal below."
                     ],
-                    "id": "13b5b5bf-9453-4464-8d86-1500955182dc",
+                    "id": "9c0caf92-f19f-43a9-96fe-3389724cf28c",
                     "ord": "a1"
                   }
                 ],
-                "id": "5273aae8-cbf5-4b29-8430-b13fabf1d54c",
+                "id": "1c7806c4-9269-4f70-bbfd-bba129b8fe63",
                 "ord": "a0"
               }
             ],
-            "id": "4bc2723a-8a8f-4b23-b71f-9b037966c0c6",
+            "id": "1101cc47-f3cb-41ce-abd9-31a0f28364bc",
             "ord": "a0"
           },
           {
@@ -1888,7 +1888,7 @@
             "component": "commerce.search",
             "class": "mx-auto w-full max-w-6xl px-6 py-6",
             "locked": "host",
-            "id": "926b0bd6-6539-4b41-8672-df3eb527e519",
+            "id": "25e1e23f-5f34-4b4a-b69b-d04074309a04",
             "ord": "a1"
           }
         ]
@@ -1905,7 +1905,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "0ca6d53a-517f-4208-be3f-b101f4ec08af",
+        "id": "a333bae9-1b74-41bb-9de7-b5bb292bdde4",
         "children": [
           {
             "kind": "element",
@@ -1922,7 +1922,7 @@
                     "tag": "h1",
                     "class": "text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl",
                     "children": ["The Larder journal"],
-                    "id": "a1b9dce2-747e-4bc4-9f63-d31443a53338",
+                    "id": "25365f69-a777-4de8-b4eb-ebfca8c1b9f0",
                     "ord": "a0"
                   },
                   {
@@ -1932,15 +1932,15 @@
                     "children": [
                       "Practical notes for the people who run the kitchen — how we source, how to set a standing order that runs itself, and how to keep a dry store that never runs short. Plain and useful, no fluff."
                     ],
-                    "id": "8541d4dd-7230-44b7-b21a-bc184dc61e51",
+                    "id": "ebb20fdc-cd5d-411a-b60b-b7b453b3b78c",
                     "ord": "a1"
                   }
                 ],
-                "id": "a1bd2a72-43fc-41db-8625-f80bac9a0fde",
+                "id": "ece75e1e-c064-4863-a0c6-ba2630b6c910",
                 "ord": "a0"
               }
             ],
-            "id": "26d43ed6-e4fe-4c6f-9b46-c76bca69c3b4",
+            "id": "24621fb3-a19e-4a06-930d-7a75fe811553",
             "ord": "a0"
           },
           {
@@ -1978,7 +1978,7 @@
                               "kind": "value",
                               "ref": "featuredImage"
                             },
-                            "id": "1cd207b3-5fb0-4709-a570-38a427a994d1",
+                            "id": "64634ddf-65d4-4d62-a5cc-d1bf58c85eb1",
                             "ord": "a0"
                           },
                           {
@@ -1990,7 +1990,7 @@
                               "kind": "value",
                               "ref": "date"
                             },
-                            "id": "40abe556-8a43-4f57-93d4-594d761cf623",
+                            "id": "e4bb9461-3c9b-44be-a3f6-0050825b4cc2",
                             "ord": "a1"
                           },
                           {
@@ -2002,7 +2002,7 @@
                               "kind": "value",
                               "ref": "title"
                             },
-                            "id": "510c4454-5294-43e8-9265-8c92a7745e94",
+                            "id": "aabb01c6-e913-4189-a5a4-06e09a2d295c",
                             "ord": "a2"
                           },
                           {
@@ -2014,7 +2014,7 @@
                               "kind": "value",
                               "ref": "excerpt"
                             },
-                            "id": "0c3c868d-9b43-4666-aff8-1d0f4f38137c",
+                            "id": "54c741ba-9ada-4a25-86b0-8ecbeb8c0e30",
                             "ord": "a3"
                           }
                         ],
@@ -2023,7 +2023,7 @@
                           "ref": "url",
                           "attr": "href"
                         },
-                        "id": "4244a0d6-6f01-4919-885c-cf266f35b4a4",
+                        "id": "a7539c25-574f-41bb-ad24-90049c316aba",
                         "ord": "a0"
                       }
                     ],
@@ -2031,15 +2031,15 @@
                       "kind": "collection",
                       "ref": "cms.blog_post"
                     },
-                    "id": "f8569f25-2038-46d1-adbd-033d9e8cbae0",
+                    "id": "6d3f1cb0-e5e2-4f38-bc54-a4cdbb4766a2",
                     "ord": "a0"
                   }
                 ],
-                "id": "dec55c6f-b5d0-4c7a-99c8-9baa1bca7967",
+                "id": "6537fa57-4b5a-4e3c-87a5-b2043777dec5",
                 "ord": "a0"
               }
             ],
-            "id": "edfb69ab-90a7-4599-b3e9-29442e679d0b",
+            "id": "cab2c75a-0a86-464f-ac6f-82f3e5fde01a",
             "ord": "a1"
           }
         ]
@@ -2056,7 +2056,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "3c917451-b62c-4d27-80f6-bd8fa5062ce8",
+        "id": "85e0e52f-508f-428a-8a66-664eb26726e4",
         "children": [
           {
             "kind": "element",
@@ -2073,7 +2073,7 @@
                     "tag": "h1",
                     "class": "text-5xl font-bold tracking-tight text-base-content @2xl:text-6xl",
                     "children": ["About The Larder"],
-                    "id": "b2b3be19-7637-46d1-96a0-22d5b7fe6a46",
+                    "id": "3b885636-716a-4a91-b727-c1476dcacb38",
                     "ord": "a0"
                   },
                   {
@@ -2083,7 +2083,7 @@
                     "children": [
                       "The Larder Supply Co. started on a single van, supplying a handful of cafes that were tired of chasing six different suppliers for one week’s order. It grew the way good trade relationships do — one kitchen, one standing order, one reliable delivery at a time — and it still runs on the same promise: carry the whole order, price it fairly, and turn up when we said we would."
                     ],
-                    "id": "d976553b-00fa-4562-a466-7de646af3ad0",
+                    "id": "9bb7f1f7-c2d5-42bb-8e99-72a2763fc213",
                     "ord": "a1"
                   },
                   {
@@ -2093,7 +2093,7 @@
                     "children": [
                       "We buy in volume and pass the price on — pantry by the sack, oils and staples by the case, packaging and disposables by the carton. Because we carry the breadth, a cafe, a bistro and a staff canteen can all clear their order with one supplier and one invoice, instead of a drawer full of dockets."
                     ],
-                    "id": "0b177456-abe1-41b0-aa84-1a4f6383b244",
+                    "id": "b394c598-bd73-4801-847d-92e5bf318105",
                     "ord": "a2"
                   },
                   {
@@ -2103,15 +2103,15 @@
                     "children": [
                       "No consumer markup, no order too small once you are set up, and a named account manager who knows your kitchen. Trade pricing, net-30 terms, and a delivery you can build a prep list around."
                     ],
-                    "id": "ff8ec767-d550-4d67-9371-efbc62092c0a",
+                    "id": "dddc6d3c-bcfa-42ed-b16b-26218e3da604",
                     "ord": "a3"
                   }
                 ],
-                "id": "eb14d8ed-7117-41a0-8da6-05f3fc8fbf10",
+                "id": "6cf18540-54a9-4db2-ab7b-fb2819a675e6",
                 "ord": "a0"
               }
             ],
-            "id": "88be59e9-b5dc-4f7b-961b-8603cde36fee",
+            "id": "ed3d6e47-4423-46d3-9d8c-9d5c03b8244a",
             "ord": "a0"
           }
         ]
@@ -2128,53 +2128,297 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "ca76d743-61c0-4bda-b2ac-ed64b1f2d62b",
+        "id": "4073f8c2-ddfe-45f4-936e-10f822b45426",
         "children": [
           {
             "kind": "element",
             "tag": "section",
-            "class": "bg-base-100 @container px-6 py-20 text-center",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-20",
             "children": [
               {
                 "kind": "element",
                 "tag": "div",
-                "class": "mx-auto flex w-full max-w-xl flex-col items-center gap-5",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-8",
                 "children": [
                   {
                     "kind": "element",
-                    "tag": "h1",
-                    "class": "text-5xl font-bold tracking-tight text-base-content @2xl:text-6xl",
-                    "children": ["Open a trade account"],
-                    "id": "e1517ea6-0a88-4abc-9653-eb9f633687f1",
+                    "tag": "div",
+                    "class": "flex flex-col gap-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h1",
+                        "class": "text-4xl font-bold tracking-tight text-base-content @3xl:text-5xl",
+                        "children": ["Open a trade account"],
+                        "id": "a81546a7-4040-41ff-b4e9-2aed580067ce",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Tell us about your kitchen — what you run, roughly what you order, and where you are. We will set up your account, run a quick credit check for net-30 terms, and get a named manager on your first delivery."
+                        ],
+                        "id": "c2ac6fe6-f419-4b42-a936-264d65540163",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "4f305793-b621-422f-93e7-540cd64421fe",
                     "ord": "a0"
                   },
                   {
                     "kind": "element",
-                    "tag": "p",
-                    "class": "text-lg leading-relaxed text-base-content",
+                    "tag": "div",
+                    "class": "flex flex-col gap-1",
                     "children": [
-                      "Tell us about your kitchen — what you run, roughly what you order, and where you are. We will set up your account, run a quick credit check for net-30 terms, and get a named manager on your first delivery."
+                      {
+                        "kind": "element",
+                        "tag": "span",
+                        "class": "text-base font-medium text-base-content",
+                        "children": ["Call us"],
+                        "id": "24aeb27b-8680-45d1-b727-357b82ccfcff",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "text-lg font-semibold text-base-content underline underline-offset-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "children": ["(555) 123-4567"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "site.identity.phone"
+                            },
+                            "id": "73989bd7-2e63-4436-8c88-1c7fe9b1b6b1",
+                            "ord": "a0"
+                          }
+                        ],
+                        "data": {
+                          "kind": "value",
+                          "ref": "site.identity.phoneHref",
+                          "attr": "href"
+                        },
+                        "id": "ac9fcacd-7079-4636-8c0b-c40ecc767f18",
+                        "ord": "a1"
+                      }
                     ],
-                    "id": "23a1e37c-8230-41bb-9c5b-1793895b08b7",
+                    "data": {
+                      "kind": "visible",
+                      "ref": "site.identity.phone"
+                    },
+                    "id": "5f12e225-16c3-45cb-bd81-154535650531",
                     "ord": "a1"
                   },
                   {
                     "kind": "element",
-                    "tag": "a",
-                    "class": "btn btn-primary btn-lg",
-                    "attrs": {
-                      "href": "mailto:accounts@lardersupply.example"
+                    "tag": "div",
+                    "class": "flex flex-col gap-1",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "span",
+                        "class": "text-base font-medium text-base-content",
+                        "children": ["Email us"],
+                        "id": "6491f105-a597-4888-880e-d6ea670369a5",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "text-lg font-semibold text-base-content underline underline-offset-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "children": ["hello@yourbusiness.com"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "site.identity.email"
+                            },
+                            "id": "a8abb877-57a6-4df2-b8a0-741e535f74cb",
+                            "ord": "a0"
+                          }
+                        ],
+                        "data": {
+                          "kind": "value",
+                          "ref": "site.identity.emailHref",
+                          "attr": "href"
+                        },
+                        "id": "de6be358-9d28-4a6b-a8dc-4708ed038cfc",
+                        "ord": "a1"
+                      }
+                    ],
+                    "data": {
+                      "kind": "visible",
+                      "ref": "site.identity.email"
                     },
-                    "children": ["Email the trade desk"],
-                    "id": "02400cbf-3df7-4d81-aad8-91b2c49dbceb",
+                    "id": "ca880266-fd34-4c6f-a68a-b6c0e21acfec",
                     "ord": "a2"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-1",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "span",
+                        "class": "text-base font-medium text-base-content",
+                        "children": ["Visit us"],
+                        "id": "03a6bc42-f3b5-4e43-8af4-7926215aaed7",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "address",
+                        "class": "text-lg leading-relaxed whitespace-pre-line not-italic text-base-content",
+                        "children": ["123 Main Street\nPortland, OR 97204"],
+                        "data": {
+                          "kind": "value",
+                          "ref": "site.identity.address"
+                        },
+                        "id": "949147f7-e25d-47e7-860d-199e3d08eab8",
+                        "ord": "a1"
+                      }
+                    ],
+                    "data": {
+                      "kind": "visible",
+                      "ref": "site.identity.address"
+                    },
+                    "id": "b0ec55b5-8ffa-4b43-836c-01ff8d100c49",
+                    "ord": "a3"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "form",
+                    "class": "flex w-full max-w-xl flex-col gap-5",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "label",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-base font-medium text-base-content",
+                            "children": ["Your name"],
+                            "id": "604b3b33-c4de-4d38-ac36-c49ec3734fd0",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "input",
+                            "class": "input input-bordered w-full",
+                            "attrs": {
+                              "type": "text",
+                              "name": "name",
+                              "required": true
+                            },
+                            "id": "89967f74-a4ba-48f1-aa40-df29979f7575",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "176f50bb-11ca-4531-8dc7-ae847bc9dfbd",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "label",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-base font-medium text-base-content",
+                            "children": ["Email address"],
+                            "id": "4e73512b-b843-4593-b636-1724b5f19bce",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "input",
+                            "class": "input input-bordered w-full",
+                            "attrs": {
+                              "type": "email",
+                              "name": "email",
+                              "required": true
+                            },
+                            "id": "410744a5-3176-48d4-8c42-f8c02876edd8",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "f9d3b3a5-c818-4afd-9753-f1f599249b40",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "label",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-base font-medium text-base-content",
+                            "children": ["How can we help?"],
+                            "id": "72afb445-dcfd-4661-92a3-10ccdb57d049",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "textarea",
+                            "class": "textarea textarea-bordered min-h-32 w-full",
+                            "attrs": {
+                              "name": "message"
+                            },
+                            "id": "4cccfb9e-aedd-43ad-b4c9-531586b12e94",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "456ca076-836a-446b-b317-702846b615ab",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-wrap items-center gap-3",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "button",
+                            "class": "btn btn-primary btn-lg",
+                            "attrs": {
+                              "type": "submit"
+                            },
+                            "children": ["Email the trade desk"],
+                            "id": "a9ea7e85-a545-445a-adc0-9d17b798616b",
+                            "ord": "a0"
+                          }
+                        ],
+                        "id": "6072709f-af14-4208-9ffd-39ccd7a01e2f",
+                        "ord": "a3"
+                      }
+                    ],
+                    "behavior": {
+                      "type": "form"
+                    },
+                    "data": {
+                      "kind": "action",
+                      "ref": "submit"
+                    },
+                    "id": "d2616991-120c-4edf-a4f5-21c31be92dfa",
+                    "ord": "a4"
                   }
                 ],
-                "id": "e0e6d864-fb33-4821-9ed8-b0b4ab8b2d4f",
+                "id": "5516bd8a-480c-4101-aa98-ac6cc81b731e",
                 "ord": "a0"
               }
             ],
-            "id": "3fb6d407-df2d-4be8-9ab8-cb7c20433014",
+            "id": "b4503931-3006-47ca-a9dd-d3bfc6ec2acc",
             "ord": "a0"
           }
         ]
@@ -2214,7 +2458,7 @@
                       "kind": "value",
                       "ref": "image"
                     },
-                    "id": "1267ed23-8e4c-4a8d-9847-a4ab46ec2d7b",
+                    "id": "df261f51-4a9f-47ee-bc73-8fcd1510ec41",
                     "ord": "a0"
                   },
                   {
@@ -2232,7 +2476,7 @@
                             "tag": "p",
                             "class": "text-sm font-semibold uppercase tracking-widest text-secondary",
                             "children": ["The Larder Supply Co."],
-                            "id": "c15953f1-20a1-4929-8ee7-c01a563495e7",
+                            "id": "c2dfa31b-6d55-497b-85a1-3e32082165ba",
                             "ord": "a0"
                           },
                           {
@@ -2244,7 +2488,7 @@
                               "kind": "value",
                               "ref": "title"
                             },
-                            "id": "edfcf66c-32ab-43e6-8db9-1a8ec3c02b4a",
+                            "id": "8041f30f-ec93-4046-be94-c366605a3f5e",
                             "ord": "a1"
                           },
                           {
@@ -2261,7 +2505,7 @@
                                   "kind": "value",
                                   "ref": "price"
                                 },
-                                "id": "1ffc80e8-4070-480c-bca7-f0101ebdcddf",
+                                "id": "aa3709d7-6ace-4911-800b-d542b9900f28",
                                 "ord": "a0"
                               },
                               {
@@ -2277,7 +2521,7 @@
                                       "kind": "value",
                                       "ref": "compareAtPrice"
                                     },
-                                    "id": "d3168f58-86d2-4b06-a393-491c38717b80",
+                                    "id": "283d9b27-26f5-45b7-bb76-c3682a6c2c23",
                                     "ord": "a0"
                                   }
                                 ],
@@ -2285,11 +2529,11 @@
                                   "kind": "visible",
                                   "ref": "compareAtPrice"
                                 },
-                                "id": "3c723086-3985-493c-9b28-d88508f69717",
+                                "id": "e8ec7a05-4ead-406f-b0f9-1b9012e87727",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "7d72357f-c973-455f-966f-e39a44f755d1",
+                            "id": "ef058c0f-ec1a-40ed-931a-c41c81a5b49d",
                             "ord": "a2"
                           },
                           {
@@ -2301,11 +2545,11 @@
                               "kind": "visible",
                               "ref": "lowStock"
                             },
-                            "id": "3953516b-a7a2-462d-83f5-8d455aed3017",
+                            "id": "15e62057-3ca9-436b-8ce9-6663d8e14e0e",
                             "ord": "a3"
                           }
                         ],
-                        "id": "57cd1aae-5eda-449e-92bc-0098ecaedd49",
+                        "id": "d0717983-7aaf-464e-ae5f-996eba550c83",
                         "ord": "a0"
                       },
                       {
@@ -2317,7 +2561,7 @@
                           "kind": "value",
                           "ref": "description"
                         },
-                        "id": "c47e33c2-6811-4e5a-a3f4-3ff5842af366",
+                        "id": "6804b662-6e59-457d-aaa4-be36fe58c881",
                         "ord": "a1"
                       },
                       {
@@ -2336,7 +2580,7 @@
                               "kind": "value",
                               "ref": "variantId"
                             },
-                            "id": "128b12dc-7456-4a1d-8e45-d247fdb12756",
+                            "id": "35cf1e81-70c1-4ff7-ad50-fd7ba9fb92ea",
                             "ord": "a0"
                           },
                           {
@@ -2349,7 +2593,7 @@
                                 "tag": "span",
                                 "class": "font-medium",
                                 "children": ["Quantity"],
-                                "id": "bfe52d9e-aad6-4d6e-b077-a30ecd8707ec",
+                                "id": "90a9eff5-363b-4164-9a39-6d9e04fa3650",
                                 "ord": "a0"
                               },
                               {
@@ -2363,11 +2607,11 @@
                                   "min": "1",
                                   "step": "1"
                                 },
-                                "id": "5f35904a-02b5-4323-ab57-b683a596bfb8",
+                                "id": "e445db53-a4d3-417d-874d-97984b6a518e",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "f551203a-afd9-40c1-9abc-52e701eeed72",
+                            "id": "0bfb3620-67aa-48b8-93b3-f2fec7b49157",
                             "ord": "a1"
                           },
                           {
@@ -2378,7 +2622,7 @@
                               "type": "submit"
                             },
                             "children": ["Add to cart"],
-                            "id": "fcccd21b-a57b-4f9c-9730-b90e009acfdf",
+                            "id": "12370d3f-02b3-45b3-a521-102c490848a3",
                             "ord": "a2"
                           }
                         ],
@@ -2389,7 +2633,7 @@
                           "kind": "action",
                           "ref": "add-to-cart"
                         },
-                        "id": "2dcf14b3-c5a2-4c74-b4d3-3caa4460d393",
+                        "id": "221ca356-070e-4ba4-a6e8-5e795d1d8e68",
                         "ord": "a2"
                       },
                       {
@@ -2402,7 +2646,7 @@
                             "tag": "h2",
                             "class": "text-sm font-semibold uppercase tracking-widest text-secondary",
                             "children": ["Trade pricing & delivery"],
-                            "id": "d7e5c10a-0abc-40f2-b136-ac0efcb753ce",
+                            "id": "a444ea5b-e2aa-40c5-ba1a-2f261bb09252",
                             "ord": "a0"
                           },
                           {
@@ -2412,7 +2656,7 @@
                             "children": [
                               "Prices shown are the trade price per case. Volume breaks apply automatically from 10+ cases, and contract pricing is available on standing-order lines. Approved accounts pay on net-30 terms."
                             ],
-                            "id": "9b39bbe2-6e60-44d4-b0b6-bd7704956a71",
+                            "id": "45b1168f-5bfa-4ca7-9019-04de3f482006",
                             "ord": "a1"
                           },
                           {
@@ -2422,11 +2666,11 @@
                             "children": [
                               "Delivered on your area’s set day when ordered by 2pm the day before, on orders over the £250 minimum. Chilled and ambient arrive on one truck, in one drop."
                             ],
-                            "id": "868091c2-5829-4521-9f52-077fd71c9aa7",
+                            "id": "d77d840a-0808-4f2e-9395-eded6cca0353",
                             "ord": "a2"
                           }
                         ],
-                        "id": "5554b56c-2528-4fbc-8d1f-d3a1ec86160b",
+                        "id": "27bc63e2-0593-4463-bbfb-b13c4808a486",
                         "ord": "a3"
                       },
                       {
@@ -2442,7 +2686,7 @@
                               "href": "/shipping-policy"
                             },
                             "children": ["Delivery & minimums"],
-                            "id": "e0714161-4e5c-4a1a-b69a-a28529c11fba",
+                            "id": "6ab0ee15-9131-484e-87c3-f0640ee03d4f",
                             "ord": "a0"
                           },
                           {
@@ -2453,19 +2697,19 @@
                               "href": "/returns-policy"
                             },
                             "children": ["Returns & credits"],
-                            "id": "ab8c0d29-1c72-46c3-94b0-5033d92ed0b2",
+                            "id": "050407aa-b836-41c8-ab81-d1cda6de83b8",
                             "ord": "a1"
                           }
                         ],
-                        "id": "4f41ab65-d96c-4607-a8af-a0403b963580",
+                        "id": "e2ea22af-e26f-421e-bd32-79aaab8105c6",
                         "ord": "a4"
                       }
                     ],
-                    "id": "b1e1fa5b-97c6-44a8-8f68-1006be1e66ac",
+                    "id": "946a3c47-7801-4313-98ff-5256039df8ec",
                     "ord": "a1"
                   }
                 ],
-                "id": "04a62321-49a2-44c2-9781-ade58e8a941d",
+                "id": "1551fba7-8ec1-44c4-8766-19410d59648c",
                 "ord": "a0"
               }
             ],
@@ -2473,7 +2717,7 @@
               "kind": "collection",
               "ref": "product"
             },
-            "id": "51e84cdd-9c00-4d68-958d-ccac00283555",
+            "id": "221eb897-1a7e-43ca-9cd3-bcb9aae9b28f",
             "ord": "a0"
           },
           {
@@ -2491,7 +2735,7 @@
                     "tag": "h2",
                     "class": "text-2xl font-semibold text-base-content",
                     "children": ["Order these together"],
-                    "id": "2d27be28-4c71-4176-8d3f-fd1ad795ec6c",
+                    "id": "c0342423-f546-4629-8f33-3c9c4b55f14e",
                     "ord": "a0"
                   },
                   {
@@ -2515,12 +2759,12 @@
                             "props": {
                               "name": "arrow-left"
                             },
-                            "id": "5f046b3d-e339-4077-9108-693ae0477691",
+                            "id": "bdabb07a-d6a4-4557-a0e5-efc5197a8ec9",
                             "ord": "a0"
                           }
                         ],
                         "part": "prev",
-                        "id": "fbec284a-0a10-4992-a940-02dae9abfbf0",
+                        "id": "dc43d235-5978-44c2-8b92-f778039d2c2f",
                         "ord": "a0"
                       },
                       {
@@ -2539,20 +2783,20 @@
                             "props": {
                               "name": "arrow-right"
                             },
-                            "id": "cd027d65-5a2e-404a-aec1-f4e991bef765",
+                            "id": "8ff4c632-ed9c-4209-a279-20e697d31670",
                             "ord": "a0"
                           }
                         ],
                         "part": "next",
-                        "id": "e388a368-45b4-4113-9205-1520f07b611b",
+                        "id": "e5f3c2b6-fa14-4819-a95a-8f5baa28b3e9",
                         "ord": "a1"
                       }
                     ],
-                    "id": "08a30536-fc0c-44ad-aed4-35ae829dfd76",
+                    "id": "86bd2936-b436-47e1-96d4-232d216351af",
                     "ord": "a1"
                   }
                 ],
-                "id": "875a6b0e-cc64-46e1-b597-5413789cea4d",
+                "id": "6899aa32-cd1c-47bb-8aaf-81884f685d6e",
                 "ord": "a0"
               },
               {
@@ -2577,7 +2821,7 @@
                           "kind": "value",
                           "ref": "image"
                         },
-                        "id": "7b1dcd47-a6cd-4b84-99b3-cacb130fc99f",
+                        "id": "e39981da-5004-4b4c-a3e3-6682380a39ec",
                         "ord": "a0"
                       },
                       {
@@ -2594,7 +2838,7 @@
                               "kind": "value",
                               "ref": "title"
                             },
-                            "id": "2606ba48-0247-44f8-a1a4-ad5fffe65de0",
+                            "id": "14a5c8da-121a-4886-a672-4309efd5d523",
                             "ord": "a0"
                           },
                           {
@@ -2606,11 +2850,11 @@
                               "kind": "value",
                               "ref": "price"
                             },
-                            "id": "1d31841b-bc38-4cb8-8f17-8723bcb1f9ef",
+                            "id": "88c9dd8b-737c-4f28-9eea-32cb91bb015c",
                             "ord": "a1"
                           }
                         ],
-                        "id": "7209b4a1-4bb4-48df-949a-51220ab2c07d",
+                        "id": "1c5af1ed-b591-438c-9ca1-724a5b438f19",
                         "ord": "a1"
                       }
                     ],
@@ -2620,7 +2864,7 @@
                       "attr": "href"
                     },
                     "part": "slide",
-                    "id": "7374f1ce-f50e-4b05-a3ce-2c3f0bc6481c",
+                    "id": "a0344146-90e7-4268-afad-166aed11e36e",
                     "ord": "a0"
                   }
                 ],
@@ -2629,18 +2873,18 @@
                   "kind": "collection",
                   "ref": "commerce.related"
                 },
-                "id": "9c02b5da-309e-4ed4-82b0-3cca53431ac2",
+                "id": "b446ab28-6031-49ee-a9a8-c9886c451fba",
                 "ord": "a1"
               }
             ],
             "behavior": {
               "type": "carousel"
             },
-            "id": "4ea3d88d-4dc1-499c-ac4d-a8b5f93b570e",
+            "id": "cc1d77d1-6e06-43f5-a283-ad22843dbde1",
             "ord": "a1"
           }
         ],
-        "id": "ec75a508-4d92-449d-8d89-4d62a233de6d"
+        "id": "33c1f96a-03dd-4c84-bb85-c5503234a393"
       }
     }
   ],

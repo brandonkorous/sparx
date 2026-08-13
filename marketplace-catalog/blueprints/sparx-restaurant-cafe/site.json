@@ -22,7 +22,7 @@
                   "props": {
                     "show": "both"
                   },
-                  "id": "3a81d61b-18d3-481b-b544-e0316ed055e7",
+                  "id": "900f983b-9348-4be7-99c0-85a14d835990",
                   "ord": "a0"
                 },
                 {
@@ -43,7 +43,7 @@
                         "type": "link",
                         "label": "Product"
                       },
-                      "id": "8b1be1c3-a7fd-4681-9de9-6268d1e189be",
+                      "id": "3cdea3c4-16f9-415f-8904-54ee5c1c498a",
                       "ord": "a0"
                     },
                     {
@@ -59,7 +59,7 @@
                         "type": "link",
                         "label": "Pricing"
                       },
-                      "id": "2063e9d1-3817-4428-9222-3663ac035f77",
+                      "id": "4072c391-b223-45bf-812e-3b64aa2f69cf",
                       "ord": "a1"
                     },
                     {
@@ -75,7 +75,7 @@
                         "type": "link",
                         "label": "Docs"
                       },
-                      "id": "251f894d-0741-4d55-9f89-2d984ff6ad70",
+                      "id": "ddc16a76-431f-4629-b620-e25b8ade4ade",
                       "ord": "a2"
                     },
                     {
@@ -91,11 +91,11 @@
                         "type": "link",
                         "label": "Company"
                       },
-                      "id": "fd1ba571-e00b-4193-9cc9-48619af7324b",
+                      "id": "e9a55c3b-82e7-4b71-9fba-916e3e226ba7",
                       "ord": "a3"
                     }
                   ],
-                  "id": "535edef4-0fc1-4e05-9359-234f684ab8ac",
+                  "id": "6b13d2f0-219c-4c73-981c-b48b1eeab098",
                   "ord": "a1"
                 },
                 {
@@ -116,14 +116,14 @@
                         "type": "link",
                         "label": "Secondary link"
                       },
-                      "id": "4084fafd-7554-44ff-b104-6cc178ae295d",
+                      "id": "81f725e1-13bc-4484-8139-bfc6473be512",
                       "ord": "a0"
                     },
                     {
                       "kind": "host",
                       "component": "site.theme-toggle",
                       "class": "inline-flex items-center",
-                      "id": "55233426-d7a1-4cae-8905-0cf846c5f635",
+                      "id": "e002f587-547d-403d-85ac-104e6f19d1aa",
                       "ord": "a1"
                     },
                     {
@@ -139,7 +139,7 @@
                         "type": "link",
                         "label": "Primary action"
                       },
-                      "id": "dd4f1196-2f80-48e1-ba20-557d485e199b",
+                      "id": "620c8bd7-4d74-4c4d-9bb6-7d46e031f219",
                       "ord": "a2"
                     },
                     {
@@ -157,20 +157,20 @@
                           "props": {
                             "name": "menu"
                           },
-                          "id": "b89232d6-2ff4-42de-a4d7-1d7540846f22",
+                          "id": "e5567976-1539-4ac3-a522-6959a341de84",
                           "ord": "a0"
                         }
                       ],
                       "part": "trigger",
-                      "id": "a0920402-e2e1-4696-947f-75a87832ea34",
+                      "id": "cc703644-3134-45fd-889d-f086f9bbd172",
                       "ord": "a3"
                     }
                   ],
-                  "id": "e52a7c92-e9b5-4796-8fe2-4c7fca1cc014",
+                  "id": "03ab62b1-36b8-40f8-90ba-edb99fbc0e52",
                   "ord": "a2"
                 }
               ],
-              "id": "65570907-8d0d-4242-905f-f6a91a3b934c",
+              "id": "e6ddd190-8d91-49b3-b66a-8aaac4aa3cb8",
               "ord": "a0"
             },
             {
@@ -194,7 +194,7 @@
                     "type": "link",
                     "label": "Product"
                   },
-                  "id": "0d6829c9-2a45-4c1e-b608-fc2b13d6255a",
+                  "id": "806ccbb5-f3ba-40c9-b02f-823b4307f5fd",
                   "ord": "a0"
                 },
                 {
@@ -210,7 +210,7 @@
                     "type": "link",
                     "label": "Pricing"
                   },
-                  "id": "5696c836-b7d3-4b0c-9563-d9a81461045f",
+                  "id": "2a3796a8-6990-4a34-915f-773ba5bbca83",
                   "ord": "a1"
                 },
                 {
@@ -226,7 +226,7 @@
                     "type": "link",
                     "label": "Docs"
                   },
-                  "id": "e75d02fc-bb08-45b0-bd04-8921e0c5bedd",
+                  "id": "92bc4860-c62f-4531-b920-595820dd42ec",
                   "ord": "a2"
                 },
                 {
@@ -242,7 +242,7 @@
                     "type": "link",
                     "label": "Company"
                   },
-                  "id": "7d91312b-c3f3-406d-aadd-612d0338583c",
+                  "id": "7851a12f-7d12-4707-bd6d-3291eab44758",
                   "ord": "a3"
                 },
                 {
@@ -258,7 +258,7 @@
                     "type": "link",
                     "label": "Secondary link"
                   },
-                  "id": "3562ef0f-1724-40be-b6e5-8343ade51895",
+                  "id": "a3f37843-4def-457b-b86b-741941177591",
                   "ord": "a4"
                 },
                 {
@@ -274,19 +274,19 @@
                     "type": "link",
                     "label": "Primary action"
                   },
-                  "id": "c985fe0d-508a-4642-bcd6-9537b15f0966",
+                  "id": "81d83198-139a-42ca-a8b0-2185e9c17a9b",
                   "ord": "a5"
                 }
               ],
               "part": "panel",
-              "id": "3b9274ee-da3b-436f-ba73-edfec2fbef55",
+              "id": "59f69ea3-9d9d-415c-8aa4-06c6b37afe6a",
               "ord": "a1"
             }
           ],
           "behavior": {
             "type": "disclosure"
           },
-          "id": "edb02f86-a9cf-4c72-a63e-691c2dcc1821",
+          "id": "c8421cfe-3916-4a55-8906-dfcd634be2bc",
           "ord": "a0"
         },
         {
@@ -302,7 +302,7 @@
               "kind": "outlet"
             }
           ],
-          "id": "2a518e68-ea12-42d4-b1ce-e6d43da9ebc9",
+          "id": "5bac029f-4ea1-4cfb-8e24-1c049f837d15",
           "ord": "a1"
         },
         {
@@ -332,7 +332,7 @@
                           "props": {
                             "show": "both"
                           },
-                          "id": "e9b94175-3bda-4232-a4a2-d904521beb5f",
+                          "id": "fa3910a0-28c4-42fc-ada9-b1cd88710a81",
                           "ord": "a0"
                         },
                         {
@@ -350,7 +350,7 @@
                           "attrs": {
                             "href": "/"
                           },
-                          "id": "b28ee545-fc51-4ea8-9649-c668a99eb225",
+                          "id": "565b2a7c-a499-48ee-92ac-c5f773e08a76",
                           "ord": "a1"
                         },
                         {
@@ -371,7 +371,7 @@
                                 "placeholder": "you@example.com",
                                 "required": true
                               },
-                              "id": "3d5d45ae-8b93-40f1-ac34-c5676d9f9ac7",
+                              "id": "7c0b3cd3-f8db-4935-b1e3-a46b1f30f72e",
                               "ord": "a0"
                             },
                             {
@@ -387,11 +387,11 @@
                                 "type": "text",
                                 "label": "Button label"
                               },
-                              "id": "5d643a4d-1c56-4499-b1ef-ecc9b7d0736d",
+                              "id": "cd8c5136-00b4-4956-8bd9-0f5626cea679",
                               "ord": "a1"
                             }
                           ],
-                          "id": "c5995f7d-b9b6-4d95-8b4a-b194c71e53c8",
+                          "id": "2f128521-b9a1-4699-8911-42c16c3fa299",
                           "ord": "a2"
                         },
                         {
@@ -404,11 +404,11 @@
                             "type": "text",
                             "label": "Reassurance line"
                           },
-                          "id": "dfcd3d4b-b491-4311-9eb7-7e6279929153",
+                          "id": "19cda396-7374-404b-91fe-6816dd25b2f9",
                           "ord": "a3"
                         }
                       ],
-                      "id": "c07d8f84-352a-41b4-a47a-fd288108f984",
+                      "id": "9ad946cb-1a20-4581-bcfe-89dcae150a6f",
                       "ord": "a0"
                     },
                     {
@@ -434,7 +434,7 @@
                               "attrs": {
                                 "href": "/"
                               },
-                              "id": "3039d5be-6344-4be5-b612-0fd9668e70d3",
+                              "id": "9d89209a-071e-49e2-bcc0-0671280d1299",
                               "ord": "a0"
                             },
                             {
@@ -459,11 +459,11 @@
                                         "type": "link",
                                         "label": "Features"
                                       },
-                                      "id": "d2bb78a3-3906-48f3-87d3-c2ab4ab981dd",
+                                      "id": "1c6b12a7-f75f-4916-87a8-527547eaf129",
                                       "ord": "a0"
                                     }
                                   ],
-                                  "id": "dfae2cd5-6488-49c1-b6f7-b4eba23e485c",
+                                  "id": "cf818cb6-af17-4b4c-a154-5f48adbed4dd",
                                   "ord": "a0"
                                 },
                                 {
@@ -483,11 +483,11 @@
                                         "type": "link",
                                         "label": "Pricing"
                                       },
-                                      "id": "caf75703-1629-48b6-83ee-ef2f7c643186",
+                                      "id": "f3bcc39a-db1d-48fa-a70b-c693e68ef1af",
                                       "ord": "a0"
                                     }
                                   ],
-                                  "id": "6f0ffa82-14f2-4138-a846-75c94205be07",
+                                  "id": "5053daff-af06-44f5-8887-56a2d0802cc2",
                                   "ord": "a1"
                                 },
                                 {
@@ -507,11 +507,11 @@
                                         "type": "link",
                                         "label": "Changelog"
                                       },
-                                      "id": "ca3b673c-ac20-4f5d-b0cc-2caecdcafd21",
+                                      "id": "24354afb-e62d-4c4d-84a9-db631ce984c5",
                                       "ord": "a0"
                                     }
                                   ],
-                                  "id": "f45ae55f-cfcb-45bf-8fed-2043efbbf8ea",
+                                  "id": "498817ac-626c-466b-bbc9-839dc0117988",
                                   "ord": "a2"
                                 },
                                 {
@@ -531,19 +531,19 @@
                                         "type": "link",
                                         "label": "Roadmap"
                                       },
-                                      "id": "213110be-d036-43ad-9e0d-8f3a45e9fa5c",
+                                      "id": "36922936-5e85-4798-b672-ebce4a4cf728",
                                       "ord": "a0"
                                     }
                                   ],
-                                  "id": "0f33c72a-d700-4824-aac3-4b46cae32b69",
+                                  "id": "ee3c777e-12bd-47c4-a3b2-f206523db706",
                                   "ord": "a3"
                                 }
                               ],
-                              "id": "8ee1bcf1-8a6d-4fe2-af1e-4e3758183b45",
+                              "id": "2ba2a6eb-0e03-4ddc-a050-d90ad298110a",
                               "ord": "a1"
                             }
                           ],
-                          "id": "933b92ad-493d-48b0-82ff-c26ede04d6e6",
+                          "id": "dda999da-af17-4885-a540-7d5312927d3f",
                           "ord": "a0"
                         },
                         {
@@ -556,19 +556,19 @@
                               "tag": "ul",
                               "class": "flex flex-col gap-2",
                               "children": [],
-                              "id": "dd8117f9-5ec7-4eec-b88d-cc3077b248de",
+                              "id": "f2ef3f87-ecc0-413f-8655-9dbb4dc9f9a8",
                               "ord": "a0"
                             }
                           ],
-                          "id": "720058f7-91d8-4b6c-8e6d-c7f00709a0a4",
+                          "id": "8e24cb03-d7ba-40c6-94dd-a803b11db623",
                           "ord": "a1"
                         }
                       ],
-                      "id": "2c7fcda2-c2f3-4295-a6cd-6e7a4ebeef18",
+                      "id": "42d08e5a-fca2-4969-abce-7c72b4c63abc",
                       "ord": "a1"
                     }
                   ],
-                  "id": "c61ee5ae-4418-4e41-b78b-2ea90dff3760",
+                  "id": "7dbe1ebe-4db5-4c7a-a56c-1d378e33565d",
                   "ord": "a0"
                 },
                 {
@@ -591,11 +591,11 @@
                             "kind": "value",
                             "ref": "site.identity.name"
                           },
-                          "id": "bbc7ccd9-32c2-4adb-bf20-09701023375e",
+                          "id": "80ae9e44-6817-4fd2-8930-b87c60bc2864",
                           "ord": "a0"
                         }
                       ],
-                      "id": "f80631c4-ee55-430e-ae88-910274f5db18",
+                      "id": "f7e88f32-ef6a-468d-9741-91c66791d3ed",
                       "ord": "a0"
                     },
                     {
@@ -603,23 +603,23 @@
                       "tag": "ul",
                       "class": "flex items-center gap-5",
                       "children": [],
-                      "id": "eaea3aa2-a071-49de-aa29-e9d253b52c29",
+                      "id": "46e17de2-b3e4-4094-9c5a-f18cac084619",
                       "ord": "a1"
                     }
                   ],
-                  "id": "fa30d564-e363-4255-b066-fe59876db1e7",
+                  "id": "e537ba4f-3436-4cc7-beb1-b3b4dd0fbd8f",
                   "ord": "a1"
                 }
               ],
-              "id": "cc94338f-5c1e-4a19-a34d-e263b94a81ed",
+              "id": "3b14d3ad-ec1f-4783-a381-0052e5de5287",
               "ord": "a0"
             }
           ],
-          "id": "edda16ca-c7f5-420c-b1b0-6bbb68fa8550",
+          "id": "ef3b9c2d-845e-4f3b-86d9-d3386a3b7b7c",
           "ord": "a2"
         }
       ],
-      "id": "6fda174c-7514-4391-9c05-6fb361930a33"
+      "id": "225f9313-eace-4f36-ae10-b7599c564ae2"
     }
   },
   "pages": [
@@ -633,7 +633,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "18154afe-9509-4780-9985-02faef6afb3c",
+        "id": "bb67ac10-7c62-4905-9f4f-ceaa1c9b5d80",
         "children": [
           {
             "kind": "element",
@@ -649,7 +649,7 @@
                   "alt": "A bright, plant-filled café in morning light",
                   "loading": "lazy"
                 },
-                "id": "d926069b-8cc1-4ded-8878-1ad386470b9c",
+                "id": "b8e79ed5-2a7a-4f93-a569-25c936c9aa29",
                 "ord": "a0"
               },
               {
@@ -667,7 +667,7 @@
                         "tag": "h1",
                         "class": "text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl",
                         "children": ["Kettle & Crumb"],
-                        "id": "a01d8e13-b743-40ea-8e22-0f3d111b93a4",
+                        "id": "c75ec98f-1c12-4e7a-804f-4c4b84bdd3de",
                         "ord": "a0"
                       },
                       {
@@ -677,7 +677,7 @@
                         "children": [
                           "A sunny all-day café. Proper coffee, unhurried brunch, and a room that’s just as happy with a laptop and a flat white as a long table of friends. Open eight to four, every day."
                         ],
-                        "id": "816eceb8-045f-4991-8292-1ea629d5025e",
+                        "id": "df609356-e345-483b-8fb2-7f62e228aab8",
                         "ord": "a1"
                       },
                       {
@@ -693,7 +693,7 @@
                               "href": "/book"
                             },
                             "children": ["Book a table"],
-                            "id": "dec59a30-8151-4da8-a28e-bae7807c9c56",
+                            "id": "0ae3dc02-562f-453e-b5a0-53f7c14c6d81",
                             "ord": "a0"
                           },
                           {
@@ -704,23 +704,23 @@
                               "href": "/menu"
                             },
                             "children": ["See the menu"],
-                            "id": "dfd5cf6c-a5c8-4c3b-8322-5e7d8d2dbbe1",
+                            "id": "a4b1ee96-dd93-4798-8c33-7df02f326e92",
                             "ord": "a1"
                           }
                         ],
-                        "id": "22c1c373-7e1b-43b3-a1c6-3589a6c8a9ce",
+                        "id": "17d4c126-c5e7-4771-b82b-c53172fbce74",
                         "ord": "a2"
                       }
                     ],
-                    "id": "22650249-d532-4c0e-8b5e-c96b47330588",
+                    "id": "80fdca74-0784-4ad7-a3c5-2a1916fbe06a",
                     "ord": "a0"
                   }
                 ],
-                "id": "c7ae7316-d19a-47e5-8755-88698f681c1d",
+                "id": "2658279d-79d6-46c5-8061-09b300add36d",
                 "ord": "a1"
               }
             ],
-            "id": "06c39503-50b1-4416-b7d9-e8dbf0f71ed7",
+            "id": "266aa5fe-8bd7-48e0-a541-b3c0c8e54908",
             "ord": "a0"
           },
           {
@@ -743,7 +743,7 @@
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
                         "children": ["All day, your way"],
-                        "id": "15053401-5f3d-4ee5-82ee-2baac0bfd11e",
+                        "id": "468d6819-12e1-49db-b604-cbc1dae7ef70",
                         "ord": "a0"
                       },
                       {
@@ -753,11 +753,11 @@
                         "children": [
                           "Roll in for a quiet coffee, settle in for a slow brunch, or grab something sweet on the way past. We serve the whole menu from open to close — no breakfast cut-off here."
                         ],
-                        "id": "ab2b128f-4c7b-4e08-ac89-b916f97214e2",
+                        "id": "81444c43-32e1-49d4-8d99-c85fdd721704",
                         "ord": "a1"
                       }
                     ],
-                    "id": "79e3b64b-9b21-4581-b1d2-e5a8c8d8dd0c",
+                    "id": "0560d279-b542-4602-941b-7ebf26f37fbc",
                     "ord": "a0"
                   },
                   {
@@ -782,7 +782,7 @@
                               "alt": "A flat white with latte art",
                               "loading": "lazy"
                             },
-                            "id": "a3ab1039-9760-476d-ae87-84c150fd6ad9",
+                            "id": "d8529805-67f0-4db6-8907-2b9a538e1f1a",
                             "ord": "a0"
                           },
                           {
@@ -790,7 +790,7 @@
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
                             "children": ["Just coffee"],
-                            "id": "983c439e-7370-4d70-9436-6eaf54eb30ee",
+                            "id": "5d4a1f08-9057-4a51-a321-d9e41bb42f20",
                             "ord": "a1"
                           },
                           {
@@ -800,11 +800,11 @@
                             "children": [
                               "Beans roasted up the road, pulled properly. Flat whites, filters, and a very good iced latte when the sun’s out."
                             ],
-                            "id": "90e44c43-e781-41d4-8940-266499e033fc",
+                            "id": "153a2dfd-8526-4b7e-94a2-f7f741a8bd28",
                             "ord": "a2"
                           }
                         ],
-                        "id": "d0719bf6-ff2d-4348-a403-6633bff2437b",
+                        "id": "87be2840-4011-4625-8b93-1ef16c09f3fd",
                         "ord": "a0"
                       },
                       {
@@ -824,7 +824,7 @@
                               "alt": "A loaded toast plate with a soft egg",
                               "loading": "lazy"
                             },
-                            "id": "83c97117-8048-4d49-a9c9-f8feb7773b70",
+                            "id": "2390b533-3ceb-46a4-b432-63bfb51affd6",
                             "ord": "a0"
                           },
                           {
@@ -832,7 +832,7 @@
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
                             "children": ["Brunch, all day"],
-                            "id": "1e4201b2-a745-4db1-ba80-5c39c63f3549",
+                            "id": "926cc952-3bf5-4d3c-833f-d04107bd8a49",
                             "ord": "a1"
                           },
                           {
@@ -842,11 +842,11 @@
                             "children": [
                               "Loaded toasts, big breakfast plates, and greens that earn their place. Long tables welcome — we’ll pull them together."
                             ],
-                            "id": "07dfa207-4363-49a9-9a0e-63f96ec9c692",
+                            "id": "240d015c-febf-417d-889f-468c5530931d",
                             "ord": "a2"
                           }
                         ],
-                        "id": "97747e6c-2996-4f1c-9c6e-8f2f05c65a7a",
+                        "id": "b6220ddf-9520-41c4-a7bb-82d343a044c4",
                         "ord": "a1"
                       },
                       {
@@ -866,7 +866,7 @@
                               "alt": "A tray of fresh pastries and citrus cake",
                               "loading": "lazy"
                             },
-                            "id": "3cec9474-8a9c-4c9f-b1d2-28c8db75e5d7",
+                            "id": "876cc42d-3c05-4c8f-9a30-e58b45ee6fa9",
                             "ord": "a0"
                           },
                           {
@@ -874,7 +874,7 @@
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
                             "children": ["Something sweet"],
-                            "id": "64ee094f-82e0-4463-91df-3038e38da75a",
+                            "id": "91121b9c-4857-4829-b6fd-022ee7e9b82b",
                             "ord": "a1"
                           },
                           {
@@ -884,15 +884,15 @@
                             "children": [
                               "The pastry case, the cake of the day, and a warm cinnamon bun that never lasts past noon. Ask what’s just come out."
                             ],
-                            "id": "bc7e4fd1-2ce4-43d7-bd60-d498d1536dd6",
+                            "id": "8393beb8-5cd8-4edf-a3c2-7489f82f28cb",
                             "ord": "a2"
                           }
                         ],
-                        "id": "7e4a0e19-be9c-4a9d-9af7-4e905405cb68",
+                        "id": "3ab6c580-5ef6-4d4a-b8f5-66431a892f44",
                         "ord": "a2"
                       }
                     ],
-                    "id": "24d6142a-0405-45f1-b950-e30e7dd046ba",
+                    "id": "ff48ea46-7ac3-4489-8f48-3e15a71a2986",
                     "ord": "a1"
                   },
                   {
@@ -907,26 +907,26 @@
                         "kind": "element",
                         "tag": "span",
                         "children": ["See the full menu"],
-                        "id": "8c1d5ac2-d057-4165-a609-7c86578f81d1",
+                        "id": "96498ade-980e-4ad6-b7be-bffd01cda06c",
                         "ord": "a0"
                       },
                       {
                         "kind": "element",
                         "tag": "span",
                         "children": ["→"],
-                        "id": "2f2953b0-be14-447c-be9e-2427dbc67e00",
+                        "id": "fcdfbc12-8ff3-4e05-9cf1-7d8a33fdee04",
                         "ord": "a1"
                       }
                     ],
-                    "id": "1b33bf49-3481-4b9f-872f-4aab57cba615",
+                    "id": "c474d73f-dd98-4fad-9d2b-320f1404b4f6",
                     "ord": "a2"
                   }
                 ],
-                "id": "c2e85227-4ad6-48e6-9368-7a602e757bb9",
+                "id": "6f8f2919-25a5-4062-a5fb-b7a3d8d488e5",
                 "ord": "a0"
               }
             ],
-            "id": "6dedef9d-4483-4605-ab93-d41102122042",
+            "id": "9681e90b-061d-49ae-a17d-c1c59f97463d",
             "ord": "a1"
           },
           {
@@ -948,7 +948,7 @@
                       "alt": "The café room — light wood, hanging plants, mismatched chairs",
                       "loading": "lazy"
                     },
-                    "id": "9816aea6-8f7e-4e4e-b01b-1c40b1309791",
+                    "id": "5efd7736-8208-4cd1-95b4-6701c9fc1fa1",
                     "ord": "a0"
                   },
                   {
@@ -961,7 +961,7 @@
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
                         "children": ["Save your table"],
-                        "id": "b1919487-784d-4d85-ac8a-9e7b5288da52",
+                        "id": "7ac32bd9-5717-4a1a-91a6-1d48acecc3dd",
                         "ord": "a0"
                       },
                       {
@@ -971,7 +971,7 @@
                         "children": [
                           "Weekend brunch fills up fast, so booking ahead is the safe bet — it takes about a minute and you’ll see the real availability. Walk-ins are always welcome too; there’s usually a stool at the counter with your name on it."
                         ],
-                        "id": "57c09121-1c48-4e89-8cde-0415ea69bed9",
+                        "id": "a9e66891-0c2c-4a78-9d19-8a90db9e6ec9",
                         "ord": "a1"
                       },
                       {
@@ -987,23 +987,23 @@
                               "href": "/book"
                             },
                             "children": ["Book a table"],
-                            "id": "2da982e9-fedb-4313-94e0-f9d1f7df214e",
+                            "id": "31c0ce90-7e06-4ba3-b2ed-368102cef760",
                             "ord": "a0"
                           }
                         ],
-                        "id": "43b9dba5-04a0-4e7f-b4bf-b25771bada17",
+                        "id": "4670806e-4207-43d2-801f-db7adcaacbcc",
                         "ord": "a2"
                       }
                     ],
-                    "id": "b868a539-a31c-4cd7-8dd0-9f372ae2a5dc",
+                    "id": "4ce9baab-1095-40b7-815c-61e6150ed468",
                     "ord": "a1"
                   }
                 ],
-                "id": "680d81f9-448e-4492-b5b2-2cefae74d05a",
+                "id": "4d88d98f-9d1b-4224-8997-4fc1cdaad944",
                 "ord": "a0"
               }
             ],
-            "id": "2a67a394-7de5-42c7-baea-33db4e45b394",
+            "id": "2d6a3b0d-e7e5-4c45-9414-5f71cc0a553d",
             "ord": "a2"
           },
           {
@@ -1026,7 +1026,7 @@
                         "tag": "h2",
                         "class": "text-2xl font-bold tracking-tight text-base-content @3xl:text-3xl",
                         "children": ["Hours"],
-                        "id": "d3bb7709-faa6-44c1-a5a4-a8662fcafca4",
+                        "id": "0fd5dbfa-fd32-4fae-92d2-87239d649486",
                         "ord": "a0"
                       },
                       {
@@ -1044,7 +1044,7 @@
                                 "tag": "span",
                                 "class": "text-base font-semibold text-base-content",
                                 "children": ["Mon – Fri"],
-                                "id": "0d0564c7-8a0a-4001-8729-a47e202ee5ba",
+                                "id": "bf22fe29-1dff-494e-929a-0a578aab4a4e",
                                 "ord": "a0"
                               },
                               {
@@ -1052,11 +1052,11 @@
                                 "tag": "span",
                                 "class": "text-base text-secondary",
                                 "children": ["08:00 – 16:00"],
-                                "id": "5083b43f-86a6-4b6c-b38b-17d51ee648b0",
+                                "id": "fbea689a-e4bd-4a71-a578-294300025102",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "5c57a253-b3e2-48bb-bb44-cee208bad9f5",
+                            "id": "87cd53fc-cab3-4857-b66c-3872c7121f88",
                             "ord": "a0"
                           },
                           {
@@ -1069,7 +1069,7 @@
                                 "tag": "span",
                                 "class": "text-base font-semibold text-base-content",
                                 "children": ["Saturday"],
-                                "id": "f538c870-168f-4fe9-9f7f-d0f6aa841543",
+                                "id": "94bc3265-172f-42a2-8059-c309d91306b3",
                                 "ord": "a0"
                               },
                               {
@@ -1077,11 +1077,11 @@
                                 "tag": "span",
                                 "class": "text-base text-secondary",
                                 "children": ["08:00 – 16:00"],
-                                "id": "fd855958-a62e-4259-a75f-c92cf19309fb",
+                                "id": "8b9e8632-0a76-4b58-9bad-6a728e00240f",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "258ebb0b-0845-416c-835d-4172b7d7dcaf",
+                            "id": "e11c0441-aae4-4620-9b88-12a80a1fc899",
                             "ord": "a1"
                           },
                           {
@@ -1094,7 +1094,7 @@
                                 "tag": "span",
                                 "class": "text-base font-semibold text-base-content",
                                 "children": ["Sunday"],
-                                "id": "900a9ec0-9535-4210-aa8f-c49bffc0618b",
+                                "id": "bf97e6ff-f707-4faf-bcaa-fd8b71fe57d9",
                                 "ord": "a0"
                               },
                               {
@@ -1102,11 +1102,11 @@
                                 "tag": "span",
                                 "class": "text-base text-secondary",
                                 "children": ["08:00 – 16:00"],
-                                "id": "2eac7b25-48fc-4dcb-b71a-d5a0a3e0063c",
+                                "id": "2dacb6d2-680b-45a9-8df8-f0d9703c59f6",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "258e3351-0a4c-4188-81b1-b5aa3c76264f",
+                            "id": "c6a6f955-ed3a-4fc1-8f60-18d797ae1fba",
                             "ord": "a2"
                           },
                           {
@@ -1119,7 +1119,7 @@
                                 "tag": "span",
                                 "class": "text-base font-semibold text-base-content",
                                 "children": ["Kitchen"],
-                                "id": "7017d3fd-397b-45e7-aa63-06d74044bb2d",
+                                "id": "4633b86b-9764-45aa-9d16-e733202e19d9",
                                 "ord": "a0"
                               },
                               {
@@ -1127,19 +1127,19 @@
                                 "tag": "span",
                                 "class": "text-base text-secondary",
                                 "children": ["All day, no cut-off"],
-                                "id": "da5d60d6-985f-48a7-9bfe-69b06f29584a",
+                                "id": "ad4860a7-90d7-4280-ac0b-c5557f9b6cf2",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "d0bb7a82-ebe2-47d5-81bf-837d40328189",
+                            "id": "abfd0935-b834-4b30-809b-4809e5b34313",
                             "ord": "a3"
                           }
                         ],
-                        "id": "2de07858-b860-41c1-9e81-53c1029e2604",
+                        "id": "352e4f14-988b-4099-bbac-c5ea3e835773",
                         "ord": "a1"
                       }
                     ],
-                    "id": "74353ecb-8914-4dc1-90d7-f52cb5d1ac5e",
+                    "id": "a1d72edc-df32-4b71-b40b-7fbb8418e944",
                     "ord": "a0"
                   },
                   {
@@ -1152,7 +1152,7 @@
                         "tag": "h2",
                         "class": "text-2xl font-bold tracking-tight text-base-content @3xl:text-3xl",
                         "children": ["Find us"],
-                        "id": "80cc4147-48a1-4ae9-80a8-4bfea6271953",
+                        "id": "176af471-1c6d-4b2f-8eaf-dc21a19687b5",
                         "ord": "a0"
                       },
                       {
@@ -1162,7 +1162,7 @@
                         "children": [
                           "9 Marigold Street, on the sunny corner by the little park. Bike racks out front, buggies and dogs always welcome, and the number 4 stops right outside."
                         ],
-                        "id": "34a2ebdf-6138-4e81-93ff-d306f34966a4",
+                        "id": "2967e546-54b1-4691-bea5-301a486ecafa",
                         "ord": "a1"
                       },
                       {
@@ -1177,30 +1177,30 @@
                             "kind": "element",
                             "tag": "span",
                             "children": ["Directions & contact"],
-                            "id": "5069c7d9-db77-4cad-a1e7-594c7463c51f",
+                            "id": "ebe74805-a6fe-4202-a8d2-d35619b8be58",
                             "ord": "a0"
                           },
                           {
                             "kind": "element",
                             "tag": "span",
                             "children": ["→"],
-                            "id": "5bda6311-3038-4d98-b9cc-943806363de8",
+                            "id": "b7b4f468-3372-4047-ab27-9d269e757118",
                             "ord": "a1"
                           }
                         ],
-                        "id": "685e43fe-c242-4dda-a506-81e7b0e9494c",
+                        "id": "7d93ef57-ec4e-4923-ab1b-5d91db4a1935",
                         "ord": "a2"
                       }
                     ],
-                    "id": "d47a522b-ddc5-4df3-925e-78a6449e160b",
+                    "id": "1fecb1fe-0f42-48e6-bc3f-140f418158b1",
                     "ord": "a1"
                   }
                 ],
-                "id": "d2808050-bd51-4516-8ee7-c354c541d650",
+                "id": "18697419-18b0-4ec3-8e70-2df517a6426c",
                 "ord": "a0"
               }
             ],
-            "id": "fa714a81-19f7-4bcb-9365-3f0f54183687",
+            "id": "315b2d89-5df4-4505-9e0a-ddd22fae9fc1",
             "ord": "a3"
           }
         ]
@@ -1217,7 +1217,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "ea2a9a8c-a7a6-4c9c-9fd4-fb50473f960d",
+        "id": "e09effe2-ce30-4455-ab4f-b806aa977ddd",
         "children": [
           {
             "kind": "element",
@@ -1234,7 +1234,7 @@
                     "tag": "h1",
                     "class": "text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl",
                     "children": ["The menu"],
-                    "id": "0cb8c6e1-95f8-40de-94b1-39ff9a70e156",
+                    "id": "3e369514-0556-4d39-a004-f8d3ff7d0ac7",
                     "ord": "a0"
                   },
                   {
@@ -1244,15 +1244,15 @@
                     "children": [
                       "Everything you see is served all day — no breakfast cut-off, no rush. We bake most of it here, the eggs are free-range, and there’s always something for the little ones. Tell us about allergies and we’ll sort you out."
                     ],
-                    "id": "0b4638f0-13b7-4931-ae79-c63c55a48f10",
+                    "id": "fbacb852-2d29-42db-b86d-5850f888a5b5",
                     "ord": "a1"
                   }
                 ],
-                "id": "84447c68-fc3f-423b-9f1b-2e46c8414f50",
+                "id": "93f4eaa4-3eb3-4f9a-9ecb-bb6d2d1d80d0",
                 "ord": "a0"
               }
             ],
-            "id": "67395b3c-3555-4078-adac-6974eae01f4b",
+            "id": "972edfaf-715a-4093-b158-5999b84d9cab",
             "ord": "a0"
           },
           {
@@ -1270,7 +1270,7 @@
                     "tag": "h2",
                     "class": "text-3xl font-bold tracking-tight text-base-content @2xl:text-4xl",
                     "children": ["Breakfast & brunch"],
-                    "id": "8f7d2519-c32d-4238-a29a-b974a09203ee",
+                    "id": "2618d6be-c56e-4687-9371-f3d68c04b40b",
                     "ord": "a0"
                   },
                   {
@@ -1280,7 +1280,7 @@
                     "children": [
                       "Served open to close. Add streaky bacon or an extra egg to anything for 3."
                     ],
-                    "id": "36132fd7-9676-4e31-95ba-d2c66580d1e5",
+                    "id": "ca345da9-1d33-43bc-bd96-7aaf24f53336",
                     "ord": "a1"
                   },
                   {
@@ -1303,7 +1303,7 @@
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
                                 "children": ["The big plate"],
-                                "id": "0f372928-be04-4213-8a23-035d6bdf9355",
+                                "id": "9cf96edc-331a-46cd-98d6-22c42a6ade3c",
                                 "ord": "a0"
                               },
                               {
@@ -1311,11 +1311,11 @@
                                 "tag": "span",
                                 "class": "text-lg font-semibold text-primary",
                                 "children": ["15"],
-                                "id": "6e947b97-e467-4177-bc86-9f6daa697c01",
+                                "id": "d90573fe-df17-4c52-8250-6950b71ac607",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "6fc59ce8-144e-473f-ab44-f6dafd56f7dd",
+                            "id": "4319abbb-504f-4f83-adb0-bba28408a703",
                             "ord": "a0"
                           },
                           {
@@ -1325,11 +1325,11 @@
                             "children": [
                               "Two eggs how you like them, streaky bacon, roast tomato, garlic mushrooms, beans and sourdough."
                             ],
-                            "id": "7a421e56-a6da-4e4c-b627-7631e806cbc7",
+                            "id": "faf60ca7-b017-4327-a94d-5c7769cdaa73",
                             "ord": "a1"
                           }
                         ],
-                        "id": "0301bd75-2e28-47bb-9019-b40bca3e4d81",
+                        "id": "c5f97d7c-e1be-4ac2-99bf-8a8ecedc3650",
                         "ord": "a0"
                       },
                       {
@@ -1347,7 +1347,7 @@
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
                                 "children": ["Green eggs"],
-                                "id": "f9541910-beb8-478d-821a-610fe5ef7e18",
+                                "id": "574bbbde-32ac-4278-a339-ab5e5900a098",
                                 "ord": "a0"
                               },
                               {
@@ -1355,11 +1355,11 @@
                                 "tag": "span",
                                 "class": "text-lg font-semibold text-primary",
                                 "children": ["12"],
-                                "id": "fed215d0-9c09-4af8-8cbc-0b6f1b3fd200",
+                                "id": "b4e759dc-4fb5-471b-9058-1da870138757",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "85a5fec5-cac9-4fc5-ab9b-f2ae4fa37637",
+                            "id": "d1e74b76-3aad-4e44-a782-3eb853152fd4",
                             "ord": "a0"
                           },
                           {
@@ -1369,11 +1369,11 @@
                             "children": [
                               "Soft-scrambled eggs, wilted greens, herb oil, feta and dukkah on toasted sourdough."
                             ],
-                            "id": "d86ebc0b-11d6-40b0-904d-e019dc08e534",
+                            "id": "7483db19-6bbd-44bf-b781-fcd72e0aee65",
                             "ord": "a1"
                           }
                         ],
-                        "id": "74a13550-0353-48a6-b70a-95f8e642f8dc",
+                        "id": "fac94806-5129-43ea-ba55-53978998b974",
                         "ord": "a1"
                       },
                       {
@@ -1391,7 +1391,7 @@
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
                                 "children": ["Buttermilk pancakes"],
-                                "id": "0865584a-6526-4c21-880a-75ac4d0db476",
+                                "id": "aa32713f-2cb9-4759-b18a-b7bd1ce84052",
                                 "ord": "a0"
                               },
                               {
@@ -1399,11 +1399,11 @@
                                 "tag": "span",
                                 "class": "text-lg font-semibold text-primary",
                                 "children": ["11"],
-                                "id": "4d79767d-ecf4-4b7e-b8d8-12e7249ddf89",
+                                "id": "d8cb9484-d5a0-48fc-a43f-7cdcf0dfcd40",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "d3762875-e74a-4889-aab4-bc5c542308c3",
+                            "id": "1415821c-c178-4ead-b03b-8d6f5572e9f5",
                             "ord": "a0"
                           },
                           {
@@ -1413,11 +1413,11 @@
                             "children": [
                               "A stack of three, maple butter, seasonal fruit and a dust of icing sugar."
                             ],
-                            "id": "67f56754-cf4a-4353-8062-781a16485334",
+                            "id": "d110e0d7-8574-4a73-838a-53b753128b39",
                             "ord": "a1"
                           }
                         ],
-                        "id": "a6e4858f-aa1e-4bb7-a45e-105d6ae4135c",
+                        "id": "dff3fae9-4907-4a27-b28e-cca4e0b4df58",
                         "ord": "a2"
                       },
                       {
@@ -1435,7 +1435,7 @@
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
                                 "children": ["Shakshuka"],
-                                "id": "2e7bdb23-b827-4ec8-8cf7-2b54c8593bbb",
+                                "id": "8ee85c06-6778-418b-adc7-0be3891a8658",
                                 "ord": "a0"
                               },
                               {
@@ -1443,11 +1443,11 @@
                                 "tag": "span",
                                 "class": "text-lg font-semibold text-primary",
                                 "children": ["13"],
-                                "id": "8a892cd0-85ad-448f-8701-28a81b8ecf63",
+                                "id": "97043757-cd55-461c-b205-df4b7bcbc369",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "6f3e11e3-c87f-4618-b995-b0220993ee98",
+                            "id": "335c06b4-f341-42b7-8852-3f62149788bc",
                             "ord": "a0"
                           },
                           {
@@ -1457,11 +1457,11 @@
                             "children": [
                               "Eggs baked in a spiced tomato-and-pepper sauce, whipped feta, warm flatbread to mop."
                             ],
-                            "id": "fe952286-5973-4cde-ae5e-9153f2ab6127",
+                            "id": "92f29721-7bae-4ffa-ac88-4235a1287cb5",
                             "ord": "a1"
                           }
                         ],
-                        "id": "4446287d-2375-4814-a77b-3d1cf2e199c8",
+                        "id": "f045fe3e-d4aa-4a74-8edf-bc17bfa7b115",
                         "ord": "a3"
                       },
                       {
@@ -1479,7 +1479,7 @@
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
                                 "children": ["Bircher bowl"],
-                                "id": "18b12f2c-cf3c-4085-bdfe-cd23ae06617b",
+                                "id": "3eecfdf6-c2b8-4de3-a8d1-5c123190bbec",
                                 "ord": "a0"
                               },
                               {
@@ -1487,11 +1487,11 @@
                                 "tag": "span",
                                 "class": "text-lg font-semibold text-primary",
                                 "children": ["9"],
-                                "id": "61a20995-9221-4975-a148-46e89456e061",
+                                "id": "55870b5e-532e-4709-8bf3-dd8b30010e0d",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "7df0bf0e-9ceb-4335-8edb-a09d9cf1f43b",
+                            "id": "b9aa080e-c30c-4fcc-bb56-7611dc6d43f9",
                             "ord": "a0"
                           },
                           {
@@ -1501,23 +1501,23 @@
                             "children": [
                               "Overnight oats, grated apple, toasted seeds, yoghurt and a spoon of berry compote."
                             ],
-                            "id": "568006c4-4a65-4809-9268-a7bd5c2becd7",
+                            "id": "5dcac764-2c94-4f76-aa28-d031368f5b79",
                             "ord": "a1"
                           }
                         ],
-                        "id": "84c642bc-051c-4d90-8df3-752eafda99b4",
+                        "id": "923e9627-97df-4c13-b451-9bb2a36f928f",
                         "ord": "a4"
                       }
                     ],
-                    "id": "9736b838-73f8-4389-8173-b63f11932096",
+                    "id": "d1b546b5-81f7-4951-a0c1-9400602cff65",
                     "ord": "a2"
                   }
                 ],
-                "id": "115ed9b3-5c1d-4ab3-9870-cde13534799c",
+                "id": "6e40b2d8-5b2a-45b3-8fcb-4edc34288d8d",
                 "ord": "a0"
               }
             ],
-            "id": "c9846173-28ab-4c19-80e5-a321ed4bb1e0",
+            "id": "6452e0d5-3dc6-4d1a-9acd-feb70beb1703",
             "ord": "a1"
           },
           {
@@ -1535,7 +1535,7 @@
                     "tag": "h2",
                     "class": "text-3xl font-bold tracking-tight text-base-content @2xl:text-4xl",
                     "children": ["Toasts & plates"],
-                    "id": "5acf766e-3a3d-4f8e-bb07-283190915044",
+                    "id": "3b7455e7-e199-496f-80a8-1827c178cf12",
                     "ord": "a0"
                   },
                   {
@@ -1545,7 +1545,7 @@
                     "children": [
                       "On our own sourdough unless you ask otherwise. Make any toast a double for 4."
                     ],
-                    "id": "78e58bb8-4447-4b1a-baec-86ecf232cea1",
+                    "id": "a3a27d63-46ba-4363-8d38-2ac9b93874d3",
                     "ord": "a1"
                   },
                   {
@@ -1568,7 +1568,7 @@
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
                                 "children": ["Avo, chilli & lime"],
-                                "id": "91b61311-fefe-41c2-8acb-954b0abd2ed5",
+                                "id": "0104443d-6fca-48b2-9650-19d48ee14d2a",
                                 "ord": "a0"
                               },
                               {
@@ -1576,11 +1576,11 @@
                                 "tag": "span",
                                 "class": "text-lg font-semibold text-primary",
                                 "children": ["11"],
-                                "id": "e4ed0dd8-343c-443a-bf9c-97f582c9e66f",
+                                "id": "8b754500-0b74-4e8a-bb05-4983c7fa1aad",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "e0c4e2ba-c9ba-468c-9037-c94a27dc4b2c",
+                            "id": "33ac31ba-18db-4014-af19-d51e5409c51c",
                             "ord": "a0"
                           },
                           {
@@ -1590,11 +1590,11 @@
                             "children": [
                               "Smashed avocado, quick-pickled chilli, lime, toasted seeds and a soft-poached egg."
                             ],
-                            "id": "4bee91ae-1b34-4944-9bf2-6ec4afb7e522",
+                            "id": "298c8748-67a2-4257-ad18-c2506bb0a8b0",
                             "ord": "a1"
                           }
                         ],
-                        "id": "f42eb543-de14-4ab8-bae0-b9187915ca5b",
+                        "id": "91d7b9c0-f6ce-4c81-8d31-fb5e597d1ca0",
                         "ord": "a0"
                       },
                       {
@@ -1612,7 +1612,7 @@
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
                                 "children": ["Mushrooms on toast"],
-                                "id": "5b41187a-482f-4527-b57c-8edcb59cb14b",
+                                "id": "aebc14fa-60fe-4639-9886-25d419add878",
                                 "ord": "a0"
                               },
                               {
@@ -1620,11 +1620,11 @@
                                 "tag": "span",
                                 "class": "text-lg font-semibold text-primary",
                                 "children": ["10"],
-                                "id": "93325ab4-bf33-4e15-a6c8-40fdecdcd466",
+                                "id": "2920bb99-158e-482b-923c-0e001d5f4d5c",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "702e7475-8e3f-4f54-83db-ff61d7cfade7",
+                            "id": "d1eb9667-d3e3-4005-abc9-1beea329c659",
                             "ord": "a0"
                           },
                           {
@@ -1634,11 +1634,11 @@
                             "children": [
                               "Garlic-buttered mushrooms, thyme, aged cheddar melted through, a crack of pepper."
                             ],
-                            "id": "dfc3e678-4c92-4cc7-956a-f4327df478ef",
+                            "id": "af669fae-0923-4d12-9552-8441efed29fb",
                             "ord": "a1"
                           }
                         ],
-                        "id": "b5c6d2c4-5c10-4fc4-98e7-e63276e88f1d",
+                        "id": "f46ce540-b205-4ef3-8865-12d28712356f",
                         "ord": "a1"
                       },
                       {
@@ -1656,7 +1656,7 @@
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
                                 "children": ["Smoked salmon"],
-                                "id": "111a52c9-3929-4cd5-b1ce-189da83d0b70",
+                                "id": "79e69b6b-4584-4a13-9bae-08afea6fce2f",
                                 "ord": "a0"
                               },
                               {
@@ -1664,11 +1664,11 @@
                                 "tag": "span",
                                 "class": "text-lg font-semibold text-primary",
                                 "children": ["13"],
-                                "id": "8bf20ee7-3e9b-4940-adf1-5bc6fe5f4d0f",
+                                "id": "80116126-c4b5-4651-b329-7ccf8034127e",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "de9aba43-e4a4-493a-8018-683e108aa89e",
+                            "id": "c8eadc06-0eda-4f0f-94e4-7a94b96f6696",
                             "ord": "a0"
                           },
                           {
@@ -1678,11 +1678,11 @@
                             "children": [
                               "Cream cheese, cured salmon, capers, dill and shaved red onion on rye."
                             ],
-                            "id": "0600d630-ca7a-41af-a307-b3d8e7172394",
+                            "id": "390fcbe0-a600-4346-908c-1c386dd15b8d",
                             "ord": "a1"
                           }
                         ],
-                        "id": "8c3a8883-18e0-4a59-ab99-985fcb70de04",
+                        "id": "ffb3cb22-0339-42be-b06f-7ac823828808",
                         "ord": "a2"
                       },
                       {
@@ -1700,7 +1700,7 @@
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
                                 "children": ["Soup of the day"],
-                                "id": "6150a432-5d89-4e3d-ab45-bd7b451fd999",
+                                "id": "a4648ed4-1fd6-42ca-83c1-3b493c3b0940",
                                 "ord": "a0"
                               },
                               {
@@ -1708,11 +1708,11 @@
                                 "tag": "span",
                                 "class": "text-lg font-semibold text-primary",
                                 "children": ["8"],
-                                "id": "65b62ea2-be9d-43da-9ab1-e12a89dc21b0",
+                                "id": "7ef90c29-4a54-4a0e-abff-6065cd683526",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "038b9ce0-d2e6-4cff-a02a-9b659ef95819",
+                            "id": "6e1cfca8-9a40-4f23-bf9a-4c7d1b668f01",
                             "ord": "a0"
                           },
                           {
@@ -1722,11 +1722,11 @@
                             "children": [
                               "Whatever’s good this week — ask the counter. Comes with buttered sourdough."
                             ],
-                            "id": "eb32ac12-eb86-486c-b6fe-8c5a828a45f7",
+                            "id": "0a7e7a34-44f6-4e9d-971b-cb7b57ae78ab",
                             "ord": "a1"
                           }
                         ],
-                        "id": "b1aeb9c2-c940-4e0f-a28b-7bf2192aadcc",
+                        "id": "4b2b7bc1-0af5-48c8-bec5-68221f6f7695",
                         "ord": "a3"
                       },
                       {
@@ -1744,7 +1744,7 @@
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
                                 "children": ["Halloumi & slaw bowl"],
-                                "id": "f770965f-933d-44da-ba5f-3dc940ef021b",
+                                "id": "4e56a9ad-ee3f-4445-8fd1-5ee4a2884e99",
                                 "ord": "a0"
                               },
                               {
@@ -1752,11 +1752,11 @@
                                 "tag": "span",
                                 "class": "text-lg font-semibold text-primary",
                                 "children": ["12"],
-                                "id": "a2811245-d254-47fa-b261-d862b566f310",
+                                "id": "4b62fd63-8cb6-4565-b008-2877a752d93b",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "3aff030b-30e0-4873-8ec8-d92f1b1e80b1",
+                            "id": "a2ed4f57-494f-48be-810c-526b583235ae",
                             "ord": "a0"
                           },
                           {
@@ -1766,23 +1766,23 @@
                             "children": [
                               "Grilled halloumi, crunchy slaw, grains, roast squash and a lemon-tahini drizzle."
                             ],
-                            "id": "66a39959-0595-4126-b803-fe36712a70a9",
+                            "id": "fcfb25f0-eb2b-4f65-8f3b-6f4007bb9b68",
                             "ord": "a1"
                           }
                         ],
-                        "id": "53aaeac5-1e51-4936-98ad-650ab3c797be",
+                        "id": "047f8d70-dc1b-4e38-86cd-9d4ecd393c88",
                         "ord": "a4"
                       }
                     ],
-                    "id": "287ed1f5-445f-4cd2-bc61-00b0929cac15",
+                    "id": "8909291e-d1c2-421b-b9b0-8aabbf7bd85d",
                     "ord": "a2"
                   }
                 ],
-                "id": "f907fde0-563d-4101-aeca-c20177f18fbb",
+                "id": "3b791441-8948-4418-9da9-137a0a01e147",
                 "ord": "a0"
               }
             ],
-            "id": "c53eafe6-ef3b-4a34-8913-a1da49d68fa4",
+            "id": "7aa971dc-300f-4c99-be8f-895dde489da2",
             "ord": "a2"
           },
           {
@@ -1800,7 +1800,7 @@
                     "tag": "h2",
                     "class": "text-3xl font-bold tracking-tight text-base-content @2xl:text-4xl",
                     "children": ["Something sweet"],
-                    "id": "7f9e4c80-3337-4918-aa2e-7a1571456a1a",
+                    "id": "0d15a77a-e732-49d3-9c07-49e36ee3df7c",
                     "ord": "a0"
                   },
                   {
@@ -1810,7 +1810,7 @@
                     "children": [
                       "From the pastry case up front — ask what came out of the oven this morning."
                     ],
-                    "id": "03b188cd-950a-4b0a-8a20-4adfd73f4a53",
+                    "id": "2f681917-667a-4c76-a0b0-f2ec7373bf05",
                     "ord": "a1"
                   },
                   {
@@ -1833,7 +1833,7 @@
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
                                 "children": ["Cinnamon bun"],
-                                "id": "248f3a99-87d2-49bd-98b4-271b9d71d3cd",
+                                "id": "b89e6a34-a16c-437c-ac64-1b0abe361feb",
                                 "ord": "a0"
                               },
                               {
@@ -1841,11 +1841,11 @@
                                 "tag": "span",
                                 "class": "text-lg font-semibold text-primary",
                                 "children": ["5"],
-                                "id": "c06de95a-aadd-4fdd-9a3e-92c5bb03151e",
+                                "id": "0f88e31f-bb47-4df3-a4a0-7509afcf311c",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "ee5a164a-de98-4066-9f39-87d130b9cef9",
+                            "id": "c82dd626-8b6e-4ab7-b57c-83c367e38163",
                             "ord": "a0"
                           },
                           {
@@ -1855,11 +1855,11 @@
                             "children": [
                               "Soft, tall and iced. Best still warm — they rarely make it past noon."
                             ],
-                            "id": "cde81c3e-82e4-4554-bbf6-29705c77ec1b",
+                            "id": "e90fc540-a5f2-47d9-9f2a-79622e8a4a28",
                             "ord": "a1"
                           }
                         ],
-                        "id": "f37ecdab-4b93-4495-8a19-21a0dc60b023",
+                        "id": "59103cbf-7f37-44aa-b034-a782ab7f46b2",
                         "ord": "a0"
                       },
                       {
@@ -1877,7 +1877,7 @@
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
                                 "children": ["Citrus & olive-oil cake"],
-                                "id": "6f8c18fd-861a-463b-b936-ebcfac593e3f",
+                                "id": "9a3c7eef-5510-461a-bd32-44027dbec85c",
                                 "ord": "a0"
                               },
                               {
@@ -1885,11 +1885,11 @@
                                 "tag": "span",
                                 "class": "text-lg font-semibold text-primary",
                                 "children": ["6"],
-                                "id": "f9aa813e-3410-43f8-b625-ad0efe0a1d0b",
+                                "id": "3893cf53-4187-49f0-b373-2340909f2e75",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "9ab29e26-e293-4a18-b2e4-3287b3096aa4",
+                            "id": "5d2d52b4-343d-48a7-8dac-13de00887ad7",
                             "ord": "a0"
                           },
                           {
@@ -1899,11 +1899,11 @@
                             "children": [
                               "A moist slice with crème fraîche and a spoon of poached rhubarb."
                             ],
-                            "id": "2100bb41-6bb9-4df1-95ad-802ab4e028fe",
+                            "id": "d01591d4-6c74-4626-922f-5540827aae2b",
                             "ord": "a1"
                           }
                         ],
-                        "id": "c79d92ee-3fa4-4413-8406-b5d36a7d8350",
+                        "id": "dc21ae12-18cd-439b-a233-80362a0a0f62",
                         "ord": "a1"
                       },
                       {
@@ -1921,7 +1921,7 @@
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
                                 "children": ["Chocolate cookie"],
-                                "id": "d0b11a13-33d6-4ebd-8a61-dce79740b5ca",
+                                "id": "85334e65-cdf0-42d3-9679-b07afc3dcb19",
                                 "ord": "a0"
                               },
                               {
@@ -1929,11 +1929,11 @@
                                 "tag": "span",
                                 "class": "text-lg font-semibold text-primary",
                                 "children": ["4"],
-                                "id": "79afa32a-a3e7-498e-bb20-16d46f841284",
+                                "id": "e8eda482-d985-4a98-9bee-5982517ee7cb",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "a09a1a1b-008f-4a10-bbed-1e1149ec52fa",
+                            "id": "6a2dbfdb-5928-4a91-bfd1-a9d1dac10168",
                             "ord": "a0"
                           },
                           {
@@ -1943,11 +1943,11 @@
                             "children": [
                               "Rye flour, sea salt, a puddle of dark chocolate. Warm on request."
                             ],
-                            "id": "45873f1c-89be-4393-8213-f7d6198ecff7",
+                            "id": "8813322e-3eb2-458c-ab52-fb215b076b89",
                             "ord": "a1"
                           }
                         ],
-                        "id": "48b83896-15e5-4fa5-abf6-51fd617cc469",
+                        "id": "a922fa94-ad3b-416b-aa58-8a71e24d7468",
                         "ord": "a2"
                       },
                       {
@@ -1965,7 +1965,7 @@
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
                                 "children": ["Pastry of the day"],
-                                "id": "b81576b6-e08d-4201-a054-14c8f814e22c",
+                                "id": "d374d1e9-a9c2-41a1-a70f-d070d5d21691",
                                 "ord": "a0"
                               },
                               {
@@ -1973,11 +1973,11 @@
                                 "tag": "span",
                                 "class": "text-lg font-semibold text-primary",
                                 "children": ["4"],
-                                "id": "63f67bc9-1501-4dcf-a4d6-c00e626fe9a0",
+                                "id": "2036aa86-b4e2-4208-8604-a016ce4b370a",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "908a21b5-eb27-4938-a43a-0fa28b41b70d",
+                            "id": "b4407236-a14a-4816-b863-fec10e0fe2d5",
                             "ord": "a0"
                           },
                           {
@@ -1987,23 +1987,23 @@
                             "children": [
                               "A croissant, a morning bun, or whatever the baker felt like — ask what’s in."
                             ],
-                            "id": "8c40ede3-6c05-4d16-90be-0d3840688f5c",
+                            "id": "51e29729-1fe0-477d-9e63-b9ade0f5407d",
                             "ord": "a1"
                           }
                         ],
-                        "id": "e91fc911-e0c1-422f-ba02-b6d7f2c14a40",
+                        "id": "daf38740-678d-4ea4-8157-68ab7305a081",
                         "ord": "a3"
                       }
                     ],
-                    "id": "7415939d-5b60-4cf3-8713-abf8caef1586",
+                    "id": "dd6b28e4-2e1f-4f14-9788-05f63b8be887",
                     "ord": "a2"
                   }
                 ],
-                "id": "19faf62d-3564-465a-801c-546ae806fb83",
+                "id": "88b48eef-e641-469e-b6c3-09479b64e74b",
                 "ord": "a0"
               }
             ],
-            "id": "64afafb8-9c30-4c73-ad1e-f7a3f41a1087",
+            "id": "374b8abd-a5b9-44c7-9219-29b00999b10a",
             "ord": "a3"
           },
           {
@@ -2021,7 +2021,7 @@
                     "tag": "h2",
                     "class": "text-3xl font-bold tracking-tight text-base-content @2xl:text-4xl",
                     "children": ["Coffee & drinks"],
-                    "id": "ea42f0da-12f9-4e13-95be-0780dda838b1",
+                    "id": "d12dc619-1da5-4caf-936d-b4447d14d24a",
                     "ord": "a0"
                   },
                   {
@@ -2031,7 +2031,7 @@
                     "children": [
                       "Beans roasted two streets over. Oat, soya and whole milk all on the house — no extra."
                     ],
-                    "id": "53d42c94-eae2-4ccd-b389-dfd106e223fa",
+                    "id": "bcbbb098-1814-4d7b-9dac-a0a9ea012103",
                     "ord": "a1"
                   },
                   {
@@ -2054,7 +2054,7 @@
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
                                 "children": ["Espresso / flat white / latte"],
-                                "id": "6b64a0eb-1d42-48e9-becd-1a4eb78e8eda",
+                                "id": "96a9f444-6fde-4562-884b-291ce9e8396e",
                                 "ord": "a0"
                               },
                               {
@@ -2062,11 +2062,11 @@
                                 "tag": "span",
                                 "class": "text-lg font-semibold text-primary",
                                 "children": ["4"],
-                                "id": "5b9db59e-d3c9-4ff2-b104-4720ccd506fc",
+                                "id": "b199ce74-828f-4646-b55e-24e83b1f368e",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "fdcb37cb-1256-413b-b6ef-ac5feae6d7fd",
+                            "id": "5ef6a93c-5e31-46d9-b199-c65de31a821f",
                             "ord": "a0"
                           },
                           {
@@ -2076,11 +2076,11 @@
                             "children": [
                               "Our house blend, pulled properly. Decaf’s just as good, honestly."
                             ],
-                            "id": "7a153f73-a9ce-4618-975d-9a24d6a4dd21",
+                            "id": "b1420c7f-d5ec-4683-ae42-9f62b48474ad",
                             "ord": "a1"
                           }
                         ],
-                        "id": "1a887afc-1cc1-44fe-81b7-9bfa42ad434c",
+                        "id": "aa2c9371-fc00-42b5-b9de-ac329089dbed",
                         "ord": "a0"
                       },
                       {
@@ -2098,7 +2098,7 @@
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
                                 "children": ["Filter / batch brew"],
-                                "id": "c4a196c1-452e-4eb3-a337-88462f1d4744",
+                                "id": "1047416d-767c-4cc0-83f6-c0eabb4d08a0",
                                 "ord": "a0"
                               },
                               {
@@ -2106,11 +2106,11 @@
                                 "tag": "span",
                                 "class": "text-lg font-semibold text-primary",
                                 "children": ["4"],
-                                "id": "7a453962-d846-4e8c-b1ce-b5a095d74181",
+                                "id": "1f3e9b05-4052-4250-bf47-cfd35c1c5d10",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "e8f342fb-2276-4276-962d-323d07e85931",
+                            "id": "96ea09b3-4fa0-4774-a707-3db9f345fde8",
                             "ord": "a0"
                           },
                           {
@@ -2120,11 +2120,11 @@
                             "children": [
                               "A rotating single origin, brewed by the cup. Free refills before eleven."
                             ],
-                            "id": "5fde4906-346a-4e63-bd6c-fc15556bda7f",
+                            "id": "fb7ec483-1e30-4ffa-ac3a-373834b19e19",
                             "ord": "a1"
                           }
                         ],
-                        "id": "173960d9-d5de-41cb-bdb1-f7478130374b",
+                        "id": "c0107b8d-0080-4898-82bd-2e271ff55e1b",
                         "ord": "a1"
                       },
                       {
@@ -2142,7 +2142,7 @@
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
                                 "children": ["Iced latte / cold brew"],
-                                "id": "d47df6cc-74f7-4b86-a9eb-cad9526a62c3",
+                                "id": "b462cb8b-8543-403c-aed3-bd34df6f081f",
                                 "ord": "a0"
                               },
                               {
@@ -2150,11 +2150,11 @@
                                 "tag": "span",
                                 "class": "text-lg font-semibold text-primary",
                                 "children": ["5"],
-                                "id": "68ae8483-9207-4a3a-ac2c-6eae99c1a2fd",
+                                "id": "9cc2c051-8be7-431a-ae0c-2844ed0e70fe",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "f7ba6e65-288a-4744-b1db-1079aa38bf3a",
+                            "id": "5d4f50c7-9453-46f5-a9cb-280e414a7756",
                             "ord": "a0"
                           },
                           {
@@ -2164,11 +2164,11 @@
                             "children": [
                               "Slow-steeped overnight, poured long over ice. A summer regular."
                             ],
-                            "id": "5adc0d2a-c008-4962-853d-e1d768f5d9a9",
+                            "id": "7ffbc246-1260-4cf7-b5a6-f5f76da7ce46",
                             "ord": "a1"
                           }
                         ],
-                        "id": "7c688852-e452-413a-9f6a-9315f2229e8d",
+                        "id": "1d6c9e7c-2c8d-4d3d-b669-8d3c6194b48e",
                         "ord": "a2"
                       },
                       {
@@ -2186,7 +2186,7 @@
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
                                 "children": ["Loose-leaf tea"],
-                                "id": "357afbe8-3940-48a0-92ad-0335d79f4b26",
+                                "id": "49f27d39-017b-4364-966f-14171aaff048",
                                 "ord": "a0"
                               },
                               {
@@ -2194,11 +2194,11 @@
                                 "tag": "span",
                                 "class": "text-lg font-semibold text-primary",
                                 "children": ["4"],
-                                "id": "b60c2912-6aae-40f0-944a-964347d813ab",
+                                "id": "98e6503b-06e9-4e0c-95a1-596aaee8d903",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "f20a5cd5-7d1b-439a-a5a0-15f0e39143f6",
+                            "id": "0a1fdb6b-3c25-45f2-94f8-2cb59d5d3043",
                             "ord": "a0"
                           },
                           {
@@ -2208,11 +2208,11 @@
                             "children": [
                               "English breakfast, earl grey, fresh mint or a house herbal. Proper pot."
                             ],
-                            "id": "6e77fe46-6557-42aa-8c5e-9a700070e567",
+                            "id": "f4ce39cb-d63d-49cc-9cae-c7c1f085ffcb",
                             "ord": "a1"
                           }
                         ],
-                        "id": "d10b1ee5-8f55-4a59-a3b8-3415a7e2c126",
+                        "id": "b1c75cf7-9310-46e9-af28-641c711f6d6d",
                         "ord": "a3"
                       },
                       {
@@ -2230,7 +2230,7 @@
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
                                 "children": ["Fresh orange / seasonal juice"],
-                                "id": "c626dfc7-6366-4e77-869c-771d0ed14640",
+                                "id": "3fee2e77-cd23-48f3-9663-bc24b91b6bab",
                                 "ord": "a0"
                               },
                               {
@@ -2238,11 +2238,11 @@
                                 "tag": "span",
                                 "class": "text-lg font-semibold text-primary",
                                 "children": ["5"],
-                                "id": "1c110500-4df5-40aa-90f6-da0213e9bbcd",
+                                "id": "6c6c4712-4129-488b-9769-a8961e42b6bf",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "4e456c42-59d6-4ae4-a7aa-baaa1bbd150d",
+                            "id": "292c02a3-960b-415b-b4ce-1ee8a297f17d",
                             "ord": "a0"
                           },
                           {
@@ -2250,23 +2250,23 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-secondary",
                             "children": ["Squeezed that morning, plus a changing house lemonade."],
-                            "id": "b7e3fa2d-27ee-46cb-98b1-25657aaca644",
+                            "id": "f296be9f-aa96-454f-babc-6e7507b05f38",
                             "ord": "a1"
                           }
                         ],
-                        "id": "7947029b-0648-4138-803f-ec1225403225",
+                        "id": "f3cd43fb-4b94-44af-b545-6a5db00312e2",
                         "ord": "a4"
                       }
                     ],
-                    "id": "3090157c-09a0-46ce-98c7-a57ebc0fea1c",
+                    "id": "03d88b66-395f-4f4b-95f1-02d25c945688",
                     "ord": "a2"
                   }
                 ],
-                "id": "971c2504-5022-4c70-8e21-4d7d72f94d94",
+                "id": "1dcb4b0c-fa82-40a2-b334-1148ba4abb08",
                 "ord": "a0"
               }
             ],
-            "id": "5b039afb-232c-410a-89f2-ff1396d6fd52",
+            "id": "12b20fc9-ca57-48f7-8fd0-194b9cec8884",
             "ord": "a4"
           }
         ]
@@ -2283,7 +2283,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "2050e05a-3175-4b89-9e6f-a354cc68352c",
+        "id": "5ffe1b97-c368-4f6f-9714-01e8eee58729",
         "children": [
           {
             "kind": "element",
@@ -2300,7 +2300,7 @@
                     "tag": "h1",
                     "class": "text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl",
                     "children": ["Book a table"],
-                    "id": "03a76569-0750-42fa-bfa5-64be6b615a33",
+                    "id": "8c4f7aca-e37e-4524-9a5d-c52d3186b00f",
                     "ord": "a0"
                   },
                   {
@@ -2310,15 +2310,15 @@
                     "children": [
                       "Pick your party size and a time below — you’ll see live availability across the week. No deposit, no fuss. Walk-ins are always welcome; booking just means your table’s waiting when the weekend gets busy."
                     ],
-                    "id": "bd4b6bcd-f81d-4123-ae0e-96fd793afbf2",
+                    "id": "bb5ff7b2-35fd-4f02-97c9-9065886d1ea8",
                     "ord": "a1"
                   }
                 ],
-                "id": "7603c690-036b-4d5e-8980-2edf34944afc",
+                "id": "02be6d25-9290-4c0b-919f-72752dbdbabd",
                 "ord": "a0"
               }
             ],
-            "id": "cd5f638c-f0f3-4aba-a8cf-2591cf750bbd",
+            "id": "899bb361-f50c-44b6-9f6e-10907c1acd03",
             "ord": "a0"
           },
           {
@@ -2326,8 +2326,136 @@
             "component": "scheduling.services",
             "class": "mx-auto w-full max-w-5xl px-6 py-8",
             "locked": "host",
-            "id": "863ca07e-1d8d-4b36-87ab-a92199f210b5",
+            "id": "9878e56c-66f3-4efc-bd8b-cdbfbbb908a7",
             "ord": "a1"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-8",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["Good to know"],
+                        "id": "ee600b69-b439-40a0-a910-b8be12bba7b5",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "What happens once you pick a time — and how to change it if something comes up."
+                        ],
+                        "id": "bf944a53-0c3e-42c9-9d3c-1689badec498",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "b52314d1-04cf-484b-a6e3-dccba26138d1",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-6 @3xl:grid-cols-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-3 rounded-box border border-base-300 bg-base-100 p-6",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Table reservation"],
+                            "id": "a21955a9-895d-438b-87b6-93c6cd9a4816",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "No deposit, ever — just book and turn up. We hold your table for 15 minutes past your time; if your plans change, a quick heads-up by a couple of hours before frees it for someone else. Walk-ins are always welcome, so don’t worry if you didn’t book."
+                            ],
+                            "id": "0ffdecf0-6358-482d-a874-b8e79a8efb14",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base font-medium text-base-content",
+                            "children": [
+                              "No deposit to book. Change or cancel free up to 2 hours before."
+                            ],
+                            "id": "da304cfe-dd24-4600-b7bc-5f000e8f309f",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "eb67336d-6506-45b1-86a2-6be27d8abf02",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-3 rounded-box border border-base-300 bg-base-100 p-6",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Larger group"],
+                            "id": "ecfe52c2-a305-4281-a6ce-7fa1d2274fd9",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Groups of five or six get the big communal table by the window — still no deposit. If you need to cancel, letting us know the evening before means we can offer it to another party. Bigger than six? Email us and we’ll happily sort it."
+                            ],
+                            "id": "ccf8841c-63f5-4055-a93d-a8e5ad29e844",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base font-medium text-base-content",
+                            "children": [
+                              "No deposit to book. Change or cancel free up to 12 hours before."
+                            ],
+                            "id": "4f5762ad-0a82-4648-a739-86de2e1b79c7",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "f6ee6d93-b171-4431-9665-9a2ea858490a",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "0de7ef02-5d72-4634-ac10-4d743b989f83",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "d97f72fc-21a5-4225-8921-8f15036e9ec2",
+                "ord": "a0"
+              }
+            ],
+            "id": "9367c890-c570-4305-8acd-706c616efd73",
+            "ord": "a2"
           }
         ]
       }
@@ -2343,7 +2471,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "7c4ab177-7331-4c10-9854-dba02de4f053",
+        "id": "809832f6-7e87-4b77-8cb0-4ad90a085378",
         "children": [
           {
             "kind": "element",
@@ -2360,7 +2488,7 @@
                     "tag": "h1",
                     "class": "text-5xl font-bold tracking-tight text-base-content @2xl:text-6xl",
                     "children": ["About Kettle & Crumb"],
-                    "id": "010cf338-242c-4958-9bca-b6819f53ff45",
+                    "id": "1144ebeb-1855-4a90-bd8e-be73a7bf46ec",
                     "ord": "a0"
                   },
                   {
@@ -2370,7 +2498,7 @@
                     "children": [
                       "Kettle & Crumb started as a tiny coffee window and grew into the corner café we always wanted on our own street — the kind you can drop into any hour of the day and feel at home in. Sunny, unhurried, and open to everyone."
                     ],
-                    "id": "84cbaa71-dad1-4dbe-a968-af390a8e6778",
+                    "id": "cd1d8049-e092-4b36-91a0-3355374ed6d5",
                     "ord": "a1"
                   },
                   {
@@ -2380,7 +2508,7 @@
                     "children": [
                       "We bake the sourdough and the pastries in-house, pull coffee from a roaster two streets over, and cook a menu that runs all day because we never understood why brunch has to stop at eleven. Most of what’s on the plate comes from growers and makers we know by name."
                     ],
-                    "id": "1ac1d411-6d75-4c0d-a3c4-1e05358ccb2d",
+                    "id": "baea1155-5755-443a-bec3-478997a090e6",
                     "ord": "a2"
                   },
                   {
@@ -2390,15 +2518,15 @@
                     "children": [
                       "Bring your laptop, your book, your baby or your whole football team. There’s good coffee, a warm bun, and a table with your name on it whenever you’re ready."
                     ],
-                    "id": "767244e1-2d02-4518-b622-078700a85c45",
+                    "id": "4d315a2a-7125-4e47-9d1e-af0190aa7e3d",
                     "ord": "a3"
                   }
                 ],
-                "id": "9a190cee-d780-451a-8528-de7555f47442",
+                "id": "f5691ff5-e5b2-4750-a14d-d64cc738b74b",
                 "ord": "a0"
               }
             ],
-            "id": "c7b7caa6-bdc3-409d-b645-f5962c93e737",
+            "id": "a6f70d4a-6322-41bf-af7b-a3544d19df7f",
             "ord": "a0"
           }
         ]
@@ -2415,8 +2543,294 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "97d0fe26-a197-4045-a85e-7bec7bfe217a",
+        "id": "ecb26356-f94a-41be-b71e-4d092b887dc2",
         "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-8",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h1",
+                        "class": "text-4xl font-bold tracking-tight text-base-content @3xl:text-5xl",
+                        "children": ["Get in touch"],
+                        "id": "0dac39f2-d4c1-45e0-829c-6a482d12b699",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Questions before you book? Send a note and Kettle & Crumb will get back to you — usually the same day."
+                        ],
+                        "id": "4a00864f-c6c6-4c57-b71f-6106cbf8b373",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "d58d46ef-4e04-48f0-8adf-811a62229bfb",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-1",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "span",
+                        "class": "text-base font-medium text-base-content",
+                        "children": ["Call us"],
+                        "id": "b77bef0e-af2b-434a-8329-194e93c2466c",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "text-lg font-semibold text-base-content underline underline-offset-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "children": ["(555) 123-4567"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "site.identity.phone"
+                            },
+                            "id": "089308b3-2b7c-4dd7-b861-4e3bcb18fac7",
+                            "ord": "a0"
+                          }
+                        ],
+                        "data": {
+                          "kind": "value",
+                          "ref": "site.identity.phoneHref",
+                          "attr": "href"
+                        },
+                        "id": "1363a328-56dc-41f8-b9bc-032132cebb7a",
+                        "ord": "a1"
+                      }
+                    ],
+                    "data": {
+                      "kind": "visible",
+                      "ref": "site.identity.phone"
+                    },
+                    "id": "7e7d5a02-22df-4388-b424-8932d5c42cf0",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-1",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "span",
+                        "class": "text-base font-medium text-base-content",
+                        "children": ["Email us"],
+                        "id": "a8de78f2-d806-4956-b38d-f9a501da7fe4",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "text-lg font-semibold text-base-content underline underline-offset-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "children": ["hello@yourbusiness.com"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "site.identity.email"
+                            },
+                            "id": "161696d4-83da-4457-b99e-e7634599ec50",
+                            "ord": "a0"
+                          }
+                        ],
+                        "data": {
+                          "kind": "value",
+                          "ref": "site.identity.emailHref",
+                          "attr": "href"
+                        },
+                        "id": "0bd57a80-bc3f-4a2e-a661-ff75eef061ee",
+                        "ord": "a1"
+                      }
+                    ],
+                    "data": {
+                      "kind": "visible",
+                      "ref": "site.identity.email"
+                    },
+                    "id": "9dd3a508-8037-4e5f-932b-8e85e29cd75b",
+                    "ord": "a2"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "form",
+                    "class": "flex w-full max-w-xl flex-col gap-5",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "label",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-base font-medium text-base-content",
+                            "children": ["Your name"],
+                            "id": "c9949ca9-a235-411c-b306-ad458f3c3979",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "input",
+                            "class": "input input-bordered w-full",
+                            "attrs": {
+                              "type": "text",
+                              "name": "name",
+                              "required": true
+                            },
+                            "id": "defa791e-b984-4058-b1ab-fffe8c8b17c6",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "333b3043-e3c1-4716-aa0c-3165deb46a84",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "label",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-base font-medium text-base-content",
+                            "children": ["Email address"],
+                            "id": "86554904-16ab-40db-8ff6-c0a2858c7164",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "input",
+                            "class": "input input-bordered w-full",
+                            "attrs": {
+                              "type": "email",
+                              "name": "email",
+                              "required": true
+                            },
+                            "id": "b4817386-7465-496d-be21-ba2ec5076bde",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "77e979f1-69e3-4f27-95b3-0c8b1ca7d85d",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "label",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-base font-medium text-base-content",
+                            "children": ["Phone number"],
+                            "id": "f1b413a3-4f0e-4fb9-9f3b-113e07314de7",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "input",
+                            "class": "input input-bordered w-full",
+                            "attrs": {
+                              "type": "tel",
+                              "name": "phone"
+                            },
+                            "id": "0304a08d-411f-40ad-adbb-701944e4de87",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "ed4c8629-9abd-4e37-9a4a-4608dc76e94c",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "label",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-base font-medium text-base-content",
+                            "children": ["How can we help?"],
+                            "id": "9f936f72-d81b-4531-8978-0d31f51d662c",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "textarea",
+                            "class": "textarea textarea-bordered min-h-32 w-full",
+                            "attrs": {
+                              "name": "message"
+                            },
+                            "id": "29bd7767-8770-4c2f-83e8-145d990abae9",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "6f315259-4c3d-406b-89e9-debc923498e1",
+                        "ord": "a3"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-wrap items-center gap-3",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "button",
+                            "class": "btn btn-primary btn-lg",
+                            "attrs": {
+                              "type": "submit"
+                            },
+                            "children": ["Send my request"],
+                            "id": "a4f37d40-7ab5-46cb-a434-43697d6c8267",
+                            "ord": "a0"
+                          }
+                        ],
+                        "id": "8143d812-b9bd-4111-a6c8-20fa699f23ce",
+                        "ord": "a4"
+                      }
+                    ],
+                    "behavior": {
+                      "type": "form"
+                    },
+                    "data": {
+                      "kind": "action",
+                      "ref": "submit"
+                    },
+                    "id": "93d1c685-f2f4-43f9-92db-1868a3e00364",
+                    "ord": "a3"
+                  }
+                ],
+                "id": "3ca548a2-0c26-4d49-acf3-27f719c4224a",
+                "ord": "a0"
+              }
+            ],
+            "id": "475948e5-6df6-4808-a825-4f24f70f2ef8",
+            "ord": "a0"
+          },
           {
             "kind": "element",
             "tag": "section",
@@ -2429,10 +2843,10 @@
                 "children": [
                   {
                     "kind": "element",
-                    "tag": "h1",
+                    "tag": "h2",
                     "class": "text-5xl font-bold tracking-tight text-base-content @2xl:text-6xl",
                     "children": ["Visit Kettle & Crumb"],
-                    "id": "8bf2443a-c4b8-4ae9-bc99-dd2c2691f6a2",
+                    "id": "b5f8feea-a95e-4e0c-8ef0-d1c71f9b48f5",
                     "ord": "a0"
                   },
                   {
@@ -2442,7 +2856,7 @@
                     "children": [
                       "9 Marigold Street, on the sunny corner by the little park. Open every day, eight till four, kitchen running the whole time. Bikes, buggies and well-behaved dogs always welcome — the number 4 stops right outside."
                     ],
-                    "id": "d1bde525-c2ca-4c3f-9a9f-602d1fea7e16",
+                    "id": "83153df9-5090-4a19-a790-8cfd35491bc4",
                     "ord": "a1"
                   },
                   {
@@ -2458,7 +2872,7 @@
                           "href": "/book"
                         },
                         "children": ["Book a table"],
-                        "id": "b1324d69-c3ed-4e2c-9b92-70504aa0af89",
+                        "id": "d8ece34e-1b22-4bf3-ada2-41e5a1486c62",
                         "ord": "a0"
                       },
                       {
@@ -2469,11 +2883,11 @@
                           "href": "mailto:hello@kettleandcrumb.example"
                         },
                         "children": ["Email us"],
-                        "id": "118d491b-45e2-4660-a827-484a62e638ed",
+                        "id": "4b01c7d6-5f55-404c-b149-fc93cb16defc",
                         "ord": "a1"
                       }
                     ],
-                    "id": "f2cd203b-8188-4aa1-a324-e480ff90e0f9",
+                    "id": "e5785a98-6b5c-4473-9418-46f5a63161e0",
                     "ord": "a2"
                   },
                   {
@@ -2483,16 +2897,16 @@
                     "children": [
                       "Planning a big group, a baby shower or a morning takeover? Email hello@kettleandcrumb.example and we’ll get straight back to you."
                     ],
-                    "id": "1d8de595-b5b9-4f1e-81bf-0c39f9ad7e3e",
+                    "id": "ea1ed1d6-c288-4923-b385-bd11419a9dce",
                     "ord": "a3"
                   }
                 ],
-                "id": "f3d63d95-680d-4670-b156-62bc5d9f74a5",
+                "id": "9b00e557-5ebb-4df2-b65c-8ccddb87322d",
                 "ord": "a0"
               }
             ],
-            "id": "ebc5a734-6d07-434d-9ecf-8c44aa6611ef",
-            "ord": "a0"
+            "id": "4d0026ab-2fb0-4a74-9dfb-645413b1e239",
+            "ord": "a1"
           }
         ]
       }

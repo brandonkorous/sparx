@@ -22,7 +22,7 @@
                   "props": {
                     "show": "both"
                   },
-                  "id": "1d9951c5-271b-41ec-b9fc-9724866d3707",
+                  "id": "9658ec73-bf0d-4083-9082-2162e23a9af6",
                   "ord": "a0"
                 },
                 {
@@ -43,7 +43,7 @@
                         "type": "link",
                         "label": "Product"
                       },
-                      "id": "e6bd761f-1faa-4b63-8096-a6a919678bcc",
+                      "id": "0c436c6c-4a5b-4896-aa73-26a9388a19ec",
                       "ord": "a0"
                     },
                     {
@@ -59,7 +59,7 @@
                         "type": "link",
                         "label": "Pricing"
                       },
-                      "id": "096a734b-20a4-4261-94dd-552229178473",
+                      "id": "e8482c28-2d25-4b57-afa2-92c94fb19f66",
                       "ord": "a1"
                     },
                     {
@@ -75,7 +75,7 @@
                         "type": "link",
                         "label": "Docs"
                       },
-                      "id": "d5b29e63-8355-415a-a034-2f590984dad1",
+                      "id": "22b9ee72-d3dc-4d5f-bd4d-ec38aceb0b92",
                       "ord": "a2"
                     },
                     {
@@ -91,11 +91,11 @@
                         "type": "link",
                         "label": "Company"
                       },
-                      "id": "05af5b81-b69c-4147-bf6e-7102717ac874",
+                      "id": "b137f99f-b5a6-432f-873f-b14acdcd494a",
                       "ord": "a3"
                     }
                   ],
-                  "id": "37cdc7d6-4327-4b20-94bd-4cdd3c5b8d4b",
+                  "id": "e767c629-fd43-4ae8-8371-40ea8ed25b57",
                   "ord": "a1"
                 },
                 {
@@ -116,14 +116,14 @@
                         "type": "link",
                         "label": "Secondary link"
                       },
-                      "id": "1e67d55d-2980-48a1-ba4f-6a701d3e4bb8",
+                      "id": "0a677f11-84d5-4891-bb30-9ac8ebc775bb",
                       "ord": "a0"
                     },
                     {
                       "kind": "host",
                       "component": "site.theme-toggle",
                       "class": "inline-flex items-center",
-                      "id": "4126d8e0-62c7-414c-80f5-82052994e391",
+                      "id": "4083521b-97c4-48bb-9378-4bec373d6af0",
                       "ord": "a1"
                     },
                     {
@@ -139,7 +139,7 @@
                         "type": "link",
                         "label": "Primary action"
                       },
-                      "id": "95c24943-adde-4514-b62c-8ded6b7dfd61",
+                      "id": "f999350e-725b-4c98-9a4e-95904deed52d",
                       "ord": "a2"
                     },
                     {
@@ -157,20 +157,20 @@
                           "props": {
                             "name": "menu"
                           },
-                          "id": "020f1d67-520e-4eb1-bdeb-30e8a5caa7d3",
+                          "id": "9653c91f-9ac4-4718-bf4e-a70ce5a23163",
                           "ord": "a0"
                         }
                       ],
                       "part": "trigger",
-                      "id": "04017a5e-70a7-4f00-b57e-3663f6db70a4",
+                      "id": "f8de9f2d-67ca-4d9b-bb5c-5b6270e57e5b",
                       "ord": "a3"
                     }
                   ],
-                  "id": "07e6ce42-4054-473c-b30c-03a86250ba84",
+                  "id": "cd04460a-ba6f-4ae6-8447-3bfa950747aa",
                   "ord": "a2"
                 }
               ],
-              "id": "6fdb0d0f-a8c8-44ee-8812-9cd106ee022d",
+              "id": "074b14c0-6445-4cbb-ad50-49ed32c4bd45",
               "ord": "a0"
             },
             {
@@ -194,7 +194,7 @@
                     "type": "link",
                     "label": "Product"
                   },
-                  "id": "296e3a60-7d4c-47e4-98e2-ec8f2b3114b8",
+                  "id": "ea4cf064-86b8-4b24-a312-f5a657c60c11",
                   "ord": "a0"
                 },
                 {
@@ -210,7 +210,7 @@
                     "type": "link",
                     "label": "Pricing"
                   },
-                  "id": "8bce4034-af62-4e64-bc74-e9dc38b4171c",
+                  "id": "ec2b50b8-1354-4043-a7dd-34ba8dfa0ce8",
                   "ord": "a1"
                 },
                 {
@@ -226,7 +226,7 @@
                     "type": "link",
                     "label": "Docs"
                   },
-                  "id": "43de38fa-68f2-4214-a388-28082198623e",
+                  "id": "abd2d30e-7c98-4749-b64c-15866648581c",
                   "ord": "a2"
                 },
                 {
@@ -242,7 +242,7 @@
                     "type": "link",
                     "label": "Company"
                   },
-                  "id": "b51a8d37-b054-4e4c-9d04-4a3b65c52331",
+                  "id": "f7b8cb97-9cc1-48b2-8aee-a80e879c9cc7",
                   "ord": "a3"
                 },
                 {
@@ -258,7 +258,7 @@
                     "type": "link",
                     "label": "Secondary link"
                   },
-                  "id": "7849dfbf-3176-4493-9b28-c6db9520ad7f",
+                  "id": "fd7bf973-6958-4710-aa7c-e97a8cf7d220",
                   "ord": "a4"
                 },
                 {
@@ -274,19 +274,19 @@
                     "type": "link",
                     "label": "Primary action"
                   },
-                  "id": "b2d44655-922c-43c1-804d-f828d7479908",
+                  "id": "7fea6fc4-e6f6-4d7b-a8a1-4905ee939b33",
                   "ord": "a5"
                 }
               ],
               "part": "panel",
-              "id": "d797f7fa-8eee-42c8-8315-6f25c5195457",
+              "id": "4473fd03-a93e-440e-b845-6ba0c450db8d",
               "ord": "a1"
             }
           ],
           "behavior": {
             "type": "disclosure"
           },
-          "id": "58fb8bdc-c096-462b-968f-784cb1920552",
+          "id": "5fba41e4-d244-4c82-af3f-d5ba51232b48",
           "ord": "a0"
         },
         {
@@ -302,7 +302,7 @@
               "kind": "outlet"
             }
           ],
-          "id": "29bb945d-d786-410b-8862-427328db3912",
+          "id": "f97717f8-f146-4c1c-b8a3-0d7825a58fe6",
           "ord": "a1"
         },
         {
@@ -332,7 +332,7 @@
                           "props": {
                             "show": "both"
                           },
-                          "id": "364a0986-533e-4acb-9b07-6c863e3fc7c3",
+                          "id": "c26d911c-1d73-49ce-be58-6c1a528fdf10",
                           "ord": "a0"
                         },
                         {
@@ -350,7 +350,7 @@
                           "attrs": {
                             "href": "/"
                           },
-                          "id": "c953bc45-881a-4fdd-b6c7-3c10bdbf9a41",
+                          "id": "cf00fbaa-53ad-456a-a586-c4aa5fcbd066",
                           "ord": "a1"
                         },
                         {
@@ -371,7 +371,7 @@
                                 "placeholder": "you@example.com",
                                 "required": true
                               },
-                              "id": "d6a63824-d8ce-4996-93a2-dfa7e3692535",
+                              "id": "9909606d-ea82-4ea4-972f-f27dbd25371e",
                               "ord": "a0"
                             },
                             {
@@ -387,11 +387,11 @@
                                 "type": "text",
                                 "label": "Button label"
                               },
-                              "id": "4a8fb445-c866-44be-8a68-05af2cc854be",
+                              "id": "aea5f235-b1bd-4165-9142-55fe63200eec",
                               "ord": "a1"
                             }
                           ],
-                          "id": "2a003a44-0a9d-41b1-9ac0-b9dba1c0c1c3",
+                          "id": "92b2616f-0342-4d68-b799-bccada7db978",
                           "ord": "a2"
                         },
                         {
@@ -404,11 +404,11 @@
                             "type": "text",
                             "label": "Reassurance line"
                           },
-                          "id": "6177632c-63a0-42d7-9d7d-7933dff082b3",
+                          "id": "f428a3e7-c410-464f-8ebf-96aa0fd9042e",
                           "ord": "a3"
                         }
                       ],
-                      "id": "50ef3526-0d22-4878-8c70-315dbfb4bbdd",
+                      "id": "99e05654-4f4c-4814-bf5a-38ec896ff968",
                       "ord": "a0"
                     },
                     {
@@ -434,7 +434,7 @@
                               "attrs": {
                                 "href": "/"
                               },
-                              "id": "a5fdfa37-1721-4ec4-945b-16dcf1b32d82",
+                              "id": "f065e21b-eb27-4643-a2e6-4ded801d8a85",
                               "ord": "a0"
                             },
                             {
@@ -459,11 +459,11 @@
                                         "type": "link",
                                         "label": "Features"
                                       },
-                                      "id": "33846cbe-4816-4b0e-acf6-b3b04e396cdb",
+                                      "id": "3261c134-1b6d-4947-9f13-c9bb2f83cc6e",
                                       "ord": "a0"
                                     }
                                   ],
-                                  "id": "864cabd9-e2b5-4ae9-a82e-26bce5692084",
+                                  "id": "67b29709-99fc-4534-bc2a-530b4063489e",
                                   "ord": "a0"
                                 },
                                 {
@@ -483,11 +483,11 @@
                                         "type": "link",
                                         "label": "Pricing"
                                       },
-                                      "id": "606caadc-0329-4ec3-b630-c3b6a0903738",
+                                      "id": "dcc0980d-57fd-4193-896d-1954c80f22be",
                                       "ord": "a0"
                                     }
                                   ],
-                                  "id": "d66ec234-c4de-4000-a628-f40ccabdd070",
+                                  "id": "9135143d-3a73-468b-8c40-782b48877ae6",
                                   "ord": "a1"
                                 },
                                 {
@@ -507,11 +507,11 @@
                                         "type": "link",
                                         "label": "Changelog"
                                       },
-                                      "id": "3d63b306-34ab-4085-aada-9b143170ac20",
+                                      "id": "d38f0c80-72a5-43d1-860a-c4ffcf5c04fa",
                                       "ord": "a0"
                                     }
                                   ],
-                                  "id": "088dc9eb-1473-4b0d-9612-d1855190bfd1",
+                                  "id": "542c5d22-0727-4873-9232-2100a7bbb325",
                                   "ord": "a2"
                                 },
                                 {
@@ -531,11 +531,11 @@
                                         "type": "link",
                                         "label": "Roadmap"
                                       },
-                                      "id": "85517997-1864-410d-b207-0f6cc9c78838",
+                                      "id": "6d48bbb8-821b-42f2-ae99-da7c5b93b9e2",
                                       "ord": "a0"
                                     }
                                   ],
-                                  "id": "fd504f30-52ab-45e6-a90a-b3e7088fbb89",
+                                  "id": "e2794e17-42fe-4141-809c-1e5c1958111a",
                                   "ord": "a3"
                                 },
                                 {
@@ -550,19 +550,19 @@
                                         "href": "/search"
                                       },
                                       "children": ["Search"],
-                                      "id": "42d24edb-5816-4726-bd25-f45c4e51289c",
+                                      "id": "f4ac74a8-34c8-452f-98c0-4fb212557032",
                                       "ord": "a0"
                                     }
                                   ],
-                                  "id": "7c9ccb17-9e25-4866-a5f3-56e887f04b49",
+                                  "id": "85ca9ee5-6541-480d-baa7-3a4037b7095d",
                                   "ord": "a4"
                                 }
                               ],
-                              "id": "be8cb358-a8c6-4fbb-b04d-a62ad767d98a",
+                              "id": "cbea19e4-b31d-47ff-802e-1595a9647ebb",
                               "ord": "a1"
                             }
                           ],
-                          "id": "f5c00d0c-425f-4711-9e29-75a6bb1270ce",
+                          "id": "995c36bc-caa6-4203-a031-b1810681946c",
                           "ord": "a0"
                         },
                         {
@@ -583,7 +583,7 @@
                               "attrs": {
                                 "href": "/account"
                               },
-                              "id": "3fc1d7c8-32ea-4dd7-9db7-39b3c04a4164",
+                              "id": "59a60301-39ef-415c-990c-c24ff16aa2da",
                               "ord": "a0"
                             },
                             {
@@ -608,11 +608,11 @@
                                         "type": "link",
                                         "label": "About"
                                       },
-                                      "id": "b6f31f7a-cce6-4057-87c4-3b4eef0e798d",
+                                      "id": "5952e9d7-828a-4688-9040-dbafd128a166",
                                       "ord": "a0"
                                     }
                                   ],
-                                  "id": "adc08ce6-3ffc-4888-b464-4d2c12ae3cd0",
+                                  "id": "c6ae4586-cc69-45ed-a877-2301cea42de7",
                                   "ord": "a0"
                                 },
                                 {
@@ -632,11 +632,11 @@
                                         "type": "link",
                                         "label": "Careers"
                                       },
-                                      "id": "562348ed-e6f0-40c3-951b-a532fb12f954",
+                                      "id": "5ce0b87b-9d7f-450f-9012-4e2779297221",
                                       "ord": "a0"
                                     }
                                   ],
-                                  "id": "6e4aa887-df89-40ad-ae2e-61bcbd0b404a",
+                                  "id": "7351aa0c-f765-4ca4-98b2-5eca7bfe2c9c",
                                   "ord": "a1"
                                 },
                                 {
@@ -656,27 +656,27 @@
                                         "type": "link",
                                         "label": "Press"
                                       },
-                                      "id": "76fa8b13-9be6-4f4e-b27e-6af20e6e20d0",
+                                      "id": "8a9b0446-6712-4010-93c8-d6a2ccda68db",
                                       "ord": "a0"
                                     }
                                   ],
-                                  "id": "3e1be876-af87-4af9-bb08-e50a4c93c24c",
+                                  "id": "32a6661b-d765-436c-8a7e-1d4f220081f7",
                                   "ord": "a2"
                                 }
                               ],
-                              "id": "856ee2f9-ffd7-4352-9ea8-8992a484da18",
+                              "id": "d96cd005-f53a-4609-bd18-52c4afd527ab",
                               "ord": "a1"
                             }
                           ],
-                          "id": "44053afa-e954-4005-a32c-f27d31868ad2",
+                          "id": "407bc818-2940-4407-a90a-8521db54332d",
                           "ord": "a1"
                         }
                       ],
-                      "id": "860ecded-b9f2-41a8-b379-b924e4f2babc",
+                      "id": "bc9271e7-3c89-4358-85cd-f012a1d0afca",
                       "ord": "a1"
                     }
                   ],
-                  "id": "88f4add0-1105-4ab6-b9dc-a0ef761059d7",
+                  "id": "257668f5-ef81-4249-b53a-6d7ed97fbd32",
                   "ord": "a0"
                 },
                 {
@@ -699,11 +699,11 @@
                             "kind": "value",
                             "ref": "site.identity.name"
                           },
-                          "id": "6d8f064a-7398-46b3-b459-d6466c0c7d9f",
+                          "id": "9555b393-870d-49ea-b9b9-3d9cc26cf5e3",
                           "ord": "a0"
                         }
                       ],
-                      "id": "78eee2c5-63ed-4e81-90b6-50db1ed1ef8f",
+                      "id": "aec82f9c-1714-457c-a422-e9b727bbe02c",
                       "ord": "a0"
                     },
                     {
@@ -711,23 +711,23 @@
                       "tag": "ul",
                       "class": "flex items-center gap-5",
                       "children": [],
-                      "id": "f8790942-8056-4a3d-ad12-6080753a5b1c",
+                      "id": "55607c43-a738-477f-9e98-c82ccd087045",
                       "ord": "a1"
                     }
                   ],
-                  "id": "980699b8-f0d1-4100-9b22-c7218881e046",
+                  "id": "97cdef82-dae1-4474-9ecc-3484f3c98fdb",
                   "ord": "a1"
                 }
               ],
-              "id": "0f6bd297-03fc-4ff2-bf81-60df55c96eb6",
+              "id": "05691ec9-9404-4075-ab7d-6fb2a9cae190",
               "ord": "a0"
             }
           ],
-          "id": "756aa872-af6e-4e0b-9306-dc182ffea371",
+          "id": "3ec935a3-a954-48a7-8a8f-486470b1e94a",
           "ord": "a2"
         }
       ],
-      "id": "d27d0dba-1d15-4185-8879-5462994690ec"
+      "id": "b4a18185-d6b4-4cc2-b211-e0b4e752e774"
     }
   },
   "pages": [
@@ -741,7 +741,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "f0802fe1-aebb-4949-b7f5-fa03ecd05597",
+        "id": "4302c676-d7cf-45f7-a0d8-dc81e1837dc4",
         "children": [
           {
             "kind": "element",
@@ -757,7 +757,7 @@
                   "alt": "A roaster pouring fresh-roasted beans",
                   "loading": "lazy"
                 },
-                "id": "14cd4614-128e-4c9c-aed0-b929c4ee65c0",
+                "id": "8ec35fc5-b7da-45f5-85d7-bde1ddd78ccd",
                 "ord": "a0"
               },
               {
@@ -775,7 +775,7 @@
                         "tag": "h1",
                         "class": "text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl",
                         "children": ["Roasted this week, not last month."],
-                        "id": "cfcdbf55-6d71-4b0a-8375-275f4e64fb96",
+                        "id": "c5d11a95-1749-4179-b106-f5ce57a01eeb",
                         "ord": "a0"
                       },
                       {
@@ -785,7 +785,7 @@
                         "children": [
                           "Cairn is a small-batch coffee roaster. We buy green coffee from farms we can name, roast it in tens of pounds, and ship it within days — so it reaches you tasting like the roaster meant it to."
                         ],
-                        "id": "f57c275d-6f85-444c-a539-a5bec0fdf8ca",
+                        "id": "65ab77d1-e808-4793-b7d3-0ce3e3a81ce6",
                         "ord": "a1"
                       },
                       {
@@ -801,7 +801,7 @@
                               "href": "/shop"
                             },
                             "children": ["Shop coffee"],
-                            "id": "6f5538fe-a4be-4807-bfed-c3d880ab5cc3",
+                            "id": "4734b077-f9de-4f38-924f-aea03d73dcaf",
                             "ord": "a0"
                           },
                           {
@@ -812,23 +812,23 @@
                               "href": "/shop/subscription"
                             },
                             "children": ["Start a subscription"],
-                            "id": "cf3b32fb-8758-4968-9c4b-959ffd1debf8",
+                            "id": "48f787fd-3313-4a7d-8ca5-cb0058720cfe",
                             "ord": "a1"
                           }
                         ],
-                        "id": "c0d143c6-7249-4ab1-9cd8-df7623e57455",
+                        "id": "c5206b51-da0b-4b19-9217-1a92fa9baff4",
                         "ord": "a2"
                       }
                     ],
-                    "id": "86d037bf-d874-413f-8fbd-2f2a4bbb708f",
+                    "id": "ff644494-ae19-44be-90e5-c76c6a7ef66e",
                     "ord": "a0"
                   }
                 ],
-                "id": "d754b713-d37f-4509-922d-41859d49fb3b",
+                "id": "dcbfcfa5-f086-4949-b79a-adc41dbd90f0",
                 "ord": "a1"
               }
             ],
-            "id": "e135d007-2846-424b-8dff-d529747b626f",
+            "id": "87e190be-45b0-4e57-ba54-2413d0b81d17",
             "ord": "a0"
           },
           {
@@ -846,7 +846,7 @@
                     "tag": "h2",
                     "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
                     "children": ["Find your coffee"],
-                    "id": "199fe9c3-2936-483b-826f-5eb2f4c1e774",
+                    "id": "c41725be-eca7-4e17-a374-14aadfa87d64",
                     "ord": "a0"
                   },
                   {
@@ -871,7 +871,7 @@
                               "alt": "Green coffee from a burlap sack",
                               "loading": "lazy"
                             },
-                            "id": "5807eb2d-158e-4f01-8947-2975202aadb2",
+                            "id": "e217782e-d842-474d-a5f5-90747ebeabfd",
                             "ord": "a0"
                           },
                           {
@@ -879,11 +879,11 @@
                             "tag": "span",
                             "class": "text-center text-base font-semibold text-base-content",
                             "children": ["Single origin"],
-                            "id": "461c7be1-eb2d-4f86-8044-063b9f860b18",
+                            "id": "4bf8c0c0-ff58-4c97-8aab-24eacf34d39d",
                             "ord": "a1"
                           }
                         ],
-                        "id": "ab9217b0-7759-421e-b195-889523a72194",
+                        "id": "8cec9214-6d82-49a4-9811-7f3c82275051",
                         "ord": "a0"
                       },
                       {
@@ -903,7 +903,7 @@
                               "alt": "Roasted beans spilling onto a counter",
                               "loading": "lazy"
                             },
-                            "id": "6f922f75-6299-412c-9ac4-67d7dccd2b7b",
+                            "id": "5e185b79-33b3-49e6-b253-0c542facb738",
                             "ord": "a0"
                           },
                           {
@@ -911,11 +911,11 @@
                             "tag": "span",
                             "class": "text-center text-base font-semibold text-base-content",
                             "children": ["Blends"],
-                            "id": "d31bd46d-01ec-4eaa-8bc8-53e32a828098",
+                            "id": "eb35d005-b83e-4a5b-9f8a-f4f3691f1253",
                             "ord": "a1"
                           }
                         ],
-                        "id": "a27114ea-3e7a-4e12-8e88-e9c5b558f42c",
+                        "id": "e9d190e1-b407-488b-8088-f94c83793a89",
                         "ord": "a1"
                       },
                       {
@@ -935,7 +935,7 @@
                               "alt": "A pour-over dripper and kettle",
                               "loading": "lazy"
                             },
-                            "id": "1e4dfd6c-ee43-4875-8359-b7047dab0075",
+                            "id": "4cd23d67-72ea-43cd-b95f-817e1dc506e9",
                             "ord": "a0"
                           },
                           {
@@ -943,11 +943,11 @@
                             "tag": "span",
                             "class": "text-center text-base font-semibold text-base-content",
                             "children": ["Brew gear"],
-                            "id": "f2c466c4-b77b-4dfe-8d44-396afea148c4",
+                            "id": "85998a2c-4156-4da1-89c3-52d0e4b675d7",
                             "ord": "a1"
                           }
                         ],
-                        "id": "e6b2491a-859c-48ce-b98c-957083653073",
+                        "id": "de3f4d2e-8d7c-4c4c-aa41-d7dfc887ce6b",
                         "ord": "a2"
                       },
                       {
@@ -967,7 +967,7 @@
                               "alt": "A stack of kraft coffee bags",
                               "loading": "lazy"
                             },
-                            "id": "53375787-9b2f-4613-ab1e-6817e53dccf8",
+                            "id": "b93a9fd9-4da0-457e-9b35-e12383a1d283",
                             "ord": "a0"
                           },
                           {
@@ -975,23 +975,23 @@
                             "tag": "span",
                             "class": "text-center text-base font-semibold text-base-content",
                             "children": ["Subscription"],
-                            "id": "70591f7f-0a04-43d0-b57f-80e9b023c25d",
+                            "id": "18e74a54-eda4-4854-9bc0-6a24c1d563d7",
                             "ord": "a1"
                           }
                         ],
-                        "id": "6d0777d4-18a2-4042-b6f8-e46fbb860e16",
+                        "id": "c702fb9a-798d-428b-9b56-d753c997f844",
                         "ord": "a3"
                       }
                     ],
-                    "id": "32dc0bf9-2a13-44d6-9eb6-02117e6c5510",
+                    "id": "d10d1a4e-14ea-41c4-9e95-3aa17466d449",
                     "ord": "a1"
                   }
                 ],
-                "id": "a525e289-702c-4250-a737-199a4c30b9ce",
+                "id": "1ed49228-5c6a-40e6-a4d6-04d2a7d27397",
                 "ord": "a0"
               }
             ],
-            "id": "6d5ed9d8-9055-4d76-8e35-b077942e45a8",
+            "id": "715028db-9779-449e-b2c5-8021249a1371",
             "ord": "a1"
           },
           {
@@ -1009,7 +1009,7 @@
                     "tag": "h2",
                     "class": "text-2xl font-semibold text-base-content",
                     "children": ["This week’s roasts"],
-                    "id": "e3074334-ca51-4e8f-a551-48810b23724d",
+                    "id": "f8d770fc-08fd-44d2-a284-b1132f95c113",
                     "ord": "a0"
                   },
                   {
@@ -1033,12 +1033,12 @@
                             "props": {
                               "name": "arrow-left"
                             },
-                            "id": "e99b2fd7-668e-40ae-abc6-3f4fa93fc555",
+                            "id": "6a4c06aa-a0cb-458a-bc16-5af42a4ab354",
                             "ord": "a0"
                           }
                         ],
                         "part": "prev",
-                        "id": "70f19307-b291-455f-8972-7ff7777aa890",
+                        "id": "58938f1b-fcd0-45ee-a986-54383f520f7f",
                         "ord": "a0"
                       },
                       {
@@ -1057,20 +1057,20 @@
                             "props": {
                               "name": "arrow-right"
                             },
-                            "id": "4073552e-e037-4f6a-aa6b-5d2d0be4e9a4",
+                            "id": "26d59e23-8e2b-4dc1-af07-aed887605eac",
                             "ord": "a0"
                           }
                         ],
                         "part": "next",
-                        "id": "9e3abde6-4453-4dcc-8a9e-11e55abcd006",
+                        "id": "81ce0b08-ed5c-456c-bb14-7b01ff1fdb76",
                         "ord": "a1"
                       }
                     ],
-                    "id": "3a71d376-a627-4b97-ac25-ec7844aed2c7",
+                    "id": "b69c8f25-b3b1-480b-814c-9fa3a64a5554",
                     "ord": "a1"
                   }
                 ],
-                "id": "95cb9d5b-9ead-45cb-af7e-07f73bafe255",
+                "id": "c6652fe7-6cb9-479b-b862-204c84ff62c9",
                 "ord": "a0"
               },
               {
@@ -1095,7 +1095,7 @@
                           "kind": "value",
                           "ref": "image"
                         },
-                        "id": "674eed17-fa38-4795-bfb0-65f5f1d87355",
+                        "id": "f600f556-b340-48e4-9269-4a399c01da8a",
                         "ord": "a0"
                       },
                       {
@@ -1112,7 +1112,7 @@
                               "kind": "value",
                               "ref": "title"
                             },
-                            "id": "8597f43b-d235-4b2e-9bd4-a6d18e5991a8",
+                            "id": "2dda050a-2369-4b21-be5a-9d749dfb853e",
                             "ord": "a0"
                           },
                           {
@@ -1124,11 +1124,11 @@
                               "kind": "value",
                               "ref": "price"
                             },
-                            "id": "3481fb16-6f15-49cf-9323-75fb912f0ef4",
+                            "id": "26c0e166-affb-4f09-a1d0-5d56975a4dc4",
                             "ord": "a1"
                           }
                         ],
-                        "id": "ab1e2100-c59b-41fb-b688-3602fe851002",
+                        "id": "82681925-e853-4853-82bf-0b47be734e1c",
                         "ord": "a1"
                       }
                     ],
@@ -1138,7 +1138,7 @@
                       "attr": "href"
                     },
                     "part": "slide",
-                    "id": "ad1fcf08-780e-469a-838a-8b855b14130f",
+                    "id": "4826c6dd-bf0f-4f4b-8c65-8b077282aa9d",
                     "ord": "a0"
                   }
                 ],
@@ -1147,14 +1147,14 @@
                   "kind": "collection",
                   "ref": "commerce.featured"
                 },
-                "id": "c4a83694-3a45-46c0-8b6f-a2b0dcbbe792",
+                "id": "43f58a3b-00bb-4ffa-867d-02031228e134",
                 "ord": "a1"
               }
             ],
             "behavior": {
               "type": "carousel"
             },
-            "id": "18a1a72c-89d9-4599-b0d4-d6a8a78110a8",
+            "id": "2a2b8942-f3a8-494d-a381-fd9495b7a89b",
             "ord": "a2"
           },
           {
@@ -1171,7 +1171,7 @@
                   "alt": "A drum roaster glowing at work",
                   "loading": "lazy"
                 },
-                "id": "922ea584-121a-4e7b-921b-e4185dd3f9d4",
+                "id": "5fce28a2-bd08-48d7-992c-26834ae967ee",
                 "ord": "a0"
               },
               {
@@ -1189,7 +1189,7 @@
                         "tag": "h2",
                         "class": "text-4xl font-bold leading-none tracking-tight text-base-content @3xl:text-5xl",
                         "children": ["Small batches, on purpose"],
-                        "id": "dbf028c8-5e3e-4d62-966e-e05d62ac9337",
+                        "id": "402046f0-8e4b-4fca-8c4f-537bbb5b9147",
                         "ord": "a0"
                       },
                       {
@@ -1199,7 +1199,7 @@
                         "children": [
                           "We roast in tens of pounds, not thousands, on a drum roaster we run by ear and by nose. Every batch is cupped before it ships — if it isn’t what we tasted on the sample table, it doesn’t go in a bag."
                         ],
-                        "id": "d3ab01a9-0ff6-4494-8c57-2c4685face9c",
+                        "id": "8334d1e7-9fa1-4303-ba2d-a2c62beec80f",
                         "ord": "a1"
                       },
                       {
@@ -1210,19 +1210,19 @@
                           "href": "/blog/how-we-roast"
                         },
                         "children": ["How we roast"],
-                        "id": "18d9bdeb-2b19-4c9b-aa73-1dcae148373f",
+                        "id": "9050db5c-90c0-4191-bdf6-c7d3839d8ac8",
                         "ord": "a2"
                       }
                     ],
-                    "id": "1ca7b8e0-81aa-480e-9548-b5087c0c61d2",
+                    "id": "b3b83a3a-b45f-4f9c-bc76-7532fab4f12f",
                     "ord": "a0"
                   }
                 ],
-                "id": "a9ff7807-ae07-4e31-9f07-216973f72768",
+                "id": "4d49bfa6-cd42-405e-9383-e07e4a2ca7ab",
                 "ord": "a1"
               }
             ],
-            "id": "0aad5464-78f6-453f-9393-1e8ce0dfa199",
+            "id": "a21ea096-2053-4ca2-9434-fc13f0f1f2ec",
             "ord": "a3"
           },
           {
@@ -1240,7 +1240,7 @@
                     "tag": "h2",
                     "class": "text-2xl font-semibold text-base-content",
                     "children": ["Single origin"],
-                    "id": "6662de65-2ea9-4011-bf2b-67d79e55e736",
+                    "id": "14c72b0b-051b-4da6-8d03-8de74405a7f5",
                     "ord": "a0"
                   },
                   {
@@ -1264,12 +1264,12 @@
                             "props": {
                               "name": "arrow-left"
                             },
-                            "id": "4b61126e-286a-4b22-8f15-a49c721ac568",
+                            "id": "469d9114-9f7e-4d59-a731-118517498539",
                             "ord": "a0"
                           }
                         ],
                         "part": "prev",
-                        "id": "a90478b7-d384-44a2-a78f-c55393a59f2d",
+                        "id": "0465f751-5cf0-4142-807a-7f17c8b8d7c6",
                         "ord": "a0"
                       },
                       {
@@ -1288,20 +1288,20 @@
                             "props": {
                               "name": "arrow-right"
                             },
-                            "id": "e1bdf013-bcad-4b40-9892-cbb917a1f750",
+                            "id": "f7776720-eaa9-4d2b-8ecc-3dab5686bf2a",
                             "ord": "a0"
                           }
                         ],
                         "part": "next",
-                        "id": "aca23180-6acb-433d-b15c-466da1b0a432",
+                        "id": "91005bf5-f134-4cd2-90a1-40eb851d8bce",
                         "ord": "a1"
                       }
                     ],
-                    "id": "13677792-47c8-40fa-8264-f9d1a72daf64",
+                    "id": "5ef683fc-d94e-439e-b1ce-d3e51d8fc70b",
                     "ord": "a1"
                   }
                 ],
-                "id": "c9795f0f-91da-4534-86c1-8969e95928eb",
+                "id": "ed005046-20e2-43eb-91a8-cbbe6d6048c0",
                 "ord": "a0"
               },
               {
@@ -1326,7 +1326,7 @@
                           "kind": "value",
                           "ref": "image"
                         },
-                        "id": "6924e6fe-7aeb-4b89-a797-f089e39ed12f",
+                        "id": "434956f5-b395-4019-a3aa-1fdd56793fcb",
                         "ord": "a0"
                       },
                       {
@@ -1343,7 +1343,7 @@
                               "kind": "value",
                               "ref": "title"
                             },
-                            "id": "235969f6-cccd-46a1-8c2d-8cafb3cb50cd",
+                            "id": "b86be900-f9f5-48f4-afb8-6a732bed26f0",
                             "ord": "a0"
                           },
                           {
@@ -1355,11 +1355,11 @@
                               "kind": "value",
                               "ref": "price"
                             },
-                            "id": "2c83d15d-9905-4e05-ac29-af67cba20ad9",
+                            "id": "ab207f78-1115-4fba-b138-7497bbce3d7d",
                             "ord": "a1"
                           }
                         ],
-                        "id": "87502e7c-650a-4982-9518-e466dbd09989",
+                        "id": "add266b7-628f-4e9a-afc6-fb4f4c80a45c",
                         "ord": "a1"
                       }
                     ],
@@ -1369,7 +1369,7 @@
                       "attr": "href"
                     },
                     "part": "slide",
-                    "id": "451ef02d-b8c1-4145-964e-8b8455a7b91b",
+                    "id": "f11c085d-0b92-49cf-8bf0-3ff9693af206",
                     "ord": "a0"
                   }
                 ],
@@ -1378,14 +1378,14 @@
                   "kind": "collection",
                   "ref": "commerce.category.single-origin"
                 },
-                "id": "fe240174-df46-4522-9ef2-238aca8097d8",
+                "id": "7b2016e0-ec43-4695-afdd-f821e9dd6f1e",
                 "ord": "a1"
               }
             ],
             "behavior": {
               "type": "carousel"
             },
-            "id": "ee40e22f-f9fc-4ab5-a250-0d69df402847",
+            "id": "172a3239-e89a-4c97-bb4e-19f68a396ae9",
             "ord": "a4"
           },
           {
@@ -1402,7 +1402,7 @@
                   "alt": "A fresh bag of coffee on a doorstep",
                   "loading": "lazy"
                 },
-                "id": "86788184-0694-4ce3-9139-3f78a4a07df6",
+                "id": "5bbe809f-97fe-449e-b547-41e60d340cff",
                 "ord": "a0"
               },
               {
@@ -1420,7 +1420,7 @@
                         "tag": "h2",
                         "class": "text-4xl font-bold leading-none tracking-tight text-base-content @3xl:text-5xl",
                         "children": ["Coffee, handled"],
-                        "id": "e0229e75-54be-4b2a-a6c6-e5cb1b592bf0",
+                        "id": "497a09ea-b30b-4a08-a88e-0e298a00f0cc",
                         "ord": "a0"
                       },
                       {
@@ -1430,7 +1430,7 @@
                         "children": [
                           "A subscription is the easy way to never run out: pick a bag, pick how often, and it arrives freshly roasted on your schedule. Skip, swap or cancel any time — no lock-in, ever."
                         ],
-                        "id": "4f9687e4-83b8-4683-998c-597359361e13",
+                        "id": "ea663d81-0806-412f-ba1b-043e5e79edfc",
                         "ord": "a1"
                       },
                       {
@@ -1441,19 +1441,19 @@
                           "href": "/shop/subscription"
                         },
                         "children": ["Start a subscription"],
-                        "id": "b061ef2c-eca4-4c71-9a30-0161afb1418e",
+                        "id": "305d37a5-0424-42d6-b8bc-6aeb1383a793",
                         "ord": "a2"
                       }
                     ],
-                    "id": "871c738f-9c97-4bb8-a8c0-d21095f64195",
+                    "id": "fda5954d-98eb-4763-8ba5-ca0e432101f5",
                     "ord": "a0"
                   }
                 ],
-                "id": "57e825a7-27d0-49bc-be6d-15ee5070f46e",
+                "id": "33e42b0b-4cc5-4486-94e1-6db20be9f28a",
                 "ord": "a1"
               }
             ],
-            "id": "930b69ae-a7b9-4002-ab74-981e6346a07c",
+            "id": "d7e530d5-3f72-49ba-a3aa-be905dbed265",
             "ord": "a5"
           }
         ]
@@ -1470,7 +1470,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "39dce29f-e9de-4708-978d-2136d2a5b21a",
+        "id": "285594ff-0dc3-40b9-baac-6d97111685fe",
         "children": [
           {
             "kind": "element",
@@ -1487,7 +1487,7 @@
                     "tag": "h1",
                     "class": "text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl",
                     "children": ["Shop coffee"],
-                    "id": "a8a407c5-4009-4fe6-b214-7267b4af6c77",
+                    "id": "5cb1b9d2-359b-4731-b1b9-ec791a31341a",
                     "ord": "a0"
                   },
                   {
@@ -1497,15 +1497,15 @@
                     "children": [
                       "Every coffee we’re roasting right now — single origins, blends, decaf, and the gear to brew them. Filter by roast or origin, or sort however you like; all of it ships freshly roasted to order."
                     ],
-                    "id": "8f42c81a-02c2-4e93-bb9d-f82187838007",
+                    "id": "42f042d9-3250-4209-81a3-e2b0d1eb7588",
                     "ord": "a1"
                   }
                 ],
-                "id": "68a58abf-52b8-4c12-96eb-73e2d0985020",
+                "id": "f0bee69d-632f-459b-8a16-d10c49f2a633",
                 "ord": "a0"
               }
             ],
-            "id": "d343aa88-f5d3-4bba-bb55-47aa5f8d5a0f",
+            "id": "e289191a-b5b2-48c1-bbb2-447fdac78a74",
             "ord": "a0"
           },
           {
@@ -1513,7 +1513,7 @@
             "component": "commerce.plp",
             "class": "mx-auto w-full max-w-6xl px-6 py-6",
             "locked": "host",
-            "id": "f48cab57-749d-4333-8491-80cefab697d6",
+            "id": "7d0b5293-3a67-44e2-9732-e1fab6d15529",
             "ord": "a1"
           }
         ]
@@ -1530,7 +1530,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "b0718319-02db-4f28-9d13-841d40da4520",
+        "id": "645109d7-7aa0-4360-8aaa-d09e7f0901fe",
         "children": [
           {
             "kind": "element",
@@ -1547,7 +1547,7 @@
                     "tag": "h1",
                     "class": "text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl",
                     "children": ["Collections"],
-                    "id": "374ca4fa-9bd5-4bf1-8e7d-10aff24ff837",
+                    "id": "8744c899-1429-4e26-bf14-ce8122dca17e",
                     "ord": "a0"
                   },
                   {
@@ -1557,15 +1557,15 @@
                     "children": [
                       "The coffees grouped the way people actually shop — this week’s roasts, the everyday blends, the bright single origins, and starter kits for a new brew method."
                     ],
-                    "id": "8ac15a75-acc1-45ed-9ed9-65d6384e5346",
+                    "id": "37e378d3-e82e-4ea4-be6e-45f357d1d9c9",
                     "ord": "a1"
                   }
                 ],
-                "id": "3429cf8f-83d0-4014-8541-14db95f0db1c",
+                "id": "4bcf420d-4597-4a68-9d2a-7c1da88e81a4",
                 "ord": "a0"
               }
             ],
-            "id": "1bc72c9d-c9f6-4dd0-8d06-15d2fce19a65",
+            "id": "95eb0329-5154-4cd4-8271-eec4145459ba",
             "ord": "a0"
           },
           {
@@ -1573,7 +1573,7 @@
             "component": "commerce.collections",
             "class": "mx-auto w-full max-w-6xl px-6 py-6",
             "locked": "host",
-            "id": "c6fcca3f-c3ab-442e-9750-ea17e50918a1",
+            "id": "618f4308-cdb6-4831-8859-9a637ccff7d8",
             "ord": "a1"
           }
         ]
@@ -1590,7 +1590,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "62f57815-6ad1-4cf5-ae01-f30363eb7a72",
+        "id": "2f892ea7-8a84-4430-8f6a-902372beed8f",
         "children": [
           {
             "kind": "element",
@@ -1607,7 +1607,7 @@
                     "tag": "h1",
                     "class": "text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl",
                     "children": ["Your cart"],
-                    "id": "af197bae-b996-47f9-9995-4a57da074284",
+                    "id": "009f3165-1a95-4c7d-a35b-f4fce6fd10b5",
                     "ord": "a0"
                   },
                   {
@@ -1617,15 +1617,15 @@
                     "children": [
                       "Free shipping on orders over $40, and every bag is roasted to order and sent within two days. Not sure it’s for you? Tell us and we’ll make it right — coffee should be a pleasure, not a gamble."
                     ],
-                    "id": "2ab11c55-1e6a-4e4e-9e91-d0bca26bddc6",
+                    "id": "5f42f953-dfc2-4188-b8ca-aad308b716ad",
                     "ord": "a1"
                   }
                 ],
-                "id": "bb9dd109-4388-4682-b3ef-2a206b4261d9",
+                "id": "ad207a79-af30-4ff0-83b1-a51974e7f7da",
                 "ord": "a0"
               }
             ],
-            "id": "4fda1794-ea1a-4c89-8b7b-66cca4c50e2a",
+            "id": "f14dad8e-00f4-43f5-8c1f-7e27463cb262",
             "ord": "a0"
           },
           {
@@ -1633,7 +1633,7 @@
             "component": "commerce.cart",
             "class": "mx-auto w-full max-w-4xl px-6 py-10",
             "locked": "host",
-            "id": "c483ea00-ac50-403e-b71d-b28e8f895c92",
+            "id": "e695347b-e72f-4055-a918-fc86882dc6b2",
             "ord": "a1"
           }
         ]
@@ -1650,7 +1650,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "98c2d88c-f3b8-4095-95db-d089ec3cf50c",
+        "id": "03ebcd95-eaca-4bf6-97dd-a157cd17811b",
         "children": [
           {
             "kind": "element",
@@ -1667,7 +1667,7 @@
                     "tag": "h1",
                     "class": "text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl",
                     "children": ["Search Cairn"],
-                    "id": "1993caaa-9db0-4a48-a05d-2a29bb125df3",
+                    "id": "91779cc7-064e-4698-99e3-234c77f241e2",
                     "ord": "a0"
                   },
                   {
@@ -1677,15 +1677,15 @@
                     "children": [
                       "Looking for an origin, a roast level, or a brewing guide? Search the whole shop and the journal below."
                     ],
-                    "id": "592f8ea3-fb9a-4e37-b566-7beacf4699bf",
+                    "id": "db41a1a4-bf6f-4c16-8372-2bdb6f3bb9ef",
                     "ord": "a1"
                   }
                 ],
-                "id": "37d6df5f-dcc0-4329-af88-e62744c3939e",
+                "id": "ee4abdda-9c58-4fc4-b41c-7cbf9cfa684a",
                 "ord": "a0"
               }
             ],
-            "id": "5a0b6dde-b9ab-47dd-972c-429635e2145d",
+            "id": "803a7e29-f6de-455e-b6d6-99a63c4e9fc9",
             "ord": "a0"
           },
           {
@@ -1693,7 +1693,7 @@
             "component": "commerce.search",
             "class": "mx-auto w-full max-w-6xl px-6 py-6",
             "locked": "host",
-            "id": "3de06ff8-a46e-43ae-947b-e0d3c6013248",
+            "id": "1e7ac6c3-029d-4d26-8c42-8e4b413352f6",
             "ord": "a1"
           }
         ]
@@ -1710,7 +1710,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "67125641-59f7-481b-b70c-621413a43a57",
+        "id": "66e7faeb-aa59-49bd-b28f-c9be034c0ae9",
         "children": [
           {
             "kind": "element",
@@ -1727,7 +1727,7 @@
                     "tag": "h1",
                     "class": "text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl",
                     "children": ["The Cairn journal"],
-                    "id": "511bde9e-6110-42a0-a43b-3dea92f95ed0",
+                    "id": "58c8ffe6-1e0e-46aa-a97d-da0788338524",
                     "ord": "a0"
                   },
                   {
@@ -1737,15 +1737,15 @@
                     "children": [
                       "Notes from the roastery — how we roast, how to brew it at home, and where the coffee actually comes from. Plain, useful, no coffee snobbery."
                     ],
-                    "id": "1110152d-6338-486d-932e-2be58817a90b",
+                    "id": "dd34716a-72f9-4fac-af18-10a162095ea6",
                     "ord": "a1"
                   }
                 ],
-                "id": "90cdb656-a0f8-4cb2-96cb-1beb11431592",
+                "id": "a7f0a2dd-0154-4d45-8cff-15304bb815e9",
                 "ord": "a0"
               }
             ],
-            "id": "bdc08e10-a980-44bb-99aa-845b8257dfe7",
+            "id": "74c483b7-7742-4e66-9570-303c1fa8b5a9",
             "ord": "a0"
           },
           {
@@ -1783,7 +1783,7 @@
                               "kind": "value",
                               "ref": "featuredImage"
                             },
-                            "id": "58f4b88a-5fc9-478d-8789-4f3e6097f350",
+                            "id": "12bb80a8-6dda-4bb7-b0b3-d1203bc9037d",
                             "ord": "a0"
                           },
                           {
@@ -1795,7 +1795,7 @@
                               "kind": "value",
                               "ref": "date"
                             },
-                            "id": "9255adf9-415f-4f6f-bbee-12eccb4c43c4",
+                            "id": "ad694e2c-5f72-480c-b04b-fb2e9722cd9d",
                             "ord": "a1"
                           },
                           {
@@ -1807,7 +1807,7 @@
                               "kind": "value",
                               "ref": "title"
                             },
-                            "id": "0a1bbf88-2f86-42b4-9042-4ceba03b93ec",
+                            "id": "744d0d2a-acd3-4378-a684-92279ed14df1",
                             "ord": "a2"
                           },
                           {
@@ -1819,7 +1819,7 @@
                               "kind": "value",
                               "ref": "excerpt"
                             },
-                            "id": "b10e9257-483f-4103-8dbf-57fb5a7f20d0",
+                            "id": "9ce891d7-e08d-4f46-a6dc-8f6fcd9ea1bd",
                             "ord": "a3"
                           }
                         ],
@@ -1828,7 +1828,7 @@
                           "ref": "url",
                           "attr": "href"
                         },
-                        "id": "f4569967-278d-4b1a-a873-c19a6afd11de",
+                        "id": "8d9ebd3d-078f-46c3-92ff-1b8cecc0271a",
                         "ord": "a0"
                       }
                     ],
@@ -1836,15 +1836,15 @@
                       "kind": "collection",
                       "ref": "cms.blog_post"
                     },
-                    "id": "a111c86d-29fe-439e-9751-9599246429eb",
+                    "id": "3812915a-26a3-4742-bbfb-60d35ac994fd",
                     "ord": "a0"
                   }
                 ],
-                "id": "090e2d05-3850-4022-8d70-777430f1cebb",
+                "id": "a31889aa-ac42-410a-b435-be33cabf9460",
                 "ord": "a0"
               }
             ],
-            "id": "9610b7ba-3d1b-4786-b4ce-26326b0e9ba6",
+            "id": "fef7f6e4-d77c-4954-a029-d6563835d8fc",
             "ord": "a1"
           }
         ]
@@ -1861,7 +1861,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "c0e1daa4-f2fc-46eb-93fb-1d8b0a4d7175",
+        "id": "4f3f6d02-3843-4f2d-8887-382efa450f44",
         "children": [
           {
             "kind": "element",
@@ -1878,7 +1878,7 @@
                     "tag": "h1",
                     "class": "text-5xl font-bold tracking-tight text-base-content @2xl:text-6xl",
                     "children": ["About Cairn"],
-                    "id": "3ab36d4c-833b-4e22-8728-902341d17d44",
+                    "id": "05f63b97-488e-4acc-aa9b-da3a6a72795f",
                     "ord": "a0"
                   },
                   {
@@ -1888,7 +1888,7 @@
                     "children": [
                       "Cairn started as a drum roaster in a garage and a standing order from a few neighbours who were tired of stale supermarket coffee. It grew the slow way — one bag, one café, one farmer relationship at a time — and it still runs on the same idea: buy well, roast small, ship fast."
                     ],
-                    "id": "5eb8a449-5628-49db-a2bc-49d369a2858a",
+                    "id": "e20465de-3290-43ad-b744-afbd4f2ac5b0",
                     "ord": "a1"
                   },
                   {
@@ -1898,7 +1898,7 @@
                     "children": [
                       "We buy green coffee from importers and farms we can name, and we pay above the commodity rate because the people who grow it deserve a living from it. Then we roast in small batches, cup every one, and only bag what tastes the way it did on the sample table."
                     ],
-                    "id": "da327759-0741-4088-ba1b-4aaf1e5af2a0",
+                    "id": "7ffa4696-e32b-4046-8932-f1de0fd7e564",
                     "ord": "a2"
                   },
                   {
@@ -1908,15 +1908,15 @@
                     "children": [
                       "No mystery blends, no roast dates you can’t read, no coffee older than it should be. Just good coffee, handled with care from the farm to your kitchen."
                     ],
-                    "id": "e83b08b6-a240-49d2-af68-bac26950f0f1",
+                    "id": "3f269daf-b08f-481a-b0fa-31003c106954",
                     "ord": "a3"
                   }
                 ],
-                "id": "e357d115-0c2c-4a33-a4f1-d2c8a85b96fd",
+                "id": "a3092023-c983-4601-b80c-ff95fe6c4cf6",
                 "ord": "a0"
               }
             ],
-            "id": "9bd4e628-5c1e-4883-988d-e26926b30b8e",
+            "id": "4a15467b-817b-4b1e-b5f1-e95577f77538",
             "ord": "a0"
           }
         ]
@@ -1933,53 +1933,297 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "f549ae03-9f0f-4f34-920a-672beab84e9f",
+        "id": "46aae6f6-469c-4806-a0e9-0127084d883f",
         "children": [
           {
             "kind": "element",
             "tag": "section",
-            "class": "bg-base-100 @container px-6 py-20 text-center",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-20",
             "children": [
               {
                 "kind": "element",
                 "tag": "div",
-                "class": "mx-auto flex w-full max-w-xl flex-col items-center gap-5",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-8",
                 "children": [
                   {
                     "kind": "element",
-                    "tag": "h1",
-                    "class": "text-5xl font-bold tracking-tight text-base-content @2xl:text-6xl",
-                    "children": ["Say hello"],
-                    "id": "382aff8e-aa8e-41fe-8d66-0750e3222d1d",
+                    "tag": "div",
+                    "class": "flex flex-col gap-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h1",
+                        "class": "text-4xl font-bold tracking-tight text-base-content @3xl:text-5xl",
+                        "children": ["Say hello"],
+                        "id": "f61c8361-7aba-4b2f-8743-821290771eba",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Questions about a coffee, a wholesale enquiry, or want us to roast for your café? Tell us what you’re after and a real person at the roastery will get back to you."
+                        ],
+                        "id": "fdaf1351-96ea-47c3-a0db-39be3cf21b46",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "ba615114-84a8-4714-b2c6-b1a676ee7e13",
                     "ord": "a0"
                   },
                   {
                     "kind": "element",
-                    "tag": "p",
-                    "class": "text-lg leading-relaxed text-base-content",
+                    "tag": "div",
+                    "class": "flex flex-col gap-1",
                     "children": [
-                      "Questions about a coffee, a wholesale enquiry, or want us to roast for your café? Tell us what you’re after and a real person at the roastery will get back to you."
+                      {
+                        "kind": "element",
+                        "tag": "span",
+                        "class": "text-base font-medium text-base-content",
+                        "children": ["Call us"],
+                        "id": "5e43b654-2d65-4d14-966a-96281f8e61ac",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "text-lg font-semibold text-base-content underline underline-offset-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "children": ["(555) 123-4567"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "site.identity.phone"
+                            },
+                            "id": "622cf815-0c22-4ac2-9377-a6084abd04c6",
+                            "ord": "a0"
+                          }
+                        ],
+                        "data": {
+                          "kind": "value",
+                          "ref": "site.identity.phoneHref",
+                          "attr": "href"
+                        },
+                        "id": "56c00ba2-54d3-4348-af58-03dbe1323301",
+                        "ord": "a1"
+                      }
                     ],
-                    "id": "90972d38-0aaa-4969-9391-312d377c44ff",
+                    "data": {
+                      "kind": "visible",
+                      "ref": "site.identity.phone"
+                    },
+                    "id": "406c5a80-9e1c-4cae-810a-4c3db23df3dd",
                     "ord": "a1"
                   },
                   {
                     "kind": "element",
-                    "tag": "a",
-                    "class": "btn btn-primary btn-lg",
-                    "attrs": {
-                      "href": "mailto:hello@cairncoffee.example"
+                    "tag": "div",
+                    "class": "flex flex-col gap-1",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "span",
+                        "class": "text-base font-medium text-base-content",
+                        "children": ["Email us"],
+                        "id": "dcca3d7d-f5f1-47be-9a66-64985f16d5f9",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "text-lg font-semibold text-base-content underline underline-offset-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "children": ["hello@yourbusiness.com"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "site.identity.email"
+                            },
+                            "id": "f6579ae1-c71d-4fdb-beb9-cc6a0d612384",
+                            "ord": "a0"
+                          }
+                        ],
+                        "data": {
+                          "kind": "value",
+                          "ref": "site.identity.emailHref",
+                          "attr": "href"
+                        },
+                        "id": "d881bc7f-0ac5-4ee0-bff0-62da501075e5",
+                        "ord": "a1"
+                      }
+                    ],
+                    "data": {
+                      "kind": "visible",
+                      "ref": "site.identity.email"
                     },
-                    "children": ["Email the roastery"],
-                    "id": "22aaa98a-114b-4e9b-88ca-0d41c739cdbc",
+                    "id": "25eaba02-178d-4281-8f5a-77dbbeaca0aa",
                     "ord": "a2"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-1",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "span",
+                        "class": "text-base font-medium text-base-content",
+                        "children": ["Visit us"],
+                        "id": "40ce4529-81e8-43d1-b6d4-3d3407b9e59e",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "address",
+                        "class": "text-lg leading-relaxed whitespace-pre-line not-italic text-base-content",
+                        "children": ["123 Main Street\nPortland, OR 97204"],
+                        "data": {
+                          "kind": "value",
+                          "ref": "site.identity.address"
+                        },
+                        "id": "5bc6044c-79da-4dd9-9211-83339a648a1b",
+                        "ord": "a1"
+                      }
+                    ],
+                    "data": {
+                      "kind": "visible",
+                      "ref": "site.identity.address"
+                    },
+                    "id": "4b0311a3-7b74-46f3-b022-228962ecf52e",
+                    "ord": "a3"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "form",
+                    "class": "flex w-full max-w-xl flex-col gap-5",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "label",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-base font-medium text-base-content",
+                            "children": ["Your name"],
+                            "id": "7bc0c43b-fb3a-4de0-a525-c0233c0b1823",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "input",
+                            "class": "input input-bordered w-full",
+                            "attrs": {
+                              "type": "text",
+                              "name": "name",
+                              "required": true
+                            },
+                            "id": "1c8abaac-e3c6-40fd-a03d-d6d6fa6fc5f7",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "e9500179-48b7-4755-94c0-a699eb85b0dd",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "label",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-base font-medium text-base-content",
+                            "children": ["Email address"],
+                            "id": "41353183-bb52-4a4b-a761-63e67ad5253b",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "input",
+                            "class": "input input-bordered w-full",
+                            "attrs": {
+                              "type": "email",
+                              "name": "email",
+                              "required": true
+                            },
+                            "id": "54a0a579-08e6-4d03-bbe9-f0986fe6dc4b",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "cc2ff20d-df73-4228-920e-75b058ed3e51",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "label",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-base font-medium text-base-content",
+                            "children": ["How can we help?"],
+                            "id": "3f07eb8a-f061-4f17-aa0a-ff830935655a",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "textarea",
+                            "class": "textarea textarea-bordered min-h-32 w-full",
+                            "attrs": {
+                              "name": "message"
+                            },
+                            "id": "24d41638-f2f4-4278-aedc-5edace2c4344",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "35fb1df2-b1d7-4e49-9a6f-00aba6c6f8b6",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-wrap items-center gap-3",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "button",
+                            "class": "btn btn-primary btn-lg",
+                            "attrs": {
+                              "type": "submit"
+                            },
+                            "children": ["Email the roastery"],
+                            "id": "f06921ad-19f5-4273-b084-3da9ef51ead0",
+                            "ord": "a0"
+                          }
+                        ],
+                        "id": "6b43bb62-1096-47ed-bdd7-bef0e0a9b3bf",
+                        "ord": "a3"
+                      }
+                    ],
+                    "behavior": {
+                      "type": "form"
+                    },
+                    "data": {
+                      "kind": "action",
+                      "ref": "submit"
+                    },
+                    "id": "d3d681e8-f9a5-4d37-8ce2-0e5370ee0ca2",
+                    "ord": "a4"
                   }
                 ],
-                "id": "03a8fc9d-3ac5-42c9-8d50-4411f42b519c",
+                "id": "75d8a5fb-c480-426c-90cb-0116c7685a76",
                 "ord": "a0"
               }
             ],
-            "id": "6e8e4b06-e30e-4de8-8c22-8c489e7853b9",
+            "id": "b319c407-925f-487f-bb85-d5cb5c390eba",
             "ord": "a0"
           }
         ]
@@ -2019,7 +2263,7 @@
                       "kind": "value",
                       "ref": "image"
                     },
-                    "id": "508d7a9d-188f-4c16-9fef-e91634fcb092",
+                    "id": "ff6cdb96-61dc-4527-b56e-2ed67fee0e7c",
                     "ord": "a0"
                   },
                   {
@@ -2037,7 +2281,7 @@
                             "tag": "p",
                             "class": "text-sm font-semibold uppercase tracking-widest text-secondary",
                             "children": ["Cairn Coffee Roasters"],
-                            "id": "90837d0a-3e52-4b22-87e9-041afcdb8d0b",
+                            "id": "52f19f99-0592-4a78-a3e1-da9145bcd71e",
                             "ord": "a0"
                           },
                           {
@@ -2049,7 +2293,7 @@
                               "kind": "value",
                               "ref": "title"
                             },
-                            "id": "d9d8c343-3b6f-4080-b99b-fee52028cc3e",
+                            "id": "aa8cfac1-639a-4a35-8659-2e9459d80e41",
                             "ord": "a1"
                           },
                           {
@@ -2066,7 +2310,7 @@
                                   "kind": "value",
                                   "ref": "price"
                                 },
-                                "id": "7be5a7ea-e9c4-4a0f-9889-4bd683ca3ae7",
+                                "id": "871ae6fe-0b3a-4bd8-8bed-a9b54f5247c2",
                                 "ord": "a0"
                               },
                               {
@@ -2082,7 +2326,7 @@
                                       "kind": "value",
                                       "ref": "compareAtPrice"
                                     },
-                                    "id": "efad6b91-addd-4018-80d9-b52db62263b1",
+                                    "id": "3cdb48ae-3501-4b2a-9eef-440eb3788c58",
                                     "ord": "a0"
                                   }
                                 ],
@@ -2090,11 +2334,11 @@
                                   "kind": "visible",
                                   "ref": "compareAtPrice"
                                 },
-                                "id": "4da85f29-61c5-481d-bfde-c910f4557590",
+                                "id": "f4377bfa-ac18-461a-af29-6f7a88dda3de",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "27d85d61-c287-410b-91b3-269e53237922",
+                            "id": "9f97d08b-8e37-48ac-81e7-fabd8440c8cf",
                             "ord": "a2"
                           },
                           {
@@ -2106,11 +2350,11 @@
                               "kind": "visible",
                               "ref": "lowStock"
                             },
-                            "id": "e55b0013-0e90-463d-839b-22f16c7feb1d",
+                            "id": "7951b0fc-67a1-4ba3-a3f5-42aee7fcec01",
                             "ord": "a3"
                           }
                         ],
-                        "id": "2ab5776c-4b9c-4bd8-a864-98a2a33de3e5",
+                        "id": "960a8c2c-865b-4322-8a3c-b8dc30618ba1",
                         "ord": "a0"
                       },
                       {
@@ -2122,7 +2366,7 @@
                           "kind": "value",
                           "ref": "description"
                         },
-                        "id": "085d5e96-52b5-4e11-b107-0c3ed9dc6450",
+                        "id": "d0016310-e4ac-4c79-bbf2-dc6de589e8f0",
                         "ord": "a1"
                       },
                       {
@@ -2141,7 +2385,7 @@
                               "kind": "value",
                               "ref": "variantId"
                             },
-                            "id": "2cfa3486-dc8f-4859-b288-58b6c3385fd5",
+                            "id": "8cc38f5b-7356-433c-9e57-09a565dfaa27",
                             "ord": "a0"
                           },
                           {
@@ -2154,7 +2398,7 @@
                                 "tag": "span",
                                 "class": "font-medium",
                                 "children": ["Quantity"],
-                                "id": "2d5d07c2-f8d6-40cb-8f3f-d70bffdd556c",
+                                "id": "40af5954-a080-459e-ae3b-5f5f32753c1c",
                                 "ord": "a0"
                               },
                               {
@@ -2168,11 +2412,11 @@
                                   "min": "1",
                                   "step": "1"
                                 },
-                                "id": "150510a0-d215-4ba1-b098-5b6a4706d80b",
+                                "id": "3e87708f-6d52-47a2-8cca-6abb1727d749",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "7e224f62-1e1c-497f-9199-b9dc0b5f9b4a",
+                            "id": "5ecaea4c-f266-467a-ac54-cd356d81aaa9",
                             "ord": "a1"
                           },
                           {
@@ -2183,7 +2427,7 @@
                               "type": "submit"
                             },
                             "children": ["Add to cart"],
-                            "id": "78bb35d0-f7a6-41de-8ebd-9c6684f8b6a4",
+                            "id": "355c9b5c-8f4e-4ce7-aab6-fb66fd6501d7",
                             "ord": "a2"
                           }
                         ],
@@ -2194,7 +2438,7 @@
                           "kind": "action",
                           "ref": "add-to-cart"
                         },
-                        "id": "274ae4dc-42bf-4cd3-b3ab-c085053d91a7",
+                        "id": "5dc2607c-450e-43e0-b1a8-0b7985f0d4ac",
                         "ord": "a2"
                       },
                       {
@@ -2207,7 +2451,7 @@
                             "tag": "h2",
                             "class": "text-sm font-semibold uppercase tracking-widest text-secondary",
                             "children": ["Freshly roasted to order"],
-                            "id": "89aaee97-8f46-49ef-8543-a039a9337002",
+                            "id": "25464ea6-f3cd-4263-a807-332f947f4a11",
                             "ord": "a0"
                           },
                           {
@@ -2217,11 +2461,11 @@
                             "children": [
                               "Every bag is roasted after you order and shipped within two days, whole bean or ground to your brew method. Rest it a few days off roast, then use it within a month for the best cup."
                             ],
-                            "id": "6ae22e20-cc9a-4792-87da-90dc73e7ebe2",
+                            "id": "98be62fa-a8c1-4c09-b7ed-43ffb2b9e1a9",
                             "ord": "a1"
                           }
                         ],
-                        "id": "dfff29d9-1033-4cbc-8e88-a88287305db1",
+                        "id": "b278393b-923d-4a96-a480-d71deed9126d",
                         "ord": "a3"
                       },
                       {
@@ -2237,7 +2481,7 @@
                               "href": "/shipping-policy"
                             },
                             "children": ["Shipping & delivery"],
-                            "id": "20a8b687-12cf-4200-b73a-fb3057cbf284",
+                            "id": "e54a8161-78fc-485d-8d0f-fec707c85850",
                             "ord": "a0"
                           },
                           {
@@ -2248,19 +2492,19 @@
                               "href": "/returns-policy"
                             },
                             "children": ["Returns & refunds"],
-                            "id": "d02c2a27-c698-4fdf-b6fd-96e44eac7751",
+                            "id": "2f6e65d1-807d-440b-a53c-c5ef1a9f7d75",
                             "ord": "a1"
                           }
                         ],
-                        "id": "a91e54fe-15b8-4cae-84b8-0fc1489dccd4",
+                        "id": "6936398f-9f8a-41b1-9145-4f9d7b64356a",
                         "ord": "a4"
                       }
                     ],
-                    "id": "441e8350-ef37-485f-a2d2-b530df621199",
+                    "id": "6cdad115-86f9-4717-a70e-f92d26b74ef5",
                     "ord": "a1"
                   }
                 ],
-                "id": "dd29002b-1e44-4923-b939-b3a46cc85401",
+                "id": "5722b417-9370-4035-b0ab-b86f47a968b8",
                 "ord": "a0"
               }
             ],
@@ -2268,7 +2512,7 @@
               "kind": "collection",
               "ref": "product"
             },
-            "id": "66c8e7f7-97b8-4a6f-a036-4723ab743af8",
+            "id": "cc8f1747-2557-40ff-81a2-07224ca211da",
             "ord": "a0"
           },
           {
@@ -2286,7 +2530,7 @@
                     "tag": "h2",
                     "class": "text-2xl font-semibold text-base-content",
                     "children": ["Pairs well with"],
-                    "id": "0500e5c8-164e-4634-8169-240e7af5fc7a",
+                    "id": "cfe95e50-1408-4a0a-a532-e75b9a911767",
                     "ord": "a0"
                   },
                   {
@@ -2310,12 +2554,12 @@
                             "props": {
                               "name": "arrow-left"
                             },
-                            "id": "5edf6092-dc48-48d5-be53-57869841d33b",
+                            "id": "db1a862c-27b0-4acd-befa-0cd7acc81399",
                             "ord": "a0"
                           }
                         ],
                         "part": "prev",
-                        "id": "48c64bf3-00e5-4514-98c7-b2260a564c33",
+                        "id": "7e99b385-dcf8-4ae6-bf57-27b33bf40843",
                         "ord": "a0"
                       },
                       {
@@ -2334,20 +2578,20 @@
                             "props": {
                               "name": "arrow-right"
                             },
-                            "id": "7e5f3436-e3b4-4d7c-a544-4c6eb6b1b888",
+                            "id": "7be630f1-b674-4256-b455-cca6340282be",
                             "ord": "a0"
                           }
                         ],
                         "part": "next",
-                        "id": "4debc191-6860-417e-b440-e8fa590c01c0",
+                        "id": "9c7d1388-3d3e-4973-964b-eded3c7fb91c",
                         "ord": "a1"
                       }
                     ],
-                    "id": "3b2069f0-a969-4f6e-8eb1-0ed398e4b866",
+                    "id": "fe2edb72-d69d-4dd4-929b-6709d478b638",
                     "ord": "a1"
                   }
                 ],
-                "id": "327294bc-6b4a-44f7-88be-1fb1c9c349d5",
+                "id": "9b292bd7-2632-44d4-9cb0-437f17912fcd",
                 "ord": "a0"
               },
               {
@@ -2372,7 +2616,7 @@
                           "kind": "value",
                           "ref": "image"
                         },
-                        "id": "e118214d-7367-4e11-a964-0b66e9d1dfde",
+                        "id": "0f2c7416-14d7-4d3d-ab01-07c134c7008f",
                         "ord": "a0"
                       },
                       {
@@ -2389,7 +2633,7 @@
                               "kind": "value",
                               "ref": "title"
                             },
-                            "id": "f02bf585-c56b-4977-9238-91e550672641",
+                            "id": "42f71989-66e4-491c-9c47-3f8208e117e6",
                             "ord": "a0"
                           },
                           {
@@ -2401,11 +2645,11 @@
                               "kind": "value",
                               "ref": "price"
                             },
-                            "id": "2f1cb82b-a3fc-496e-8fd5-c82ebe35b645",
+                            "id": "77fb8d74-4273-4df9-91d3-fb920946469c",
                             "ord": "a1"
                           }
                         ],
-                        "id": "f777f3da-916e-4db9-b797-9cb98bfd1e9a",
+                        "id": "693a8d83-1f6b-4a81-9965-fdf43ee84206",
                         "ord": "a1"
                       }
                     ],
@@ -2415,7 +2659,7 @@
                       "attr": "href"
                     },
                     "part": "slide",
-                    "id": "839e12cb-9781-432b-b582-ec9fe62e20df",
+                    "id": "eb0329c5-3459-4605-9126-cd5e54ad14d1",
                     "ord": "a0"
                   }
                 ],
@@ -2424,18 +2668,18 @@
                   "kind": "collection",
                   "ref": "commerce.related"
                 },
-                "id": "69d283fe-6d40-4a74-8bd4-683c86abcdde",
+                "id": "047a7194-ea12-4522-bd41-dbc1aad92a67",
                 "ord": "a1"
               }
             ],
             "behavior": {
               "type": "carousel"
             },
-            "id": "f8bc3fcd-5f7a-4929-a189-f0f3d3d39c82",
+            "id": "28b86c00-4180-46a7-b992-c11825e9d403",
             "ord": "a1"
           }
         ],
-        "id": "20639667-e123-495e-a48a-4924f1f7e61c"
+        "id": "e8715c82-0420-4f3a-8d36-b09e2bf06857"
       }
     }
   ],

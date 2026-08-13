@@ -3,7 +3,7 @@
   "category": "blueprint",
   "slug": "sparx-handyman-modern",
   "name": "sparx — Handyman (Modern)",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "tagline": "A modern, on-demand template for handymen — booked online from day one.",
   "description": "A bright, techy handyman site for on-demand home repairs — book a vetted pro online in minutes at a flat hourly rate. Installs a working booking flow: a real task menu (mounting, assembly, smart-home, half-day projects), three vetted pros dispatched as bookable resources with long weekday and weekend hours, and same-day scheduling. Ships as \"FixList\", a modern on-demand handyman service.",
   "payload": "blueprint.ts",

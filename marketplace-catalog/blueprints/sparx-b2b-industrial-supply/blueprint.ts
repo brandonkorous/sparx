@@ -15,7 +15,7 @@ import emails from './emails.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-b2b-industrial-supply',
-  version: '1.3.0',
+  version: '1.4.0',
   name: 'sparx — Industrial Supply (B2B / Wholesale)',
   summary:
     'A complete, working wholesale shop for an industrial MRO distributor: a real trade catalogue sold by the case — fasteners, abrasives, safety & PPE and bulk consumables — with categories, collections, a bespoke trade PDP (per-case pricing, volume breaks, net-30), and a full merchandised home page. Sturdy industrial theme — steel ground, deep navy, safety-amber accent. Shipped as Ironworks Supply Co.',

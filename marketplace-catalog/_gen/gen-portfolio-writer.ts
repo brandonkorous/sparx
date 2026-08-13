@@ -31,6 +31,7 @@ import {
 } from '../../packages/silica-catalog/node_modules/@wizeworks/silicaui-html/dist/index.js';
 import { safeParseBlueprint } from '../../packages/blueprints/src/validate';
 
+import { contactSection } from './shared/contact-section';
 import { emitPortfolioBundle, type PortfolioSiteSpec } from './portfolio-sites/harness';
 import { writePortfolioPreview } from './portfolio-sites/preview';
 import {
@@ -392,37 +393,19 @@ const ABOUT: Node[] = [
 ];
 
 const CONTACT: Node[] = [
-  el('section', 'bg-base-100 @container px-6 py-20', {
-    children: [
-      el('div', 'mx-auto flex w-full max-w-2xl flex-col gap-6', {
-        children: [
-          el('h1', 'text-5xl font-medium tracking-tight text-base-content @2xl:text-7xl', {
-            text: 'Get in touch',
-          }),
-          el('p', 'text-xl leading-relaxed text-base-content @2xl:text-2xl', {
-            text: 'I’m open to commissions and I read every pitch. Essays, reported features, criticism — if there’s a story you think I’m the right person to tell, write and tell me why.',
-          }),
-          el('p', 'text-lg leading-relaxed text-base-content', {
-            text: 'A useful note tells me the idea, roughly how long it wants to be, and when you’d need it. A half-formed idea is a perfectly good place to begin — most of mine start that way.',
-          }),
-          el('div', 'flex flex-wrap items-center gap-5 border-t border-base-300 pt-8', {
-            children: [
-              el('a', 'btn btn-primary btn-lg', {
-                attrs: { href: 'mailto:iris@irisbellamy.example' },
-                text: 'Email Iris',
-              }),
-              el('a', 'text-base font-semibold text-primary transition-colors hover:text-base-content', {
-                attrs: { href: '/work' },
-                text: 'Read the writing first',
-              }),
-            ],
-          }),
-          el('p', 'text-base leading-relaxed text-secondary', {
-            text: 'Or subscribe to The Long Field — a fortnightly letter on work and attention, and the quietest way to keep up with what I’m writing.',
-          }),
-        ],
-      }),
+  // The page's own words, over the shared contact band: the business's phone and email
+  // (each hidden until set in Site settings — never an invented number) and a working
+  // enquiry form that reaches the tenant's Form submissions inbox. This used to end at a
+  // `mailto:` to a placeholder domain, which was the only way to reach the business.
+  contactSection({
+    heading: 'Get in touch',
+    intro: [
+      'I’m open to commissions and I read every pitch. Essays, reported features, criticism — if there’s a story you think I’m the right person to tell, write and tell me why.',
+      'A useful note tells me the idea, roughly how long it wants to be, and when you’d need it. A half-formed idea is a perfectly good place to begin — most of mine start that way.',
+      'Or subscribe to The Long Field — a fortnightly letter on work and attention, and the quietest way to keep up with what I’m writing.',
     ],
+    submitLabel: 'Email Iris',
+    secondary: { label: 'Read the writing first', href: '/work' },
   }),
 ];
 

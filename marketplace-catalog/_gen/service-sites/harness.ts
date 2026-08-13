@@ -27,6 +27,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import {
+  bind,
   el,
   pageBody,
   stampTree,
@@ -44,6 +45,7 @@ import { HOST_KEYS, hostCore } from '../../../packages/silica-catalog/src/host-n
 import { resolveSparxTheme } from '../../../packages/silica-catalog/src/resolve-sparx-theme';
 import { colorToHex } from '../../../packages/site-themes/src/v2/color';
 import { blueprintEmailDoc } from '../shared/blueprint-email';
+import { contactSection } from '../shared/contact-section';
 
 // Re-export the theme-authoring kit so a blueprint imports EVERYTHING (its theme helpers
 // AND the section kit + emit) from one place.
@@ -67,7 +69,7 @@ const blueprintsDir = join(here, '..', '..', 'blueprints');
 /** The payload version every service bundle ships. BUMP on any content change — a
  *  marketplace artifact is IMMUTABLE per `(category, slug, version)`, so without a bump
  *  the catalog keeps serving the OLD payload. */
-const BUNDLE_VERSION = '1.1.0';
+const BUNDLE_VERSION = '1.2.0';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -222,6 +224,12 @@ export function composeServiceSite(spec: ServiceSiteSpec): Record<string, unknow
   const bookBody = [
     ...(spec.bookIntro ?? [defaultBookIntro(spec)]),
     hostCore(HOST_KEYS.schedulingServices, 'mx-auto w-full max-w-5xl px-6 py-8'),
+    // What happens after you pick a time. The Book page was the THINNEST page on every
+    // service site (a median of 30 words: a masthead and the live widget) despite being
+    // the page the whole template exists to get people to — and the answers a customer
+    // wants before booking were already written, in the template's own voice, sitting
+    // unread in its scheduling policies.
+    ...bookingPolicyBand(spec),
   ];
 
   const pages = [
@@ -230,8 +238,41 @@ export function composeServiceSite(spec: ServiceSiteSpec): Record<string, unknow
     // surface); absent for the booking-service templates that author no menu.
     ...(spec.menu ? [singleton('Menu', 'menu', pageBody(spec.menu), seo.menu)] : []),
     singleton('Book', 'book', pageBody(bookBody), seo.book),
-    singleton('About', 'about', pageBody(spec.about ?? [defaultAbout(spec)]), seo.about),
-    singleton('Contact', 'contact', pageBody(spec.contact ?? [defaultContact(spec)]), seo.contact),
+    singleton('About', 'about', pageBody(ensurePageH1(spec.about ?? [defaultAbout(spec)])), seo.about),
+    // The Contact page ALWAYS opens with the shared contact band — the page's `h1`, the
+    // business's own phone/email (each hidden until set, never an invented number), and
+    // a working enquiry form that reaches the tenant's Form submissions inbox. The
+    // template's authored sections (its find-us band, its booking CTA) follow.
+    //
+    // Prepended by the HARNESS rather than authored per template, because the finding
+    // that produced it was catalogue-wide: none of the 97 service starters had a phone
+    // number, an email, or anything a visitor could type into, and 90 of them had no
+    // `h1` on this page either. `showAddress: false` — the find-us band below binds the
+    // same address beside its hours and map.
+    singleton(
+      'Contact',
+      'contact',
+      pageBody([
+        contactSection({
+          heading: 'Get in touch',
+          intro: `Questions before you book? Send a note and ${spec.brand.businessName} will get back to you — usually the same day.`,
+          submitLabel: 'Send my request',
+          askPhone: true,
+          showAddress: false,
+        }),
+        // No `defaultContact` fallback any more: the band above IS a complete contact
+        // page (heading, channels, working form), and the old default's own "Get in
+        // touch" heading would have put a second `h1` on the page.
+        //
+        // `demoteH1s` for the same reason: the band above owns the page title now, and
+        // the seven hospitality templates author their own `h1` ("Visit Larkspur") in
+        // their find-us band. Two `h1`s is two page titles — an outline with no single
+        // top, which the sweep reports as `heading-multiple-top`. They become the `h2`
+        // they always were in meaning: a section heading under the page's title.
+        ...demoteH1s(spec.contact ?? []),
+      ]),
+      seo.contact
+    ),
   ];
 
   return { frame, pages, theme };
@@ -625,9 +666,14 @@ export function typeHero(o: {
           ...(o.sub
             ? [el('p', 'max-w-2xl text-lg leading-relaxed @2xl:text-xl', { text: o.sub })]
             : []),
+          // The action has to CONTRAST with the band it sits on. On a `primary` surface
+          // a `btn-primary` is the same fill as its background: the button disappears
+          // and its label reads as a stray line of bold text floating under the intro —
+          // which is exactly how every `surface: 'primary'` masthead shipped, the Book
+          // page's included. Neutral on primary, primary everywhere else.
           el('div', 'mt-2 flex flex-wrap gap-3', {
             children: [
-              el('a', 'btn btn-primary btn-lg', {
+              el('a', `btn btn-lg ${o.surface === 'primary' ? 'btn-neutral' : 'btn-primary'}`, {
                 attrs: { href: o.primary.href },
                 text: o.primary.label,
               }),
@@ -987,7 +1033,13 @@ export function bookingCta(o: {
 }
 
 /** A HOURS + FIND-US band for the Contact page — opening hours as a list, the address, and
- *  a live `site.map` of the location (the tenant edits the address in the builder). */
+ *  a live `site.map` of the location.
+ *
+ *  The address is BOUND to `site.identity.address` (Site settings → How customers reach
+ *  you): the authored lines are the placeholder an author sees on the canvas, and the
+ *  business's own address replaces them the moment they type it. It used to be authored
+ *  text only, which meant every service starter shipped a Tacoma industrial estate as
+ *  the permanent address of a business that had never been there. */
 export function findUs(o: {
   heading?: string;
   hours: { day: string; time: string }[];
@@ -1003,11 +1055,17 @@ export function findUs(o: {
               el('h2', 'text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl', {
                 text: o.heading ?? 'Visit us',
               }),
-              el('div', 'flex flex-col gap-1', {
-                children: o.address.map((line) =>
-                  el('p', 'text-lg leading-relaxed text-base-content', { text: line })
+              // ONE node, not one per line: a binding fills a node's whole content, so
+              // the lines have to arrive as a single string. `whitespace-pre-line` is
+              // what keeps the breaks — the business's own, once they set it.
+              bind(
+                el(
+                  'address',
+                  'text-lg leading-relaxed whitespace-pre-line not-italic text-base-content',
+                  { text: o.address.join('\n') }
                 ),
-              }),
+                'site.identity.address'
+              ),
               el('div', 'flex flex-col gap-2', {
                 children: o.hours.map((h) =>
                   el('div', 'flex items-baseline justify-between gap-6 border-b border-base-200 pb-1', {
@@ -1033,6 +1091,147 @@ export function findUs(o: {
 }
 
 // ── Neutral defaults (Book intro / About / Contact) ─────────────────────────────
+
+/**
+ * Guarantee the page has an `h1`, by promoting its FIRST heading when it has none.
+ *
+ * Ninety of the shipped service bundles had an About page whose title was an `h2` — the
+ * story band's heading, which IS the page's title, just marked up a level down. A page
+ * with no `h1` has no title as far as a screen reader's outline or a search engine is
+ * concerned, and it is not something a template author would notice: on screen the
+ * heading is already the biggest thing on the page.
+ *
+ * PROMOTES rather than PREPENDS deliberately — adding a second heading above the one the
+ * template already wrote would say the same thing twice. The classes are left alone: the
+ * band's heading is styled as a page title already.
+ */
+function ensurePageH1(nodes: Node[]): Node[] {
+  const isHeading = (n: unknown): n is { tag: string } =>
+    !!n && typeof n === 'object' && /^h[1-6]$/.test((n as { tag?: string }).tag ?? '');
+  let found: { tag: string } | undefined;
+  let hasH1 = false;
+  const walk = (n: unknown): void => {
+    if (!n || typeof n !== 'object') return;
+    if (isHeading(n)) {
+      if (n.tag === 'h1') hasH1 = true;
+      found ??= n;
+    }
+    for (const v of Object.values(n as Record<string, unknown>)) {
+      if (Array.isArray(v)) v.forEach(walk);
+      else if (v && typeof v === 'object') walk(v);
+    }
+  };
+  nodes.forEach(walk);
+  if (!hasH1 && found) found.tag = 'h1';
+  return nodes;
+}
+
+/** Retag every `h1` in these nodes to `h2` — for content composed BELOW a section that
+ *  already owns the page's title. Classes are untouched: the heading keeps the size it
+ *  was authored at, it just stops claiming to be the page. */
+function demoteH1s(nodes: Node[]): Node[] {
+  const walk = (n: unknown): void => {
+    if (!n || typeof n !== 'object') return;
+    const node = n as { tag?: string };
+    if (node.tag === 'h1') node.tag = 'h2';
+    for (const v of Object.values(n as Record<string, unknown>)) {
+      if (Array.isArray(v)) v.forEach(walk);
+      else if (v && typeof v === 'object') walk(v);
+    }
+  };
+  nodes.forEach(walk);
+  return nodes;
+}
+
+/** One booking policy as the customer needs to read it: what it covers, the template's
+ *  own words for it, and the two facts they will look for — the deposit and the notice
+ *  needed to change their mind.
+ *
+ *  Every line is DERIVED from the policy the template already declares, so nothing here
+ *  can contradict what the installer actually configures. A policy with no cancellation
+ *  window states none: a promise the booking engine is not enforcing is worse than
+ *  silence. */
+function policyCard(p: SchedulingPolicyLike): Node {
+  const facts: string[] = [];
+  if (p.depositType === 'none') {
+    facts.push('No deposit to book.');
+  } else if (p.depositType === 'deposit' && typeof p.depositAmountCents === 'number') {
+    facts.push(`A ${money(p.depositAmountCents)} deposit holds your place.`);
+  }
+  if (typeof p.cancellationWindowHours === 'number') {
+    // Days only from 48 up. A 24-hour window said as "1 day" contradicted the policy
+    // text directly above it, which says "24 hours' notice" in the template's own words.
+    const h = p.cancellationWindowHours;
+    const notice = h >= 48 && h % 24 === 0 ? `${h / 24} days` : `${h} hours`;
+    facts.push(`Change or cancel free up to ${notice} before.`);
+  }
+  return el('div', 'flex flex-col gap-3 rounded-box border border-base-300 bg-base-100 p-6', {
+    children: [
+      el('h3', 'text-xl font-semibold text-base-content', { text: p.name }),
+      ...(p.policyText
+        ? [el('p', 'text-base leading-relaxed text-base-content', { text: p.policyText })]
+        : []),
+      ...(facts.length > 0
+        ? [
+            el('p', 'text-base font-medium text-base-content', {
+              text: facts.join(' '),
+            }),
+          ]
+        : []),
+    ],
+  });
+}
+
+/** Cents → a plain price, no trailing `.00` on a round amount (a $50 deposit reads
+ *  better as "$50" than "$50.00"). */
+function money(cents: number): string {
+  const whole = cents / 100;
+  return whole % 1 === 0 ? `$${whole}` : `$${whole.toFixed(2)}`;
+}
+
+/** The minimum shape this band reads off a template's `SchedulingDecl`. Structural
+ *  rather than imported so the harness stays decoupled from the installer's schema. */
+interface SchedulingPolicyLike {
+  name?: string;
+  policyText?: string;
+  depositType?: string;
+  depositAmountCents?: number;
+  cancellationWindowHours?: number;
+}
+
+/** "Good to know" — the booking policies the template declares, rendered under the live
+ *  booking widget. Empty when a template declares none, so this can never draw an
+ *  empty heading over nothing. */
+function bookingPolicyBand(spec: ServiceSiteSpec): Node[] {
+  const decl = spec.scheduling as { policies?: SchedulingPolicyLike[] } | undefined;
+  const policies = (decl?.policies ?? []).filter((p) => p && typeof p.name === 'string');
+  if (policies.length === 0) return [];
+  return [
+    el('section', 'bg-base-200 @container px-6 py-16 @3xl:py-20', {
+      children: [
+        el('div', 'mx-auto flex w-full max-w-5xl flex-col gap-8', {
+          children: [
+            el('div', 'flex flex-col gap-3', {
+              children: [
+                el('h2', 'text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl', {
+                  text: 'Good to know',
+                }),
+                el('p', 'max-w-2xl text-lg leading-relaxed text-base-content', {
+                  text: 'What happens once you pick a time — and how to change it if something comes up.',
+                }),
+              ],
+            }),
+            el(
+              'div',
+              policies.length > 1 ? 'grid grid-cols-1 gap-6 @3xl:grid-cols-2' : 'grid gap-6',
+              { children: policies.map((p) => policyCard(p)) }
+            ),
+          ],
+        }),
+      ],
+    }),
+  ];
+}
 
 /** A plain, editable Book-page masthead when a template authors none — a heading + one
  *  line over the pinned live services core. */
@@ -1073,23 +1272,8 @@ function defaultAbout(spec: ServiceSiteSpec): Node {
   });
 }
 
-function defaultContact(spec: ServiceSiteSpec): Node {
-  return el('section', 'bg-base-100 @container px-6 py-20 text-center', {
-    children: [
-      el('div', 'mx-auto flex w-full max-w-xl flex-col items-center gap-5', {
-        children: [
-          el('h1', 'text-4xl font-bold tracking-tight text-base-content @2xl:text-5xl', {
-            text: 'Get in touch',
-          }),
-          el('p', 'text-lg leading-relaxed text-base-content', {
-            text: `Questions before you book? Reach ${spec.brand.businessName} — we’ll get back to you quickly.`,
-          }),
-          el('a', 'btn btn-primary btn-lg', {
-            attrs: { href: '/book' },
-            text: 'Book online',
-          }),
-        ],
-      }),
-    ],
-  });
-}
+// `defaultContact` is deleted, not kept unused. The shared `contactSection` the Contact
+// page now always opens with IS the fallback — a heading, the business's own channels and
+// a working form — and it is strictly better than what this rendered: a heading, one
+// sentence, and a button pointing at the booking page. A contact page whose only offer was
+// "go and book" was the thin end of the catalogue-wide finding (see shared/contact-section.ts).

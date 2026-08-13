@@ -15,7 +15,7 @@ import emails from './emails.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-retail-eyewear-heritage',
-  version: '1.3.0',
+  version: '1.4.0',
   name: 'sparx — Eyewear (Heritage)',
   summary:
     'A complete, working shop for a heritage, hand-made eyewear house: named acetate optical frames (each hand-finished in its own colourways with a lens choice), hand-polished sunglasses, a reading pair, a numbered limited-run frame, a leather case and a care kit, with categories, collections, a bespoke PDP and a merchandised home page. Warm heritage theme — bone/tobacco paper, a bottle-green primary, a tobacco accent, a serif display. Shipped as Atelier Optique.',

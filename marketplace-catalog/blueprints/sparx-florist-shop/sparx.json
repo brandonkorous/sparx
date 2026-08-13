@@ -3,7 +3,7 @@
   "category": "blueprint",
   "slug": "sparx-florist-shop",
   "name": "sparx — Florist (Shop)",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "tagline": "A cheerful template for neighbourhood flower shops — book online from day one.",
   "description": "A bright, joyful neighbourhood flower-shop site — a warm off-white ground, a cheerful coral primary, a fresh-green accent and a friendly rounded display. Installs a working booking flow: online booking for consults, flower subscriptions and hands-on workshops, with the shop’s florists as bookable resources on their own hours. Same-day local delivery, daily fresh arrangements, sympathy and celebration flowers. Ships as \"Petal & Post\".",
   "payload": "blueprint.ts",

@@ -124,10 +124,17 @@ export interface WriteServicePreviewResult {
 }
 
 /**
- * Render ONE service template's HOME page, in its real frame + bespoke theme, to a
- * self-contained HTML file in `scratchDir` — the branded chrome around the authored home
- * body, exactly as the storefront renders it, for review + media screenshotting. The
- * pinned scheduling core shows a labeled placeholder (it renders server-side live).
+ * Render ALL of ONE service template's pages — Home in its real frame, then Book, About and
+ * Contact under a label banner — in the bundle's bespoke theme, to a self-contained HTML file
+ * in `scratchDir`, exactly as the storefront renders them. The pinned scheduling core shows a
+ * labeled placeholder (it renders server-side live).
+ *
+ * WHY EVERY PAGE. This rendered only `pages[0]` until 2026-08-12, which meant the Book, About
+ * and Contact pages of NINETY-SEVEN shipped bundles — over half the catalogue — had never been
+ * looked at, while the template and portfolio harnesses next door had always stacked their
+ * whole site. A starter site is judged as a site; previewing one page of four graded the part
+ * that was easiest to see. `media-service.mjs` shoots `media/preview.png` from the top of this
+ * file, so the home-page screenshot it captures is unchanged.
  */
 export async function writeServicePreview(
   spec: ServiceSiteSpec,
@@ -142,18 +149,28 @@ export async function writeServicePreview(
     spec.brand.businessName
   ) as Node;
 
-  // A minimal resolver host — a service home binds nothing but the site identity.
+  // A minimal resolver host — a service page binds nothing but the site identity.
   const host = createSilicaResolver({
     root: { site: { identity: { name: spec.brand.businessName } } },
     format: defaultSilicaFormat,
   });
 
+  // Deep-clone each root before placeholderizing so the mutation can't leak into the bundle.
   const clone = (n: Node): Node => JSON.parse(JSON.stringify(n)) as Node;
-  const bodyHtml = renderSilicaBody(placeholderizeCores(clone(pages[0]!.root)) as Node, {
-    host,
-    frame: frameRoot,
-    html: { ids: false },
-  });
+  const label = (name: string): string => `<div class="__pv-label">${name}</div>`;
+  const renderPage = (root: Node, framed: boolean): string =>
+    renderSilicaBody(placeholderizeCores(clone(root)) as Node, {
+      host,
+      ...(framed ? { frame: frameRoot } : {}),
+      html: { ids: false },
+    });
+
+  const parts: string[] = [renderPage(pages[0]!.root, true)];
+  for (const pg of pages.slice(1)) {
+    parts.push(label(pg.name));
+    parts.push(renderPage(pg.root, false));
+  }
+  const bodyHtml = parts.join('\n');
 
   const utilCss = compilePreviewCss(spec.key, bodyHtml, scratchDir);
   const themeCss = buildSilicaThemeCssFromTheme(
@@ -173,7 +190,9 @@ export async function writeServicePreview(
 <style>${utilCss}</style>
 <style>${themeCss}</style>
 <style>
+  html { scroll-behavior: smooth; }
   body { background: var(--color-base-100); color: var(--color-base-content); font-family: var(--font-sans, system-ui, sans-serif); }
+  .__pv-label { position: sticky; top: 0; z-index: 50; background: #111; color: #fff; font: 600 12px/1 ui-monospace, monospace; letter-spacing: .08em; text-transform: uppercase; padding: 8px 16px; border-top: 2px solid #fff; }
 </style>
 </head>
 <body>

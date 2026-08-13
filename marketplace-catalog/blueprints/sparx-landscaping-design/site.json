@@ -22,7 +22,7 @@
                   "props": {
                     "show": "both"
                   },
-                  "id": "344fe51a-8f8d-4563-8b47-046c0a5d01d2",
+                  "id": "86fa8c98-0659-40f3-a7fd-478814f9505a",
                   "ord": "a0"
                 },
                 {
@@ -43,7 +43,7 @@
                         "type": "link",
                         "label": "Product"
                       },
-                      "id": "c8a31958-25f3-4398-bbaa-8cdb54f65451",
+                      "id": "4894944a-c90d-4acf-94d0-c598eeea51ba",
                       "ord": "a0"
                     },
                     {
@@ -59,7 +59,7 @@
                         "type": "link",
                         "label": "Pricing"
                       },
-                      "id": "a7b794d7-9ac4-489f-a014-095b5377c8e5",
+                      "id": "b53440de-3473-4385-8364-791dac75fd8f",
                       "ord": "a1"
                     },
                     {
@@ -75,11 +75,11 @@
                         "type": "link",
                         "label": "Docs"
                       },
-                      "id": "2ce4f96f-ee0b-468d-b4bd-f1f06b0120b7",
+                      "id": "e8cec7ed-476a-4ee4-897a-6aeced9c0e0a",
                       "ord": "a2"
                     }
                   ],
-                  "id": "ecb087d2-a101-4594-8509-cc1b38c2a6c0",
+                  "id": "9d6c3119-fdc3-4a9e-9ed3-f8eb87dedd2e",
                   "ord": "a1"
                 },
                 {
@@ -100,14 +100,14 @@
                         "type": "link",
                         "label": "Secondary link"
                       },
-                      "id": "c3a515f3-7939-4750-b0a2-24d9dd87ae06",
+                      "id": "2cac0ae6-1b86-4a2c-b4f0-c3f6fdf57476",
                       "ord": "a0"
                     },
                     {
                       "kind": "host",
                       "component": "site.theme-toggle",
                       "class": "inline-flex items-center",
-                      "id": "015a5a75-dec6-4a63-8624-d02e0d643e74",
+                      "id": "4982375f-f75a-4ddc-aa78-f8171dddbd94",
                       "ord": "a1"
                     },
                     {
@@ -123,7 +123,7 @@
                         "type": "link",
                         "label": "Primary action"
                       },
-                      "id": "eb967aec-7d99-4337-8e43-92870e25fde8",
+                      "id": "191330a4-c234-4448-bfff-afcbc4b6f48c",
                       "ord": "a2"
                     },
                     {
@@ -141,20 +141,20 @@
                           "props": {
                             "name": "menu"
                           },
-                          "id": "df3c3b7d-146c-475e-ac75-cdc9db1a2925",
+                          "id": "fc5c6881-b633-4d4b-a396-c1470f9509be",
                           "ord": "a0"
                         }
                       ],
                       "part": "trigger",
-                      "id": "662b421d-15a2-40c2-9a5e-2740e5958ea9",
+                      "id": "0b67593c-6816-432d-9079-2f375ba1e9a2",
                       "ord": "a3"
                     }
                   ],
-                  "id": "bd618945-9a5d-43ba-b437-3b6a60a830db",
+                  "id": "2af1734c-7e11-43c8-8caf-6ab50d2feb37",
                   "ord": "a2"
                 }
               ],
-              "id": "e880b5d9-a3fa-4a46-8450-c075169e0868",
+              "id": "a82e7129-bf0c-47b6-81fa-403b0bb1efca",
               "ord": "a0"
             },
             {
@@ -178,7 +178,7 @@
                     "type": "link",
                     "label": "Product"
                   },
-                  "id": "e0307512-095a-45e4-97fd-47370996dbfd",
+                  "id": "9a96b5d7-e798-4d2c-bbeb-2e3c09b83d9e",
                   "ord": "a0"
                 },
                 {
@@ -194,7 +194,7 @@
                     "type": "link",
                     "label": "Pricing"
                   },
-                  "id": "de50229d-89fb-4cd0-a3e0-70363d96368f",
+                  "id": "f8677d8e-43e0-4c0a-a0b0-5c2c23e28d7d",
                   "ord": "a1"
                 },
                 {
@@ -210,7 +210,7 @@
                     "type": "link",
                     "label": "Docs"
                   },
-                  "id": "5922b58e-9c64-4d02-a466-331262ff9708",
+                  "id": "f3d2443b-cdc6-460c-84ff-7daabc9eb096",
                   "ord": "a2"
                 },
                 {
@@ -226,7 +226,7 @@
                     "type": "link",
                     "label": "Secondary link"
                   },
-                  "id": "ddcef2ff-aba8-43f8-9c84-c7ba7cb7d041",
+                  "id": "e4ab7f77-6d3f-45e2-939d-887b3d0d203a",
                   "ord": "a3"
                 },
                 {
@@ -242,19 +242,19 @@
                     "type": "link",
                     "label": "Primary action"
                   },
-                  "id": "63f7d55b-ff56-49ae-9e12-bc6fcf5e0505",
+                  "id": "5d280864-7952-48cb-912a-7088308249fd",
                   "ord": "a4"
                 }
               ],
               "part": "panel",
-              "id": "7c6a89c5-ee96-41d7-91bf-d98ae7caf24c",
+              "id": "bb4f20e1-9988-4eb3-aeeb-91cd5f7487ae",
               "ord": "a1"
             }
           ],
           "behavior": {
             "type": "disclosure"
           },
-          "id": "0d8f3008-891f-4dc7-a369-bd69953bf946",
+          "id": "c605c8a9-c001-465a-9aa4-e87bb8f9613c",
           "ord": "a0"
         },
         {
@@ -270,7 +270,7 @@
               "kind": "outlet"
             }
           ],
-          "id": "5ab0f4ce-f37a-4e2a-9e71-814baeac45f1",
+          "id": "0734efb2-49de-4cd7-86e2-2ff9f8b0b5bd",
           "ord": "a1"
         },
         {
@@ -300,7 +300,7 @@
                           "props": {
                             "show": "both"
                           },
-                          "id": "8ffb730b-a07e-4395-bcfb-534ff87cd7bf",
+                          "id": "97fbbb63-d0b9-47d1-afc8-af80997e713d",
                           "ord": "a0"
                         },
                         {
@@ -316,7 +316,7 @@
                           "attrs": {
                             "href": "/"
                           },
-                          "id": "ffc76432-efb5-4a8f-916d-e9716a619530",
+                          "id": "d245ce3f-e02a-415f-ac8f-a29d2928e639",
                           "ord": "a1"
                         },
                         {
@@ -324,11 +324,11 @@
                           "tag": "ul",
                           "class": "mt-2 flex items-center gap-5",
                           "children": [],
-                          "id": "27c0b8ab-1080-4d9a-8e24-4dfc5e82d331",
+                          "id": "73e04642-00e2-4e51-adfe-72528b407930",
                           "ord": "a2"
                         }
                       ],
-                      "id": "ab63ddc4-4b9a-47a8-9e69-b03f17e705f1",
+                      "id": "0a757a36-59de-4e01-b03e-56bbdcdfa4f8",
                       "ord": "a0"
                     },
                     {
@@ -349,7 +349,7 @@
                           "attrs": {
                             "href": "/"
                           },
-                          "id": "fca4e99e-f2d0-446a-b4eb-d512d8447e54",
+                          "id": "7269806e-db10-45b7-a073-53299dccadeb",
                           "ord": "a0"
                         },
                         {
@@ -374,11 +374,11 @@
                                     "type": "link",
                                     "label": "Features"
                                   },
-                                  "id": "883f7369-f688-406a-8ae5-50cf4ce7bfac",
+                                  "id": "8564b5f7-3746-4d33-ab52-c57cb2f037f4",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "f2e0e611-0d0a-4933-9901-df3323d4e849",
+                              "id": "c6af77d2-47f6-4323-8b18-6164a5a254fb",
                               "ord": "a0"
                             },
                             {
@@ -398,11 +398,11 @@
                                     "type": "link",
                                     "label": "Pricing"
                                   },
-                                  "id": "99e27b31-6ad6-4fea-8c23-9d44bf1a997c",
+                                  "id": "0fba013b-d5eb-4c97-ad96-bb7d5ece1090",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "d8d9f73b-0b20-447f-92d5-b67e18051f95",
+                              "id": "734fdf13-68e4-4bf3-a447-7b8b251b0a72",
                               "ord": "a1"
                             },
                             {
@@ -422,11 +422,11 @@
                                     "type": "link",
                                     "label": "Integrations"
                                   },
-                                  "id": "16dfcea5-9895-4f6d-baa8-9eb02f8dee78",
+                                  "id": "fc2e91b5-04d6-4fe3-b7d9-6ce7889162fb",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "c591c7ee-1ec9-44ce-a504-e539af1bacfa",
+                              "id": "9e49b55c-5bf4-45c4-9744-88eba4377180",
                               "ord": "a2"
                             },
                             {
@@ -446,19 +446,19 @@
                                     "type": "link",
                                     "label": "Changelog"
                                   },
-                                  "id": "fd23dd85-1209-40b2-9790-bc97c13f0ed6",
+                                  "id": "78f36e56-17be-425a-8b61-9aa37dc1eba3",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "70b10612-f5a7-4530-9025-46c5d017f038",
+                              "id": "7fb90f33-1a90-4ad3-8941-f7ba238ddb3f",
                               "ord": "a3"
                             }
                           ],
-                          "id": "61b60f77-7d9a-428f-b9f8-fcf99538ae8a",
+                          "id": "b1c7f869-603a-4bef-add4-b5c3a532d1b1",
                           "ord": "a1"
                         }
                       ],
-                      "id": "7d389c35-ee10-44ba-9e4c-87a0bf446dbe",
+                      "id": "49cc5b33-bfdd-4a85-86b4-ae05b24045d0",
                       "ord": "a1"
                     },
                     {
@@ -471,11 +471,11 @@
                           "tag": "ul",
                           "class": "flex flex-col gap-2",
                           "children": [],
-                          "id": "538c151b-5aa1-4fd3-9545-14934872b594",
+                          "id": "ea9fbc82-5223-45aa-850a-e0ad56654044",
                           "ord": "a0"
                         }
                       ],
-                      "id": "7dbd8e7d-0ccf-43ae-ab26-5cb70ab2c518",
+                      "id": "a8d6dcf3-818a-4c79-b4c3-563ade292d22",
                       "ord": "a2"
                     },
                     {
@@ -499,23 +499,23 @@
                                   "props": {
                                     "heading": "Legal"
                                   },
-                                  "id": "b5d715d1-7bb6-4751-be5f-14411c078694",
+                                  "id": "c7a32eaa-8ea2-4522-9755-ddbeb61453ce",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "590aeb7b-b20d-48f6-b7ac-7511c2fa1e8f",
+                              "id": "f6dfc28c-5368-4b9d-8aec-cc7fcd80d387",
                               "ord": "a0"
                             }
                           ],
-                          "id": "76f29640-a4b5-4d83-b99d-9a6496273aa9",
+                          "id": "67de82c7-b276-48ff-b24f-50629580b9b9",
                           "ord": "a0"
                         }
                       ],
-                      "id": "a9c2142d-a556-4309-9e76-5eb013c74fcf",
+                      "id": "550b8e87-ada3-42d3-bdbf-b1c269f31aae",
                       "ord": "a3"
                     }
                   ],
-                  "id": "b16bfdfa-6069-4ee0-b035-92f751e99b60",
+                  "id": "408e5ec4-560b-4436-95c7-a3abf728fa2a",
                   "ord": "a0"
                 },
                 {
@@ -538,11 +538,11 @@
                             "kind": "value",
                             "ref": "site.identity.name"
                           },
-                          "id": "29ba157e-5f18-463a-a658-7466f81f8f4d",
+                          "id": "183f062b-6a95-49e9-8d88-edc66d928dc6",
                           "ord": "a0"
                         }
                       ],
-                      "id": "576ad235-74a0-4b4a-9350-133ff2c267c4",
+                      "id": "6b6e7b03-37f7-4376-b1bc-2e303c2e2c3b",
                       "ord": "a0"
                     },
                     {
@@ -550,23 +550,23 @@
                       "tag": "ul",
                       "class": "flex flex-wrap items-center gap-x-6 gap-y-2",
                       "children": [],
-                      "id": "fa5ac3b3-723e-4199-8603-ce3f0bbd9dc1",
+                      "id": "15c53b1c-b21b-40c6-a345-1d5f2253e599",
                       "ord": "a1"
                     }
                   ],
-                  "id": "89488bf5-3d3c-48a7-932d-3e8c354f1aac",
+                  "id": "a353231c-ac00-4ff1-9123-64a118319363",
                   "ord": "a1"
                 }
               ],
-              "id": "acb5a3e2-a0ff-4706-a3a4-162ec9973329",
+              "id": "e8452bae-d914-478c-8750-3c23a35e8a24",
               "ord": "a0"
             }
           ],
-          "id": "4083d831-af02-4a54-8d56-c3e39951bec0",
+          "id": "040b494d-8aad-44a5-8b93-542289df7a6b",
           "ord": "a2"
         }
       ],
-      "id": "d8e69880-448a-47a3-9b06-99e38f002425"
+      "id": "532ec2c0-ad27-44a6-934d-00eb01852afb"
     }
   },
   "pages": [
@@ -580,7 +580,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "3b1eb3fd-5679-439e-9bbc-db5efebe0e0d",
+        "id": "7c23a4d6-a7c4-4803-afd7-a1dc41949788",
         "children": [
           {
             "kind": "element",
@@ -596,14 +596,14 @@
                   "alt": "A lush, layered garden with a stone terrace at golden hour",
                   "loading": "eager"
                 },
-                "id": "bab8311a-b8ae-4ca4-bee4-0922d5704942",
+                "id": "5c77a381-6ec6-4df1-87b8-8b3ccec6ac05",
                 "ord": "a0"
               },
               {
                 "kind": "element",
                 "tag": "div",
                 "class": "absolute inset-0 bg-black/50",
-                "id": "e7f5dc69-6080-470d-9250-1b382df7a084",
+                "id": "87cea5cd-f81a-478c-a6aa-8162db7075a2",
                 "ord": "a1"
               },
               {
@@ -616,7 +616,7 @@
                     "tag": "h1",
                     "class": "max-w-3xl text-4xl font-bold leading-tight tracking-tight @2xl:text-5xl @3xl:text-6xl",
                     "children": ["The yard you keep meaning to build"],
-                    "id": "378a51e4-ef64-487c-9c54-6da524d52fab",
+                    "id": "d400d6ac-5364-4720-8193-25581e0e9ee5",
                     "ord": "a0"
                   },
                   {
@@ -626,7 +626,7 @@
                     "children": [
                       "Verdant Grounds designs and builds landscapes worth coming home to — considered design, real craftsmanship, and plantings that only get better with time."
                     ],
-                    "id": "d43f858f-5234-4ad1-a4b9-7a67387227bc",
+                    "id": "e6ffaa8c-b256-40ad-bb90-d2d5aae06077",
                     "ord": "a1"
                   },
                   {
@@ -642,7 +642,7 @@
                           "href": "/book"
                         },
                         "children": ["Book a design consultation"],
-                        "id": "6525cc12-52ab-4cd0-8667-2023423dcae3",
+                        "id": "bda79d1d-ceed-4b43-893f-924d6315205e",
                         "ord": "a0"
                       },
                       {
@@ -653,19 +653,19 @@
                           "href": "/book"
                         },
                         "children": ["See our work"],
-                        "id": "36b28db6-710e-4ff0-be94-58829d17b52d",
+                        "id": "3c85ca42-5c44-49ba-8760-5c8172722b72",
                         "ord": "a1"
                       }
                     ],
-                    "id": "05e5aff5-3083-4c1a-99bb-31e514d9a309",
+                    "id": "936d6b98-eb25-4438-9897-da66e82ca47b",
                     "ord": "a2"
                   }
                 ],
-                "id": "9aaa03c5-17ba-4ad9-af8b-44a1098cb904",
+                "id": "364ae035-27c3-4b8f-a845-1c2e9c92052b",
                 "ord": "a2"
               }
             ],
-            "id": "2a2b7eed-f67c-4ae6-a9f1-f0601ccbcb0f",
+            "id": "8dc1ede4-d3d3-4182-9d57-7945fefb66e3",
             "ord": "a0"
           },
           {
@@ -693,7 +693,7 @@
                             "tag": "h2",
                             "class": "text-xl font-semibold text-base-content",
                             "children": ["Design that fits your yard"],
-                            "id": "6dcff30e-cb18-482b-b4da-00d2606d6613",
+                            "id": "328ea67f-0334-4560-b3c2-f9f6b747c801",
                             "ord": "a0"
                           },
                           {
@@ -703,11 +703,11 @@
                             "children": [
                               "Every project starts with a custom design drawn for your space, your light and how you actually want to live outside — never a copy-paste plan."
                             ],
-                            "id": "bafe630f-0dde-4ee4-927d-d03aa1ebd14c",
+                            "id": "0fb5578e-5216-4a41-b615-7db08ef16085",
                             "ord": "a1"
                           }
                         ],
-                        "id": "14486bc1-dd42-4b60-a10d-9e79da37e044",
+                        "id": "ec926d94-8d2c-47cd-b65c-90ba302d54b3",
                         "ord": "a0"
                       },
                       {
@@ -720,7 +720,7 @@
                             "tag": "h2",
                             "class": "text-xl font-semibold text-base-content",
                             "children": ["Licensed, insured crews"],
-                            "id": "fa76c164-6a95-4011-9835-80e68ed48553",
+                            "id": "202ad891-da9c-44c6-b0f5-693ba365e980",
                             "ord": "a0"
                           },
                           {
@@ -730,11 +730,11 @@
                             "children": [
                               "Our own in-house teams build what we draw. Fully licensed and insured, so the patio, the planting and the irrigation are all on one accountable crew."
                             ],
-                            "id": "c5b2aee7-a7ae-4cf3-92b0-8294292f8d3e",
+                            "id": "ab8bc77d-50d8-4620-8ec8-325d2d37a0e7",
                             "ord": "a1"
                           }
                         ],
-                        "id": "f908850d-5e60-46c6-8041-635412b60155",
+                        "id": "084c0cc9-c1ef-4bee-91dc-6c57dd82dd29",
                         "ord": "a1"
                       },
                       {
@@ -747,7 +747,7 @@
                             "tag": "h2",
                             "class": "text-xl font-semibold text-base-content",
                             "children": ["See it before we build it"],
-                            "id": "1dccc212-886a-494b-b53e-b41bbae62490",
+                            "id": "4a31c6c8-2c29-4d24-b76c-5a04cf18b840",
                             "ord": "a0"
                           },
                           {
@@ -757,11 +757,11 @@
                             "children": [
                               "Scaled 2D plans and 3D renderings let you walk the finished yard on screen and change your mind on paper, where it’s free."
                             ],
-                            "id": "f95cfd10-d1cb-43e0-9cea-c0f40e191d10",
+                            "id": "b8b63908-a00f-436f-8a95-aaabb0a41d13",
                             "ord": "a1"
                           }
                         ],
-                        "id": "d879ca55-56ce-4240-af17-4b66e234f4c7",
+                        "id": "c92264db-aa88-4806-a9ab-8b8a5c8b8c90",
                         "ord": "a2"
                       },
                       {
@@ -774,7 +774,7 @@
                             "tag": "h2",
                             "class": "text-xl font-semibold text-base-content",
                             "children": ["A warranty on what grows"],
-                            "id": "9f854b58-6309-4a24-9d8c-0f8d4b7fcf5b",
+                            "id": "8c29571e-4d39-4e29-a9d9-921dc70f2091",
                             "ord": "a0"
                           },
                           {
@@ -784,23 +784,23 @@
                             "children": [
                               "We stand behind our plantings and our build. If something doesn’t take in its first season, we make it right."
                             ],
-                            "id": "87264d74-5127-4d4c-9708-2db89c3dc6c2",
+                            "id": "74866855-f803-4129-bc6b-041640f8112c",
                             "ord": "a1"
                           }
                         ],
-                        "id": "e206a024-c900-4ff5-bd99-286fd4198225",
+                        "id": "c58d0cee-7273-44aa-83b8-d0df99716b00",
                         "ord": "a3"
                       }
                     ],
-                    "id": "de71cc8f-18c1-4259-9259-b3a23468071e",
+                    "id": "c62120ad-4aa8-400b-be30-88c30332d296",
                     "ord": "a0"
                   }
                 ],
-                "id": "4437b10b-e77e-438f-a568-d8919400da3f",
+                "id": "c4c65d33-8982-4c02-94f1-08ad347be84f",
                 "ord": "a0"
               }
             ],
-            "id": "adeeaf54-9923-4d58-bdf4-3f9849b61f54",
+            "id": "ecafe570-1832-42f8-8a08-5779b66d67c8",
             "ord": "a1"
           },
           {
@@ -823,7 +823,7 @@
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
                         "children": ["Where a project begins"],
-                        "id": "e3912a19-06e1-40f5-9319-f83482bdb1fa",
+                        "id": "903768e6-00c2-4587-a3a3-4e6dd5f2513d",
                         "ord": "a0"
                       },
                       {
@@ -833,11 +833,11 @@
                         "children": [
                           "Every engagement opens with a conversation on your property. Consultations and estimates are free — full design engagements hold a deposit that’s credited toward your plan."
                         ],
-                        "id": "328a6a61-cc68-4338-b1cd-c2861c774ad6",
+                        "id": "acdb8cc9-5cbb-42a1-91a7-14de79631c4a",
                         "ord": "a1"
                       }
                     ],
-                    "id": "f8715518-a2e0-4958-bfbd-75c5f6c3d505",
+                    "id": "3054c18e-cf08-4a8f-8c19-0bbdd3d171f1",
                     "ord": "a0"
                   },
                   {
@@ -863,7 +863,7 @@
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
                                 "children": ["Design consultation"],
-                                "id": "64dac4da-83b3-4f8d-b337-87646a252848",
+                                "id": "9c8cc248-1467-4aa8-a43e-d6f7f54949a4",
                                 "ord": "a0"
                               },
                               {
@@ -871,11 +871,11 @@
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-bold text-base-content",
                                 "children": ["$0"],
-                                "id": "380d4e3e-2ba2-4d73-809d-845f454773c2",
+                                "id": "ae7152f6-bb72-4464-affa-6aa4d4457d82",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "e0858455-eae1-4c6c-b20e-85d16a7a4a82",
+                            "id": "114e4f78-210a-4bfa-be91-952f314bf1ca",
                             "ord": "a0"
                           },
                           {
@@ -883,7 +883,7 @@
                             "tag": "p",
                             "class": "text-sm font-medium uppercase tracking-wide text-secondary",
                             "children": ["1 hr"],
-                            "id": "2f29db85-cfeb-4e82-bbb2-859018c038a3",
+                            "id": "e01b32c2-d146-4732-a36f-64add8b59b96",
                             "ord": "a1"
                           },
                           {
@@ -893,11 +893,11 @@
                             "children": [
                               "An on-site walk-through of your goals and what’s possible."
                             ],
-                            "id": "547483ea-dbea-4456-8171-d1bd4f60b640",
+                            "id": "0ac028b1-cd8b-4718-a6b9-4e48ff491875",
                             "ord": "a2"
                           }
                         ],
-                        "id": "e2977421-b3c7-4b93-9108-5a921216d071",
+                        "id": "7c47b4b7-902b-4e7b-a9d4-058096918ec8",
                         "ord": "a0"
                       },
                       {
@@ -918,7 +918,7 @@
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
                                 "children": ["Full-property free estimate"],
-                                "id": "0c5e69e2-a196-413a-9239-9508e2f8369b",
+                                "id": "d25471b3-03c3-45ad-a4ed-d97537f71003",
                                 "ord": "a0"
                               },
                               {
@@ -926,11 +926,11 @@
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-bold text-base-content",
                                 "children": ["$0"],
-                                "id": "b07461af-24f8-47ea-8846-afc6c652b694",
+                                "id": "cd205bdf-db63-4051-ad2e-b15f0af09851",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "76ce129d-770d-483c-8959-2086e8173e45",
+                            "id": "c73815ee-4957-4e98-996b-8a714f211673",
                             "ord": "a0"
                           },
                           {
@@ -938,7 +938,7 @@
                             "tag": "p",
                             "class": "text-sm font-medium uppercase tracking-wide text-secondary",
                             "children": ["1 hr 30 min"],
-                            "id": "777d8fe1-f2c7-450a-b82d-c427164bde13",
+                            "id": "cf4cb3f0-a0ee-4665-b8e8-64cfb2fba41d",
                             "ord": "a1"
                           },
                           {
@@ -948,11 +948,11 @@
                             "children": [
                               "A complete measure-up and written estimate for a whole-yard transformation."
                             ],
-                            "id": "553543e2-0f43-4f37-bbad-3535f2503645",
+                            "id": "9d53b784-2a67-4350-827b-175a076287e8",
                             "ord": "a2"
                           }
                         ],
-                        "id": "a5261bf2-0ff0-4eb3-9c2d-616619ed6ee9",
+                        "id": "780a6c5c-1f8e-4fe7-9404-55a34e7069de",
                         "ord": "a1"
                       },
                       {
@@ -973,7 +973,7 @@
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
                                 "children": ["Landscape design engagement"],
-                                "id": "7779c687-acef-4762-bd48-b167902d04d6",
+                                "id": "a2591347-114f-4630-904f-199fe679bbd6",
                                 "ord": "a0"
                               },
                               {
@@ -981,11 +981,11 @@
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-bold text-base-content",
                                 "children": ["$0"],
-                                "id": "fd227d23-68ca-4daa-90f2-8f01d9fe6b6f",
+                                "id": "e0f5ad52-c169-4406-851d-f25ba2d8ebce",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "77c477e9-d1ea-4bfb-a71c-2a2aca9a1346",
+                            "id": "d1d9bf6e-b8f0-44fc-9b82-99728c6e5d02",
                             "ord": "a0"
                           },
                           {
@@ -993,7 +993,7 @@
                             "tag": "p",
                             "class": "text-sm font-medium uppercase tracking-wide text-secondary",
                             "children": ["1 hr 30 min"],
-                            "id": "2145e248-50b8-4cec-9610-78ec6bc6fdfc",
+                            "id": "2f4b252b-84bb-4df0-b39f-071254a58552",
                             "ord": "a1"
                           },
                           {
@@ -1003,11 +1003,11 @@
                             "children": [
                               "A site survey and brief that leads to scaled 2D & 3D plans."
                             ],
-                            "id": "163f79a3-ba39-46c1-92e0-5d15fcacfe31",
+                            "id": "c9daefbf-5a10-4aec-b206-2265163fa5af",
                             "ord": "a2"
                           }
                         ],
-                        "id": "fd710b36-2919-4f31-a42e-729f97d4f3b3",
+                        "id": "410353ec-96c1-40f5-81de-c34e7156d09e",
                         "ord": "a2"
                       },
                       {
@@ -1028,7 +1028,7 @@
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
                                 "children": ["Hardscape & patio consultation"],
-                                "id": "89f00e21-eba0-4b6a-896c-7940863d5511",
+                                "id": "2b31742f-3574-4d71-a304-4a79f06ceeeb",
                                 "ord": "a0"
                               },
                               {
@@ -1036,11 +1036,11 @@
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-bold text-base-content",
                                 "children": ["$0"],
-                                "id": "4a754cbf-250a-4d2f-963b-bf2ee1f9e14a",
+                                "id": "efb5be70-c312-45d5-a062-cce69b566e4a",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "5614e6c3-1b61-4e16-8b8a-62edd4e0aca7",
+                            "id": "c84e951d-eae6-42e3-aa1d-ad50c344433f",
                             "ord": "a0"
                           },
                           {
@@ -1048,7 +1048,7 @@
                             "tag": "p",
                             "class": "text-sm font-medium uppercase tracking-wide text-secondary",
                             "children": ["1 hr"],
-                            "id": "5f62eac7-6a9c-4df6-a485-91be152de5ee",
+                            "id": "b9456aa7-8a03-4013-a246-bb0419a418ac",
                             "ord": "a1"
                           },
                           {
@@ -1058,11 +1058,11 @@
                             "children": [
                               "Patios, walls, walkways and fire features, planned on site."
                             ],
-                            "id": "8cbc0e69-4574-4182-9e7e-b0f8f7be2a63",
+                            "id": "f25dacc6-edd0-4fc0-8a13-bb3c521fa82f",
                             "ord": "a2"
                           }
                         ],
-                        "id": "7a9147e4-2405-4bf5-b236-d37b4561ceec",
+                        "id": "ad682d84-6b82-48ea-94d3-1058d97ec4b1",
                         "ord": "a3"
                       },
                       {
@@ -1083,7 +1083,7 @@
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
                                 "children": ["Planting plan consultation"],
-                                "id": "8d3419db-2fd9-465e-9d17-0d3f318a299e",
+                                "id": "80b8da59-8df0-47ed-88b8-b20e65829112",
                                 "ord": "a0"
                               },
                               {
@@ -1091,11 +1091,11 @@
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-bold text-base-content",
                                 "children": ["$0"],
-                                "id": "706d2e63-4fd9-4fc3-abb5-835f8dc99891",
+                                "id": "7d62df4c-01d1-4f26-b800-f7720c038898",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "8a88ad1a-587d-48c5-afa1-b44d6f0947e3",
+                            "id": "b8b3777a-95b1-41bf-a30a-775c48c69389",
                             "ord": "a0"
                           },
                           {
@@ -1103,7 +1103,7 @@
                             "tag": "p",
                             "class": "text-sm font-medium uppercase tracking-wide text-secondary",
                             "children": ["45 min"],
-                            "id": "403a599d-2865-430e-a357-c0dbc8d5374f",
+                            "id": "36300942-ae38-4086-978d-9aeafce6a8dc",
                             "ord": "a1"
                           },
                           {
@@ -1111,11 +1111,11 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": ["A four-season garden built for your light and soil."],
-                            "id": "6a2d22fa-26f5-43d0-b665-e85d5e686a9a",
+                            "id": "33b19cd2-9fd4-4a0d-9389-231feab04b62",
                             "ord": "a2"
                           }
                         ],
-                        "id": "72c5cdce-14c3-4f2f-b624-c60e9002d0b0",
+                        "id": "9fd6f958-9862-4258-8769-fec97b83ac9b",
                         "ord": "a4"
                       },
                       {
@@ -1136,7 +1136,7 @@
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
                                 "children": ["Outdoor living design engagement"],
-                                "id": "e9db5d40-9a7c-4582-b92d-2d0ad75b013f",
+                                "id": "6d8f1eec-1d0a-431a-9dd1-f0ef5883e5d4",
                                 "ord": "a0"
                               },
                               {
@@ -1144,11 +1144,11 @@
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-bold text-base-content",
                                 "children": ["$0"],
-                                "id": "194c276e-15e9-4a8d-a09b-a823b8bc17ea",
+                                "id": "580d2bac-112a-4a0e-adad-76f1ec910d22",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "32d0e1b6-4ac4-4ca2-be00-2ed2fe8bbf60",
+                            "id": "714bbb6f-57d0-4d7b-84ba-a68d9820f992",
                             "ord": "a0"
                           },
                           {
@@ -1156,7 +1156,7 @@
                             "tag": "p",
                             "class": "text-sm font-medium uppercase tracking-wide text-secondary",
                             "children": ["1 hr 15 min"],
-                            "id": "620cd30a-93c1-4e66-bd56-1d686a6a90b0",
+                            "id": "94e6cf6c-5029-48ea-8632-8d915e9aca01",
                             "ord": "a1"
                           },
                           {
@@ -1164,15 +1164,15 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": ["Kitchens, pergolas and lighting for evenings outside."],
-                            "id": "3fe0d80d-c9da-428d-9989-be4533ca44e7",
+                            "id": "8a79bd8f-1a43-45a8-9304-eeef3282a33a",
                             "ord": "a2"
                           }
                         ],
-                        "id": "faac8494-67d2-487e-a928-d7212e571934",
+                        "id": "15500a30-001f-40f0-9e3d-423c6b7f1824",
                         "ord": "a5"
                       }
                     ],
-                    "id": "29aee3de-f2ab-4e1c-9770-c2aa0cdee8f5",
+                    "id": "dbd2f259-3c1b-4741-9d06-5e3785f586c2",
                     "ord": "a1"
                   },
                   {
@@ -1188,19 +1188,19 @@
                           "href": "/book"
                         },
                         "children": ["See everything & book"],
-                        "id": "5f83fd98-a52c-4466-b839-94c654aa38e4",
+                        "id": "a977f269-6012-4fb4-a78f-75866b2148a2",
                         "ord": "a0"
                       }
                     ],
-                    "id": "42f65893-a559-40ee-aaef-235dca034003",
+                    "id": "aa2e21c4-a409-4cc2-9497-f81cf0b6eb82",
                     "ord": "a2"
                   }
                 ],
-                "id": "063db98e-6b16-49ca-8b0c-dc592b22a46f",
+                "id": "ec7b1d6d-3e9f-4208-a12b-08eb5a62a9d7",
                 "ord": "a0"
               }
             ],
-            "id": "96bc7197-8dda-4bf9-bec0-cf085381db5c",
+            "id": "09c7bb4f-5930-47f8-a150-2da4fb586b81",
             "ord": "a2"
           },
           {
@@ -1218,7 +1218,7 @@
                     "tag": "h2",
                     "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
                     "children": ["Recent projects"],
-                    "id": "9be8298d-8c4d-4761-8d28-fc3185aea1a4",
+                    "id": "e0b98e03-13d0-428c-ab29-d9ec8a5e5543",
                     "ord": "a0"
                   },
                   {
@@ -1235,7 +1235,7 @@
                           "alt": "A natural-stone patio with built-in seating and soft lighting",
                           "loading": "lazy"
                         },
-                        "id": "d46c9959-734c-4c90-ae40-56bc328a299c",
+                        "id": "a2a9d5e8-5bae-4792-b04e-aed63010a634",
                         "ord": "a0"
                       },
                       {
@@ -1247,7 +1247,7 @@
                           "alt": "A layered perennial border in full bloom",
                           "loading": "lazy"
                         },
-                        "id": "98eebd9f-878a-47c9-9870-8763a5176390",
+                        "id": "41077f8a-74ac-4935-8ef5-7f2e5923b63f",
                         "ord": "a1"
                       },
                       {
@@ -1259,7 +1259,7 @@
                           "alt": "A poolside garden framed by ornamental grasses",
                           "loading": "lazy"
                         },
-                        "id": "a0e12829-aa96-4b4f-bc17-a1d22bb7de99",
+                        "id": "91ce1ef3-1cbc-412b-a511-d9ba20917aa5",
                         "ord": "a2"
                       },
                       {
@@ -1271,7 +1271,7 @@
                           "alt": "A flagstone path winding through a shade garden",
                           "loading": "lazy"
                         },
-                        "id": "5a7d47e1-f704-4fda-bd43-3b5c09c08e45",
+                        "id": "438ab7ec-6a84-4b63-bca4-bce08c23daad",
                         "ord": "a3"
                       },
                       {
@@ -1283,7 +1283,7 @@
                           "alt": "A cedar pergola over an outdoor dining area",
                           "loading": "lazy"
                         },
-                        "id": "ea440425-7374-425c-9947-561014a9e4ea",
+                        "id": "be575e45-7958-4f9b-b1cc-45a14bababf1",
                         "ord": "a4"
                       },
                       {
@@ -1295,19 +1295,19 @@
                           "alt": "A quiet water feature set among boulders and ferns",
                           "loading": "lazy"
                         },
-                        "id": "c06d6eb6-ccae-467f-aafc-616a8d873df7",
+                        "id": "f86cfea9-bb95-46b1-aabc-25a2bd97dd3f",
                         "ord": "a5"
                       }
                     ],
-                    "id": "3a91b576-586c-4817-a89f-61aff51ce706",
+                    "id": "950ff545-a277-4529-a93b-5dd9c1e07a30",
                     "ord": "a1"
                   }
                 ],
-                "id": "21077f42-155a-4ce2-b08e-b8779defe3cc",
+                "id": "78015b34-1f2e-4961-bcae-d9a06da3620f",
                 "ord": "a0"
               }
             ],
-            "id": "92b04ba9-0009-405d-9ce8-ad15854e8ac6",
+            "id": "3951f916-dd66-4a47-a720-7b38b39cedbe",
             "ord": "a3"
           },
           {
@@ -1329,7 +1329,7 @@
                       "alt": "A landscape designer marking up a planting plan on site",
                       "loading": "lazy"
                     },
-                    "id": "47b643f3-75bc-486f-9fa4-8c797f1f3cfb",
+                    "id": "ff4c6856-592f-4f98-9a8b-863bfa718a6c",
                     "ord": "a0"
                   },
                   {
@@ -1342,7 +1342,7 @@
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
                         "children": ["From first walk-through to finished yard"],
-                        "id": "2c2c5a16-30be-4d4f-abcc-d005e2cc689d",
+                        "id": "695928da-d004-448d-b0ee-7b79709ae808",
                         "ord": "a0"
                       },
                       {
@@ -1352,7 +1352,7 @@
                         "children": [
                           "We start on your property, not in a showroom — walking the space, learning how you live outside, and understanding the light, grade and soil we’re working with."
                         ],
-                        "id": "36baed33-f2d6-4ed8-8e13-fa1f5b13b56e",
+                        "id": "e700ab2a-0d29-493e-bbf1-da90a18c749f",
                         "ord": "a1"
                       },
                       {
@@ -1362,7 +1362,7 @@
                         "children": [
                           "From there we draw a scaled design and 3D renderings so you can see the whole yard before a single stone is set. Once it’s right, our own licensed crews build it — hardscape, planting and irrigation, start to finish."
                         ],
-                        "id": "ee2ed0d3-2355-4f35-ae71-ebdc54c235d1",
+                        "id": "bbf42ecd-652a-41b2-b1dd-624c8b4f33f7",
                         "ord": "a2"
                       },
                       {
@@ -1378,23 +1378,23 @@
                               "href": "/book"
                             },
                             "children": ["Start your design"],
-                            "id": "e1e0844f-062b-4699-9722-c4cb10bf32c5",
+                            "id": "40b6933c-2404-4faf-a814-16e90d21bb68",
                             "ord": "a0"
                           }
                         ],
-                        "id": "e29670bb-cbc1-4136-8e6a-9d2b65aa2af2",
+                        "id": "e8425b0e-2c7c-46ae-ae7a-7ee6f1022470",
                         "ord": "a3"
                       }
                     ],
-                    "id": "5bacb029-b4b4-496e-a6c3-1493ce13af02",
+                    "id": "7d460572-8404-4786-b601-edad76aff0e0",
                     "ord": "a1"
                   }
                 ],
-                "id": "0ce8d2c2-2453-4271-aa26-2dd6670dad31",
+                "id": "a4c393d9-691f-4f75-a97f-ac8753cffc46",
                 "ord": "a0"
               }
             ],
-            "id": "1ff3a83a-8326-4d9c-a273-2f2519394fd7",
+            "id": "3cef4507-d147-4f18-b15f-b01ca95057fd",
             "ord": "a4"
           },
           {
@@ -1414,7 +1414,7 @@
                     "children": [
                       "“They handed us a 3D plan of our own backyard before they touched a shovel. What they built looks exactly like the rendering — only better in person.”"
                     ],
-                    "id": "f398baa6-0bc5-4f8b-9c4b-9d7248092be9",
+                    "id": "62ee444a-8cf1-49a0-b384-d2d4ddeae038",
                     "ord": "a0"
                   },
                   {
@@ -1422,15 +1422,15 @@
                     "tag": "p",
                     "class": "text-sm font-semibold uppercase tracking-wide opacity-80",
                     "children": ["The Okafor family, clients since 2024"],
-                    "id": "8ec7da39-ac30-4de4-bfff-3f48a4c012f3",
+                    "id": "6eb66ffd-347c-40de-ad85-4dfc04b6022f",
                     "ord": "a1"
                   }
                 ],
-                "id": "deb71e46-d2ca-4ee8-bbc8-874e921d29ce",
+                "id": "7e5ca789-c074-45ec-a813-a9b3897c5b2a",
                 "ord": "a0"
               }
             ],
-            "id": "d556bcee-53ab-4d5b-98d1-4612555e5f05",
+            "id": "3660a9be-82a9-49f5-a895-d1df4c3d0649",
             "ord": "a5"
           },
           {
@@ -1448,7 +1448,7 @@
                     "tag": "h2",
                     "class": "text-3xl font-bold tracking-tight @3xl:text-4xl",
                     "children": ["Let’s design your yard"],
-                    "id": "fccaaa08-e3d7-40df-95fe-e2d76a6571ab",
+                    "id": "1ba569f4-7990-4b4c-bb24-d361c5f71e03",
                     "ord": "a0"
                   },
                   {
@@ -1458,7 +1458,7 @@
                     "children": [
                       "Book a free consultation and we’ll walk your property, talk through what’s possible, and show you where to begin. It takes about a minute."
                     ],
-                    "id": "29cc467b-a12b-4cde-99be-686bb1446b97",
+                    "id": "f6ced8f0-6d37-48a4-9578-bb96914f9824",
                     "ord": "a1"
                   },
                   {
@@ -1469,15 +1469,15 @@
                       "href": "/book"
                     },
                     "children": ["Book a design consultation"],
-                    "id": "b6ccceb1-84a7-4ed7-801d-7b6dd910245c",
+                    "id": "9bb2791e-441c-466c-b97f-5bcb86ffe916",
                     "ord": "a2"
                   }
                 ],
-                "id": "90c4482c-145c-474f-a3b4-ed6feefb5996",
+                "id": "bd0cc19e-3ff0-4b35-9cd1-83a48637e87d",
                 "ord": "a0"
               }
             ],
-            "id": "2913379a-d274-4741-a056-47dbae07eaa2",
+            "id": "9bc74703-81b2-46c4-b726-9b5bbbed7f96",
             "ord": "a6"
           }
         ]
@@ -1494,7 +1494,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "91ae363d-b44e-4c17-a2fd-f9d53b223199",
+        "id": "7949574f-74cf-43c4-b9e8-58c0ace30144",
         "children": [
           {
             "kind": "element",
@@ -1510,14 +1510,14 @@
                   "alt": "A landscape designer marking up a planting plan on site",
                   "loading": "eager"
                 },
-                "id": "fe931b01-5018-46a9-9adf-5bafd5f3b5c0",
+                "id": "09e1d6ae-89fe-45d8-a864-22ffee3b7e8e",
                 "ord": "a0"
               },
               {
                 "kind": "element",
                 "tag": "div",
                 "class": "absolute inset-0 bg-black/65",
-                "id": "26569730-0fcb-4117-bf79-a59e01031369",
+                "id": "013fbfa2-f78b-485f-99e5-63b151456504",
                 "ord": "a1"
               },
               {
@@ -1530,7 +1530,7 @@
                     "tag": "h1",
                     "class": "max-w-3xl text-4xl font-bold leading-tight tracking-tight @2xl:text-5xl @3xl:text-6xl",
                     "children": ["Book your design consultation"],
-                    "id": "dcdc7960-ec0c-45a0-bf07-f9e2fdf6c7dd",
+                    "id": "aea105fb-b0a4-4c3f-841b-2c0d45a1a225",
                     "ord": "a0"
                   },
                   {
@@ -1540,7 +1540,7 @@
                     "children": [
                       "Choose the kind of project you have in mind to see what’s involved and how long each visit takes, then pick your designer and time."
                     ],
-                    "id": "71100a78-0252-4416-a535-191c2e822fcf",
+                    "id": "de37c459-414a-4125-92b3-f8b476e4f165",
                     "ord": "a1"
                   },
                   {
@@ -1556,19 +1556,19 @@
                           "href": "/book"
                         },
                         "children": ["See consultations below"],
-                        "id": "e30dea5f-a2e4-46ac-950a-03881711e69a",
+                        "id": "6126bf43-0c4e-4544-a083-88e86e35fb5d",
                         "ord": "a0"
                       }
                     ],
-                    "id": "1f87c1fc-a04b-45d2-812f-5e847edaca12",
+                    "id": "71c57d7b-f413-4584-a295-e12161dbdf40",
                     "ord": "a2"
                   }
                 ],
-                "id": "7adeb559-e075-4c22-a755-14d20148cb48",
+                "id": "b043fa00-10a4-4d0b-9ec3-c09b1e6a2779",
                 "ord": "a2"
               }
             ],
-            "id": "5062835b-08b7-4420-b189-583582dae567",
+            "id": "822f7dec-d4a4-4cfd-9f59-f88ab0642404",
             "ord": "a0"
           },
           {
@@ -1576,8 +1576,136 @@
             "component": "scheduling.services",
             "class": "mx-auto w-full max-w-5xl px-6 py-8",
             "locked": "host",
-            "id": "7724301e-4ebc-454d-a322-c14342253f5e",
+            "id": "6a23bb8b-9608-44b0-90dc-fb4de7e0a91c",
             "ord": "a1"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-8",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["Good to know"],
+                        "id": "deb1bdc0-439c-404e-84ff-6d946e0bafa3",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "What happens once you pick a time — and how to change it if something comes up."
+                        ],
+                        "id": "0ab3a0cf-e42c-46d8-9e5b-4e5ff1124abb",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "d5cc64e5-2eff-480f-a5db-ec81e5cccf72",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-6 @3xl:grid-cols-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-3 rounded-box border border-base-300 bg-base-100 p-6",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Standard booking"],
+                            "id": "fcf2aabc-7030-438f-9c2b-b99d63d006aa",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Please give us at least 48 hours’ notice to change or cancel your consultation. We send a reminder two days before and again two hours ahead."
+                            ],
+                            "id": "e50f1473-c7c5-4235-9dd3-86e35795872b",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base font-medium text-base-content",
+                            "children": [
+                              "No deposit to book. Change or cancel free up to 2 days before."
+                            ],
+                            "id": "313142b6-a1d7-41f3-ae32-5e23a005272f",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "0839ff69-edc2-487e-84f6-db7e2dc73c19",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-3 rounded-box border border-base-300 bg-base-100 p-6",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Design deposit"],
+                            "id": "81ba04a3-b38b-41ae-9a29-f1d0ca9808c5",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Full design engagements hold a $150 design deposit that is credited in full toward your finished plan. Reschedule with 72 hours’ notice and it carries over."
+                            ],
+                            "id": "0356ce3d-5048-4b18-997e-2b488e238e79",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base font-medium text-base-content",
+                            "children": [
+                              "A $150 deposit holds your place. Change or cancel free up to 3 days before."
+                            ],
+                            "id": "ceafbabd-2ee3-4b6a-affe-ad6cce657358",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "2d444f6d-3d24-44be-bc88-736890490d55",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "766c3987-be9e-42ef-94e5-6012795eb993",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "be347c67-bb62-4ff3-a2bc-3db926c5b419",
+                "ord": "a0"
+              }
+            ],
+            "id": "c598f163-8757-4a01-8c29-5090a85e8208",
+            "ord": "a2"
           }
         ]
       }
@@ -1593,7 +1721,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "56fd773e-dc99-40e7-8446-39e5a0e158d8",
+        "id": "24efbd36-565e-4cc5-b5b3-6df960bb3271",
         "children": [
           {
             "kind": "element",
@@ -1614,7 +1742,7 @@
                       "alt": "A finished backyard with mature plantings and a seating area",
                       "loading": "lazy"
                     },
-                    "id": "1d204cdf-d3ee-4163-a336-f64af458d8e4",
+                    "id": "5c31fd42-6181-411c-8bb0-29bd4813d5a9",
                     "ord": "a0"
                   },
                   {
@@ -1624,10 +1752,10 @@
                     "children": [
                       {
                         "kind": "element",
-                        "tag": "h2",
+                        "tag": "h1",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
                         "children": ["About Verdant Grounds"],
-                        "id": "3d160133-08fb-4848-8e99-8fde31815445",
+                        "id": "48105c1e-a72c-4675-84dc-0554a0757481",
                         "ord": "a0"
                       },
                       {
@@ -1637,7 +1765,7 @@
                         "children": [
                           "Verdant Grounds is a design-and-build landscape studio. We’re the rare firm that draws the plan and builds it too — so the vision on paper is the yard you actually get, with no handoffs and no finger-pointing."
                         ],
-                        "id": "ebd1a657-880e-4e22-82d0-b668a597f9ee",
+                        "id": "3ac23d49-fac9-4492-8e22-1475e768be8c",
                         "ord": "a1"
                       },
                       {
@@ -1647,7 +1775,7 @@
                         "children": [
                           "We founded the studio on a simple idea: a landscape should be designed for the people who live with it, built to last, and beautiful in every season — not just the week it’s planted."
                         ],
-                        "id": "60c500f7-d4d1-40d1-82bc-a1e7f95f6cef",
+                        "id": "a559ab06-c9f0-447d-9cb7-e20a70aa8619",
                         "ord": "a2"
                       },
                       {
@@ -1663,23 +1791,23 @@
                               "href": "/book"
                             },
                             "children": ["Book a consultation"],
-                            "id": "c5d5e5bc-1170-41ac-8899-580207b7d0f7",
+                            "id": "84018c41-82a3-4130-997a-4090c530d1b6",
                             "ord": "a0"
                           }
                         ],
-                        "id": "a5ad7656-59ab-4b59-b7a5-7af5e6768d23",
+                        "id": "daab5cef-6cb3-4fa6-ad6c-2c8588fcee61",
                         "ord": "a3"
                       }
                     ],
-                    "id": "07e0f826-745d-4b41-a415-8a272a1d3528",
+                    "id": "f16f6e4a-bbf2-4a3d-94a8-05adc78ce5ec",
                     "ord": "a1"
                   }
                 ],
-                "id": "35bb05d9-cc81-402e-812f-6e0fbd5a2263",
+                "id": "4b1834e4-9da5-475f-8936-fd889ebd395a",
                 "ord": "a0"
               }
             ],
-            "id": "a7d6e0e5-1912-4943-96f1-0c66d40787b1",
+            "id": "e4d045cd-facb-49d7-a6dc-41c56e271bcb",
             "ord": "a0"
           },
           {
@@ -1697,7 +1825,7 @@
                     "tag": "h2",
                     "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
                     "children": ["How we work"],
-                    "id": "2f6f30f9-fb26-4aea-a779-32e12c70e157",
+                    "id": "3d9b6f1d-1829-42b2-bb4b-c57c767b1c9e",
                     "ord": "a0"
                   },
                   {
@@ -1715,7 +1843,7 @@
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
                             "children": ["Design first, always"],
-                            "id": "7294a074-58e4-4db9-941f-d43b5e49d3dc",
+                            "id": "2f0f5fa3-9bbf-4658-a134-730667a98776",
                             "ord": "a0"
                           },
                           {
@@ -1725,11 +1853,11 @@
                             "children": [
                               "Nothing gets built until there’s a plan you love. We design for your light, grade and how you want to use the space."
                             ],
-                            "id": "74846f97-7bfa-4542-b397-83489f1856f1",
+                            "id": "2ef4a924-524c-4cb9-951e-9d0cf13eec46",
                             "ord": "a1"
                           }
                         ],
-                        "id": "15b3e806-ae71-4e5a-8f1d-5ee3f3647f22",
+                        "id": "38f82dfe-c47b-4aec-b199-474c23b20fde",
                         "ord": "a0"
                       },
                       {
@@ -1742,7 +1870,7 @@
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
                             "children": ["One accountable crew"],
-                            "id": "53deaff3-6c88-44b0-b586-00cf9e481151",
+                            "id": "564c93c8-7f8c-46b0-b337-576a59b6155f",
                             "ord": "a0"
                           },
                           {
@@ -1752,11 +1880,11 @@
                             "children": [
                               "Our own licensed, insured teams handle hardscape, planting and irrigation — one point of responsibility from first cut to final walk-through."
                             ],
-                            "id": "0cb433e7-fed8-4a00-a160-fac250213c86",
+                            "id": "72ccbc49-4664-4874-8b79-ab810e5f2217",
                             "ord": "a1"
                           }
                         ],
-                        "id": "e13c309a-140b-4050-9e8d-fecc819269f0",
+                        "id": "00b1f06b-d597-44d8-aeaf-bcd886dcd2e3",
                         "ord": "a1"
                       },
                       {
@@ -1769,7 +1897,7 @@
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
                             "children": ["Built to endure"],
-                            "id": "e7516237-7117-4c6f-8de2-7bf78e820374",
+                            "id": "1a127cb7-a903-44e8-811e-b311058a8e21",
                             "ord": "a0"
                           },
                           {
@@ -1779,23 +1907,23 @@
                             "children": [
                               "Proper base prep, healthy plant stock and a warranty behind it. We build the yard to still look right in ten years, not ten weeks."
                             ],
-                            "id": "eac50d56-91fe-487b-8975-b6df1545dc52",
+                            "id": "9f63c4b2-7849-44ee-9ccf-d5b981bff917",
                             "ord": "a1"
                           }
                         ],
-                        "id": "65552b0d-71a1-43bc-8d09-d43e95ffa877",
+                        "id": "ff5a9ae1-851b-4640-a4a2-0fce457afead",
                         "ord": "a2"
                       }
                     ],
-                    "id": "7c8c431a-573c-4a8b-8ad2-714860e6454a",
+                    "id": "e44cf322-7b45-42eb-8ff4-071a1842793b",
                     "ord": "a1"
                   }
                 ],
-                "id": "862fae0f-190a-4514-9422-dba6cc0523b9",
+                "id": "e21663bd-02bd-411c-8858-0a0b6e5c9ebf",
                 "ord": "a0"
               }
             ],
-            "id": "441f6a5b-ad94-4bf3-911f-2a8407216621",
+            "id": "64491e5a-e504-4d57-a271-b110989bf244",
             "ord": "a1"
           }
         ]
@@ -1812,8 +1940,294 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "a6b09b4b-493e-4d52-8a1c-8c4b62795849",
+        "id": "e91eaee9-f24f-4259-ad14-295db4fad91f",
         "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-8",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h1",
+                        "class": "text-4xl font-bold tracking-tight text-base-content @3xl:text-5xl",
+                        "children": ["Get in touch"],
+                        "id": "11b4fce9-1dfe-4513-a99d-e23e253daf01",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Questions before you book? Send a note and Verdant Grounds will get back to you — usually the same day."
+                        ],
+                        "id": "880ddecb-044f-4ed2-bf7a-21f531a21957",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "c1f518f1-5322-44e7-8596-c14d1e09e608",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-1",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "span",
+                        "class": "text-base font-medium text-base-content",
+                        "children": ["Call us"],
+                        "id": "14d8d39f-30cb-4e3b-826a-97c3169f0ad5",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "text-lg font-semibold text-base-content underline underline-offset-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "children": ["(555) 123-4567"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "site.identity.phone"
+                            },
+                            "id": "95deb8ee-0630-4863-a564-784b0d035065",
+                            "ord": "a0"
+                          }
+                        ],
+                        "data": {
+                          "kind": "value",
+                          "ref": "site.identity.phoneHref",
+                          "attr": "href"
+                        },
+                        "id": "687f6c3b-c247-4974-a4de-0dc924b516a9",
+                        "ord": "a1"
+                      }
+                    ],
+                    "data": {
+                      "kind": "visible",
+                      "ref": "site.identity.phone"
+                    },
+                    "id": "f412fe2a-c5f8-471c-ac3b-033193757e47",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-1",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "span",
+                        "class": "text-base font-medium text-base-content",
+                        "children": ["Email us"],
+                        "id": "d0356520-2cf5-4b2d-b568-417151e66295",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "text-lg font-semibold text-base-content underline underline-offset-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "children": ["hello@yourbusiness.com"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "site.identity.email"
+                            },
+                            "id": "980980e3-04d5-4b41-8f5f-5daf6e0482c3",
+                            "ord": "a0"
+                          }
+                        ],
+                        "data": {
+                          "kind": "value",
+                          "ref": "site.identity.emailHref",
+                          "attr": "href"
+                        },
+                        "id": "9a0691ee-0a5c-436e-ace5-4cc2ff751f77",
+                        "ord": "a1"
+                      }
+                    ],
+                    "data": {
+                      "kind": "visible",
+                      "ref": "site.identity.email"
+                    },
+                    "id": "8b60a60d-9697-46a3-8c96-db0c40f52264",
+                    "ord": "a2"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "form",
+                    "class": "flex w-full max-w-xl flex-col gap-5",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "label",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-base font-medium text-base-content",
+                            "children": ["Your name"],
+                            "id": "feff448d-7afa-4bc4-a542-cacfc2bf666c",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "input",
+                            "class": "input input-bordered w-full",
+                            "attrs": {
+                              "type": "text",
+                              "name": "name",
+                              "required": true
+                            },
+                            "id": "44932609-2f4a-4320-8a90-e4fcf3ea7ec1",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "f41f4e5e-7770-48cf-9655-dfb42a351d02",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "label",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-base font-medium text-base-content",
+                            "children": ["Email address"],
+                            "id": "9d95d0c7-a504-4ba8-becd-eb788521ea10",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "input",
+                            "class": "input input-bordered w-full",
+                            "attrs": {
+                              "type": "email",
+                              "name": "email",
+                              "required": true
+                            },
+                            "id": "7bbe3fc7-c01f-4025-a118-fc0ccb579145",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "77351a3f-c3ce-495e-8ea1-1eddde4f7408",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "label",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-base font-medium text-base-content",
+                            "children": ["Phone number"],
+                            "id": "e200e8e9-4884-45b3-92f9-33e36d45c6f3",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "input",
+                            "class": "input input-bordered w-full",
+                            "attrs": {
+                              "type": "tel",
+                              "name": "phone"
+                            },
+                            "id": "f70e9d22-7cef-44b4-ad76-3e48c5f8d755",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "72f7fde0-185a-474a-9f53-03fe870148e4",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "label",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-base font-medium text-base-content",
+                            "children": ["How can we help?"],
+                            "id": "36715d6d-f1b2-4f77-8278-5187014c1a23",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "textarea",
+                            "class": "textarea textarea-bordered min-h-32 w-full",
+                            "attrs": {
+                              "name": "message"
+                            },
+                            "id": "e523ebff-a945-407f-bebe-d19456cac29e",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "271302de-79cb-4411-b8d6-1a3b9690d100",
+                        "ord": "a3"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-wrap items-center gap-3",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "button",
+                            "class": "btn btn-primary btn-lg",
+                            "attrs": {
+                              "type": "submit"
+                            },
+                            "children": ["Send my request"],
+                            "id": "1bddd4ec-473a-453c-b962-2a0fe1157a2e",
+                            "ord": "a0"
+                          }
+                        ],
+                        "id": "efabb022-956e-40ae-b1e5-d50c0a404ac6",
+                        "ord": "a4"
+                      }
+                    ],
+                    "behavior": {
+                      "type": "form"
+                    },
+                    "data": {
+                      "kind": "action",
+                      "ref": "submit"
+                    },
+                    "id": "57427605-dda7-427a-bc85-e9cd0ec899f8",
+                    "ord": "a3"
+                  }
+                ],
+                "id": "ba4b5632-4f27-474b-abbf-4cbed3fe1a80",
+                "ord": "a0"
+              }
+            ],
+            "id": "36a9e422-a132-4360-8665-71aae1ff1a92",
+            "ord": "a0"
+          },
           {
             "kind": "element",
             "tag": "section",
@@ -1834,40 +2248,21 @@
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
                         "children": ["Visit the studio"],
-                        "id": "7ab1027c-9839-4422-ba27-47a02620bd9b",
+                        "id": "b7c79735-7f75-4ba1-9d66-8314697da1b2",
                         "ord": "a0"
                       },
                       {
                         "kind": "element",
-                        "tag": "div",
-                        "class": "flex flex-col gap-1",
+                        "tag": "address",
+                        "class": "text-lg leading-relaxed whitespace-pre-line not-italic text-base-content",
                         "children": [
-                          {
-                            "kind": "element",
-                            "tag": "p",
-                            "class": "text-lg leading-relaxed text-base-content",
-                            "children": ["Verdant Grounds"],
-                            "id": "b63063c3-bcc0-47dc-bd5f-0651f4723c21",
-                            "ord": "a0"
-                          },
-                          {
-                            "kind": "element",
-                            "tag": "p",
-                            "class": "text-lg leading-relaxed text-base-content",
-                            "children": ["640 Cedar Mill Road"],
-                            "id": "8e9b9478-d189-44da-9122-e532b70e7c9a",
-                            "ord": "a1"
-                          },
-                          {
-                            "kind": "element",
-                            "tag": "p",
-                            "class": "text-lg leading-relaxed text-base-content",
-                            "children": ["Studio B · Asheville, NC 28801"],
-                            "id": "aa341756-b209-472b-8bea-8189eaf4db54",
-                            "ord": "a2"
-                          }
+                          "Verdant Grounds\n640 Cedar Mill Road\nStudio B · Asheville, NC 28801"
                         ],
-                        "id": "974b5b59-53d9-4b50-9349-116498536b6e",
+                        "data": {
+                          "kind": "value",
+                          "ref": "site.identity.address"
+                        },
+                        "id": "81645cc5-8ee3-4829-8238-6a98b05db76c",
                         "ord": "a1"
                       },
                       {
@@ -1885,7 +2280,7 @@
                                 "tag": "span",
                                 "class": "font-medium text-base-content",
                                 "children": ["Monday – Friday"],
-                                "id": "2b565402-6e8f-4a1b-a4f0-b75afd45e15b",
+                                "id": "e53ca3a4-f705-4f8b-91e3-97bf9f8fc6d5",
                                 "ord": "a0"
                               },
                               {
@@ -1893,11 +2288,11 @@
                                 "tag": "span",
                                 "class": "text-base-content",
                                 "children": ["8:00 – 5:00"],
-                                "id": "6d3d80da-111d-490f-a877-ee097dc2375a",
+                                "id": "b4f21d09-8fde-4cb1-a98d-60eaa5fff2b2",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "4a12966e-38e4-46ed-b8c4-f11884d33903",
+                            "id": "9e29aa1f-4d90-4d59-bcd5-5b534256076e",
                             "ord": "a0"
                           },
                           {
@@ -1910,7 +2305,7 @@
                                 "tag": "span",
                                 "class": "font-medium text-base-content",
                                 "children": ["Saturday"],
-                                "id": "34e5e716-8fe4-4793-8223-ccad294d8bf1",
+                                "id": "0bbe01a2-8341-49d5-8fe2-ead66f4da6b2",
                                 "ord": "a0"
                               },
                               {
@@ -1918,11 +2313,11 @@
                                 "tag": "span",
                                 "class": "text-base-content",
                                 "children": ["9:00 – 2:00 (by appointment)"],
-                                "id": "a6f9a11c-138a-438d-9b46-52a684740752",
+                                "id": "21d5ccda-5630-4d50-98fa-cf873d991a05",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "bf63e133-9bff-4d2c-9635-f6ac48a8b7af",
+                            "id": "03aae8bb-2eaa-4625-b6fc-9c731fdced65",
                             "ord": "a1"
                           },
                           {
@@ -1935,7 +2330,7 @@
                                 "tag": "span",
                                 "class": "font-medium text-base-content",
                                 "children": ["Sunday"],
-                                "id": "8b3ba81b-8de3-4932-9ba4-38a6b67b66ba",
+                                "id": "9545214c-1221-440c-911b-d4519751ff2d",
                                 "ord": "a0"
                               },
                               {
@@ -1943,19 +2338,19 @@
                                 "tag": "span",
                                 "class": "text-base-content",
                                 "children": ["Closed"],
-                                "id": "dd88eec0-3ff8-4039-a566-d1d570c584d2",
+                                "id": "5223a3f8-a72b-4376-ae04-f2c703894ac1",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "ac793169-34fe-4988-b549-38beedbeefcf",
+                            "id": "bc739e5d-8cdd-44d3-8ab9-ac6bdf8ffaeb",
                             "ord": "a2"
                           }
                         ],
-                        "id": "59ab7e55-f533-43e6-8bdc-fc0e59674271",
+                        "id": "1d6930fb-af1f-49f0-bef3-ed036b7f6b40",
                         "ord": "a2"
                       }
                     ],
-                    "id": "2de38e40-d978-4687-916a-c3cd882c5206",
+                    "id": "6aedea8e-04ad-413f-aaed-a46fe9532adb",
                     "ord": "a0"
                   },
                   {
@@ -1968,16 +2363,16 @@
                       "zoom": 15,
                       "ratio": "classic"
                     },
-                    "id": "a7c89c5a-e9db-4770-8f36-7ef426d29391",
+                    "id": "0a58a42a-64c4-4421-92fb-2bebb5905f0e",
                     "ord": "a1"
                   }
                 ],
-                "id": "5403d1d0-cf42-4d20-b030-2f5ed04c3345",
+                "id": "64aa92dd-9048-4bce-ad1a-22ee847b26e3",
                 "ord": "a0"
               }
             ],
-            "id": "9eae4703-92c5-4e57-99e8-31de867b980b",
-            "ord": "a0"
+            "id": "ca720764-5c8c-4f36-a6bb-b20b6e0f205f",
+            "ord": "a1"
           },
           {
             "kind": "element",
@@ -1994,7 +2389,7 @@
                     "tag": "h2",
                     "class": "text-3xl font-bold tracking-tight @3xl:text-4xl",
                     "children": ["Rather book than call?"],
-                    "id": "74be9f84-0d99-4c39-b03b-2e0ff031f3c1",
+                    "id": "da7ecd65-0773-4350-9900-10c674d9797a",
                     "ord": "a0"
                   },
                   {
@@ -2004,7 +2399,7 @@
                     "children": [
                       "See live availability and reserve a consultation online — no phone tag, and you’ll pick the designer who fits your project."
                     ],
-                    "id": "df9e24b1-b05b-47e6-805a-6a4b99d5e990",
+                    "id": "d8c51cab-a085-4efc-9be1-7e81bfb339c1",
                     "ord": "a1"
                   },
                   {
@@ -2015,16 +2410,16 @@
                       "href": "/book"
                     },
                     "children": ["Book a design consultation"],
-                    "id": "de18f8af-73dc-4745-804a-85cc48696eb7",
+                    "id": "bd4cd257-d666-4ce3-ba7f-f80b30ea64d0",
                     "ord": "a2"
                   }
                 ],
-                "id": "bc5978f9-a073-475a-933e-89804d9f8df2",
+                "id": "5f911b24-a834-4321-b7fa-f483a762d3c6",
                 "ord": "a0"
               }
             ],
-            "id": "a1dcc47c-18f0-4178-a2e4-91aad3bf2437",
-            "ord": "a1"
+            "id": "e44ef720-74d8-4089-b18e-236c7f0480bb",
+            "ord": "a2"
           }
         ]
       }

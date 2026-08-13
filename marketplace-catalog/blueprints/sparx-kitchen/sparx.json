@@ -3,7 +3,7 @@
   "category": "blueprint",
   "slug": "sparx-kitchen",
   "name": "sparx — Kitchen",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "tagline": "A complete multi-module starter in the Kitchen look — for restaurants, cafés, and bakeries.",
   "description": "The complete sparx starter — a faceted shop, a journal, a booking page, and a wholesale page — in the Kitchen look, tuned for restaurants, cafés, and bakeries. Install it, make it yours, and launch a polished working site in minutes.",
   "payload": "blueprint.ts",

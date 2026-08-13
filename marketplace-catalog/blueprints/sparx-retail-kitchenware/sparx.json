@@ -3,7 +3,7 @@
   "category": "blueprint",
   "slug": "sparx-retail-kitchenware",
   "name": "sparx — Kitchenware & Cookware",
-  "version": "1.3.0",
+  "version": "1.4.0",
   "tagline": "A warm, working storefront for a chef-grade kitchenware shop.",
   "description": "A complete, working shop for a chef-grade kitchenware store: a real catalogue of carbon-steel pans, cast-iron Dutch ovens, forged knives, and honest tools, with categories, collections, a bespoke cookware PDP and a full merchandised home page. Warm kitchen theme — slate-cream ground, deep copper, a verdigris accent. Shipped as Copper & Cast.",
   "payload": "blueprint.ts",

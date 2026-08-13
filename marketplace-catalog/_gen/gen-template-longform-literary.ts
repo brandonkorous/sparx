@@ -40,6 +40,7 @@ import { productsBlock } from '../../packages/silica-catalog/src/commerce';
 import { blogPostGrid } from '../../packages/silica-catalog/src/cms';
 import { safeParseBlueprint } from '../../packages/blueprints/src/validate';
 
+import { contactSection } from './shared/contact-section';
 import { emitBundle, type TemplateSiteSpec } from './template-sites/harness';
 import { writeTemplatePreview } from './template-sites/preview';
 import {
@@ -472,23 +473,14 @@ const ABOUT: Node[] = [
 ];
 
 const CONTACT: Node[] = [
-  el('section', 'bg-base-100 @container px-6 py-20 text-center', {
-    children: [
-      el('div', 'mx-auto flex w-full max-w-xl flex-col items-center gap-5', {
-        children: [
-          el('h1', 'text-4xl font-bold tracking-tight text-base-content @2xl:text-5xl', {
-            text: 'Write to the editors',
-          }),
-          el('p', 'text-lg leading-relaxed text-base-content', {
-            text: 'A pitch, a letter about something we ran, a correction we should make — we read all of it. Submissions and letters go to the same desk, and a real person writes back.',
-          }),
-          el('a', 'btn btn-primary btn-lg', {
-            attrs: { href: 'mailto:editors@themeridian.example' },
-            text: 'Email the editors',
-          }),
-        ],
-      }),
-    ],
+  // The page's own words, over the shared contact band: the business's phone and email
+  // (each hidden until set in Site settings — never an invented number) and a working
+  // enquiry form that reaches the tenant's Form submissions inbox. This used to end at a
+  // `mailto:` to a placeholder domain, which was the only way to reach the business.
+  contactSection({
+    heading: 'Write to the editors',
+    intro: 'A pitch, a letter about something we ran, a correction we should make — we read all of it. Submissions and letters go to the same desk, and a real person writes back.',
+    submitLabel: 'Email the editors',
   }),
 ];
 

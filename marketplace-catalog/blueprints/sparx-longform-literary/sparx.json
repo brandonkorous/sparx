@@ -3,7 +3,7 @@
   "category": "blueprint",
   "slug": "sparx-longform-literary",
   "name": "sparx — Longform Literary",
-  "version": "1.2.0",
+  "version": "1.4.0",
   "tagline": "A serif longform template for a magazine that publishes and sells.",
   "description": "A serif, reading-first front page for a literary magazine — a single ranked lead essay over a contents rail, a live journal, a curated \"in this issue\" table of contents, magazine departments, and a bespoke serif article page tuned for reading an essay end to end, in a warm-paper one-red theme. Modelled on the literary-longform archetype; shipped as The Meridian. Ships a light store (a print membership, an anthology, merch) to demonstrate content + commerce together.",
   "payload": "blueprint.ts",

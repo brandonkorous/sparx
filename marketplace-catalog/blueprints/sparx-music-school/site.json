@@ -22,7 +22,7 @@
                   "props": {
                     "show": "both"
                   },
-                  "id": "c21a12aa-cd7f-4338-8e95-ef12e55f3552",
+                  "id": "a51336b1-9113-4670-81df-d618c9367540",
                   "ord": "a0"
                 },
                 {
@@ -43,7 +43,7 @@
                         "type": "link",
                         "label": "Product"
                       },
-                      "id": "6df1f4bf-3625-4638-82ba-247031820d27",
+                      "id": "1e4f9053-72fb-4b0f-8ca5-f7dc3975fd9e",
                       "ord": "a0"
                     },
                     {
@@ -59,7 +59,7 @@
                         "type": "link",
                         "label": "Pricing"
                       },
-                      "id": "0a9f71ce-9881-44da-8230-95b1d232a305",
+                      "id": "b3630872-88cf-4a1c-b60f-7fe980fda5ae",
                       "ord": "a1"
                     },
                     {
@@ -75,11 +75,11 @@
                         "type": "link",
                         "label": "Docs"
                       },
-                      "id": "08e5167d-2f55-4448-b639-51c441a8538e",
+                      "id": "5b9fa411-7b5e-4517-87d5-dbb46777ae66",
                       "ord": "a2"
                     }
                   ],
-                  "id": "e7de688e-4dd4-4203-9976-213d8f078895",
+                  "id": "57420af6-6601-4327-9a9e-bf02ba365aaa",
                   "ord": "a1"
                 },
                 {
@@ -100,14 +100,14 @@
                         "type": "link",
                         "label": "Secondary link"
                       },
-                      "id": "0187c558-fee4-400c-9794-7ef95302b340",
+                      "id": "1ebffa22-1c3c-43cd-8423-a857a5aeb77b",
                       "ord": "a0"
                     },
                     {
                       "kind": "host",
                       "component": "site.theme-toggle",
                       "class": "inline-flex items-center",
-                      "id": "5e96b1d4-5622-4edd-8f6d-7590aa3585e1",
+                      "id": "800f7c84-0661-4ec3-ae44-000038b94e1a",
                       "ord": "a1"
                     },
                     {
@@ -123,7 +123,7 @@
                         "type": "link",
                         "label": "Primary action"
                       },
-                      "id": "94072323-57c4-4efb-ae76-6270a1477351",
+                      "id": "4e5bc49a-a50e-448a-9380-73420db29427",
                       "ord": "a2"
                     },
                     {
@@ -141,20 +141,20 @@
                           "props": {
                             "name": "menu"
                           },
-                          "id": "36de4be7-0feb-4154-ad96-d8d4316c8687",
+                          "id": "07b97e5f-6389-4c1c-9cd0-957afa168d6c",
                           "ord": "a0"
                         }
                       ],
                       "part": "trigger",
-                      "id": "f2c31368-1726-4d59-b2c8-9d16f83b44b3",
+                      "id": "18621b42-1267-4197-9330-ee492d95ac61",
                       "ord": "a3"
                     }
                   ],
-                  "id": "5e425d75-2fb1-46fa-9779-04ce5a920e40",
+                  "id": "e322d500-b0f7-45b6-b0ae-d25b0831ee90",
                   "ord": "a2"
                 }
               ],
-              "id": "01da192a-6edd-4810-81db-8acff29ee9d1",
+              "id": "42b61320-0236-4ab4-aabc-94189dc6f6f1",
               "ord": "a0"
             },
             {
@@ -178,7 +178,7 @@
                     "type": "link",
                     "label": "Product"
                   },
-                  "id": "9751bed4-c8b8-4c14-93f9-ec0cee9f945e",
+                  "id": "60a9c8cf-9b16-4107-bd37-ef8ac1f66338",
                   "ord": "a0"
                 },
                 {
@@ -194,7 +194,7 @@
                     "type": "link",
                     "label": "Pricing"
                   },
-                  "id": "d1178904-c8d9-48e8-a9dd-c18ebe5057cf",
+                  "id": "611b676e-c3c0-45ef-81b6-7def2f74f21d",
                   "ord": "a1"
                 },
                 {
@@ -210,7 +210,7 @@
                     "type": "link",
                     "label": "Docs"
                   },
-                  "id": "a9262df3-ba40-46ad-9749-cda8cf31f0b4",
+                  "id": "fb81a301-ede6-47bb-ac5b-003a32f9b820",
                   "ord": "a2"
                 },
                 {
@@ -226,7 +226,7 @@
                     "type": "link",
                     "label": "Secondary link"
                   },
-                  "id": "11bf0481-b2e6-4e7f-8f9e-ae3667ac7919",
+                  "id": "3e7b7718-a541-4a03-9570-740d6b0caf71",
                   "ord": "a3"
                 },
                 {
@@ -242,19 +242,19 @@
                     "type": "link",
                     "label": "Primary action"
                   },
-                  "id": "4e210b23-6e23-4248-a865-4ee3627078c5",
+                  "id": "fe8f48c4-1fd4-4cae-acf9-1d313337d46b",
                   "ord": "a4"
                 }
               ],
               "part": "panel",
-              "id": "9313e572-2a85-414a-892a-540c3a647425",
+              "id": "c99af3cb-213a-4215-8c84-7af1a23e1d7e",
               "ord": "a1"
             }
           ],
           "behavior": {
             "type": "disclosure"
           },
-          "id": "969ba746-7c6e-4aac-acf7-322ae6115534",
+          "id": "d5916283-f9f4-4a67-91e6-6fa70ffe4451",
           "ord": "a0"
         },
         {
@@ -270,7 +270,7 @@
               "kind": "outlet"
             }
           ],
-          "id": "62d1ed9e-f8e1-4cdd-9bca-d8dc85f4aadd",
+          "id": "9fd49833-13e2-463b-bcf2-35d3fd224f3d",
           "ord": "a1"
         },
         {
@@ -300,7 +300,7 @@
                           "props": {
                             "show": "both"
                           },
-                          "id": "f77bb82c-55eb-435e-934e-319c0127ed95",
+                          "id": "6c4cbe43-0cb2-445f-ab80-1e0db09f1621",
                           "ord": "a0"
                         },
                         {
@@ -316,7 +316,7 @@
                           "attrs": {
                             "href": "/"
                           },
-                          "id": "6f4f1bd3-5df4-4b18-adc8-7f7ff67836d6",
+                          "id": "023bb249-8016-4e0b-9ba3-6a463e8e0660",
                           "ord": "a1"
                         },
                         {
@@ -324,11 +324,11 @@
                           "tag": "ul",
                           "class": "mt-2 flex items-center gap-5",
                           "children": [],
-                          "id": "d314b434-cd74-4eaa-8151-3e7284b833d4",
+                          "id": "78f39f33-7399-47f1-afa9-b00e243c985c",
                           "ord": "a2"
                         }
                       ],
-                      "id": "a95b9580-ecde-4fa8-9e81-6c218a380ed6",
+                      "id": "fd5adb13-52c1-4316-9717-fff6c4be7bd0",
                       "ord": "a0"
                     },
                     {
@@ -349,7 +349,7 @@
                           "attrs": {
                             "href": "/"
                           },
-                          "id": "8f04d14c-78da-4f3a-8734-867d1c55bed0",
+                          "id": "738557d3-2aaf-49ff-a906-c47b3c846fa6",
                           "ord": "a0"
                         },
                         {
@@ -374,11 +374,11 @@
                                     "type": "link",
                                     "label": "Features"
                                   },
-                                  "id": "be483713-04da-4ba8-abe1-3bdfbc9d2347",
+                                  "id": "810f1971-f0b0-4301-a6a3-d5bafcc760f0",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "4660bc43-4a6b-444f-89fc-2bc850ca0570",
+                              "id": "0e4aba52-66b7-4a09-a0cc-0776256b9b6e",
                               "ord": "a0"
                             },
                             {
@@ -398,11 +398,11 @@
                                     "type": "link",
                                     "label": "Pricing"
                                   },
-                                  "id": "07efc2e4-b94c-4bcf-9c48-ccbed833a73c",
+                                  "id": "984f49ec-cae7-4522-a439-ef5036edacf4",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "c6e6a440-619a-410f-8bd5-ffc170b4c481",
+                              "id": "364c3838-7f33-4221-bc9e-2b58a21f536a",
                               "ord": "a1"
                             },
                             {
@@ -422,11 +422,11 @@
                                     "type": "link",
                                     "label": "Integrations"
                                   },
-                                  "id": "1e787dae-7c2e-41e8-a904-37a1d3703b7c",
+                                  "id": "efde2113-bc78-49f7-a239-a35dc81e9222",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "637bc248-0be5-4838-b4de-f82518e25ad1",
+                              "id": "20710f39-4221-4b04-8e9f-97f8f07397ad",
                               "ord": "a2"
                             },
                             {
@@ -446,19 +446,19 @@
                                     "type": "link",
                                     "label": "Changelog"
                                   },
-                                  "id": "9b9eb1f0-8116-4d44-8f4d-d319b29f3311",
+                                  "id": "39041228-edb7-482d-ba48-42fa79a80b03",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "846acd77-fad5-41f9-ac29-36decdbed208",
+                              "id": "b3907cbf-b7f0-46bf-9eda-ff8a8e5a8225",
                               "ord": "a3"
                             }
                           ],
-                          "id": "e11ab632-e960-4e07-9f0f-6cc2be172a6b",
+                          "id": "f8f6ffea-d219-43a5-b3bd-11d00a10cfbf",
                           "ord": "a1"
                         }
                       ],
-                      "id": "e12fe6b6-d2c9-4165-875d-5b1ad8b433bd",
+                      "id": "331cdfa1-5b5f-4ba1-9ffa-f71e379a82a1",
                       "ord": "a1"
                     },
                     {
@@ -471,11 +471,11 @@
                           "tag": "ul",
                           "class": "flex flex-col gap-2",
                           "children": [],
-                          "id": "e34cd3e0-9480-47c9-a622-93e15c6e3569",
+                          "id": "230829d0-b2bf-4fb7-9dcd-9b3a109dcced",
                           "ord": "a0"
                         }
                       ],
-                      "id": "3024422c-f7ba-49e3-9e9b-793859b7083b",
+                      "id": "bfe04ff6-02a9-4984-93bb-1d0138f2ede4",
                       "ord": "a2"
                     },
                     {
@@ -499,23 +499,23 @@
                                   "props": {
                                     "heading": "Legal"
                                   },
-                                  "id": "c6d0e85a-619c-4a94-b1a0-fc130dc4f2f6",
+                                  "id": "ef784523-555a-416d-9aa9-0a6d56b8be58",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "349baf21-6337-47cb-acb9-1e970f9c1ee7",
+                              "id": "52097904-b26e-471c-a52b-6b3bc3fb92d3",
                               "ord": "a0"
                             }
                           ],
-                          "id": "c3448c1b-438b-426f-8cab-9acfab537393",
+                          "id": "9c0ea5f5-f380-4264-9caa-1ff52c12ae86",
                           "ord": "a0"
                         }
                       ],
-                      "id": "662a5d2f-5830-40b8-8b43-2c856e37aec7",
+                      "id": "f98ff28d-2090-4fe8-a633-5120d90eff8e",
                       "ord": "a3"
                     }
                   ],
-                  "id": "cec76f02-93d6-4748-b94b-98fb66d39e6f",
+                  "id": "800b6bc8-4995-46ee-9076-df442a51947a",
                   "ord": "a0"
                 },
                 {
@@ -538,11 +538,11 @@
                             "kind": "value",
                             "ref": "site.identity.name"
                           },
-                          "id": "c7183136-7ca7-4f38-8ad5-ef6b6c3a3db1",
+                          "id": "9df580cb-19df-40bb-a05f-d495948a84a3",
                           "ord": "a0"
                         }
                       ],
-                      "id": "46e76f6f-dc4b-4377-8aea-02a17ebdbc64",
+                      "id": "c9031a8c-4281-4b1f-95dc-42fa12423b70",
                       "ord": "a0"
                     },
                     {
@@ -550,23 +550,23 @@
                       "tag": "ul",
                       "class": "flex flex-wrap items-center gap-x-6 gap-y-2",
                       "children": [],
-                      "id": "2edd17f0-9f7b-454c-b39b-74ef2cc48133",
+                      "id": "4fff5dab-c51b-44d0-ad2e-9aba9f684f3d",
                       "ord": "a1"
                     }
                   ],
-                  "id": "b5194ef4-5626-4262-b883-73e0dafc6039",
+                  "id": "cf4d5c8e-deb9-4410-8c4a-5df48a4a717a",
                   "ord": "a1"
                 }
               ],
-              "id": "7ffc9532-47c9-494a-9e11-ea3723cc16bd",
+              "id": "ea567375-df27-4356-99c9-dee0be6a8505",
               "ord": "a0"
             }
           ],
-          "id": "db7be2d5-a402-408a-99cb-028350b544df",
+          "id": "502642c2-a282-4267-a34a-b0c96a16a5f6",
           "ord": "a2"
         }
       ],
-      "id": "a28655e4-06d2-409c-a4d6-81f1889c7cff"
+      "id": "3bbc4660-38b3-4779-b8c6-42c24b376ced"
     }
   },
   "pages": [
@@ -580,7 +580,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "575ab328-2b33-40cd-adae-54f8259b45c7",
+        "id": "3d6b2562-3992-460c-85a5-9fe44a397443",
         "children": [
           {
             "kind": "element",
@@ -596,14 +596,14 @@
                   "alt": "A young student smiling at the piano during a lesson",
                   "loading": "eager"
                 },
-                "id": "8c92dc94-f0f4-4996-a767-379fd957d24d",
+                "id": "222d8ba6-6634-4008-a68f-29cc590546f4",
                 "ord": "a0"
               },
               {
                 "kind": "element",
                 "tag": "div",
                 "class": "absolute inset-0 bg-black/50",
-                "id": "21e2a70c-e58a-4f0c-b1ef-aea14bddf79a",
+                "id": "35f9321c-1af2-4c0f-8f19-aea5406e32dd",
                 "ord": "a1"
               },
               {
@@ -616,7 +616,7 @@
                     "tag": "h1",
                     "class": "max-w-3xl text-4xl font-bold leading-tight tracking-tight @2xl:text-5xl @3xl:text-6xl",
                     "children": ["Learn to love making music"],
-                    "id": "e0f92cae-adfe-4b0a-b1e3-9335a77eb538",
+                    "id": "51a769e6-1030-4ada-aeb2-a551ef309c06",
                     "ord": "a0"
                   },
                   {
@@ -626,7 +626,7 @@
                     "children": [
                       "Warm, encouraging private lessons and group classes in piano, guitar, voice, violin and more — for every age and every level. Start with a free trial lesson."
                     ],
-                    "id": "d38c74dc-ac8c-4cc7-aaae-fad4192b439f",
+                    "id": "f2243596-af6e-4db2-ab20-22aaf57622df",
                     "ord": "a1"
                   },
                   {
@@ -642,7 +642,7 @@
                           "href": "/book"
                         },
                         "children": ["Book a trial lesson"],
-                        "id": "ca0c7a86-3f45-44a5-b1e4-75008af9bef1",
+                        "id": "07535c23-67e1-4bff-a04a-5af44f1965a9",
                         "ord": "a0"
                       },
                       {
@@ -653,19 +653,19 @@
                           "href": "/book"
                         },
                         "children": ["See lessons & classes"],
-                        "id": "03c2f0d2-7144-4d51-a68e-70a5580522f5",
+                        "id": "77f3c82a-83b3-4272-a977-e74242a13bfc",
                         "ord": "a1"
                       }
                     ],
-                    "id": "b7fdb3f7-357b-4dbb-b50c-8a3cf3b3b757",
+                    "id": "0163b662-adb3-42d2-b311-2f44f1dab162",
                     "ord": "a2"
                   }
                 ],
-                "id": "45f176c1-e479-4d2d-a999-e36d82986cc6",
+                "id": "f673fa95-b994-40db-9583-bef5cd55332e",
                 "ord": "a2"
               }
             ],
-            "id": "807435ef-d385-4703-ade3-d69e8f7763ed",
+            "id": "4c29be19-298b-4368-9a30-da3ba1c5016c",
             "ord": "a0"
           },
           {
@@ -693,7 +693,7 @@
                             "tag": "h2",
                             "class": "text-xl font-semibold text-base-content",
                             "children": ["Caring, certified teachers"],
-                            "id": "0de0575e-315b-4ed7-8cfb-cbd267ecde02",
+                            "id": "52535d77-b613-47a0-bf02-5588706b6aa9",
                             "ord": "a0"
                           },
                           {
@@ -703,11 +703,11 @@
                             "children": [
                               "Real musicians who love to teach — patient, encouraging, and trained to meet you exactly where you are."
                             ],
-                            "id": "29e7d574-fd32-4a2f-9409-d474541f2931",
+                            "id": "48ca146b-cf90-42b7-a2ee-68f81807763b",
                             "ord": "a1"
                           }
                         ],
-                        "id": "ed46a129-1f9b-4a8e-899d-b0adf84befc6",
+                        "id": "46a77fed-ac2e-438c-a01e-b1ae7728c15b",
                         "ord": "a0"
                       },
                       {
@@ -720,7 +720,7 @@
                             "tag": "h2",
                             "class": "text-xl font-semibold text-base-content",
                             "children": ["All ages, all instruments"],
-                            "id": "e667ab44-0bd5-41e5-9fad-19ba5dfc7057",
+                            "id": "08c33a42-8bd2-4e2b-aa34-5e099ad87274",
                             "ord": "a0"
                           },
                           {
@@ -730,11 +730,11 @@
                             "children": [
                               "From four-year-olds at their first keyboard to grandparents picking up guitar — beginners are genuinely welcome here."
                             ],
-                            "id": "c607830e-5634-4d6f-a4a4-e5a13d07aef9",
+                            "id": "efecf9b2-a835-4438-9873-78bf5545792b",
                             "ord": "a1"
                           }
                         ],
-                        "id": "3905284d-c438-47e7-b3d3-8991c43e9a09",
+                        "id": "d8697a68-8d2e-4357-a5de-6d1577909d80",
                         "ord": "a1"
                       },
                       {
@@ -747,7 +747,7 @@
                             "tag": "h2",
                             "class": "text-xl font-semibold text-base-content",
                             "children": ["Recitals & performances"],
-                            "id": "4746324c-7b90-4cc1-81da-23886e964cd0",
+                            "id": "c9b7defc-924d-43fc-ac98-ab210b514186",
                             "ord": "a0"
                           },
                           {
@@ -757,11 +757,11 @@
                             "children": [
                               "Friendly, low-pressure recitals give every student something to work toward and a moment to feel proud."
                             ],
-                            "id": "448c80d8-1f3e-4b95-a1b7-d9b1ee8ccb68",
+                            "id": "aea56605-8684-432c-8e9f-999ca048662e",
                             "ord": "a1"
                           }
                         ],
-                        "id": "3332c3ff-a546-4d78-b4fc-b9368cc4cc63",
+                        "id": "c28ae3a8-2eff-4ab2-a402-b10af897e42e",
                         "ord": "a2"
                       },
                       {
@@ -774,7 +774,7 @@
                             "tag": "h2",
                             "class": "text-xl font-semibold text-base-content",
                             "children": ["Flexible scheduling"],
-                            "id": "c51e0b26-c1fc-4534-924f-d0ab9343d16a",
+                            "id": "e16fa83c-862f-4640-b43d-37080e2a5002",
                             "ord": "a0"
                           },
                           {
@@ -784,23 +784,23 @@
                             "children": [
                               "After-school and weekend times, easy online booking, and reminders so lessons fit around real family life."
                             ],
-                            "id": "b100372f-b20d-4e85-8349-f4fc5545c0a1",
+                            "id": "c17b65b2-208e-4040-ae10-a72b8ba705b0",
                             "ord": "a1"
                           }
                         ],
-                        "id": "3542e7d7-4c7e-46f4-8348-0d2e9cf0c6f8",
+                        "id": "74d915f2-5076-4bfa-be8b-91cc61a108c9",
                         "ord": "a3"
                       }
                     ],
-                    "id": "672de778-4f42-4046-9604-b0ea23ccbf88",
+                    "id": "87503150-e9c1-437d-b371-7ff7bbf2bc27",
                     "ord": "a0"
                   }
                 ],
-                "id": "e55a0145-a73b-4696-bf53-642fe0fd31d9",
+                "id": "bdc72220-d5eb-4c64-a237-2100b5e115fd",
                 "ord": "a0"
               }
             ],
-            "id": "966c0e99-615a-49b8-b484-f357d62dab60",
+            "id": "679d058a-8ca8-4714-92f9-ebab934903e9",
             "ord": "a1"
           },
           {
@@ -823,7 +823,7 @@
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
                         "children": ["Lessons & classes"],
-                        "id": "5b09c237-f983-4e7e-8d7c-fc7e71c11f82",
+                        "id": "16d6179b-9361-4332-b753-f96d97975d96",
                         "ord": "a0"
                       },
                       {
@@ -833,11 +833,11 @@
                         "children": [
                           "A few of the ways to make music with us. See full prices and live times on the booking page — and remember, your first lesson is free."
                         ],
-                        "id": "03c0678e-2e4e-47b3-824e-ab7fc274f5ec",
+                        "id": "88bb99ed-4963-43d1-8dd0-db4ec738a200",
                         "ord": "a1"
                       }
                     ],
-                    "id": "fca05b2d-25c7-4a19-8cff-c3c63b0811b4",
+                    "id": "e5c4ca5a-ff78-4249-bde9-12f0a780d004",
                     "ord": "a0"
                   },
                   {
@@ -863,7 +863,7 @@
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
                                 "children": ["Trial lesson"],
-                                "id": "c2cb5251-6753-4f9a-8f5c-881f52271400",
+                                "id": "61d66e1a-7bcb-4621-9bb0-a5bf7e5f4065",
                                 "ord": "a0"
                               },
                               {
@@ -871,11 +871,11 @@
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-bold text-base-content",
                                 "children": ["$0"],
-                                "id": "71c8470a-f70e-4877-ac66-e1cda725027d",
+                                "id": "21352c66-e51b-4fce-bea4-710d22f49c85",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "b6dd7cfd-010d-45b8-a690-447e132d2b7a",
+                            "id": "8cb6edd6-8cda-4aba-bbf3-aaf648d1df72",
                             "ord": "a0"
                           },
                           {
@@ -883,7 +883,7 @@
                             "tag": "p",
                             "class": "text-sm font-medium uppercase tracking-wide text-secondary",
                             "children": ["30 min"],
-                            "id": "746f8160-776c-4eff-bfcd-05ad5c406691",
+                            "id": "773b9346-903d-4ef4-9fdf-d3b786135b09",
                             "ord": "a1"
                           },
                           {
@@ -891,11 +891,11 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": ["A free first lesson — meet a teacher and try it out."],
-                            "id": "06b10a9f-7dd4-4010-86f5-d8a293bce314",
+                            "id": "6fa83d2a-ed43-41af-8ab5-cb2b176c1c61",
                             "ord": "a2"
                           }
                         ],
-                        "id": "10f907e8-62fd-4db8-8120-0eca4f07da31",
+                        "id": "e95426e0-e296-43df-89d6-94f42b542f3a",
                         "ord": "a0"
                       },
                       {
@@ -916,7 +916,7 @@
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
                                 "children": ["Piano lesson"],
-                                "id": "91aa98d9-257c-4e82-8ddb-115e9050a849",
+                                "id": "8dda54da-f0db-4da3-a171-35c8cdfdc1e0",
                                 "ord": "a0"
                               },
                               {
@@ -924,11 +924,11 @@
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-bold text-base-content",
                                 "children": ["$60"],
-                                "id": "02fa00ec-9ad9-4878-a4a4-71f2167905f3",
+                                "id": "9275274e-4b63-493f-8d0c-6db69a7600ac",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "a24aae51-017c-4733-8a96-620dbee3ce28",
+                            "id": "49c347f8-1c69-4da4-a504-eb3e1a2ded4f",
                             "ord": "a0"
                           },
                           {
@@ -936,7 +936,7 @@
                             "tag": "p",
                             "class": "text-sm font-medium uppercase tracking-wide text-secondary",
                             "children": ["45 min"],
-                            "id": "b3ec7d9e-9378-4fc0-a7d9-45772fe4e0d8",
+                            "id": "6c45d7e9-988d-401a-9739-00ba5b090088",
                             "ord": "a1"
                           },
                           {
@@ -944,11 +944,11 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": ["One-to-one piano for every level."],
-                            "id": "3919ddec-deaa-4fc1-b7de-24c65054d892",
+                            "id": "97474f53-92dd-4895-82e9-96f9e1a315f6",
                             "ord": "a2"
                           }
                         ],
-                        "id": "6ef53008-ca05-4aa1-8060-6ad6f162b887",
+                        "id": "c852ddb1-bcc7-49b3-bfdd-6a3122bf7fff",
                         "ord": "a1"
                       },
                       {
@@ -969,7 +969,7 @@
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
                                 "children": ["Guitar lesson"],
-                                "id": "03fcfcb7-a631-43c0-affb-03522f48695b",
+                                "id": "faeb6d6f-01a7-414e-ad7b-bfd771cf218d",
                                 "ord": "a0"
                               },
                               {
@@ -977,11 +977,11 @@
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-bold text-base-content",
                                 "children": ["$55"],
-                                "id": "d37df317-9e9e-44b1-b5e3-195a3a4e9a03",
+                                "id": "88ee007d-c706-4ee4-aec0-a80e2c0b047c",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "9a080d22-dd95-4c1a-8942-903931d76ef3",
+                            "id": "6483b5d6-cddd-4295-971c-d5bcf2b0faae",
                             "ord": "a0"
                           },
                           {
@@ -989,7 +989,7 @@
                             "tag": "p",
                             "class": "text-sm font-medium uppercase tracking-wide text-secondary",
                             "children": ["45 min"],
-                            "id": "73b9dfab-27da-445a-acf0-3d0de51f426c",
+                            "id": "657e62a4-b7f7-4d4e-b724-03d6845c9ce1",
                             "ord": "a1"
                           },
                           {
@@ -997,11 +997,11 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": ["Acoustic or electric, chords to solos."],
-                            "id": "e0a22361-25d4-44d8-a6bb-749ef29993ec",
+                            "id": "4615b41f-6202-4ce5-81b0-bb49cec83b90",
                             "ord": "a2"
                           }
                         ],
-                        "id": "331460bf-3c13-4f02-a111-e838a4f2c774",
+                        "id": "23951978-8e78-4f95-bdeb-09dd0a1f7aa1",
                         "ord": "a2"
                       },
                       {
@@ -1022,7 +1022,7 @@
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
                                 "children": ["Group musicianship class"],
-                                "id": "8933cc54-c3ad-4a28-8192-d29d086a93b8",
+                                "id": "f17639c0-f52e-46ad-9e47-5544c6b598f3",
                                 "ord": "a0"
                               },
                               {
@@ -1030,11 +1030,11 @@
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-bold text-base-content",
                                 "children": ["$30"],
-                                "id": "b760fe25-4c9e-433e-b71f-e4cd0eeaf094",
+                                "id": "98f10f71-2e44-4330-aba7-e29b0998bcb6",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "35e1ed75-0502-4944-bc52-1249f897109f",
+                            "id": "402e8f60-f0e6-4af7-a683-c8c5f44749a6",
                             "ord": "a0"
                           },
                           {
@@ -1042,7 +1042,7 @@
                             "tag": "p",
                             "class": "text-sm font-medium uppercase tracking-wide text-secondary",
                             "children": ["1 hr"],
-                            "id": "90ffa277-680e-4f23-bc4a-7e98f44e719f",
+                            "id": "8307adb9-c1af-40aa-97ef-d9e56a211f5c",
                             "ord": "a1"
                           },
                           {
@@ -1050,15 +1050,15 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": ["Rhythm, ear-training and playing together."],
-                            "id": "45eb458b-891d-418e-9008-c3c62a98330a",
+                            "id": "875d07c2-9b43-4978-861b-0bc0d4fbf469",
                             "ord": "a2"
                           }
                         ],
-                        "id": "5a3e4ad7-97a2-4cc0-b3ca-4abf4888e257",
+                        "id": "5f2c2889-f40d-4fa6-b769-24f97e43ae4c",
                         "ord": "a3"
                       }
                     ],
-                    "id": "fc8b5a43-39c1-4cab-8bdb-5899ad552f2d",
+                    "id": "d9a13d9e-c592-494b-880b-9ebd68c757db",
                     "ord": "a1"
                   },
                   {
@@ -1074,19 +1074,19 @@
                           "href": "/book"
                         },
                         "children": ["See everything & book"],
-                        "id": "1938273c-b396-4179-b150-c41360769862",
+                        "id": "0ab356b5-3eca-4593-9ad3-21230a756fd9",
                         "ord": "a0"
                       }
                     ],
-                    "id": "67ba72f5-194b-420e-a2ee-fb16b40b6834",
+                    "id": "d68ca379-7bac-428e-91a6-1a43bcdb36b2",
                     "ord": "a2"
                   }
                 ],
-                "id": "eb891158-e94f-49c6-9f40-7c8787421e14",
+                "id": "c2768f87-155d-4ffd-9898-d32b94f33447",
                 "ord": "a0"
               }
             ],
-            "id": "c7ff1688-fb5f-4c02-b65f-3f8e466d551d",
+            "id": "281dc340-938f-4485-8ec9-09f8f390ee86",
             "ord": "a2"
           },
           {
@@ -1108,7 +1108,7 @@
                       "alt": "A warm, light-filled lesson room with an upright piano and music stands",
                       "loading": "lazy"
                     },
-                    "id": "b3576c30-ca9b-4be6-812b-3017ef0cf643",
+                    "id": "ac057b56-0d53-44a4-8ebb-789ddadeb836",
                     "ord": "a0"
                   },
                   {
@@ -1121,7 +1121,7 @@
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
                         "children": ["Music should feel joyful, not stressful"],
-                        "id": "6edfa8a7-ed9b-4339-be11-f2570401bf33",
+                        "id": "ee6fb19b-8c81-4f28-818a-ec09ffcdbde7",
                         "ord": "a0"
                       },
                       {
@@ -1131,7 +1131,7 @@
                         "children": [
                           "We believe every person is musical, and that the fastest way to grow is to enjoy the journey. So we teach with encouragement first — celebrating small wins, choosing songs students actually want to play, and never making anyone feel behind."
                         ],
-                        "id": "3d890a52-593c-4487-8d3e-7805946b4a17",
+                        "id": "1fa77ab7-c3ed-4f0f-a28c-01a130667160",
                         "ord": "a1"
                       },
                       {
@@ -1141,7 +1141,7 @@
                         "children": [
                           "Progress is personal here. Whether you dream of playing in a recital or just want a happy half-hour each week, your teacher builds the lessons around you."
                         ],
-                        "id": "252033ae-e5d9-4b88-937f-e3ead64bb7a7",
+                        "id": "cc4a1df9-d005-434b-8ba9-f58d445a76e0",
                         "ord": "a2"
                       },
                       {
@@ -1157,23 +1157,23 @@
                               "href": "/book"
                             },
                             "children": ["Book a trial lesson"],
-                            "id": "baee9719-e9a4-470a-8f7d-426917370351",
+                            "id": "0860981b-71d7-4c27-b9af-4339910e2347",
                             "ord": "a0"
                           }
                         ],
-                        "id": "2cd9ad8d-a851-4296-91a2-95f3a77d9fc8",
+                        "id": "e2ac42ae-5c4d-4c00-9c75-e406b46f52ce",
                         "ord": "a3"
                       }
                     ],
-                    "id": "697f3c1b-46f9-4682-8095-47c119ac76a1",
+                    "id": "91a7b95b-1878-48a8-be3a-8d6933a35d61",
                     "ord": "a1"
                   }
                 ],
-                "id": "2f5b97a8-56f8-4fad-990d-0d22588f167d",
+                "id": "c7592dea-867c-442b-a4a4-e0884681a5ca",
                 "ord": "a0"
               }
             ],
-            "id": "cbe905d9-d6c3-4684-b7a6-abd39037b47d",
+            "id": "4debec60-3256-4ee4-9168-043d67cf19d4",
             "ord": "a3"
           },
           {
@@ -1196,7 +1196,7 @@
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
                         "children": ["Meet your teachers"],
-                        "id": "36b8dbfc-fe86-446e-974a-3e974246b556",
+                        "id": "ed68aa5c-f2f5-4464-b9dd-05cfa569de39",
                         "ord": "a0"
                       },
                       {
@@ -1206,11 +1206,11 @@
                         "children": [
                           "Book by name — you’ll learn with the same teacher each week, someone who gets to know you and how you like to learn."
                         ],
-                        "id": "c8cb36f3-d3b7-4d5c-b89a-4f54d6c5a80d",
+                        "id": "0459120e-7f7b-4402-bc75-117fd6fa554a",
                         "ord": "a1"
                       }
                     ],
-                    "id": "e8aa3938-2ef9-41d9-b3b6-c07128da578e",
+                    "id": "8666a8a1-760d-4139-b02a-a324d00347fa",
                     "ord": "a0"
                   },
                   {
@@ -1232,7 +1232,7 @@
                               "alt": "Mara Ellison, piano and voice teacher",
                               "loading": "lazy"
                             },
-                            "id": "80594c83-d11b-4941-8e2a-57021879a7e4",
+                            "id": "2b3cfb15-3909-4c78-861e-ed200b75e385",
                             "ord": "a0"
                           },
                           {
@@ -1245,7 +1245,7 @@
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
                                 "children": ["Mara Ellison"],
-                                "id": "e1d3754e-791d-4720-9aa1-86b47195001f",
+                                "id": "ec3df1c8-21db-44fb-afef-c434e5fa9bdb",
                                 "ord": "a0"
                               },
                               {
@@ -1253,7 +1253,7 @@
                                 "tag": "p",
                                 "class": "text-sm font-medium uppercase tracking-wide text-secondary",
                                 "children": ["Piano & voice"],
-                                "id": "75262381-620a-49e5-b37f-4571a92777b9",
+                                "id": "ed786867-1325-4249-91a5-77d0230dc1e3",
                                 "ord": "a1"
                               },
                               {
@@ -1263,15 +1263,15 @@
                                 "children": [
                                   "Twenty years of teaching, endless patience, and a gift for making beginners feel at home at the keyboard."
                                 ],
-                                "id": "0d807f41-a9d0-4175-81b8-d37cae3ae01e",
+                                "id": "82a80880-3099-4f6e-b6e6-d00a8ad55ee9",
                                 "ord": "a2"
                               }
                             ],
-                            "id": "2723c901-b6b3-4a48-b7f9-0a8460d1149e",
+                            "id": "f83f087c-01ae-48f2-968b-b493f99b6d06",
                             "ord": "a1"
                           }
                         ],
-                        "id": "977fe1a7-b1ad-4684-8710-a2135d37e396",
+                        "id": "d6b5377c-e6e8-48d1-ac2c-88b5ed10a916",
                         "ord": "a0"
                       },
                       {
@@ -1288,7 +1288,7 @@
                               "alt": "Theo Nakamura, guitar teacher",
                               "loading": "lazy"
                             },
-                            "id": "11ccaffa-f207-403f-9f69-cc0fce55fcc6",
+                            "id": "4b573bfe-795a-4575-92e6-bc8c4e0424da",
                             "ord": "a0"
                           },
                           {
@@ -1301,7 +1301,7 @@
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
                                 "children": ["Theo Nakamura"],
-                                "id": "a398b0d6-3fb7-4404-a1bf-a48a8709d49c",
+                                "id": "50031dab-eda9-4788-8f6a-586a92ddc9ac",
                                 "ord": "a0"
                               },
                               {
@@ -1309,7 +1309,7 @@
                                 "tag": "p",
                                 "class": "text-sm font-medium uppercase tracking-wide text-secondary",
                                 "children": ["Guitar"],
-                                "id": "fc13649a-6724-430c-93df-d180fbcc5ae9",
+                                "id": "9a1b1d6a-446b-49b2-86fe-bb4e48ab93ef",
                                 "ord": "a1"
                               },
                               {
@@ -1319,15 +1319,15 @@
                                 "children": [
                                   "From first chords to full songs, Theo meets every student where they are — teens and grown-up beginners especially love his classes."
                                 ],
-                                "id": "96ba456d-38e6-4290-9761-105c9ea5949c",
+                                "id": "b354decd-b886-4d22-816a-522983bc51e9",
                                 "ord": "a2"
                               }
                             ],
-                            "id": "fff8286a-23ed-40c3-b49d-6d3eaa157da1",
+                            "id": "4631e665-6c21-464b-9dcb-d54a491c5f3c",
                             "ord": "a1"
                           }
                         ],
-                        "id": "7c5b7400-71ef-42df-8163-43456702769d",
+                        "id": "7a8d9e8e-0d97-48dc-8ab5-985e9b7bb36f",
                         "ord": "a1"
                       },
                       {
@@ -1344,7 +1344,7 @@
                               "alt": "Lena Petrov, violin teacher",
                               "loading": "lazy"
                             },
-                            "id": "dbeef708-c468-4e00-8d19-dd249d5fe021",
+                            "id": "cf35b416-22c0-4945-a0c3-3f59868d2812",
                             "ord": "a0"
                           },
                           {
@@ -1357,7 +1357,7 @@
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
                                 "children": ["Lena Petrov"],
-                                "id": "d752b426-7786-465f-837f-363c088b9afe",
+                                "id": "f3ee540a-0b7c-4d11-a85f-20172becb7e5",
                                 "ord": "a0"
                               },
                               {
@@ -1365,7 +1365,7 @@
                                 "tag": "p",
                                 "class": "text-sm font-medium uppercase tracking-wide text-secondary",
                                 "children": ["Violin & strings"],
-                                "id": "f8626912-be80-4221-8e78-1a1a7d1bd88e",
+                                "id": "9db3efc4-f95b-43e4-87f2-97d1ab0b1d98",
                                 "ord": "a1"
                               },
                               {
@@ -1375,27 +1375,27 @@
                                 "children": [
                                   "A warm, encouraging strings teacher who makes the violin approachable for the very youngest players and returning adults alike."
                                 ],
-                                "id": "8e8aa65e-1ace-4993-b729-157fcfe12f19",
+                                "id": "51e0a47c-6ce5-4762-8334-3eacf4909d8c",
                                 "ord": "a2"
                               }
                             ],
-                            "id": "e41da507-7f65-43c4-ac25-9223cd33c5ae",
+                            "id": "df3dde5f-ea2b-48f4-8a2a-e3bb3a9b06a4",
                             "ord": "a1"
                           }
                         ],
-                        "id": "ffbe16be-c53c-4eb9-b20b-b744a3e65212",
+                        "id": "7cf207c4-b881-49ab-9294-edf4c7f19192",
                         "ord": "a2"
                       }
                     ],
-                    "id": "4d62ad4f-86bc-4b59-b615-1f021b31f9b7",
+                    "id": "d6ea2211-cc16-4322-adb1-7dc1d1f97cda",
                     "ord": "a1"
                   }
                 ],
-                "id": "96db0744-9ef8-4966-87a4-a81518ddad8a",
+                "id": "74714339-46ce-48b0-9b1f-99790fbf98a4",
                 "ord": "a0"
               }
             ],
-            "id": "497aa940-8ccb-490c-a5de-532e760d73c4",
+            "id": "fee15d0c-8546-4f49-80de-1b56821b80be",
             "ord": "a4"
           },
           {
@@ -1415,7 +1415,7 @@
                     "children": [
                       "“My daughter counts down the days to her piano lesson. She’s learning so much, but more than that, she’s fallen in love with music. That’s everything we hoped for.”"
                     ],
-                    "id": "68e23327-7d1c-4c8a-99b1-b4e119fc9093",
+                    "id": "8d80f0c8-f14f-439d-bdb6-72a7e9e6f637",
                     "ord": "a0"
                   },
                   {
@@ -1423,15 +1423,15 @@
                     "tag": "p",
                     "class": "text-sm font-semibold uppercase tracking-wide opacity-80",
                     "children": ["Rachel, parent of a Crescendo student"],
-                    "id": "f68bc885-dd2b-48ca-bb5c-4c20eb3e7acc",
+                    "id": "46d237bb-9cd0-4a69-8daf-bbdb395b3f5d",
                     "ord": "a1"
                   }
                 ],
-                "id": "ba5efc8d-8491-4e73-9737-01aa993407f5",
+                "id": "08307ed7-f088-49ac-80fc-a629510c58c5",
                 "ord": "a0"
               }
             ],
-            "id": "45d2e284-56d8-4143-8775-657b40f90ee4",
+            "id": "0757d8e0-eb1e-480b-8bd6-2f1f0afcb7e5",
             "ord": "a5"
           },
           {
@@ -1449,7 +1449,7 @@
                     "tag": "h2",
                     "class": "text-3xl font-bold tracking-tight @3xl:text-4xl",
                     "children": ["Ready to make some music?"],
-                    "id": "2b505bc8-4f1d-4f4e-adf9-777ce3e77ca0",
+                    "id": "9dfe8b60-69b1-4f90-8364-1128d54e994f",
                     "ord": "a0"
                   },
                   {
@@ -1459,7 +1459,7 @@
                     "children": [
                       "Pick an instrument, choose your teacher and see live times. Your first lesson is free — it takes about a minute to book."
                     ],
-                    "id": "e662cf76-1c63-48fa-8d31-31d69df49ee4",
+                    "id": "bafbf16b-5afc-4671-82d6-07b0459e63cf",
                     "ord": "a1"
                   },
                   {
@@ -1470,15 +1470,15 @@
                       "href": "/book"
                     },
                     "children": ["Book a trial lesson"],
-                    "id": "711ece96-ed75-4ab0-869a-1b3c5379327f",
+                    "id": "8d440505-3f52-4c25-91f5-f2e99623514a",
                     "ord": "a2"
                   }
                 ],
-                "id": "4c03d545-35a2-4821-8acb-7e046b63baf5",
+                "id": "8fd2f6cc-c2af-4d7d-acf7-132b4d005ae7",
                 "ord": "a0"
               }
             ],
-            "id": "3395f983-9c94-4b95-a2d7-1922a4fe4a49",
+            "id": "7a5798d3-0eb4-4821-a92f-7c43b7d19135",
             "ord": "a6"
           }
         ]
@@ -1495,7 +1495,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "a924cd9d-1b7c-4f55-aeb9-67567f23ac5a",
+        "id": "6c88dba7-2dea-48db-8453-75cc3a9fc97a",
         "children": [
           {
             "kind": "element",
@@ -1511,14 +1511,14 @@
                   "alt": "A warm, light-filled lesson room with an upright piano and music stands",
                   "loading": "eager"
                 },
-                "id": "0d78796e-1014-454b-a2e7-2d280885c637",
+                "id": "d547bf03-45a3-480d-b9b0-5830f9a97301",
                 "ord": "a0"
               },
               {
                 "kind": "element",
                 "tag": "div",
                 "class": "absolute inset-0 bg-black/65",
-                "id": "09b46861-3ea2-4e07-ab28-62869392815f",
+                "id": "222a21d2-8eab-4434-9321-58dc6969f65d",
                 "ord": "a1"
               },
               {
@@ -1531,7 +1531,7 @@
                     "tag": "h1",
                     "class": "max-w-3xl text-4xl font-bold leading-tight tracking-tight @2xl:text-5xl @3xl:text-6xl",
                     "children": ["Book your lesson"],
-                    "id": "8ac9f4fe-3d75-4892-a8e4-2a0613d7fb1b",
+                    "id": "b54c6dba-7a46-45df-a928-8fd78996a824",
                     "ord": "a0"
                   },
                   {
@@ -1541,7 +1541,7 @@
                     "children": [
                       "Choose a lesson or class to see prices and live availability, then pick your teacher and time. First lesson’s on us."
                     ],
-                    "id": "c60e9212-b3bd-4240-98cc-13d83126b639",
+                    "id": "547d2651-40bd-4542-98d3-d49257a07651",
                     "ord": "a1"
                   },
                   {
@@ -1557,19 +1557,19 @@
                           "href": "/book"
                         },
                         "children": ["See lessons below"],
-                        "id": "e02f2993-f3d1-42e2-a281-24b80b5b2782",
+                        "id": "ad983151-9fb0-4f0e-b827-381fa1b9fd06",
                         "ord": "a0"
                       }
                     ],
-                    "id": "09c7172d-2738-42ed-871f-78ce7b01f5d7",
+                    "id": "944aecb0-7b72-4ce3-a0c5-4e3c4ce70e03",
                     "ord": "a2"
                   }
                 ],
-                "id": "80a5666a-5e4f-48a1-9340-9a2759357588",
+                "id": "4a1faa9a-a458-4953-a467-82e54b2aa511",
                 "ord": "a2"
               }
             ],
-            "id": "dea880e6-8dc0-4f5c-912f-a83db470a31f",
+            "id": "b575e408-3300-4454-8033-9bd7244014e5",
             "ord": "a0"
           },
           {
@@ -1577,8 +1577,136 @@
             "component": "scheduling.services",
             "class": "mx-auto w-full max-w-5xl px-6 py-8",
             "locked": "host",
-            "id": "ff4f6567-5fb0-4432-b3d1-3fe1597da667",
+            "id": "ccdbb654-cde6-4555-879a-457d1cc90280",
             "ord": "a1"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-8",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["Good to know"],
+                        "id": "85a8137a-be21-4414-ac31-42ad672d82d9",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "What happens once you pick a time — and how to change it if something comes up."
+                        ],
+                        "id": "a8730d3a-12ad-4990-9238-cf9a44e5ae7c",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "3ab8c109-bd68-473a-b7a0-4433dd4c2e7e",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-6 @3xl:grid-cols-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-3 rounded-box border border-base-300 bg-base-100 p-6",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Standard lesson"],
+                            "id": "90c3c8f0-8ed1-46cf-92cd-aa8fd1616a80",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Please give us at least 24 hours’ notice to reschedule or cancel a lesson. We send a reminder the day before and two hours ahead so nobody forgets."
+                            ],
+                            "id": "df569a37-7fee-4627-af3c-b0cb1bb56d0e",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base font-medium text-base-content",
+                            "children": [
+                              "No deposit to book. Change or cancel free up to 24 hours before."
+                            ],
+                            "id": "3afdb6b5-9b1a-4d57-bf08-6294c39c8a5a",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "e61a65b5-b723-43d6-a8f0-5d730e5a0769",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-3 rounded-box border border-base-300 bg-base-100 p-6",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Missed lesson"],
+                            "id": "495446eb-1839-45ae-baa4-afe8a9dc8a2b",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Lessons cancelled with less than 24 hours’ notice, or missed without warning, are counted as used. Life happens — just let your teacher know as early as you can and we’ll do our best to find another time."
+                            ],
+                            "id": "3461c39c-5830-45a3-86d0-71707d954749",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base font-medium text-base-content",
+                            "children": [
+                              "No deposit to book. Change or cancel free up to 24 hours before."
+                            ],
+                            "id": "6c88a453-3e00-4d9d-b653-7ba48fce1a95",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "39ea9b21-b967-4640-86ca-2efb17f6e0fd",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "19033f7f-6db6-431e-88be-b39e4e4a13bf",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "6fc1c031-779b-409a-9acd-e02306b5719c",
+                "ord": "a0"
+              }
+            ],
+            "id": "7b948396-0b41-4a22-b99d-ae5e56037157",
+            "ord": "a2"
           }
         ]
       }
@@ -1594,7 +1722,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "b042063e-6035-4500-a33b-21f483b77e51",
+        "id": "e10bc6a9-40e5-45b3-8091-87113d5c29c5",
         "children": [
           {
             "kind": "element",
@@ -1615,7 +1743,7 @@
                       "alt": "A young student smiling at the piano during a lesson",
                       "loading": "lazy"
                     },
-                    "id": "4e676119-100d-4c57-98ea-9127b07f717e",
+                    "id": "f63f67ed-1552-4913-8da8-868b20a34378",
                     "ord": "a0"
                   },
                   {
@@ -1625,10 +1753,10 @@
                     "children": [
                       {
                         "kind": "element",
-                        "tag": "h2",
+                        "tag": "h1",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
                         "children": ["About Crescendo Music School"],
-                        "id": "ce111042-d7d3-4ca7-ac7f-a42586170aa5",
+                        "id": "8c6431c1-5d7f-4cd9-ba74-59070dbf034b",
                         "ord": "a0"
                       },
                       {
@@ -1638,7 +1766,7 @@
                         "children": [
                           "Crescendo began with a simple belief: that everyone deserves the joy of making music, and that the right teacher can change a life. We opened our doors as a neighbourhood school where children and adults, absolute beginners and returning players, all feel equally welcome."
                         ],
-                        "id": "23fe2421-dff8-41ff-9301-d770b725e48a",
+                        "id": "d0b9a698-1a32-47f2-9dd6-8f4c106afbfe",
                         "ord": "a1"
                       },
                       {
@@ -1648,7 +1776,7 @@
                         "children": [
                           "Today we’re a small, close-knit school of teachers who genuinely love what they do — and a community of students, families and friends who cheer each other on at every recital."
                         ],
-                        "id": "98594d5f-0e6d-46bd-9544-c5f22113025d",
+                        "id": "ff910b62-d166-43d2-86e8-1197d947bed1",
                         "ord": "a2"
                       },
                       {
@@ -1664,23 +1792,23 @@
                               "href": "/book"
                             },
                             "children": ["Book a trial lesson"],
-                            "id": "cf62ba48-01e0-4828-914c-51d25501c4ea",
+                            "id": "fef2ab1c-cfee-4b81-882b-03f9efa4cc08",
                             "ord": "a0"
                           }
                         ],
-                        "id": "2cacb89a-5a85-43da-9f2f-f39540c8aa28",
+                        "id": "2e33005f-36ae-4138-9f64-1c940f105526",
                         "ord": "a3"
                       }
                     ],
-                    "id": "0739c79c-ca7c-44be-a2f6-560bdbb8193d",
+                    "id": "1829f1b6-ebed-4a6c-90eb-56492af90fe5",
                     "ord": "a1"
                   }
                 ],
-                "id": "89ce482d-a89b-42ed-8c41-cd0029dbcaa3",
+                "id": "51261e4a-f4ec-47ce-bfe0-20dce300a816",
                 "ord": "a0"
               }
             ],
-            "id": "ac68e8c8-0839-4e5c-aa6f-41f521b163d3",
+            "id": "c926de4f-7426-4102-971f-c69f43ee069b",
             "ord": "a0"
           },
           {
@@ -1698,7 +1826,7 @@
                     "tag": "h2",
                     "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
                     "children": ["What we believe"],
-                    "id": "122df181-b379-4c95-9f67-aa2c9e782859",
+                    "id": "a1db4566-2946-40dc-9d52-c835b1d952d6",
                     "ord": "a0"
                   },
                   {
@@ -1716,7 +1844,7 @@
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
                             "children": ["Everyone is musical"],
-                            "id": "cec92338-4182-4d6a-87ec-7108859d24b4",
+                            "id": "8fe893bd-1e60-44a6-a99c-d5aa4e1ae45d",
                             "ord": "a0"
                           },
                           {
@@ -1726,11 +1854,11 @@
                             "children": [
                               "There’s no such thing as “not musical” — only music not yet discovered. We teach with that faith in every student."
                             ],
-                            "id": "189a345c-f52a-4d86-a77a-46796894688f",
+                            "id": "58554e4f-43a4-455b-aed0-b212b8cb100a",
                             "ord": "a1"
                           }
                         ],
-                        "id": "5f0a1d95-26fd-4b6c-ad8b-a2e25bc7ba08",
+                        "id": "e573c23d-04c2-4512-b649-9640f1704847",
                         "ord": "a0"
                       },
                       {
@@ -1743,7 +1871,7 @@
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
                             "children": ["Encouragement first"],
-                            "id": "a5a53b6b-533f-4326-b5a7-c1c5f2229e70",
+                            "id": "e2aac794-b7b0-49f4-9e52-157dd12518de",
                             "ord": "a0"
                           },
                           {
@@ -1753,11 +1881,11 @@
                             "children": [
                               "We lead with warmth and small wins. Confidence is what keeps people playing, so we build it from the very first lesson."
                             ],
-                            "id": "69c2c1a2-24c8-454d-8f90-33b3a05aca27",
+                            "id": "3f7de87d-59b0-4d27-b28d-5b9c91fe60da",
                             "ord": "a1"
                           }
                         ],
-                        "id": "6d4aea4e-db10-4a6f-b378-443596415a48",
+                        "id": "02151783-d155-4bd1-8c70-0dc7e75aafba",
                         "ord": "a1"
                       },
                       {
@@ -1770,7 +1898,7 @@
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
                             "children": ["A place to belong"],
-                            "id": "a3ad38fd-87a1-4518-bdec-aeeb3047882c",
+                            "id": "ed0da626-db02-4081-8024-b132a18f08d7",
                             "ord": "a0"
                           },
                           {
@@ -1780,23 +1908,23 @@
                             "children": [
                               "Recitals, group classes and a friendly front desk make Crescendo a community, not just a place you take lessons."
                             ],
-                            "id": "af52b8b0-c6fa-4be8-9122-879d0a2c33a1",
+                            "id": "ae5c1d63-c64c-42f9-8853-71f208faf55d",
                             "ord": "a1"
                           }
                         ],
-                        "id": "a09b3421-4a9d-4a2e-b44f-76cafb4edb44",
+                        "id": "f6f4ffdd-f80c-4900-acf4-8c263d141e61",
                         "ord": "a2"
                       }
                     ],
-                    "id": "6b97afe2-ac1c-4224-91ae-ce7613c8e1d6",
+                    "id": "2fa7f63f-d784-460a-8cf9-2014c865ba87",
                     "ord": "a1"
                   }
                 ],
-                "id": "20c6d7bc-2aec-4f0c-ac27-128f49cf6535",
+                "id": "4aa66dbf-e0ac-41b9-b170-f04d849803a8",
                 "ord": "a0"
               }
             ],
-            "id": "ebba0e8d-7768-4f16-b149-dfdb0ad5ed69",
+            "id": "61c855bb-09ed-44c4-ba71-8ce8834f7680",
             "ord": "a1"
           }
         ]
@@ -1813,8 +1941,294 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "070dc232-2f44-48b4-bb4d-4d476c4fb495",
+        "id": "8f2755f3-2436-4715-aa27-029f54e804b7",
         "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-8",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h1",
+                        "class": "text-4xl font-bold tracking-tight text-base-content @3xl:text-5xl",
+                        "children": ["Get in touch"],
+                        "id": "e3620130-f9bc-4a7a-8bd5-7be4fafa9e8a",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Questions before you book? Send a note and Crescendo Music School will get back to you — usually the same day."
+                        ],
+                        "id": "2a409b89-ce91-43f3-a666-5982f4e7caae",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "fbf8f787-e7ca-4b60-9345-e0315aff8e69",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-1",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "span",
+                        "class": "text-base font-medium text-base-content",
+                        "children": ["Call us"],
+                        "id": "47095ca5-5690-41ef-a398-04563db0cbc9",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "text-lg font-semibold text-base-content underline underline-offset-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "children": ["(555) 123-4567"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "site.identity.phone"
+                            },
+                            "id": "befd5578-3920-4577-ad9c-1f1f33835465",
+                            "ord": "a0"
+                          }
+                        ],
+                        "data": {
+                          "kind": "value",
+                          "ref": "site.identity.phoneHref",
+                          "attr": "href"
+                        },
+                        "id": "a110338c-34f6-48e1-a652-679fb2ad7854",
+                        "ord": "a1"
+                      }
+                    ],
+                    "data": {
+                      "kind": "visible",
+                      "ref": "site.identity.phone"
+                    },
+                    "id": "19b129e0-10c1-419d-8b59-d5b294855680",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-1",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "span",
+                        "class": "text-base font-medium text-base-content",
+                        "children": ["Email us"],
+                        "id": "eebf2f23-c096-4d08-a055-aa46551529be",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "text-lg font-semibold text-base-content underline underline-offset-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "children": ["hello@yourbusiness.com"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "site.identity.email"
+                            },
+                            "id": "3c0b5404-2233-47c4-9094-ee4822af4bdf",
+                            "ord": "a0"
+                          }
+                        ],
+                        "data": {
+                          "kind": "value",
+                          "ref": "site.identity.emailHref",
+                          "attr": "href"
+                        },
+                        "id": "e0d44992-292e-4fa0-afcd-45988581c03b",
+                        "ord": "a1"
+                      }
+                    ],
+                    "data": {
+                      "kind": "visible",
+                      "ref": "site.identity.email"
+                    },
+                    "id": "121dd8b0-57e9-402d-b9fe-4c09531ff73a",
+                    "ord": "a2"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "form",
+                    "class": "flex w-full max-w-xl flex-col gap-5",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "label",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-base font-medium text-base-content",
+                            "children": ["Your name"],
+                            "id": "c1ecfc60-1a47-40e6-9ffd-4318e36f41ab",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "input",
+                            "class": "input input-bordered w-full",
+                            "attrs": {
+                              "type": "text",
+                              "name": "name",
+                              "required": true
+                            },
+                            "id": "3bd87f6a-1427-4335-ba0e-e77766ec3844",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "eda3158b-a4b8-44e4-81c7-77200f574517",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "label",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-base font-medium text-base-content",
+                            "children": ["Email address"],
+                            "id": "315024fb-bcb4-47bc-bc6d-a1ac9402760a",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "input",
+                            "class": "input input-bordered w-full",
+                            "attrs": {
+                              "type": "email",
+                              "name": "email",
+                              "required": true
+                            },
+                            "id": "61c7e9b1-e47a-4658-8659-515da9edeb76",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "c27f2370-3775-460d-acd3-59f669f3a6b5",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "label",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-base font-medium text-base-content",
+                            "children": ["Phone number"],
+                            "id": "3d4cd2db-3455-4919-8c20-26f87924fdbf",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "input",
+                            "class": "input input-bordered w-full",
+                            "attrs": {
+                              "type": "tel",
+                              "name": "phone"
+                            },
+                            "id": "bd5abcf5-c6a7-42f2-a9d9-2ebecf26f86c",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "684724ce-d66e-4582-a02f-4543585dca9f",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "label",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-base font-medium text-base-content",
+                            "children": ["How can we help?"],
+                            "id": "54ae4eae-7382-4297-90c0-623a3003f1bc",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "textarea",
+                            "class": "textarea textarea-bordered min-h-32 w-full",
+                            "attrs": {
+                              "name": "message"
+                            },
+                            "id": "9aff5d48-7015-4109-a127-2a13528d06bd",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "9f776b97-4836-494a-81df-295b493eab2c",
+                        "ord": "a3"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-wrap items-center gap-3",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "button",
+                            "class": "btn btn-primary btn-lg",
+                            "attrs": {
+                              "type": "submit"
+                            },
+                            "children": ["Send my request"],
+                            "id": "785b4001-e3bd-4796-bef1-9e3f01af1935",
+                            "ord": "a0"
+                          }
+                        ],
+                        "id": "f2484f8c-bb3e-49b0-8528-6673c935021a",
+                        "ord": "a4"
+                      }
+                    ],
+                    "behavior": {
+                      "type": "form"
+                    },
+                    "data": {
+                      "kind": "action",
+                      "ref": "submit"
+                    },
+                    "id": "39750973-d224-408a-b75b-a0fc42c5ffcc",
+                    "ord": "a3"
+                  }
+                ],
+                "id": "948976ab-9234-4661-8182-612ef9f31973",
+                "ord": "a0"
+              }
+            ],
+            "id": "92370e36-cc19-43f5-92fc-1d6b6017c219",
+            "ord": "a0"
+          },
           {
             "kind": "element",
             "tag": "section",
@@ -1835,40 +2249,21 @@
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
                         "children": ["Visit the school"],
-                        "id": "d6413d55-a59a-44fb-9d9d-401b5bce94ca",
+                        "id": "2dbddf18-8a7c-401a-b2c2-6612652ebdc3",
                         "ord": "a0"
                       },
                       {
                         "kind": "element",
-                        "tag": "div",
-                        "class": "flex flex-col gap-1",
+                        "tag": "address",
+                        "class": "text-lg leading-relaxed whitespace-pre-line not-italic text-base-content",
                         "children": [
-                          {
-                            "kind": "element",
-                            "tag": "p",
-                            "class": "text-lg leading-relaxed text-base-content",
-                            "children": ["Crescendo Music School"],
-                            "id": "5077ce4c-64a3-4794-9afe-2a800d142237",
-                            "ord": "a0"
-                          },
-                          {
-                            "kind": "element",
-                            "tag": "p",
-                            "class": "text-lg leading-relaxed text-base-content",
-                            "children": ["215 Maple Row"],
-                            "id": "3b8c6356-74cf-40f2-92fe-62d9e819bd30",
-                            "ord": "a1"
-                          },
-                          {
-                            "kind": "element",
-                            "tag": "p",
-                            "class": "text-lg leading-relaxed text-base-content",
-                            "children": ["Suite 3 · Asheville, NC 28801"],
-                            "id": "24dddcf6-74ae-4ec8-96f6-7c2027e46066",
-                            "ord": "a2"
-                          }
+                          "Crescendo Music School\n215 Maple Row\nSuite 3 · Asheville, NC 28801"
                         ],
-                        "id": "192080dd-baad-4bf2-aeec-5814f48bdc40",
+                        "data": {
+                          "kind": "value",
+                          "ref": "site.identity.address"
+                        },
+                        "id": "e32b70f7-40fb-4f28-94d0-d12303023414",
                         "ord": "a1"
                       },
                       {
@@ -1886,7 +2281,7 @@
                                 "tag": "span",
                                 "class": "font-medium text-base-content",
                                 "children": ["Monday – Thursday"],
-                                "id": "2f433328-17b3-4aa6-8447-f2cbf9c6096e",
+                                "id": "c86c38ae-04ee-4ba1-adb8-e492e2620334",
                                 "ord": "a0"
                               },
                               {
@@ -1894,11 +2289,11 @@
                                 "tag": "span",
                                 "class": "text-base-content",
                                 "children": ["3:00 – 8:00"],
-                                "id": "6fa0e82c-2c0d-42ec-97d5-4968b4c9c323",
+                                "id": "68fd9549-82b7-419a-91fa-c4eb29925fd0",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "e7ffe680-1451-4eca-9a6f-6fb79ecbd31a",
+                            "id": "f1013ba8-73fd-44db-b06c-f504f2c3114d",
                             "ord": "a0"
                           },
                           {
@@ -1911,7 +2306,7 @@
                                 "tag": "span",
                                 "class": "font-medium text-base-content",
                                 "children": ["Friday"],
-                                "id": "2d8d3e94-051a-46a9-97e5-dc1e96a75b1a",
+                                "id": "288c2016-75db-469c-80b6-38bc14de4992",
                                 "ord": "a0"
                               },
                               {
@@ -1919,11 +2314,11 @@
                                 "tag": "span",
                                 "class": "text-base-content",
                                 "children": ["3:00 – 8:00"],
-                                "id": "dce8e984-fda3-47e5-aa90-8055ca7ef113",
+                                "id": "ef5e2b9b-7026-4d65-aa56-e69530fb14d4",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "6219ed3e-2e24-4237-b75d-ca79db48ecbc",
+                            "id": "ce5c6254-1a50-41e0-923b-7091bebfc5a8",
                             "ord": "a1"
                           },
                           {
@@ -1936,7 +2331,7 @@
                                 "tag": "span",
                                 "class": "font-medium text-base-content",
                                 "children": ["Saturday"],
-                                "id": "cf1f07c5-723b-44fb-9d7e-fd362278ce4d",
+                                "id": "a6d01786-b1cd-4d93-9fc6-de4c9ac73a5c",
                                 "ord": "a0"
                               },
                               {
@@ -1944,11 +2339,11 @@
                                 "tag": "span",
                                 "class": "text-base-content",
                                 "children": ["9:00 – 2:00"],
-                                "id": "9f1cc22d-1a19-438a-bfbe-ada19ebacdc2",
+                                "id": "c088a644-52a8-4379-9e2a-f16c381909bb",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "e701129f-dbd0-4cc5-b9e8-0bf3c1057e65",
+                            "id": "702f231d-08ad-481b-8c20-c086a78d0343",
                             "ord": "a2"
                           },
                           {
@@ -1961,7 +2356,7 @@
                                 "tag": "span",
                                 "class": "font-medium text-base-content",
                                 "children": ["Sunday"],
-                                "id": "a594e618-d046-4d99-9a71-8c3bc66653a5",
+                                "id": "3acd6c43-ac12-4584-9c85-aeb774adee63",
                                 "ord": "a0"
                               },
                               {
@@ -1969,19 +2364,19 @@
                                 "tag": "span",
                                 "class": "text-base-content",
                                 "children": ["10:00 – 2:00"],
-                                "id": "7548da26-da06-4bd9-acb1-fdb4b107ba9a",
+                                "id": "284f806d-1102-4839-9148-8a57e8af230f",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "b75b7bd9-0b9f-434c-bb5b-de1bd113d893",
+                            "id": "c7085be5-ef82-41b1-a606-17e022e17b55",
                             "ord": "a3"
                           }
                         ],
-                        "id": "2867edb0-7402-44e4-9710-ad89209b684f",
+                        "id": "6e80011e-fc77-4319-ac41-73d8030c6b22",
                         "ord": "a2"
                       }
                     ],
-                    "id": "6f0031e2-65f7-4813-ae12-8f4f6b291c1a",
+                    "id": "427a3178-eb4a-4a32-86e0-0fdeb0942925",
                     "ord": "a0"
                   },
                   {
@@ -1994,16 +2389,16 @@
                       "zoom": 15,
                       "ratio": "classic"
                     },
-                    "id": "fc02d88c-80f8-4f77-bf5d-cea590611e69",
+                    "id": "76efb247-bc80-4567-a256-8c72e0411c3a",
                     "ord": "a1"
                   }
                 ],
-                "id": "0d600e6c-11e4-4909-b0fa-d2f59a7214e9",
+                "id": "66c8a21b-6943-48aa-b5e5-b7a89c2f8b57",
                 "ord": "a0"
               }
             ],
-            "id": "064e8e24-e1e1-413b-bc4c-95666693c37b",
-            "ord": "a0"
+            "id": "84d938b2-4c18-42f9-921f-7ac06e9ca1e0",
+            "ord": "a1"
           },
           {
             "kind": "element",
@@ -2020,7 +2415,7 @@
                     "tag": "h2",
                     "class": "text-3xl font-bold tracking-tight @3xl:text-4xl",
                     "children": ["Rather book than call?"],
-                    "id": "72d4d117-2a2e-4a58-a836-780da22f3542",
+                    "id": "19df8248-6aac-45ab-b569-6cd5193955f4",
                     "ord": "a0"
                   },
                   {
@@ -2030,7 +2425,7 @@
                     "children": [
                       "See live availability and reserve your free trial lesson online — no phone tag."
                     ],
-                    "id": "1bad3499-f858-45af-9f78-d001bcc1b22e",
+                    "id": "8748da7a-d72e-4275-960c-4130ea67b622",
                     "ord": "a1"
                   },
                   {
@@ -2041,16 +2436,16 @@
                       "href": "/book"
                     },
                     "children": ["Book a trial lesson"],
-                    "id": "fe3e7d6f-0ca1-4ce0-b7d8-47c7ae3324f0",
+                    "id": "b7e195a6-4dbd-48ff-8f46-516fa0a05928",
                     "ord": "a2"
                   }
                 ],
-                "id": "c079f6ff-fef4-4cc6-bd00-b3787747225c",
+                "id": "173f472e-d202-4bcc-9f13-3b0427ef6de0",
                 "ord": "a0"
               }
             ],
-            "id": "ea07c5eb-6071-4f13-8fa9-966ca19c2943",
-            "ord": "a1"
+            "id": "6f96f5f6-7b5c-4d11-b330-fa34018a62b7",
+            "ord": "a2"
           }
         ]
       }

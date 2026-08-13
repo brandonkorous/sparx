@@ -11,7 +11,7 @@ import assets from './assets.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-nail-luxe',
-  version: '1.1.0',
+  version: '1.2.0',
   name: 'sparx — Nail Studio (Luxe)',
   summary:
     'A quiet, upscale nail-studio site — a warm champagne palette, a soft-gold primary and a Cormorant Garamond serif over Inter, with calm, spacious photography. Installs a working booking flow: a real service menu (luxury and gel manicures, spa pedicures, gel extensions, nail art), three technicians you book by name with their own hours, two pedicure chairs, and a small deposit on extensions. Ships as "Gilded", a calm, considered studio.',

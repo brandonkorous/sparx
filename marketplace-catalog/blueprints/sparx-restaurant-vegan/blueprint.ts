@@ -11,7 +11,7 @@ import assets from './assets.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-restaurant-vegan',
-  version: '1.1.0',
+  version: '1.2.0',
   name: 'sparx — Plant Kitchen',
   summary:
     'A complete, working site for a modern plant-based restaurant: a real vegetable-forward menu, and a live table-reservations flow (tables as bookable resources, party-size reservation services, opening hours, a relaxed no-deposit policy, walk-ins welcome) on the Reserve page. Bright plant-kitchen theme — green-tinted cream, vibrant leaf-green, a warm terracotta accent. Pages: Home, Menu, Reserve, About, Visit. Shipped as Sprout & Vine.',

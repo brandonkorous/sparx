@@ -15,7 +15,7 @@ import emails from './emails.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-retail-stationery-playful',
-  version: '1.3.0',
+  version: '1.4.0',
   name: 'sparx — Stationery & Gifts (Playful)',
   summary:
     'A complete, working shop for a bright, playful stationery & gifts store: a real catalogue of colour-pop notebooks, a gel-pen set, sticker packs, an enamel pin, a desk calendar, greeting cards, washi tape, a sticky-note cube and a fun gift bundle, with categories, collections, a bespoke PDP and a loud, merchandised home page. Joyful pop theme — soft lemon ground, a bubblegum-pink primary, a grape-purple accent, a rounded Fredoka display. Shipped as Pencil Club.',

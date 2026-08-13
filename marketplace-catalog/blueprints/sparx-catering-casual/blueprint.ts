@@ -11,7 +11,7 @@ import assets from './assets.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-catering-casual',
-  version: '1.1.0',
+  version: '1.2.0',
   name: 'sparx — Catering (Casual BBQ)',
   summary:
     'A bold, smoky catering site for a casual BBQ & food-truck outfit — a kraft ground, a deep-rust primary and an ember-amber accent under a sturdy condensed display. Installs online booking for tastings and event consults: a real menu (free consults, BBQ and taco-bar tastings, corporate and game-day packages), three coordinators you book by name with their own hours, and a tasting-deposit policy. Ships as "Smoke & Barrel BBQ Catering".',

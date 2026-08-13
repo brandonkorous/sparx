@@ -22,7 +22,7 @@
                   "props": {
                     "show": "both"
                   },
-                  "id": "f7d93cfb-c906-4be9-9fdc-166cc0b779f2",
+                  "id": "0c49b66d-c233-4b1f-917e-0af5ba64af0b",
                   "ord": "a0"
                 },
                 {
@@ -43,7 +43,7 @@
                         "type": "link",
                         "label": "Product"
                       },
-                      "id": "68f0ba70-c8aa-4b4b-b533-e70a1adff96e",
+                      "id": "fd817885-9279-4f25-8ea3-fa105e9cde15",
                       "ord": "a0"
                     },
                     {
@@ -59,7 +59,7 @@
                         "type": "link",
                         "label": "Pricing"
                       },
-                      "id": "8a74848e-857d-430d-8214-f429e77fb0c8",
+                      "id": "80a5a871-c01d-45ed-b1b4-4d308cf2d85f",
                       "ord": "a1"
                     },
                     {
@@ -75,11 +75,11 @@
                         "type": "link",
                         "label": "Docs"
                       },
-                      "id": "71f6d2c4-0305-4861-a87c-b53bb81ac08e",
+                      "id": "1a226bb6-d452-4033-9bdc-275bea4473ab",
                       "ord": "a2"
                     }
                   ],
-                  "id": "76f57ad2-9210-4bac-a4d0-0162b17a118a",
+                  "id": "ab1701bd-cd09-4ca7-916c-597acb0d46ea",
                   "ord": "a1"
                 },
                 {
@@ -100,14 +100,14 @@
                         "type": "link",
                         "label": "Secondary link"
                       },
-                      "id": "7243993d-1544-4f11-935f-3781ed3112ee",
+                      "id": "894d5588-c262-49e1-834e-81714932d162",
                       "ord": "a0"
                     },
                     {
                       "kind": "host",
                       "component": "site.theme-toggle",
                       "class": "inline-flex items-center",
-                      "id": "ea0a6deb-68dc-41ba-b406-6e854c081ccf",
+                      "id": "877d21bd-730d-4c49-b43e-bd50cdb761f4",
                       "ord": "a1"
                     },
                     {
@@ -123,7 +123,7 @@
                         "type": "link",
                         "label": "Primary action"
                       },
-                      "id": "54fdda3d-4aaa-4499-b93f-51e4262cbc34",
+                      "id": "e0c3fc4f-bb7d-4855-ab1a-c410eab4239e",
                       "ord": "a2"
                     },
                     {
@@ -141,20 +141,20 @@
                           "props": {
                             "name": "menu"
                           },
-                          "id": "74bface8-2b53-465b-b655-6449e1921ab0",
+                          "id": "10e2d5c8-ba12-4b59-ae5c-484bc2ca71bf",
                           "ord": "a0"
                         }
                       ],
                       "part": "trigger",
-                      "id": "dc866f0e-7df5-46eb-8557-f6f582846cc0",
+                      "id": "e251056b-34ca-4796-a125-d8b6019f7813",
                       "ord": "a3"
                     }
                   ],
-                  "id": "bbdd5dfe-716a-4513-b51e-a9f7c0870f43",
+                  "id": "a3645ec7-fde2-48b1-a864-9b5d07d74a49",
                   "ord": "a2"
                 }
               ],
-              "id": "c8c459df-3764-4270-82cc-fb0846c572c9",
+              "id": "22e9cf30-2d43-493c-acde-818d6befb0f1",
               "ord": "a0"
             },
             {
@@ -178,7 +178,7 @@
                     "type": "link",
                     "label": "Product"
                   },
-                  "id": "e97887aa-419b-449d-8c6b-8a9febbe09b3",
+                  "id": "66585f6e-771c-48ab-905e-60cfbf721748",
                   "ord": "a0"
                 },
                 {
@@ -194,7 +194,7 @@
                     "type": "link",
                     "label": "Pricing"
                   },
-                  "id": "936f49e2-7c27-4c8e-b8eb-395ac5d5633c",
+                  "id": "bdf88ce4-d3c0-4162-a546-e800c717f560",
                   "ord": "a1"
                 },
                 {
@@ -210,7 +210,7 @@
                     "type": "link",
                     "label": "Docs"
                   },
-                  "id": "c04008e7-b0d7-4ca1-bc36-7b92399fd44e",
+                  "id": "03d099c6-0080-4569-80d8-2a0aa536b9c2",
                   "ord": "a2"
                 },
                 {
@@ -226,7 +226,7 @@
                     "type": "link",
                     "label": "Secondary link"
                   },
-                  "id": "6dc0729d-b347-4a38-9a75-8894a0ef9104",
+                  "id": "bc8c01fb-5343-479b-9a82-0cf69d2716d0",
                   "ord": "a3"
                 },
                 {
@@ -242,19 +242,19 @@
                     "type": "link",
                     "label": "Primary action"
                   },
-                  "id": "0f39b944-b208-4d03-abf8-7c7f6768275a",
+                  "id": "7cb728b2-47df-4b7b-bffb-d8fee92f18f7",
                   "ord": "a4"
                 }
               ],
               "part": "panel",
-              "id": "a8e37c7b-53c1-4aa6-9b39-f742d3440e8c",
+              "id": "536dcd7a-7e93-46e1-9058-8d2ec8ca33ff",
               "ord": "a1"
             }
           ],
           "behavior": {
             "type": "disclosure"
           },
-          "id": "160a49b8-c4dd-4723-aba7-ee3bb3a1b3fa",
+          "id": "ffcd8e77-f5a8-4330-8b08-70273cbb0fdf",
           "ord": "a0"
         },
         {
@@ -270,7 +270,7 @@
               "kind": "outlet"
             }
           ],
-          "id": "4ccb9db0-6aca-4332-8509-30f0a1e8a770",
+          "id": "d5936487-3a97-47e3-9a75-6d2c6ebd98db",
           "ord": "a1"
         },
         {
@@ -300,7 +300,7 @@
                           "props": {
                             "show": "both"
                           },
-                          "id": "0ea6f8a3-76f3-47be-987c-862723d5e7b2",
+                          "id": "148885b5-2915-400b-9cdd-f67ed6a78813",
                           "ord": "a0"
                         },
                         {
@@ -316,7 +316,7 @@
                           "attrs": {
                             "href": "/"
                           },
-                          "id": "765e370d-5cf7-4a1c-8062-86e760d8cb47",
+                          "id": "29b52f57-4aac-4888-a058-96fa70b17f92",
                           "ord": "a1"
                         },
                         {
@@ -324,11 +324,11 @@
                           "tag": "ul",
                           "class": "mt-2 flex items-center gap-5",
                           "children": [],
-                          "id": "6e2bd2b8-793b-4fd3-b2a9-e87f05919de2",
+                          "id": "cf306934-cc88-40ef-9ab6-939c28b14d71",
                           "ord": "a2"
                         }
                       ],
-                      "id": "d820da3f-0cae-4fff-9eaa-9a3c5783ef00",
+                      "id": "650a9f38-7d02-49e3-859c-247bfaf8134c",
                       "ord": "a0"
                     },
                     {
@@ -349,7 +349,7 @@
                           "attrs": {
                             "href": "/"
                           },
-                          "id": "ac29fc75-0bef-41ae-9d6e-604a7b856631",
+                          "id": "e1c73692-80ec-4de8-b23a-5580a6b9d770",
                           "ord": "a0"
                         },
                         {
@@ -374,11 +374,11 @@
                                     "type": "link",
                                     "label": "Features"
                                   },
-                                  "id": "5db105d1-08c5-4b5c-906f-a3bf536dbc3d",
+                                  "id": "95a62256-9c5e-4a1e-bd8c-2fe792ccfba4",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "f2769888-5d69-4e67-8652-e616f6ea4975",
+                              "id": "9c642594-4cbb-42c2-8579-61871206b83a",
                               "ord": "a0"
                             },
                             {
@@ -398,11 +398,11 @@
                                     "type": "link",
                                     "label": "Pricing"
                                   },
-                                  "id": "cc033396-30ba-4265-929e-a5d02158a15d",
+                                  "id": "1150088e-8a18-422e-a33b-b590fce644ff",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "75f83f9f-873a-442f-b742-a3ac79930ad9",
+                              "id": "0e0595ae-7d6e-4604-81b5-1d72ba3cd926",
                               "ord": "a1"
                             },
                             {
@@ -422,11 +422,11 @@
                                     "type": "link",
                                     "label": "Integrations"
                                   },
-                                  "id": "382d94dd-4c3e-4eec-8b87-8f160f1a8103",
+                                  "id": "dbcf8657-27bf-416f-8b55-d2ed5a56ecfc",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "0f96e0e3-e217-4c9b-aaab-473b9e96619a",
+                              "id": "0e82aa66-2af9-4582-8475-c6dc853f8436",
                               "ord": "a2"
                             },
                             {
@@ -446,19 +446,19 @@
                                     "type": "link",
                                     "label": "Changelog"
                                   },
-                                  "id": "668d98e9-500e-4bed-ac5b-a0107a96b975",
+                                  "id": "9b68d521-62b4-48a4-9de6-3ed40e115b52",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "8617736a-805d-4234-b346-67889f64efde",
+                              "id": "2809ed85-65ac-47b6-97a1-6d0411648e85",
                               "ord": "a3"
                             }
                           ],
-                          "id": "4bfee9fd-ffbb-42bc-9db9-8d269a73367f",
+                          "id": "8cc61863-4b03-4275-9fea-3a9d5eeef860",
                           "ord": "a1"
                         }
                       ],
-                      "id": "67774002-cd74-4500-b073-ad509b79786b",
+                      "id": "f38e47a1-cff5-417c-a999-d9261b33df63",
                       "ord": "a1"
                     },
                     {
@@ -471,11 +471,11 @@
                           "tag": "ul",
                           "class": "flex flex-col gap-2",
                           "children": [],
-                          "id": "a723e27f-170c-4aba-a314-9ac3c2251473",
+                          "id": "ea499e6c-a240-47ca-be51-432f929a5529",
                           "ord": "a0"
                         }
                       ],
-                      "id": "d0654c0f-6f83-4be9-a0f2-d4fbbfc61900",
+                      "id": "c38c3a40-4d18-4d23-944e-b817d8c004a9",
                       "ord": "a2"
                     },
                     {
@@ -499,23 +499,23 @@
                                   "props": {
                                     "heading": "Legal"
                                   },
-                                  "id": "49af84f2-3697-486b-80f6-aef0ce5ab5e3",
+                                  "id": "7ccee4e8-a7c7-4cb5-a54d-a21c33f14101",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "2df68817-d87e-4d89-9b5c-7afca373c3c7",
+                              "id": "f7857462-c17e-4694-91c8-b9e53b7cc6d0",
                               "ord": "a0"
                             }
                           ],
-                          "id": "92f32c59-ec5b-4cac-a167-87a2edb1d2c4",
+                          "id": "a675ba3e-88c5-47d4-891e-6cbc6829e244",
                           "ord": "a0"
                         }
                       ],
-                      "id": "4bd9e731-f73d-4e8c-951c-05577516efd8",
+                      "id": "0eb6bd4a-5cba-4591-b31f-5b1c4ca9d23b",
                       "ord": "a3"
                     }
                   ],
-                  "id": "36e22c84-3dff-4f56-933a-8783e8b681af",
+                  "id": "4dd328f4-fe69-4b35-a2c6-2532bb191c0d",
                   "ord": "a0"
                 },
                 {
@@ -538,11 +538,11 @@
                             "kind": "value",
                             "ref": "site.identity.name"
                           },
-                          "id": "a997a3cc-59eb-44d2-bbbb-57093021d210",
+                          "id": "5a747424-2d4b-4606-8811-d293623339bb",
                           "ord": "a0"
                         }
                       ],
-                      "id": "b8315e85-30bd-4a55-ac23-eb0e174daf9d",
+                      "id": "f4ccddca-1692-4216-8a37-6fca791afd56",
                       "ord": "a0"
                     },
                     {
@@ -550,23 +550,23 @@
                       "tag": "ul",
                       "class": "flex flex-wrap items-center gap-x-6 gap-y-2",
                       "children": [],
-                      "id": "c350e070-ec85-4eb5-99c0-9547d872cbc8",
+                      "id": "523e11b0-95b1-4bfc-8e87-724532cfae04",
                       "ord": "a1"
                     }
                   ],
-                  "id": "6fa15508-68e6-4825-adb4-e32f9ec5e72d",
+                  "id": "a8ab397f-133a-45d3-89f7-1f5aa2624935",
                   "ord": "a1"
                 }
               ],
-              "id": "4c0411aa-d5a2-46c8-af3a-fba8daf3f9f2",
+              "id": "8bdda73e-5401-414e-960c-bb573c21a482",
               "ord": "a0"
             }
           ],
-          "id": "3496126d-8f1f-43ce-b7c9-7651ffe844cb",
+          "id": "e2ccbcc1-0408-49af-99e9-7bc652162a40",
           "ord": "a2"
         }
       ],
-      "id": "5cf41a6b-9058-4b8e-8b8b-10f838dd5c6f"
+      "id": "84463738-2908-4ae2-9494-30b88aca333d"
     }
   },
   "pages": [
@@ -580,7 +580,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "17e91394-ca5a-4982-8a7d-053b8ada5dcf",
+        "id": "24dcb19f-e089-470a-a1b6-653bf6469bc6",
         "children": [
           {
             "kind": "element",
@@ -596,14 +596,14 @@
                   "alt": "A dark, wood-and-brass barbershop with leather chairs",
                   "loading": "eager"
                 },
-                "id": "c7d61027-cdd5-4e79-86c2-c4b8ece62b3c",
+                "id": "df44b058-bdea-4fa1-9bcf-4e69071eb164",
                 "ord": "a0"
               },
               {
                 "kind": "element",
                 "tag": "div",
                 "class": "absolute inset-0 bg-black/65",
-                "id": "96fd9ab5-a3fe-4aab-8214-9d15f12a2116",
+                "id": "ce1ea74f-7ece-411c-8055-0a8abc717f24",
                 "ord": "a1"
               },
               {
@@ -616,7 +616,7 @@
                     "tag": "p",
                     "class": "text-sm font-semibold uppercase tracking-widest",
                     "children": ["EST. 2014"],
-                    "id": "044220d2-93d5-4dce-8a8a-069fb6ec4fd5",
+                    "id": "24dac389-6909-4468-b000-37e61bc7f92d",
                     "ord": "a0"
                   },
                   {
@@ -624,7 +624,7 @@
                     "tag": "h1",
                     "class": "max-w-3xl text-4xl font-bold leading-tight tracking-tight @2xl:text-5xl @3xl:text-6xl",
                     "children": ["A proper barbershop. Nothing less."],
-                    "id": "3ad1d481-afa9-4bd2-bfec-ad24e8b7fcea",
+                    "id": "94628590-d682-471c-ac5b-5c4387ea9bf1",
                     "ord": "a1"
                   },
                   {
@@ -634,7 +634,7 @@
                     "children": [
                       "Sharp cuts, clean fades and a hot-towel shave that takes its time. Walk in, or book your chair and your barber."
                     ],
-                    "id": "0b5b8af4-332c-480a-9aee-3049e7a6713a",
+                    "id": "cb39f4e7-7407-426e-b543-775675525fe1",
                     "ord": "a2"
                   },
                   {
@@ -650,7 +650,7 @@
                           "href": "/book"
                         },
                         "children": ["Book a chair"],
-                        "id": "e2dcc9ce-76b2-4f20-ba25-029fc0d048d4",
+                        "id": "9f227df5-bcc2-4215-ae0e-f2c96394f267",
                         "ord": "a0"
                       },
                       {
@@ -661,19 +661,19 @@
                           "href": "/book"
                         },
                         "children": ["See the menu"],
-                        "id": "43279b9c-bd93-4894-a569-cca36531b186",
+                        "id": "b1496194-7774-455e-9d77-255868259241",
                         "ord": "a1"
                       }
                     ],
-                    "id": "b9f37d31-9d1b-4200-8064-3639f84098bf",
+                    "id": "0dca2386-3291-4c4e-bfe0-0ffc3007daef",
                     "ord": "a3"
                   }
                 ],
-                "id": "2fc19a52-f5f0-481f-b17d-c26fd0984dca",
+                "id": "d9051933-4cc8-48be-8664-624de7965816",
                 "ord": "a2"
               }
             ],
-            "id": "2c0a3b12-8aeb-4482-828f-d05570ceceb5",
+            "id": "8a8305e2-2703-4086-974a-14820808abbf",
             "ord": "a0"
           },
           {
@@ -701,7 +701,7 @@
                             "tag": "h2",
                             "class": "text-xl font-semibold text-base-content",
                             "children": ["Walk-ins welcome"],
-                            "id": "9ea30a27-ccd7-468c-badd-fb392d624a87",
+                            "id": "8249b952-4a8c-418b-9ce2-48f23e9a2d05",
                             "ord": "a0"
                           },
                           {
@@ -711,11 +711,11 @@
                             "children": [
                               "Got a free hour? Come in. If a chair’s open we’ll take you — no appointment needed, no attitude at the door."
                             ],
-                            "id": "fe0d392c-3796-44b4-a892-b5dcdd09ead1",
+                            "id": "e0e820ff-043c-40dd-acec-96c7131af8b0",
                             "ord": "a1"
                           }
                         ],
-                        "id": "b8fef6d4-fbc2-4312-834b-4f8800978134",
+                        "id": "b088956a-b60f-4173-8791-db62fc784eb8",
                         "ord": "a0"
                       },
                       {
@@ -728,7 +728,7 @@
                             "tag": "h2",
                             "class": "text-xl font-semibold text-base-content",
                             "children": ["Hot-towel finish"],
-                            "id": "24305ffe-a334-4a9f-83d6-7231d4d780ae",
+                            "id": "69199b5b-3b11-4564-b870-e49ad1e2de98",
                             "ord": "a0"
                           },
                           {
@@ -738,11 +738,11 @@
                             "children": [
                               "Every cut ends the way it should: a hot towel, a clean neckline and a face that feels fresh, not just trimmed."
                             ],
-                            "id": "0bd5dd9d-3eca-4780-a79c-bbad0d314891",
+                            "id": "ffb57bea-9224-4df5-9307-9dd11e6b1667",
                             "ord": "a1"
                           }
                         ],
-                        "id": "e87b005e-2c26-4d9c-8d54-f982b2c47e2f",
+                        "id": "90356def-27d2-4a18-b300-02cac8d5d1b5",
                         "ord": "a1"
                       },
                       {
@@ -755,7 +755,7 @@
                             "tag": "h2",
                             "class": "text-xl font-semibold text-base-content",
                             "children": ["The straight razor"],
-                            "id": "63a880be-6d83-4664-8405-c0896d3fe412",
+                            "id": "db29e634-037b-4e6c-9b4c-6475d06e1919",
                             "ord": "a0"
                           },
                           {
@@ -765,23 +765,23 @@
                             "children": [
                               "We still shave with a blade and a brush. Hot lather, steady hands, and the closest shave you’ll get anywhere."
                             ],
-                            "id": "037f26f3-c971-48c7-b1dc-b0078734b186",
+                            "id": "bf8d9159-ea51-488f-9864-5616be2fda1e",
                             "ord": "a1"
                           }
                         ],
-                        "id": "1fc76174-bb8f-40d8-825f-7739f8d8b824",
+                        "id": "68bbd49f-f744-4188-8a9f-27cd58e303f9",
                         "ord": "a2"
                       }
                     ],
-                    "id": "9e880f89-9d95-4e16-9dc9-17cdebb327eb",
+                    "id": "d9d9af8d-9939-40e2-8db7-b5b45a77e99f",
                     "ord": "a0"
                   }
                 ],
-                "id": "269e5b28-7ddb-43d9-a87c-e5c4105c09a3",
+                "id": "2d62185d-ffc4-4c00-9b46-f3adb1b40525",
                 "ord": "a0"
               }
             ],
-            "id": "b2a2444f-c67c-468d-a2cf-40a4290d82e6",
+            "id": "9c17f897-d1cc-4bd4-a67f-fe06c152ece2",
             "ord": "a1"
           },
           {
@@ -804,7 +804,7 @@
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
                         "children": ["The menu"],
-                        "id": "b25259a7-a1d9-432d-8536-32b5788cb61d",
+                        "id": "1eec6857-1f72-4881-90c4-ef1a4db93453",
                         "ord": "a0"
                       },
                       {
@@ -814,11 +814,11 @@
                         "children": [
                           "What we do most, with real prices. Live times and every service are on the booking page."
                         ],
-                        "id": "e4646f48-ccff-47f2-a472-04c51ca11d46",
+                        "id": "4f60da07-ef91-4937-8fe6-cc76cf587d7f",
                         "ord": "a1"
                       }
                     ],
-                    "id": "701efaa1-c93b-467e-80aa-2291ec6d4179",
+                    "id": "e49bd284-471b-430b-a116-32abd97378c8",
                     "ord": "a0"
                   },
                   {
@@ -844,7 +844,7 @@
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
                                 "children": ["Haircut"],
-                                "id": "8a029c8d-bde7-4afa-95ab-fc4218156d14",
+                                "id": "e5a937cb-c16f-4b10-8d67-85757d3dd8f9",
                                 "ord": "a0"
                               },
                               {
@@ -852,11 +852,11 @@
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-bold text-base-content",
                                 "children": ["$35"],
-                                "id": "4ca4e9e4-88c5-4d51-b836-2afb29048e5d",
+                                "id": "a2fbc534-07d1-4862-85af-2f1c30d5a0b0",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "8a65a7bb-b2dd-4f6c-9324-89e01a70659d",
+                            "id": "41e64ea0-70c9-48b8-b12a-be9f9ec4bb5c",
                             "ord": "a0"
                           },
                           {
@@ -864,7 +864,7 @@
                             "tag": "p",
                             "class": "text-sm font-medium uppercase tracking-wide text-secondary",
                             "children": ["30 min"],
-                            "id": "f39e6ab1-de33-45b9-a067-6f92c8206805",
+                            "id": "11c725da-75d6-4d0f-97f1-f444f49105d1",
                             "ord": "a1"
                           },
                           {
@@ -872,11 +872,11 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": ["Scissor or clipper, washed and finished."],
-                            "id": "59aef1d8-fc75-40ba-a514-8c1c98b25bfc",
+                            "id": "f00391f7-e236-4827-8260-32c117585a1a",
                             "ord": "a2"
                           }
                         ],
-                        "id": "c03473f1-8118-4726-8d48-9cc314165371",
+                        "id": "82677425-fa43-4ca3-8b9a-f4f2cf05a733",
                         "ord": "a0"
                       },
                       {
@@ -897,7 +897,7 @@
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
                                 "children": ["Skin fade"],
-                                "id": "4a22f845-0fcf-44f2-8bad-817cf98856d1",
+                                "id": "b502f706-430a-4364-aaf7-502e277b44ee",
                                 "ord": "a0"
                               },
                               {
@@ -905,11 +905,11 @@
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-bold text-base-content",
                                 "children": ["$45"],
-                                "id": "16d7316a-f5f0-4d73-8e88-40820bf95013",
+                                "id": "fb706e35-0c07-4e20-bf12-d85fcd941dbe",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "e7364ff5-65c9-488b-bad3-aff1c15c9323",
+                            "id": "96437e3c-31f9-4a9d-bac9-75b235f63c57",
                             "ord": "a0"
                           },
                           {
@@ -917,7 +917,7 @@
                             "tag": "p",
                             "class": "text-sm font-medium uppercase tracking-wide text-secondary",
                             "children": ["45 min"],
-                            "id": "a1452074-19e1-444b-a913-a5500a5c8b77",
+                            "id": "cc0928f1-9d2c-4245-8fe2-2a0186ce8f3f",
                             "ord": "a1"
                           },
                           {
@@ -925,11 +925,11 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": ["Faded to the skin with a sharp line-up."],
-                            "id": "7c035bce-20ed-4afe-8086-0cb819f7d65b",
+                            "id": "647636e3-8ccd-4569-a6b1-1f9cad9b3e7d",
                             "ord": "a2"
                           }
                         ],
-                        "id": "6fb1074a-38c4-4506-a784-66119adb4fb1",
+                        "id": "1005db90-888e-4e01-ade8-5ea7cdb3e54d",
                         "ord": "a1"
                       },
                       {
@@ -950,7 +950,7 @@
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
                                 "children": ["Hot-towel straight-razor shave"],
-                                "id": "77e3c01f-b491-4b0d-b53b-66b25fc2f196",
+                                "id": "32538078-749f-4c4b-ae79-d79b5b63f186",
                                 "ord": "a0"
                               },
                               {
@@ -958,11 +958,11 @@
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-bold text-base-content",
                                 "children": ["$45"],
-                                "id": "bdc3c4a0-0661-4ef3-bdf5-0719c83ea7e4",
+                                "id": "ab86b283-1085-473a-ba2c-d63340ceaa7c",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "0e2e24b3-6a09-4648-b1ba-c1ba6dc44550",
+                            "id": "256cc2ff-21fb-4352-bf30-218f7c9b0397",
                             "ord": "a0"
                           },
                           {
@@ -970,7 +970,7 @@
                             "tag": "p",
                             "class": "text-sm font-medium uppercase tracking-wide text-secondary",
                             "children": ["45 min"],
-                            "id": "8ab7e4d4-b713-40c0-8616-4056fa3a33ba",
+                            "id": "7fc04bce-2274-4dc9-814d-fd9e5191f0df",
                             "ord": "a1"
                           },
                           {
@@ -978,11 +978,11 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": ["Hot towels, lather and a straight razor."],
-                            "id": "15603136-c7e7-412f-bb68-d9d289a934ba",
+                            "id": "48944e7f-6de7-4205-acbb-3fbd43a55161",
                             "ord": "a2"
                           }
                         ],
-                        "id": "229df1e0-778d-44c9-8447-bd1c497fea2e",
+                        "id": "52b5e5e8-2fc1-4d9e-8ca5-697742d6b7f3",
                         "ord": "a2"
                       },
                       {
@@ -1003,7 +1003,7 @@
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
                                 "children": ["Cut + beard combo"],
-                                "id": "d6d7e404-989c-47ec-9085-33923b74699b",
+                                "id": "a7fac644-0f51-4f09-aab9-682befcfddb2",
                                 "ord": "a0"
                               },
                               {
@@ -1011,11 +1011,11 @@
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-bold text-base-content",
                                 "children": ["$60"],
-                                "id": "754c205d-e3c7-4a80-9a1b-b14e264be453",
+                                "id": "67df55fd-e159-413f-a505-c4d28e2f212f",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "482e6d3e-a587-4da8-b916-cdd70c3e8026",
+                            "id": "ba66da00-278a-4e49-9dd8-a366fa2a6245",
                             "ord": "a0"
                           },
                           {
@@ -1023,7 +1023,7 @@
                             "tag": "p",
                             "class": "text-sm font-medium uppercase tracking-wide text-secondary",
                             "children": ["1 hr"],
-                            "id": "dbf4eaaf-0857-41c5-87f1-a8524b23dd1e",
+                            "id": "7f94bc51-ca84-464d-b7f6-320fc9241b47",
                             "ord": "a1"
                           },
                           {
@@ -1031,15 +1031,15 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": ["Full cut and a shaped beard, one sitting."],
-                            "id": "9eb89e4c-40fd-46e8-b5f6-ece4b2e9b299",
+                            "id": "e4ca39f4-afea-4671-b741-1e9b443b31d2",
                             "ord": "a2"
                           }
                         ],
-                        "id": "da3ab50e-2213-4aa1-a297-d551665500bd",
+                        "id": "6a079c01-58dc-4f33-969d-16ae42b0a390",
                         "ord": "a3"
                       }
                     ],
-                    "id": "bb5faca7-7b2d-4ae7-a997-038cb159f072",
+                    "id": "a8d82232-a55c-40c2-9e9e-afcd6e7e913f",
                     "ord": "a1"
                   },
                   {
@@ -1055,19 +1055,19 @@
                           "href": "/book"
                         },
                         "children": ["See everything & book"],
-                        "id": "414546e0-7e41-4efb-9008-93441dc74154",
+                        "id": "8b6d5f2d-0d2c-4439-9360-1eae921bc50c",
                         "ord": "a0"
                       }
                     ],
-                    "id": "321eb78a-5db9-4585-afd5-821ff6566928",
+                    "id": "ade3d8b1-bf87-4c14-b731-fcdeb11e1d2d",
                     "ord": "a2"
                   }
                 ],
-                "id": "7efa2603-55d1-427c-b68b-9a9323a54b76",
+                "id": "6f18d735-733e-4e1c-b3df-c550d8c33c15",
                 "ord": "a0"
               }
             ],
-            "id": "d4a2f424-7922-43ef-8509-060bb6832d67",
+            "id": "1ade4f7d-9ffa-4fd3-b297-12e887ac41bc",
             "ord": "a2"
           },
           {
@@ -1089,7 +1089,7 @@
                       "alt": "A barber station with a straight razor and hot towels",
                       "loading": "lazy"
                     },
-                    "id": "e75709b6-040d-47a4-947d-e61721927dfe",
+                    "id": "c92ad3ca-79b5-47f7-b82c-23b85d0de548",
                     "ord": "a0"
                   },
                   {
@@ -1102,7 +1102,7 @@
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
                         "children": ["Brass, leather and a good blade"],
-                        "id": "70fc9448-d954-4d4c-ac7b-722551fe27a1",
+                        "id": "a18886bf-3a96-4bb5-8da9-3d36f2f2a1f2",
                         "ord": "a0"
                       },
                       {
@@ -1112,7 +1112,7 @@
                         "children": [
                           "Copper & Cole has run the same way since 2014 — real barbers, real chairs, and the old tools kept sharp. No gimmicks, no rushing you out the door."
                         ],
-                        "id": "1e4dbcad-55f5-4369-b444-1c0e35256fd4",
+                        "id": "d867e8b0-5d54-42d0-b1ea-b19979044a0d",
                         "ord": "a1"
                       },
                       {
@@ -1122,7 +1122,7 @@
                         "children": [
                           "You sit down, you get looked after, you leave sharper than you came in. That’s the whole job, and we take it seriously."
                         ],
-                        "id": "821ab599-5845-4409-9153-dd0a046a8ee3",
+                        "id": "7436ad29-f378-4f13-9b03-1f48584a63e1",
                         "ord": "a2"
                       },
                       {
@@ -1138,23 +1138,23 @@
                               "href": "/book"
                             },
                             "children": ["Book your chair"],
-                            "id": "06e2fe67-5cd4-4d22-b512-154063ea3fd2",
+                            "id": "c753105f-fa2f-4e4d-b33a-74de6cfb321a",
                             "ord": "a0"
                           }
                         ],
-                        "id": "1015fbab-d32e-461c-8b87-70631574ff71",
+                        "id": "995ecfad-e358-42d6-bb02-1cf77f5a30f2",
                         "ord": "a3"
                       }
                     ],
-                    "id": "ef9d6f0a-1166-437f-b41e-f1afc5af7b93",
+                    "id": "7cf3d375-06f0-4488-b9ac-6560e41aca44",
                     "ord": "a1"
                   }
                 ],
-                "id": "b40919f5-8a5b-4519-9ca9-6d442fa3e06f",
+                "id": "394cc024-1c7b-4679-b684-61ec6cae19ff",
                 "ord": "a0"
               }
             ],
-            "id": "104be8ff-3ab4-462c-8d74-f5f29cd031d9",
+            "id": "a63198f1-e49c-4d3a-a41f-4e2aeb64bb68",
             "ord": "a3"
           },
           {
@@ -1177,7 +1177,7 @@
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
                         "children": ["Your barbers"],
-                        "id": "0b371e67-49d4-4582-bfb8-e6e9ac8c3a77",
+                        "id": "4a3292ec-bfe7-40ce-a2e8-b9966a285d54",
                         "ord": "a0"
                       },
                       {
@@ -1187,11 +1187,11 @@
                         "children": [
                           "Book by name — the same hands every time, or take whoever’s open."
                         ],
-                        "id": "bcd3e193-da22-4ecd-be27-7fd069c8c73b",
+                        "id": "8c67772c-8d12-4b29-87b8-fc4896c5820f",
                         "ord": "a1"
                       }
                     ],
-                    "id": "e73b1c2c-1d85-493b-8e32-2150f415aef1",
+                    "id": "02be702f-815b-4778-a426-930871f39533",
                     "ord": "a0"
                   },
                   {
@@ -1213,7 +1213,7 @@
                               "alt": "Vince Cole, master barber",
                               "loading": "lazy"
                             },
-                            "id": "b9d9c8d2-e90e-4c2f-b261-049760573432",
+                            "id": "faa842d1-3756-478d-9992-9ec37e8602ae",
                             "ord": "a0"
                           },
                           {
@@ -1226,7 +1226,7 @@
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
                                 "children": ["Vince Cole"],
-                                "id": "73ea645c-201a-46f9-8bf1-32706c117530",
+                                "id": "d325d44a-5aba-41b5-8158-3d9d75d82ed4",
                                 "ord": "a0"
                               },
                               {
@@ -1234,7 +1234,7 @@
                                 "tag": "p",
                                 "class": "text-sm font-medium uppercase tracking-wide text-secondary",
                                 "children": ["Master barber"],
-                                "id": "2e608945-732a-4b17-b501-26eb8191cd80",
+                                "id": "54ecfba5-17e4-4582-96d9-2bb4a754bad3",
                                 "ord": "a1"
                               },
                               {
@@ -1244,15 +1244,15 @@
                                 "children": [
                                   "Founded the shop in 2014. Classic cuts and a straight-razor shave nobody beats."
                                 ],
-                                "id": "ae0654f6-3703-4743-b4f7-52a216e1bb36",
+                                "id": "eeac439c-2d97-49db-8723-3a242dded5db",
                                 "ord": "a2"
                               }
                             ],
-                            "id": "91f7250c-8a3b-4091-a00d-be9b3bcc1789",
+                            "id": "1f52dd69-9be9-4ea5-a33e-98be17097df7",
                             "ord": "a1"
                           }
                         ],
-                        "id": "d3fd62a3-8ae8-40ee-8c13-c617d97d3be2",
+                        "id": "169b5bc2-b0a4-46f8-8b06-dd9a925a94c4",
                         "ord": "a0"
                       },
                       {
@@ -1269,7 +1269,7 @@
                               "alt": "Marcus Reyes, barber",
                               "loading": "lazy"
                             },
-                            "id": "f1985bbb-9003-49b1-ab70-74d286ce0554",
+                            "id": "4cec513f-b814-43c8-af50-6a8d58bae0eb",
                             "ord": "a0"
                           },
                           {
@@ -1282,7 +1282,7 @@
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
                                 "children": ["Marcus Reyes"],
-                                "id": "926a127a-8851-453d-9799-ac6bb28b860b",
+                                "id": "b732b577-a176-4899-bab8-e1131179b385",
                                 "ord": "a0"
                               },
                               {
@@ -1290,7 +1290,7 @@
                                 "tag": "p",
                                 "class": "text-sm font-medium uppercase tracking-wide text-secondary",
                                 "children": ["Barber"],
-                                "id": "51fb9318-2bc1-45ba-ab17-41c2391d26e8",
+                                "id": "ab8b5e7e-c625-4694-be68-d2ae2698acfc",
                                 "ord": "a1"
                               },
                               {
@@ -1300,15 +1300,15 @@
                                 "children": [
                                   "Fades, tapers and sharp line-ups. Fast hands, clean work."
                                 ],
-                                "id": "d3bc341f-6ed9-4c04-b85f-43be01107c60",
+                                "id": "16cc1d3c-1e22-40aa-805e-3ee3b25ac502",
                                 "ord": "a2"
                               }
                             ],
-                            "id": "0076c76b-35d7-4313-8db0-3f05ab756861",
+                            "id": "90aa6e21-6244-4f78-bd27-10fee8bdad9d",
                             "ord": "a1"
                           }
                         ],
-                        "id": "58c1c144-5111-46e4-b598-4be3f57d3c7c",
+                        "id": "b3a9e890-8f6d-4724-b8fc-a9f0c0d720c6",
                         "ord": "a1"
                       },
                       {
@@ -1325,7 +1325,7 @@
                               "alt": "Silas Cooper, barber",
                               "loading": "lazy"
                             },
-                            "id": "ecc98f71-a9fe-40ae-959a-d623d43991f7",
+                            "id": "9503acda-0a1c-4a12-b0a2-ae0dbcaa80a0",
                             "ord": "a0"
                           },
                           {
@@ -1338,7 +1338,7 @@
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
                                 "children": ["Silas Cooper"],
-                                "id": "8281658d-b739-496f-a873-25cab9636ac8",
+                                "id": "daa65fad-a0b0-43be-8b6f-11e7583b59f6",
                                 "ord": "a0"
                               },
                               {
@@ -1346,7 +1346,7 @@
                                 "tag": "p",
                                 "class": "text-sm font-medium uppercase tracking-wide text-secondary",
                                 "children": ["Barber"],
-                                "id": "92673e1f-2209-430c-8cb1-bedd9e40a187",
+                                "id": "fa2ef847-7d85-4106-9ac1-8393396cc956",
                                 "ord": "a1"
                               },
                               {
@@ -1356,27 +1356,27 @@
                                 "children": [
                                   "Scissor work and beards. Takes his time, gets it right."
                                 ],
-                                "id": "31da6150-d7e2-401e-87fd-39e6f0b90555",
+                                "id": "92dc52cc-b0f5-4761-aba5-4881d9177137",
                                 "ord": "a2"
                               }
                             ],
-                            "id": "292546ad-5c77-4650-9c76-7a8b657917ae",
+                            "id": "32829563-1d58-4d0b-8b83-cf3988accbff",
                             "ord": "a1"
                           }
                         ],
-                        "id": "b584ea17-4e5d-4479-a865-4d7076efdc43",
+                        "id": "2e7058da-b812-4915-b0ac-afa3c6578459",
                         "ord": "a2"
                       }
                     ],
-                    "id": "af74ead1-891d-4bc6-ad25-e5cb8bbab4cd",
+                    "id": "1b96753d-2e49-4be5-b492-a31c59d20e7d",
                     "ord": "a1"
                   }
                 ],
-                "id": "ac0f16be-a8a9-4e33-ba1c-3d53a04d367b",
+                "id": "96321f4d-5ff0-4a18-910c-49235095cf1d",
                 "ord": "a0"
               }
             ],
-            "id": "afb68ee4-6955-48c8-9739-9fe9e8aed7ef",
+            "id": "182c6c67-8600-4612-af12-efc0349881cc",
             "ord": "a4"
           },
           {
@@ -1394,7 +1394,7 @@
                     "tag": "h2",
                     "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
                     "children": ["From the chair"],
-                    "id": "7732fe8c-65d1-46f7-8b1d-b16a768a6314",
+                    "id": "9763119a-f81b-4599-94c7-d640a5065600",
                     "ord": "a0"
                   },
                   {
@@ -1411,7 +1411,7 @@
                           "alt": "A clean skin fade with a sharp line-up",
                           "loading": "lazy"
                         },
-                        "id": "5baad7f4-0b79-4888-a1eb-62d7e50d0896",
+                        "id": "5a750a89-5af9-4909-aa40-f90d35d3c704",
                         "ord": "a0"
                       },
                       {
@@ -1423,7 +1423,7 @@
                           "alt": "A shaped beard after a hot-towel finish",
                           "loading": "lazy"
                         },
-                        "id": "a7028713-1b71-46b0-83ae-7023932f6d8f",
+                        "id": "22f9ba40-a54a-4df6-b4b5-a585d0df1fbc",
                         "ord": "a1"
                       },
                       {
@@ -1435,19 +1435,19 @@
                           "alt": "A classic scissor cut, tight on the sides",
                           "loading": "lazy"
                         },
-                        "id": "e4159a43-81cc-4f03-920d-ff728fa28dab",
+                        "id": "7c6bef76-a7fb-4fd8-a2cd-b9a1bffa27bd",
                         "ord": "a2"
                       }
                     ],
-                    "id": "02342bbc-6cc7-402f-b2f5-0975fedf73b5",
+                    "id": "11f6120c-1ace-47d3-bafc-e105350e057b",
                     "ord": "a1"
                   }
                 ],
-                "id": "41e6a5bd-9336-43da-9af6-866a734e05f7",
+                "id": "dd455f6b-be30-44e0-b95f-ff1d14a4672c",
                 "ord": "a0"
               }
             ],
-            "id": "3a06ce19-34b1-402c-aa67-9f44a48a34cb",
+            "id": "d1999135-f240-4e42-a32f-8e9d02ce3655",
             "ord": "a5"
           },
           {
@@ -1467,7 +1467,7 @@
                     "children": [
                       "“Best cut in the city, hands down. The shave alone is worth the trip — hot towel, straight razor, the works. I don’t go anywhere else.”"
                     ],
-                    "id": "545561d4-6d2b-411c-970b-a54a90530a94",
+                    "id": "3a53d49d-eb85-404d-9c15-252cc462521b",
                     "ord": "a0"
                   },
                   {
@@ -1475,15 +1475,15 @@
                     "tag": "p",
                     "class": "text-sm font-semibold uppercase tracking-wide opacity-80",
                     "children": ["Dev, regular since 2018"],
-                    "id": "bc018f48-fba9-4dcd-ba7c-d0df3c6d5263",
+                    "id": "94154ff4-8535-49e7-8f68-e660fe673574",
                     "ord": "a1"
                   }
                 ],
-                "id": "da323091-5e1d-4c74-9184-3883f2130cc8",
+                "id": "8a5d95b4-e4e6-4593-9eed-c95d13606618",
                 "ord": "a0"
               }
             ],
-            "id": "6a4dbd69-768a-4b27-bf07-3df9bca91fd8",
+            "id": "0e5eb52d-667b-45bb-a224-cc16be508528",
             "ord": "a6"
           },
           {
@@ -1501,7 +1501,7 @@
                     "tag": "h2",
                     "class": "text-3xl font-bold tracking-tight @3xl:text-4xl",
                     "children": ["Grab a chair"],
-                    "id": "648b9b78-a496-4e13-85c0-fb47e0ca22f2",
+                    "id": "93bb63dc-958e-4790-9468-8cb34be6472e",
                     "ord": "a0"
                   },
                   {
@@ -1511,7 +1511,7 @@
                     "children": [
                       "Pick your service, pick your barber, see live times. Or just walk in — we’ll sort you out."
                     ],
-                    "id": "094dd4cd-c510-4be6-a282-44cd556ad900",
+                    "id": "6bb84763-ac59-4368-9b24-179fb90b23fe",
                     "ord": "a1"
                   },
                   {
@@ -1522,15 +1522,15 @@
                       "href": "/book"
                     },
                     "children": ["Book a chair"],
-                    "id": "9fde5ad4-07e8-4882-bb0f-10f473a99113",
+                    "id": "26b2032f-1b12-487b-9df8-cd79bb520736",
                     "ord": "a2"
                   }
                 ],
-                "id": "b94cd0c0-1259-4d7d-8458-d6ce6a9559bc",
+                "id": "eb140819-f988-490e-b4c5-50a907426bea",
                 "ord": "a0"
               }
             ],
-            "id": "80754526-4a96-43c4-a9ec-890824753f2a",
+            "id": "76b6424b-b4af-4266-bd6b-2a557ea8b87e",
             "ord": "a7"
           }
         ]
@@ -1547,7 +1547,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "9729c040-b604-45d3-9834-ee4f8cf62f8b",
+        "id": "e6ad2135-59eb-4397-be3c-9530818db276",
         "children": [
           {
             "kind": "element",
@@ -1563,14 +1563,14 @@
                   "alt": "A barber station with a straight razor and hot towels",
                   "loading": "eager"
                 },
-                "id": "49362b0d-a28a-4c9a-9c0c-0279b92d196a",
+                "id": "fcd9388a-660d-48a5-b433-be063d5bd642",
                 "ord": "a0"
               },
               {
                 "kind": "element",
                 "tag": "div",
                 "class": "absolute inset-0 bg-black/65",
-                "id": "18f5629b-825a-4298-99f7-d4781a233a0a",
+                "id": "e6f492c8-72ff-4d5c-9dd2-088c400b71e6",
                 "ord": "a1"
               },
               {
@@ -1583,7 +1583,7 @@
                     "tag": "p",
                     "class": "text-sm font-semibold uppercase tracking-widest",
                     "children": ["EST. 2014"],
-                    "id": "b4ad0c0f-c14e-4a0c-92f9-a91d0609beb1",
+                    "id": "e49f5a1f-1d97-405c-a06c-bffe3929c27c",
                     "ord": "a0"
                   },
                   {
@@ -1591,7 +1591,7 @@
                     "tag": "h1",
                     "class": "max-w-3xl text-4xl font-bold leading-tight tracking-tight @2xl:text-5xl @3xl:text-6xl",
                     "children": ["Book your chair"],
-                    "id": "b49f77af-c279-4e1c-bf69-e4c398b87538",
+                    "id": "70761119-614a-4255-85ac-fd3679cc085b",
                     "ord": "a1"
                   },
                   {
@@ -1601,7 +1601,7 @@
                     "children": [
                       "Choose a service to see prices and live times, then pick your barber and your slot."
                     ],
-                    "id": "f54abb21-5c82-44a7-981a-e72e8faf6167",
+                    "id": "b27c59dd-93b0-45f6-bfd2-f843505c9463",
                     "ord": "a2"
                   },
                   {
@@ -1617,19 +1617,19 @@
                           "href": "/book"
                         },
                         "children": ["See services below"],
-                        "id": "0ee93c19-c7ee-4f83-9987-b06c67ead562",
+                        "id": "de5a1035-0bf4-46dc-90e1-e47838fe1c89",
                         "ord": "a0"
                       }
                     ],
-                    "id": "5d65d2f7-0d6c-4037-82c1-655e54082b15",
+                    "id": "17310b18-4266-42ee-a902-8a7f9a24c952",
                     "ord": "a3"
                   }
                 ],
-                "id": "1de34457-cfd5-4446-820c-245c493239db",
+                "id": "45995b39-22fa-479d-9c49-9f40dc8a9b3b",
                 "ord": "a2"
               }
             ],
-            "id": "e78aa23c-9055-463a-a4f6-3afdcb471ae1",
+            "id": "0b4fd10a-4ce7-40be-9006-178868bfa5b2",
             "ord": "a0"
           },
           {
@@ -1637,8 +1637,136 @@
             "component": "scheduling.services",
             "class": "mx-auto w-full max-w-5xl px-6 py-8",
             "locked": "host",
-            "id": "bdc027f2-44a7-42d3-b0cc-3cb192e7e186",
+            "id": "cffbdaf3-249e-42b6-9bc4-2ac8d215e474",
             "ord": "a1"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-8",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["Good to know"],
+                        "id": "dc018971-d313-460b-9a5a-62675d4cd5ad",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "What happens once you pick a time — and how to change it if something comes up."
+                        ],
+                        "id": "b1288b53-886c-46f9-aca2-7c81faae96f6",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "5139f154-f051-406d-8fce-b7b586ec6dbb",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-6 @3xl:grid-cols-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-3 rounded-box border border-base-300 bg-base-100 p-6",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Standard booking"],
+                            "id": "a7df62f1-6ec2-40b7-af50-e5c9d64227b2",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Walk in or book ahead — either works. If you booked and can’t make it, give us 12 hours so we can hand the chair to someone else. We text a reminder the day before and two hours out."
+                            ],
+                            "id": "5a8687c9-54ee-49d7-b123-26586a26c36f",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base font-medium text-base-content",
+                            "children": [
+                              "No deposit to book. Change or cancel free up to 12 hours before."
+                            ],
+                            "id": "2d318bc5-c43e-415a-9aaa-d79c4e40eb0d",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "74f75e44-21eb-424c-a8d5-b59562f71fc4",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-3 rounded-box border border-base-300 bg-base-100 p-6",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Longer-chair booking"],
+                            "id": "df6821ba-1488-4e6b-98d4-60bff99a9667",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "The shave and the full combo hold your barber for the better part of an hour. No deposit — just give us 24 hours if plans change. Two no-shows and we’ll ask you to call to rebook."
+                            ],
+                            "id": "a36787c4-0a61-49e4-8481-d0627dc201af",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base font-medium text-base-content",
+                            "children": [
+                              "No deposit to book. Change or cancel free up to 24 hours before."
+                            ],
+                            "id": "cdc5a953-589a-4985-9097-918c8478a66d",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "a5381d41-93d2-44c5-ae48-a803d2ac842f",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "f9200f85-264c-4f6b-9fa8-233e6e921095",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "1900ec56-511a-4e34-8b5f-01cb1bb3896a",
+                "ord": "a0"
+              }
+            ],
+            "id": "61c5f3e8-9d74-4dae-adc3-d4b498d72985",
+            "ord": "a2"
           }
         ]
       }
@@ -1654,7 +1782,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "9ff21a5b-671c-44a2-a9b4-cef5a852d424",
+        "id": "0644794f-c9ce-4d3c-b2c8-4cd993b6c966",
         "children": [
           {
             "kind": "element",
@@ -1675,7 +1803,7 @@
                       "alt": "A dark, wood-and-brass barbershop with leather chairs",
                       "loading": "lazy"
                     },
-                    "id": "b3b6b6cb-af5a-46e2-b865-ff0a5179946e",
+                    "id": "50a98193-6e1e-4779-9e44-a46e28196ef6",
                     "ord": "a0"
                   },
                   {
@@ -1685,10 +1813,10 @@
                     "children": [
                       {
                         "kind": "element",
-                        "tag": "h2",
+                        "tag": "h1",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
                         "children": ["About Copper & Cole"],
-                        "id": "e43dcf95-1491-49c9-8770-eab4f4a1970f",
+                        "id": "4932cdb8-a2b6-465c-9be5-3a84306914a6",
                         "ord": "a0"
                       },
                       {
@@ -1698,7 +1826,7 @@
                         "children": [
                           "We opened Copper & Cole in 2014 to run a barbershop the old way — real barbers, sharp tools, and time taken over every cut and shave."
                         ],
-                        "id": "c2937e18-273f-4201-82ea-fe82989567d6",
+                        "id": "44f25f88-6127-4af4-8266-d11c9bf763a2",
                         "ord": "a1"
                       },
                       {
@@ -1708,7 +1836,7 @@
                         "children": [
                           "No franchise script, no upsell, no ten-minute turnaround. Just good work done properly, for men who want to look after themselves."
                         ],
-                        "id": "ed1ca3a1-f51c-4373-b4f3-7aa61f32ab30",
+                        "id": "b6a37840-d670-48b7-908a-99ce0fce773b",
                         "ord": "a2"
                       },
                       {
@@ -1724,23 +1852,23 @@
                               "href": "/book"
                             },
                             "children": ["Book a chair"],
-                            "id": "a53026f1-b276-42f6-b751-fcc9abe264eb",
+                            "id": "31ce0cd8-8cb0-404e-bd19-f1efe83e3fc2",
                             "ord": "a0"
                           }
                         ],
-                        "id": "e04e1845-dce2-4e11-9f72-c929cce9aa0d",
+                        "id": "4d3126c4-dbff-4265-919f-9161836f1899",
                         "ord": "a3"
                       }
                     ],
-                    "id": "4c0943a3-70c7-462f-9460-0a27afe8ef3f",
+                    "id": "5f0eeadc-97a9-44b6-9d19-ab74c928a767",
                     "ord": "a1"
                   }
                 ],
-                "id": "40c038d0-23b6-4ea6-98f2-eef6b89004cd",
+                "id": "8e9d4dce-d9b0-4852-be49-4fcf7e977b56",
                 "ord": "a0"
               }
             ],
-            "id": "18c7d0a6-2ef6-47a6-b7ea-6d83e66aea7d",
+            "id": "90610670-8b07-4fd4-86ad-6ffd0edc64d7",
             "ord": "a0"
           },
           {
@@ -1758,7 +1886,7 @@
                     "tag": "h2",
                     "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
                     "children": ["How the shop runs"],
-                    "id": "a96dae9d-1fb0-48d7-8dea-590fd74f92b5",
+                    "id": "a7a24bf1-7f72-42f0-989b-66f0bf3d785a",
                     "ord": "a0"
                   },
                   {
@@ -1776,7 +1904,7 @@
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
                             "children": ["Walk in or book"],
-                            "id": "c33664a4-cffa-48d9-aee9-b4cc2855b7f5",
+                            "id": "bc3a0a49-4e72-4b03-99da-e6feb53ce1ad",
                             "ord": "a0"
                           },
                           {
@@ -1786,11 +1914,11 @@
                             "children": [
                               "A chair’s a chair. Book ahead and it’s yours, or walk in and we’ll take you as soon as one opens."
                             ],
-                            "id": "2ad2f764-57c7-4c68-872b-9441454ae98d",
+                            "id": "13aece99-5ddd-4a12-8cfa-4ca5af2c02da",
                             "ord": "a1"
                           }
                         ],
-                        "id": "88845e98-5f2f-418c-aff1-4dc9149e47d4",
+                        "id": "4f5e0b6e-4d10-454a-9d03-ca88f98d0c4b",
                         "ord": "a0"
                       },
                       {
@@ -1803,7 +1931,7 @@
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
                             "children": ["The tools kept sharp"],
-                            "id": "76f06215-2f75-4f6f-9ca8-daa0561dec15",
+                            "id": "ea773e72-44d8-4821-b9e5-c58a4d334f6a",
                             "ord": "a0"
                           },
                           {
@@ -1813,11 +1941,11 @@
                             "children": [
                               "Clippers, shears and a straight razor, all maintained the way they should be. It shows in the finish."
                             ],
-                            "id": "a3d827f3-c3ca-4a35-a1eb-1fc5babf15f1",
+                            "id": "3920288f-aa3f-45bd-9e5a-25d082aef30b",
                             "ord": "a1"
                           }
                         ],
-                        "id": "e2597430-541b-4457-9d2d-86b525d6c024",
+                        "id": "8f6caf2b-7234-47b1-b81a-f9683667af00",
                         "ord": "a1"
                       },
                       {
@@ -1830,7 +1958,7 @@
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
                             "children": ["Same barber, every time"],
-                            "id": "9cfc6f61-753c-4118-9404-95b433444fab",
+                            "id": "491b73f0-c0e6-4876-8c7a-460617271125",
                             "ord": "a0"
                           },
                           {
@@ -1840,23 +1968,23 @@
                             "children": [
                               "Find the one who gets your cut and book them by name. They’ll know your head before you sit down."
                             ],
-                            "id": "b319224d-92f4-428c-9262-d0baf82e1b3d",
+                            "id": "1f4935de-7de1-4f6d-abbb-129af4e4a103",
                             "ord": "a1"
                           }
                         ],
-                        "id": "a0df7428-18d1-4c23-a04f-a930e10b9261",
+                        "id": "fba3fffd-08fb-4881-87ce-e7bd9344a415",
                         "ord": "a2"
                       }
                     ],
-                    "id": "604f1a06-467e-4e2b-9b8c-5a3612aed760",
+                    "id": "1c871d73-12ed-4ec0-b98d-bc6233952868",
                     "ord": "a1"
                   }
                 ],
-                "id": "bc368c31-0e2e-4ea6-be1b-05c668812930",
+                "id": "c68c8028-1559-419d-9429-6e819345fafc",
                 "ord": "a0"
               }
             ],
-            "id": "a2c20e62-b990-41ee-96aa-7b614ed0e3a3",
+            "id": "040883e6-14af-47a3-934d-8d60a773aa1f",
             "ord": "a1"
           }
         ]
@@ -1873,8 +2001,294 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "997e10d5-4db2-45b6-b52e-e3388416252c",
+        "id": "d3ff3726-8fb7-435c-826a-67e42a4b0950",
         "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-8",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h1",
+                        "class": "text-4xl font-bold tracking-tight text-base-content @3xl:text-5xl",
+                        "children": ["Get in touch"],
+                        "id": "ad0059dc-8d58-44b3-9399-d354e48545ca",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Questions before you book? Send a note and Copper & Cole will get back to you — usually the same day."
+                        ],
+                        "id": "fce894ba-d96f-42c8-978a-f22ed8915b73",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "073c1abc-d395-4838-883c-68c727f8e445",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-1",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "span",
+                        "class": "text-base font-medium text-base-content",
+                        "children": ["Call us"],
+                        "id": "a1ea9564-6515-4d71-857b-78412ece2796",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "text-lg font-semibold text-base-content underline underline-offset-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "children": ["(555) 123-4567"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "site.identity.phone"
+                            },
+                            "id": "6fe0f50b-bfa6-4684-9784-b0812ae3285f",
+                            "ord": "a0"
+                          }
+                        ],
+                        "data": {
+                          "kind": "value",
+                          "ref": "site.identity.phoneHref",
+                          "attr": "href"
+                        },
+                        "id": "c5489153-664a-43f0-b1d8-55a00f4928a2",
+                        "ord": "a1"
+                      }
+                    ],
+                    "data": {
+                      "kind": "visible",
+                      "ref": "site.identity.phone"
+                    },
+                    "id": "e9867e1d-c0c7-48a3-8e8a-9a1f82b251a7",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-1",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "span",
+                        "class": "text-base font-medium text-base-content",
+                        "children": ["Email us"],
+                        "id": "e0f5d874-14bc-4106-ad46-6c55c56ee8c4",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "text-lg font-semibold text-base-content underline underline-offset-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "children": ["hello@yourbusiness.com"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "site.identity.email"
+                            },
+                            "id": "0099e465-ef3c-43b6-8977-46339f70c121",
+                            "ord": "a0"
+                          }
+                        ],
+                        "data": {
+                          "kind": "value",
+                          "ref": "site.identity.emailHref",
+                          "attr": "href"
+                        },
+                        "id": "7942174d-399c-4889-820c-9effac5c951c",
+                        "ord": "a1"
+                      }
+                    ],
+                    "data": {
+                      "kind": "visible",
+                      "ref": "site.identity.email"
+                    },
+                    "id": "31204497-434a-4509-9b5c-3e443fa9fcda",
+                    "ord": "a2"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "form",
+                    "class": "flex w-full max-w-xl flex-col gap-5",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "label",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-base font-medium text-base-content",
+                            "children": ["Your name"],
+                            "id": "aa9896ba-2a7a-4fbf-a65e-0813798c9ced",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "input",
+                            "class": "input input-bordered w-full",
+                            "attrs": {
+                              "type": "text",
+                              "name": "name",
+                              "required": true
+                            },
+                            "id": "858b0de0-7540-4121-b867-35393c2169ef",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "5a01f80c-3800-41a1-a267-7452c7655cf2",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "label",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-base font-medium text-base-content",
+                            "children": ["Email address"],
+                            "id": "7013c7bf-acee-466d-b48e-1b5d6788af9b",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "input",
+                            "class": "input input-bordered w-full",
+                            "attrs": {
+                              "type": "email",
+                              "name": "email",
+                              "required": true
+                            },
+                            "id": "e44423f5-ba20-4d06-b221-2009cd6d634b",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "8363f059-e638-47ec-a6fc-eb0fa4b9ec54",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "label",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-base font-medium text-base-content",
+                            "children": ["Phone number"],
+                            "id": "e4537196-e093-41b5-9599-3479bbd54771",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "input",
+                            "class": "input input-bordered w-full",
+                            "attrs": {
+                              "type": "tel",
+                              "name": "phone"
+                            },
+                            "id": "5b1e68ff-efed-4e53-bed2-cbfbce03a68a",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "2c6350c2-cd99-4808-9b0b-39bad91adad3",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "label",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-base font-medium text-base-content",
+                            "children": ["How can we help?"],
+                            "id": "5f154cd6-6a7d-4751-8347-1c33a0849ca2",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "textarea",
+                            "class": "textarea textarea-bordered min-h-32 w-full",
+                            "attrs": {
+                              "name": "message"
+                            },
+                            "id": "b5cd0229-ea1c-480e-bf8b-b3c435199c2f",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "4e63e8e8-fc01-4ade-868d-c04b0310bda2",
+                        "ord": "a3"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-wrap items-center gap-3",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "button",
+                            "class": "btn btn-primary btn-lg",
+                            "attrs": {
+                              "type": "submit"
+                            },
+                            "children": ["Send my request"],
+                            "id": "10209f0c-61a0-4000-a15f-3024bc687a51",
+                            "ord": "a0"
+                          }
+                        ],
+                        "id": "9bc92531-8e71-452c-bf9a-470534e6b795",
+                        "ord": "a4"
+                      }
+                    ],
+                    "behavior": {
+                      "type": "form"
+                    },
+                    "data": {
+                      "kind": "action",
+                      "ref": "submit"
+                    },
+                    "id": "99565c4f-5409-4329-9f41-c4c15969083f",
+                    "ord": "a3"
+                  }
+                ],
+                "id": "f382f578-82f1-4f5d-b4f9-bac38c114231",
+                "ord": "a0"
+              }
+            ],
+            "id": "150b7d84-9102-42d8-a243-58c0d1db4710",
+            "ord": "a0"
+          },
           {
             "kind": "element",
             "tag": "section",
@@ -1895,40 +2309,19 @@
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
                         "children": ["Find the shop"],
-                        "id": "07f3bb33-8c93-4d75-9063-256353adaf12",
+                        "id": "c18ab59f-2aab-414b-86f3-eb693ce873c3",
                         "ord": "a0"
                       },
                       {
                         "kind": "element",
-                        "tag": "div",
-                        "class": "flex flex-col gap-1",
-                        "children": [
-                          {
-                            "kind": "element",
-                            "tag": "p",
-                            "class": "text-lg leading-relaxed text-base-content",
-                            "children": ["Copper & Cole"],
-                            "id": "14f0bd46-2d80-45f5-b0a4-a1864ac30a57",
-                            "ord": "a0"
-                          },
-                          {
-                            "kind": "element",
-                            "tag": "p",
-                            "class": "text-lg leading-relaxed text-base-content",
-                            "children": ["412 Ironside Avenue"],
-                            "id": "ba27ea8b-7c17-4a8d-ba53-2325fe163b6d",
-                            "ord": "a1"
-                          },
-                          {
-                            "kind": "element",
-                            "tag": "p",
-                            "class": "text-lg leading-relaxed text-base-content",
-                            "children": ["Portland, OR 97214"],
-                            "id": "6f009ca7-9d60-469c-ae94-ea1bdbd8ade4",
-                            "ord": "a2"
-                          }
-                        ],
-                        "id": "a3783bc6-1d3a-4de4-8b2b-31d1530b5d58",
+                        "tag": "address",
+                        "class": "text-lg leading-relaxed whitespace-pre-line not-italic text-base-content",
+                        "children": ["Copper & Cole\n412 Ironside Avenue\nPortland, OR 97214"],
+                        "data": {
+                          "kind": "value",
+                          "ref": "site.identity.address"
+                        },
+                        "id": "1e3461c4-88a2-467a-a413-d6b5569c289d",
                         "ord": "a1"
                       },
                       {
@@ -1946,7 +2339,7 @@
                                 "tag": "span",
                                 "class": "font-medium text-base-content",
                                 "children": ["Tuesday – Friday"],
-                                "id": "43678497-23a3-44fe-8e55-288ddd687c28",
+                                "id": "f1b5945b-1630-49ef-8d75-35b36efba431",
                                 "ord": "a0"
                               },
                               {
@@ -1954,11 +2347,11 @@
                                 "tag": "span",
                                 "class": "text-base-content",
                                 "children": ["9:00 – 7:00"],
-                                "id": "9ff80398-3025-4eef-9eea-9869e11e2eee",
+                                "id": "caf5f0b7-8260-4960-bab6-85803b434d23",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "d7523e32-7b13-4176-bbe0-33f20fececc2",
+                            "id": "0a493034-520c-47bf-885a-c0dab2fe5931",
                             "ord": "a0"
                           },
                           {
@@ -1971,7 +2364,7 @@
                                 "tag": "span",
                                 "class": "font-medium text-base-content",
                                 "children": ["Saturday"],
-                                "id": "9faf3532-5c12-4e74-a201-2cdcb22862e3",
+                                "id": "cbe4f50f-0eb6-468a-8db6-1a90df2b3708",
                                 "ord": "a0"
                               },
                               {
@@ -1979,11 +2372,11 @@
                                 "tag": "span",
                                 "class": "text-base-content",
                                 "children": ["8:00 – 6:00"],
-                                "id": "48a5bb40-cf59-49e6-8c8f-00a159eaf458",
+                                "id": "2ec96583-b702-459d-9fef-cf96ff174505",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "b53c2732-27f9-4511-947e-22aeff96cef2",
+                            "id": "dcbc3ec7-aa80-43c0-ac61-e712768cf6a7",
                             "ord": "a1"
                           },
                           {
@@ -1996,7 +2389,7 @@
                                 "tag": "span",
                                 "class": "font-medium text-base-content",
                                 "children": ["Sunday"],
-                                "id": "280a1075-5618-481f-af15-15838773ed1f",
+                                "id": "c36f856e-8f40-49f6-a9b8-82c1d882b1e0",
                                 "ord": "a0"
                               },
                               {
@@ -2004,11 +2397,11 @@
                                 "tag": "span",
                                 "class": "text-base-content",
                                 "children": ["10:00 – 4:00"],
-                                "id": "dcbdf4f1-7a90-4f3d-94cf-f80b79a8e658",
+                                "id": "0aee16bb-d884-4ca5-8fa3-3d59c67c073c",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "53f1950d-0fc1-4b02-bd02-b86bd7090471",
+                            "id": "c1e82bd0-99e8-4035-a41b-c396963be5c7",
                             "ord": "a2"
                           },
                           {
@@ -2021,7 +2414,7 @@
                                 "tag": "span",
                                 "class": "font-medium text-base-content",
                                 "children": ["Monday"],
-                                "id": "d718a7ca-ab2f-41cc-aa01-402e516cdd99",
+                                "id": "4bd436c4-82d2-4770-abae-4935afb7c3db",
                                 "ord": "a0"
                               },
                               {
@@ -2029,19 +2422,19 @@
                                 "tag": "span",
                                 "class": "text-base-content",
                                 "children": ["Closed"],
-                                "id": "e7dd0131-f0ec-44a8-a72f-5ea5f5fc45a4",
+                                "id": "512a1812-8f37-4bda-b021-2f547d4b46e1",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "8ffbb107-ea26-4989-b373-03484627999e",
+                            "id": "6231ece9-d58c-4e93-bade-665466498060",
                             "ord": "a3"
                           }
                         ],
-                        "id": "95de7b66-0d86-41c9-bf6f-9125354512ee",
+                        "id": "211b09a9-9820-4d8a-b0f6-2bee09060319",
                         "ord": "a2"
                       }
                     ],
-                    "id": "30520a94-a772-4ef8-9cb0-b8ad0c4d6a59",
+                    "id": "4ccdfd38-335e-436d-b4f2-82e21726b375",
                     "ord": "a0"
                   },
                   {
@@ -2054,16 +2447,16 @@
                       "zoom": 15,
                       "ratio": "classic"
                     },
-                    "id": "2ee29f37-53d3-4445-a6d9-37698a16b736",
+                    "id": "0d9a47d4-af87-4ee1-bbe7-576e3a916ec8",
                     "ord": "a1"
                   }
                 ],
-                "id": "1493cd77-a8c4-449b-82d3-2fc6b85862a6",
+                "id": "91f2d39b-9735-46cb-bb64-fe40c0f17b93",
                 "ord": "a0"
               }
             ],
-            "id": "bba6fd01-6f2e-420c-8c02-8dd1d9e35665",
-            "ord": "a0"
+            "id": "7dd92714-2c95-4cfc-8058-f8655a19d16c",
+            "ord": "a1"
           },
           {
             "kind": "element",
@@ -2080,7 +2473,7 @@
                     "tag": "h2",
                     "class": "text-3xl font-bold tracking-tight @3xl:text-4xl",
                     "children": ["Skip the wait"],
-                    "id": "7ebe833b-7e41-46f1-b265-2595fe89f0be",
+                    "id": "0130edba-e99b-4d46-9618-3e6792f8bd3a",
                     "ord": "a0"
                   },
                   {
@@ -2090,7 +2483,7 @@
                     "children": [
                       "Book your chair online and see live times — walk-ins still welcome whenever a chair’s open."
                     ],
-                    "id": "a6c5b490-7816-44ee-9900-36a983a78569",
+                    "id": "ecb8907c-5372-45ad-8531-9bd60cf653bb",
                     "ord": "a1"
                   },
                   {
@@ -2101,16 +2494,16 @@
                       "href": "/book"
                     },
                     "children": ["Book a chair"],
-                    "id": "43c8c18b-015e-4e6c-b318-5aba10a2534b",
+                    "id": "09686b48-aba7-4f6c-bc5a-18e1ab931c14",
                     "ord": "a2"
                   }
                 ],
-                "id": "a8e706fa-fe91-4140-8dad-68bac73ed65e",
+                "id": "521edd0e-4365-47c4-9846-bf5e5e794052",
                 "ord": "a0"
               }
             ],
-            "id": "06452b9e-b925-4082-b4d8-e0ad424d7aa8",
-            "ord": "a1"
+            "id": "a7046932-81a1-4c1b-9905-1841f0f4db5c",
+            "ord": "a2"
           }
         ]
       }

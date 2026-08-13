@@ -22,7 +22,7 @@
                   "props": {
                     "show": "both"
                   },
-                  "id": "7cee2818-2de1-46f2-b2d7-08fc65d31335",
+                  "id": "db80b6f3-b91d-4248-aa7d-cfb9654b6c0e",
                   "ord": "a0"
                 },
                 {
@@ -43,7 +43,7 @@
                         "type": "link",
                         "label": "Product"
                       },
-                      "id": "086a23eb-623d-4877-9aa8-d78b1d5e3c48",
+                      "id": "45e0b720-4750-4a1a-8783-d8a8b07e6d0f",
                       "ord": "a0"
                     },
                     {
@@ -59,7 +59,7 @@
                         "type": "link",
                         "label": "Pricing"
                       },
-                      "id": "3b9617b1-e61a-433c-b94c-7966668b39d6",
+                      "id": "ddd05a86-0ada-4103-8cb2-ce2f5b9f2532",
                       "ord": "a1"
                     },
                     {
@@ -75,7 +75,7 @@
                         "type": "link",
                         "label": "Docs"
                       },
-                      "id": "7a16578a-7802-4120-9579-950044579abd",
+                      "id": "62e9d2fa-5558-43d6-8856-b6e88c23fa3c",
                       "ord": "a2"
                     },
                     {
@@ -91,11 +91,11 @@
                         "type": "link",
                         "label": "Company"
                       },
-                      "id": "89e7dc07-f931-41e8-bc15-c20997aea49a",
+                      "id": "b8fea0f4-cba4-4d2b-aa81-da5fefcfdac8",
                       "ord": "a3"
                     }
                   ],
-                  "id": "ef1a516f-29af-4e62-805d-3b20024d5e04",
+                  "id": "11590a90-7af3-4ffd-8eee-f47574d964d1",
                   "ord": "a1"
                 },
                 {
@@ -116,14 +116,14 @@
                         "type": "link",
                         "label": "Secondary link"
                       },
-                      "id": "5607d661-e6a5-4096-b8c5-8a415de96f5a",
+                      "id": "eec0055d-2d08-4b05-83ea-8083f9640a24",
                       "ord": "a0"
                     },
                     {
                       "kind": "host",
                       "component": "site.theme-toggle",
                       "class": "inline-flex items-center",
-                      "id": "c5a9d99e-c60a-4501-b2e9-404b714472ed",
+                      "id": "f091542e-7482-4e26-aa54-2fac2bc7ff5c",
                       "ord": "a1"
                     },
                     {
@@ -141,20 +141,20 @@
                           "props": {
                             "name": "menu"
                           },
-                          "id": "a66f57f0-c8de-4a4d-ac31-4dc082ad6db7",
+                          "id": "6eaf74bc-45aa-4c6f-976f-2a5488b8a4a3",
                           "ord": "a0"
                         }
                       ],
                       "part": "trigger",
-                      "id": "6eff5557-a486-42dd-aea4-45229db889ed",
+                      "id": "5409db8c-c58e-4b3d-a604-9bd6fc67c54b",
                       "ord": "a2"
                     }
                   ],
-                  "id": "81e5a215-3449-49c9-a720-1511f82f920e",
+                  "id": "bc52c0e9-7341-413d-aa64-ea3d77087b15",
                   "ord": "a2"
                 }
               ],
-              "id": "b35f4cc3-4662-47ba-9b1f-9e2c19ec9f1b",
+              "id": "f631c515-2cda-4ed8-8b1c-b198f3ce694d",
               "ord": "a0"
             },
             {
@@ -178,7 +178,7 @@
                     "type": "link",
                     "label": "Product"
                   },
-                  "id": "1615c945-0eae-4185-b4c6-30bbc383829d",
+                  "id": "ddb04a11-5328-42ae-a43a-c36af8896464",
                   "ord": "a0"
                 },
                 {
@@ -194,7 +194,7 @@
                     "type": "link",
                     "label": "Pricing"
                   },
-                  "id": "d5a423e7-714b-4544-979e-1dbe86e8a741",
+                  "id": "6223ee54-4bb1-4f98-8078-e57bf40d3590",
                   "ord": "a1"
                 },
                 {
@@ -210,7 +210,7 @@
                     "type": "link",
                     "label": "Docs"
                   },
-                  "id": "af83b9e9-390f-4175-9385-942a7ccb29b9",
+                  "id": "c833c5e4-4c9f-4200-9db8-bca79991f08e",
                   "ord": "a2"
                 },
                 {
@@ -226,7 +226,7 @@
                     "type": "link",
                     "label": "Company"
                   },
-                  "id": "59ffabb0-6a2a-4a1e-9641-1f77a1483709",
+                  "id": "9e5bcf0c-0a44-4427-899a-41c4c2b80c8b",
                   "ord": "a3"
                 },
                 {
@@ -242,19 +242,19 @@
                     "type": "link",
                     "label": "Secondary link"
                   },
-                  "id": "6e249a84-1251-4c9e-b503-d5bbfb4a41b9",
+                  "id": "6fd38e45-9079-4973-9fed-8e205fb8a46a",
                   "ord": "a4"
                 }
               ],
               "part": "panel",
-              "id": "49e61923-4acb-4159-8b57-194bf7330ac5",
+              "id": "2df47fcd-4c18-4aff-aa7b-0f196cb9ace2",
               "ord": "a1"
             }
           ],
           "behavior": {
             "type": "disclosure"
           },
-          "id": "714bd8e9-283f-48c8-9776-701329462cba",
+          "id": "26d29a77-4f56-43a8-82e1-ac8aeab52198",
           "ord": "a0"
         },
         {
@@ -270,7 +270,7 @@
               "kind": "outlet"
             }
           ],
-          "id": "7b416c02-a2dc-4e4a-802f-941be637a9d2",
+          "id": "ef19b847-67c7-4244-8972-30bb79326386",
           "ord": "a1"
         },
         {
@@ -300,7 +300,7 @@
                           "props": {
                             "show": "both"
                           },
-                          "id": "62ddeabb-b7ba-47a5-b5a8-f2d06f84c3e7",
+                          "id": "f5bfe679-27d8-47ab-98e0-306d65c88d02",
                           "ord": "a0"
                         },
                         {
@@ -316,7 +316,7 @@
                           "attrs": {
                             "href": "/"
                           },
-                          "id": "2a3a3f16-f6ef-428d-ac03-d1902e206362",
+                          "id": "8bd269f2-4c8e-4581-8e1e-bc45546e8684",
                           "ord": "a1"
                         },
                         {
@@ -324,11 +324,11 @@
                           "tag": "ul",
                           "class": "mt-2 flex items-center gap-5",
                           "children": [],
-                          "id": "70abe3fd-a5dc-4565-8214-d0cb54d6afb4",
+                          "id": "914cd796-8514-4bb3-8d42-bd65ce5882f5",
                           "ord": "a2"
                         }
                       ],
-                      "id": "24248dda-62da-4e2b-b4d8-c77d1b0795fb",
+                      "id": "24ff91b0-6f26-460f-aec3-29d2f82b9df9",
                       "ord": "a0"
                     },
                     {
@@ -349,7 +349,7 @@
                           "attrs": {
                             "href": "/"
                           },
-                          "id": "ea3c0226-0391-4d1e-8724-6e584500f768",
+                          "id": "8b868fec-dd14-43cc-bf9c-b86f5d686ca6",
                           "ord": "a0"
                         },
                         {
@@ -374,11 +374,11 @@
                                     "type": "link",
                                     "label": "Features"
                                   },
-                                  "id": "f2f2f2fc-bf14-44ec-9a25-594d4a417db0",
+                                  "id": "5e9c98a5-8d28-45fa-925e-32bc04482176",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "03f7162e-2a9a-4737-958f-57a0f15d4a66",
+                              "id": "533f8504-8167-4cbf-bdb6-d288eae25dcb",
                               "ord": "a0"
                             },
                             {
@@ -398,11 +398,11 @@
                                     "type": "link",
                                     "label": "Pricing"
                                   },
-                                  "id": "ce0c4c79-0a51-4f7a-bcd6-dfa9ef3c669f",
+                                  "id": "b0db9a2e-fc28-452a-a672-ff6df544c786",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "b1c635c8-d0ee-4b58-b965-812b95d96a7e",
+                              "id": "5fd13fc8-370e-485c-abb2-a028a2e96bc4",
                               "ord": "a1"
                             },
                             {
@@ -422,11 +422,11 @@
                                     "type": "link",
                                     "label": "Integrations"
                                   },
-                                  "id": "f58716c0-04da-4b9c-9c83-637fb0ad0366",
+                                  "id": "db46870e-01a0-48f3-9e98-85a5fbfc8395",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "44cb75a9-3137-43b3-adb7-06fccf80048c",
+                              "id": "25c7cdf8-3d0d-4880-ba62-bf31fcb37261",
                               "ord": "a2"
                             },
                             {
@@ -446,11 +446,11 @@
                                     "type": "link",
                                     "label": "Changelog"
                                   },
-                                  "id": "837255c5-6c61-425a-94fa-9a22246b5d1e",
+                                  "id": "6684d7fa-a26a-4a4b-a05d-9aa8aa7c6ea0",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "45ba6dc1-ee97-47e8-9b7f-18c300aabe5b",
+                              "id": "830f765b-9896-4c8f-8c62-02fc324ddf3d",
                               "ord": "a3"
                             },
                             {
@@ -465,19 +465,19 @@
                                     "href": "/search"
                                   },
                                   "children": ["Search"],
-                                  "id": "04fbe9df-d19a-4bbb-b6b8-ebbf77950e4e",
+                                  "id": "5ffc6ddb-eef4-4c52-b9d0-22d892929fa5",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "d5c8310b-eafe-40ed-a9f1-4b0176849ea9",
+                              "id": "8959f34a-6ab3-4171-af64-3ce9333bf48c",
                               "ord": "a4"
                             }
                           ],
-                          "id": "3d346455-0729-4b2c-b95b-af90ec235d14",
+                          "id": "0790e76e-4444-4a6e-9452-8d35381c517a",
                           "ord": "a1"
                         }
                       ],
-                      "id": "2f904e89-3ad7-4eda-9d20-617dfe79ac2e",
+                      "id": "d7d4512a-1da2-458e-a623-0fe749709eba",
                       "ord": "a1"
                     },
                     {
@@ -498,7 +498,7 @@
                           "attrs": {
                             "href": "/account"
                           },
-                          "id": "26abcdf4-080e-47e5-ab5e-11bca8864bdb",
+                          "id": "0ca3d76e-198e-4121-846d-3b30b1bb0886",
                           "ord": "a0"
                         },
                         {
@@ -523,11 +523,11 @@
                                     "type": "link",
                                     "label": "About"
                                   },
-                                  "id": "f80f54b7-e4cb-4562-91a5-59859b5261e5",
+                                  "id": "9cffb12e-c44f-4ded-b8cd-619b7977a802",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "56bb0346-74e0-47ed-b234-f2a867b1fdf5",
+                              "id": "68941dce-dda1-48ed-bf03-b9076a759207",
                               "ord": "a0"
                             },
                             {
@@ -547,11 +547,11 @@
                                     "type": "link",
                                     "label": "Careers"
                                   },
-                                  "id": "9fe424bc-afdc-4f59-8257-c5ea5f15e31e",
+                                  "id": "092bc0c3-f748-440d-ae29-8aacf1fab199",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "e3ff59f4-0fca-415f-90d1-8734926d1839",
+                              "id": "971e16fd-6772-4ad0-8278-b5d373cd7fb9",
                               "ord": "a1"
                             },
                             {
@@ -571,19 +571,19 @@
                                     "type": "link",
                                     "label": "Blog"
                                   },
-                                  "id": "be2d042d-ee5e-419e-99ee-ebce2ede2ea1",
+                                  "id": "891f412c-a87d-4d30-a55a-9eb3dd8febef",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "84d4c763-62f6-4a95-9823-6a20c971e708",
+                              "id": "d2da0641-d081-42ec-aa02-3f0a4ba10af6",
                               "ord": "a2"
                             }
                           ],
-                          "id": "edd7fec5-9d91-4f47-9af8-f84dd37b73a8",
+                          "id": "10c2f47d-8efb-47ae-8764-40351dcdee4c",
                           "ord": "a1"
                         }
                       ],
-                      "id": "a2227dd3-ceac-4f2a-bde6-01816d192837",
+                      "id": "fdc8f6c2-d239-4e1d-9a92-154f22eecb00",
                       "ord": "a2"
                     },
                     {
@@ -607,23 +607,23 @@
                                   "props": {
                                     "heading": "Legal"
                                   },
-                                  "id": "f0db7c0e-c2ee-44b7-bd8a-3ae05a74988e",
+                                  "id": "bcabc103-a13a-4d69-bd34-d9d7f6cccf97",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "7b73ebc4-8689-4327-a3ce-1698838d534d",
+                              "id": "6f0175b8-a45f-4109-b7da-ca39f78bd479",
                               "ord": "a0"
                             }
                           ],
-                          "id": "9b51790d-df84-4f5a-b224-fe0aa37a5ae9",
+                          "id": "0460ce3b-9524-491b-9e09-003f05d756b6",
                           "ord": "a0"
                         }
                       ],
-                      "id": "3dfbdfb3-db74-4f0a-9005-e93c31a2386f",
+                      "id": "874bb976-0482-4b07-85f2-616e35415298",
                       "ord": "a3"
                     }
                   ],
-                  "id": "acf7deef-dd68-45bd-8b50-9a44feb35af7",
+                  "id": "5fa31286-8ef0-4b54-a9a8-614321671931",
                   "ord": "a0"
                 },
                 {
@@ -646,11 +646,11 @@
                             "kind": "value",
                             "ref": "site.identity.name"
                           },
-                          "id": "c2f6aa37-ba3f-457e-8e3c-dc00177f8976",
+                          "id": "64823948-58ac-4704-98ea-deff348c63e4",
                           "ord": "a0"
                         }
                       ],
-                      "id": "0a212aef-63ba-456a-a27c-c446f93686c9",
+                      "id": "84b3595e-0a33-4e39-b05f-aa0b9f25710a",
                       "ord": "a0"
                     },
                     {
@@ -658,23 +658,23 @@
                       "tag": "ul",
                       "class": "flex flex-wrap items-center gap-x-6 gap-y-2",
                       "children": [],
-                      "id": "670dfc1d-7db0-430b-82ed-b8beb928c503",
+                      "id": "2c36adde-66a9-4e80-96bc-fed8692e47c8",
                       "ord": "a1"
                     }
                   ],
-                  "id": "e1f5bd5e-466b-4921-ab63-c9a6beb6271d",
+                  "id": "d0d0e5c3-43fb-4b18-b739-b025fd702d4d",
                   "ord": "a1"
                 }
               ],
-              "id": "8d5fd762-c85d-41ec-8f52-32976a4622cc",
+              "id": "c6dac913-5888-4a7d-922c-b927ebd485b9",
               "ord": "a0"
             }
           ],
-          "id": "0d9c00a8-1110-401b-913d-a070246b64f5",
+          "id": "078ecbd3-3507-4a3a-84e0-3265c1a270c5",
           "ord": "a2"
         }
       ],
-      "id": "6bc7fcee-6f61-4f7b-8984-c95f59af7b4a"
+      "id": "25c2cb91-0c94-41f9-b3d1-93383d111dbc"
     }
   },
   "pages": [
@@ -688,7 +688,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "8c2b65c6-59f1-42a1-9103-24565bd00af9",
+        "id": "9558d551-70f9-439e-ab76-116942b471ed",
         "children": [
           {
             "kind": "element",
@@ -717,7 +717,7 @@
                           "alt": "A Northgate researcher at a microscope in a campus lab",
                           "loading": "lazy"
                         },
-                        "id": "3de33a33-1693-4745-b4c1-6065ab06dc05",
+                        "id": "cc318915-ea07-415b-a3b0-995485ca7c98",
                         "ord": "a0"
                       },
                       {
@@ -725,7 +725,7 @@
                         "tag": "span",
                         "class": "text-sm font-semibold uppercase tracking-wide text-accent",
                         "children": ["Research"],
-                        "id": "e9908f2d-802b-4f25-a447-1d0e34ed6e64",
+                        "id": "920c9210-deda-49c9-b3e9-23028ea2b0f4",
                         "ord": "a1"
                       },
                       {
@@ -735,7 +735,7 @@
                         "children": [
                           "Northgate scientists find coastal marshes store far more carbon than models assumed"
                         ],
-                        "id": "c1014bbb-559e-4bc8-b5ae-9258accd2bad",
+                        "id": "a58951f6-0c00-44d4-a215-d23f7c135aa4",
                         "ord": "a2"
                       },
                       {
@@ -745,7 +745,7 @@
                         "children": [
                           "A six-year survey led by the School of Public Health and the coastal ecology lab remeasured how much carbon a tidal marsh holds below the waterline. The number is large enough to change how the state values the wetlands it has been draining."
                         ],
-                        "id": "e99b6f8f-c400-4ee8-a5f6-3e9a0c120e6e",
+                        "id": "20f36b76-6518-46f0-9a94-14e221c573ea",
                         "ord": "a3"
                       },
                       {
@@ -753,11 +753,11 @@
                         "tag": "p",
                         "class": "text-sm text-base-content",
                         "children": ["By Elena Marsh · School of Arts & Sciences · 6 August"],
-                        "id": "ba41a556-e164-4a0c-9ff2-3194865c0e68",
+                        "id": "c53d3fc8-4b54-4039-ac93-7ba717ec394f",
                         "ord": "a4"
                       }
                     ],
-                    "id": "8faabb73-bf1f-4065-8167-28a999376689",
+                    "id": "1bec6e72-9b04-4d75-8d88-a4ce6577f499",
                     "ord": "a0"
                   },
                   {
@@ -778,7 +778,7 @@
                             "tag": "span",
                             "class": "text-sm font-semibold uppercase tracking-wide text-accent",
                             "children": ["Campus & Community"],
-                            "id": "0cad19f3-3a35-4b30-8d0d-22e2efb4f421",
+                            "id": "c266204a-9b08-4f0e-a293-8e43286eb03b",
                             "ord": "a0"
                           },
                           {
@@ -786,7 +786,7 @@
                             "tag": "h2",
                             "class": "text-lg font-semibold leading-snug text-base-content",
                             "children": ["The first-year move-in that reshaped a neighbourhood"],
-                            "id": "fa85fa62-f336-4eb4-b53a-dd35f3cf4b4f",
+                            "id": "61350fbb-a379-4ad2-aeee-cb07f52d1246",
                             "ord": "a1"
                           },
                           {
@@ -794,11 +794,11 @@
                             "tag": "p",
                             "class": "text-sm text-base-content",
                             "children": ["By Theo Park · 5 August"],
-                            "id": "d877f8d2-ac31-4c0b-9b50-bafa9034e729",
+                            "id": "a0a72cf1-0b6b-4db4-955d-d75b57120937",
                             "ord": "a2"
                           }
                         ],
-                        "id": "94a37bcd-29a2-4f34-b3d8-ce5bf83668c3",
+                        "id": "b374602b-573c-4476-9cdd-0f2caba3710e",
                         "ord": "a0"
                       },
                       {
@@ -814,7 +814,7 @@
                             "tag": "span",
                             "class": "text-sm font-semibold uppercase tracking-wide text-accent",
                             "children": ["Health"],
-                            "id": "ca51dcc3-1fd9-413d-8361-c7f591c0e7e9",
+                            "id": "ad6d4a88-7374-455c-953e-1dd19555993b",
                             "ord": "a0"
                           },
                           {
@@ -822,7 +822,7 @@
                             "tag": "h2",
                             "class": "text-lg font-semibold leading-snug text-base-content",
                             "children": ["A campus clinic study rethinks how students sleep"],
-                            "id": "2649a3ef-4fab-4952-a10c-6a2bddd97de1",
+                            "id": "d3c9743e-eb77-4cfa-b03a-97eaaac33821",
                             "ord": "a1"
                           },
                           {
@@ -830,11 +830,11 @@
                             "tag": "p",
                             "class": "text-sm text-base-content",
                             "children": ["By Nadia Okonkwo · 5 August"],
-                            "id": "419399b8-fd0f-4af8-b875-ad295b5202d8",
+                            "id": "fbc64b83-c34a-4cef-bbb2-087f8b2b44d5",
                             "ord": "a2"
                           }
                         ],
-                        "id": "0fa1ba89-93ac-435a-8593-4d4e5532bcdc",
+                        "id": "ef794263-61a1-4708-80c0-9b2fc161fc3b",
                         "ord": "a1"
                       },
                       {
@@ -850,7 +850,7 @@
                             "tag": "span",
                             "class": "text-sm font-semibold uppercase tracking-wide text-accent",
                             "children": ["Science & Tech"],
-                            "id": "8c087943-9816-4446-a439-452aad760cf8",
+                            "id": "6c723a69-a444-4f60-9f69-ac56087f1c64",
                             "ord": "a0"
                           },
                           {
@@ -858,7 +858,7 @@
                             "tag": "h2",
                             "class": "text-lg font-semibold leading-snug text-base-content",
                             "children": ["Inside the lab teaching robots to read handwriting"],
-                            "id": "97d3399a-8924-46d8-98de-aed8e376c844",
+                            "id": "9342dba6-dc62-405c-b755-f9d822ef6f73",
                             "ord": "a1"
                           },
                           {
@@ -866,23 +866,23 @@
                             "tag": "p",
                             "class": "text-sm text-base-content",
                             "children": ["By Elena Marsh · 4 August"],
-                            "id": "67ae9a89-f733-4371-b28e-55555f56a07c",
+                            "id": "aab6541c-bdd7-456e-9202-81177fe63cbe",
                             "ord": "a2"
                           }
                         ],
-                        "id": "856e3478-c54d-41b8-a849-04673ad2fa88",
+                        "id": "ab441d1b-332d-4384-aad7-f5480019af97",
                         "ord": "a2"
                       }
                     ],
-                    "id": "06351341-3dfd-47e0-9272-1a3507871259",
+                    "id": "6e7d9b04-8d77-4f85-8eb0-138696fb98ec",
                     "ord": "a1"
                   }
                 ],
-                "id": "7f7d9e9b-4750-458d-8437-d606f36bceb3",
+                "id": "bc4f7562-ae22-4706-8db7-a0a07160134f",
                 "ord": "a0"
               }
             ],
-            "id": "98837eff-0d26-43fb-a010-5a496900e1b2",
+            "id": "1e033d33-f18f-4630-8f55-94acfb105efb",
             "ord": "a0"
           },
           {
@@ -900,7 +900,7 @@
                     "tag": "h2",
                     "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
                     "children": ["Across the university"],
-                    "id": "aef4e478-bb8e-48f7-8784-d4b5a7756e78",
+                    "id": "6402c40d-5625-4f79-9701-fff6267436f9",
                     "ord": "a0"
                   },
                   {
@@ -908,15 +908,15 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg text-base-content",
                     "children": ["The newest reporting from every corner of campus."],
-                    "id": "7f50c76c-47bd-409b-839e-ff4b39f6511c",
+                    "id": "b167c972-76fe-4880-972a-4bd37e3a554f",
                     "ord": "a1"
                   }
                 ],
-                "id": "924d4577-8308-45d4-94a7-a41a4e907155",
+                "id": "273c25f8-83de-4f52-8c29-31594a825499",
                 "ord": "a0"
               }
             ],
-            "id": "5f86bf72-c9b9-4ee8-9d81-c405b196da0f",
+            "id": "2822b57a-9547-4906-95cb-945da49ee445",
             "ord": "a1"
           },
           {
@@ -954,7 +954,7 @@
                               "kind": "value",
                               "ref": "featuredImage"
                             },
-                            "id": "149460fd-7cfb-4419-a5e7-2a4d00976fe8",
+                            "id": "b1759b3c-9434-46b9-bb26-00dcca7e3518",
                             "ord": "a0"
                           },
                           {
@@ -966,7 +966,7 @@
                               "kind": "value",
                               "ref": "date"
                             },
-                            "id": "d87447e0-4e24-47c2-a8fa-f6430ec7a2a3",
+                            "id": "69af5bf7-4187-4cb7-a03a-ee39635c132b",
                             "ord": "a1"
                           },
                           {
@@ -978,7 +978,7 @@
                               "kind": "value",
                               "ref": "title"
                             },
-                            "id": "168923dd-92ff-4758-8ff6-bce3014d190e",
+                            "id": "00181a0b-178d-4f7d-a253-79345a0fde30",
                             "ord": "a2"
                           },
                           {
@@ -990,7 +990,7 @@
                               "kind": "value",
                               "ref": "excerpt"
                             },
-                            "id": "6c1f8bdb-7912-4ada-84f5-f0938367a71e",
+                            "id": "0655b4b5-5d5c-4cc8-89cd-436fc2e3a1fd",
                             "ord": "a3"
                           }
                         ],
@@ -999,7 +999,7 @@
                           "ref": "url",
                           "attr": "href"
                         },
-                        "id": "2e242755-361f-4bb4-b9d8-9a881f71b38f",
+                        "id": "b4efb769-5a3f-46b6-a38f-ca3238eefcc3",
                         "ord": "a0"
                       }
                     ],
@@ -1007,15 +1007,15 @@
                       "kind": "collection",
                       "ref": "cms.blog_post"
                     },
-                    "id": "d59e004d-89be-4e57-ae96-51260573131f",
+                    "id": "f89133b7-9e01-4411-bc59-9d9b0f580d6e",
                     "ord": "a0"
                   }
                 ],
-                "id": "5d0681dd-a8bd-4cf7-9037-4d1ca30672ef",
+                "id": "2b9a349a-39c0-42a2-a503-4d6aa0501568",
                 "ord": "a0"
               }
             ],
-            "id": "627c5c2b-b023-4936-ad00-7a7525568408",
+            "id": "e4856190-9297-4721-b45e-246555b39549",
             "ord": "a2"
           },
           {
@@ -1038,7 +1038,7 @@
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
                         "children": ["Explore Northgate"],
-                        "id": "043a4fef-2563-4c69-8d63-4d55f8720c2c",
+                        "id": "bdc714cd-05c5-475b-b34d-a41bbc067a51",
                         "ord": "a0"
                       },
                       {
@@ -1048,11 +1048,11 @@
                         "children": [
                           "Reporting from every part of the university — findings from the labs, life on the quad, and the teams that carry the Northgate name."
                         ],
-                        "id": "363e0272-931d-4b14-9a8b-5c785066dac8",
+                        "id": "23802d07-33e0-484e-a51c-bc82facd4494",
                         "ord": "a1"
                       }
                     ],
-                    "id": "3c6941da-c1c2-4297-afc6-0f370eae0d75",
+                    "id": "18e0ebc6-7f9b-40d5-93c9-2b32d9bcec53",
                     "ord": "a0"
                   },
                   {
@@ -1070,7 +1070,7 @@
                             "tag": "h3",
                             "class": "text-sm font-semibold uppercase tracking-wide text-primary",
                             "children": ["News"],
-                            "id": "605eec64-f23c-40d4-a2b8-86bef51b1d19",
+                            "id": "79f6dad8-fbd1-4dd7-8eb2-7c7516ce5a1f",
                             "ord": "a0"
                           },
                           {
@@ -1095,7 +1095,7 @@
                                         "tag": "span",
                                         "class": "text-lg font-semibold leading-snug text-base-content",
                                         "children": ["University announcements"],
-                                        "id": "5a2dbc55-a337-4674-ae9e-7989e4e4aec8",
+                                        "id": "cec64b6d-1783-4e32-b1b3-634e8ab79fcf",
                                         "ord": "a0"
                                       },
                                       {
@@ -1103,15 +1103,15 @@
                                         "tag": "span",
                                         "class": "text-sm text-base-content",
                                         "children": ["Policy, appointments and the record"],
-                                        "id": "c7de1f28-18b2-4326-a3b4-e1144e5671ec",
+                                        "id": "23bdb191-a03c-47ff-934f-4912850dcc56",
                                         "ord": "a1"
                                       }
                                     ],
-                                    "id": "b6f477ca-1d8a-4606-a5a4-21b701a9ce84",
+                                    "id": "ced2e141-22d0-4a80-abd3-09706b15d61b",
                                     "ord": "a0"
                                   }
                                 ],
-                                "id": "e910cb16-f1df-465f-bed8-c95273aeef89",
+                                "id": "0ae90040-62dc-41bd-90cf-1c036c174273",
                                 "ord": "a0"
                               },
                               {
@@ -1131,7 +1131,7 @@
                                         "tag": "span",
                                         "class": "text-lg font-semibold leading-snug text-base-content",
                                         "children": ["Nation & World"],
-                                        "id": "105aa40c-dbd1-436a-a123-b7ced91dad35",
+                                        "id": "8ab7a4cb-cd30-419b-a5df-300ff717aeda",
                                         "ord": "a0"
                                       },
                                       {
@@ -1139,15 +1139,15 @@
                                         "tag": "span",
                                         "class": "text-sm text-base-content",
                                         "children": ["Northgate voices on the wider story"],
-                                        "id": "7497e4a4-22a9-4776-b27c-3f54ff6517fe",
+                                        "id": "a8680572-e73e-402f-9140-5c6707e25c38",
                                         "ord": "a1"
                                       }
                                     ],
-                                    "id": "bf5a950a-0cfe-4392-b66f-c66b95fcc7bc",
+                                    "id": "46f290b8-727e-41bd-921f-501314b952ad",
                                     "ord": "a0"
                                   }
                                 ],
-                                "id": "719b4627-6780-40d5-abab-bf6cc185ec2b",
+                                "id": "dd579ddf-d7cb-4a0a-85c9-76abc094c361",
                                 "ord": "a1"
                               },
                               {
@@ -1167,7 +1167,7 @@
                                         "tag": "span",
                                         "class": "text-lg font-semibold leading-snug text-base-content",
                                         "children": ["Work & Economy"],
-                                        "id": "ac479971-36c0-4f24-bbc3-6bb3fba02c79",
+                                        "id": "d4c471e8-b0c8-4962-85b8-072913f63519",
                                         "ord": "a0"
                                       },
                                       {
@@ -1175,19 +1175,19 @@
                                         "tag": "span",
                                         "class": "text-sm text-base-content",
                                         "children": ["Research that reaches beyond campus"],
-                                        "id": "fdb28d75-99c0-4ba6-a2bb-84f2caa92cc9",
+                                        "id": "08a67e8a-9df9-48a3-9724-8ac2f6246c99",
                                         "ord": "a1"
                                       }
                                     ],
-                                    "id": "83348d7d-391c-4f4d-866a-9df4a86595d9",
+                                    "id": "08c4f95e-533d-4116-89d7-202265596ae3",
                                     "ord": "a0"
                                   }
                                 ],
-                                "id": "727b05b0-b48b-4f26-b9a8-149f3473f3c5",
+                                "id": "3dc3f9c2-fec3-4023-9faf-91b1c8e59e57",
                                 "ord": "a2"
                               }
                             ],
-                            "id": "cb9101a4-2f4b-4db7-80e6-bbfa43a735f9",
+                            "id": "0629db50-8dfd-450b-801d-54e4f1d47aba",
                             "ord": "a1"
                           },
                           {
@@ -1198,11 +1198,11 @@
                               "href": "/journal"
                             },
                             "children": ["More in News →"],
-                            "id": "236999b4-1cd1-4960-b9dd-dea5a17cdc12",
+                            "id": "38eef8b2-5da3-43a1-b93f-6b34f46935d3",
                             "ord": "a2"
                           }
                         ],
-                        "id": "6ae0d841-9ff4-4475-ba76-cf6fb52a475f",
+                        "id": "9a7d2e29-452d-4e75-b005-cb0bb4505428",
                         "ord": "a0"
                       },
                       {
@@ -1215,7 +1215,7 @@
                             "tag": "h3",
                             "class": "text-sm font-semibold uppercase tracking-wide text-primary",
                             "children": ["Research"],
-                            "id": "a361e241-e0ae-4675-bcd6-e3f3b43512a1",
+                            "id": "10495ff5-284b-4fa9-9e6a-ac8cd93bac64",
                             "ord": "a0"
                           },
                           {
@@ -1240,7 +1240,7 @@
                                         "tag": "span",
                                         "class": "text-lg font-semibold leading-snug text-base-content",
                                         "children": ["Findings"],
-                                        "id": "5c07a2ad-f44f-45e5-bc58-1f9ead68e138",
+                                        "id": "cd1c582e-3238-430a-946b-5ea50d810a09",
                                         "ord": "a0"
                                       },
                                       {
@@ -1248,15 +1248,15 @@
                                         "tag": "span",
                                         "class": "text-sm text-base-content",
                                         "children": ["The marquee work from the labs"],
-                                        "id": "2fe14d19-111e-4e22-9663-30b2321982fe",
+                                        "id": "4596bd3e-bf6c-425c-88bc-6902fec06abc",
                                         "ord": "a1"
                                       }
                                     ],
-                                    "id": "c819f658-6a62-46aa-817d-f4c08c5f721d",
+                                    "id": "0ae81e6c-3650-46f5-9d66-7eef9db02d51",
                                     "ord": "a0"
                                   }
                                 ],
-                                "id": "815037aa-2ed5-441d-a25f-50937c1a0f1f",
+                                "id": "499bc1ba-143d-45e3-a028-3ba961afe4e8",
                                 "ord": "a0"
                               },
                               {
@@ -1276,7 +1276,7 @@
                                         "tag": "span",
                                         "class": "text-lg font-semibold leading-snug text-base-content",
                                         "children": ["Health & Medicine"],
-                                        "id": "2118c3b8-1469-4e25-93f3-aadfc01f2c45",
+                                        "id": "c09e53be-1334-4f07-8839-b8e4ab34e97d",
                                         "ord": "a0"
                                       },
                                       {
@@ -1284,15 +1284,15 @@
                                         "tag": "span",
                                         "class": "text-sm text-base-content",
                                         "children": ["Studies from the medical school"],
-                                        "id": "1ce213bf-fd7a-4bc4-af04-6de9231cee36",
+                                        "id": "4816c002-4586-4f05-9cce-ff7c1c837bb6",
                                         "ord": "a1"
                                       }
                                     ],
-                                    "id": "9c83f360-2193-4ff2-837d-b72fb7c2de8b",
+                                    "id": "db9652d5-ed6c-48c9-abc8-4a489b1e5572",
                                     "ord": "a0"
                                   }
                                 ],
-                                "id": "5063eeee-f795-44bc-9a03-e68e9aefd692",
+                                "id": "8afb184e-1391-4fda-9fb5-4da80e7cabc1",
                                 "ord": "a1"
                               },
                               {
@@ -1312,7 +1312,7 @@
                                         "tag": "span",
                                         "class": "text-lg font-semibold leading-snug text-base-content",
                                         "children": ["Science & Tech"],
-                                        "id": "e450d59b-2bc2-4764-973b-242f69389a5c",
+                                        "id": "af45ce52-7014-4388-8d50-9eea315efe22",
                                         "ord": "a0"
                                       },
                                       {
@@ -1320,19 +1320,19 @@
                                         "tag": "span",
                                         "class": "text-sm text-base-content",
                                         "children": ["Engineering, computing and the sciences"],
-                                        "id": "b9fa5609-9a3d-4c63-a3d4-f3a77312f4ee",
+                                        "id": "5fc2bbdc-41c6-483b-bb16-14f37de91142",
                                         "ord": "a1"
                                       }
                                     ],
-                                    "id": "6317f293-ba84-4dfd-abf0-b8dfcfe49c9f",
+                                    "id": "dc053afb-cfa9-403b-960d-b97500e61ffd",
                                     "ord": "a0"
                                   }
                                 ],
-                                "id": "4cf34c4a-8f9b-46a0-b53a-07a57118a8a9",
+                                "id": "d41372bb-723a-443e-9c06-e301a2661998",
                                 "ord": "a2"
                               }
                             ],
-                            "id": "4289d9f4-960a-4e93-ba62-3bcdbc77ceb5",
+                            "id": "5a1b80f5-c39e-4f38-94c1-da2bf0d5e2ff",
                             "ord": "a1"
                           },
                           {
@@ -1343,11 +1343,11 @@
                               "href": "/journal"
                             },
                             "children": ["More in Research →"],
-                            "id": "d648178c-bdea-4153-b230-82c5cc640ff1",
+                            "id": "5942461d-190e-48eb-a205-0ff6cf0ce7f3",
                             "ord": "a2"
                           }
                         ],
-                        "id": "ef61f959-653c-4735-b785-c56b05ccf521",
+                        "id": "72211871-92e9-43ce-8c95-07a4df085d9c",
                         "ord": "a1"
                       },
                       {
@@ -1360,7 +1360,7 @@
                             "tag": "h3",
                             "class": "text-sm font-semibold uppercase tracking-wide text-primary",
                             "children": ["Campus"],
-                            "id": "0a01c0af-da79-41c4-bd91-c8f4d5257abf",
+                            "id": "3d06b3aa-0f2c-4013-acd9-f3c568a1976f",
                             "ord": "a0"
                           },
                           {
@@ -1385,7 +1385,7 @@
                                         "tag": "span",
                                         "class": "text-lg font-semibold leading-snug text-base-content",
                                         "children": ["Campus & Community"],
-                                        "id": "6bc1b4d6-4279-4192-98ab-ec10f76f4ee0",
+                                        "id": "d906ba42-ffe4-47e1-9d23-196af7431826",
                                         "ord": "a0"
                                       },
                                       {
@@ -1393,15 +1393,15 @@
                                         "tag": "span",
                                         "class": "text-sm text-base-content",
                                         "children": ["Student life, housing and the city"],
-                                        "id": "9f14e5e0-8ff3-44f2-92ca-d794e65a1609",
+                                        "id": "85fb1f3b-e14d-4ea0-9be4-b261bc7fbc4d",
                                         "ord": "a1"
                                       }
                                     ],
-                                    "id": "2a581083-d146-4490-99b3-1e9af563b05f",
+                                    "id": "c242fbcb-355c-48e0-9399-26198db9745c",
                                     "ord": "a0"
                                   }
                                 ],
-                                "id": "9c328fb6-352c-4fc1-9f69-5e19f59948cd",
+                                "id": "e86d1494-18da-4a11-b5e5-52ccdfd2c68f",
                                 "ord": "a0"
                               },
                               {
@@ -1421,7 +1421,7 @@
                                         "tag": "span",
                                         "class": "text-lg font-semibold leading-snug text-base-content",
                                         "children": ["Arts & Culture"],
-                                        "id": "98a83877-b42d-4197-8655-76ec3720e17f",
+                                        "id": "d8922b4c-42db-487b-8d99-eab2d0c31604",
                                         "ord": "a0"
                                       },
                                       {
@@ -1429,15 +1429,15 @@
                                         "tag": "span",
                                         "class": "text-sm text-base-content",
                                         "children": ["Music, theatre and the galleries"],
-                                        "id": "0ee0a281-4293-4b22-b200-5813b8d9dc57",
+                                        "id": "0de11753-6c89-4e59-9388-b2272125ef3c",
                                         "ord": "a1"
                                       }
                                     ],
-                                    "id": "ba952dc2-9acb-44e5-86ea-48670f349c97",
+                                    "id": "f5ef8a0a-0d53-4f82-ba8d-ba1351ad0357",
                                     "ord": "a0"
                                   }
                                 ],
-                                "id": "b752cec5-011a-4208-b6e1-4b09eff85cda",
+                                "id": "4a9d84b0-b406-47ff-8a29-0bdf1ff23724",
                                 "ord": "a1"
                               },
                               {
@@ -1457,7 +1457,7 @@
                                         "tag": "span",
                                         "class": "text-lg font-semibold leading-snug text-base-content",
                                         "children": ["Sustainability"],
-                                        "id": "912822e6-f02f-4692-9ae4-cd7640be731d",
+                                        "id": "a79fbf70-8e98-4ceb-a55e-a4c058638020",
                                         "ord": "a0"
                                       },
                                       {
@@ -1465,19 +1465,19 @@
                                         "tag": "span",
                                         "class": "text-sm text-base-content",
                                         "children": ["How the campus runs, and greener"],
-                                        "id": "182d4622-3fbb-4e42-88a0-a593b7c239f8",
+                                        "id": "2490d73e-ac90-4e86-9816-91815067d76c",
                                         "ord": "a1"
                                       }
                                     ],
-                                    "id": "6576079e-540d-453d-9d85-e68ec4ff1f0c",
+                                    "id": "cbf47a37-91cd-4d73-b511-4caa75abd700",
                                     "ord": "a0"
                                   }
                                 ],
-                                "id": "6f4642df-099c-4e20-bbf2-8b253bec3155",
+                                "id": "c637ae64-be6d-4880-bc0c-4974b0b196e0",
                                 "ord": "a2"
                               }
                             ],
-                            "id": "c819a9b5-4a3c-4139-91fc-056a69d87ed4",
+                            "id": "8da038be-e8f6-41c8-8fab-4a5fceb80fdb",
                             "ord": "a1"
                           },
                           {
@@ -1488,11 +1488,11 @@
                               "href": "/journal"
                             },
                             "children": ["More in Campus →"],
-                            "id": "8aba1d63-16f0-4066-a565-cb497f51512f",
+                            "id": "70f7b344-bdbd-4558-b48d-15946bb333a4",
                             "ord": "a2"
                           }
                         ],
-                        "id": "940583fe-0d2f-49a7-a507-ab2099fa8532",
+                        "id": "61b72946-1f1d-4c86-beed-73f3e76dd2e6",
                         "ord": "a2"
                       },
                       {
@@ -1505,7 +1505,7 @@
                             "tag": "h3",
                             "class": "text-sm font-semibold uppercase tracking-wide text-primary",
                             "children": ["Athletics"],
-                            "id": "c2af516a-db39-4aad-ba9a-864cd334849a",
+                            "id": "c8f26200-a35b-4a11-a3d6-af3c23c316d0",
                             "ord": "a0"
                           },
                           {
@@ -1530,7 +1530,7 @@
                                         "tag": "span",
                                         "class": "text-lg font-semibold leading-snug text-base-content",
                                         "children": ["Northgate Athletics"],
-                                        "id": "e7e4aa65-641a-4d68-bd0a-16660d1172ea",
+                                        "id": "7fc14fed-0ddd-4f05-bf3e-05eed3628fa1",
                                         "ord": "a0"
                                       },
                                       {
@@ -1538,15 +1538,15 @@
                                         "tag": "span",
                                         "class": "text-sm text-base-content",
                                         "children": ["Scores, seasons and the teams"],
-                                        "id": "744d42c0-1271-4941-ba2a-c61c4f39221b",
+                                        "id": "c00cb2c5-3efa-4d3e-8ab6-261fc706d05d",
                                         "ord": "a1"
                                       }
                                     ],
-                                    "id": "2276e8d3-0ddc-4da8-83df-7c44c7cbcb16",
+                                    "id": "0d96e6dc-babb-442b-84e9-84806214b9c5",
                                     "ord": "a0"
                                   }
                                 ],
-                                "id": "bdfca43b-213a-4d61-8e9c-0778b020394f",
+                                "id": "8b194072-7404-4ad0-a073-af090323f8ab",
                                 "ord": "a0"
                               },
                               {
@@ -1566,7 +1566,7 @@
                                         "tag": "span",
                                         "class": "text-lg font-semibold leading-snug text-base-content",
                                         "children": ["Club & intramural"],
-                                        "id": "13483266-5027-4d72-80d6-ee6a97df9e4f",
+                                        "id": "39eef6db-1dbc-4aa0-a667-8c5c9b799af1",
                                         "ord": "a0"
                                       },
                                       {
@@ -1574,15 +1574,15 @@
                                         "tag": "span",
                                         "class": "text-sm text-base-content",
                                         "children": ["Sport beyond the varsity roster"],
-                                        "id": "795ae99c-f72b-4cd5-9db3-200a32e71c7a",
+                                        "id": "2ccdba9e-1c97-406c-8109-b0585f1a52be",
                                         "ord": "a1"
                                       }
                                     ],
-                                    "id": "c6fe1933-cedd-4fe2-ac44-a437e1f62297",
+                                    "id": "26976e20-81dd-489f-87da-ac581fa00ee5",
                                     "ord": "a0"
                                   }
                                 ],
-                                "id": "c1e31d1d-f488-4b84-b9f8-f3a303b6f662",
+                                "id": "726d85e2-11b7-4068-8f86-d7702450aa06",
                                 "ord": "a1"
                               },
                               {
@@ -1602,7 +1602,7 @@
                                         "tag": "span",
                                         "class": "text-lg font-semibold leading-snug text-base-content",
                                         "children": ["Alumni & legends"],
-                                        "id": "1fcf8132-49fb-4a05-8180-b9b93fbf3a83",
+                                        "id": "bea0aab4-5382-4116-8a91-11714b8a53eb",
                                         "ord": "a0"
                                       },
                                       {
@@ -1610,19 +1610,19 @@
                                         "tag": "span",
                                         "class": "text-sm text-base-content",
                                         "children": ["The record book and its keepers"],
-                                        "id": "84409358-fd0c-4e84-ab77-1c30c43bf57b",
+                                        "id": "fa86d464-5996-4109-b34d-eab31e0ab6f0",
                                         "ord": "a1"
                                       }
                                     ],
-                                    "id": "52684c1a-c690-42e1-bc98-64bc7311f054",
+                                    "id": "66ae8608-e5cb-46c3-8cc2-49b7e0ffa6cc",
                                     "ord": "a0"
                                   }
                                 ],
-                                "id": "d6f8a062-9864-4a28-83bc-c341b23f2bfd",
+                                "id": "fcb46498-d9d0-42ee-b72d-257375e7dde0",
                                 "ord": "a2"
                               }
                             ],
-                            "id": "e9b8b65c-a902-4a67-92ad-e1b817f37505",
+                            "id": "959d58d2-0472-439c-8410-90f20525e742",
                             "ord": "a1"
                           },
                           {
@@ -1633,23 +1633,23 @@
                               "href": "/journal"
                             },
                             "children": ["More in Athletics →"],
-                            "id": "a9fb9758-7033-4bf5-8b96-68805fa1eafa",
+                            "id": "26750bf1-d853-4382-b4ab-9f2164070ff0",
                             "ord": "a2"
                           }
                         ],
-                        "id": "1aa2d1d4-715e-44ac-970f-535f3522277a",
+                        "id": "c3967e2d-325b-49df-88d3-1a79b2fa0c9b",
                         "ord": "a3"
                       }
                     ],
-                    "id": "a22f6462-3e88-4614-9e5a-e37d8c127c53",
+                    "id": "6e777066-8b7e-4999-bebc-1f0fd6071d3b",
                     "ord": "a1"
                   }
                 ],
-                "id": "2d7b9823-8037-4e24-8589-878db49c2efd",
+                "id": "5b9bfe76-50e5-45f0-bb1a-c17d5b1c079c",
                 "ord": "a0"
               }
             ],
-            "id": "0aab8d37-57ba-4d05-96fc-c8253056bd66",
+            "id": "5b3c57d1-7409-48ab-a6d5-2b56b74929b2",
             "ord": "a3"
           },
           {
@@ -1667,7 +1667,7 @@
                     "tag": "h2",
                     "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
                     "children": ["On campus this month"],
-                    "id": "7bba33dd-806c-462c-b0e3-24a222510bd3",
+                    "id": "983509f4-9936-4e3f-9dc8-ffa0cfb86b5c",
                     "ord": "a0"
                   },
                   {
@@ -1690,7 +1690,7 @@
                                 "tag": "span",
                                 "class": "text-3xl font-bold leading-none text-primary",
                                 "children": ["12"],
-                                "id": "c1a6e70e-5027-45ed-968e-ea3cd5dc5717",
+                                "id": "00275e19-37be-40c6-9387-2ab234a25d2d",
                                 "ord": "a0"
                               },
                               {
@@ -1698,11 +1698,11 @@
                                 "tag": "span",
                                 "class": "text-base font-semibold text-base-content",
                                 "children": ["Sep"],
-                                "id": "7620beb6-0876-4648-b2e2-415b83b2c22b",
+                                "id": "1a0e0f82-cd2f-4c86-9ff8-0415439c9019",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "a0fdd144-99a3-4e5f-9ae9-446f5b2a5e84",
+                            "id": "82ad8dc3-bbb4-4601-8b64-9b793d837df2",
                             "ord": "a0"
                           },
                           {
@@ -1715,7 +1715,7 @@
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
                                 "children": ["The President’s Lecture: what a coastline is worth"],
-                                "id": "66632a58-8648-4eea-a11a-18f85dc3333b",
+                                "id": "18f7f0bf-2c4b-4e21-b675-d505dd9a6878",
                                 "ord": "a0"
                               },
                               {
@@ -1725,7 +1725,7 @@
                                 "children": [
                                   "Elena Marsh and the coastal ecology lab present the marsh-carbon findings, followed by a public Q&A."
                                 ],
-                                "id": "12af1e7c-7c45-45a1-a13d-79e547a21c7c",
+                                "id": "39e25510-1d0f-4b7c-a4ab-4ef38c1d3747",
                                 "ord": "a1"
                               },
                               {
@@ -1733,7 +1733,7 @@
                                 "tag": "p",
                                 "class": "text-sm text-base-content",
                                 "children": ["Hartwell Hall · 6pm · free and open to the public"],
-                                "id": "e831c735-107e-4edb-8348-f98cf5fbc1a2",
+                                "id": "3e8e051e-e270-42a1-a82b-f7d3726131cb",
                                 "ord": "a2"
                               },
                               {
@@ -1744,15 +1744,15 @@
                                   "href": "/journal"
                                 },
                                 "children": ["Details →"],
-                                "id": "189f5e29-2647-4827-ac77-6107f8b59d32",
+                                "id": "4fa53756-eb7d-49db-8d99-e9fe54154552",
                                 "ord": "a3"
                               }
                             ],
-                            "id": "4f57d3ae-8376-470b-b700-c065a7f01f64",
+                            "id": "24a5098a-b45c-4ddb-932c-049a45ddd4dd",
                             "ord": "a1"
                           }
                         ],
-                        "id": "f3aea50a-cca3-4b67-98e5-30e6368f316c",
+                        "id": "e776e548-02cd-42eb-bb74-21538ff343ed",
                         "ord": "a0"
                       },
                       {
@@ -1770,7 +1770,7 @@
                                 "tag": "span",
                                 "class": "text-3xl font-bold leading-none text-primary",
                                 "children": ["27"],
-                                "id": "6520a605-caa4-457a-b328-53e07751ca93",
+                                "id": "ed9f8696-b7a0-43d1-95ef-47e34773d54d",
                                 "ord": "a0"
                               },
                               {
@@ -1778,11 +1778,11 @@
                                 "tag": "span",
                                 "class": "text-base font-semibold text-base-content",
                                 "children": ["Sep"],
-                                "id": "c9c4fde4-c417-47a1-8535-ff33e131e96c",
+                                "id": "689ec7ac-b858-41b1-ad42-db85d39a0326",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "330858ce-6a43-4cf9-ac7c-3bac707ab7d1",
+                            "id": "93e69537-76c4-44b7-9c4e-717f4f3b44be",
                             "ord": "a0"
                           },
                           {
@@ -1795,7 +1795,7 @@
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
                                 "children": ["Fall Research Showcase"],
-                                "id": "64d10478-1034-49ec-89d9-69aae6d0f207",
+                                "id": "8c53affb-ac48-40f6-b2bc-974810f9c504",
                                 "ord": "a0"
                               },
                               {
@@ -1805,7 +1805,7 @@
                                 "children": [
                                   "Two hundred undergraduate and graduate projects across every school, in one afternoon under the atrium."
                                 ],
-                                "id": "d145f1b7-da8e-472c-8111-64111f9c2cea",
+                                "id": "d9e5923c-a220-4089-9424-cc0d7b405729",
                                 "ord": "a1"
                               },
                               {
@@ -1813,7 +1813,7 @@
                                 "tag": "p",
                                 "class": "text-sm text-base-content",
                                 "children": ["Science Quad Atrium · 1pm · all welcome"],
-                                "id": "0268b4ae-22e3-4432-9ada-3457182389c4",
+                                "id": "96cb862a-33f8-4d22-95cd-e738c51471d9",
                                 "ord": "a2"
                               },
                               {
@@ -1824,15 +1824,15 @@
                                   "href": "/journal"
                                 },
                                 "children": ["Details →"],
-                                "id": "237ebaa1-9234-4968-adea-a9fd0877a6f1",
+                                "id": "38ec7770-d426-45f7-9257-ecb4573ad600",
                                 "ord": "a3"
                               }
                             ],
-                            "id": "afcd8b00-5ef4-4932-8326-7f4857532e17",
+                            "id": "f4fdf47c-5e4d-4808-a739-6f0a19852346",
                             "ord": "a1"
                           }
                         ],
-                        "id": "2dcc380f-93c3-43af-bd2e-7b2b6e8d6f13",
+                        "id": "c8688038-5276-4f6e-809a-2ddbc0594bd8",
                         "ord": "a1"
                       },
                       {
@@ -1850,7 +1850,7 @@
                                 "tag": "span",
                                 "class": "text-3xl font-bold leading-none text-primary",
                                 "children": ["05"],
-                                "id": "601e91c2-f557-45f0-b376-1767dcab56f6",
+                                "id": "48063f81-9c59-43cc-996a-1bcc023de5a9",
                                 "ord": "a0"
                               },
                               {
@@ -1858,11 +1858,11 @@
                                 "tag": "span",
                                 "class": "text-base font-semibold text-base-content",
                                 "children": ["Oct"],
-                                "id": "9383540a-04a8-4a5c-8576-e92509456f47",
+                                "id": "a9302890-0096-417e-91a0-b2689b802218",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "391880b2-e161-4c6d-b4d8-65f605faefa3",
+                            "id": "1986e054-abc4-489c-a366-5db8fd103caf",
                             "ord": "a0"
                           },
                           {
@@ -1875,7 +1875,7 @@
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
                                 "children": ["Northgate Symphony: a century in the hall"],
-                                "id": "78fcc5d6-c45e-4ce5-a9ce-0b18a9428b54",
+                                "id": "aa64b963-ae08-4d44-8fec-8214f3f64f5d",
                                 "ord": "a0"
                               },
                               {
@@ -1885,7 +1885,7 @@
                                 "children": [
                                   "The student orchestra reopens the restored Whitfield Hall with a programme spanning its hundred years."
                                 ],
-                                "id": "1992ad03-12bf-479a-a1ef-415ddc0e631a",
+                                "id": "2d961528-e47f-4fb9-a853-8332194cd20f",
                                 "ord": "a1"
                               },
                               {
@@ -1893,7 +1893,7 @@
                                 "tag": "p",
                                 "class": "text-sm text-base-content",
                                 "children": ["Whitfield Hall · 7:30pm · tickets at the box office"],
-                                "id": "1f17a8bc-f22c-4132-9a57-fd5d70f4d169",
+                                "id": "21829875-87ad-4d9f-aa20-80be2dad3d16",
                                 "ord": "a2"
                               },
                               {
@@ -1904,15 +1904,15 @@
                                   "href": "/journal"
                                 },
                                 "children": ["Details →"],
-                                "id": "06793772-3cae-412e-be60-9861fbac5b22",
+                                "id": "5feb67fe-d4f6-4540-a384-d5ba25d185cd",
                                 "ord": "a3"
                               }
                             ],
-                            "id": "8eb7ce9d-fc46-4daf-8674-688d48520b4c",
+                            "id": "da29c5df-a2b4-47ea-a148-ec765413744a",
                             "ord": "a1"
                           }
                         ],
-                        "id": "5af48a3c-9f39-4e3a-8eed-9de585120459",
+                        "id": "ca508467-024c-4096-9337-bf72a77c9801",
                         "ord": "a2"
                       },
                       {
@@ -1930,7 +1930,7 @@
                                 "tag": "span",
                                 "class": "text-3xl font-bold leading-none text-primary",
                                 "children": ["19"],
-                                "id": "c6d52778-067b-4401-afea-777448352813",
+                                "id": "54142ac0-3d35-4691-8a25-2a9a1bdbe44c",
                                 "ord": "a0"
                               },
                               {
@@ -1938,11 +1938,11 @@
                                 "tag": "span",
                                 "class": "text-base font-semibold text-base-content",
                                 "children": ["Oct"],
-                                "id": "d53c802a-ca81-4671-8847-dee92ff11543",
+                                "id": "7c022e6f-23cb-4686-8fbf-0f419bd71731",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "e9902b90-e94d-4866-905b-09f6e9faed2c",
+                            "id": "f6044bb8-f642-42a4-9cc3-a02370538f21",
                             "ord": "a0"
                           },
                           {
@@ -1955,7 +1955,7 @@
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
                                 "children": ["Alumni & Careers Fair"],
-                                "id": "727b20c2-a68a-4b63-96a6-60b23409da9d",
+                                "id": "b0de8d8b-78e1-4b96-a971-0ce088c7428d",
                                 "ord": "a0"
                               },
                               {
@@ -1965,7 +1965,7 @@
                                 "children": [
                                   "Employers, graduate schools and the alumni network, with drop-in advising for every year."
                                 ],
-                                "id": "587c89bf-906d-4e4d-8293-b10294522587",
+                                "id": "8ae9b24b-4e0e-4952-b5ce-45ac7372ae3f",
                                 "ord": "a1"
                               },
                               {
@@ -1973,7 +1973,7 @@
                                 "tag": "p",
                                 "class": "text-sm text-base-content",
                                 "children": ["Reeve Fieldhouse · 10am · students and alumni"],
-                                "id": "9594c600-9da2-42d9-886d-d15657d1cdcc",
+                                "id": "c7fc07c0-ceb8-4b03-a184-251207476be2",
                                 "ord": "a2"
                               },
                               {
@@ -1984,27 +1984,27 @@
                                   "href": "/journal"
                                 },
                                 "children": ["Details →"],
-                                "id": "a3c198ae-12a1-49fc-a997-40d46998f045",
+                                "id": "b5ef72f1-28b4-43b0-a7d0-d67d8bb6f0c9",
                                 "ord": "a3"
                               }
                             ],
-                            "id": "2d3d4511-4718-404e-8152-c5fdff45cf5c",
+                            "id": "ee09083f-c237-45ed-89c3-55e26c97356d",
                             "ord": "a1"
                           }
                         ],
-                        "id": "4b9d8374-744c-42c8-9f6a-c655d72529a3",
+                        "id": "dddf3b36-3a6d-439e-87fd-4b84c50eff32",
                         "ord": "a3"
                       }
                     ],
-                    "id": "08b051e9-e50c-4a33-a6db-37f84e7a5f35",
+                    "id": "2ac21b1e-9be1-4403-918c-5fe9654bda05",
                     "ord": "a1"
                   }
                 ],
-                "id": "939eae88-d844-4ee4-a63b-e84264896322",
+                "id": "5ded7a1a-b111-454d-a25e-d33cea9f7e29",
                 "ord": "a0"
               }
             ],
-            "id": "04301498-ada3-42de-b394-7264127f6647",
+            "id": "2c94465a-dd2a-4940-a739-d3269f077e13",
             "ord": "a4"
           },
           {
@@ -2022,7 +2022,7 @@
                     "tag": "h2",
                     "class": "text-2xl font-semibold text-base-content",
                     "children": ["University Press"],
-                    "id": "d303113e-867f-4671-9c3a-fe872e422035",
+                    "id": "756fdf31-acd2-40fd-9304-6d7ada0d8ac1",
                     "ord": "a0"
                   },
                   {
@@ -2046,12 +2046,12 @@
                             "props": {
                               "name": "arrow-left"
                             },
-                            "id": "a2d87335-daef-4a0d-8b8e-a1213bbaf5b9",
+                            "id": "0d3ea2bb-5243-4d7e-aabf-7c86262408f3",
                             "ord": "a0"
                           }
                         ],
                         "part": "prev",
-                        "id": "6e35cb82-39bb-4ddc-9303-1f38c8d42fd0",
+                        "id": "81fba2a8-5891-4a5d-9335-716187bc70c3",
                         "ord": "a0"
                       },
                       {
@@ -2070,20 +2070,20 @@
                             "props": {
                               "name": "arrow-right"
                             },
-                            "id": "2ba49036-92bc-494d-83d8-b9e2cf5581e0",
+                            "id": "605e984f-8637-4cf8-889d-945a1562894b",
                             "ord": "a0"
                           }
                         ],
                         "part": "next",
-                        "id": "bca4a2a4-c218-43d5-a8f1-e457fd8789c4",
+                        "id": "4ba155b5-d069-4e69-8203-f24153e79faa",
                         "ord": "a1"
                       }
                     ],
-                    "id": "4272419a-1765-472a-889e-ca06f5d6959a",
+                    "id": "2b7b745e-05f4-42ba-89c7-27d957b24643",
                     "ord": "a1"
                   }
                 ],
-                "id": "dccfbd83-71af-4c0a-8ddd-8121a56c9d32",
+                "id": "43634aff-5630-426c-b45f-920e770af00d",
                 "ord": "a0"
               },
               {
@@ -2108,7 +2108,7 @@
                           "kind": "value",
                           "ref": "image"
                         },
-                        "id": "303b2e67-f29e-48c5-b22e-8f281a597a61",
+                        "id": "75d9dd81-b10e-4afc-b773-08b757f1f33a",
                         "ord": "a0"
                       },
                       {
@@ -2125,7 +2125,7 @@
                               "kind": "value",
                               "ref": "title"
                             },
-                            "id": "7cbef4ca-617e-4ee4-8632-34fc9c379345",
+                            "id": "2fadfa08-00be-4754-9fd8-ca1c55631210",
                             "ord": "a0"
                           },
                           {
@@ -2137,11 +2137,11 @@
                               "kind": "value",
                               "ref": "price"
                             },
-                            "id": "ff38f23e-1115-4fd9-908c-fbeb13a2f055",
+                            "id": "480b4e23-3e6e-4060-8cd6-57c56d3a83e8",
                             "ord": "a1"
                           }
                         ],
-                        "id": "6149b5dc-90fe-4763-9452-f200d4820a5b",
+                        "id": "9e007e76-5ff4-4548-8849-c733fb3cf5f9",
                         "ord": "a1"
                       }
                     ],
@@ -2151,7 +2151,7 @@
                       "attr": "href"
                     },
                     "part": "slide",
-                    "id": "ba714ae6-897c-465f-8e48-94e6098f78ef",
+                    "id": "d0d3f67c-d942-482f-b6ad-b6b3cac81d89",
                     "ord": "a0"
                   }
                 ],
@@ -2160,14 +2160,14 @@
                   "kind": "collection",
                   "ref": "commerce.featured"
                 },
-                "id": "f2539e12-186e-4808-919a-1610bfb35690",
+                "id": "7441391f-f95c-4ab9-9606-be5397bba91d",
                 "ord": "a1"
               }
             ],
             "behavior": {
               "type": "carousel"
             },
-            "id": "b5b4f6e4-e59e-4a81-9633-94a6a015dc38",
+            "id": "40c76fad-4791-4417-84cf-5adce22fcecf",
             "ord": "a5"
           }
         ]
@@ -2184,7 +2184,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "40087a6c-3a9e-4eae-a900-4202561f00b3",
+        "id": "1ad706ef-65b4-412f-b32e-15740303fc8c",
         "children": [
           {
             "kind": "element",
@@ -2201,7 +2201,7 @@
                     "tag": "h1",
                     "class": "text-4xl font-bold tracking-tight text-base-content @2xl:text-5xl",
                     "children": ["Shop"],
-                    "id": "7cd05404-d5fc-400b-914c-73f307782ef1",
+                    "id": "0f134062-6d95-474a-b738-993623c571f1",
                     "ord": "a0"
                   },
                   {
@@ -2209,15 +2209,15 @@
                     "tag": "p",
                     "class": "mt-4 max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": ["Everything we currently have available."],
-                    "id": "6f4ed153-1c03-4434-a166-69bdbcdd8d5d",
+                    "id": "4b8c2895-e05f-4223-b92d-d306c6dcd548",
                     "ord": "a1"
                   }
                 ],
-                "id": "a12387b0-d569-4e63-84bf-62d34b1a8b95",
+                "id": "4c96b429-2d3c-44ae-947c-70f999d7e3b6",
                 "ord": "a0"
               }
             ],
-            "id": "867a8269-28a6-4daf-b0b4-44fa42f7e947",
+            "id": "06a1a6c8-26ae-4b2a-bbf8-39733db923d5",
             "ord": "a0"
           },
           {
@@ -2225,7 +2225,7 @@
             "component": "commerce.plp",
             "class": "mx-auto w-full max-w-6xl px-6 py-6",
             "locked": "host",
-            "id": "a16677b2-8b03-4fe1-ab0f-2fae8bf20a83",
+            "id": "bb5f3dce-5cda-45e7-bb00-82ff49d89ef5",
             "ord": "a1"
           }
         ]
@@ -2242,7 +2242,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "4860d351-48b1-4229-8dcc-f5cdd0218acc",
+        "id": "9be94729-490b-436b-bd9a-d5f404987e80",
         "children": [
           {
             "kind": "element",
@@ -2250,15 +2250,23 @@
             "class": "bg-base-100 @container",
             "children": [
               {
+                "kind": "element",
+                "tag": "h1",
+                "class": "mb-6 px-6 pt-10 text-3xl font-semibold text-base-content",
+                "children": ["Collections"],
+                "id": "0844af7b-7597-48dc-8ecd-b5567633d550",
+                "ord": "a0"
+              },
+              {
                 "kind": "host",
                 "component": "commerce.collections",
                 "class": "mx-auto w-full max-w-6xl px-6 py-6",
                 "locked": "host",
-                "id": "4c0ffb35-c628-48a3-ae12-77c2e4f31566",
-                "ord": "a0"
+                "id": "e70aa9d2-aa6b-40c4-a98f-ad6cb37f969c",
+                "ord": "a1"
               }
             ],
-            "id": "9cde6a3e-e8d4-4cdc-b7bb-275bf2a522c4",
+            "id": "aca9c473-1cca-4bb4-b818-096bf7961d4d",
             "ord": "a0"
           }
         ]
@@ -2275,7 +2283,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "827b8c1b-c8bf-4dd0-84c6-308b88fbe72c",
+        "id": "dc47a305-5b2b-43ef-abe5-ecebab9d1463",
         "children": [
           {
             "kind": "element",
@@ -2287,7 +2295,7 @@
                 "tag": "h1",
                 "class": "mb-6 px-6 pt-10 text-3xl font-semibold text-base-content",
                 "children": ["Your cart"],
-                "id": "c48cebe5-06b8-4125-a00b-43d914e9287e",
+                "id": "63594870-1dc8-48aa-9b30-2234d918cb75",
                 "ord": "a0"
               },
               {
@@ -2295,11 +2303,11 @@
                 "component": "commerce.cart",
                 "class": "mx-auto w-full max-w-4xl px-6 py-10",
                 "locked": "host",
-                "id": "5b6d2219-588d-4065-a9f2-be5d23c7de80",
+                "id": "5de7dc95-96b9-4a0e-998a-fd0538afe0a7",
                 "ord": "a1"
               }
             ],
-            "id": "0b20f9c2-aa6f-4dc1-a023-b667391a959a",
+            "id": "ac43ec2d-93e4-4db9-8637-13118bb1c28e",
             "ord": "a0"
           }
         ]
@@ -2316,7 +2324,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "b9b6e098-fdd3-4811-9cd8-3ad2fb7f24ea",
+        "id": "a1375691-24ee-422f-bf1d-167f67877953",
         "children": [
           {
             "kind": "element",
@@ -2328,7 +2336,7 @@
                 "tag": "h1",
                 "class": "mb-6 px-6 pt-10 text-3xl font-semibold text-base-content",
                 "children": ["Search"],
-                "id": "c3e7831d-84f5-47d1-9782-e905bc0c4a5a",
+                "id": "63aca76a-c261-4823-b4e0-1c788bb8bd01",
                 "ord": "a0"
               },
               {
@@ -2336,11 +2344,11 @@
                 "component": "commerce.search",
                 "class": "mx-auto w-full max-w-6xl px-6 py-6",
                 "locked": "host",
-                "id": "df537637-4463-448e-a0fb-939eb12b3369",
+                "id": "294da40b-785e-40a8-865b-7f2be6817fa2",
                 "ord": "a1"
               }
             ],
-            "id": "cebe632f-7fe1-4bd5-aee8-cb34fd739806",
+            "id": "4ea2ee7e-0c13-4ac5-999d-84d469f178d3",
             "ord": "a0"
           }
         ]
@@ -2357,7 +2365,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "a7ba94e2-f5ed-4042-b7b9-df46d4a5fc76",
+        "id": "4347c06d-8370-4fe2-864e-4fff9f6fc0f1",
         "children": [
           {
             "kind": "element",
@@ -2374,7 +2382,7 @@
                     "tag": "h1",
                     "class": "text-4xl font-bold leading-tight tracking-tight text-base-content @3xl:text-6xl",
                     "children": ["The Northgate Newsroom"],
-                    "id": "0995d140-6ae6-4122-84ce-e4512ab84745",
+                    "id": "24b929e6-d837-42d1-a9f7-10a0a33c4d5e",
                     "ord": "a0"
                   },
                   {
@@ -2384,15 +2392,15 @@
                     "children": [
                       "Research findings, campus life, and the people who make the university — reported by the news office for students, faculty, alumni and the public."
                     ],
-                    "id": "2b4550bc-3a59-438d-9433-eb8830454a01",
+                    "id": "072c08fc-1bd0-452f-b03b-e390d9447684",
                     "ord": "a1"
                   }
                 ],
-                "id": "02aadcdd-9715-4c19-bf6c-8f19c88dffcf",
+                "id": "2a23e911-3ee3-4bab-8c5f-00bad91546c2",
                 "ord": "a0"
               }
             ],
-            "id": "f6500cbb-1d69-4e35-9d8b-02ec0eb5f91f",
+            "id": "5fb2c512-1950-4b24-958f-b5903acf710f",
             "ord": "a0"
           },
           {
@@ -2430,7 +2438,7 @@
                               "kind": "value",
                               "ref": "featuredImage"
                             },
-                            "id": "9787e55f-2541-4bc7-945e-7f96356f834d",
+                            "id": "14293d63-4392-4adb-a2d0-894fd9521e4c",
                             "ord": "a0"
                           },
                           {
@@ -2442,7 +2450,7 @@
                               "kind": "value",
                               "ref": "date"
                             },
-                            "id": "349f8c5f-f67f-4cfd-836c-505b2201d442",
+                            "id": "6f4cf200-524c-480a-aa41-79f74f78f102",
                             "ord": "a1"
                           },
                           {
@@ -2454,7 +2462,7 @@
                               "kind": "value",
                               "ref": "title"
                             },
-                            "id": "232f0bef-1c06-437b-82af-d39657cabaa5",
+                            "id": "d2816939-9c8f-46eb-95fa-78b41161812b",
                             "ord": "a2"
                           },
                           {
@@ -2466,7 +2474,7 @@
                               "kind": "value",
                               "ref": "excerpt"
                             },
-                            "id": "4294db1b-656c-4c2b-9cdb-4ba1e3104b68",
+                            "id": "da9fd1e9-3a5f-4bbb-b9a2-e43123a22e37",
                             "ord": "a3"
                           }
                         ],
@@ -2475,7 +2483,7 @@
                           "ref": "url",
                           "attr": "href"
                         },
-                        "id": "ee38e559-7e2e-4786-b5d0-714536ef9a4d",
+                        "id": "f265e27f-6cac-4556-a324-9909412ded2a",
                         "ord": "a0"
                       }
                     ],
@@ -2483,15 +2491,15 @@
                       "kind": "collection",
                       "ref": "cms.blog_post"
                     },
-                    "id": "f67d4a51-3933-4bd6-bdb8-62d66924925f",
+                    "id": "39663480-bcfe-4931-9ace-5acb4fefe293",
                     "ord": "a0"
                   }
                 ],
-                "id": "68ae1b4f-7107-4aa2-9245-25838e643f1c",
+                "id": "2c61ca12-bae8-486d-83c9-86ac8dc5d6e9",
                 "ord": "a0"
               }
             ],
-            "id": "52119052-6b8d-4162-acb6-98358809f382",
+            "id": "81a1f490-1d35-4e14-9702-cc713f34ebde",
             "ord": "a1"
           }
         ]
@@ -2508,7 +2516,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "21eeede6-41a0-4668-9829-c9b8df8f340b",
+        "id": "4fb0a977-5fc7-403f-ba5d-76f777fbd727",
         "children": [
           {
             "kind": "element",
@@ -2525,7 +2533,7 @@
                     "tag": "h1",
                     "class": "text-4xl font-bold tracking-tight text-base-content @2xl:text-5xl",
                     "children": ["About the Newsroom"],
-                    "id": "09253725-1500-49f9-b705-2b099b01a18b",
+                    "id": "c6a4a454-cf37-46bd-8f3c-19f54e13dcb5",
                     "ord": "a0"
                   },
                   {
@@ -2535,7 +2543,7 @@
                     "children": [
                       "The Northgate Newsroom is the official news office of Northgate University. We report on the research, teaching and life of the institution — the findings coming out of the labs, the decisions shaping the campus, and the students, faculty and staff behind them."
                     ],
-                    "id": "edbde0ec-7848-42da-af03-21b9b2e00775",
+                    "id": "bbb88af2-8897-4f12-8683-85db3807a7aa",
                     "ord": "a1"
                   },
                   {
@@ -2545,7 +2553,7 @@
                     "children": [
                       "Our job is to tell the university’s story plainly and accurately, to a mixed audience of the campus community, alumni, the press and the wider public. When we cover research, we read the study before we write the headline, and we say clearly what has been found and what has not."
                     ],
-                    "id": "031370ad-5290-469d-8ad3-451c7a58e79a",
+                    "id": "84a32e64-b6f5-4da2-8da5-4e9ae5510fbe",
                     "ord": "a2"
                   },
                   {
@@ -2555,15 +2563,15 @@
                     "children": [
                       "Media Relations can arrange interviews, provide images and connect reporters with faculty experts. Story ideas from across the university are always welcome."
                     ],
-                    "id": "a3c04157-195c-4c09-b777-31df4836cccd",
+                    "id": "0c1b99bb-ae4e-4606-a251-9d7eaa8589be",
                     "ord": "a3"
                   }
                 ],
-                "id": "4daf169c-9392-46f0-8a30-adfd1ec2a6db",
+                "id": "707e35b8-2db1-4bf3-9e58-50496eaae4a8",
                 "ord": "a0"
               }
             ],
-            "id": "67132bd9-e938-460b-83ec-4b528936bb12",
+            "id": "e04c52ad-e3a8-48e7-88ad-eba136a87615",
             "ord": "a0"
           }
         ]
@@ -2580,53 +2588,297 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "11c51227-b5de-4957-8da8-ea30838122e1",
+        "id": "76b1d90d-d678-419b-be13-fed31e3e92be",
         "children": [
           {
             "kind": "element",
             "tag": "section",
-            "class": "bg-base-100 @container px-6 py-20 text-center",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-20",
             "children": [
               {
                 "kind": "element",
                 "tag": "div",
-                "class": "mx-auto flex w-full max-w-xl flex-col items-center gap-5",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-8",
                 "children": [
                   {
                     "kind": "element",
-                    "tag": "h1",
-                    "class": "text-4xl font-bold tracking-tight text-base-content @2xl:text-5xl",
-                    "children": ["Contact the Newsroom"],
-                    "id": "4e8109b9-8ade-4054-a80a-14d245e16814",
+                    "tag": "div",
+                    "class": "flex flex-col gap-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h1",
+                        "class": "text-4xl font-bold tracking-tight text-base-content @3xl:text-5xl",
+                        "children": ["Contact the Newsroom"],
+                        "id": "eef9a11e-783f-45c8-9c3c-334eda7ad345",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "For a media enquiry, an interview request, images, or a story tip from within the university, reach the news office directly. We respond to press on deadline and read every tip."
+                        ],
+                        "id": "6018160b-bc71-4951-8229-f0f00f56ca6a",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "a6647c8b-cba8-4f6b-a304-dc3674b1abfa",
                     "ord": "a0"
                   },
                   {
                     "kind": "element",
-                    "tag": "p",
-                    "class": "text-lg leading-relaxed text-base-content",
+                    "tag": "div",
+                    "class": "flex flex-col gap-1",
                     "children": [
-                      "For a media enquiry, an interview request, images, or a story tip from within the university, reach the news office directly. We respond to press on deadline and read every tip."
+                      {
+                        "kind": "element",
+                        "tag": "span",
+                        "class": "text-base font-medium text-base-content",
+                        "children": ["Call us"],
+                        "id": "c1a7efc7-215c-4002-ad9b-21c9d811eef4",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "text-lg font-semibold text-base-content underline underline-offset-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "children": ["(555) 123-4567"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "site.identity.phone"
+                            },
+                            "id": "8abab06d-23a6-4525-9459-77f8b856d682",
+                            "ord": "a0"
+                          }
+                        ],
+                        "data": {
+                          "kind": "value",
+                          "ref": "site.identity.phoneHref",
+                          "attr": "href"
+                        },
+                        "id": "e9e19019-75b5-4760-986a-c3e4942c16bf",
+                        "ord": "a1"
+                      }
                     ],
-                    "id": "4933465b-1d4f-440c-af76-cc1dc9e1d3e4",
+                    "data": {
+                      "kind": "visible",
+                      "ref": "site.identity.phone"
+                    },
+                    "id": "1660652e-9a86-4911-bb18-d265f6860b15",
                     "ord": "a1"
                   },
                   {
                     "kind": "element",
-                    "tag": "a",
-                    "class": "btn btn-primary btn-lg",
-                    "attrs": {
-                      "href": "mailto:news@northgate.example"
+                    "tag": "div",
+                    "class": "flex flex-col gap-1",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "span",
+                        "class": "text-base font-medium text-base-content",
+                        "children": ["Email us"],
+                        "id": "9469aead-f26f-489a-bae4-7f569960b355",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "text-lg font-semibold text-base-content underline underline-offset-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "children": ["hello@yourbusiness.com"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "site.identity.email"
+                            },
+                            "id": "33295200-1bf2-4f19-884e-e05a596e70cd",
+                            "ord": "a0"
+                          }
+                        ],
+                        "data": {
+                          "kind": "value",
+                          "ref": "site.identity.emailHref",
+                          "attr": "href"
+                        },
+                        "id": "78813ac9-6838-4d5e-b5f3-3dfb2802a99c",
+                        "ord": "a1"
+                      }
+                    ],
+                    "data": {
+                      "kind": "visible",
+                      "ref": "site.identity.email"
                     },
-                    "children": ["Email Media Relations"],
-                    "id": "d6e14f1d-2d2b-4138-ab48-99d8073d7847",
+                    "id": "03a7f620-489a-4624-b28c-c79ce983de6d",
                     "ord": "a2"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-1",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "span",
+                        "class": "text-base font-medium text-base-content",
+                        "children": ["Visit us"],
+                        "id": "95b936e6-b08f-45ee-9c77-ff7176c658cb",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "address",
+                        "class": "text-lg leading-relaxed whitespace-pre-line not-italic text-base-content",
+                        "children": ["123 Main Street\nPortland, OR 97204"],
+                        "data": {
+                          "kind": "value",
+                          "ref": "site.identity.address"
+                        },
+                        "id": "702051c0-6fe8-44fa-8217-202a634e684f",
+                        "ord": "a1"
+                      }
+                    ],
+                    "data": {
+                      "kind": "visible",
+                      "ref": "site.identity.address"
+                    },
+                    "id": "0a2bbca6-0fe8-443a-8788-cc0e5e13191d",
+                    "ord": "a3"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "form",
+                    "class": "flex w-full max-w-xl flex-col gap-5",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "label",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-base font-medium text-base-content",
+                            "children": ["Your name"],
+                            "id": "0bf1933f-42e8-4026-a1c3-1341b78713ef",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "input",
+                            "class": "input input-bordered w-full",
+                            "attrs": {
+                              "type": "text",
+                              "name": "name",
+                              "required": true
+                            },
+                            "id": "66d4cb97-7871-48c1-a2d4-87f1098f6917",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "1448f2a1-c007-49b6-8641-49bc75cb1e1c",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "label",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-base font-medium text-base-content",
+                            "children": ["Email address"],
+                            "id": "5a4e6c4e-5089-4ea5-bbb1-acb0d535b39f",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "input",
+                            "class": "input input-bordered w-full",
+                            "attrs": {
+                              "type": "email",
+                              "name": "email",
+                              "required": true
+                            },
+                            "id": "b278478b-f4e8-4ece-8570-a2108531e984",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "11501a15-8760-4ac1-b2b7-90d271608b05",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "label",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-base font-medium text-base-content",
+                            "children": ["How can we help?"],
+                            "id": "a19e5c99-b95b-4624-a6da-1e01a37399b8",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "textarea",
+                            "class": "textarea textarea-bordered min-h-32 w-full",
+                            "attrs": {
+                              "name": "message"
+                            },
+                            "id": "2997ca30-974b-4727-9cd7-38c6f704da49",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "ffa40b5e-e83f-4093-bfcf-75f9a6d0908b",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-wrap items-center gap-3",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "button",
+                            "class": "btn btn-primary btn-lg",
+                            "attrs": {
+                              "type": "submit"
+                            },
+                            "children": ["Email Media Relations"],
+                            "id": "32ea2e58-f7db-436d-8f0b-68c785d904e5",
+                            "ord": "a0"
+                          }
+                        ],
+                        "id": "5a7d789e-ef41-4558-bb6e-74399af25b89",
+                        "ord": "a3"
+                      }
+                    ],
+                    "behavior": {
+                      "type": "form"
+                    },
+                    "data": {
+                      "kind": "action",
+                      "ref": "submit"
+                    },
+                    "id": "b7094355-eac1-47c8-b5a0-07b88ec62bb4",
+                    "ord": "a4"
                   }
                 ],
-                "id": "1594302b-9633-408d-8302-927a73ba765c",
+                "id": "825ebd71-32d3-4593-9ea1-2cc204a4ee0e",
                 "ord": "a0"
               }
             ],
-            "id": "837cb365-7c8a-41a9-a232-18aea6f6b1dd",
+            "id": "503eff1c-e160-4faa-9568-c67d70cadfde",
             "ord": "a0"
           }
         ]
@@ -2671,18 +2923,18 @@
                             "kind": "element",
                             "tag": "span",
                             "children": ["←"],
-                            "id": "96681411-434a-4b58-a66e-62619f608ffa",
+                            "id": "24e5d125-0800-402b-be7e-36a34129f645",
                             "ord": "a0"
                           },
                           {
                             "kind": "element",
                             "tag": "span",
                             "children": ["All stories"],
-                            "id": "dbcdc925-ef95-42ff-9fe0-4dc89668aef7",
+                            "id": "16bcd2ad-d074-4cdf-b40a-d6d0bbc16d6c",
                             "ord": "a1"
                           }
                         ],
-                        "id": "3e088c84-f954-4f6b-96b1-68cbb47bf67d",
+                        "id": "2184c165-4f8c-4630-8c2a-42cef5ff2d2d",
                         "ord": "a0"
                       },
                       {
@@ -2694,7 +2946,7 @@
                           "kind": "visible",
                           "ref": "category"
                         },
-                        "id": "0e0e1090-675d-4fbb-9c37-ef309a093677",
+                        "id": "7986f35f-ac99-45d7-97e4-8e7439f6d893",
                         "ord": "a1"
                       },
                       {
@@ -2706,7 +2958,7 @@
                           "kind": "value",
                           "ref": "title"
                         },
-                        "id": "9fb3fa90-7702-4d69-8cfc-60250e12d019",
+                        "id": "a39c4796-7f79-405f-9d80-d5e889fc5456",
                         "ord": "a2"
                       },
                       {
@@ -2718,7 +2970,7 @@
                           "kind": "value",
                           "ref": "excerpt"
                         },
-                        "id": "9d3d1104-38eb-422c-bc2a-9d813e8b7944",
+                        "id": "4a4c33da-fef5-4f1c-aa9a-8cfd5956a753",
                         "ord": "a3"
                       },
                       {
@@ -2738,7 +2990,7 @@
                               "kind": "visible",
                               "ref": "authorAvatar"
                             },
-                            "id": "671fc1f0-165e-4a14-9aa3-89e720ae20eb",
+                            "id": "d8ec3afa-c2fa-4ee3-bee5-80191f9bf267",
                             "ord": "a0"
                           },
                           {
@@ -2755,7 +3007,7 @@
                                   "kind": "visible",
                                   "ref": "authorName"
                                 },
-                                "id": "45d10f57-d468-4bc3-a43b-eadd36db90a3",
+                                "id": "91bc07dc-7e69-4071-a9d7-7501a0f2bd4c",
                                 "ord": "a0"
                               },
                               {
@@ -2767,23 +3019,23 @@
                                   "kind": "value",
                                   "ref": "date"
                                 },
-                                "id": "e56e98b3-7b6e-4db2-bec6-177b9dc7a5e4",
+                                "id": "003ba5a8-5847-49b8-92d5-179f7d50e6a5",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "ad8cf294-4b6d-4abb-8606-91edf85155c5",
+                            "id": "c2c16a5f-dc41-4d0e-8d8b-faaa9033383e",
                             "ord": "a1"
                           }
                         ],
-                        "id": "b72c83cc-9914-4353-b7c7-8190693fc49a",
+                        "id": "009fd8c9-c8cd-4402-a0b0-1aa870cd09ec",
                         "ord": "a4"
                       }
                     ],
-                    "id": "544a6a06-6cda-4f78-91a0-7d3d7d3a0402",
+                    "id": "89f38e0b-7d6b-48e8-af07-d3c9d5beea49",
                     "ord": "a0"
                   }
                 ],
-                "id": "dad7951d-fd42-424e-b283-fb5ab2174279",
+                "id": "b1f98b6b-ea21-40d3-960f-fe38d1098f11",
                 "ord": "a0"
               },
               {
@@ -2808,19 +3060,19 @@
                           "kind": "value",
                           "ref": "featuredImage"
                         },
-                        "id": "bc4e6c9c-e537-4a82-a83c-2ffc1f3a865f",
+                        "id": "a9c80707-7686-4bd4-8e0b-db75d56114b8",
                         "ord": "a0"
                       }
                     ],
-                    "id": "e8b4fe5c-f8ee-4a00-9a5f-d97c8abf6aee",
+                    "id": "1ed89372-c423-4feb-b367-21e436e69dac",
                     "ord": "a0"
                   }
                 ],
-                "id": "46425ca3-a852-4086-b8f3-49f4ec7872ee",
+                "id": "7e60d07f-5360-4a1a-87bd-3fc5cc70709a",
                 "ord": "a1"
               }
             ],
-            "id": "7cc59f6f-bb55-47c5-8279-e1696f29632f",
+            "id": "700b5db0-3ec4-4ec4-b471-a4ac947b9ada",
             "ord": "a0"
           },
           {
@@ -2838,15 +3090,15 @@
                     "component": "cms.article-body",
                     "class": "w-full",
                     "locked": "host",
-                    "id": "ea70aa0c-527f-4a84-aabd-5fa6b2985d22",
+                    "id": "d01f7759-38df-43c1-a71b-7bec58946cc6",
                     "ord": "a0"
                   }
                 ],
-                "id": "22548e12-e16d-487c-9d36-b935ce3e33bd",
+                "id": "89d4f5ae-f175-4e82-b57c-762a4de0c036",
                 "ord": "a0"
               }
             ],
-            "id": "6ac4264e-edc7-4a85-aba3-90714f815c02",
+            "id": "cb699e16-6acc-41e4-a6e9-a64c7e26d31b",
             "ord": "a1"
           },
           {
@@ -2876,7 +3128,7 @@
                           "kind": "visible",
                           "ref": "authorAvatar"
                         },
-                        "id": "9cfb0ea7-e037-496b-85da-335b8d42c7a6",
+                        "id": "95a1f05d-50f2-478e-a039-69dad2d98b6a",
                         "ord": "a0"
                       },
                       {
@@ -2893,7 +3145,7 @@
                               "kind": "value",
                               "ref": "authorName"
                             },
-                            "id": "ac08f411-7718-40b5-8494-ecea40b7136b",
+                            "id": "270bce64-646d-4996-88d5-d08c21429da3",
                             "ord": "a0"
                           },
                           {
@@ -2905,11 +3157,11 @@
                               "kind": "value",
                               "ref": "authorBio"
                             },
-                            "id": "a8354a40-0729-4ab2-9b8e-c1d1c3a1b878",
+                            "id": "b00a8e7e-8e1e-4cad-82e1-6dff0a84341d",
                             "ord": "a1"
                           }
                         ],
-                        "id": "714f5593-fecb-4f29-917e-9512481f25ba",
+                        "id": "2476f4a4-5238-4ff5-ab9e-981ce49efd97",
                         "ord": "a1"
                       }
                     ],
@@ -2917,15 +3169,15 @@
                       "kind": "visible",
                       "ref": "authorBio"
                     },
-                    "id": "709643aa-2f80-4629-8723-f22c6a15df02",
+                    "id": "d1f4746d-8466-4b3d-8dcb-8b6344dac1c2",
                     "ord": "a0"
                   }
                 ],
-                "id": "668b4b7b-dc5c-4e76-bafe-bd8bea4f66ed",
+                "id": "1159055e-c667-4058-9675-95850e4d9412",
                 "ord": "a0"
               }
             ],
-            "id": "af7bb5d1-6791-4987-aede-e0237c3f7bc2",
+            "id": "0dee41b5-7249-41a7-bd74-0ef23cb1c71e",
             "ord": "a2"
           },
           {
@@ -2948,7 +3200,7 @@
                         "tag": "h2",
                         "class": "text-2xl font-bold tracking-tight text-base-content @2xl:text-3xl",
                         "children": ["Keep reading"],
-                        "id": "49e0d3e9-6c78-4b66-a260-5d7f06304132",
+                        "id": "e9003035-e46a-4e5e-87bb-2161b19a8c55",
                         "ord": "a0"
                       },
                       {
@@ -2963,23 +3215,23 @@
                               "href": "/journal"
                             },
                             "children": ["More stories"],
-                            "id": "83259682-168e-4681-ae71-6428c28470b3",
+                            "id": "4002bd5d-5f8f-42f3-a596-8aaf419fe3a5",
                             "ord": "a0"
                           }
                         ],
-                        "id": "9e5ed1e6-49f2-4fd8-94cf-3313008c090c",
+                        "id": "ab34e8ac-7993-47d1-b351-ea7f141067d0",
                         "ord": "a1"
                       }
                     ],
-                    "id": "26ed33be-8647-4710-99ce-10ac44c6f432",
+                    "id": "378cf58c-e507-439f-a0dd-40850ecee26e",
                     "ord": "a0"
                   }
                 ],
-                "id": "f1c96f87-3157-44e9-8b74-b91a7806ea77",
+                "id": "8db52812-4f34-47ec-a45b-7d17718c48f1",
                 "ord": "a0"
               }
             ],
-            "id": "6642fe49-01d9-40da-8c25-4f09621d4152",
+            "id": "71664107-679b-4ab4-80a3-eb2b8dcdf118",
             "ord": "a3"
           }
         ],
@@ -2987,7 +3239,7 @@
           "kind": "collection",
           "ref": "blog_post"
         },
-        "id": "d40626a2-decd-4d08-8a44-ae515b3b35d3"
+        "id": "9852b650-04e0-4fa6-8ccb-3f3ff1b47be2"
       }
     }
   ],

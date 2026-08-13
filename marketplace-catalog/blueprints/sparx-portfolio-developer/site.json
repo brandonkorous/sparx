@@ -22,7 +22,7 @@
                   "props": {
                     "show": "both"
                   },
-                  "id": "4e8ddc40-0d27-48cc-ab54-0ef0ec6d0534",
+                  "id": "d76d091c-d988-475f-93b9-43ecdfaf727c",
                   "ord": "a0"
                 },
                 {
@@ -43,7 +43,7 @@
                         "type": "link",
                         "label": "Product"
                       },
-                      "id": "69fc5961-d087-4f37-af19-e7f252140ac2",
+                      "id": "5b3e2243-5e05-434c-ac5d-a1115b6b64c3",
                       "ord": "a0"
                     },
                     {
@@ -59,7 +59,7 @@
                         "type": "link",
                         "label": "Pricing"
                       },
-                      "id": "64ea27f6-2589-4ddd-bf68-e5bf3db1393c",
+                      "id": "807d90ae-140c-4abc-9a8a-219b6187afe0",
                       "ord": "a1"
                     },
                     {
@@ -75,11 +75,11 @@
                         "type": "link",
                         "label": "Docs"
                       },
-                      "id": "adf3f65c-9232-4dd0-bea7-77afa2bc92a3",
+                      "id": "518c920a-ed8b-44bb-8c25-eb1c674d2d82",
                       "ord": "a2"
                     }
                   ],
-                  "id": "0a0e7b22-dd58-4291-bc28-cde3cf174a7a",
+                  "id": "d508ee15-30cc-49ff-ab15-b4df32665ca0",
                   "ord": "a1"
                 },
                 {
@@ -100,14 +100,14 @@
                         "type": "link",
                         "label": "Secondary link"
                       },
-                      "id": "d8c70e58-b3e6-4686-87d8-979ab15fd579",
+                      "id": "8d7dcc7a-0f8d-4c84-914e-f294cba79380",
                       "ord": "a0"
                     },
                     {
                       "kind": "host",
                       "component": "site.theme-toggle",
                       "class": "inline-flex items-center",
-                      "id": "e158d8a3-3d42-4307-a2c9-85a59004ece3",
+                      "id": "1a5f6cce-57a1-4afd-a008-b8fee05e2756",
                       "ord": "a1"
                     },
                     {
@@ -125,20 +125,20 @@
                           "props": {
                             "name": "menu"
                           },
-                          "id": "3b392a77-7550-47fc-9650-aa56bc4619b2",
+                          "id": "e8f07187-1566-4885-9e8d-6a6a991926f8",
                           "ord": "a0"
                         }
                       ],
                       "part": "trigger",
-                      "id": "83d408d2-8689-4b0e-a29f-b60ad499d2c7",
+                      "id": "5d4267fa-3208-4dd2-a0d1-5297b8937de5",
                       "ord": "a2"
                     }
                   ],
-                  "id": "a8428038-74af-4355-9c09-afdd0e82be68",
+                  "id": "a922e360-862a-44e4-8ec7-5e6775414106",
                   "ord": "a2"
                 }
               ],
-              "id": "cea05c29-096c-411e-a856-2ba9f237a4a2",
+              "id": "f36efcc3-e559-456a-924b-9ce065b859a2",
               "ord": "a0"
             },
             {
@@ -162,7 +162,7 @@
                     "type": "link",
                     "label": "Product"
                   },
-                  "id": "8faa5315-983c-4b77-92d8-8b4da1f69332",
+                  "id": "afe03503-a638-47ca-9cd8-10cbb7a26972",
                   "ord": "a0"
                 },
                 {
@@ -178,7 +178,7 @@
                     "type": "link",
                     "label": "Pricing"
                   },
-                  "id": "38abf5a7-eb50-46a4-a8c5-9af755bf31bd",
+                  "id": "b6b18ec9-b020-4f0c-9d20-af8211930842",
                   "ord": "a1"
                 },
                 {
@@ -194,7 +194,7 @@
                     "type": "link",
                     "label": "Docs"
                   },
-                  "id": "5427ffb4-0226-4079-946d-71923585586d",
+                  "id": "ba22c6e2-c6c7-44c7-85ec-b7f3ad69b285",
                   "ord": "a2"
                 },
                 {
@@ -210,19 +210,19 @@
                     "type": "link",
                     "label": "Secondary link"
                   },
-                  "id": "d3da3b70-3d2c-4f5f-8f10-3842687cb78f",
+                  "id": "7ce04c78-43d4-4343-8671-c634f6e536fc",
                   "ord": "a3"
                 }
               ],
               "part": "panel",
-              "id": "e651c670-af25-400d-80ee-8ec3460254aa",
+              "id": "f84d61b2-b7d1-43fd-822b-a189b8a95070",
               "ord": "a1"
             }
           ],
           "behavior": {
             "type": "disclosure"
           },
-          "id": "85cdb0dd-e8a6-4d01-9f45-11867aa9b07a",
+          "id": "d73d40f9-b7cc-4918-8147-90a516db424c",
           "ord": "a0"
         },
         {
@@ -238,7 +238,7 @@
               "kind": "outlet"
             }
           ],
-          "id": "6758f7e8-69b1-4242-bef5-db383dfb9499",
+          "id": "72ec1aa2-88d8-4637-971f-f66782c1c985",
           "ord": "a1"
         },
         {
@@ -268,7 +268,7 @@
                           "props": {
                             "show": "both"
                           },
-                          "id": "ec8c1abd-f283-4ea4-a070-de8079451a3d",
+                          "id": "d121095b-a281-4509-826c-8a2266f5fe41",
                           "ord": "a0"
                         },
                         {
@@ -284,7 +284,7 @@
                           "attrs": {
                             "href": "/"
                           },
-                          "id": "b80a6b33-2ccc-4fe3-ab27-da309c133377",
+                          "id": "b6332bc2-49bc-46fc-b1fa-88c82cfef64a",
                           "ord": "a1"
                         },
                         {
@@ -292,11 +292,11 @@
                           "tag": "ul",
                           "class": "mt-2 flex items-center gap-5",
                           "children": [],
-                          "id": "209ff5e5-5420-43cd-a172-23cb06c48541",
+                          "id": "97858c1b-fc85-45b4-b817-e2a4772d81e9",
                           "ord": "a2"
                         }
                       ],
-                      "id": "3f1bb799-fda3-43b8-a1f9-5261e784a934",
+                      "id": "84594fe9-f993-4d91-bc51-70a9cd8eef27",
                       "ord": "a0"
                     },
                     {
@@ -317,7 +317,7 @@
                           "attrs": {
                             "href": "/"
                           },
-                          "id": "226b7c32-d8e1-467c-adeb-c9146e1ded99",
+                          "id": "e8ef2f62-e63f-44e3-9cea-10201a344a98",
                           "ord": "a0"
                         },
                         {
@@ -342,11 +342,11 @@
                                     "type": "link",
                                     "label": "Features"
                                   },
-                                  "id": "b3b7ccea-761a-496a-ada4-b9172e2041e3",
+                                  "id": "d0bad241-3d24-4ac3-9c7a-b7f5f4801831",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "18236415-9347-46ed-8e15-96081e690fdf",
+                              "id": "cef6faf6-385c-4413-8dee-c7eadf876610",
                               "ord": "a0"
                             },
                             {
@@ -366,11 +366,11 @@
                                     "type": "link",
                                     "label": "Pricing"
                                   },
-                                  "id": "74adba79-5856-4366-bdf7-14d026e5ef1a",
+                                  "id": "078b987e-a747-433b-ac1f-448970b90038",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "621ebbc9-07fa-4e8f-b532-358e5ae31eb4",
+                              "id": "cbeec54d-5ff0-4e0a-b9d9-c1fc5da2c8b8",
                               "ord": "a1"
                             },
                             {
@@ -390,19 +390,19 @@
                                     "type": "link",
                                     "label": "Integrations"
                                   },
-                                  "id": "a6cd424d-ddbd-4263-999a-7f3c3deddebd",
+                                  "id": "4099f249-6581-4677-951c-79c4c10b6053",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "1a653dca-04d5-4005-8292-8da04aedf958",
+                              "id": "efbc7533-3c4e-4478-911c-995475ea1075",
                               "ord": "a2"
                             }
                           ],
-                          "id": "0f9551e0-2fc9-4155-8f47-d94fdb6609b8",
+                          "id": "63a1db4d-af1a-4e23-bc0f-7208bb0fa38b",
                           "ord": "a1"
                         }
                       ],
-                      "id": "da09cb5d-c3e5-4943-b529-04588fcd666f",
+                      "id": "8fbe3dbb-d95b-474d-9f3d-22f4cada0e70",
                       "ord": "a1"
                     },
                     {
@@ -415,11 +415,11 @@
                           "tag": "ul",
                           "class": "flex flex-col gap-2",
                           "children": [],
-                          "id": "048fe633-4611-49ad-88d4-f8e8f3c480f2",
+                          "id": "89e5ce8d-c7e8-4df8-902c-ca9cfbfeb9ad",
                           "ord": "a0"
                         }
                       ],
-                      "id": "65f9a65e-28ba-403a-9066-c9b30d274e43",
+                      "id": "73b5ed82-f290-4a69-b92f-c3dec5f22242",
                       "ord": "a2"
                     },
                     {
@@ -443,23 +443,23 @@
                                   "props": {
                                     "heading": "Legal"
                                   },
-                                  "id": "cd419528-0e4a-42bc-88fd-cefda6f8ebe4",
+                                  "id": "e07db936-1958-487d-915f-5c3b3d306b4b",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "30a315cd-e97f-45f2-87eb-92c3055b241e",
+                              "id": "43e05c6b-21c9-43cf-b6aa-6552c8b09809",
                               "ord": "a0"
                             }
                           ],
-                          "id": "36bee4e8-d952-4409-82e3-2c7aa532d8b2",
+                          "id": "34cf0795-42e5-461a-b63b-4ce3bd872a98",
                           "ord": "a0"
                         }
                       ],
-                      "id": "f89b2fc7-8b1d-40d4-acc3-e8238711da7f",
+                      "id": "847ee498-cc69-4659-a601-a162de9c4f5e",
                       "ord": "a3"
                     }
                   ],
-                  "id": "517728aa-fc1e-4df9-a46d-1cac35a45aa1",
+                  "id": "75105a9c-3741-4590-aa36-485707870513",
                   "ord": "a0"
                 },
                 {
@@ -482,11 +482,11 @@
                             "kind": "value",
                             "ref": "site.identity.name"
                           },
-                          "id": "a4e9f195-4d24-44d5-b226-240258090592",
+                          "id": "de5acf75-a085-4ede-a4fb-542fc9ef68b2",
                           "ord": "a0"
                         }
                       ],
-                      "id": "e78a5c4e-10d0-4f93-8300-3aacee1663e9",
+                      "id": "3322b797-5929-4318-ba53-a8b92696ad48",
                       "ord": "a0"
                     },
                     {
@@ -494,23 +494,23 @@
                       "tag": "ul",
                       "class": "flex flex-wrap items-center gap-x-6 gap-y-2",
                       "children": [],
-                      "id": "b14b0d00-e49e-475d-9a00-0fe55e839433",
+                      "id": "06dcb87a-c480-48da-9924-135e2f0f6de9",
                       "ord": "a1"
                     }
                   ],
-                  "id": "6e630a51-a2cb-4b1f-895c-05ddcb6e4f41",
+                  "id": "82db3e14-2145-471f-95a9-b8ad356ecf7f",
                   "ord": "a1"
                 }
               ],
-              "id": "53950c67-fab3-41df-b236-6dc93d57ffcc",
+              "id": "461a37e1-0bbd-4443-bf43-f8ddbe456468",
               "ord": "a0"
             }
           ],
-          "id": "a922150c-9a58-4f4b-b030-c85764dee9bf",
+          "id": "9771d304-a25a-4a0c-a2b2-24a1287de418",
           "ord": "a2"
         }
       ],
-      "id": "eb5692f1-5215-47c1-844d-7bd3c2942cac"
+      "id": "4d16ebde-1c25-41d9-8acb-e1f3f8a1dda7"
     }
   },
   "pages": [
@@ -524,7 +524,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "00530c12-541a-4934-9378-4cea7507e5da",
+        "id": "5091585c-9b5c-4575-97d4-43002827bb30",
         "children": [
           {
             "kind": "element",
@@ -551,7 +551,7 @@
                             "tag": "span",
                             "class": "text-base font-semibold text-primary",
                             "children": ["❯"],
-                            "id": "d6973d7d-7546-43ee-a50c-605dfe427a32",
+                            "id": "b4c621a6-4f74-49a9-874f-0a69c7524fb9",
                             "ord": "a0"
                           },
                           {
@@ -559,11 +559,11 @@
                             "tag": "span",
                             "class": "text-base text-base-content",
                             "children": ["whoami"],
-                            "id": "b7e6e86a-5ae6-421e-b9b5-20c6a53530de",
+                            "id": "1522355b-61e9-40a1-b839-2ae4d92b6232",
                             "ord": "a1"
                           }
                         ],
-                        "id": "ac49ab4c-5fe8-4f24-902f-e6e848e2b179",
+                        "id": "60a7d413-f8ff-408d-9b14-c09be5979687",
                         "ord": "a0"
                       },
                       {
@@ -576,7 +576,7 @@
                             "tag": "span",
                             "class": "text-base font-semibold text-accent",
                             "children": ["~"],
-                            "id": "1a0d0ec6-d947-4577-a932-ae77e97519c5",
+                            "id": "aa811004-a20c-41fc-bf8c-48f8ebd7b653",
                             "ord": "a0"
                           },
                           {
@@ -586,15 +586,15 @@
                             "children": [
                               "kade — creative developer · webgl / interactive / tooling"
                             ],
-                            "id": "e5561b1b-55e9-4481-8830-84e5398272c9",
+                            "id": "7f3c9c69-a1ab-413c-afbb-8618c84ca6c6",
                             "ord": "a1"
                           }
                         ],
-                        "id": "1d07ed2a-d89f-44c9-b470-03e6f41029ef",
+                        "id": "01f71085-5082-42a7-89fe-82f0825e4d38",
                         "ord": "a1"
                       }
                     ],
-                    "id": "8268981a-4b68-4c38-8e36-41aea538e29a",
+                    "id": "1b2beeff-6761-4d6b-8ef1-6b3fd7809946",
                     "ord": "a0"
                   },
                   {
@@ -607,7 +607,7 @@
                         "tag": "h1",
                         "class": "max-w-4xl text-5xl font-bold leading-none tracking-tight text-base-content @2xl:text-7xl @3xl:text-8xl",
                         "children": ["Kade Nakamura"],
-                        "id": "fb56e9e8-9e62-4ae3-959b-a46427b7bd27",
+                        "id": "ca566002-6cbd-4e34-b9a4-2da5691480ff",
                         "ord": "a0"
                       },
                       {
@@ -617,11 +617,11 @@
                         "children": [
                           "I build things that run in a browser — real-time WebGL, interactive interfaces, and the tools other developers use to make them. Ten years of shipping the demo AND the production build behind it."
                         ],
-                        "id": "0e935e22-2fa8-47dc-ae53-8a6b35d4577e",
+                        "id": "90dd5675-6b5c-4786-b6e1-d45a273ea947",
                         "ord": "a1"
                       }
                     ],
-                    "id": "aa917bb5-5be5-4d71-a851-40fd5ec11d4f",
+                    "id": "7e46dd2e-a02d-4cc5-8d9e-0ac9e91d8a89",
                     "ord": "a1"
                   },
                   {
@@ -637,7 +637,7 @@
                           "href": "/work"
                         },
                         "children": ["View builds"],
-                        "id": "023e0526-0394-412b-ae6e-9e1c4142b2ea",
+                        "id": "0b48c918-753e-40b6-aa77-52b114f3bb45",
                         "ord": "a0"
                       },
                       {
@@ -648,11 +648,11 @@
                           "href": "/about"
                         },
                         "children": ["About"],
-                        "id": "abfea35f-3dbb-4df4-a594-44b830607934",
+                        "id": "1d87ef15-a958-4089-9c34-07029c4db7f5",
                         "ord": "a1"
                       }
                     ],
-                    "id": "c1570f09-4a79-4030-b38f-68f635774f9e",
+                    "id": "d86fbe32-33fc-4cc5-b4d3-47744fb0bda7",
                     "ord": "a2"
                   },
                   {
@@ -665,7 +665,7 @@
                         "tag": "span",
                         "class": "text-sm font-semibold uppercase tracking-wide text-secondary",
                         "children": ["Runs on"],
-                        "id": "38e0e2cc-9622-4734-ac11-823693987013",
+                        "id": "0fcce4a1-8fa0-4e05-966b-6648b5ff32d0",
                         "ord": "a0"
                       },
                       {
@@ -678,7 +678,7 @@
                             "tag": "span",
                             "class": "rounded-full border border-base-300 px-3 py-1 text-sm font-semibold text-primary",
                             "children": ["TypeScript"],
-                            "id": "576ccf28-c8ff-46da-85cb-6e5e07f6ea4f",
+                            "id": "0451fde6-bbce-4aa0-b490-01ad94000d40",
                             "ord": "a0"
                           },
                           {
@@ -686,7 +686,7 @@
                             "tag": "span",
                             "class": "rounded-full border border-base-300 px-3 py-1 text-sm font-semibold text-accent",
                             "children": ["WebGL / GLSL"],
-                            "id": "93a909ac-da1d-4249-b71a-0f5db98bd4b9",
+                            "id": "5fe85d3e-9d99-4274-878d-2ba6d9ff649b",
                             "ord": "a1"
                           },
                           {
@@ -694,7 +694,7 @@
                             "tag": "span",
                             "class": "rounded-full border border-base-300 px-3 py-1 text-sm font-semibold text-primary",
                             "children": ["Three.js"],
-                            "id": "a1cb89af-b228-4dab-bcb2-7a34d060a1b9",
+                            "id": "90ca2d4a-d9cb-4ff0-9531-6980e5b563bd",
                             "ord": "a2"
                           },
                           {
@@ -702,7 +702,7 @@
                             "tag": "span",
                             "class": "rounded-full border border-base-300 px-3 py-1 text-sm font-semibold text-accent",
                             "children": ["Rust / WASM"],
-                            "id": "9eb4a7e7-6c75-4483-ad12-31fcd0146cb6",
+                            "id": "19133ef5-7ca9-42ec-8f5c-7acf072f6e91",
                             "ord": "a3"
                           },
                           {
@@ -710,23 +710,23 @@
                             "tag": "span",
                             "class": "rounded-full border border-base-300 px-3 py-1 text-sm font-semibold text-primary",
                             "children": ["Node"],
-                            "id": "3a9c79ad-9bf5-43ce-bec9-00af5e9d6190",
+                            "id": "897fdc23-316b-4700-a61f-8ed29ea82a82",
                             "ord": "a4"
                           }
                         ],
-                        "id": "17812d54-c389-44b6-8ff3-627520c7170a",
+                        "id": "5a85f817-c669-46b1-b848-039db3c45906",
                         "ord": "a1"
                       }
                     ],
-                    "id": "6f3faee6-f645-42cb-838c-cb0dae19da61",
+                    "id": "03e9a2b7-1d13-4478-bdd4-36345ebd3c9d",
                     "ord": "a3"
                   }
                 ],
-                "id": "10cb8e51-c3d3-42e1-a649-23348cc8b857",
+                "id": "1835da71-b1ca-4712-afed-55eb4e4ac7bc",
                 "ord": "a0"
               }
             ],
-            "id": "7f65b924-ae9f-423d-b086-56b3ed55762a",
+            "id": "0933dc96-f75e-46db-b47e-055fcb005eee",
             "ord": "a0"
           },
           {
@@ -749,7 +749,7 @@
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
                         "children": ["Selected builds"],
-                        "id": "47c0a36d-11ec-4ebc-b3fd-0d21dd7e8c5f",
+                        "id": "fabc731a-448b-41f0-a70d-02dd4049795a",
                         "ord": "a0"
                       },
                       {
@@ -759,11 +759,11 @@
                         "children": [
                           "Three recent things I built and shipped. Each one opens to the full breakdown — what it is, the part that was actually hard, the stack, and what went live."
                         ],
-                        "id": "dc5ac9f2-3450-41ec-88de-386d28400d83",
+                        "id": "a61e2d03-aef3-4d93-a6e5-182ceaf81b40",
                         "ord": "a1"
                       }
                     ],
-                    "id": "b14d6a14-5924-4a2e-bef3-1b9e86d0ccc2",
+                    "id": "4846bbd0-d3d6-409f-a832-6017fec656f0",
                     "ord": "a0"
                   },
                   {
@@ -784,7 +784,7 @@
                             "tag": "span",
                             "class": "text-sm font-semibold uppercase tracking-wide text-secondary",
                             "children": ["WebGL"],
-                            "id": "34c06399-69f4-4bf8-9f6c-7712f04faa21",
+                            "id": "77078ea6-7700-466b-a955-6f6ecd8bb811",
                             "ord": "a0"
                           },
                           {
@@ -792,7 +792,7 @@
                             "tag": "h3",
                             "class": "text-2xl font-bold leading-tight tracking-tight text-base-content",
                             "children": ["Drift"],
-                            "id": "3fffd323-4f7b-4fa9-9a6a-8f2a57bf3969",
+                            "id": "aac20cf8-b201-43cb-bd20-6baa063d1a05",
                             "ord": "a1"
                           },
                           {
@@ -805,7 +805,7 @@
                                 "tag": "span",
                                 "class": "rounded-full border border-base-300 px-3 py-1 text-sm font-semibold text-primary",
                                 "children": ["Three.js"],
-                                "id": "1d93749a-1482-431d-afd6-7541fd1ba675",
+                                "id": "15f604c8-8f52-4e98-9d42-00f522683331",
                                 "ord": "a0"
                               },
                               {
@@ -813,7 +813,7 @@
                                 "tag": "span",
                                 "class": "rounded-full border border-base-300 px-3 py-1 text-sm font-semibold text-accent",
                                 "children": ["GLSL"],
-                                "id": "3a32db4a-c1f8-4f24-8d8a-aa98b14935ae",
+                                "id": "82a7b6c1-ffca-4fca-a943-d85237278d8c",
                                 "ord": "a1"
                               },
                               {
@@ -821,11 +821,11 @@
                                 "tag": "span",
                                 "class": "rounded-full border border-base-300 px-3 py-1 text-sm font-semibold text-primary",
                                 "children": ["GPGPU"],
-                                "id": "6039dd84-450d-4b73-b315-c7ffa3efbe92",
+                                "id": "7603fed6-4df3-4d02-8b2f-8e63d0b0afe3",
                                 "ord": "a2"
                               }
                             ],
-                            "id": "3f743673-9568-4f42-8d6d-a5721c33e823",
+                            "id": "5dbe1624-6a5e-45f4-a98f-389a582323d5",
                             "ord": "a2"
                           },
                           {
@@ -835,7 +835,7 @@
                             "children": [
                               "A GPU particle field that pushes a million points at 60fps by simulating them entirely on the graphics card."
                             ],
-                            "id": "f048268d-5097-4851-9a1e-c8a96c75eee8",
+                            "id": "36cd954f-23c5-4d47-a464-58a86e8a919d",
                             "ord": "a3"
                           },
                           {
@@ -847,22 +847,22 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "children": ["Read the build"],
-                                "id": "b9d85332-07bc-4beb-84c8-abb0787d434d",
+                                "id": "2e5e7c55-e139-4fa7-bd8f-6e9183f61ae0",
                                 "ord": "a0"
                               },
                               {
                                 "kind": "element",
                                 "tag": "span",
                                 "children": ["→"],
-                                "id": "c1561e2d-3516-4704-8f5e-8a8ea68a9beb",
+                                "id": "3c74a8b7-13fc-4da8-b64b-d9ca5a7fd2f6",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "d5a1287c-1604-4543-a715-6d5071900d0e",
+                            "id": "71a97294-69ce-448c-ac18-c550df8677b6",
                             "ord": "a4"
                           }
                         ],
-                        "id": "75d47c03-f073-4e4b-910e-75fe0509684b",
+                        "id": "1618a1bd-a9cf-4aa7-bde6-83e2074f4102",
                         "ord": "a0"
                       },
                       {
@@ -878,7 +878,7 @@
                             "tag": "span",
                             "class": "text-sm font-semibold uppercase tracking-wide text-secondary",
                             "children": ["Open source"],
-                            "id": "cae2ab30-ac80-4406-924d-9302211afaea",
+                            "id": "b007bcc0-c713-4c10-9e0d-cf28bbf19cc7",
                             "ord": "a0"
                           },
                           {
@@ -886,7 +886,7 @@
                             "tag": "h3",
                             "class": "text-2xl font-bold leading-tight tracking-tight text-base-content",
                             "children": ["Loom"],
-                            "id": "8a2a3e84-8e2f-4c0a-a0cc-9d3956d3dac1",
+                            "id": "b58fc37e-cb0c-4908-a1e6-f2c2981770a6",
                             "ord": "a1"
                           },
                           {
@@ -899,7 +899,7 @@
                                 "tag": "span",
                                 "class": "rounded-full border border-base-300 px-3 py-1 text-sm font-semibold text-primary",
                                 "children": ["Rust"],
-                                "id": "f9647249-ee38-431c-87c4-57b6e618a269",
+                                "id": "05969cf9-0a6e-4b9e-9025-b105f6ef1a3d",
                                 "ord": "a0"
                               },
                               {
@@ -907,7 +907,7 @@
                                 "tag": "span",
                                 "class": "rounded-full border border-base-300 px-3 py-1 text-sm font-semibold text-accent",
                                 "children": ["TUI"],
-                                "id": "f36701c1-89af-4d82-bbd8-1c9736e833ca",
+                                "id": "a0d3e20d-e6e0-47bf-b81c-2e53f1c06652",
                                 "ord": "a1"
                               },
                               {
@@ -915,11 +915,11 @@
                                 "tag": "span",
                                 "class": "rounded-full border border-base-300 px-3 py-1 text-sm font-semibold text-primary",
                                 "children": ["CLI"],
-                                "id": "f44182d5-3b67-45d8-bbe1-81dd3bfd7b2f",
+                                "id": "10abbdd9-0ae7-4084-b93e-60b38abeb1b0",
                                 "ord": "a2"
                               }
                             ],
-                            "id": "7726ad8a-aa47-47e5-9084-0feca093ee42",
+                            "id": "d1d21981-1b8b-47e7-b7b8-92e23481b57f",
                             "ord": "a2"
                           },
                           {
@@ -929,7 +929,7 @@
                             "children": [
                               "A terminal-UI toolkit for building fast, keyboard-driven console apps — panes, tables and a real layout engine."
                             ],
-                            "id": "08ae0291-dd48-4a7a-a37e-7cc9d1a1c164",
+                            "id": "0304f509-5ee1-4927-8db9-168257759333",
                             "ord": "a3"
                           },
                           {
@@ -941,22 +941,22 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "children": ["Read the build"],
-                                "id": "774bdad7-b1da-4643-b500-8bba0a9dfdd7",
+                                "id": "91bdc739-defc-4d59-9db8-b1a652db1ec3",
                                 "ord": "a0"
                               },
                               {
                                 "kind": "element",
                                 "tag": "span",
                                 "children": ["→"],
-                                "id": "ef0d6bc1-9f85-487d-ac93-6a3d43401402",
+                                "id": "8cdc45c5-9fb6-4e0a-9b04-67f43f84ce9c",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "2c9d1582-2806-465f-b9f8-e4964a35a90f",
+                            "id": "5f84347f-84bb-4edb-9df2-74a034a4dc70",
                             "ord": "a4"
                           }
                         ],
-                        "id": "bd292616-bc80-4672-bdac-d562005a77af",
+                        "id": "2517abbd-e880-43d5-a088-9535f22e11a7",
                         "ord": "a1"
                       },
                       {
@@ -972,7 +972,7 @@
                             "tag": "span",
                             "class": "text-sm font-semibold uppercase tracking-wide text-secondary",
                             "children": ["Tooling"],
-                            "id": "5c4a0420-6236-4833-97cb-47c9b5c3d2c4",
+                            "id": "461e5562-f954-45b3-898d-d9ddc659f494",
                             "ord": "a0"
                           },
                           {
@@ -980,7 +980,7 @@
                             "tag": "h3",
                             "class": "text-2xl font-bold leading-tight tracking-tight text-base-content",
                             "children": ["Prism"],
-                            "id": "5f11c3a5-0299-4c60-895e-525b29f15e55",
+                            "id": "c6c53be9-586f-4434-829e-1543db09aafc",
                             "ord": "a1"
                           },
                           {
@@ -993,7 +993,7 @@
                                 "tag": "span",
                                 "class": "rounded-full border border-base-300 px-3 py-1 text-sm font-semibold text-accent",
                                 "children": ["WebGL2"],
-                                "id": "082baf84-ebdb-4e07-b968-bcb3aee78740",
+                                "id": "57518235-6bf4-44ec-94e9-b6e74628b2ff",
                                 "ord": "a0"
                               },
                               {
@@ -1001,7 +1001,7 @@
                                 "tag": "span",
                                 "class": "rounded-full border border-base-300 px-3 py-1 text-sm font-semibold text-primary",
                                 "children": ["TypeScript"],
-                                "id": "16613117-c69f-4d76-a184-c9f73cf1d785",
+                                "id": "6a31a10f-f4f0-4477-9dc8-02626284b9ce",
                                 "ord": "a1"
                               },
                               {
@@ -1009,11 +1009,11 @@
                                 "tag": "span",
                                 "class": "rounded-full border border-base-300 px-3 py-1 text-sm font-semibold text-primary",
                                 "children": ["Monaco"],
-                                "id": "51216461-6ac1-4fb4-95a2-edca9ac88e6d",
+                                "id": "a340845b-2a5f-494e-aa14-731828082e48",
                                 "ord": "a2"
                               }
                             ],
-                            "id": "73ec8420-e043-4e17-8344-3a9c026b839f",
+                            "id": "402a0f45-7136-43f5-9139-3a518dffd603",
                             "ord": "a2"
                           },
                           {
@@ -1023,7 +1023,7 @@
                             "children": [
                               "A browser shader playground with a live fragment-shader preview, hot reload, and shareable links."
                             ],
-                            "id": "69cbacd8-3b42-4b72-93f7-11dbb3db57dd",
+                            "id": "65a47eb3-c264-4077-bef0-22c6e5ed308c",
                             "ord": "a3"
                           },
                           {
@@ -1035,26 +1035,26 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "children": ["Read the build"],
-                                "id": "43ba7b75-5d34-473c-adb8-27e3bc70bc34",
+                                "id": "ec1c0bda-3f2e-43a8-ae8d-e6fa70375621",
                                 "ord": "a0"
                               },
                               {
                                 "kind": "element",
                                 "tag": "span",
                                 "children": ["→"],
-                                "id": "020265e3-1898-4de4-9079-4c0dd8200741",
+                                "id": "a8cd124b-c1f2-47ab-8d35-619b8b6fed2f",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "94ca6b62-adf8-42da-aefe-c280be86e28d",
+                            "id": "18ddca11-bb36-401c-9b19-67a03aae826c",
                             "ord": "a4"
                           }
                         ],
-                        "id": "3674cfbc-a7dc-4faa-bed1-5646efbfef83",
+                        "id": "b2dea827-924b-4352-b33f-24852176e648",
                         "ord": "a2"
                       }
                     ],
-                    "id": "ed4e12f6-ca00-4f22-a8ae-1d96b4da6467",
+                    "id": "c81aa121-12fc-497f-8b39-e95bac0f0b7e",
                     "ord": "a1"
                   },
                   {
@@ -1069,26 +1069,26 @@
                         "kind": "element",
                         "tag": "span",
                         "children": ["See every build"],
-                        "id": "b0cb92fe-4e65-43a4-947e-a6a8792c6b92",
+                        "id": "c02a709e-7d37-4a6f-a508-8fa00807a248",
                         "ord": "a0"
                       },
                       {
                         "kind": "element",
                         "tag": "span",
                         "children": ["→"],
-                        "id": "b794c74b-6631-4265-816c-6c9d6d20f09b",
+                        "id": "c8384259-a6d6-49a2-a682-8ac3153fade7",
                         "ord": "a1"
                       }
                     ],
-                    "id": "0f35e2f4-4fb3-489b-a6c2-fdd9f8790c18",
+                    "id": "f6dbe72e-f020-4201-84d6-291bcacf8e02",
                     "ord": "a2"
                   }
                 ],
-                "id": "8b135a34-c171-4ac8-99de-8d556ef8836c",
+                "id": "c3441ff8-abc1-4084-8d3a-318a84975046",
                 "ord": "a0"
               }
             ],
-            "id": "6f42eccf-da8a-4dd0-8635-3dba5a63614b",
+            "id": "0494816d-e1b1-4afc-831e-31d2db7b3fb9",
             "ord": "a1"
           },
           {
@@ -1111,7 +1111,7 @@
                         "tag": "h2",
                         "class": "max-w-3xl text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
                         "children": ["Now"],
-                        "id": "f91702fa-a681-4607-baad-d4298c3f421f",
+                        "id": "17faa9d9-1d31-4a50-a186-76a952fca7dd",
                         "ord": "a0"
                       },
                       {
@@ -1119,11 +1119,11 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": ["A snapshot of what I have open in the editor this month."],
-                        "id": "8e340ec3-28b2-47b2-ae84-5758ee0c9f5e",
+                        "id": "ef582fa7-0a10-4caa-b031-9d80466dff33",
                         "ord": "a1"
                       }
                     ],
-                    "id": "58568dc5-4532-474d-8d11-8890c0e5b93a",
+                    "id": "081fabc9-cdcc-4a55-b17a-bff283b00868",
                     "ord": "a0"
                   },
                   {
@@ -1141,7 +1141,7 @@
                             "tag": "h3",
                             "class": "text-sm font-semibold uppercase tracking-wide text-primary",
                             "children": ["Building"],
-                            "id": "e78b7392-2dd2-44cc-a43c-6dd1eea69c0f",
+                            "id": "3780dca6-99e3-43d3-a77e-622ce5a9eeeb",
                             "ord": "a0"
                           },
                           {
@@ -1151,11 +1151,11 @@
                             "children": [
                               "A WebGPU renderer for a generative-art studio — compute shaders doing the heavy lifting so a browser tab can drive a wall of screens."
                             ],
-                            "id": "06d641ab-7a6e-42ea-a1e1-d407e29cf34d",
+                            "id": "1131e718-d519-4bf0-be3a-7efb59bb16c8",
                             "ord": "a1"
                           }
                         ],
-                        "id": "6e120653-32f5-4bbe-ba02-2adffe8b1ef0",
+                        "id": "54eb7e8f-1a85-4316-9629-d2b58ca425bc",
                         "ord": "a0"
                       },
                       {
@@ -1168,7 +1168,7 @@
                             "tag": "h3",
                             "class": "text-sm font-semibold uppercase tracking-wide text-accent",
                             "children": ["Tooling"],
-                            "id": "0a84d178-6e47-4af0-beb0-9f63b44ee075",
+                            "id": "f5391d8e-f777-4fcd-b1f3-bee58eebdbdf",
                             "ord": "a0"
                           },
                           {
@@ -1178,11 +1178,11 @@
                             "children": [
                               "Reaching for TypeScript, Three.js and raw WebGL2 daily, with Rust and WASM whenever a hot path needs to leave JavaScript behind."
                             ],
-                            "id": "7a0585d7-7203-4e61-9c8d-890752afd9cd",
+                            "id": "a4ebe7ab-9226-48cf-9adb-640a9c63271f",
                             "ord": "a1"
                           }
                         ],
-                        "id": "5a7470f0-a497-4ba8-ae03-5b24ce36940f",
+                        "id": "1b919028-c9f6-466b-8088-09a338615998",
                         "ord": "a1"
                       },
                       {
@@ -1195,7 +1195,7 @@
                             "tag": "h3",
                             "class": "text-sm font-semibold uppercase tracking-wide text-primary",
                             "children": ["Open source"],
-                            "id": "1a449716-bf5e-4308-997a-1ac7f1429e72",
+                            "id": "f3ff5990-26a0-4964-a289-68afa33082dc",
                             "ord": "a0"
                           },
                           {
@@ -1205,23 +1205,23 @@
                             "children": [
                               "Maintaining Loom and a handful of smaller libraries — issues answered, PRs reviewed, and the occasional 2am refactor when a bug is too interesting to leave."
                             ],
-                            "id": "614c4298-dfdd-4780-aa90-7d437734db82",
+                            "id": "8fe3a473-95ef-4089-b34e-8285df3a7e18",
                             "ord": "a1"
                           }
                         ],
-                        "id": "fda8b337-a675-4279-963a-fe6795fbf8e4",
+                        "id": "189ca0a3-09cc-48c1-a84a-d6a13dd1b8cf",
                         "ord": "a2"
                       }
                     ],
-                    "id": "8604731d-e90f-47b1-838b-c6c15a93158c",
+                    "id": "c46807a1-8a70-4b34-9621-3bc80d42a60f",
                     "ord": "a1"
                   }
                 ],
-                "id": "59aef6b5-cde3-4435-bd25-08d649ee70f1",
+                "id": "4b8708df-a6d7-4d5c-9b72-01f4d3a13de3",
                 "ord": "a0"
               }
             ],
-            "id": "89063713-373c-4756-ac6a-d84d4edd0b15",
+            "id": "ad1a160e-8ce5-4e25-96ff-e71c87b2562d",
             "ord": "a2"
           },
           {
@@ -1239,7 +1239,7 @@
                     "tag": "h2",
                     "class": "text-3xl font-bold tracking-tight text-primary-content @3xl:text-4xl",
                     "children": ["Got something that has to run in a browser?"],
-                    "id": "dc46cbff-615d-4945-8367-f8d79477ec5a",
+                    "id": "dc706458-89cc-462c-b38d-c032a9adaf49",
                     "ord": "a0"
                   },
                   {
@@ -1249,7 +1249,7 @@
                     "children": [
                       "I take on a few build-heavy projects at a time — the ones where the demo has to survive contact with production. If that sounds like yours, let’s talk."
                     ],
-                    "id": "178708b3-b736-496f-82a4-4eaea56cea03",
+                    "id": "2276bc63-df60-4bd8-afcd-02326e1b5a19",
                     "ord": "a1"
                   },
                   {
@@ -1260,15 +1260,15 @@
                       "href": "/contact"
                     },
                     "children": ["Start a build"],
-                    "id": "64cdb55e-71e0-428b-8a7e-762f4f8368e5",
+                    "id": "aff0128f-6f1e-418f-bc87-0848919ee0b3",
                     "ord": "a2"
                   }
                 ],
-                "id": "ad64402f-a46d-4f23-9733-89981be81f48",
+                "id": "6477ba1d-973a-40fb-a2dc-cfc506caa272",
                 "ord": "a0"
               }
             ],
-            "id": "4d24c744-717d-4bcb-8672-f12bf4b88785",
+            "id": "bdba9512-0985-48ef-9d75-d4cc4aefc0e1",
             "ord": "a3"
           }
         ]
@@ -1285,7 +1285,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "200bcc60-1174-488a-a4af-2b7196e3fd25",
+        "id": "55baa2a6-79b4-4ecd-8547-96101692418d",
         "children": [
           {
             "kind": "element",
@@ -1302,7 +1302,7 @@
                     "tag": "h1",
                     "class": "text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-7xl",
                     "children": ["Builds"],
-                    "id": "82892c4d-30b2-461e-880b-0eac889e96f4",
+                    "id": "32a61324-4f0a-4979-aa60-ef896c1b47c2",
                     "ord": "a0"
                   },
                   {
@@ -1312,15 +1312,15 @@
                     "children": [
                       "Real-time graphics, interactive interfaces, and developer tooling. Each build opens to the full breakdown: what it is, the hard part, the stack, and what shipped."
                     ],
-                    "id": "1b505ce7-6cfa-467a-b3fc-4dac6d70a581",
+                    "id": "ba240f9a-6c65-4713-a757-d4014de000e6",
                     "ord": "a1"
                   }
                 ],
-                "id": "95b70bcf-4967-47ce-a6ff-effb9ff1c7bc",
+                "id": "11349bf4-8d60-4c30-aca0-886f79f54ad4",
                 "ord": "a0"
               }
             ],
-            "id": "53a9855f-749a-4e38-9c8c-83a34e801aed",
+            "id": "66f751b2-4cc1-476f-9dd7-e6d98b1cee80",
             "ord": "a0"
           },
           {
@@ -1358,7 +1358,7 @@
                               "kind": "value",
                               "ref": "featuredImage"
                             },
-                            "id": "047a2f02-d453-4a33-9fbe-534217fd57a1",
+                            "id": "aa8f61d4-a8f3-4ac5-b629-59a476a4ee9f",
                             "ord": "a0"
                           },
                           {
@@ -1370,7 +1370,7 @@
                               "kind": "value",
                               "ref": "date"
                             },
-                            "id": "eb70adc1-d8bc-419c-a50e-1424bd8badb1",
+                            "id": "7fcaebc1-8418-4a5c-9630-6f818ec3586c",
                             "ord": "a1"
                           },
                           {
@@ -1382,7 +1382,7 @@
                               "kind": "value",
                               "ref": "title"
                             },
-                            "id": "a86606f5-9141-4d44-8e64-0783c2306976",
+                            "id": "4f112e70-2e0b-49d8-a185-ec8079de2368",
                             "ord": "a2"
                           },
                           {
@@ -1394,7 +1394,7 @@
                               "kind": "value",
                               "ref": "excerpt"
                             },
-                            "id": "399a4e87-00b4-4000-b76f-9f35a527d2d1",
+                            "id": "59bbf642-443f-41b8-aa2a-096ec6328907",
                             "ord": "a3"
                           }
                         ],
@@ -1403,7 +1403,7 @@
                           "ref": "url",
                           "attr": "href"
                         },
-                        "id": "4a639703-3e79-4e68-8480-36bfbc720838",
+                        "id": "6f11e084-5e8d-4a67-8c34-e8224fa65f61",
                         "ord": "a0"
                       }
                     ],
@@ -1411,15 +1411,15 @@
                       "kind": "collection",
                       "ref": "cms.blog_post"
                     },
-                    "id": "ecf59e73-1b2f-4d34-9190-c3417667199b",
+                    "id": "23ef0785-e887-4e68-bd61-fc4cee43fa52",
                     "ord": "a0"
                   }
                 ],
-                "id": "74dfbb8f-3dfd-498c-a566-2f68d0cada04",
+                "id": "6c9151af-4351-4ffa-9e1f-05d82a5ce96b",
                 "ord": "a0"
               }
             ],
-            "id": "3403226f-42cf-4f64-a9fc-c1aa99abddfb",
+            "id": "96414f46-32d9-4350-ad8a-1d2835e49243",
             "ord": "a1"
           }
         ]
@@ -1436,7 +1436,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "3594294a-f23b-49c0-b294-d385829f2a16",
+        "id": "0dadf98f-b913-4d7c-b957-067756f8e808",
         "children": [
           {
             "kind": "element",
@@ -1458,7 +1458,7 @@
                         "tag": "h1",
                         "class": "text-5xl font-bold tracking-tight text-base-content @2xl:text-6xl",
                         "children": ["About Kade"],
-                        "id": "a08cddb2-e962-466b-a872-5edb829892a9",
+                        "id": "a4d7476a-78b5-4dad-9375-ccecd08e7486",
                         "ord": "a0"
                       },
                       {
@@ -1468,7 +1468,7 @@
                         "children": [
                           "I’m a creative developer. That means I live in the seam between design and engineering — the demos that look impossible, the interfaces that feel alive, and the tools that make building them faster. Ten years in, mostly real-time graphics and the web platform."
                         ],
-                        "id": "dac5fa35-aba7-4e4c-9210-92b761b96ae4",
+                        "id": "a2847b21-80ae-41ca-a59e-f09d810a6f57",
                         "ord": "a1"
                       },
                       {
@@ -1478,7 +1478,7 @@
                         "children": [
                           "I care about the whole path, not just the pretty frame: the shader that renders it, the memory budget that keeps it at 60fps, and the build pipeline that ships it to a phone. A prototype that can’t survive production was never finished — it was a screenshot."
                         ],
-                        "id": "abea8b98-add5-45cd-b1b4-51d959737487",
+                        "id": "ff94b970-23cf-466a-b5b4-1b086cfbab5f",
                         "ord": "a2"
                       },
                       {
@@ -1488,11 +1488,11 @@
                         "children": [
                           "Before going independent I built rendering tech at a games studio and interactive work at a creative agency. Now I take on a handful of build-heavy projects a year, and I keep a few open-source libraries alive between them."
                         ],
-                        "id": "ee20ab0f-28d2-43d7-88ba-db1cb72d4e09",
+                        "id": "c437acbb-3e80-41fd-ba30-52ee7ac2d9da",
                         "ord": "a3"
                       }
                     ],
-                    "id": "166211b7-6969-4e3d-b33d-aa41b02be3e7",
+                    "id": "31660c19-ada4-47c5-99f5-90b9ab39a637",
                     "ord": "a0"
                   },
                   {
@@ -1509,7 +1509,7 @@
                           "alt": "Portrait of Kade Nakamura, creative developer",
                           "loading": "lazy"
                         },
-                        "id": "e390187f-4366-4dfb-8092-17fe7ca85fc1",
+                        "id": "aa1114e2-e91d-479a-9cac-437853e680c0",
                         "ord": "a0"
                       },
                       {
@@ -1522,7 +1522,7 @@
                             "tag": "span",
                             "class": "text-sm font-semibold uppercase tracking-wide text-secondary",
                             "children": ["Stack"],
-                            "id": "57fdb9e0-904f-413e-a298-4d09d032da20",
+                            "id": "3b8b6c9d-6370-462f-bf15-d8e44d290a85",
                             "ord": "a0"
                           },
                           {
@@ -1535,7 +1535,7 @@
                                 "tag": "span",
                                 "class": "rounded-full border border-base-300 px-3 py-1 text-sm font-semibold text-primary",
                                 "children": ["TypeScript"],
-                                "id": "72b72136-33f7-49f5-be96-5b783ccff598",
+                                "id": "18e58e05-aabb-41c7-86ee-bb420ca47709",
                                 "ord": "a0"
                               },
                               {
@@ -1543,7 +1543,7 @@
                                 "tag": "span",
                                 "class": "rounded-full border border-base-300 px-3 py-1 text-sm font-semibold text-accent",
                                 "children": ["WebGL / GLSL"],
-                                "id": "1110d6f6-368c-4564-a759-fef96f593cb2",
+                                "id": "d43ce40a-6544-48a1-ace4-7e34929b1bc1",
                                 "ord": "a1"
                               },
                               {
@@ -1551,7 +1551,7 @@
                                 "tag": "span",
                                 "class": "rounded-full border border-base-300 px-3 py-1 text-sm font-semibold text-primary",
                                 "children": ["Three.js"],
-                                "id": "80844be7-57f7-4c1d-bd50-35df5e718101",
+                                "id": "d8ade9c3-952e-47c4-9fbe-bf9c6bb4d664",
                                 "ord": "a2"
                               },
                               {
@@ -1559,7 +1559,7 @@
                                 "tag": "span",
                                 "class": "rounded-full border border-base-300 px-3 py-1 text-sm font-semibold text-accent",
                                 "children": ["WebGPU"],
-                                "id": "34580034-c70d-4d29-bae6-e2acef656594",
+                                "id": "0d2b3794-604d-4fdd-a0bf-eaa95a217719",
                                 "ord": "a3"
                               },
                               {
@@ -1567,7 +1567,7 @@
                                 "tag": "span",
                                 "class": "rounded-full border border-base-300 px-3 py-1 text-sm font-semibold text-primary",
                                 "children": ["Rust"],
-                                "id": "47f43dd3-6b06-408f-b683-c35e1971e0e2",
+                                "id": "4619e4b5-4eda-4bcd-9c9d-0c2ca8ef84b1",
                                 "ord": "a4"
                               },
                               {
@@ -1575,7 +1575,7 @@
                                 "tag": "span",
                                 "class": "rounded-full border border-base-300 px-3 py-1 text-sm font-semibold text-accent",
                                 "children": ["WASM"],
-                                "id": "19b1aa8d-5ca1-4a7c-85a1-8e1eea8eb798",
+                                "id": "7cb0b291-4865-4c92-8223-37845ed78d92",
                                 "ord": "a5"
                               },
                               {
@@ -1583,7 +1583,7 @@
                                 "tag": "span",
                                 "class": "rounded-full border border-base-300 px-3 py-1 text-sm font-semibold text-primary",
                                 "children": ["Node"],
-                                "id": "f625fdad-3568-4e6d-a355-4135ea2fcbdd",
+                                "id": "de17b9a8-342d-4295-9a29-d179e362b1e1",
                                 "ord": "a6"
                               },
                               {
@@ -1591,11 +1591,11 @@
                                 "tag": "span",
                                 "class": "rounded-full border border-base-300 px-3 py-1 text-sm font-semibold text-accent",
                                 "children": ["GSAP"],
-                                "id": "36a1f608-2f68-44e7-a0bf-589205534dbe",
+                                "id": "44cb3bfc-0fb2-46b7-9280-101399030fce",
                                 "ord": "a7"
                               }
                             ],
-                            "id": "17b87503-eacf-4d59-bdeb-275d6767bb78",
+                            "id": "feeb704f-28e7-4f19-8031-390bdb3c1616",
                             "ord": "a1"
                           },
                           {
@@ -1605,23 +1605,23 @@
                             "children": [
                               "And enough Blender, Figma and shader math to hand off work that renders the same in the build as it did in the pitch."
                             ],
-                            "id": "33397f35-99b3-4562-ade9-05e4a38078fd",
+                            "id": "d852ab80-2ba6-42c3-989d-59c1701a8652",
                             "ord": "a2"
                           }
                         ],
-                        "id": "f37236f1-b140-4548-a4a8-e396b3e9644a",
+                        "id": "1e59e71e-adde-4b04-ada2-496e11bbece9",
                         "ord": "a1"
                       }
                     ],
-                    "id": "bf92b332-c80a-4ab1-863b-2707afbe5d40",
+                    "id": "d7e45fd6-e532-4a8b-941f-35c0e7225988",
                     "ord": "a1"
                   }
                 ],
-                "id": "1f95edd6-3a84-4629-b801-6f23f9f15df2",
+                "id": "2e6e491d-3d1b-4307-a254-41ddf1b04f8b",
                 "ord": "a0"
               }
             ],
-            "id": "fa77b5aa-9780-4800-9a6b-aae2bd40364e",
+            "id": "0bd27d17-13aa-4f04-af43-e27498b5468e",
             "ord": "a0"
           }
         ]
@@ -1638,134 +1638,308 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "8dc504bb-2600-4e06-bfcd-73531493913c",
+        "id": "fac14324-b2f4-4f65-b3a8-702254c20297",
         "children": [
           {
             "kind": "element",
             "tag": "section",
-            "class": "bg-base-100 @container px-6 py-20",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-20",
             "children": [
               {
                 "kind": "element",
                 "tag": "div",
-                "class": "mx-auto flex w-full max-w-2xl flex-col gap-6",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-8",
                 "children": [
                   {
                     "kind": "element",
-                    "tag": "h1",
-                    "class": "text-5xl font-bold tracking-tight text-base-content @2xl:text-6xl",
-                    "children": ["Let’s build something"],
-                    "id": "34a59c51-cff9-4148-aaf6-436a95108921",
+                    "tag": "div",
+                    "class": "flex flex-col gap-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h1",
+                        "class": "text-4xl font-bold tracking-tight text-base-content @3xl:text-5xl",
+                        "children": ["Let’s build something"],
+                        "id": "395e364d-3788-4460-b1d9-7dc8785735f6",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "I’m open to select WebGL, interactive and tooling work. A good first message tells me what you’re trying to make, roughly when, and where it has to run — but a half-formed idea and a deadline is a fine place to start too."
+                        ],
+                        "id": "04e0a14f-90f5-4e4f-b3ff-5e83553af915",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "578bb23c-3df3-4559-a918-2eabc14498a5",
                     "ord": "a0"
                   },
                   {
                     "kind": "element",
-                    "tag": "p",
-                    "class": "text-lg leading-relaxed text-base-content",
+                    "tag": "div",
+                    "class": "flex flex-col gap-1",
                     "children": [
-                      "I’m open to select WebGL, interactive and tooling work. A good first message tells me what you’re trying to make, roughly when, and where it has to run — but a half-formed idea and a deadline is a fine place to start too."
+                      {
+                        "kind": "element",
+                        "tag": "span",
+                        "class": "text-base font-medium text-base-content",
+                        "children": ["Call us"],
+                        "id": "6321a825-dfb9-474f-a634-aac2865e9139",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "text-lg font-semibold text-base-content underline underline-offset-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "children": ["(555) 123-4567"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "site.identity.phone"
+                            },
+                            "id": "166fa3bc-6bd9-4c2e-8af8-66f7b5d16ecf",
+                            "ord": "a0"
+                          }
+                        ],
+                        "data": {
+                          "kind": "value",
+                          "ref": "site.identity.phoneHref",
+                          "attr": "href"
+                        },
+                        "id": "a27ecbcf-6b8e-4fdf-ab61-4d6df186f84d",
+                        "ord": "a1"
+                      }
                     ],
-                    "id": "9016d0b6-da5b-4b8c-867d-2b131d7b5f2b",
+                    "data": {
+                      "kind": "visible",
+                      "ref": "site.identity.phone"
+                    },
+                    "id": "a39c9b5d-9328-497f-b39c-fb1a6119ff38",
                     "ord": "a1"
                   },
                   {
                     "kind": "element",
                     "tag": "div",
-                    "class": "flex flex-col gap-2 rounded-box border border-base-300 bg-base-200 px-5 py-4",
+                    "class": "flex flex-col gap-1",
                     "children": [
                       {
                         "kind": "element",
-                        "tag": "div",
-                        "class": "flex items-center gap-3",
-                        "children": [
-                          {
-                            "kind": "element",
-                            "tag": "span",
-                            "class": "text-base font-semibold text-primary",
-                            "children": ["❯"],
-                            "id": "ca29eff8-e4bf-49f4-bb83-e8d907a8f082",
-                            "ord": "a0"
-                          },
-                          {
-                            "kind": "element",
-                            "tag": "span",
-                            "class": "text-base text-base-content",
-                            "children": ["contact --kade"],
-                            "id": "79af09b1-2455-4545-add5-f551777fed86",
-                            "ord": "a1"
-                          }
-                        ],
-                        "id": "5173bcbc-e022-4e06-ba93-89c2daf667ca",
+                        "tag": "span",
+                        "class": "text-base font-medium text-base-content",
+                        "children": ["Email us"],
+                        "id": "424370be-c89c-4308-a811-c57c25f62d17",
                         "ord": "a0"
                       },
                       {
                         "kind": "element",
-                        "tag": "div",
-                        "class": "flex items-center gap-3",
+                        "tag": "a",
+                        "class": "text-lg font-semibold text-base-content underline underline-offset-4",
                         "children": [
                           {
                             "kind": "element",
                             "tag": "span",
-                            "class": "text-base font-semibold text-accent",
-                            "children": ["~"],
-                            "id": "01de1664-f6c2-42ca-8881-431596943e46",
+                            "children": ["hello@yourbusiness.com"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "site.identity.email"
+                            },
+                            "id": "d73af032-6707-4994-9fbf-df02ab861479",
                             "ord": "a0"
-                          },
-                          {
-                            "kind": "element",
-                            "tag": "span",
-                            "class": "text-base text-secondary",
-                            "children": [
-                              "email me, or find me on the usual places — repos, feeds, the odd conference hallway."
-                            ],
-                            "id": "e4d0a982-5b8d-4160-8036-a9d210a20f0f",
-                            "ord": "a1"
                           }
                         ],
-                        "id": "c4a4772e-542c-4eb5-9365-44264dac2eed",
+                        "data": {
+                          "kind": "value",
+                          "ref": "site.identity.emailHref",
+                          "attr": "href"
+                        },
+                        "id": "72fb4572-fb3d-4dd0-8578-e92bce878d41",
                         "ord": "a1"
                       }
                     ],
-                    "id": "de78777a-13d4-497f-91cb-f7168aa6dd21",
+                    "data": {
+                      "kind": "visible",
+                      "ref": "site.identity.email"
+                    },
+                    "id": "37ab218c-0b4a-4dd0-ab36-5483cef1fa69",
                     "ord": "a2"
                   },
                   {
                     "kind": "element",
                     "tag": "div",
-                    "class": "flex flex-wrap gap-3",
+                    "class": "flex flex-col gap-1",
                     "children": [
                       {
                         "kind": "element",
-                        "tag": "a",
-                        "class": "btn btn-primary btn-lg",
-                        "attrs": {
-                          "href": "mailto:kade@voidbuilds.example"
-                        },
-                        "children": ["Email me"],
-                        "id": "82ae77ee-a24a-4d1d-95e2-461fbf119fea",
+                        "tag": "span",
+                        "class": "text-base font-medium text-base-content",
+                        "children": ["Visit us"],
+                        "id": "486de3f9-0206-441f-bfed-e75435806a9f",
                         "ord": "a0"
                       },
                       {
                         "kind": "element",
-                        "tag": "a",
-                        "class": "btn btn-neutral btn-outline btn-lg",
-                        "attrs": {
-                          "href": "/work"
+                        "tag": "address",
+                        "class": "text-lg leading-relaxed whitespace-pre-line not-italic text-base-content",
+                        "children": ["123 Main Street\nPortland, OR 97204"],
+                        "data": {
+                          "kind": "value",
+                          "ref": "site.identity.address"
                         },
-                        "children": ["See the builds first"],
-                        "id": "3666703a-dd47-4ef9-9371-08c6f0115657",
+                        "id": "78f35927-9600-4e99-9113-8ced2d9b9b33",
                         "ord": "a1"
                       }
                     ],
-                    "id": "4fa4959e-9ef4-4b7f-b837-30babebd3cc7",
+                    "data": {
+                      "kind": "visible",
+                      "ref": "site.identity.address"
+                    },
+                    "id": "56232d4b-4a95-49c0-9a1a-c06b6e19add4",
                     "ord": "a3"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "form",
+                    "class": "flex w-full max-w-xl flex-col gap-5",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "label",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-base font-medium text-base-content",
+                            "children": ["Your name"],
+                            "id": "7e42287c-c2e0-417b-a1e4-77181e22b7c7",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "input",
+                            "class": "input input-bordered w-full",
+                            "attrs": {
+                              "type": "text",
+                              "name": "name",
+                              "required": true
+                            },
+                            "id": "e0acc246-9351-49a2-81b9-bca00ed09aed",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "42969355-8a12-4d14-965c-51038b24aac4",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "label",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-base font-medium text-base-content",
+                            "children": ["Email address"],
+                            "id": "7cf199e0-58d1-4eb1-be4b-1b0c600f785f",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "input",
+                            "class": "input input-bordered w-full",
+                            "attrs": {
+                              "type": "email",
+                              "name": "email",
+                              "required": true
+                            },
+                            "id": "08868f03-8351-45cc-825a-e97b1e92e9af",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "3d247817-2cd1-4e93-9187-efd2fa90d8f9",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "label",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-base font-medium text-base-content",
+                            "children": ["How can we help?"],
+                            "id": "07679597-ae00-45c8-8ec4-1509ebeeed3f",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "textarea",
+                            "class": "textarea textarea-bordered min-h-32 w-full",
+                            "attrs": {
+                              "name": "message"
+                            },
+                            "id": "f01e031e-d4ed-48fc-859e-b5675b5e358d",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "05932122-9ed6-4dd4-9ff4-ece97fc187ec",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-wrap items-center gap-3",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "button",
+                            "class": "btn btn-primary btn-lg",
+                            "attrs": {
+                              "type": "submit"
+                            },
+                            "children": ["Email me"],
+                            "id": "3da8e034-0e5b-4220-abb7-c3e77a44b649",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "btn btn-outline btn-lg",
+                            "attrs": {
+                              "href": "/work"
+                            },
+                            "children": ["See the builds first"],
+                            "id": "737dbe53-f78d-47c0-ba4c-83567125ab87",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "ff386d69-e457-44ac-8e5d-dc0bebd5a1df",
+                        "ord": "a3"
+                      }
+                    ],
+                    "behavior": {
+                      "type": "form"
+                    },
+                    "data": {
+                      "kind": "action",
+                      "ref": "submit"
+                    },
+                    "id": "89c08b99-5d52-4472-a7d4-ffadb9d9b3ca",
+                    "ord": "a4"
                   }
                 ],
-                "id": "5414f031-bea4-4b29-9116-c08af5f54f6b",
+                "id": "9abc8f3b-6efe-40ef-84e5-43aea4b95237",
                 "ord": "a0"
               }
             ],
-            "id": "a0f4b32d-cf85-46b9-a26c-7e8a719e3798",
+            "id": "f608f1ec-9ea4-4a76-93e3-063b0cd8bf15",
             "ord": "a0"
           }
         ]
@@ -1810,18 +1984,18 @@
                             "kind": "element",
                             "tag": "span",
                             "children": ["←"],
-                            "id": "a34dae1e-091c-4e11-9f3e-bfb2995df8ab",
+                            "id": "860f3096-d7ff-44f2-b426-1fc2fe0f0035",
                             "ord": "a0"
                           },
                           {
                             "kind": "element",
                             "tag": "span",
                             "children": ["All builds"],
-                            "id": "1cebdd1e-91c6-4729-82dc-8ad3871ca794",
+                            "id": "c8987b29-eb1e-4a3f-81b4-5d1d763afcdc",
                             "ord": "a1"
                           }
                         ],
-                        "id": "257b7c76-744f-496b-91bb-c3daac608b6a",
+                        "id": "14701929-111b-4bb8-bfce-c57b1f410f32",
                         "ord": "a0"
                       },
                       {
@@ -1833,7 +2007,7 @@
                           "kind": "visible",
                           "ref": "category"
                         },
-                        "id": "0c7b4e87-15af-4f2d-875f-b61636931969",
+                        "id": "a1858cc3-cb15-4705-8d59-5cffabdef850",
                         "ord": "a1"
                       },
                       {
@@ -1845,7 +2019,7 @@
                           "kind": "value",
                           "ref": "title"
                         },
-                        "id": "7261d84b-fa03-48a3-8771-1212e1e25d3d",
+                        "id": "17715d8c-a935-4c2d-a56e-3a2088ee5015",
                         "ord": "a2"
                       },
                       {
@@ -1857,7 +2031,7 @@
                           "kind": "value",
                           "ref": "excerpt"
                         },
-                        "id": "24f2a8f3-aa2f-4154-b537-096d029bb8e9",
+                        "id": "29a472ce-8c86-4107-8294-9ba90c43f2b4",
                         "ord": "a3"
                       },
                       {
@@ -1877,7 +2051,7 @@
                               "kind": "visible",
                               "ref": "authorAvatar"
                             },
-                            "id": "e42a0025-e9f5-46ac-85da-e31233e62d28",
+                            "id": "2c85f2f2-9912-4733-bcd8-3d3e09b80522",
                             "ord": "a0"
                           },
                           {
@@ -1894,7 +2068,7 @@
                                   "kind": "visible",
                                   "ref": "authorName"
                                 },
-                                "id": "4ccb4558-cd30-4ef5-b5e6-7f1742d1cd0c",
+                                "id": "57dc4d5e-9c23-4c58-bbdc-6e985b0980f6",
                                 "ord": "a0"
                               },
                               {
@@ -1906,23 +2080,23 @@
                                   "kind": "value",
                                   "ref": "date"
                                 },
-                                "id": "8d492881-a175-4da2-a59c-50d65391b6c3",
+                                "id": "f7f4d305-f7bc-40f9-81a0-52ca7a4f6e04",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "5fc11a01-f4bf-455e-af0e-3db6a5413c78",
+                            "id": "b550bcee-1bf1-471e-82fa-942e88dcd563",
                             "ord": "a1"
                           }
                         ],
-                        "id": "bd5847e2-144e-44fa-8cb2-a95dd85db7f3",
+                        "id": "c5ddab18-d48d-4a8f-a2ac-0e9a90b4dbf3",
                         "ord": "a4"
                       }
                     ],
-                    "id": "69003f34-a0cb-4422-8c2c-adf7a8b439d4",
+                    "id": "b16d3239-29f5-4760-90e2-d810c6bf0b54",
                     "ord": "a0"
                   }
                 ],
-                "id": "edfcf407-b513-463c-ad2d-69a27716e544",
+                "id": "dc3f9365-4a87-4aa0-ae39-4e84e692249e",
                 "ord": "a0"
               },
               {
@@ -1947,19 +2121,19 @@
                           "kind": "value",
                           "ref": "featuredImage"
                         },
-                        "id": "207580db-96ba-4374-a9bc-9f377682c6d4",
+                        "id": "b89bd498-6a71-44a2-b6da-a6c3498fac9c",
                         "ord": "a0"
                       }
                     ],
-                    "id": "5af37338-25ac-48b0-ab87-f8b0a05d1ff9",
+                    "id": "103b6972-6b89-45dd-ae43-ed95fb002768",
                     "ord": "a0"
                   }
                 ],
-                "id": "89a5749c-c796-4d51-b32d-dd25bdf9558c",
+                "id": "97485bf4-4266-4059-b966-97983a16eab1",
                 "ord": "a1"
               }
             ],
-            "id": "f24d26c9-0d91-4dd6-8f24-0743985b570b",
+            "id": "52693319-6cc3-4259-933d-9c44b7f51e65",
             "ord": "a0"
           },
           {
@@ -1977,15 +2151,15 @@
                     "component": "cms.article-body",
                     "class": "w-full",
                     "locked": "host",
-                    "id": "9b8ad360-1489-4001-a77a-4f544af2632e",
+                    "id": "b0ba698d-9b3d-4f7d-bdf0-b16a1001f411",
                     "ord": "a0"
                   }
                 ],
-                "id": "a24f5fd5-8d44-4db4-ad8d-d9d7b44a4fc8",
+                "id": "34f5beb8-5962-40c7-ad18-32931801788b",
                 "ord": "a0"
               }
             ],
-            "id": "4c3d8cbc-c79e-4313-bf57-2f88b1be46fa",
+            "id": "6246d732-f54e-4680-8f33-0d4c0cbe5c29",
             "ord": "a1"
           },
           {
@@ -2015,7 +2189,7 @@
                           "kind": "visible",
                           "ref": "authorAvatar"
                         },
-                        "id": "ffe16f08-6d53-473c-8b24-10c2f28fea39",
+                        "id": "32913d8c-11db-412e-ad2e-22bf17d79c24",
                         "ord": "a0"
                       },
                       {
@@ -2032,7 +2206,7 @@
                               "kind": "value",
                               "ref": "authorName"
                             },
-                            "id": "dd49b92b-7638-4fb5-8a8b-c58511ed19af",
+                            "id": "bcead483-ede5-44df-a714-b0f05f8652b3",
                             "ord": "a0"
                           },
                           {
@@ -2044,11 +2218,11 @@
                               "kind": "value",
                               "ref": "authorBio"
                             },
-                            "id": "8620bc9e-5d85-41eb-bd49-095beaa3d873",
+                            "id": "da8f9853-6c59-4ee5-b3f6-44f1fb8bff67",
                             "ord": "a1"
                           }
                         ],
-                        "id": "aeceb175-5225-41e3-b4b2-52b1207fd5cb",
+                        "id": "622a125f-1348-4d0f-b015-43f7ff24fcc5",
                         "ord": "a1"
                       }
                     ],
@@ -2056,15 +2230,15 @@
                       "kind": "visible",
                       "ref": "authorBio"
                     },
-                    "id": "15508371-32c5-40f7-9dc8-5b1458deb817",
+                    "id": "cdce4d8f-dc56-482a-91a9-086093f97f6a",
                     "ord": "a0"
                   }
                 ],
-                "id": "99e13fc4-a30a-4313-8ac4-cdc08aa4b355",
+                "id": "b397e42e-9466-409b-8f50-13669a9a8ca7",
                 "ord": "a0"
               }
             ],
-            "id": "bf9bca9e-44a3-413a-91ae-6cf55903f727",
+            "id": "a0a3db9e-c60b-48d9-8171-868ff1d98730",
             "ord": "a2"
           },
           {
@@ -2087,7 +2261,7 @@
                         "tag": "h2",
                         "class": "text-2xl font-bold tracking-tight text-base-content @2xl:text-3xl",
                         "children": ["Keep reading"],
-                        "id": "a8a97361-2ff9-4413-81f8-d76101d218b1",
+                        "id": "db0bc959-19c8-4c27-9250-02eff5295bd5",
                         "ord": "a0"
                       },
                       {
@@ -2102,23 +2276,23 @@
                               "href": "/work"
                             },
                             "children": ["More stories"],
-                            "id": "ee39ac35-5f5d-4f6f-9a69-aae7c4e70f07",
+                            "id": "5016190a-e7a0-4d45-9b9e-e1e8178de9cf",
                             "ord": "a0"
                           }
                         ],
-                        "id": "e6581e7c-99bb-4dad-b028-fe3ff43a05d8",
+                        "id": "c45b2ac1-970f-4b15-b5f0-2442ecb91f9c",
                         "ord": "a1"
                       }
                     ],
-                    "id": "66c34c57-429b-426e-a999-f108e01e8eec",
+                    "id": "77845202-57b4-4850-8710-ecbf693f5cd2",
                     "ord": "a0"
                   }
                 ],
-                "id": "dfe6fbab-87e9-4606-9a95-bcefb61f004d",
+                "id": "5cdcfe90-5156-408e-9ce2-48ceca3130f8",
                 "ord": "a0"
               }
             ],
-            "id": "6dd7acf8-adbe-4a7a-b2b4-a8399b088e09",
+            "id": "d28d01a8-8944-4dc5-96f2-4e5b1b9bfba8",
             "ord": "a3"
           }
         ],
@@ -2126,7 +2300,7 @@
           "kind": "collection",
           "ref": "blog_post"
         },
-        "id": "7ff9b7d2-f567-42b1-85e7-54ac8bf420f3"
+        "id": "4cb821df-985f-4d49-a7c1-3fb46f7aecc7"
       }
     }
   ],

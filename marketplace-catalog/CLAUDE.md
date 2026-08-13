@@ -50,6 +50,30 @@ emitted parts** (a regen overwrites them). `sparx.json`, `README.md`, and `media
 fixes by property order — keep that order stable across edits (ids are persisted + used as
 React/dnd keys).
 
+## The Contact page is shared, and nothing on it is invented
+
+Every bundle's Contact page is built from **`_gen/shared/contact-section.ts`** — the page's
+`h1`, the business's own phone/email/address, and a real submitting `<form>`. Each family
+reaches it differently (the service harness prepends it; the 72 template/portfolio
+generators each call it with their own words), but the SHAPE is one file.
+
+**The details are BOUND, never authored.** `site.identity.phone` / `.email` / `.address`
+come from Site settings → _How customers reach you_ (`Property.settings.contact`, no schema
+column). Each row is wrapped in `visibleWhen`, so an un-filled field renders **nothing** —
+a starter never ships a plausible-looking phone number that is not a real line. `phoneHref`
+/ `emailHref` are composed host-side (`apps/site/lib/silica-data.ts`), because `bindAttr`
+fills an attribute verbatim and cannot prefix `tel:`.
+
+**The form is unconditional and works on install.** A form with no `FormDefinition` row is
+not an error — `form-submit-service.ts` falls back to notifying the account email and always
+writes the submission — so a site is reachable before its owner configures anything.
+
+This exists because an audit on 2026-08-12 found that of 190 shipped bundles: **none had a
+phone number anywhere**, **none had a form on the contact page**, 111 had no email either,
+and 68 shipped `hello@example.com` as the only route to the business. The parts were all on
+the shelf (`sections/convert.ts`, the form pipeline, the notification email) and unfitted.
+When adding a bundle, call `contactSection` — do not hand-author a contact band.
+
 ## Binding conventions (bind by HANDLE/assetId, never a row id)
 
 - Collection templates bind **`<typeKey>.*`** — `product.*` (commerce), `blog_post.*` (CMS) —

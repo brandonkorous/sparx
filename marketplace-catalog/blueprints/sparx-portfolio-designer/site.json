@@ -22,7 +22,7 @@
                   "props": {
                     "show": "both"
                   },
-                  "id": "61f0a6c6-1916-4d4a-b808-588bf3443b22",
+                  "id": "33820422-3a0a-4c44-8fcf-8d43ca2feaae",
                   "ord": "a0"
                 },
                 {
@@ -43,7 +43,7 @@
                         "type": "link",
                         "label": "Product"
                       },
-                      "id": "6d4d0047-0bca-45b4-b048-abb54f870b74",
+                      "id": "e4c139fa-b435-47f5-804c-e259a292bce7",
                       "ord": "a0"
                     },
                     {
@@ -59,7 +59,7 @@
                         "type": "link",
                         "label": "Pricing"
                       },
-                      "id": "ce5822f5-84a5-4057-84bf-77eb3a5793e3",
+                      "id": "b13f8e2b-ad02-4fb9-b4fb-e85d103c9f47",
                       "ord": "a1"
                     },
                     {
@@ -75,11 +75,11 @@
                         "type": "link",
                         "label": "Docs"
                       },
-                      "id": "6c45c873-7f60-4841-b9d0-b1720f51a84e",
+                      "id": "451373d1-dcbb-40c8-9661-4b9d744371b8",
                       "ord": "a2"
                     }
                   ],
-                  "id": "5d509d21-a2a6-4cb6-a05b-78e30502e5f7",
+                  "id": "ffb69629-bd2b-4a7b-8f2a-6cc909b62861",
                   "ord": "a1"
                 },
                 {
@@ -100,14 +100,14 @@
                         "type": "link",
                         "label": "Secondary link"
                       },
-                      "id": "679f003d-b754-487d-8759-a2d3996cb2d1",
+                      "id": "459a3f25-3dec-4954-b3dd-520df5d7a440",
                       "ord": "a0"
                     },
                     {
                       "kind": "host",
                       "component": "site.theme-toggle",
                       "class": "inline-flex items-center",
-                      "id": "615c6a29-c43d-48ab-98d9-7820dc873885",
+                      "id": "617d74fb-78a2-48ff-8d1d-e200a175e006",
                       "ord": "a1"
                     },
                     {
@@ -123,7 +123,7 @@
                         "type": "link",
                         "label": "Primary action"
                       },
-                      "id": "0ec8e8d0-40c4-4050-9a40-a55f9215ba3f",
+                      "id": "c4337189-42ab-436f-8fcb-d2dd94fef800",
                       "ord": "a2"
                     },
                     {
@@ -141,20 +141,20 @@
                           "props": {
                             "name": "menu"
                           },
-                          "id": "f728c963-4d74-4a68-8741-26b6ca375617",
+                          "id": "be4fa974-161d-43a1-af48-062e00245cc4",
                           "ord": "a0"
                         }
                       ],
                       "part": "trigger",
-                      "id": "dbda0136-3e1f-439e-a158-fffd4804a200",
+                      "id": "6d5a6489-debf-4322-a15e-dcc045b355fa",
                       "ord": "a3"
                     }
                   ],
-                  "id": "4b50ca07-5a3a-41a9-9c54-ac2fdd7d04d2",
+                  "id": "509f6171-a0e9-4be7-9ed9-7f9cea83e118",
                   "ord": "a2"
                 }
               ],
-              "id": "01351c29-7f12-493a-952a-63b516ae2787",
+              "id": "1375bbfe-df53-42f7-8bd6-63d087467d90",
               "ord": "a0"
             },
             {
@@ -178,7 +178,7 @@
                     "type": "link",
                     "label": "Product"
                   },
-                  "id": "f81130a0-b2a0-4e79-ab8c-196ac7da3c34",
+                  "id": "34317ae4-fa9d-4b8d-aeb2-192566b222ec",
                   "ord": "a0"
                 },
                 {
@@ -194,7 +194,7 @@
                     "type": "link",
                     "label": "Pricing"
                   },
-                  "id": "6e98a877-df25-4ff2-8e7d-ec5f541d066f",
+                  "id": "3c7dc22b-595a-4d9e-b1ab-485b8a7c9c77",
                   "ord": "a1"
                 },
                 {
@@ -210,7 +210,7 @@
                     "type": "link",
                     "label": "Docs"
                   },
-                  "id": "5e11ed9c-4ddb-4e12-b633-87ac84c380fd",
+                  "id": "7e9d00d4-b801-47f4-9392-c914e0c43f4e",
                   "ord": "a2"
                 },
                 {
@@ -226,7 +226,7 @@
                     "type": "link",
                     "label": "Secondary link"
                   },
-                  "id": "04076694-eb29-48b8-9ea0-cf01075ade50",
+                  "id": "7aff7f49-5ed6-4a2e-a9b7-e82ecc5438ff",
                   "ord": "a3"
                 },
                 {
@@ -242,19 +242,19 @@
                     "type": "link",
                     "label": "Primary action"
                   },
-                  "id": "ca883473-c57f-4c86-8d9c-35d3023a4d9a",
+                  "id": "1e451c9d-b696-41ef-8ead-bb10bf3b0a4a",
                   "ord": "a4"
                 }
               ],
               "part": "panel",
-              "id": "d065886e-76af-4414-b1f6-f94c020c35c9",
+              "id": "98a19198-179a-40d1-832d-63a67bd0a9f6",
               "ord": "a1"
             }
           ],
           "behavior": {
             "type": "disclosure"
           },
-          "id": "4f34d2c7-a28a-4691-a9c1-43bdd2da8979",
+          "id": "6ed5ce39-22ce-4818-b805-4dafed92e415",
           "ord": "a0"
         },
         {
@@ -270,7 +270,7 @@
               "kind": "outlet"
             }
           ],
-          "id": "6507e3d4-388c-4b29-b09c-e9f650732c0e",
+          "id": "db3e288c-cc4a-467f-9cd8-d728993aca02",
           "ord": "a1"
         },
         {
@@ -300,7 +300,7 @@
                           "props": {
                             "show": "both"
                           },
-                          "id": "8685a0a2-d194-42b6-95d6-141af2bb9764",
+                          "id": "b27225c6-c5fb-4780-8783-f516032213b1",
                           "ord": "a0"
                         },
                         {
@@ -316,7 +316,7 @@
                           "attrs": {
                             "href": "/"
                           },
-                          "id": "0611d521-dd84-413a-ab86-9dad46d477aa",
+                          "id": "3f03a614-6fb8-4573-b75c-0ef09965ce70",
                           "ord": "a1"
                         },
                         {
@@ -324,11 +324,11 @@
                           "tag": "ul",
                           "class": "mt-2 flex items-center gap-5",
                           "children": [],
-                          "id": "70117ab3-b97e-41ad-a076-89340cbc0104",
+                          "id": "696a25d6-898e-463c-97fb-c40b96b2a69e",
                           "ord": "a2"
                         }
                       ],
-                      "id": "882b2da2-c2e9-4abf-83a4-9a09f01c642b",
+                      "id": "990e07a6-c3ba-417f-93a7-c6902aab30fe",
                       "ord": "a0"
                     },
                     {
@@ -349,7 +349,7 @@
                           "attrs": {
                             "href": "/"
                           },
-                          "id": "0e1c7e77-36e6-400d-8258-bc18f1a44c4f",
+                          "id": "9e73d068-f7dc-4ac9-ac99-ce120a0eee01",
                           "ord": "a0"
                         },
                         {
@@ -374,11 +374,11 @@
                                     "type": "link",
                                     "label": "Features"
                                   },
-                                  "id": "61a66eb6-4e3b-4736-b70f-aa6761629934",
+                                  "id": "56a724ae-4169-4f29-8afa-df5fbf6a4523",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "6379bfbe-bb02-4e04-b28d-675b91ef975e",
+                              "id": "d72db408-003c-4f57-a4be-e9c606ed299d",
                               "ord": "a0"
                             },
                             {
@@ -398,11 +398,11 @@
                                     "type": "link",
                                     "label": "Pricing"
                                   },
-                                  "id": "d791bd1a-3c8e-410e-8a60-1c2475f887e5",
+                                  "id": "131ff70c-1ba6-49f8-96df-08a4bdc46b1b",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "808e5cb3-14e4-4a2c-9d81-5712bf0e71da",
+                              "id": "cffce1e7-5671-47ca-a51c-f1b5b5db8731",
                               "ord": "a1"
                             },
                             {
@@ -422,19 +422,19 @@
                                     "type": "link",
                                     "label": "Integrations"
                                   },
-                                  "id": "96eb6b5a-0be8-4eca-bf5d-fda63f16d3c4",
+                                  "id": "1771dba0-b7b7-43cc-8a72-2e92093e138e",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "150ec511-88e8-451f-946e-7f8562379718",
+                              "id": "ee845553-830d-4a53-a952-b6018858154c",
                               "ord": "a2"
                             }
                           ],
-                          "id": "85861703-3072-4904-aacf-835e17796d0f",
+                          "id": "e467f46c-b4d4-4139-b6ed-ad4bcf1c15df",
                           "ord": "a1"
                         }
                       ],
-                      "id": "c5df2a2d-11b5-4b20-804b-ab967f64b349",
+                      "id": "98528a48-ba43-49ed-b1ff-d22260ec9640",
                       "ord": "a1"
                     },
                     {
@@ -447,11 +447,11 @@
                           "tag": "ul",
                           "class": "flex flex-col gap-2",
                           "children": [],
-                          "id": "e12db0eb-45e7-46df-803d-b4d7d0947d5f",
+                          "id": "9393faf2-7330-479e-976a-80798459fd75",
                           "ord": "a0"
                         }
                       ],
-                      "id": "e59f5d25-339f-4b3f-81ed-b45770a9006e",
+                      "id": "e886ff53-6932-4f79-aaf1-f05f0773cc0d",
                       "ord": "a2"
                     },
                     {
@@ -475,23 +475,23 @@
                                   "props": {
                                     "heading": "Legal"
                                   },
-                                  "id": "98a5cbcf-89c6-455f-a6b5-aeb46eb8e7e4",
+                                  "id": "711b1f11-38cc-46ad-af64-07b5aa5f2fab",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "9b466a2a-ce50-42a2-8c6b-8cc7ec21951a",
+                              "id": "82068dbe-96f5-4eef-8b95-7e5f6e3f4612",
                               "ord": "a0"
                             }
                           ],
-                          "id": "039612e2-c7ff-4439-b5e6-83a03a042f62",
+                          "id": "86b21b00-0c6d-4c30-872f-f807e6f52d6f",
                           "ord": "a0"
                         }
                       ],
-                      "id": "1aa99ef9-5765-48ce-96a3-1a86488cb035",
+                      "id": "5daab593-b045-41ad-a8ca-7cdbfeb8a0ec",
                       "ord": "a3"
                     }
                   ],
-                  "id": "127c3e54-8f6e-4a82-afeb-31cdc6bc0d43",
+                  "id": "99f06df7-e955-442a-8391-b54f4c6b34ba",
                   "ord": "a0"
                 },
                 {
@@ -514,11 +514,11 @@
                             "kind": "value",
                             "ref": "site.identity.name"
                           },
-                          "id": "70fac6c9-8877-45e2-a92a-083ef15bf0c1",
+                          "id": "8152e190-3cec-42e4-84c6-d0d78b51f319",
                           "ord": "a0"
                         }
                       ],
-                      "id": "83a7e15d-b882-4681-9050-f910f729de8b",
+                      "id": "3f88098b-fdd4-4324-ae21-93ca0f89b90c",
                       "ord": "a0"
                     },
                     {
@@ -526,23 +526,23 @@
                       "tag": "ul",
                       "class": "flex flex-wrap items-center gap-x-6 gap-y-2",
                       "children": [],
-                      "id": "ef05974f-9a09-4e39-9e04-cafee7e692f8",
+                      "id": "d1bdb852-71b4-4d27-b20e-7ff3717b8ebe",
                       "ord": "a1"
                     }
                   ],
-                  "id": "6ffbdb65-2b1e-464d-9650-f6b303630ca1",
+                  "id": "e3c7ad30-b1c4-439c-95ba-5bdbe1c159c0",
                   "ord": "a1"
                 }
               ],
-              "id": "73e890e0-592c-4915-861f-011aac42243f",
+              "id": "1bb551ab-9f9a-41ed-91d1-664deff12aee",
               "ord": "a0"
             }
           ],
-          "id": "e9fa97da-42d0-4ba5-bd0c-d8b5dbc510ba",
+          "id": "e7b710a1-5ba8-4286-9ba8-18baad1854db",
           "ord": "a2"
         }
       ],
-      "id": "1143b212-a358-4c2b-882d-d54add9ea9bf"
+      "id": "bef3b862-e33a-417e-8dfa-1b5344bac1bf"
     }
   },
   "pages": [
@@ -556,7 +556,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "d9cc2a39-e99b-4440-aaa9-0661bd4bd2b9",
+        "id": "e67e3534-175c-4502-b6f1-e4e5c591ff0b",
         "children": [
           {
             "kind": "element",
@@ -578,7 +578,7 @@
                         "tag": "h1",
                         "class": "max-w-4xl text-5xl font-bold leading-none tracking-tight text-base-content @2xl:text-7xl @3xl:text-8xl",
                         "children": ["Product designer who ships."],
-                        "id": "830e4375-e31c-40b8-b4a4-aba497ab9d0f",
+                        "id": "048cc92b-0867-47d5-bab5-96084abd3744",
                         "ord": "a0"
                       },
                       {
@@ -588,11 +588,11 @@
                         "children": [
                           "I’m Sasha Rourke — I design product interfaces and the systems behind them, from the first sketch to the shipped release. Twelve years, mostly fintech and health, always end to end."
                         ],
-                        "id": "44a8d42a-a16d-4920-abcb-9cbe73973d6d",
+                        "id": "599cb586-683f-4eed-8a99-f57398571a27",
                         "ord": "a1"
                       }
                     ],
-                    "id": "c612313b-ed35-48a0-8de6-e5c288804bc0",
+                    "id": "35bdcea8-9c74-40bc-ad77-3016c8402bd1",
                     "ord": "a0"
                   },
                   {
@@ -608,7 +608,7 @@
                           "href": "/work"
                         },
                         "children": ["See selected work"],
-                        "id": "1c6f3cd0-42cd-42bd-a520-d34fc02c54b8",
+                        "id": "9ab4de79-3d50-47ad-a829-6dd1f136adf1",
                         "ord": "a0"
                       },
                       {
@@ -619,11 +619,11 @@
                           "href": "/about"
                         },
                         "children": ["About me"],
-                        "id": "d6f51d75-5f6a-4c24-947b-6f17a8e9f115",
+                        "id": "63e559e9-e2e5-461d-ac0a-960bb04251f9",
                         "ord": "a1"
                       }
                     ],
-                    "id": "596ed667-e224-4061-a1cd-4e5f8ff30189",
+                    "id": "6fee1574-22d1-46fc-b195-274a80d4a8ce",
                     "ord": "a1"
                   },
                   {
@@ -636,7 +636,7 @@
                         "tag": "span",
                         "class": "text-sm font-semibold uppercase tracking-wide text-secondary",
                         "children": ["Selected clients"],
-                        "id": "530fd572-b3a2-4256-a460-63d2c8ee49b0",
+                        "id": "827c834d-a95e-4155-a924-4707e2f4d0a7",
                         "ord": "a0"
                       },
                       {
@@ -649,7 +649,7 @@
                             "tag": "span",
                             "class": "text-base font-semibold text-base-content",
                             "children": ["Atlas Financial"],
-                            "id": "720d8ad1-1107-4a40-a1b3-072ff6953458",
+                            "id": "8f22d6a8-152d-4750-8629-6542362a7b33",
                             "ord": "a0"
                           },
                           {
@@ -657,7 +657,7 @@
                             "tag": "span",
                             "class": "text-base font-semibold text-base-content",
                             "children": ["Northwind Health"],
-                            "id": "c50d528c-9cba-4a96-9a18-f7bb0b6e58ca",
+                            "id": "288ede31-1936-4ca7-921b-f2eb42481be0",
                             "ord": "a1"
                           },
                           {
@@ -665,7 +665,7 @@
                             "tag": "span",
                             "class": "text-base font-semibold text-base-content",
                             "children": ["Kiln"],
-                            "id": "96693b3d-c02e-4562-a6c2-b0acef2ca80b",
+                            "id": "a649d828-c0e2-4707-b625-9df4e5ad956f",
                             "ord": "a2"
                           },
                           {
@@ -673,7 +673,7 @@
                             "tag": "span",
                             "class": "text-base font-semibold text-base-content",
                             "children": ["Fathom"],
-                            "id": "ff527dc6-e7a9-40a9-87e3-d43296c75e5a",
+                            "id": "11f72382-262e-4949-a145-8f0711fb89e5",
                             "ord": "a3"
                           },
                           {
@@ -681,23 +681,23 @@
                             "tag": "span",
                             "class": "text-base font-semibold text-base-content",
                             "children": ["Meridian"],
-                            "id": "05d76647-8464-44f9-88f1-69eade16e46a",
+                            "id": "d3e3c3d6-e65e-4419-935f-10b490b9b221",
                             "ord": "a4"
                           }
                         ],
-                        "id": "fc3c0eb1-3708-4837-97d4-e5ac0a8c5ae9",
+                        "id": "5b6f52b1-00ae-4f5a-9be6-e3da64ecbdad",
                         "ord": "a1"
                       }
                     ],
-                    "id": "238fde91-cf4d-4a8e-904e-37cd81bd2226",
+                    "id": "f6db05ca-2c09-49a0-b6d6-4c3962125b21",
                     "ord": "a2"
                   }
                 ],
-                "id": "5c6d18b4-037e-4300-9e36-50af4aeac359",
+                "id": "4b56e24a-b688-4b6f-a381-f77a4741e47e",
                 "ord": "a0"
               }
             ],
-            "id": "7a1cb39c-0cd3-4354-a825-835c3fa7b077",
+            "id": "1ac80b35-9542-4ba0-b6f2-12d23c42eb29",
             "ord": "a0"
           },
           {
@@ -720,7 +720,7 @@
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
                         "children": ["Selected work"],
-                        "id": "3365e7cf-ef72-4c34-8716-c595f7154bc6",
+                        "id": "03c39c50-9c96-4c80-8157-1996d9a4627c",
                         "ord": "a0"
                       },
                       {
@@ -730,11 +730,11 @@
                         "children": [
                           "Three recent projects, each with the problem it solved and the result it moved. The rest are on the work page."
                         ],
-                        "id": "5654ff8a-e391-439e-ac80-d353b3e1338a",
+                        "id": "676e2165-932a-4b4a-a86b-581bebba1bdc",
                         "ord": "a1"
                       }
                     ],
-                    "id": "bfd778a5-d1ed-40b0-85e1-1337cf362f9d",
+                    "id": "412ebe41-7d4a-4efc-8e91-7d6c9519aaa3",
                     "ord": "a0"
                   },
                   {
@@ -759,11 +759,11 @@
                               "alt": "A financial dashboard redesign shown across desktop and mobile",
                               "loading": "lazy"
                             },
-                            "id": "0986e523-279f-4c07-bee7-991b04e58e01",
+                            "id": "d7d2bf92-31ac-46d3-bb80-c35c5b68acd9",
                             "ord": "a0"
                           }
                         ],
-                        "id": "7ccacc08-57bd-4d54-bc6b-1398bb2ae3f6",
+                        "id": "30a2ba31-9b85-4b44-be60-36f2a173f513",
                         "ord": "a0"
                       },
                       {
@@ -776,7 +776,7 @@
                             "tag": "span",
                             "class": "text-sm font-semibold uppercase tracking-wide text-secondary",
                             "children": ["Product design · Design systems · 2026"],
-                            "id": "f8935f41-8b9c-474b-bdb5-f8c7bdce9562",
+                            "id": "d8449628-5a0c-4d0e-ad3b-4a598e3c740b",
                             "ord": "a0"
                           },
                           {
@@ -784,7 +784,7 @@
                             "tag": "h3",
                             "class": "text-3xl font-bold leading-tight tracking-tight text-base-content @2xl:text-4xl",
                             "children": ["Rebuilding the Atlas trading dashboard"],
-                            "id": "729e83d6-b52e-4bbb-bb85-c6bf693ca900",
+                            "id": "bf91e676-374c-4116-8e6f-a72ce1547b60",
                             "ord": "a1"
                           },
                           {
@@ -794,7 +794,7 @@
                             "children": [
                               "A dense pro-trader dashboard rebuilt from the information architecture up, then codified into a component library the whole product now runs on."
                             ],
-                            "id": "fd700136-d34d-4f64-ade6-57f9c20a40f4",
+                            "id": "9ea5c1e5-cb27-4921-a35a-111c7998cbfa",
                             "ord": "a2"
                           },
                           {
@@ -807,7 +807,7 @@
                                 "tag": "span",
                                 "class": "text-5xl font-bold leading-none tracking-tight text-primary @2xl:text-6xl",
                                 "children": ["−38%"],
-                                "id": "953fbb5d-fc1b-4d3c-9db1-08c2111691f5",
+                                "id": "f8d46506-c2c7-4156-86e7-2efee15217aa",
                                 "ord": "a0"
                               },
                               {
@@ -815,11 +815,11 @@
                                 "tag": "span",
                                 "class": "text-base font-semibold text-base-content",
                                 "children": ["support tickets in the first quarter"],
-                                "id": "7e4447fd-29e8-453d-a069-15f482518411",
+                                "id": "6826c5ba-712b-4a6c-9669-20baef909862",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "17f94a0e-2190-4664-a8d6-d3939a96377d",
+                            "id": "835fa79f-30c0-4aa5-9dfc-1949f0938f1c",
                             "ord": "a3"
                           },
                           {
@@ -834,26 +834,26 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "children": ["Read the case study"],
-                                "id": "21b9fd11-0b6f-4507-b11d-668b7700e8b8",
+                                "id": "e81bf5a3-906e-4ec7-876e-573e2dcc5e9b",
                                 "ord": "a0"
                               },
                               {
                                 "kind": "element",
                                 "tag": "span",
                                 "children": ["→"],
-                                "id": "543d20f5-1908-4fa7-aa9a-4a8662f1ed04",
+                                "id": "e7f3b447-cba2-4505-ae32-0b82ae70e3dc",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "95601d38-0639-49be-99da-894075716b83",
+                            "id": "5c838867-f44b-4b3c-8f8e-3aeecdc573a5",
                             "ord": "a4"
                           }
                         ],
-                        "id": "f18e211e-0a28-4774-8f38-bd7d6daf034a",
+                        "id": "948eaca4-5c8e-49f2-b67a-7872f45363c2",
                         "ord": "a1"
                       }
                     ],
-                    "id": "1295708c-594b-4ccf-a780-2f14c44cf5b6",
+                    "id": "b198edf1-3c11-4e56-80db-99e7bf366464",
                     "ord": "a1"
                   },
                   {
@@ -871,7 +871,7 @@
                             "tag": "span",
                             "class": "text-sm font-semibold uppercase tracking-wide text-secondary",
                             "children": ["UX · Service design · 2025"],
-                            "id": "1ab01e2b-a269-4907-a6b1-308b38be8f2f",
+                            "id": "ed0b7a67-ccdb-4496-87fd-2e722c94033f",
                             "ord": "a0"
                           },
                           {
@@ -879,7 +879,7 @@
                             "tag": "h3",
                             "class": "text-3xl font-bold leading-tight tracking-tight text-base-content @2xl:text-4xl",
                             "children": ["A booking flow patients actually finish"],
-                            "id": "bd6ab04e-f18c-4952-9fd5-422c2674e7be",
+                            "id": "d7a61bc8-cdd4-4a24-87d5-74279133aaf0",
                             "ord": "a1"
                           },
                           {
@@ -889,7 +889,7 @@
                             "children": [
                               "Northwind’s appointment booking was losing people at every step. We cut it to three, wrote it in plain language, and tested it with real patients."
                             ],
-                            "id": "eb9147fc-3048-4c64-ab69-e4c80c3f534d",
+                            "id": "cc67aed3-345c-4cee-82d2-d78df8f3e23e",
                             "ord": "a2"
                           },
                           {
@@ -902,7 +902,7 @@
                                 "tag": "span",
                                 "class": "text-5xl font-bold leading-none tracking-tight text-primary @2xl:text-6xl",
                                 "children": ["+61%"],
-                                "id": "5611d1be-cca6-4c92-a3c8-e7aef8b39a03",
+                                "id": "dc79faba-c0d4-47e1-9388-46bf972e29fb",
                                 "ord": "a0"
                               },
                               {
@@ -910,11 +910,11 @@
                                 "tag": "span",
                                 "class": "text-base font-semibold text-base-content",
                                 "children": ["booking completion rate"],
-                                "id": "6eaca6e1-2905-4aad-8349-77a033c9759d",
+                                "id": "edfdbf39-0294-494c-a395-26948211a217",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "9cc12a61-48ba-47cf-af23-ddd980d019bd",
+                            "id": "3ee59663-067a-4cb4-b230-8673b9601fc6",
                             "ord": "a3"
                           },
                           {
@@ -929,22 +929,22 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "children": ["Read the case study"],
-                                "id": "cdf55689-de3f-483a-9118-4eb245a3cb09",
+                                "id": "022b6854-7ba1-49d2-bf8a-895e1051de75",
                                 "ord": "a0"
                               },
                               {
                                 "kind": "element",
                                 "tag": "span",
                                 "children": ["→"],
-                                "id": "6c5bf884-f0fc-4d75-b898-0128877a3666",
+                                "id": "42390074-4ed2-4226-978b-36bbbcb5329a",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "ad08d970-21c9-48ba-a8a1-363e5ad70e87",
+                            "id": "349a349d-822e-4905-8df1-95516aaae948",
                             "ord": "a4"
                           }
                         ],
-                        "id": "3f25471f-ef9e-466e-9aa6-b4c3ec416bc2",
+                        "id": "11574f37-4bfa-4230-87d7-e0da05b5e7b0",
                         "ord": "a0"
                       },
                       {
@@ -964,15 +964,15 @@
                               "alt": "A healthcare booking flow, a sequence of clean mobile screens",
                               "loading": "lazy"
                             },
-                            "id": "e2660a9b-2aec-4c2f-a92e-4487b5e54c0c",
+                            "id": "1af26382-c903-4cf8-a891-1c92c6ff3208",
                             "ord": "a0"
                           }
                         ],
-                        "id": "1414ec9e-7440-4ba1-aed8-f694cbae715f",
+                        "id": "6235b819-298b-4dae-8a56-41c735a9f65b",
                         "ord": "a1"
                       }
                     ],
-                    "id": "37ca6682-9477-4e90-ac4a-c6ac5e7ff98d",
+                    "id": "ba970c1c-627a-42e6-9c6b-7198148cf113",
                     "ord": "a2"
                   },
                   {
@@ -997,11 +997,11 @@
                               "alt": "A design-system component library laid out as a swatch grid",
                               "loading": "lazy"
                             },
-                            "id": "f7379499-f773-42bd-b28c-75e5123030bd",
+                            "id": "258c3280-d128-452f-a691-8d1959dccf48",
                             "ord": "a0"
                           }
                         ],
-                        "id": "0a33f827-d88d-4ccf-8cab-e56304a8a9ca",
+                        "id": "7bd5cb67-12d8-4a37-81cc-33bfdaa0d6cd",
                         "ord": "a0"
                       },
                       {
@@ -1014,7 +1014,7 @@
                             "tag": "span",
                             "class": "text-sm font-semibold uppercase tracking-wide text-secondary",
                             "children": ["Design systems · 2025"],
-                            "id": "5faa3110-32fa-4411-a384-8de1ed9b58de",
+                            "id": "f93bcf46-794d-4de1-b9b2-7d47aa2f3ecb",
                             "ord": "a0"
                           },
                           {
@@ -1022,7 +1022,7 @@
                             "tag": "h3",
                             "class": "text-3xl font-bold leading-tight tracking-tight text-base-content @2xl:text-4xl",
                             "children": ["One system, five product teams"],
-                            "id": "a7bb7d85-6658-4491-983d-54e4c5d64a78",
+                            "id": "8870b2b1-8fff-4b0d-839d-aac48ff9dc6d",
                             "ord": "a1"
                           },
                           {
@@ -1032,7 +1032,7 @@
                             "children": [
                               "Kiln’s five squads were each rebuilding the same buttons. I built the shared system — tokens, components, and the docs that made teams actually adopt it."
                             ],
-                            "id": "80d9697d-cf8a-44fc-a4de-fd7f2be793c7",
+                            "id": "345a1ace-a797-453c-989b-988b7b4a944d",
                             "ord": "a2"
                           },
                           {
@@ -1045,7 +1045,7 @@
                                 "tag": "span",
                                 "class": "text-5xl font-bold leading-none tracking-tight text-primary @2xl:text-6xl",
                                 "children": ["4×"],
-                                "id": "aa6e1662-24bc-4af8-a341-0342ddb1f1dd",
+                                "id": "07d1cde8-9596-42d0-9e5e-aa60d8902f93",
                                 "ord": "a0"
                               },
                               {
@@ -1053,11 +1053,11 @@
                                 "tag": "span",
                                 "class": "text-base font-semibold text-base-content",
                                 "children": ["faster to ship a new screen"],
-                                "id": "fe93aaa8-08b3-4765-a853-bf210f388f93",
+                                "id": "87491d35-bc02-4213-b32b-4a4b3817cdd0",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "b5b678a1-da04-41b7-937a-3ff446e403d9",
+                            "id": "ea39ca2e-dba7-454c-861e-56b34b287d58",
                             "ord": "a3"
                           },
                           {
@@ -1072,34 +1072,34 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "children": ["Read the case study"],
-                                "id": "909fa8fe-7846-4752-ab72-16d83f858680",
+                                "id": "90c9cec6-9d93-4e42-8aed-d2bbcfe5e221",
                                 "ord": "a0"
                               },
                               {
                                 "kind": "element",
                                 "tag": "span",
                                 "children": ["→"],
-                                "id": "5028582a-3820-4237-9967-a8d16ac49134",
+                                "id": "32df22d7-345b-442c-9893-ea98edde5c48",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "2a65972e-f33d-43cb-82ec-14b84c032f73",
+                            "id": "10c9290d-c243-45b5-84ca-47cad9e0e0f7",
                             "ord": "a4"
                           }
                         ],
-                        "id": "065b76a1-2c82-4fea-b9af-4bad3d316a5e",
+                        "id": "f198a6a9-af36-4317-8061-a76e97ee0d79",
                         "ord": "a1"
                       }
                     ],
-                    "id": "1ba7022b-c504-4e43-b845-7b44715b2183",
+                    "id": "cecc5ffd-861a-4bee-a778-18dc3a93a397",
                     "ord": "a3"
                   }
                 ],
-                "id": "f6de9963-6a4a-41b9-933b-1b48f4659bf8",
+                "id": "3164e802-1d1c-4688-a36a-377d0c0b54c3",
                 "ord": "a0"
               }
             ],
-            "id": "440e28bf-a847-4ff6-88b8-b0261ebab123",
+            "id": "3dbaf3f5-8af2-471c-921c-88f64e09828d",
             "ord": "a1"
           },
           {
@@ -1117,7 +1117,7 @@
                     "tag": "h2",
                     "class": "max-w-3xl text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
                     "children": ["I design the product and the system it’s built on."],
-                    "id": "1cae8795-b270-48a5-836a-c62f6b4947a3",
+                    "id": "abead11b-d044-4c21-a353-7598b9282d7c",
                     "ord": "a0"
                   },
                   {
@@ -1135,7 +1135,7 @@
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
                             "children": ["Product design"],
-                            "id": "fce57e44-6d51-4be2-a171-0efa0ce14b8b",
+                            "id": "1a08796a-0dd7-4706-8b17-ed4672c8d322",
                             "ord": "a0"
                           },
                           {
@@ -1145,11 +1145,11 @@
                             "children": [
                               "End-to-end interface design — flows, wireframes, high-fidelity screens, and the prototype that proves them before a line of code is written."
                             ],
-                            "id": "dce2be8a-00d0-4a11-af00-b7a4aef6d641",
+                            "id": "0e114a6d-fce1-40a6-9214-0da22013eecd",
                             "ord": "a1"
                           }
                         ],
-                        "id": "c872c3f0-0919-43da-8399-0a04dba1d774",
+                        "id": "5ae698c9-686b-4de7-b2c1-2f823c94e415",
                         "ord": "a0"
                       },
                       {
@@ -1162,7 +1162,7 @@
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
                             "children": ["Design systems"],
-                            "id": "e0edb70c-2995-4a31-a2c4-ffeab51e749e",
+                            "id": "ac66acba-2602-4843-9c74-16e4eca5e594",
                             "ord": "a0"
                           },
                           {
@@ -1172,11 +1172,11 @@
                             "children": [
                               "Tokens, components and documentation that let a whole team move fast without the product drifting apart. Built to be adopted, not admired."
                             ],
-                            "id": "518b93ca-1048-4439-b49d-52bae5940561",
+                            "id": "47a671f2-5ee5-48c0-81ab-da6bf7c11362",
                             "ord": "a1"
                           }
                         ],
-                        "id": "b88df523-3b3c-438d-b114-4bdfd5a2c0ca",
+                        "id": "45184a75-61bb-46f4-803c-f3ee52303a18",
                         "ord": "a1"
                       },
                       {
@@ -1189,7 +1189,7 @@
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
                             "children": ["Research & testing"],
-                            "id": "c8a6dc05-b64c-4861-8a38-21ba6398e7cc",
+                            "id": "1df759f3-b3da-4923-b17b-8682019df159",
                             "ord": "a0"
                           },
                           {
@@ -1199,23 +1199,23 @@
                             "children": [
                               "I test with real users early and often — usability sessions, quick prototypes, and honest readouts that change what we build next."
                             ],
-                            "id": "e5ed406d-3ac8-4dd6-b5b6-63b935cd68f4",
+                            "id": "bf286363-2898-430b-884e-5343f0ea4452",
                             "ord": "a1"
                           }
                         ],
-                        "id": "77793441-2665-44b2-9ecf-84e79f06365e",
+                        "id": "d4e8f671-bb90-43eb-bb83-e6b043615094",
                         "ord": "a2"
                       }
                     ],
-                    "id": "7b3c8a75-431f-412e-965b-0b62b05cd1a9",
+                    "id": "b1f500ae-abf9-49d3-b072-dbaf92e452ea",
                     "ord": "a1"
                   }
                 ],
-                "id": "db87cb25-511b-423f-9507-b58d131e47c6",
+                "id": "7f1a5bb9-a0d2-453c-9654-e9d148375b7b",
                 "ord": "a0"
               }
             ],
-            "id": "23177d9e-38e4-4172-ae18-9e3aafdf7600",
+            "id": "dcf0c90d-a39f-4be8-8b14-eafed0f91b70",
             "ord": "a2"
           },
           {
@@ -1233,7 +1233,7 @@
                     "tag": "h2",
                     "class": "text-3xl font-bold tracking-tight text-primary-content @3xl:text-4xl",
                     "children": ["Have a project in mind?"],
-                    "id": "1b24c05d-8967-4ef1-9215-dba972572a19",
+                    "id": "146e5c8d-d695-4fa5-8d66-11e6639b8503",
                     "ord": "a0"
                   },
                   {
@@ -1243,7 +1243,7 @@
                     "children": [
                       "I take on a few projects at a time and I’m choosy about fit. If yours sounds like a good one, tell me about it."
                     ],
-                    "id": "7f3e9d88-d3eb-4f31-acbb-ec7dac57a817",
+                    "id": "1f733d45-ee35-4dac-9ceb-e0a8c53b91dc",
                     "ord": "a1"
                   },
                   {
@@ -1254,15 +1254,15 @@
                       "href": "/contact"
                     },
                     "children": ["Start a conversation"],
-                    "id": "1a4254f3-c8b4-4ca3-a15e-7faa81811ac7",
+                    "id": "392898b3-a4c4-4d5e-859d-d8092e97298d",
                     "ord": "a2"
                   }
                 ],
-                "id": "faeeb261-4176-4c90-a626-1966016a43fe",
+                "id": "520701de-27d9-43a8-8213-80702cdf5f96",
                 "ord": "a0"
               }
             ],
-            "id": "df3bdab0-35bf-4e4d-bfac-6c8b527da27d",
+            "id": "6648cfd5-b49c-4856-a634-68557d8c1486",
             "ord": "a3"
           }
         ]
@@ -1279,7 +1279,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "daef3044-4b7f-4c7a-b153-1fff0fd8e02c",
+        "id": "661c2cd3-5e4a-4a4f-9e26-84fad15e14a8",
         "children": [
           {
             "kind": "element",
@@ -1296,7 +1296,7 @@
                     "tag": "h1",
                     "class": "text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-7xl",
                     "children": ["Selected work"],
-                    "id": "600001a5-4881-4c1c-babf-aff08a2dde97",
+                    "id": "44776261-227d-4ff3-bc7e-6e9f7cb7ddb3",
                     "ord": "a0"
                   },
                   {
@@ -1306,15 +1306,15 @@
                     "children": [
                       "Case studies from the last few years — fintech, health, and the design systems underneath them. Each opens to the full story: the brief, the work, and what changed."
                     ],
-                    "id": "7ae5f60c-72c9-4123-90b5-da77eefe61cf",
+                    "id": "5fdb01de-c31a-4f40-ae39-b6f8ff517d0e",
                     "ord": "a1"
                   }
                 ],
-                "id": "6efb1dba-9126-409e-9fa0-66d50523aca0",
+                "id": "94592bd7-6e20-4059-8f95-fb6eb86c6ac0",
                 "ord": "a0"
               }
             ],
-            "id": "6f961e23-af0a-4ee6-82f3-138ce4bdf9d8",
+            "id": "47ea79f5-56ab-4cc1-baab-ec5151011aae",
             "ord": "a0"
           },
           {
@@ -1352,7 +1352,7 @@
                               "kind": "value",
                               "ref": "featuredImage"
                             },
-                            "id": "cae5596a-4ea2-48ab-85e5-e197f9223e55",
+                            "id": "0cce4462-1254-42f7-ab40-0d4fde276fd9",
                             "ord": "a0"
                           },
                           {
@@ -1364,7 +1364,7 @@
                               "kind": "value",
                               "ref": "date"
                             },
-                            "id": "372785b4-823b-4453-8e77-467cdddcd5b2",
+                            "id": "85f130ae-033e-487c-aa7d-d344cd8b209e",
                             "ord": "a1"
                           },
                           {
@@ -1376,7 +1376,7 @@
                               "kind": "value",
                               "ref": "title"
                             },
-                            "id": "1c1945dc-aff8-420a-a71a-df4b8f8eb0fe",
+                            "id": "4ff05824-734d-454f-8462-71c0bd706a70",
                             "ord": "a2"
                           },
                           {
@@ -1388,7 +1388,7 @@
                               "kind": "value",
                               "ref": "excerpt"
                             },
-                            "id": "93f56e4a-3fbf-4394-9885-70d04be9e0a2",
+                            "id": "f75c6a1f-33d7-4318-a59a-3d90489d91a1",
                             "ord": "a3"
                           }
                         ],
@@ -1397,7 +1397,7 @@
                           "ref": "url",
                           "attr": "href"
                         },
-                        "id": "e4686b5d-9924-4281-9bf6-3df6d4752b23",
+                        "id": "fad7845d-c4f6-41cb-81b1-01ea341048f8",
                         "ord": "a0"
                       }
                     ],
@@ -1405,15 +1405,15 @@
                       "kind": "collection",
                       "ref": "cms.blog_post"
                     },
-                    "id": "fbc33102-9849-4526-9ca2-31eb5e324c9a",
+                    "id": "aca333db-1c6c-438a-8829-0fe49b3b7cf4",
                     "ord": "a0"
                   }
                 ],
-                "id": "954dbc9d-41d4-43c5-a037-98cbb89afbbb",
+                "id": "62116124-0493-4753-91e4-8eb8d8b9ace4",
                 "ord": "a0"
               }
             ],
-            "id": "0a1d0f94-962e-467e-ab80-93810abbb4ea",
+            "id": "0f032ec5-c12c-477a-9214-6d6b077b882e",
             "ord": "a1"
           }
         ]
@@ -1430,7 +1430,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "269a22b6-5c6e-4239-a8d7-efaed81d7209",
+        "id": "14ecb283-0cab-4269-8bf3-1fc45b071fc2",
         "children": [
           {
             "kind": "element",
@@ -1452,7 +1452,7 @@
                         "tag": "h1",
                         "class": "text-5xl font-bold tracking-tight text-base-content @2xl:text-6xl",
                         "children": ["About Sasha"],
-                        "id": "86d3f664-c076-4810-8df2-fd45a6a12a98",
+                        "id": "0f11017d-d442-4991-91fe-a383a86d25fc",
                         "ord": "a0"
                       },
                       {
@@ -1462,7 +1462,7 @@
                         "children": [
                           "I’m a product designer with twelve years of shipping real software — most of it in fintech and healthcare, where getting the details right actually matters to the person on the other end of the screen."
                         ],
-                        "id": "97228e88-9da8-47fb-899f-997cc0aba59b",
+                        "id": "f4b289d0-cb9c-44ed-8d5e-0f3045dbfd6e",
                         "ord": "a1"
                       },
                       {
@@ -1472,7 +1472,7 @@
                         "children": [
                           "I work end to end: the research that frames the problem, the flows and screens that solve it, and the design system that keeps a whole team consistent as they build. I care most about the boring parts done well — the empty states, the error messages, the second-time-through experience."
                         ],
-                        "id": "651aa2dd-8735-4f58-98d9-55c36947be38",
+                        "id": "2ea544f4-b491-4844-8e6c-680568f8af37",
                         "ord": "a2"
                       },
                       {
@@ -1482,11 +1482,11 @@
                         "children": [
                           "Before going independent I led design at two venture-backed products and one very large bank. Now I take on a handful of projects a year, usually as the senior designer a team is missing."
                         ],
-                        "id": "383a2625-049c-4ec0-9a6a-84956bf4b3a9",
+                        "id": "1162f263-6311-47a1-a666-79848d08c115",
                         "ord": "a3"
                       }
                     ],
-                    "id": "c5c5342b-d3c5-40df-82e6-73ee4b3238c8",
+                    "id": "11ee2e71-d9ac-42b3-8e8d-a1ddb00f04a0",
                     "ord": "a0"
                   },
                   {
@@ -1503,7 +1503,7 @@
                           "alt": "Portrait of Sasha Rourke, product designer",
                           "loading": "lazy"
                         },
-                        "id": "d1f6ac59-711c-4564-9152-b4e5b9ab471f",
+                        "id": "e2fc4fe8-4a55-4f18-a537-154ff69c7d48",
                         "ord": "a0"
                       },
                       {
@@ -1516,7 +1516,7 @@
                             "tag": "span",
                             "class": "text-sm font-semibold uppercase tracking-wide text-secondary",
                             "children": ["Tools"],
-                            "id": "431dafb5-7ceb-4dfa-a2e6-51755230d11a",
+                            "id": "7fd863bc-6393-431f-838f-8fc3e84b8ad5",
                             "ord": "a0"
                           },
                           {
@@ -1526,23 +1526,23 @@
                             "children": [
                               "Figma, prototyping, design tokens, and just enough front-end (React, CSS) to hand off work that survives the build."
                             ],
-                            "id": "e6bab02f-85c3-458c-be4f-4c3806528a05",
+                            "id": "fba129df-c476-432e-8872-115b7814ff14",
                             "ord": "a1"
                           }
                         ],
-                        "id": "1e442cb3-3bc0-48db-976a-edda0e97be2a",
+                        "id": "eef30f4c-e4f1-45b2-896f-7abca8004934",
                         "ord": "a1"
                       }
                     ],
-                    "id": "0533fbda-eaca-489b-b490-0eeebde8f5e4",
+                    "id": "643bb67f-3bf4-4ad0-9f62-237231088878",
                     "ord": "a1"
                   }
                 ],
-                "id": "0015363a-808a-4c2d-976d-eee48c9d940d",
+                "id": "b3a37a5d-8846-4f16-ab9c-d7767f1a52ab",
                 "ord": "a0"
               }
             ],
-            "id": "516ad60f-d34d-4885-b77b-eb842d4d9ea1",
+            "id": "54db0576-7e8a-43f9-a231-3f409ce70f93",
             "ord": "a0"
           }
         ]
@@ -1559,73 +1559,308 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "7e9f0868-0276-4522-a7d1-1022e683338d",
+        "id": "37e680d2-807b-4773-85b5-80356b2774e2",
         "children": [
           {
             "kind": "element",
             "tag": "section",
-            "class": "bg-base-100 @container px-6 py-20",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-20",
             "children": [
               {
                 "kind": "element",
                 "tag": "div",
-                "class": "mx-auto flex w-full max-w-2xl flex-col gap-6",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-8",
                 "children": [
                   {
                     "kind": "element",
-                    "tag": "h1",
-                    "class": "text-5xl font-bold tracking-tight text-base-content @2xl:text-6xl",
-                    "children": ["Let’s work together"],
-                    "id": "61675b13-d829-4b72-a8ce-190fc954ce83",
+                    "tag": "div",
+                    "class": "flex flex-col gap-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h1",
+                        "class": "text-4xl font-bold tracking-tight text-base-content @3xl:text-5xl",
+                        "children": ["Let’s work together"],
+                        "id": "e981dacc-d8ab-4b49-8f64-9b6d61c07fbc",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "I’m available for select product-design and design-systems work. A good brief tells me the problem you’re solving, who for, and roughly when you need it — but a rough idea is a fine place to start too."
+                        ],
+                        "id": "387d34dc-0d2c-4c0d-b2d3-c86c7352e095",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "fbabc313-ce61-4715-8413-c0b2bc96895a",
                     "ord": "a0"
                   },
                   {
                     "kind": "element",
-                    "tag": "p",
-                    "class": "text-lg leading-relaxed text-base-content",
-                    "children": [
-                      "I’m available for select product-design and design-systems work. A good brief tells me the problem you’re solving, who for, and roughly when you need it — but a rough idea is a fine place to start too."
-                    ],
-                    "id": "15dd4fe7-7323-4c00-ab83-af1cc0785d3d",
-                    "ord": "a1"
-                  },
-                  {
-                    "kind": "element",
                     "tag": "div",
-                    "class": "flex flex-wrap gap-3",
+                    "class": "flex flex-col gap-1",
                     "children": [
                       {
                         "kind": "element",
-                        "tag": "a",
-                        "class": "btn btn-primary btn-lg",
-                        "attrs": {
-                          "href": "mailto:hello@sasharourke.example"
-                        },
-                        "children": ["Email me"],
-                        "id": "43c515ef-8a32-46a1-b417-1d6a9079ff1e",
+                        "tag": "span",
+                        "class": "text-base font-medium text-base-content",
+                        "children": ["Call us"],
+                        "id": "62022771-615e-4f36-8a0d-6dbe4782c2f9",
                         "ord": "a0"
                       },
                       {
                         "kind": "element",
                         "tag": "a",
-                        "class": "btn btn-neutral btn-outline btn-lg",
-                        "attrs": {
-                          "href": "/work"
+                        "class": "text-lg font-semibold text-base-content underline underline-offset-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "children": ["(555) 123-4567"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "site.identity.phone"
+                            },
+                            "id": "d350da66-b247-4b05-87b9-6c6a8db24141",
+                            "ord": "a0"
+                          }
+                        ],
+                        "data": {
+                          "kind": "value",
+                          "ref": "site.identity.phoneHref",
+                          "attr": "href"
                         },
-                        "children": ["See the work first"],
-                        "id": "59c6d098-5ca2-438e-9b09-9f122cd67074",
+                        "id": "b1903647-19b8-4ceb-b70c-75fd7d257215",
                         "ord": "a1"
                       }
                     ],
-                    "id": "4baea409-ff55-46c7-bd32-70b599041198",
+                    "data": {
+                      "kind": "visible",
+                      "ref": "site.identity.phone"
+                    },
+                    "id": "b7af4be4-f605-4b56-8a4a-e46e92fa9876",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-1",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "span",
+                        "class": "text-base font-medium text-base-content",
+                        "children": ["Email us"],
+                        "id": "8d6fa88f-00e2-49d4-aa3a-a8e1f03d8ee3",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "text-lg font-semibold text-base-content underline underline-offset-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "children": ["hello@yourbusiness.com"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "site.identity.email"
+                            },
+                            "id": "de7b6db1-8bc3-456b-ba21-ee182d10fec4",
+                            "ord": "a0"
+                          }
+                        ],
+                        "data": {
+                          "kind": "value",
+                          "ref": "site.identity.emailHref",
+                          "attr": "href"
+                        },
+                        "id": "a97ef30f-a362-490e-9519-0c33614f9afe",
+                        "ord": "a1"
+                      }
+                    ],
+                    "data": {
+                      "kind": "visible",
+                      "ref": "site.identity.email"
+                    },
+                    "id": "5a802e3a-9233-49e2-823a-c50b05311b0d",
                     "ord": "a2"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-1",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "span",
+                        "class": "text-base font-medium text-base-content",
+                        "children": ["Visit us"],
+                        "id": "e7a7466f-4298-4794-b63b-7b174a76423d",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "address",
+                        "class": "text-lg leading-relaxed whitespace-pre-line not-italic text-base-content",
+                        "children": ["123 Main Street\nPortland, OR 97204"],
+                        "data": {
+                          "kind": "value",
+                          "ref": "site.identity.address"
+                        },
+                        "id": "386f2393-ecf3-4d12-82db-5e073895e0b4",
+                        "ord": "a1"
+                      }
+                    ],
+                    "data": {
+                      "kind": "visible",
+                      "ref": "site.identity.address"
+                    },
+                    "id": "9710fbb3-297a-43b1-8ac8-f52c3b7c8d57",
+                    "ord": "a3"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "form",
+                    "class": "flex w-full max-w-xl flex-col gap-5",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "label",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-base font-medium text-base-content",
+                            "children": ["Your name"],
+                            "id": "d2a0a430-aa19-47fe-a32c-11a77bb79a3f",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "input",
+                            "class": "input input-bordered w-full",
+                            "attrs": {
+                              "type": "text",
+                              "name": "name",
+                              "required": true
+                            },
+                            "id": "d1643554-7612-40ee-a576-7bc60761a0a1",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "15d05e5f-b2c7-47be-aa80-beaf4e2fbaf8",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "label",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-base font-medium text-base-content",
+                            "children": ["Email address"],
+                            "id": "fc771ab6-c4d5-4757-abc5-bb1bdeea1eb3",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "input",
+                            "class": "input input-bordered w-full",
+                            "attrs": {
+                              "type": "email",
+                              "name": "email",
+                              "required": true
+                            },
+                            "id": "a1494328-ab15-4e33-aa37-39f42d4409ce",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "7d00c4bc-6d87-44c7-8c07-f3595525ff31",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "label",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-base font-medium text-base-content",
+                            "children": ["How can we help?"],
+                            "id": "d7f5ae9a-4f76-4a58-975d-c3f8bf5ba8dc",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "textarea",
+                            "class": "textarea textarea-bordered min-h-32 w-full",
+                            "attrs": {
+                              "name": "message"
+                            },
+                            "id": "c9ad3db4-c4aa-4051-ba1c-06c38e005b25",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "c8c26494-560d-4aa9-b546-804bc6394689",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-wrap items-center gap-3",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "button",
+                            "class": "btn btn-primary btn-lg",
+                            "attrs": {
+                              "type": "submit"
+                            },
+                            "children": ["Email me"],
+                            "id": "951754d7-439f-491b-98b2-445b84dda739",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "btn btn-outline btn-lg",
+                            "attrs": {
+                              "href": "/work"
+                            },
+                            "children": ["See the work first"],
+                            "id": "40f3c674-e264-4caf-ab7e-b98b910068fd",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "ed50d822-e94f-4674-92cd-0e5cc261bc57",
+                        "ord": "a3"
+                      }
+                    ],
+                    "behavior": {
+                      "type": "form"
+                    },
+                    "data": {
+                      "kind": "action",
+                      "ref": "submit"
+                    },
+                    "id": "42e13a52-45c9-4986-a10e-08a4eab3e554",
+                    "ord": "a4"
                   }
                 ],
-                "id": "c8280331-bc56-44c3-b9f6-d2277971bf97",
+                "id": "d28b0056-3c06-4d0a-8f9e-4300ebe1bd8f",
                 "ord": "a0"
               }
             ],
-            "id": "36b204c2-e565-49bc-8cc4-4d0f8909cf1c",
+            "id": "81b793fb-1d1c-40fc-9f2e-5c63756be321",
             "ord": "a0"
           }
         ]
@@ -1670,18 +1905,18 @@
                             "kind": "element",
                             "tag": "span",
                             "children": ["←"],
-                            "id": "69f77ebe-b47c-4f0e-95ae-fd452690311f",
+                            "id": "b9c6e9ed-93bb-4357-a2fc-970c57d3eb9c",
                             "ord": "a0"
                           },
                           {
                             "kind": "element",
                             "tag": "span",
                             "children": ["All work"],
-                            "id": "ba91d257-ba77-4bd9-b76b-bcf811a746d3",
+                            "id": "68cb4088-446c-4a6a-8f08-e83219236639",
                             "ord": "a1"
                           }
                         ],
-                        "id": "170e0cc4-184f-4563-be04-872d848837dc",
+                        "id": "69cdce40-b728-4cc6-9d83-32997da2dbc4",
                         "ord": "a0"
                       },
                       {
@@ -1693,7 +1928,7 @@
                           "kind": "visible",
                           "ref": "category"
                         },
-                        "id": "70ddc2cd-b76e-44f3-b9c4-832765f9aa10",
+                        "id": "f5d48ae9-76f7-4ed5-87c8-5a4086d59474",
                         "ord": "a1"
                       },
                       {
@@ -1705,7 +1940,7 @@
                           "kind": "value",
                           "ref": "title"
                         },
-                        "id": "204f90ea-c820-4055-921d-967e3192b46c",
+                        "id": "44391c82-112d-45d2-a547-467a33a5d067",
                         "ord": "a2"
                       },
                       {
@@ -1717,7 +1952,7 @@
                           "kind": "value",
                           "ref": "excerpt"
                         },
-                        "id": "2affd52a-0539-4223-9bd4-cdf0829784f8",
+                        "id": "195e1f22-1dba-4f1c-aeef-a852fcfc3cfb",
                         "ord": "a3"
                       },
                       {
@@ -1737,7 +1972,7 @@
                               "kind": "visible",
                               "ref": "authorAvatar"
                             },
-                            "id": "d689ff5f-11ba-4726-9376-889a4d7a71fe",
+                            "id": "2c8abbc6-2f48-4d53-8baf-feb5ce40a1f7",
                             "ord": "a0"
                           },
                           {
@@ -1754,7 +1989,7 @@
                                   "kind": "visible",
                                   "ref": "authorName"
                                 },
-                                "id": "6d0dd0b7-a858-462c-9aba-073b05a73e05",
+                                "id": "646c4bfd-9338-4feb-94f5-527d3a0dc0a9",
                                 "ord": "a0"
                               },
                               {
@@ -1766,23 +2001,23 @@
                                   "kind": "value",
                                   "ref": "date"
                                 },
-                                "id": "245acb11-4e66-454e-beaf-a2de318a9d26",
+                                "id": "5e80b746-9aa4-4834-b379-67c22a6fc3e9",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "b43565b0-70f2-4d19-9465-005942e4f341",
+                            "id": "4ff2f79a-b3b2-4dae-bf41-ab399c44f3d1",
                             "ord": "a1"
                           }
                         ],
-                        "id": "34317e1b-318b-4183-bd46-5d6b4cf587cd",
+                        "id": "ca65cc38-aa45-445e-b747-810c96141977",
                         "ord": "a4"
                       }
                     ],
-                    "id": "c2b19bdd-578d-4677-86d3-7599508039ba",
+                    "id": "8574a075-c4fe-479f-8c2e-e80b7bdfbb7b",
                     "ord": "a0"
                   }
                 ],
-                "id": "3894fb94-2e14-48ee-9d26-e16f91c2bc59",
+                "id": "ca67c388-f047-4161-88d2-3c9659506c9a",
                 "ord": "a0"
               },
               {
@@ -1807,19 +2042,19 @@
                           "kind": "value",
                           "ref": "featuredImage"
                         },
-                        "id": "5c3fb946-677f-425f-8e4c-13d87ca4b68d",
+                        "id": "c0ff4929-a20c-43da-8dba-41616c9805e8",
                         "ord": "a0"
                       }
                     ],
-                    "id": "07d0e06a-c189-45da-b548-9df3e3d046b4",
+                    "id": "1819a401-8c82-4098-b5f0-ec16dc5667d5",
                     "ord": "a0"
                   }
                 ],
-                "id": "d9361dd7-1f74-442c-a59e-3b9a65d7bed7",
+                "id": "57163aac-81d0-4bbe-b192-0d4e98995eef",
                 "ord": "a1"
               }
             ],
-            "id": "bcae5c6f-35fb-49b3-a66e-b72b91df94f2",
+            "id": "ba9f8122-342e-467d-85ac-7666ce9dd070",
             "ord": "a0"
           },
           {
@@ -1837,15 +2072,15 @@
                     "component": "cms.article-body",
                     "class": "w-full",
                     "locked": "host",
-                    "id": "7eefeedd-3c7d-4dc7-ba03-bd452bad6cd1",
+                    "id": "b9130dc1-e80c-49eb-96b9-247c433f28ce",
                     "ord": "a0"
                   }
                 ],
-                "id": "373804ed-f872-46e7-ba27-e173caad4575",
+                "id": "87916bd2-6b9e-4f6a-92b9-a98cf38da4d1",
                 "ord": "a0"
               }
             ],
-            "id": "aeffd42d-f783-417e-873a-d3d820fcf8a5",
+            "id": "de9e42ef-859e-475c-8f6a-b6b836917a09",
             "ord": "a1"
           },
           {
@@ -1875,7 +2110,7 @@
                           "kind": "visible",
                           "ref": "authorAvatar"
                         },
-                        "id": "ed278a07-016e-444b-b6e5-4e7b6b09253e",
+                        "id": "e673fb0a-5f7e-4d59-945c-84fde81a8db1",
                         "ord": "a0"
                       },
                       {
@@ -1892,7 +2127,7 @@
                               "kind": "value",
                               "ref": "authorName"
                             },
-                            "id": "6c86f274-9bf1-4fbe-b45c-2ad8bcfd785d",
+                            "id": "ebfeebf1-d112-49fa-acb2-fada3b5342e9",
                             "ord": "a0"
                           },
                           {
@@ -1904,11 +2139,11 @@
                               "kind": "value",
                               "ref": "authorBio"
                             },
-                            "id": "932ccc85-4634-4c1b-bf87-ae4e1dfa12b9",
+                            "id": "f14c226c-7c6f-4227-90e8-e5372f8a360f",
                             "ord": "a1"
                           }
                         ],
-                        "id": "1648956d-21b4-4931-acb4-daf80815f36a",
+                        "id": "a28c39c1-d509-4544-80ff-6bd6dc61fac9",
                         "ord": "a1"
                       }
                     ],
@@ -1916,15 +2151,15 @@
                       "kind": "visible",
                       "ref": "authorBio"
                     },
-                    "id": "fad62ec1-2aba-4d54-96c1-e70dcdab5eb6",
+                    "id": "f4b60908-b05b-4db9-8259-3455a0579d63",
                     "ord": "a0"
                   }
                 ],
-                "id": "d9405c9c-4a34-4494-915c-82905c4b173a",
+                "id": "cffc2ef1-66da-441a-9bdc-f580544905a6",
                 "ord": "a0"
               }
             ],
-            "id": "25f2561c-4724-480f-bf2e-bc60aaf42c7b",
+            "id": "ff95dd67-4505-4733-859b-d902af3ee25b",
             "ord": "a2"
           },
           {
@@ -1947,7 +2182,7 @@
                         "tag": "h2",
                         "class": "text-2xl font-bold tracking-tight text-base-content @2xl:text-3xl",
                         "children": ["Keep reading"],
-                        "id": "e3e09a04-8cd8-4b34-b2d1-2bcaaf030701",
+                        "id": "ab37f63b-49dd-41bf-8528-f73b5fa03924",
                         "ord": "a0"
                       },
                       {
@@ -1962,23 +2197,23 @@
                               "href": "/work"
                             },
                             "children": ["More stories"],
-                            "id": "ca512a52-c199-418b-a679-7f8b2408aeee",
+                            "id": "2e47c3cc-c915-4406-918e-6b84839f156a",
                             "ord": "a0"
                           }
                         ],
-                        "id": "3b01b6c9-af5f-4460-8e21-1c37f909db50",
+                        "id": "7c39433b-8843-4d3e-bed7-9fe15b3c04f3",
                         "ord": "a1"
                       }
                     ],
-                    "id": "4423344b-dae4-494d-8f71-983652b37cd3",
+                    "id": "beb3a9f4-6a29-4998-975e-9d2baf1eaa47",
                     "ord": "a0"
                   }
                 ],
-                "id": "d5e1cf89-431d-4ef3-9cef-92132eab043f",
+                "id": "526c7f8a-838c-4b73-aa0c-1d4daf608b00",
                 "ord": "a0"
               }
             ],
-            "id": "a01d4725-71a7-44e2-b48f-4ad1c10244a4",
+            "id": "799048a5-6faa-4df1-822b-a57d25fd7f09",
             "ord": "a3"
           }
         ],
@@ -1986,7 +2221,7 @@
           "kind": "collection",
           "ref": "blog_post"
         },
-        "id": "6cec4101-12cf-4a1d-ad58-bb6a91c11815"
+        "id": "5e6c04d1-28d6-46c3-b4de-b0ac79e7be93"
       }
     }
   ],

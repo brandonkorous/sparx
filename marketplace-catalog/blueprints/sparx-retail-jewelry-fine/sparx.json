@@ -3,7 +3,7 @@
   "category": "blueprint",
   "slug": "sparx-retail-jewelry-fine",
   "name": "sparx — Fine Jeweler",
-  "version": "1.3.0",
+  "version": "1.4.0",
   "tagline": "A precious, working storefront for a fine jeweler.",
   "description": "A complete, working shop for a fine & demi-fine jeweler: a real catalogue of solid 14k gold and sterling silver pieces — a signet, stacking rings, a pendant, hoops, a tennis bracelet, a birthstone necklace, a cuff and a solitaire — with Metal and Size variants, categories, collections, a bespoke PDP and a merchandised home page. Precious, restrained theme — a bone/ivory ground, near-black ink, an antique-gold accent, a serif display. Shipped as Aurelia.",
   "payload": "blueprint.ts",

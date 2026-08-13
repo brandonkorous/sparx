@@ -16,7 +16,7 @@ import welcomeEmail2 from './welcome-email-2.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-salon',
-  version: '1.1.0',
+  version: '1.2.0',
   name: 'sparx — Salon',
   summary:
     'The complete sparx starter — a faceted shop, a journal, a booking page, and a wholesale page — in the Salon look, tuned for hair, beauty, nails, and spa. Install it, make it yours, and launch a polished working site in minutes.',
@@ -42,7 +42,7 @@ const blueprint = {
   },
 
   // The provisioned SiteTheme the installer creates + applies — the 'salon'
-  // look as a tenant-editable saved theme (base preset salon + this theme's brand look).
+  // look as a tenant-editable saved theme (base preset apex + this theme's brand look).
   theme: {
     name: 'salon',
     basePresetKey: 'salon',

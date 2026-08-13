@@ -3,7 +3,7 @@
   "category": "blueprint",
   "slug": "sparx-cellar",
   "name": "sparx — Cellar",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "tagline": "A complete multi-module starter in the Cellar look — for wine, beer, spirits, and bars.",
   "description": "The complete sparx starter — a faceted shop, a journal, a booking page, and a wholesale page — in the Cellar look, tuned for wine, beer, spirits, and bars. Install it, make it yours, and launch a polished working site in minutes.",
   "payload": "blueprint.ts",

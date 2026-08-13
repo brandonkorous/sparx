@@ -38,6 +38,7 @@ import { productsBlock } from '../../packages/silica-catalog/src/commerce';
 import { defineTheme, face, STATUS_ON_DARK, STATUS_ON_LIGHT } from '../../packages/silica-catalog/src/themes';
 import { safeParseBlueprint } from '../../packages/blueprints/src/validate';
 
+import { contactSection } from './shared/contact-section';
 import { emitBundle, type TemplateSiteSpec } from './template-sites/harness';
 import { writeTemplatePreview } from './template-sites/preview';
 import {
@@ -433,18 +434,14 @@ const ABOUT: Node[] = [
 ];
 
 const CONTACT: Node[] = [
-  el('section', 'bg-base-100 @container px-6 py-20 text-center', {
-    children: [
-      el('div', 'mx-auto flex w-full max-w-xl flex-col items-center gap-5', {
-        children: [
-          el('h1', 'text-5xl font-bold tracking-tight text-base-content @2xl:text-6xl', { text: 'Say hi!' }),
-          el('p', 'text-lg leading-relaxed text-base-content', {
-            text: 'A question about a colour, a big gift order for the office, or a stockist enquiry? Tell us what you’re after and a real, cheerful human at the shop will write straight back — usually the same day.',
-          }),
-          el('a', 'btn btn-primary btn-lg', { attrs: { href: 'mailto:hello@pencilclub.example' }, text: 'Email the club' }),
-        ],
-      }),
-    ],
+  // The page's own words, over the shared contact band: the business's phone and email
+  // (each hidden until set in Site settings — never an invented number) and a working
+  // enquiry form that reaches the tenant's Form submissions inbox. This used to end at a
+  // `mailto:` to a placeholder domain, which was the only way to reach the business.
+  contactSection({
+    heading: 'Say hi!',
+    intro: 'A question about a colour, a big gift order for the office, or a stockist enquiry? Tell us what you’re after and a real, cheerful human at the shop will write straight back — usually the same day.',
+    submitLabel: 'Email the club',
   }),
 ];
 

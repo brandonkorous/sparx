@@ -34,6 +34,7 @@ import { productsBlock } from '../../packages/silica-catalog/src/commerce';
 import { defineTheme, face, STATUS_ON_DARK, STATUS_ON_LIGHT } from '../../packages/silica-catalog/src/themes';
 import { safeParseBlueprint } from '../../packages/blueprints/src/validate';
 
+import { contactSection } from './shared/contact-section';
 import { emitBundle, type TemplateSiteSpec } from './template-sites/harness';
 import { writeTemplatePreview } from './template-sites/preview';
 import {
@@ -435,18 +436,14 @@ const ABOUT: Node[] = [
 ];
 
 const CONTACT: Node[] = [
-  el('section', 'bg-base-100 @container px-6 py-20 text-center', {
-    children: [
-      el('div', 'mx-auto flex w-full max-w-xl flex-col items-center gap-5', {
-        children: [
-          el('h1', 'text-5xl font-bold tracking-tight text-base-content @2xl:text-6xl', { text: 'Say hello' }),
-          el('p', 'text-lg leading-relaxed text-base-content', {
-            text: 'Questions about a coffee, help dialing in your brewer, a wholesale enquiry, or want us to roast for your café? Tell us what you’re after and a real person at the roastery will get back to you.',
-          }),
-          el('a', 'btn btn-primary btn-lg', { attrs: { href: 'mailto:hello@meridiancoffee.example' }, text: 'Email the roastery' }),
-        ],
-      }),
-    ],
+  // The page's own words, over the shared contact band: the business's phone and email
+  // (each hidden until set in Site settings — never an invented number) and a working
+  // enquiry form that reaches the tenant's Form submissions inbox. This used to end at a
+  // `mailto:` to a placeholder domain, which was the only way to reach the business.
+  contactSection({
+    heading: 'Say hello',
+    intro: 'Questions about a coffee, help dialing in your brewer, a wholesale enquiry, or want us to roast for your café? Tell us what you’re after and a real person at the roastery will get back to you.',
+    submitLabel: 'Email the roastery',
   }),
 ];
 

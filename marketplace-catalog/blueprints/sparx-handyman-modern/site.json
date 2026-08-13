@@ -22,7 +22,7 @@
                   "props": {
                     "show": "both"
                   },
-                  "id": "59f9281f-de6f-48d1-b0c1-4b1d1276630a",
+                  "id": "44db7f8b-6973-40a8-920e-20662ffcf023",
                   "ord": "a0"
                 },
                 {
@@ -43,7 +43,7 @@
                         "type": "link",
                         "label": "Product"
                       },
-                      "id": "4472bbdc-e611-4e48-8a85-d6c189c44e61",
+                      "id": "2e4a93be-12ee-4ffc-b645-ccd9066a6a71",
                       "ord": "a0"
                     },
                     {
@@ -59,7 +59,7 @@
                         "type": "link",
                         "label": "Pricing"
                       },
-                      "id": "0799a34e-3cf0-42b0-b752-08165c91db37",
+                      "id": "d9d52abf-8ba8-49d3-9bef-7717971c94ac",
                       "ord": "a1"
                     },
                     {
@@ -75,11 +75,11 @@
                         "type": "link",
                         "label": "Docs"
                       },
-                      "id": "075ebfab-3523-4c78-8ee0-1c62b1e4500c",
+                      "id": "680b10ae-9773-49fd-a385-dfee9f1b4050",
                       "ord": "a2"
                     }
                   ],
-                  "id": "2a6dcdb4-0f79-4ba1-a556-8133a5f0d116",
+                  "id": "36f40610-5229-47b0-8d08-0e4dcfc02aaa",
                   "ord": "a1"
                 },
                 {
@@ -100,14 +100,14 @@
                         "type": "link",
                         "label": "Secondary link"
                       },
-                      "id": "a47dd8da-d40e-4912-8435-464bc3c97aeb",
+                      "id": "b257b80f-7805-4f50-ada7-723bea0f5923",
                       "ord": "a0"
                     },
                     {
                       "kind": "host",
                       "component": "site.theme-toggle",
                       "class": "inline-flex items-center",
-                      "id": "fe0c9da7-0929-45e8-835b-23fc005b6183",
+                      "id": "eb11b0ff-24f9-4d57-8e45-9e3637418c4a",
                       "ord": "a1"
                     },
                     {
@@ -123,7 +123,7 @@
                         "type": "link",
                         "label": "Primary action"
                       },
-                      "id": "037db2a1-5cc7-45e4-a535-a0ba2df7266a",
+                      "id": "b2946d1c-b84f-4e20-b312-c990b213e0a2",
                       "ord": "a2"
                     },
                     {
@@ -141,20 +141,20 @@
                           "props": {
                             "name": "menu"
                           },
-                          "id": "f63cd988-ae5b-4d18-8442-cca1670a6e03",
+                          "id": "0f52125e-19ed-4fb2-af83-54697bd27e9f",
                           "ord": "a0"
                         }
                       ],
                       "part": "trigger",
-                      "id": "5563fabe-93a0-47c7-84ad-1bc1e236b950",
+                      "id": "347f6273-1a80-4875-9603-b85d96785689",
                       "ord": "a3"
                     }
                   ],
-                  "id": "d9fc64ff-c056-44f8-8d51-6e676fe861fb",
+                  "id": "374321b6-c5a5-4e89-b7f3-0b2b06613c64",
                   "ord": "a2"
                 }
               ],
-              "id": "6e1ee415-9ab2-405f-a414-89b832b67c51",
+              "id": "3fc795c7-42f4-43f3-8584-5175abc82c32",
               "ord": "a0"
             },
             {
@@ -178,7 +178,7 @@
                     "type": "link",
                     "label": "Product"
                   },
-                  "id": "9c0f188e-039f-42d3-8b5d-e4380cdc9852",
+                  "id": "ca863ffa-75dc-4c3f-9680-f18035b481fb",
                   "ord": "a0"
                 },
                 {
@@ -194,7 +194,7 @@
                     "type": "link",
                     "label": "Pricing"
                   },
-                  "id": "f4899242-d691-4cdb-a060-dec3fe21a891",
+                  "id": "a69d7533-d7f8-4828-892c-37a3ada58730",
                   "ord": "a1"
                 },
                 {
@@ -210,7 +210,7 @@
                     "type": "link",
                     "label": "Docs"
                   },
-                  "id": "ad3e3712-fdd4-4bd9-8c1d-dcfeb78a1aa5",
+                  "id": "70069444-c7e4-4910-8e16-d675a4a40354",
                   "ord": "a2"
                 },
                 {
@@ -226,7 +226,7 @@
                     "type": "link",
                     "label": "Secondary link"
                   },
-                  "id": "862bd443-b131-4d24-bdd2-15d5fe0c6380",
+                  "id": "ec6ae0a1-7ba9-4754-a428-d6c2904db0c2",
                   "ord": "a3"
                 },
                 {
@@ -242,19 +242,19 @@
                     "type": "link",
                     "label": "Primary action"
                   },
-                  "id": "1d41109f-a76f-45e3-90e4-b36a1d3c038c",
+                  "id": "0564644b-8ba1-4da9-b084-594c5a52aba9",
                   "ord": "a4"
                 }
               ],
               "part": "panel",
-              "id": "3563989f-c685-4bd0-b023-9b41a3c0f621",
+              "id": "33cfa78e-b224-4bab-b34c-730a1e693b78",
               "ord": "a1"
             }
           ],
           "behavior": {
             "type": "disclosure"
           },
-          "id": "6efc98b0-20a6-4f0c-9560-51657c85af64",
+          "id": "e1816787-a68b-4598-bd05-774dc81ede2a",
           "ord": "a0"
         },
         {
@@ -270,7 +270,7 @@
               "kind": "outlet"
             }
           ],
-          "id": "65bb2b6f-9c7d-4989-9e20-4dfa8ac800eb",
+          "id": "e5dc64a0-f247-4637-b700-e7059cabbd00",
           "ord": "a1"
         },
         {
@@ -300,7 +300,7 @@
                           "props": {
                             "show": "both"
                           },
-                          "id": "9f6f7787-afde-40db-908a-792be11f4783",
+                          "id": "9cb149cc-c73e-45df-9490-dc910bb20cbe",
                           "ord": "a0"
                         },
                         {
@@ -316,7 +316,7 @@
                           "attrs": {
                             "href": "/"
                           },
-                          "id": "b9944c74-029e-4ed8-81f3-e3902021c062",
+                          "id": "94296370-c20e-4263-a881-f76212e640ec",
                           "ord": "a1"
                         },
                         {
@@ -324,11 +324,11 @@
                           "tag": "ul",
                           "class": "mt-2 flex items-center gap-5",
                           "children": [],
-                          "id": "49f1a69b-302b-46e9-adfd-f679bdc61804",
+                          "id": "34c73a37-1f4e-4395-8785-15893b34433c",
                           "ord": "a2"
                         }
                       ],
-                      "id": "2d898986-b79a-4999-b130-f902da40be5f",
+                      "id": "68c27fdb-7695-445a-9f90-1d75d45b25e9",
                       "ord": "a0"
                     },
                     {
@@ -349,7 +349,7 @@
                           "attrs": {
                             "href": "/"
                           },
-                          "id": "929ec152-f799-4a7d-bd55-af1f2d1a4b32",
+                          "id": "a72baab1-8f68-4804-aa4d-9dc6a4974c39",
                           "ord": "a0"
                         },
                         {
@@ -374,11 +374,11 @@
                                     "type": "link",
                                     "label": "Features"
                                   },
-                                  "id": "adba0583-c5c4-4ce1-bd9a-2e028fbd12e7",
+                                  "id": "081d27c4-2e42-43fa-a0c9-444abebc79eb",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "ba4575b6-6e71-4173-b666-0ef2a26721b5",
+                              "id": "8832658c-4cfd-4f87-823f-7aeb867307f0",
                               "ord": "a0"
                             },
                             {
@@ -398,11 +398,11 @@
                                     "type": "link",
                                     "label": "Pricing"
                                   },
-                                  "id": "4b9fe09c-adb8-4603-a208-08708edc30d2",
+                                  "id": "55435aae-210f-4232-8011-67d12f2ccd28",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "70243e08-3eea-4e3e-8172-22ea9998f49f",
+                              "id": "7653085c-d2ce-4248-ab62-392276ca5d14",
                               "ord": "a1"
                             },
                             {
@@ -422,11 +422,11 @@
                                     "type": "link",
                                     "label": "Integrations"
                                   },
-                                  "id": "54ad32a1-4916-4619-8a89-fb94dcaa2781",
+                                  "id": "022a00de-e339-42e1-a2ba-52978d6a41e4",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "bafe3f89-515e-45ff-9cef-cdfcc9de6a6f",
+                              "id": "7734403c-24e4-43c3-9d55-949359137ed6",
                               "ord": "a2"
                             },
                             {
@@ -446,19 +446,19 @@
                                     "type": "link",
                                     "label": "Changelog"
                                   },
-                                  "id": "43cd7673-d33f-49ba-9cb4-d4fb64919233",
+                                  "id": "b03a3ffb-a5cf-4ae1-ab99-a95667a8432a",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "c7db0518-7906-4c6e-a185-9f531c01214c",
+                              "id": "13363d12-1d91-48a4-ae76-25dea2d713c4",
                               "ord": "a3"
                             }
                           ],
-                          "id": "e3fcf9aa-aea3-4a4a-8f77-6f2e4dd96653",
+                          "id": "851b096d-adb8-43fa-8c96-47b38fe1ba6d",
                           "ord": "a1"
                         }
                       ],
-                      "id": "93afa183-7b3f-4f1c-a168-918fdfa22eef",
+                      "id": "6829326a-b604-432c-b4f3-088c4fd59af0",
                       "ord": "a1"
                     },
                     {
@@ -471,11 +471,11 @@
                           "tag": "ul",
                           "class": "flex flex-col gap-2",
                           "children": [],
-                          "id": "d95cb04d-ee97-4701-b35f-5df1ce79f726",
+                          "id": "7820a78e-4a93-42b3-8922-53930970515c",
                           "ord": "a0"
                         }
                       ],
-                      "id": "bea4e752-64ce-482c-8e91-3e4179f37666",
+                      "id": "e006d18d-4562-4e72-96ec-e9911e4806b2",
                       "ord": "a2"
                     },
                     {
@@ -499,23 +499,23 @@
                                   "props": {
                                     "heading": "Legal"
                                   },
-                                  "id": "acf19d97-71cb-4fb8-99e7-d9dcba1b4a6a",
+                                  "id": "9c5d6d07-8aa7-4fc8-8d60-37faeb34d291",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "1c18e5d4-f3e0-4c1f-9079-11ca330f5c9c",
+                              "id": "6c40a6ce-a64b-4d51-a744-6255a4428068",
                               "ord": "a0"
                             }
                           ],
-                          "id": "d1dc1e3d-43d2-43c7-b934-d341e34e4d47",
+                          "id": "26a78fa6-d676-4ed7-ae9a-4e4a83eb1917",
                           "ord": "a0"
                         }
                       ],
-                      "id": "f1e11e97-7f13-45c5-afc4-8f6904af49c1",
+                      "id": "12b66357-d770-48f8-bb8c-6dbf96642e1e",
                       "ord": "a3"
                     }
                   ],
-                  "id": "dbadf64d-e384-4bc5-836a-9753b45636cd",
+                  "id": "a1559a4b-1cd1-4f85-ab18-9051ff1b6146",
                   "ord": "a0"
                 },
                 {
@@ -538,11 +538,11 @@
                             "kind": "value",
                             "ref": "site.identity.name"
                           },
-                          "id": "1e9cfb75-06bf-4620-8dcf-d70b86428db2",
+                          "id": "1916e1f4-ad6c-4186-8f82-d1bfb56b229d",
                           "ord": "a0"
                         }
                       ],
-                      "id": "ac7ee6e4-6d8f-4c2a-a362-ccd986d748e8",
+                      "id": "1ba179b7-c547-4c95-abd8-f48a1428b562",
                       "ord": "a0"
                     },
                     {
@@ -550,23 +550,23 @@
                       "tag": "ul",
                       "class": "flex flex-wrap items-center gap-x-6 gap-y-2",
                       "children": [],
-                      "id": "8704b4f1-bf93-409c-a87d-fd69722979df",
+                      "id": "1f808ac8-2ba7-4ec9-b69c-d365a2cb670b",
                       "ord": "a1"
                     }
                   ],
-                  "id": "a145909e-71c9-4d63-89f5-4881e35d492b",
+                  "id": "02783c4f-b2e4-44be-b09b-b730b6b9307e",
                   "ord": "a1"
                 }
               ],
-              "id": "c3f5822b-d099-4214-bf32-ea30ffbb4f69",
+              "id": "0525e7f9-50f1-4e52-a7b0-c341b2d95353",
               "ord": "a0"
             }
           ],
-          "id": "ac07b6e6-b755-4c18-bf7f-c204ce5a4108",
+          "id": "2db917d4-1c4c-4887-9a8d-87442af5a79e",
           "ord": "a2"
         }
       ],
-      "id": "add2a0af-b231-48e9-ab8b-e7f978484727"
+      "id": "cbca2896-18bb-4934-86b4-488895d67af9"
     }
   },
   "pages": [
@@ -580,7 +580,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "bf768146-a24f-4b59-a3d5-21e6b026bbfb",
+        "id": "dc681bd6-87a2-457f-881e-b8cd8d8b2d61",
         "children": [
           {
             "kind": "element",
@@ -597,7 +597,7 @@
                     "tag": "h1",
                     "class": "text-5xl font-bold leading-none tracking-tight @2xl:text-6xl @3xl:text-7xl",
                     "children": ["Home fixed. Booked from your phone in two minutes."],
-                    "id": "a1cd095d-538f-425a-b124-53b9aee1d77d",
+                    "id": "0641b3df-6796-405c-91e6-3981c7469b24",
                     "ord": "a0"
                   },
                   {
@@ -607,7 +607,7 @@
                     "children": [
                       "On-demand handymen for busy homeowners and renters. Pick the task, choose a time, and a vetted pro shows up ready to work — at a flat hourly rate you see before you book."
                     ],
-                    "id": "1c6c283a-ff4f-4907-9a5b-627dd4dd709e",
+                    "id": "33755747-6423-4072-b6e3-173d0d496866",
                     "ord": "a1"
                   },
                   {
@@ -618,12 +618,12 @@
                       {
                         "kind": "element",
                         "tag": "a",
-                        "class": "btn btn-primary btn-lg",
+                        "class": "btn btn-lg btn-primary",
                         "attrs": {
                           "href": "/book"
                         },
                         "children": ["Book online"],
-                        "id": "62f0eb70-edaf-4e7b-94e6-6ffab2d75067",
+                        "id": "22f787e7-0041-446b-8458-9eb280c93ef2",
                         "ord": "a0"
                       },
                       {
@@ -634,19 +634,19 @@
                           "href": "/book"
                         },
                         "children": ["See tasks & prices"],
-                        "id": "aa87e823-eb1c-4688-83b7-b3bfb414b3ac",
+                        "id": "0e008ace-92b3-498b-9933-a1a7472ea03a",
                         "ord": "a1"
                       }
                     ],
-                    "id": "39d4d2a3-a7dc-4609-bf7d-d45f8a54c56d",
+                    "id": "61728d46-5479-4b39-9c7e-b3205ece0055",
                     "ord": "a2"
                   }
                 ],
-                "id": "02175993-b5a9-41fe-82af-6a7de1104812",
+                "id": "4891239c-01d9-4c44-939b-ad14f22472bd",
                 "ord": "a0"
               }
             ],
-            "id": "da0060d1-8810-4b17-a401-696d5ff32bb1",
+            "id": "75865768-048c-4342-9ee5-ca7bd27dcb8a",
             "ord": "a0"
           },
           {
@@ -664,7 +664,7 @@
                     "tag": "h2",
                     "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
                     "children": ["How it works"],
-                    "id": "af587b0b-e1d0-4749-8d81-975e3d94c1e8",
+                    "id": "526ff383-f07a-42b6-bbc4-143467d9ee96",
                     "ord": "a0"
                   },
                   {
@@ -682,7 +682,7 @@
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
                             "children": ["1 · Pick your task"],
-                            "id": "bb3732b9-b95e-46c3-842c-4223975a6169",
+                            "id": "232206b2-e512-4da6-b7a9-1656c50af0f8",
                             "ord": "a0"
                           },
                           {
@@ -692,11 +692,11 @@
                             "children": [
                               "Tell us what needs doing — a mount, an assembly, a quick-fix hour of odd jobs. Every task shows the price and how long it takes up front."
                             ],
-                            "id": "673e2f00-4f3b-44a0-8aec-80029965b043",
+                            "id": "c0b212da-319b-4e49-a325-a747dd9d76a0",
                             "ord": "a1"
                           }
                         ],
-                        "id": "6a3cfc2d-5e04-4a8a-a9b5-311f884d828b",
+                        "id": "bdf2b3d5-bbfe-4365-a8c9-2b5e613548d2",
                         "ord": "a0"
                       },
                       {
@@ -709,7 +709,7 @@
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
                             "children": ["2 · Choose a time"],
-                            "id": "c37f5439-4a2e-4fa2-b254-9bc82ffb4e19",
+                            "id": "9fac1223-0952-42df-a0e0-3533fdf9864b",
                             "ord": "a0"
                           },
                           {
@@ -719,11 +719,11 @@
                             "children": [
                               "See real, live availability — often same day, evenings and weekends included — and grab the slot that fits your day."
                             ],
-                            "id": "ad4b1043-a442-4e72-ae1f-7a895abde06b",
+                            "id": "00e7e78d-ba2c-48d0-9419-1a424c997dae",
                             "ord": "a1"
                           }
                         ],
-                        "id": "a8d5fedc-e15f-4811-9266-d4c7e64784da",
+                        "id": "ad8beaeb-bf87-44fe-b4ff-441c344adeb3",
                         "ord": "a1"
                       },
                       {
@@ -736,7 +736,7 @@
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
                             "children": ["3 · A vetted pro arrives"],
-                            "id": "a039ac23-e1bc-47a8-bb31-f040b231da08",
+                            "id": "4ad27c32-8f08-4c94-a5eb-ddd053eff9ca",
                             "ord": "a0"
                           },
                           {
@@ -746,23 +746,23 @@
                             "children": [
                               "A background-checked, insured pro turns up on time with the tools, does the work, cleans up, and you pay through the app. Done."
                             ],
-                            "id": "89fdc14a-1b12-4019-83bf-26f6968ea3b8",
+                            "id": "8c5e17b0-3c13-4067-961b-ffce1415908e",
                             "ord": "a1"
                           }
                         ],
-                        "id": "adac79df-1cb6-4ef5-9f7c-8ef45cd886c5",
+                        "id": "169eacbd-e5c0-43fa-9d44-452eb866d4ef",
                         "ord": "a2"
                       }
                     ],
-                    "id": "98c014df-4429-49e8-91be-0895390086b3",
+                    "id": "82c430d9-03ab-4ae1-bbe7-db30d542138a",
                     "ord": "a1"
                   }
                 ],
-                "id": "9285a9be-45ff-42fb-9cc6-ad4d8ea725ca",
+                "id": "c752d81c-d033-40b1-a5c6-58b8c60268e8",
                 "ord": "a0"
               }
             ],
-            "id": "23fd4a2c-ccff-43cc-ae1d-c02a6b059b31",
+            "id": "87bb89fc-db6d-4424-b0d7-d359b16d287e",
             "ord": "a1"
           },
           {
@@ -785,7 +785,7 @@
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
                         "children": ["Tasks & flat prices"],
-                        "id": "b64eb5aa-8a6f-4088-a917-7fa4847e73c4",
+                        "id": "be7b3807-815f-4aee-8c08-9e6ebf7f5bab",
                         "ord": "a0"
                       },
                       {
@@ -795,11 +795,11 @@
                         "children": [
                           "No call-outs for a quote, no mystery add-ons. Here’s what the common jobs cost — full prices and live times are on the booking page."
                         ],
-                        "id": "cbb274bd-8266-4ae7-898b-5f1d8c58aa9a",
+                        "id": "019049e1-1dc2-4c32-af5d-46e317251234",
                         "ord": "a1"
                       }
                     ],
-                    "id": "5987be5c-a754-4a8d-a879-1964dfbe8c7a",
+                    "id": "05905262-181b-4986-8d46-5d2c5e7ad5a7",
                     "ord": "a0"
                   },
                   {
@@ -825,7 +825,7 @@
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
                                 "children": ["Quick-fix hour"],
-                                "id": "3bf0f6b0-4ad4-4a29-9f5b-e2c2644d476c",
+                                "id": "818aed17-4c08-4aa1-adad-46a39ae72f68",
                                 "ord": "a0"
                               },
                               {
@@ -833,11 +833,11 @@
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-bold text-base-content",
                                 "children": ["$99"],
-                                "id": "1e9ca353-f1da-4b2b-b0e8-b7eacc46fa66",
+                                "id": "a599e02b-c5f5-4a25-99da-ff68cb3b8d6b",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "9794bf24-81e6-45b3-9e38-baa4e88a82b5",
+                            "id": "e9e454e6-7cda-4a51-a83f-71be85826fd6",
                             "ord": "a0"
                           },
                           {
@@ -845,7 +845,7 @@
                             "tag": "p",
                             "class": "text-sm font-medium uppercase tracking-wide text-secondary",
                             "children": ["1 hr"],
-                            "id": "bd4e098b-bd21-4efe-9b29-a8d6792cec24",
+                            "id": "75fe3dcf-1166-497c-b965-30c734dde615",
                             "ord": "a1"
                           },
                           {
@@ -853,11 +853,11 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": ["One pro, one hour, your short list of small repairs."],
-                            "id": "a410c17a-fdd7-41ac-a39b-21d2eebab5fe",
+                            "id": "80116efb-12bd-444f-bd7c-b206a6b9fa1c",
                             "ord": "a2"
                           }
                         ],
-                        "id": "ed22d21f-9851-4dd2-ae01-7aa72c99236b",
+                        "id": "e796f7fc-29ac-481b-bc25-828f2ff7b800",
                         "ord": "a0"
                       },
                       {
@@ -878,7 +878,7 @@
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
                                 "children": ["TV mounting"],
-                                "id": "a559a069-441e-41f3-9d2f-9c7806ad421f",
+                                "id": "9fe2bf82-c2d7-41c8-b767-f7af16317be9",
                                 "ord": "a0"
                               },
                               {
@@ -886,11 +886,11 @@
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-bold text-base-content",
                                 "children": ["$149"],
-                                "id": "1671eb56-11c2-40e2-a4bb-2ac102958d74",
+                                "id": "c887f41d-8041-4cea-9914-245807e4d0e8",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "616e2f95-cfdf-4eeb-a1d1-1079cd795b2b",
+                            "id": "fd56f84c-2894-40ad-996b-be0978b65289",
                             "ord": "a0"
                           },
                           {
@@ -898,7 +898,7 @@
                             "tag": "p",
                             "class": "text-sm font-medium uppercase tracking-wide text-secondary",
                             "children": ["1 hr 30 min"],
-                            "id": "1c6c280e-73ba-4b82-bdcf-2232eff12e2a",
+                            "id": "596c254a-b3cd-451d-ba44-7c430879e466",
                             "ord": "a1"
                           },
                           {
@@ -906,11 +906,11 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": ["Hung level, cables hidden, mess cleaned up."],
-                            "id": "004e6879-22e9-47bf-9d43-a918178b61a5",
+                            "id": "08f6fef5-c38d-4f97-873b-a099e7c775bf",
                             "ord": "a2"
                           }
                         ],
-                        "id": "8ffe26a9-847a-457b-948d-efbec8e91761",
+                        "id": "59d89ecf-2488-4338-82f2-ffcd520386a7",
                         "ord": "a1"
                       },
                       {
@@ -931,7 +931,7 @@
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
                                 "children": ["Furniture assembly"],
-                                "id": "2d867522-2485-4f80-bc6f-feaf8e7ecdb8",
+                                "id": "0da7fc19-a1ad-4159-b3ff-40b7157f98cb",
                                 "ord": "a0"
                               },
                               {
@@ -939,11 +939,11 @@
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-bold text-base-content",
                                 "children": ["$129"],
-                                "id": "de4cf26f-c161-4ab9-968c-d83aa5a9ecf5",
+                                "id": "2b3800c0-83e4-4100-b8cb-a6f8f6d89a3d",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "304fd103-fa0c-4bce-916c-d43284e5ab16",
+                            "id": "3b87ca6f-6edd-4718-ae79-fd00c0b546cb",
                             "ord": "a0"
                           },
                           {
@@ -951,7 +951,7 @@
                             "tag": "p",
                             "class": "text-sm font-medium uppercase tracking-wide text-secondary",
                             "children": ["2 hr"],
-                            "id": "ebd5e010-61ce-477f-b76b-5c6b1bde1e3e",
+                            "id": "9181d152-9b55-491b-8aed-20aeff18d90f",
                             "ord": "a1"
                           },
                           {
@@ -959,11 +959,11 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": ["Flat-pack built right, packaging hauled away."],
-                            "id": "d9df6708-3f78-4161-9e1b-7d945ecef281",
+                            "id": "5727fd74-7d9b-4a80-aa9f-26b8b40dc3b5",
                             "ord": "a2"
                           }
                         ],
-                        "id": "0c692d38-5f82-4e3d-82d0-370e35f22d7b",
+                        "id": "8217dc1b-7cd8-4aea-8ab2-71f989441e75",
                         "ord": "a2"
                       },
                       {
@@ -984,7 +984,7 @@
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
                                 "children": ["Smart-home install"],
-                                "id": "5a997805-7fb6-430b-bd5c-e201c93c1e27",
+                                "id": "537503ec-71d7-4242-9fe7-f85441b48fe8",
                                 "ord": "a0"
                               },
                               {
@@ -992,11 +992,11 @@
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-bold text-base-content",
                                 "children": ["$139"],
-                                "id": "a0096804-761c-4328-aecf-0905f40e3e80",
+                                "id": "0ad30566-243c-4ef5-9087-666eda2ed025",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "73b2df79-97ff-44d5-bd3e-884e6aff0b7c",
+                            "id": "d62da175-a64a-4a06-8abb-ab3a209ac4ea",
                             "ord": "a0"
                           },
                           {
@@ -1004,7 +1004,7 @@
                             "tag": "p",
                             "class": "text-sm font-medium uppercase tracking-wide text-secondary",
                             "children": ["1 hr 30 min"],
-                            "id": "2f46f14b-a46d-413c-9b35-be06b3a0b94e",
+                            "id": "2face472-d318-4706-b2ce-d25639025be6",
                             "ord": "a1"
                           },
                           {
@@ -1012,15 +1012,15 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": ["Doorbells, locks and thermostats set up and tested."],
-                            "id": "caadd414-3c83-4038-92fc-4b3f2d5666d4",
+                            "id": "97dccb3f-e8d1-42e3-9d5b-7cc1c98ef023",
                             "ord": "a2"
                           }
                         ],
-                        "id": "9fb4dd7a-c8d8-46b5-9959-b517a311cee7",
+                        "id": "c1d732f3-f1e2-4597-985d-0c5f5848d532",
                         "ord": "a3"
                       }
                     ],
-                    "id": "12bb8a79-6322-4a69-8918-ebc18fcd1ee4",
+                    "id": "0d2a2ec6-5359-4222-bd4a-368ded736c38",
                     "ord": "a1"
                   },
                   {
@@ -1036,19 +1036,19 @@
                           "href": "/book"
                         },
                         "children": ["See every task & book"],
-                        "id": "0f4cde39-8117-4c09-84f0-b13d60d5dc7e",
+                        "id": "6f2d4ab9-0dcd-40de-b9da-acbdd668bc57",
                         "ord": "a0"
                       }
                     ],
-                    "id": "fbf952ee-faab-42dc-9310-d73390e8b200",
+                    "id": "b7e45448-ab9a-4965-bae0-2e1c353b087f",
                     "ord": "a2"
                   }
                 ],
-                "id": "21e624da-4049-450b-bc8c-a750fa4fe086",
+                "id": "fba6f452-da69-4b1a-b9fa-0946fe2782a5",
                 "ord": "a0"
               }
             ],
-            "id": "bd1e7db2-d3b9-4cf1-a535-5ee7712ff6c2",
+            "id": "2b7c5019-661b-49b9-a2b4-31c353ccb2dc",
             "ord": "a2"
           },
           {
@@ -1070,7 +1070,7 @@
                       "alt": "A pro checking a booking on a phone before starting a job",
                       "loading": "lazy"
                     },
-                    "id": "6b84e3b6-7c2e-4e00-a0be-232859bfdc15",
+                    "id": "f4bdc4d5-7dce-495a-b861-2fb8df3e21a8",
                     "ord": "a0"
                   },
                   {
@@ -1083,7 +1083,7 @@
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
                         "children": ["One flat rate. Pros you can actually trust."],
-                        "id": "17812356-7ed0-4820-80e1-50a52f1681f2",
+                        "id": "5da5cbb2-b6ba-4b25-a208-b42c203d5578",
                         "ord": "a0"
                       },
                       {
@@ -1093,7 +1093,7 @@
                         "children": [
                           "Every FixList pro is background-checked, insured and rated by real neighbors before they ever knock on your door. The person you book is the person who shows up."
                         ],
-                        "id": "78941095-de3e-4380-bd6c-83fb53483b13",
+                        "id": "e3276665-2f59-4f47-870f-3ade6e7377e6",
                         "ord": "a1"
                       },
                       {
@@ -1103,7 +1103,7 @@
                         "children": [
                           "Pricing is just as simple: a clear flat rate per task, quoted before you book, charged through the app. No cash on the counter, no surprise line items, no haggling on your doorstep."
                         ],
-                        "id": "2be4d4b5-9e30-4c73-a7c2-5ea6b48684eb",
+                        "id": "baab48ec-c6d4-46d5-a6f7-652bfcabfa31",
                         "ord": "a2"
                       },
                       {
@@ -1119,23 +1119,23 @@
                               "href": "/book"
                             },
                             "children": ["Book a vetted pro"],
-                            "id": "a579783b-2dc6-4447-bbbd-2a4f9882fb82",
+                            "id": "1ae9d092-5db6-434d-810e-d44d7802fee4",
                             "ord": "a0"
                           }
                         ],
-                        "id": "449d4b0e-fad6-4251-81c8-35bf81b372ca",
+                        "id": "5c877f61-d1fb-45b6-8cd5-5e09f76c67d6",
                         "ord": "a3"
                       }
                     ],
-                    "id": "daa68fc5-5333-4505-a0cf-4d140215106f",
+                    "id": "a1fdf417-2a96-4190-b27b-1ba99c4b63d0",
                     "ord": "a1"
                   }
                 ],
-                "id": "86b3f98a-097a-420f-93be-75f2697c0219",
+                "id": "e84cfc05-b0b3-4d2c-84ea-9b9a2b227081",
                 "ord": "a0"
               }
             ],
-            "id": "d5404bf6-f6c9-412d-be48-2881b884c319",
+            "id": "5a24c27d-e157-4ac1-b51c-d43e30251c59",
             "ord": "a3"
           },
           {
@@ -1158,7 +1158,7 @@
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
                         "children": ["Meet a few of your pros"],
-                        "id": "45087db6-f68e-4dd5-968a-9686f8d26fb5",
+                        "id": "b71bf8b9-dc0c-4f33-8d91-525bc8215b03",
                         "ord": "a0"
                       },
                       {
@@ -1168,11 +1168,11 @@
                         "children": [
                           "Book by name or let us dispatch the first available — either way you get someone vetted and reviewed."
                         ],
-                        "id": "2dd34efb-7032-4ef8-832b-e283333e5738",
+                        "id": "2adf6350-6dd3-4584-a886-95f5eb6aecea",
                         "ord": "a1"
                       }
                     ],
-                    "id": "cf3e88aa-2a5b-4110-bb1e-fe0524bdfe09",
+                    "id": "bf727408-7636-402e-9414-e40c283e1062",
                     "ord": "a0"
                   },
                   {
@@ -1194,7 +1194,7 @@
                               "alt": "Marcus Reed, repair and install pro",
                               "loading": "lazy"
                             },
-                            "id": "9dfd194a-6f41-44d0-ba5c-f9ab6ac93e8b",
+                            "id": "37969387-c938-4909-962b-06faf9e83c22",
                             "ord": "a0"
                           },
                           {
@@ -1207,7 +1207,7 @@
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
                                 "children": ["Marcus Reed"],
-                                "id": "af9512b0-9a0b-46e9-9d76-aa8a17d05127",
+                                "id": "1445fd9f-7124-4a99-bdcc-8d83b0b7d511",
                                 "ord": "a0"
                               },
                               {
@@ -1215,7 +1215,7 @@
                                 "tag": "p",
                                 "class": "text-sm font-medium uppercase tracking-wide text-secondary",
                                 "children": ["Repair & install"],
-                                "id": "21c3d152-3b51-412f-a4fc-3d216f40dead",
+                                "id": "d8d7d4c1-88b8-4411-9cfc-c566f1a119ba",
                                 "ord": "a1"
                               },
                               {
@@ -1225,15 +1225,15 @@
                                 "children": [
                                   "Fifteen years of fixing what’s broken — plumbing, doors, hardware and the fiddly stuff nobody else wants."
                                 ],
-                                "id": "6f17cc24-3686-43ee-8289-baa99e25909d",
+                                "id": "ea7f9c22-62cb-4fc9-b1a0-f7c85a810856",
                                 "ord": "a2"
                               }
                             ],
-                            "id": "af26cb33-f47e-440e-ae8c-b8c36e6ef551",
+                            "id": "6d64a3e7-2d4c-41eb-b9f7-aa653ff85a0c",
                             "ord": "a1"
                           }
                         ],
-                        "id": "91cb45b8-6cca-4c37-99f1-e0cd6f70190d",
+                        "id": "4e5b3cc3-c8ea-4556-91a6-77a704b1f975",
                         "ord": "a0"
                       },
                       {
@@ -1250,7 +1250,7 @@
                               "alt": "Diego Alvarez, mounting and assembly pro",
                               "loading": "lazy"
                             },
-                            "id": "6e7ba784-7a86-41d6-81a0-4327b31a8c80",
+                            "id": "6983a006-98f1-4ba4-b596-442260d8f125",
                             "ord": "a0"
                           },
                           {
@@ -1263,7 +1263,7 @@
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
                                 "children": ["Diego Alvarez"],
-                                "id": "a866541d-00ca-450a-9267-9e4b401582cc",
+                                "id": "d422dc2e-fe30-4963-a687-5df33e8c233d",
                                 "ord": "a0"
                               },
                               {
@@ -1271,7 +1271,7 @@
                                 "tag": "p",
                                 "class": "text-sm font-medium uppercase tracking-wide text-secondary",
                                 "children": ["Mounting & assembly"],
-                                "id": "0c8ac33d-ad50-429f-8e33-7fa9a2d07e78",
+                                "id": "71bff988-8d33-4769-8275-2ac30fea7213",
                                 "ord": "a1"
                               },
                               {
@@ -1281,15 +1281,15 @@
                                 "children": [
                                   "The one you want for TVs, floating shelves and a flat-pack that came with forty screws and no instructions."
                                 ],
-                                "id": "a1b86918-6983-4d10-85ae-516cb9991a7a",
+                                "id": "27d04567-82ff-4d7e-b068-556bd63819fb",
                                 "ord": "a2"
                               }
                             ],
-                            "id": "4b9ccca7-22c6-4839-bf07-774db50c1ecd",
+                            "id": "e715200f-393a-4e11-8d6a-a0b7bed92f43",
                             "ord": "a1"
                           }
                         ],
-                        "id": "695ad57a-2a07-4f37-90a1-da5658337a84",
+                        "id": "3f17164d-aeaa-42bb-bede-3ce0cdb66e8d",
                         "ord": "a1"
                       },
                       {
@@ -1306,7 +1306,7 @@
                               "alt": "Tasha Brooks, drywall and paint pro",
                               "loading": "lazy"
                             },
-                            "id": "24f8e805-570e-4258-9ff3-c5ca0e54d9f9",
+                            "id": "37ba6834-c4ec-4400-97e1-8998f8eb2ae5",
                             "ord": "a0"
                           },
                           {
@@ -1319,7 +1319,7 @@
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
                                 "children": ["Tasha Brooks"],
-                                "id": "d60fd83c-063f-42ba-a364-c5cf2ee410b5",
+                                "id": "1bc1393b-f41c-4ecc-80be-10243f08c7ed",
                                 "ord": "a0"
                               },
                               {
@@ -1327,7 +1327,7 @@
                                 "tag": "p",
                                 "class": "text-sm font-medium uppercase tracking-wide text-secondary",
                                 "children": ["Drywall & paint"],
-                                "id": "aaa54568-6da0-497a-be77-72f51458e8a4",
+                                "id": "1b7f30bd-4d22-4fae-b916-86aa0d4a5818",
                                 "ord": "a1"
                               },
                               {
@@ -1337,27 +1337,27 @@
                                 "children": [
                                   "Patches holes, hides dents and touches up paint so cleanly you’ll forget the mark was ever there."
                                 ],
-                                "id": "4ac467f0-e326-463d-bc17-4d6680a823b6",
+                                "id": "2d817ea8-15c7-4ce7-847c-bc1950f71cbc",
                                 "ord": "a2"
                               }
                             ],
-                            "id": "067df4d4-0828-41c4-a1e1-685e3c89d3d9",
+                            "id": "c8529ee4-0bc8-4fb4-8519-4293deb7755b",
                             "ord": "a1"
                           }
                         ],
-                        "id": "4d4f7de2-72a7-49ab-baf8-d224733625e4",
+                        "id": "d368f9df-2ef8-47c5-b56c-9d675d1bd8a3",
                         "ord": "a2"
                       }
                     ],
-                    "id": "bbd7ea42-039d-4611-b00e-0ac373e215f8",
+                    "id": "fc729bb5-d432-4ac0-8bdb-b9eb85573a35",
                     "ord": "a1"
                   }
                 ],
-                "id": "21d78f16-6398-41ce-a122-37617b25b333",
+                "id": "c27564b6-ab44-406a-ab46-9c656dc10eda",
                 "ord": "a0"
               }
             ],
-            "id": "bae56da7-ee7b-478b-bb8e-4cf3ed64c098",
+            "id": "ffda04de-3e46-4773-b30b-afc090f32be8",
             "ord": "a4"
           },
           {
@@ -1377,7 +1377,7 @@
                     "children": [
                       "“Booked a TV mount at 9am, it was on the wall by noon. Flat price, friendly pro, done. This is how everything should work.”"
                     ],
-                    "id": "040f5240-f45a-4389-adff-285472b64e89",
+                    "id": "7d7803b9-b4c1-489b-a67b-471e969d47cd",
                     "ord": "a0"
                   },
                   {
@@ -1385,15 +1385,15 @@
                     "tag": "p",
                     "class": "text-sm font-semibold uppercase tracking-wide opacity-80",
                     "children": ["Renee M., booked in March"],
-                    "id": "4939cc95-63bb-4dca-90ab-05b467c516c3",
+                    "id": "0d01bd19-6135-4164-8603-74a10a754782",
                     "ord": "a1"
                   }
                 ],
-                "id": "6b77e217-d99a-4868-8085-e85f2ddd84e5",
+                "id": "54573e93-f5df-421a-bab4-fdeb565ff159",
                 "ord": "a0"
               }
             ],
-            "id": "48624f7a-9b78-4020-9830-6d343211ab3e",
+            "id": "808af6a8-450d-4256-b610-66776e25ab49",
             "ord": "a5"
           },
           {
@@ -1411,7 +1411,7 @@
                     "tag": "h2",
                     "class": "text-3xl font-bold tracking-tight @3xl:text-4xl",
                     "children": ["Got a to-do list? Hand it over."],
-                    "id": "ff57022f-37f0-468f-b2c8-534184457d51",
+                    "id": "a3bdd231-26dc-4223-b80d-57a02330110b",
                     "ord": "a0"
                   },
                   {
@@ -1421,7 +1421,7 @@
                     "children": [
                       "Pick a task, choose a time and see live availability. It takes about two minutes."
                     ],
-                    "id": "3c620604-1b15-44a2-8a9d-e64685fc20fc",
+                    "id": "11051dc6-a6bf-489c-a96e-6656f65de836",
                     "ord": "a1"
                   },
                   {
@@ -1432,15 +1432,15 @@
                       "href": "/book"
                     },
                     "children": ["Book online"],
-                    "id": "e904520c-cbd3-447f-9caa-fbee5da9fd6f",
+                    "id": "ee720e7e-697d-4305-af46-2d1ae79088eb",
                     "ord": "a2"
                   }
                 ],
-                "id": "e4b72a56-c9e6-4936-aa1c-7d1ec264d494",
+                "id": "adb98155-5c9e-41d2-8287-fabf9a38bc14",
                 "ord": "a0"
               }
             ],
-            "id": "eec35cf6-fb5d-45e0-b1c0-58a92b9abc92",
+            "id": "21c75da6-d907-414e-9336-73bfbedb1e89",
             "ord": "a6"
           }
         ]
@@ -1457,7 +1457,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "ffb1785a-f820-46d7-a560-db0342623a46",
+        "id": "31606fe0-2ea8-4ce6-9b7c-9ec53791d54a",
         "children": [
           {
             "kind": "element",
@@ -1474,7 +1474,7 @@
                     "tag": "h1",
                     "class": "text-5xl font-bold leading-none tracking-tight @2xl:text-6xl @3xl:text-7xl",
                     "children": ["Book a pro"],
-                    "id": "4c11d9f3-e79d-46ed-af77-80c0f21e9413",
+                    "id": "dd637fdb-2c7a-4aba-b2df-208a33809efa",
                     "ord": "a0"
                   },
                   {
@@ -1484,7 +1484,7 @@
                     "children": [
                       "Choose a task to see its flat price and live availability, then pick a time and your pro. Same-day slots open often."
                     ],
-                    "id": "c7624a38-8275-45be-9507-75b5f6138641",
+                    "id": "9d0fc885-527e-4bee-b724-d954c58b0ddd",
                     "ord": "a1"
                   },
                   {
@@ -1495,24 +1495,24 @@
                       {
                         "kind": "element",
                         "tag": "a",
-                        "class": "btn btn-primary btn-lg",
+                        "class": "btn btn-lg btn-primary",
                         "attrs": {
                           "href": "/book"
                         },
                         "children": ["See tasks below"],
-                        "id": "de69591c-b54d-458b-8460-f3b8a9373ab5",
+                        "id": "fe53e80f-ffbb-4a30-9db4-abbf6aaf4e55",
                         "ord": "a0"
                       }
                     ],
-                    "id": "f76a9ed5-8801-4b32-869f-344e16821e50",
+                    "id": "9f151544-d52c-4a2d-b5d4-eb10a7883bc5",
                     "ord": "a2"
                   }
                 ],
-                "id": "a5cc4336-ced4-4e7e-8248-c9d72a5dea19",
+                "id": "fae3f2a9-23b3-4ea2-abdb-f76143dc93f1",
                 "ord": "a0"
               }
             ],
-            "id": "3b47d564-5332-4260-8b01-91f71b3fccaa",
+            "id": "45e83a2b-6083-4dc4-bc3f-e07de39f8e91",
             "ord": "a0"
           },
           {
@@ -1520,8 +1520,136 @@
             "component": "scheduling.services",
             "class": "mx-auto w-full max-w-5xl px-6 py-8",
             "locked": "host",
-            "id": "469ff894-4355-46b8-ace9-f351f7e737b0",
+            "id": "3b60b0f6-16b6-4af9-a345-81493eed2ec7",
             "ord": "a1"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-8",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["Good to know"],
+                        "id": "d69e722d-b0fc-4184-9b31-dc13734f3f90",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "What happens once you pick a time — and how to change it if something comes up."
+                        ],
+                        "id": "d65a9231-4f06-4b8a-96b3-78df7d777fd7",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "a5a12e89-de24-4b1c-a296-d303022c0b9a",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-6 @3xl:grid-cols-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-3 rounded-box border border-base-300 bg-base-100 p-6",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Standard booking"],
+                            "id": "0c4415c5-dae7-4704-84fb-904b92f550b7",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Need to change your time? Reschedule or cancel with 24 hours’ notice, free. We text a reminder the day before and two hours ahead so a pro is never a surprise."
+                            ],
+                            "id": "225f324a-7297-4f15-a0ad-9c20160a627e",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base font-medium text-base-content",
+                            "children": [
+                              "No deposit to book. Change or cancel free up to 24 hours before."
+                            ],
+                            "id": "d73efb90-6f31-4eab-bd59-a8371178eb65",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "b60cff97-34e1-4fe6-953f-293643330c46",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-3 rounded-box border border-base-300 bg-base-100 p-6",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Project booking"],
+                            "id": "a7895134-b0a4-41ea-aeaa-2df7965fc855",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Half-day projects hold a $50 deposit that comes straight off your total. Reschedule with 48 hours’ notice and it carries over to your new time."
+                            ],
+                            "id": "135eb94e-a367-4e5d-9d82-5ea1a8340937",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base font-medium text-base-content",
+                            "children": [
+                              "A $50 deposit holds your place. Change or cancel free up to 2 days before."
+                            ],
+                            "id": "2f9133d3-5ee1-4958-83be-b38ceecbab7b",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "ae596bcb-760d-49d5-871c-01dcafd2e95a",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "2caf541e-9e16-4ce2-aa09-09903c876b0c",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "5f64df59-47af-46e2-88fd-4c2206793985",
+                "ord": "a0"
+              }
+            ],
+            "id": "4f27fa4e-06c6-4583-9c83-fdede1872cbb",
+            "ord": "a2"
           }
         ]
       }
@@ -1537,7 +1665,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "6ce23157-a0e6-4d7d-a371-813a050f76b7",
+        "id": "e679ba53-2130-4c6c-a17e-de646778f4da",
         "children": [
           {
             "kind": "element",
@@ -1558,7 +1686,7 @@
                       "alt": "A tidy tool bag and cordless drill on a kitchen counter",
                       "loading": "lazy"
                     },
-                    "id": "5163bea1-d5e9-475a-b4ba-0cec4704ef13",
+                    "id": "d3ea8b44-da7e-4398-89b6-72cee6acf5c8",
                     "ord": "a0"
                   },
                   {
@@ -1568,10 +1696,10 @@
                     "children": [
                       {
                         "kind": "element",
-                        "tag": "h2",
+                        "tag": "h1",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
                         "children": ["The handyman, minus the hassle"],
-                        "id": "1b297672-08da-43a9-aaaf-2c9278d2587e",
+                        "id": "e0fa60c0-e524-45e1-8573-b0cc83971932",
                         "ord": "a0"
                       },
                       {
@@ -1581,7 +1709,7 @@
                         "children": [
                           "FixList started with a simple frustration: getting small home jobs done meant phone tag, no-shows and a price you only heard after the work was over. So we built the opposite."
                         ],
-                        "id": "c326b4c2-1392-4c08-8ff1-545e4ce8e6be",
+                        "id": "14fd5176-e927-40b2-a2e8-ee8c78803c8a",
                         "ord": "a1"
                       },
                       {
@@ -1591,7 +1719,7 @@
                         "children": [
                           "Now you book online in minutes, see the flat rate before you commit, and get a vetted, insured pro at your door — often the same day. No quotes to chase, no cash to dig up, no wondering who’s showing up."
                         ],
-                        "id": "7d002915-5c9d-441f-98aa-128b8145b5f7",
+                        "id": "57858714-f419-4769-a98c-c5a5a653f936",
                         "ord": "a2"
                       },
                       {
@@ -1607,23 +1735,23 @@
                               "href": "/book"
                             },
                             "children": ["Book a pro"],
-                            "id": "9258cc86-4c2c-45ce-a2d1-52ea664ad57f",
+                            "id": "8bc6a6fd-7dce-4934-9c0c-78b9c48e9546",
                             "ord": "a0"
                           }
                         ],
-                        "id": "632ea0b8-a528-4f22-9e3e-4f17f1865b40",
+                        "id": "27365deb-ce80-4235-a8af-02711e39065e",
                         "ord": "a3"
                       }
                     ],
-                    "id": "1f7bf9b8-fa75-413e-ae31-608d8464b8a9",
+                    "id": "592f0468-d43b-4d82-8e98-2326a0f017f7",
                     "ord": "a1"
                   }
                 ],
-                "id": "d4a7785e-a099-4e0f-adb9-48031c2d7674",
+                "id": "790c33f0-e121-4093-add7-d8803778ebf7",
                 "ord": "a0"
               }
             ],
-            "id": "07f19b9b-d0fe-4918-9a0b-1a6bbd0a66c9",
+            "id": "28308195-ff24-4564-88d7-3b5d12806c62",
             "ord": "a0"
           },
           {
@@ -1641,7 +1769,7 @@
                     "tag": "h2",
                     "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
                     "children": ["Why homeowners book us"],
-                    "id": "2f523134-8793-4183-9f8e-7ca95a461fa9",
+                    "id": "8284e0d7-3c91-456c-959a-1bb03b7c42d5",
                     "ord": "a0"
                   },
                   {
@@ -1659,7 +1787,7 @@
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
                             "children": ["Vetted & insured"],
-                            "id": "f9662c8e-719d-4f93-86e2-164cb48d142e",
+                            "id": "b5ad9433-c320-4458-a8b4-d58ca8121c5e",
                             "ord": "a0"
                           },
                           {
@@ -1669,11 +1797,11 @@
                             "children": [
                               "Every pro is background-checked, insured and reviewed by real customers. We stand behind the work, not just the booking."
                             ],
-                            "id": "b57b0a8b-20b7-415e-b85c-af97b17e574b",
+                            "id": "84bb586c-6b6a-4588-9d8e-3ca25a1f845b",
                             "ord": "a1"
                           }
                         ],
-                        "id": "373b0ee4-64e1-4f5e-bb0e-512db0197b50",
+                        "id": "040e96a5-d55b-4490-a3c2-69ee4359adb3",
                         "ord": "a0"
                       },
                       {
@@ -1686,7 +1814,7 @@
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
                             "children": ["Prices you see first"],
-                            "id": "427431b6-fea9-4f01-b57b-89b960f681a9",
+                            "id": "a545f7ba-3d30-4eb8-9deb-74b91a78cb43",
                             "ord": "a0"
                           },
                           {
@@ -1696,11 +1824,11 @@
                             "children": [
                               "Flat rates per task, quoted before you book and charged in the app. What you’re quoted is what you pay."
                             ],
-                            "id": "34fa3a96-3d0a-464e-8612-3498781e560d",
+                            "id": "db28bf2e-3f3d-4aff-9fad-618ead54bfbe",
                             "ord": "a1"
                           }
                         ],
-                        "id": "d9879d44-20f4-4c28-b65f-0f2ad0dc9f99",
+                        "id": "5d3b2d79-f245-44b0-96cd-09c5809b32bc",
                         "ord": "a1"
                       },
                       {
@@ -1713,7 +1841,7 @@
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
                             "children": ["On your schedule"],
-                            "id": "f4ddd9b0-38eb-4b0a-aee0-7d4452e48f94",
+                            "id": "89779b24-6a61-41d6-b32e-70a3aba3c1a0",
                             "ord": "a0"
                           },
                           {
@@ -1723,23 +1851,23 @@
                             "children": [
                               "Live availability with evening and weekend slots, and free rescheduling — so a fix fits around your life, not the other way round."
                             ],
-                            "id": "47b18ff0-1d25-4a5a-9d21-dc0c44ba8b5f",
+                            "id": "0d9f87cd-e849-4291-a6f0-8faf72232e86",
                             "ord": "a1"
                           }
                         ],
-                        "id": "041d2428-94d6-4c3c-af30-616dbd4d395f",
+                        "id": "fc6b4f50-6f45-4861-831e-207527a71193",
                         "ord": "a2"
                       }
                     ],
-                    "id": "3d57d780-a247-4236-97bd-c7f39bc7d588",
+                    "id": "4b5d9f0c-ba22-43d2-921f-1d211819f79c",
                     "ord": "a1"
                   }
                 ],
-                "id": "72b8f55d-4f85-404e-9397-34b69a031e9b",
+                "id": "853e9052-89d4-434b-bbe1-47918c460e69",
                 "ord": "a0"
               }
             ],
-            "id": "87320ca5-78e1-4d33-a2ad-81766fd15b10",
+            "id": "25ff9f41-4191-4895-9845-b50529022659",
             "ord": "a1"
           }
         ]
@@ -1756,8 +1884,294 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "bda74bd0-e257-4db6-b281-05f6b1c4e623",
+        "id": "de3e624a-cc2c-4bfa-b3d0-5aedb9d655f4",
         "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-8",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h1",
+                        "class": "text-4xl font-bold tracking-tight text-base-content @3xl:text-5xl",
+                        "children": ["Get in touch"],
+                        "id": "3a1f5f7b-d934-420e-9445-0ba433affdb7",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Questions before you book? Send a note and FixList will get back to you — usually the same day."
+                        ],
+                        "id": "e0719a8e-7819-484f-bfaf-85098971dd88",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "91ff6006-aeaf-42e4-8176-75466764d074",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-1",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "span",
+                        "class": "text-base font-medium text-base-content",
+                        "children": ["Call us"],
+                        "id": "fa6d1d49-483f-44fa-a65a-b5fb21088c63",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "text-lg font-semibold text-base-content underline underline-offset-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "children": ["(555) 123-4567"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "site.identity.phone"
+                            },
+                            "id": "c38f46ae-1d99-46ce-9084-d5670976a4ae",
+                            "ord": "a0"
+                          }
+                        ],
+                        "data": {
+                          "kind": "value",
+                          "ref": "site.identity.phoneHref",
+                          "attr": "href"
+                        },
+                        "id": "6aa4eda5-0832-4de9-90b3-93af07dead7d",
+                        "ord": "a1"
+                      }
+                    ],
+                    "data": {
+                      "kind": "visible",
+                      "ref": "site.identity.phone"
+                    },
+                    "id": "70f4df74-e5b7-4a32-a545-13cbd8d4c89d",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-1",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "span",
+                        "class": "text-base font-medium text-base-content",
+                        "children": ["Email us"],
+                        "id": "3bb86082-8e3d-4c27-9986-0afbd9cce4fa",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "text-lg font-semibold text-base-content underline underline-offset-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "children": ["hello@yourbusiness.com"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "site.identity.email"
+                            },
+                            "id": "0ea6ce50-6b13-4483-b6d4-ee3fc852a1ef",
+                            "ord": "a0"
+                          }
+                        ],
+                        "data": {
+                          "kind": "value",
+                          "ref": "site.identity.emailHref",
+                          "attr": "href"
+                        },
+                        "id": "ab91e6eb-279c-457d-b0df-61a1a11fce86",
+                        "ord": "a1"
+                      }
+                    ],
+                    "data": {
+                      "kind": "visible",
+                      "ref": "site.identity.email"
+                    },
+                    "id": "d0d2ff92-25c7-4694-a94a-00fa43b868e9",
+                    "ord": "a2"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "form",
+                    "class": "flex w-full max-w-xl flex-col gap-5",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "label",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-base font-medium text-base-content",
+                            "children": ["Your name"],
+                            "id": "6fddff4d-ed24-4f4f-8709-1097fe9b2d96",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "input",
+                            "class": "input input-bordered w-full",
+                            "attrs": {
+                              "type": "text",
+                              "name": "name",
+                              "required": true
+                            },
+                            "id": "8ffdf500-615b-4596-bbc1-bf6fe2864b33",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "c6c21f1a-6564-45b5-a48d-5830384dc504",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "label",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-base font-medium text-base-content",
+                            "children": ["Email address"],
+                            "id": "1b9e53cf-be0f-4b93-a1ef-2e610954236a",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "input",
+                            "class": "input input-bordered w-full",
+                            "attrs": {
+                              "type": "email",
+                              "name": "email",
+                              "required": true
+                            },
+                            "id": "8c4ede31-4318-4fbd-b0ac-0e990e685674",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "c1fb096e-f767-4b2c-b279-934c5cee6b2c",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "label",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-base font-medium text-base-content",
+                            "children": ["Phone number"],
+                            "id": "ac7273bc-6e32-4ddc-8b04-ac9a09eb24b8",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "input",
+                            "class": "input input-bordered w-full",
+                            "attrs": {
+                              "type": "tel",
+                              "name": "phone"
+                            },
+                            "id": "27385598-d2f2-4820-9706-b2722aedf424",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "7d1e92cf-20d1-48a6-b04a-862135790cba",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "label",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-base font-medium text-base-content",
+                            "children": ["How can we help?"],
+                            "id": "5baacf86-9b07-4e16-a054-70d3b7a0f866",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "textarea",
+                            "class": "textarea textarea-bordered min-h-32 w-full",
+                            "attrs": {
+                              "name": "message"
+                            },
+                            "id": "03923128-8bfa-486b-8e6b-b8e886ff5581",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "0d04402f-6706-4b82-8a87-3df2030618ed",
+                        "ord": "a3"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-wrap items-center gap-3",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "button",
+                            "class": "btn btn-primary btn-lg",
+                            "attrs": {
+                              "type": "submit"
+                            },
+                            "children": ["Send my request"],
+                            "id": "468044aa-6093-462b-88c6-fba333f97742",
+                            "ord": "a0"
+                          }
+                        ],
+                        "id": "ad4c8f69-5d3d-4bca-b6df-c1e70b93ebf1",
+                        "ord": "a4"
+                      }
+                    ],
+                    "behavior": {
+                      "type": "form"
+                    },
+                    "data": {
+                      "kind": "action",
+                      "ref": "submit"
+                    },
+                    "id": "99463858-92b7-4fd5-99dc-b3cc8c3c56b2",
+                    "ord": "a3"
+                  }
+                ],
+                "id": "43b2554b-85d1-4101-a550-0e0a7a1a326e",
+                "ord": "a0"
+              }
+            ],
+            "id": "5896b5ea-e3e1-4c6e-9f7d-3359eb8da7e0",
+            "ord": "a0"
+          },
           {
             "kind": "element",
             "tag": "section",
@@ -1778,40 +2192,21 @@
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
                         "children": ["Where we work"],
-                        "id": "81957ed3-9590-47c4-915b-e25410f7015e",
+                        "id": "31352d79-0978-4ba1-930e-3489e25b79c4",
                         "ord": "a0"
                       },
                       {
                         "kind": "element",
-                        "tag": "div",
-                        "class": "flex flex-col gap-1",
+                        "tag": "address",
+                        "class": "text-lg leading-relaxed whitespace-pre-line not-italic text-base-content",
                         "children": [
-                          {
-                            "kind": "element",
-                            "tag": "p",
-                            "class": "text-lg leading-relaxed text-base-content",
-                            "children": ["FixList"],
-                            "id": "b05283a4-172b-46be-9d3e-fde5beef5920",
-                            "ord": "a0"
-                          },
-                          {
-                            "kind": "element",
-                            "tag": "p",
-                            "class": "text-lg leading-relaxed text-base-content",
-                            "children": ["Serving the greater metro area"],
-                            "id": "62a50638-2a0f-4635-984f-b1627ab6eefd",
-                            "ord": "a1"
-                          },
-                          {
-                            "kind": "element",
-                            "tag": "p",
-                            "class": "text-lg leading-relaxed text-base-content",
-                            "children": ["Dispatch: 210 Maker Ave, Austin, TX 78702"],
-                            "id": "64f91fdc-af75-46be-bdbc-c4e0fe1ff1df",
-                            "ord": "a2"
-                          }
+                          "FixList\nServing the greater metro area\nDispatch: 210 Maker Ave, Austin, TX 78702"
                         ],
-                        "id": "a8ecced3-f0d2-4a8b-bf16-ef80a45c894d",
+                        "data": {
+                          "kind": "value",
+                          "ref": "site.identity.address"
+                        },
+                        "id": "7b4caef4-c005-4d6e-b502-55082e1f130e",
                         "ord": "a1"
                       },
                       {
@@ -1829,7 +2224,7 @@
                                 "tag": "span",
                                 "class": "font-medium text-base-content",
                                 "children": ["Monday – Friday"],
-                                "id": "48944736-1dd1-4fe5-a1c8-dfe437d3934e",
+                                "id": "eaf6dbed-b47e-42f1-bf09-cf8a109dfe66",
                                 "ord": "a0"
                               },
                               {
@@ -1837,11 +2232,11 @@
                                 "tag": "span",
                                 "class": "text-base-content",
                                 "children": ["8:00 – 9:00"],
-                                "id": "16cfcc4c-893e-48f7-a693-ac068c39c93e",
+                                "id": "7b66f24b-6478-4156-8224-351b6db6ce1f",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "0ff29c8b-cccb-48b3-817b-009b5ccd9909",
+                            "id": "f779f478-4fe5-44c6-a387-ae697790b01d",
                             "ord": "a0"
                           },
                           {
@@ -1854,7 +2249,7 @@
                                 "tag": "span",
                                 "class": "font-medium text-base-content",
                                 "children": ["Saturday"],
-                                "id": "ceb017c6-9490-4746-b1d0-790f1e7cf143",
+                                "id": "6035702d-468b-4b96-9e8b-5c0f47a16258",
                                 "ord": "a0"
                               },
                               {
@@ -1862,11 +2257,11 @@
                                 "tag": "span",
                                 "class": "text-base-content",
                                 "children": ["8:00 – 8:00"],
-                                "id": "6a2b3907-9111-42d5-a8a7-3dcf5267da3e",
+                                "id": "bc5f0d6e-cbf5-4018-989f-69215c0ff590",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "742a5b24-2f9e-40bb-9b18-efaf79fba0b6",
+                            "id": "305e984e-2ae3-43db-bb4b-7e6123f49564",
                             "ord": "a1"
                           },
                           {
@@ -1879,7 +2274,7 @@
                                 "tag": "span",
                                 "class": "font-medium text-base-content",
                                 "children": ["Sunday"],
-                                "id": "65071daf-f298-401a-980f-b5961d0b3747",
+                                "id": "da7bcf1a-e9c5-4a4e-abc4-5a7ba221b974",
                                 "ord": "a0"
                               },
                               {
@@ -1887,11 +2282,11 @@
                                 "tag": "span",
                                 "class": "text-base-content",
                                 "children": ["9:00 – 7:00"],
-                                "id": "97c86b1c-0ba4-48c6-a5bb-fb5b3b3dcc84",
+                                "id": "4904d9bc-b63b-4a91-ae2a-edd405217670",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "9392860f-7bf4-462e-9114-74eecb3b2f37",
+                            "id": "47e41195-f5fc-4f3d-9821-dab3cd647826",
                             "ord": "a2"
                           },
                           {
@@ -1904,7 +2299,7 @@
                                 "tag": "span",
                                 "class": "font-medium text-base-content",
                                 "children": ["Holidays"],
-                                "id": "e46aa092-ad9b-4374-910c-990e2b4d18b0",
+                                "id": "35f5c2bf-c6ee-44a8-80aa-e40052bc6481",
                                 "ord": "a0"
                               },
                               {
@@ -1912,19 +2307,19 @@
                                 "tag": "span",
                                 "class": "text-base-content",
                                 "children": ["Limited slots"],
-                                "id": "340b76fa-ed32-4a87-8f7e-d9c600d9cf73",
+                                "id": "92502e62-822f-4973-a0d0-e7a41b71cd06",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "7a62ee0c-6805-4b45-9407-4b6ef5410404",
+                            "id": "b1c7358a-ce18-499e-b3ed-0812b0a3b1ed",
                             "ord": "a3"
                           }
                         ],
-                        "id": "4f3864b8-202c-42df-9336-51b2540bf13c",
+                        "id": "de9059e0-5072-487e-8431-4376a8247126",
                         "ord": "a2"
                       }
                     ],
-                    "id": "1ad0f1a0-cca8-426c-aca2-f07f6921a6df",
+                    "id": "828edcf3-70ea-48cf-99aa-00a8180fb945",
                     "ord": "a0"
                   },
                   {
@@ -1937,16 +2332,16 @@
                       "zoom": 15,
                       "ratio": "classic"
                     },
-                    "id": "f646c2c8-a622-4658-a8ce-768146dcfb81",
+                    "id": "f133eab0-1722-474c-920a-47f0121aa082",
                     "ord": "a1"
                   }
                 ],
-                "id": "4fd578c8-f46c-4bb5-87b7-6358a4c60158",
+                "id": "e11124b7-4600-439b-ac91-0bd388ffef30",
                 "ord": "a0"
               }
             ],
-            "id": "33440234-1e98-483d-92c3-6c9cdeeaae13",
-            "ord": "a0"
+            "id": "dc2fc9b5-e83c-4871-b370-780bb0d1fbfc",
+            "ord": "a1"
           },
           {
             "kind": "element",
@@ -1963,7 +2358,7 @@
                     "tag": "h2",
                     "class": "text-3xl font-bold tracking-tight @3xl:text-4xl",
                     "children": ["Rather book than call?"],
-                    "id": "dc9d26c5-4623-442f-8583-3cd5e4f1f8e2",
+                    "id": "bde028ba-a6cd-4768-add7-11784e79cb32",
                     "ord": "a0"
                   },
                   {
@@ -1973,7 +2368,7 @@
                     "children": [
                       "Skip the phone tag — see live availability and lock in a vetted pro online."
                     ],
-                    "id": "1df16885-f420-43c4-96a5-080f1d719163",
+                    "id": "4f9644ee-b6fe-4c93-8745-d8ceaa7268a2",
                     "ord": "a1"
                   },
                   {
@@ -1984,16 +2379,16 @@
                       "href": "/book"
                     },
                     "children": ["Book online"],
-                    "id": "4a59e2df-8eff-488b-ad71-fa8b2c1e7cbb",
+                    "id": "8fb5eb88-e7ba-4efc-9bb3-17f869e31748",
                     "ord": "a2"
                   }
                 ],
-                "id": "e83406d0-3ec4-426d-939c-25b378a68fe2",
+                "id": "96b8f9fe-48d5-4a41-b9e9-a25d4751c2be",
                 "ord": "a0"
               }
             ],
-            "id": "d2788b9f-b88e-472e-abf0-e55061f83e05",
-            "ord": "a1"
+            "id": "6c9830ec-531a-4c0e-a1e9-d13a452d3fac",
+            "ord": "a2"
           }
         ]
       }

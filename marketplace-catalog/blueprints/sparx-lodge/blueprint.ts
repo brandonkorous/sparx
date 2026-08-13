@@ -16,7 +16,7 @@ import welcomeEmail2 from './welcome-email-2.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-lodge',
-  version: '1.1.0',
+  version: '1.2.0',
   name: 'sparx — Lodge',
   summary:
     'The complete sparx starter — a faceted shop, a journal, a booking page, and a wholesale page — in the Lodge look, tuned for hotels, cabins, and short-stay rentals. Install it, make it yours, and launch a polished working site in minutes.',
@@ -42,7 +42,7 @@ const blueprint = {
   },
 
   // The provisioned SiteTheme the installer creates + applies — the 'lodge'
-  // look as a tenant-editable saved theme (base preset lodge + this theme's brand look).
+  // look as a tenant-editable saved theme (base preset apex + this theme's brand look).
   theme: {
     name: 'lodge',
     basePresetKey: 'lodge',

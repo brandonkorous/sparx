@@ -16,7 +16,7 @@ import welcomeEmail2 from './welcome-email-2.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-petal',
-  version: '1.1.0',
+  version: '1.2.0',
   name: 'sparx — Petal',
   summary:
     'The complete sparx starter — a faceted shop, a journal, a booking page, and a wholesale page — in the Petal look, tuned for florists, weddings, and events. Install it, make it yours, and launch a polished working site in minutes.',
@@ -42,7 +42,7 @@ const blueprint = {
   },
 
   // The provisioned SiteTheme the installer creates + applies — the 'petal'
-  // look as a tenant-editable saved theme (base preset petal + this theme's brand look).
+  // look as a tenant-editable saved theme (base preset apex + this theme's brand look).
   theme: {
     name: 'petal',
     basePresetKey: 'petal',

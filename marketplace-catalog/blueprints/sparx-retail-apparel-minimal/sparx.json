@@ -3,7 +3,7 @@
   "category": "blueprint",
   "slug": "sparx-retail-apparel-minimal",
   "name": "sparx — Fashion Boutique (Minimal)",
-  "version": "1.3.0",
+  "version": "1.4.0",
   "tagline": "An editorial storefront for a fashion boutique of essentials.",
   "description": "A complete, working shop for a quiet-luxury clothing boutique: a real wardrobe of essentials — tees, an oxford shirt, heavyweight and fine knitwear, tailored and wide-leg trousers, an overcoat, a scarf and a leather tote — each sized XS–XL in a tight colour palette, with categories, collections, a bespoke editorial PDP and a merchandised home page. Warm bone paper, near-black mono type, no accent — the clothes are the colour. Shipped as Kestrel.",
   "payload": "blueprint.ts",

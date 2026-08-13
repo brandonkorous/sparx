@@ -7,7 +7,7 @@
       "subject": "Welcome to {{site.name}}",
       "preheader": "Thanks for subscribing — here’s where to begin.",
       "root": {
-        "id": "journal-welcome-body-8",
+        "id": "def-s-body-1253",
         "kind": "body",
         "width": 600,
         "bg": "#f4f4f5",
@@ -18,7 +18,7 @@
         "colorScheme": "light dark",
         "children": [
           {
-            "id": "journal-welcome-section-9",
+            "id": "def-s-section-1242",
             "kind": "section",
             "bg": "#ffffff",
             "bgAuto": true,
@@ -26,7 +26,7 @@
             "paddingY": 24,
             "children": [
               {
-                "id": "journal-welcome-text-1",
+                "id": "def-s-text-1239",
                 "kind": "text",
                 "html": "Welcome, {{customer.firstName}}",
                 "align": "left",
@@ -37,12 +37,12 @@
                 "lineHeight": 36
               },
               {
-                "id": "journal-welcome-spacer-2",
+                "id": "def-s-spacer-1241",
                 "kind": "spacer",
-                "height": 10
+                "height": 16
               },
               {
-                "id": "journal-welcome-text-3",
+                "id": "def-s-text-1240",
                 "kind": "text",
                 "html": "Thanks for subscribing to {{site.name}}. You’ll be first to read what we publish — the stories, the reporting, and the ideas we think are worth your time.",
                 "align": "left",
@@ -51,30 +51,97 @@
                 "fontSize": 16,
                 "fontWeight": "normal",
                 "lineHeight": 26
-              },
+              }
+            ]
+          },
+          {
+            "id": "def-s-section-1250",
+            "kind": "section",
+            "bg": "#f4f4f5",
+            "bgAuto": true,
+            "paddingX": 20,
+            "paddingY": 22,
+            "children": [
               {
-                "id": "journal-welcome-spacer-4",
-                "kind": "spacer",
-                "height": 14
-              },
-              {
-                "id": "journal-welcome-text-5",
+                "id": "def-s-text-1243",
                 "kind": "text",
-                "html": "While you’re here, catch up on what we’ve been working on lately. Our latest pieces are waiting for you in the journal.",
+                "html": "Straight to your inbox",
                 "align": "left",
                 "color": "#18181b",
                 "colorAuto": true,
-                "fontSize": 16,
-                "fontWeight": "normal",
-                "lineHeight": 26
+                "fontSize": 17,
+                "fontWeight": "bold",
+                "lineHeight": 27
               },
               {
-                "id": "journal-welcome-spacer-6",
+                "id": "def-s-spacer-1244",
                 "kind": "spacer",
-                "height": 22
+                "height": 4
               },
               {
-                "id": "journal-welcome-button-7",
+                "id": "def-s-text-1245",
+                "kind": "text",
+                "html": "New pieces land here first — no noise, just the work we think is worth your time.",
+                "align": "left",
+                "color": "#18181b",
+                "colorAuto": true,
+                "fontSize": 15,
+                "fontWeight": "normal",
+                "lineHeight": 24
+              },
+              {
+                "id": "def-s-spacer-1246",
+                "kind": "spacer",
+                "height": 18
+              },
+              {
+                "id": "def-s-text-1247",
+                "kind": "text",
+                "html": "Start with the latest",
+                "align": "left",
+                "color": "#18181b",
+                "colorAuto": true,
+                "fontSize": 17,
+                "fontWeight": "bold",
+                "lineHeight": 27
+              },
+              {
+                "id": "def-s-spacer-1248",
+                "kind": "spacer",
+                "height": 4
+              },
+              {
+                "id": "def-s-text-1249",
+                "kind": "text",
+                "html": "Catch up on what we’ve been working on — our newest stories are waiting in the journal.",
+                "align": "left",
+                "color": "#18181b",
+                "colorAuto": true,
+                "fontSize": 15,
+                "fontWeight": "normal",
+                "lineHeight": 24
+              }
+            ],
+            "bgRole": "base200",
+            "borderColor": "#e4e4e7",
+            "borderColorAuto": true,
+            "borderColorRole": "base300",
+            "borderWidth": 1,
+            "radius": 16,
+            "marginX": 24,
+            "marginY": 8,
+            "align": "left"
+          },
+          {
+            "id": "def-s-section-1252",
+            "kind": "section",
+            "bg": "#ffffff",
+            "bgAuto": true,
+            "paddingX": 24,
+            "paddingY": 24,
+            "children": [
+              {
+                "id": "def-s-button-1251",
                 "kind": "button",
                 "label": "Read the latest",
                 "href": "{{site.url}}/journal",

@@ -22,7 +22,7 @@
                   "props": {
                     "show": "both"
                   },
-                  "id": "39290f1d-4712-4b92-8fa6-5af03fc08f26",
+                  "id": "bf4967e2-a977-4688-b377-a3375d9c4690",
                   "ord": "a0"
                 },
                 {
@@ -43,7 +43,7 @@
                         "type": "link",
                         "label": "Product"
                       },
-                      "id": "81b1573d-959f-449b-b5ec-d3467997aac1",
+                      "id": "5100cc04-ad93-41c1-b471-0918a77fb087",
                       "ord": "a0"
                     },
                     {
@@ -59,7 +59,7 @@
                         "type": "link",
                         "label": "Pricing"
                       },
-                      "id": "a1a9ea01-4608-4f3c-a727-4a5b5e8577ba",
+                      "id": "9ce40188-6a4c-4414-99ff-c9af5b04e13d",
                       "ord": "a1"
                     },
                     {
@@ -75,11 +75,11 @@
                         "type": "link",
                         "label": "Docs"
                       },
-                      "id": "d0dd5fcc-7f66-45e5-8f10-137833c972da",
+                      "id": "c950b455-695e-45e1-86b1-128f3c97b247",
                       "ord": "a2"
                     }
                   ],
-                  "id": "f909f7a7-6338-4bf5-933a-96f63ca05f9e",
+                  "id": "410f8bc3-c095-48d4-b314-2ec898fde0e2",
                   "ord": "a1"
                 },
                 {
@@ -100,14 +100,14 @@
                         "type": "link",
                         "label": "Secondary link"
                       },
-                      "id": "f17bfdfc-74b1-48b3-a5eb-d1bd27dc01e6",
+                      "id": "3ef1def3-bbe2-4cb9-8a89-aee866d93d5d",
                       "ord": "a0"
                     },
                     {
                       "kind": "host",
                       "component": "site.theme-toggle",
                       "class": "inline-flex items-center",
-                      "id": "cf3da618-ed31-44c3-84aa-b0526482fac9",
+                      "id": "7d6ebca6-6d4a-4dea-8ab8-2e7370b8400d",
                       "ord": "a1"
                     },
                     {
@@ -123,7 +123,7 @@
                         "type": "link",
                         "label": "Primary action"
                       },
-                      "id": "e3c99797-d2e3-428b-ba18-1b8c7aa24575",
+                      "id": "194cdf69-8973-43da-893d-60e5b027b985",
                       "ord": "a2"
                     },
                     {
@@ -141,20 +141,20 @@
                           "props": {
                             "name": "menu"
                           },
-                          "id": "c067d491-d9c2-4e45-afd0-039a47f69dd0",
+                          "id": "2c774d02-07ac-4dd7-add3-bb3cf93606d2",
                           "ord": "a0"
                         }
                       ],
                       "part": "trigger",
-                      "id": "f38ba71c-b717-4471-a3a5-f0e70bae9b9e",
+                      "id": "e6fc3fde-06a6-465a-b3fd-29f14baa3829",
                       "ord": "a3"
                     }
                   ],
-                  "id": "f9ee77b4-d927-446c-b4d8-5c4fa3292ce7",
+                  "id": "d38a1490-7ba1-4368-94cf-f24019d3534f",
                   "ord": "a2"
                 }
               ],
-              "id": "a142c842-dd31-41ec-9161-ae9fe318f999",
+              "id": "e6343071-f7b0-4046-b711-24a2bb8db3c9",
               "ord": "a0"
             },
             {
@@ -178,7 +178,7 @@
                     "type": "link",
                     "label": "Product"
                   },
-                  "id": "9ef9d503-695b-4ad4-be1a-9dfa21050691",
+                  "id": "fceabf62-2820-402e-aca6-9435d5826528",
                   "ord": "a0"
                 },
                 {
@@ -194,7 +194,7 @@
                     "type": "link",
                     "label": "Pricing"
                   },
-                  "id": "390bec2a-1a24-48a1-874e-09a47ecd84b6",
+                  "id": "4cbed30a-d060-4e1e-ae90-f65206473fc8",
                   "ord": "a1"
                 },
                 {
@@ -210,7 +210,7 @@
                     "type": "link",
                     "label": "Docs"
                   },
-                  "id": "f053c377-c9bf-46b7-ab6f-ace82b8cdd09",
+                  "id": "5b5c1190-9e5c-4275-bb3e-d8e6ce8d1c2b",
                   "ord": "a2"
                 },
                 {
@@ -226,7 +226,7 @@
                     "type": "link",
                     "label": "Secondary link"
                   },
-                  "id": "6e0b8d2c-a252-4186-a702-bc8d2f8a6619",
+                  "id": "9a1fbefe-c240-4184-a474-192648b66395",
                   "ord": "a3"
                 },
                 {
@@ -242,19 +242,19 @@
                     "type": "link",
                     "label": "Primary action"
                   },
-                  "id": "94f88b37-233f-4327-884c-98e14874b918",
+                  "id": "ecbfc383-5990-4d94-899f-f6ee54c75c31",
                   "ord": "a4"
                 }
               ],
               "part": "panel",
-              "id": "b0a0d579-af64-4a02-b55b-febb4108569e",
+              "id": "1b77c14c-cc66-4540-ac81-53e67140d5c9",
               "ord": "a1"
             }
           ],
           "behavior": {
             "type": "disclosure"
           },
-          "id": "845a6fde-e684-47eb-9099-1e7f5f2c32b4",
+          "id": "4d2460f5-b509-4cd1-a2ad-fa8d8645dcde",
           "ord": "a0"
         },
         {
@@ -270,7 +270,7 @@
               "kind": "outlet"
             }
           ],
-          "id": "fad03059-5ec4-4bb8-bc35-6a04b191cdd2",
+          "id": "7178f6cf-4d77-410f-9695-b258cb12b4f3",
           "ord": "a1"
         },
         {
@@ -300,7 +300,7 @@
                           "props": {
                             "show": "both"
                           },
-                          "id": "52b10f6d-8b28-459a-8162-199c523f0a8d",
+                          "id": "338d043b-88f0-473a-b14c-f50b454f95e4",
                           "ord": "a0"
                         },
                         {
@@ -316,7 +316,7 @@
                           "attrs": {
                             "href": "/"
                           },
-                          "id": "cdd93622-e6fd-470b-bb9a-5fcc9a54c4a8",
+                          "id": "801d097c-097d-4ba4-9203-e938448c173a",
                           "ord": "a1"
                         },
                         {
@@ -324,11 +324,11 @@
                           "tag": "ul",
                           "class": "mt-2 flex items-center gap-5",
                           "children": [],
-                          "id": "1dd87374-5b44-4344-bb09-3430e290a862",
+                          "id": "660dec48-b2dd-4b0c-b4dd-e87410080009",
                           "ord": "a2"
                         }
                       ],
-                      "id": "30e49994-d4e8-4b60-b4b6-6b8e2cc002e4",
+                      "id": "9401b538-230b-4e5c-81b6-8d976512cef3",
                       "ord": "a0"
                     },
                     {
@@ -349,7 +349,7 @@
                           "attrs": {
                             "href": "/"
                           },
-                          "id": "25adc2f3-dd08-466a-b24f-95cf1293da23",
+                          "id": "5507d039-c084-4193-b37c-329215c5b318",
                           "ord": "a0"
                         },
                         {
@@ -374,11 +374,11 @@
                                     "type": "link",
                                     "label": "Features"
                                   },
-                                  "id": "a281931e-ab78-476c-b031-ccd86813ebf0",
+                                  "id": "80d31895-de38-423b-a3e9-29e1b21d986f",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "ce25d306-2540-4dea-b289-44a979fcf72e",
+                              "id": "fbc4791d-f91e-4214-99e9-49a31755bb82",
                               "ord": "a0"
                             },
                             {
@@ -398,11 +398,11 @@
                                     "type": "link",
                                     "label": "Pricing"
                                   },
-                                  "id": "7edea77a-cf0e-4d11-b71f-9ab15cdd05e9",
+                                  "id": "c481bab3-56ce-4adb-a716-23c53ab45e5e",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "6ba55a6d-2b29-4135-b352-b6918a2c27b6",
+                              "id": "774bd6bf-5ef9-4cc8-a9ff-ec3f49dc02c4",
                               "ord": "a1"
                             },
                             {
@@ -422,11 +422,11 @@
                                     "type": "link",
                                     "label": "Integrations"
                                   },
-                                  "id": "13bb8287-c36d-4202-b8ea-2239d59f1ae0",
+                                  "id": "7b5fe20f-4484-485c-a519-f517b9e933df",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "7465d162-7950-49dd-a736-e4ae60dcc5b1",
+                              "id": "c0b8d6ad-62ca-4409-aa31-c8bd76659577",
                               "ord": "a2"
                             },
                             {
@@ -446,19 +446,19 @@
                                     "type": "link",
                                     "label": "Changelog"
                                   },
-                                  "id": "56ba3f7b-b1a6-4bd0-a7eb-984e7e378aca",
+                                  "id": "e1ebbdf3-f5d4-42fc-a486-4628343baf12",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "3e284917-2128-4a08-ae36-1b5c5c2bbb8b",
+                              "id": "4faa0d6f-1f86-4ed2-9a12-89f7d0b9974e",
                               "ord": "a3"
                             }
                           ],
-                          "id": "69b49767-326c-4175-a387-c4a8cd578f81",
+                          "id": "edec2d94-e34e-4a4a-83be-4b8be488926e",
                           "ord": "a1"
                         }
                       ],
-                      "id": "4ee32ab2-08eb-48bb-8f79-015af75642a2",
+                      "id": "4c59aeff-73ae-4211-8e54-b5aeedca51bf",
                       "ord": "a1"
                     },
                     {
@@ -471,11 +471,11 @@
                           "tag": "ul",
                           "class": "flex flex-col gap-2",
                           "children": [],
-                          "id": "5fecc273-2ac2-4832-b04b-f046e78e6f25",
+                          "id": "9a295be3-1277-4c66-8a47-28225084fdb3",
                           "ord": "a0"
                         }
                       ],
-                      "id": "215967ce-fe42-4af2-acb6-1bd23a1a397d",
+                      "id": "a58d9c7f-cae6-4b70-bb7c-60520c4debef",
                       "ord": "a2"
                     },
                     {
@@ -499,23 +499,23 @@
                                   "props": {
                                     "heading": "Legal"
                                   },
-                                  "id": "3def2b19-6e0b-4654-8bb8-4d8274a98606",
+                                  "id": "d1a17bd5-ff24-49f6-9a70-341dbe9ccc7d",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "9c941d1e-5462-4ddb-b6c1-88ac879d433a",
+                              "id": "6cfbab6a-ad9a-4832-a347-b1f8714e90df",
                               "ord": "a0"
                             }
                           ],
-                          "id": "25921abf-9163-4738-8905-2b87dac58ce7",
+                          "id": "fc84c008-35b3-4ac3-ae74-4cad9f60cd69",
                           "ord": "a0"
                         }
                       ],
-                      "id": "d97a9bcd-1556-435f-a947-6f35b30a6b23",
+                      "id": "abb38350-f799-45bb-aba3-360616f7b571",
                       "ord": "a3"
                     }
                   ],
-                  "id": "906b9e8f-97d0-47bd-a58f-6145ed2aafad",
+                  "id": "440ad20a-4b96-487c-89be-55f7ff979836",
                   "ord": "a0"
                 },
                 {
@@ -538,11 +538,11 @@
                             "kind": "value",
                             "ref": "site.identity.name"
                           },
-                          "id": "e1e4559d-7744-44b8-9d36-87a28d56ad35",
+                          "id": "b7e543ed-c72a-4329-979a-ba20e0577f0f",
                           "ord": "a0"
                         }
                       ],
-                      "id": "e63af566-e552-4abd-a426-2aa347750a6a",
+                      "id": "48ebdbae-53f0-4342-b2ff-aac06e55123a",
                       "ord": "a0"
                     },
                     {
@@ -550,23 +550,23 @@
                       "tag": "ul",
                       "class": "flex flex-wrap items-center gap-x-6 gap-y-2",
                       "children": [],
-                      "id": "99df477b-2c4f-4c54-beb5-330d6ce2b178",
+                      "id": "9bfdaada-896b-483b-ac7d-cd30986da629",
                       "ord": "a1"
                     }
                   ],
-                  "id": "d7b77d62-5516-4e3e-8536-8f6cdae58b6c",
+                  "id": "d97ff9d1-9799-4f13-b1d7-254921fee317",
                   "ord": "a1"
                 }
               ],
-              "id": "2e45f283-7c2d-4a99-bce5-1dbc44a18ca1",
+              "id": "e83f7aaf-7ef9-4244-ba78-9b28047019bb",
               "ord": "a0"
             }
           ],
-          "id": "36506a76-3f91-4acc-8be9-ccf22cb040a8",
+          "id": "21dab311-2de2-4a39-9704-594e60d274cb",
           "ord": "a2"
         }
       ],
-      "id": "c8fcfa5c-7302-49c6-9f92-8e1cc973f214"
+      "id": "38f5ca78-fcb1-48bd-97f8-839a0bcb3913"
     }
   },
   "pages": [
@@ -580,7 +580,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "ed5d7224-abde-467d-b8b0-d3bdd6776ead",
+        "id": "2dbd5874-a231-4fe4-ba2f-90492eb4e28a",
         "children": [
           {
             "kind": "element",
@@ -596,14 +596,14 @@
                   "alt": "A happy new teen driver at the wheel with a calm instructor beside them",
                   "loading": "eager"
                 },
-                "id": "3e56d42b-60d0-4457-b5df-ec67e3c28620",
+                "id": "8f701fcb-9aee-4cee-bb41-33dcc21b32d3",
                 "ord": "a0"
               },
               {
                 "kind": "element",
                 "tag": "div",
                 "class": "absolute inset-0 bg-black/50",
-                "id": "8147a592-7b89-4046-9663-6fe51a66b8f5",
+                "id": "7065795f-8422-408b-846a-1b8ba0e38caa",
                 "ord": "a1"
               },
               {
@@ -616,7 +616,7 @@
                     "tag": "h1",
                     "class": "max-w-3xl text-4xl font-bold leading-tight tracking-tight @2xl:text-5xl @3xl:text-6xl",
                     "children": ["Confident behind the wheel, one lesson at a time"],
-                    "id": "94040329-2b8c-4ead-a70c-0cf673a2f4a2",
+                    "id": "df4e4554-c689-4d61-8f38-892b2c6a2139",
                     "ord": "a0"
                   },
                   {
@@ -626,7 +626,7 @@
                     "children": [
                       "A friendly, safety-first driving school for teens and brand-new drivers. Patient instructors, dual-brake cars, and a plan that goes at your pace — not the other way around."
                     ],
-                    "id": "2c413460-0e6d-4cbd-89b5-b8dbcfd7e7b6",
+                    "id": "2279c40e-c9bc-4104-821e-0ab98dda4283",
                     "ord": "a1"
                   },
                   {
@@ -642,7 +642,7 @@
                           "href": "/book"
                         },
                         "children": ["Book a lesson"],
-                        "id": "357f277c-b525-458b-922e-5c17fd001d83",
+                        "id": "1ede290d-26e8-4652-8003-7c3e8d31b5a0",
                         "ord": "a0"
                       },
                       {
@@ -653,19 +653,19 @@
                           "href": "/book"
                         },
                         "children": ["See lessons"],
-                        "id": "1d3c5f84-471f-447d-b691-3240a73eafd3",
+                        "id": "b1f1b835-89c6-45d9-9a91-7ae5941e395e",
                         "ord": "a1"
                       }
                     ],
-                    "id": "88623565-bac6-4637-9d80-6a97e8a42777",
+                    "id": "ec57b1b5-bb67-4441-aaf4-4c1eeb9924a7",
                     "ord": "a2"
                   }
                 ],
-                "id": "3030270b-ae0a-424d-bba0-7a1279531573",
+                "id": "67576f5f-f37b-4673-aa2c-8643e4b44727",
                 "ord": "a2"
               }
             ],
-            "id": "04e6580c-811c-4ac3-b4bf-68307a40f830",
+            "id": "0178348e-be1b-4dc1-83b8-d163992b20b1",
             "ord": "a0"
           },
           {
@@ -693,7 +693,7 @@
                             "tag": "h2",
                             "class": "text-xl font-semibold text-base-content",
                             "children": ["Patient, certified instructors"],
-                            "id": "1f83779f-089d-4e83-81a6-7b1c823b93ef",
+                            "id": "f7f717e4-b860-4824-b617-ee2b12210a4e",
                             "ord": "a0"
                           },
                           {
@@ -703,11 +703,11 @@
                             "children": [
                               "Every instructor is state-certified, background-checked, and genuinely kind about it. Nervous drivers are our specialty — we never rush and never yell."
                             ],
-                            "id": "bd40bb98-9142-4ee9-be57-9760c7941413",
+                            "id": "76a43441-8f74-4536-be18-cbacd6e44a2e",
                             "ord": "a1"
                           }
                         ],
-                        "id": "29a17164-90da-4aa8-a083-990d67ef84fe",
+                        "id": "3c3d5d6a-873b-4b12-a63f-1f76fe69ebf7",
                         "ord": "a0"
                       },
                       {
@@ -720,7 +720,7 @@
                             "tag": "h2",
                             "class": "text-xl font-semibold text-base-content",
                             "children": ["Dual-brake safety cars"],
-                            "id": "691f0cff-a985-4808-ae5a-f2850c7bcce1",
+                            "id": "0f32edf3-170c-4714-b468-27ed6fc43773",
                             "ord": "a0"
                           },
                           {
@@ -730,11 +730,11 @@
                             "children": [
                               "You learn in a car with a second brake on the instructor’s side, so there’s always a backup. It’s the reason first lessons feel a lot less scary."
                             ],
-                            "id": "fff99e5b-bfbd-4f60-b3f5-8d67e7ab7bb3",
+                            "id": "fff33726-d8f5-4582-a776-a302a06ce897",
                             "ord": "a1"
                           }
                         ],
-                        "id": "df1d64b9-f3f6-4c9a-8858-1214b0659099",
+                        "id": "dd17c5f8-a65a-410b-88f0-34f0bb71d250",
                         "ord": "a1"
                       },
                       {
@@ -747,7 +747,7 @@
                             "tag": "h2",
                             "class": "text-xl font-semibold text-base-content",
                             "children": ["After-school & weekend times"],
-                            "id": "ebe8c3ff-6ffb-490a-b9f4-eccebf9e8041",
+                            "id": "d31ff071-57e3-482d-a32f-99b7c3d2e577",
                             "ord": "a0"
                           },
                           {
@@ -757,11 +757,11 @@
                             "children": [
                               "Book around class, practice and family life. Live availability shows exactly when your instructor and a car are both free."
                             ],
-                            "id": "e7459440-748b-486b-bf82-26f1837313d7",
+                            "id": "4d0aa83b-5d0c-4f8d-9b79-374804161232",
                             "ord": "a1"
                           }
                         ],
-                        "id": "48b94982-059f-4169-a931-efa6c56035c5",
+                        "id": "5cfa7518-9df1-4a00-bf92-1f6e5dc01a45",
                         "ord": "a2"
                       },
                       {
@@ -774,7 +774,7 @@
                             "tag": "h2",
                             "class": "text-xl font-semibold text-base-content",
                             "children": ["A high road-test pass rate"],
-                            "id": "107a25b0-9cb4-4d5b-9e4b-c3b9fdafa0e7",
+                            "id": "8498a223-4fde-4ada-994c-ffffb72c05a9",
                             "ord": "a0"
                           },
                           {
@@ -784,23 +784,23 @@
                             "children": [
                               "Most of our students pass the DMV road test on the first try — because we practice on the real routes until it feels routine."
                             ],
-                            "id": "c8a6ef0b-15c3-4618-8506-52ef31c0c56d",
+                            "id": "e1e93fc5-3b01-43d0-bee4-0548ea5dc7e0",
                             "ord": "a1"
                           }
                         ],
-                        "id": "c2eeb1ab-1bf5-49da-acf8-0a8f8323d205",
+                        "id": "d9d071fb-621b-4772-afbf-81f80bc10d51",
                         "ord": "a3"
                       }
                     ],
-                    "id": "e2f55e04-b85b-4224-b74c-9b5487cba291",
+                    "id": "07780238-ed2b-4f9a-a0e2-1ce7592a5b85",
                     "ord": "a0"
                   }
                 ],
-                "id": "9c21e2d8-c531-4861-a059-8e21e08ee240",
+                "id": "8fcc9999-0688-413e-a796-6ffaa094fe09",
                 "ord": "a0"
               }
             ],
-            "id": "33b05033-dbfc-4131-b80b-cd70f4427367",
+            "id": "0289ea70-686a-4cfd-87c0-b112557db2fc",
             "ord": "a1"
           },
           {
@@ -823,7 +823,7 @@
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
                         "children": ["Lessons & packages"],
-                        "id": "a68f8503-c4e8-413e-8f0e-4de702d8d208",
+                        "id": "8b530dab-ed65-43a4-abdb-1d0fc4a84fec",
                         "ord": "a0"
                       },
                       {
@@ -833,11 +833,11 @@
                         "children": [
                           "Start wherever you are — a first drive, the classroom hours, or a final tune-up before the test. Full prices and live availability are on the booking page."
                         ],
-                        "id": "e60fef44-c3f2-4677-a3e2-a26d7d87adf6",
+                        "id": "78322684-d458-488d-b7bc-03147952a56c",
                         "ord": "a1"
                       }
                     ],
-                    "id": "58c43d1e-ee38-44ba-af30-b1b4e1f03f7e",
+                    "id": "5ce6186a-5df6-4182-80f2-7f143ec75eb6",
                     "ord": "a0"
                   },
                   {
@@ -863,7 +863,7 @@
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
                                 "children": ["Intro drive"],
-                                "id": "2bd7722e-46e8-4031-9253-83b0d0966ba0",
+                                "id": "b0645217-01bb-4762-95df-f134f4a30d1f",
                                 "ord": "a0"
                               },
                               {
@@ -871,11 +871,11 @@
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-bold text-base-content",
                                 "children": ["$45"],
-                                "id": "d83d18f5-cdd3-4c9c-85a3-a295b6870cfc",
+                                "id": "9d3b7962-a6ca-4269-ba93-3b87240923da",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "add5badd-ebc1-4482-8de4-6d5ebd1b5a20",
+                            "id": "1f4b9ba8-6f10-49b4-b4bc-bf94bf32d676",
                             "ord": "a0"
                           },
                           {
@@ -883,7 +883,7 @@
                             "tag": "p",
                             "class": "text-sm font-medium uppercase tracking-wide text-secondary",
                             "children": ["45 min"],
-                            "id": "08075000-e3c5-43ab-a05a-f3ddcfbcce33",
+                            "id": "e95340a0-3097-4aa6-907d-271b878280a6",
                             "ord": "a1"
                           },
                           {
@@ -891,11 +891,11 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": ["A gentle first time behind the wheel, at your pace."],
-                            "id": "bce8e567-087a-4906-afe8-79e00c12fb04",
+                            "id": "5891988a-c721-48ce-bde0-12b0f71d1fc6",
                             "ord": "a2"
                           }
                         ],
-                        "id": "d54d14bb-3565-4c8f-a914-4362890f4d2d",
+                        "id": "a2911a0e-e64f-464a-b4ac-7b0a555bc469",
                         "ord": "a0"
                       },
                       {
@@ -916,7 +916,7 @@
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
                                 "children": ["Behind-the-wheel lesson"],
-                                "id": "0c04a1af-8dce-45d4-91b1-e4722eba70b9",
+                                "id": "e1613ecc-c905-407c-84b2-ab0ef67c078f",
                                 "ord": "a0"
                               },
                               {
@@ -924,11 +924,11 @@
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-bold text-base-content",
                                 "children": ["$90"],
-                                "id": "ebde3c94-56fb-49cc-8bec-e01801d0257d",
+                                "id": "d3fe33e3-0405-466d-84e6-a2fa96cdbb2d",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "103b3b58-f9e8-486d-bff1-f60849323289",
+                            "id": "1dff40d8-b4d7-436f-9e95-38461210ce58",
                             "ord": "a0"
                           },
                           {
@@ -936,7 +936,7 @@
                             "tag": "p",
                             "class": "text-sm font-medium uppercase tracking-wide text-secondary",
                             "children": ["1 hr 30 min"],
-                            "id": "f09d7dc2-7680-4e00-808d-5a33c64c61d5",
+                            "id": "9370db81-8564-492b-b346-504914c10461",
                             "ord": "a1"
                           },
                           {
@@ -944,11 +944,11 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": ["A full one-on-one lesson on real roads."],
-                            "id": "729cb237-837d-425e-8303-6d46be8ab04d",
+                            "id": "2c1cdf9e-a1a8-4716-8977-b3402c66d02b",
                             "ord": "a2"
                           }
                         ],
-                        "id": "2093375a-e0bc-4aab-9f3f-f190cc6cefe4",
+                        "id": "99d1e6a3-1be8-46a3-af5f-c49bdbde363c",
                         "ord": "a1"
                       },
                       {
@@ -969,7 +969,7 @@
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
                                 "children": ["Driver’s-ed classroom session"],
-                                "id": "c142332f-a825-404a-a41a-fb3c61993cf6",
+                                "id": "be723097-713b-4bde-9987-6147c5e909fa",
                                 "ord": "a0"
                               },
                               {
@@ -977,11 +977,11 @@
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-bold text-base-content",
                                 "children": ["$75"],
-                                "id": "9df43225-836f-4485-a4ef-b13d08fbca34",
+                                "id": "391f95b9-167d-4799-8c27-a2808dc5e239",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "fbfc0542-31d4-4686-875c-7a2e8ac7455a",
+                            "id": "f72c569a-aeb8-4003-a558-e2cb176ae9b0",
                             "ord": "a0"
                           },
                           {
@@ -989,7 +989,7 @@
                             "tag": "p",
                             "class": "text-sm font-medium uppercase tracking-wide text-secondary",
                             "children": ["2 hr"],
-                            "id": "a2d4c67c-db29-4d83-a636-6bffb96e8ccb",
+                            "id": "f13bb6a5-3191-4626-b01c-27c172324220",
                             "ord": "a1"
                           },
                           {
@@ -997,11 +997,11 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": ["Signs, rules and safe habits, in plain language."],
-                            "id": "6b258734-cb98-414c-9883-428e584f89dd",
+                            "id": "e4710395-bb37-4daf-9f68-6646a15a493c",
                             "ord": "a2"
                           }
                         ],
-                        "id": "8db2dd02-97ae-4f52-8891-27099f3ec200",
+                        "id": "95baf233-7782-40f4-bbbf-77ca91f9b832",
                         "ord": "a2"
                       },
                       {
@@ -1022,7 +1022,7 @@
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
                                 "children": ["Road-test prep"],
-                                "id": "e0483fa0-c76d-4380-be8c-b045c341a898",
+                                "id": "462e7561-0c9d-4cd6-b923-fe74c7944dbb",
                                 "ord": "a0"
                               },
                               {
@@ -1030,11 +1030,11 @@
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-bold text-base-content",
                                 "children": ["$95"],
-                                "id": "c3593868-4935-44f2-adc7-a02506ce2a6a",
+                                "id": "fa23ea7d-a886-4d8c-b257-d660cc76e8f1",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "b075819a-3030-4c3d-a4cb-63f55abfcedd",
+                            "id": "23a14d13-16e2-4317-9a1b-371d5da73fd7",
                             "ord": "a0"
                           },
                           {
@@ -1042,7 +1042,7 @@
                             "tag": "p",
                             "class": "text-sm font-medium uppercase tracking-wide text-secondary",
                             "children": ["1 hr 30 min"],
-                            "id": "da680f3f-af6b-496f-aeca-5574e0fbc07b",
+                            "id": "0946cdbf-9a9f-4f18-8df1-66593d6da99c",
                             "ord": "a1"
                           },
                           {
@@ -1050,15 +1050,15 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": ["A dress-rehearsal on the actual test route."],
-                            "id": "5db59073-df81-4727-826d-4ae61ee26c9d",
+                            "id": "6d417cfc-963f-4643-a032-e0e83380ef1b",
                             "ord": "a2"
                           }
                         ],
-                        "id": "53c50a2a-ec0b-4f62-84ab-46e66467d083",
+                        "id": "afd30b42-ce6c-45a0-9f98-b59a37c7da99",
                         "ord": "a3"
                       }
                     ],
-                    "id": "caf1ca72-488c-461f-b1aa-d6e1538eb417",
+                    "id": "178c2077-16ce-4abc-aa25-8e8b34c306fd",
                     "ord": "a1"
                   },
                   {
@@ -1074,19 +1074,19 @@
                           "href": "/book"
                         },
                         "children": ["See everything & book"],
-                        "id": "df081435-3cb0-4e3a-9ee8-12d390e38331",
+                        "id": "03067dce-ebe2-4212-aa23-a37a6b96d77e",
                         "ord": "a0"
                       }
                     ],
-                    "id": "d65c965b-5f12-4551-90f8-25e5d54acc85",
+                    "id": "94567a55-0555-4ef9-8cb8-cf60447f579e",
                     "ord": "a2"
                   }
                 ],
-                "id": "d640a362-4a9e-41e2-81be-81a6e7b0752c",
+                "id": "4944dd7d-e4db-467c-8a6e-5d1fc91ca3d8",
                 "ord": "a0"
               }
             ],
-            "id": "de54236d-e7e0-467b-ab7a-677e9ecbf0ed",
+            "id": "312a9428-7a3d-437e-b113-1bb2c4c7b0fa",
             "ord": "a2"
           },
           {
@@ -1108,7 +1108,7 @@
                       "alt": "An instructor coaching a learner through a turn in a dual-brake training car",
                       "loading": "lazy"
                     },
-                    "id": "d2b1edbf-dc2f-4cdc-8d96-a8e0f18f2d96",
+                    "id": "c7800784-7e71-4c20-a6ef-e374b82d2d07",
                     "ord": "a0"
                   },
                   {
@@ -1121,7 +1121,7 @@
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
                         "children": ["We teach confidence, not just parallel parking"],
-                        "id": "883d524f-3e0c-4068-9b56-0d9465e3cb92",
+                        "id": "5cb7993f-5592-4259-96e4-82769191ba89",
                         "ord": "a0"
                       },
                       {
@@ -1131,7 +1131,7 @@
                         "children": [
                           "Learning to drive is nerve-wracking — for teens and parents both. So we start slow, explain the why behind every rule, and celebrate the small wins until the big stuff feels easy."
                         ],
-                        "id": "012192a1-b706-419a-986c-feda8322839e",
+                        "id": "8681d930-c507-4a7f-b3d7-242e612d3f14",
                         "ord": "a1"
                       },
                       {
@@ -1141,7 +1141,7 @@
                         "children": [
                           "By the time you take your test, driving isn’t a thing you survive. It’s a thing you’re good at. That’s the whole goal: a driver who’s calm, safe and actually enjoys the road."
                         ],
-                        "id": "726bb65f-3022-4d73-8e27-492cb1937104",
+                        "id": "c12e99fc-0872-4f18-ac55-dba98948b914",
                         "ord": "a2"
                       },
                       {
@@ -1157,23 +1157,23 @@
                               "href": "/book"
                             },
                             "children": ["Book a lesson"],
-                            "id": "25ba8536-06c1-408a-800a-45ddb30bc36c",
+                            "id": "a5cad90f-af90-4301-8648-8546dba9362e",
                             "ord": "a0"
                           }
                         ],
-                        "id": "baeaed90-e244-4f8c-b8ee-139a6213296a",
+                        "id": "a38ff292-5ae0-44fb-ae35-bb461b490935",
                         "ord": "a3"
                       }
                     ],
-                    "id": "17c9c491-ae9d-42a5-8967-c860cb828b9d",
+                    "id": "66df439e-7cf5-43c9-a78c-af46625c7100",
                     "ord": "a1"
                   }
                 ],
-                "id": "015947b5-90f0-4663-b407-f94eeb078c2c",
+                "id": "86390202-19f8-40dc-879c-8bd528cd4e39",
                 "ord": "a0"
               }
             ],
-            "id": "8b783b8c-7f42-43f0-aff1-86286e43bcdb",
+            "id": "e5f80d35-1eae-4b92-8379-5bd77e4cf11f",
             "ord": "a3"
           },
           {
@@ -1196,7 +1196,7 @@
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
                         "children": ["Meet your instructors"],
-                        "id": "4b0133fb-f739-464c-b8df-e558e66df32a",
+                        "id": "c8a77ad6-77f5-462f-a746-00ae7493d36e",
                         "ord": "a0"
                       },
                       {
@@ -1206,11 +1206,11 @@
                         "children": [
                           "Book by name — you’ll build a rhythm with the same person every lesson."
                         ],
-                        "id": "b4fc3f14-06ee-4e60-a72b-37fa70b24e6d",
+                        "id": "9e9d39f1-4988-427a-ba2d-d930d16acc39",
                         "ord": "a1"
                       }
                     ],
-                    "id": "05a7fdff-75d7-4890-b251-fa454ce74c4b",
+                    "id": "62de845b-1f91-4727-bdcf-a528540fea43",
                     "ord": "a0"
                   },
                   {
@@ -1232,7 +1232,7 @@
                               "alt": "Maria Alvarez, behind-the-wheel instructor",
                               "loading": "lazy"
                             },
-                            "id": "a3f999f6-9836-418c-b4fb-d09cda38b96b",
+                            "id": "4ce907dc-7000-4def-8105-8114dabffd4c",
                             "ord": "a0"
                           },
                           {
@@ -1245,7 +1245,7 @@
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
                                 "children": ["Maria Alvarez"],
-                                "id": "a785601c-7e5b-4ae8-9dba-d7f9ba2eba85",
+                                "id": "86a9821e-5666-431c-8a69-e91db193af76",
                                 "ord": "a0"
                               },
                               {
@@ -1253,7 +1253,7 @@
                                 "tag": "p",
                                 "class": "text-sm font-medium uppercase tracking-wide text-secondary",
                                 "children": ["Behind-the-wheel instructor"],
-                                "id": "708286d4-1e9b-45a3-a062-af73f080d386",
+                                "id": "f9b0fbef-a247-45c9-a6cf-349fa16f75bc",
                                 "ord": "a1"
                               },
                               {
@@ -1263,15 +1263,15 @@
                                 "children": [
                                   "Ten years teaching first-time teen drivers. Endlessly patient with the nervous ones."
                                 ],
-                                "id": "0a43a08e-f08c-47bb-8be5-728746197d53",
+                                "id": "bd4b49f7-a6f3-417a-a821-d64aa9d4e618",
                                 "ord": "a2"
                               }
                             ],
-                            "id": "74c61587-7e56-4d30-8abb-78efa3b3a7ef",
+                            "id": "65e2fb4b-17a5-443f-8c08-25b48eaa764f",
                             "ord": "a1"
                           }
                         ],
-                        "id": "49d93487-9062-4886-af5b-c00ff87e8b19",
+                        "id": "b20d73ee-3504-467f-a3ac-508d479f0374",
                         "ord": "a0"
                       },
                       {
@@ -1288,7 +1288,7 @@
                               "alt": "James Park, driver’s-ed instructor",
                               "loading": "lazy"
                             },
-                            "id": "5b6e7799-aa4d-40ea-a499-a1c6519f802a",
+                            "id": "30a8baae-83c3-4fdb-84f8-fd0646901ffc",
                             "ord": "a0"
                           },
                           {
@@ -1301,7 +1301,7 @@
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
                                 "children": ["James Park"],
-                                "id": "d9ee699e-93de-4f45-ab43-9e1bb1ead74c",
+                                "id": "b0eea5c5-7a28-4974-9efa-48e0d4299912",
                                 "ord": "a0"
                               },
                               {
@@ -1309,7 +1309,7 @@
                                 "tag": "p",
                                 "class": "text-sm font-medium uppercase tracking-wide text-secondary",
                                 "children": ["Driver’s-ed instructor"],
-                                "id": "2a17a6c2-a793-4cb1-9d1d-9add24e7d2ca",
+                                "id": "f8aaf5b6-ca01-4ec4-b23a-dad3e635f4ac",
                                 "ord": "a1"
                               },
                               {
@@ -1319,15 +1319,15 @@
                                 "children": [
                                   "Makes the classroom hours and permit rules genuinely make sense — no boring lectures."
                                 ],
-                                "id": "fd6ddb72-8289-4b9e-930e-be0806dbf38c",
+                                "id": "3e227148-d3ff-4653-8e84-d7c0a9a20bd1",
                                 "ord": "a2"
                               }
                             ],
-                            "id": "751d7af4-e652-42c0-9821-7ad46e101b38",
+                            "id": "c1573858-1dfb-47f6-9f7e-e4468185cf90",
                             "ord": "a1"
                           }
                         ],
-                        "id": "d6dbde2e-4d7f-48e9-9408-74eb32f96d15",
+                        "id": "67d6acf4-87c9-425b-9a60-61681352e2fe",
                         "ord": "a1"
                       },
                       {
@@ -1344,7 +1344,7 @@
                               "alt": "Tanya Brooks, road-test prep instructor",
                               "loading": "lazy"
                             },
-                            "id": "3230bd39-2872-4d16-b58d-3eb9aa6e91c2",
+                            "id": "a849b08e-9930-436a-88f8-61c3c4ef8e5e",
                             "ord": "a0"
                           },
                           {
@@ -1357,7 +1357,7 @@
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
                                 "children": ["Tanya Brooks"],
-                                "id": "1d615be4-b4a8-47c6-a271-af7e2e6ba22a",
+                                "id": "a99e86a2-f905-4f5f-b809-e0addbf709db",
                                 "ord": "a0"
                               },
                               {
@@ -1365,7 +1365,7 @@
                                 "tag": "p",
                                 "class": "text-sm font-medium uppercase tracking-wide text-secondary",
                                 "children": ["Road-test prep instructor"],
-                                "id": "a37cd777-55a6-4b18-9d1e-0a8ed0273ffa",
+                                "id": "080fb7de-82a9-425d-a513-20400d4278f1",
                                 "ord": "a1"
                               },
                               {
@@ -1375,27 +1375,27 @@
                                 "children": [
                                   "Knows every local test route by heart and gets students test-day ready and calm."
                                 ],
-                                "id": "fc004c70-980f-4fc2-bd74-0d7da7cd07c3",
+                                "id": "dcfe0538-67a5-4517-b649-2fc05d3b347c",
                                 "ord": "a2"
                               }
                             ],
-                            "id": "71d37397-f092-4807-9236-2be64ef21e26",
+                            "id": "3572509e-f319-4b00-b42d-c42388ad2ab4",
                             "ord": "a1"
                           }
                         ],
-                        "id": "f7227fe6-4c20-4ccc-bcbe-0f34d512b20c",
+                        "id": "ca1c5e27-5ad9-428b-8171-93ee3282ff73",
                         "ord": "a2"
                       }
                     ],
-                    "id": "5099d7fb-90e8-4289-893d-c5e20fda81d1",
+                    "id": "cbaa6821-f728-41dd-9bf5-e39c05f58c9a",
                     "ord": "a1"
                   }
                 ],
-                "id": "c7f27b36-7b30-4c21-a881-f790a8a2f522",
+                "id": "2df17a14-45e5-4148-af6a-ec0cbd54ed0e",
                 "ord": "a0"
               }
             ],
-            "id": "63780d5e-e13b-40fd-87ec-015020e79ab4",
+            "id": "06b22834-b6d4-4398-87f8-4514d2ff1569",
             "ord": "a4"
           },
           {
@@ -1415,7 +1415,7 @@
                     "children": [
                       "“My daughter was terrified to even sit in the driver’s seat. Six lessons later she passed her road test on the first try — and actually likes driving now. I can’t thank RoadReady enough.”"
                     ],
-                    "id": "182035c2-6ac4-447a-b6be-311f18090b27",
+                    "id": "cd175fd1-0ad6-47db-8c78-c90c9fb6e913",
                     "ord": "a0"
                   },
                   {
@@ -1423,15 +1423,15 @@
                     "tag": "p",
                     "class": "text-sm font-semibold uppercase tracking-wide opacity-80",
                     "children": ["Denise M., parent of a new driver"],
-                    "id": "97c63437-c184-47f2-9c0f-6ce86d65a9fd",
+                    "id": "d40f4749-81dc-41a2-bf06-3d559cd05c29",
                     "ord": "a1"
                   }
                 ],
-                "id": "7b9e270d-5c82-4d6f-9d8a-aef7c915768b",
+                "id": "8f346ddb-f27d-43ff-8c5f-f4f899d364dd",
                 "ord": "a0"
               }
             ],
-            "id": "809bb55f-5dd2-4757-8206-07009fa6c3a3",
+            "id": "75cdc7a1-f4fe-4ac9-83df-b97b14f63f64",
             "ord": "a5"
           },
           {
@@ -1449,7 +1449,7 @@
                     "tag": "h2",
                     "class": "text-3xl font-bold tracking-tight @3xl:text-4xl",
                     "children": ["Ready to get started?"],
-                    "id": "a47ff9c3-a516-45ff-b460-4f3bf23c78a0",
+                    "id": "53438779-f1a3-4bd9-abed-c205fe780210",
                     "ord": "a0"
                   },
                   {
@@ -1459,7 +1459,7 @@
                     "children": [
                       "Pick a lesson, choose your instructor and see live times. Not sure where to begin? The free consultation is a great first step."
                     ],
-                    "id": "7416b728-2dc2-4408-92fa-a36ea31db064",
+                    "id": "3b94fbd0-90bd-4865-9f08-d4d9af544fb8",
                     "ord": "a1"
                   },
                   {
@@ -1470,15 +1470,15 @@
                       "href": "/book"
                     },
                     "children": ["Book a lesson"],
-                    "id": "128b3dc3-f824-4bdd-9586-769d1ad85fd5",
+                    "id": "4789980d-f752-45d1-8a11-89a69d5b6b4e",
                     "ord": "a2"
                   }
                 ],
-                "id": "9933125f-1cb6-464a-802d-4a0c6334b513",
+                "id": "e8a5b88c-b44f-459f-9b7f-9e37822d2dfe",
                 "ord": "a0"
               }
             ],
-            "id": "60f8329f-300e-451a-9e56-8e81583eada5",
+            "id": "cbccb3f5-04a2-43c4-bf14-74fe63e4e3cd",
             "ord": "a6"
           }
         ]
@@ -1495,7 +1495,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "5eb4abb8-b18e-4407-860b-430966284a27",
+        "id": "7d4c2ae7-6ed2-460c-ae0e-f65161df5adb",
         "children": [
           {
             "kind": "element",
@@ -1511,14 +1511,14 @@
                   "alt": "An instructor coaching a learner through a turn in a dual-brake training car",
                   "loading": "eager"
                 },
-                "id": "0b90f779-5e70-40f4-b77e-a87611b377d6",
+                "id": "ae63e821-7528-4e69-8923-af6ada740433",
                 "ord": "a0"
               },
               {
                 "kind": "element",
                 "tag": "div",
                 "class": "absolute inset-0 bg-black/65",
-                "id": "e4f143ac-aff9-43cb-9ed6-0e055ddc3003",
+                "id": "39ac8b20-89e2-41cc-955f-1de6c8fee5a3",
                 "ord": "a1"
               },
               {
@@ -1531,7 +1531,7 @@
                     "tag": "h1",
                     "class": "max-w-3xl text-4xl font-bold leading-tight tracking-tight @2xl:text-5xl @3xl:text-6xl",
                     "children": ["Book a lesson"],
-                    "id": "7eda71ad-63a8-4ce5-be7d-1a097719c818",
+                    "id": "b42fe820-6d21-47da-9ce8-56599c72c446",
                     "ord": "a0"
                   },
                   {
@@ -1541,7 +1541,7 @@
                     "children": [
                       "Choose a lesson to see the price and live availability, then pick your instructor and time. Behind-the-wheel lessons include a dual-brake training car."
                     ],
-                    "id": "d5dd8a74-6d8d-4c7a-bf15-1d18efe35741",
+                    "id": "05250f1f-24eb-4bd3-8a32-67978575c2a1",
                     "ord": "a1"
                   },
                   {
@@ -1557,19 +1557,19 @@
                           "href": "/book"
                         },
                         "children": ["See lessons below"],
-                        "id": "519f74b5-6eb6-46a7-997a-0d5c5a93cbfc",
+                        "id": "768cf944-47f8-4cd0-bf77-b81250bc8233",
                         "ord": "a0"
                       }
                     ],
-                    "id": "e69b1a98-5e11-4805-8067-fa20bfb436ce",
+                    "id": "2c63ffbd-8391-4433-9e32-e49f999580f8",
                     "ord": "a2"
                   }
                 ],
-                "id": "972d0c84-8cbd-4c96-960e-bcf5e259a92a",
+                "id": "320a7edd-6d56-4f96-8a50-aa690bb36196",
                 "ord": "a2"
               }
             ],
-            "id": "d3b24bfd-181d-4698-a5e9-c5ab719dd5cf",
+            "id": "4ade812a-cc56-4f20-bf28-423b8d3ba406",
             "ord": "a0"
           },
           {
@@ -1577,8 +1577,136 @@
             "component": "scheduling.services",
             "class": "mx-auto w-full max-w-5xl px-6 py-8",
             "locked": "host",
-            "id": "6a393d0a-1fc5-4e4b-958b-eba043a96e9a",
+            "id": "eb7e0b49-def5-4b27-8984-b403f86bee18",
             "ord": "a1"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-8",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["Good to know"],
+                        "id": "4ba61a46-4458-43c0-85f9-8a53e8e8082a",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "What happens once you pick a time — and how to change it if something comes up."
+                        ],
+                        "id": "20956865-a831-47bd-81d3-3e90e8fbb43f",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "67458f2d-d575-4e09-9e4f-096a81dd3901",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-6 @3xl:grid-cols-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-3 rounded-box border border-base-300 bg-base-100 p-6",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Standard booking"],
+                            "id": "2e6ec3d0-6c3e-4e2e-beb6-97991bc4efb4",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Life happens — just give us 24 hours’ notice to change or cancel and there’s no charge. We’ll text a reminder the day before and two hours ahead so nobody forgets."
+                            ],
+                            "id": "d91d7738-2362-4270-a6b2-138c6cc14339",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base font-medium text-base-content",
+                            "children": [
+                              "No deposit to book. Change or cancel free up to 24 hours before."
+                            ],
+                            "id": "8f126b62-58a1-4870-ab3f-0ad021e207e5",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "43698ba4-bcfa-4430-b3e2-b19d231d8859",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-3 rounded-box border border-base-300 bg-base-100 p-6",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["No-show policy"],
+                            "id": "740404dc-1fee-452a-818e-6c346f8f8f33",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Behind-the-wheel time is one-on-one, so these lessons hold a $20 deposit that comes off your total. Cancel or reschedule with 24 hours’ notice and it carries over; a no-show forfeits the hold."
+                            ],
+                            "id": "01fef9f1-ab2e-427d-a53c-7fdb26c751b8",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base font-medium text-base-content",
+                            "children": [
+                              "A $20 deposit holds your place. Change or cancel free up to 24 hours before."
+                            ],
+                            "id": "f8588126-455c-46d6-b3cf-b0cf077c6b41",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "cbb3207b-ab64-4b8c-8f33-b8808185f560",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "9aee23c5-2c86-4ec4-a1cc-713a727855fa",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "639ba308-cd86-4363-83fd-9ec03b1947a2",
+                "ord": "a0"
+              }
+            ],
+            "id": "af4453df-acc8-4d94-a508-105630492834",
+            "ord": "a2"
           }
         ]
       }
@@ -1594,7 +1722,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "d778c1bf-e00f-4359-b8fa-bea6f385f166",
+        "id": "dcc09231-6c2a-4280-8210-02144ac2c4e6",
         "children": [
           {
             "kind": "element",
@@ -1615,7 +1743,7 @@
                       "alt": "A happy new teen driver at the wheel with a calm instructor beside them",
                       "loading": "lazy"
                     },
-                    "id": "90bb13d9-bc4c-4a33-90e2-0fcc27b7ced7",
+                    "id": "500b83af-9420-4351-896a-25027375cfe4",
                     "ord": "a0"
                   },
                   {
@@ -1625,10 +1753,10 @@
                     "children": [
                       {
                         "kind": "element",
-                        "tag": "h2",
+                        "tag": "h1",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
                         "children": ["About RoadReady Driving School"],
-                        "id": "e5ce1ffe-0be6-4133-8dfd-7a8c50fa3618",
+                        "id": "c0dcfaa9-9fa0-4fdf-b484-6f8a0ec126de",
                         "ord": "a0"
                       },
                       {
@@ -1638,7 +1766,7 @@
                         "children": [
                           "We started RoadReady because learning to drive shouldn’t feel like a test you’re failing before it begins. New drivers deserve patience, a calm car, and someone in the passenger seat who’s genuinely on their side."
                         ],
-                        "id": "e00bff39-e517-4fc4-b1f7-2f0bf925f603",
+                        "id": "8543b8ab-a5d9-49eb-8b71-64e3b0ddfb61",
                         "ord": "a1"
                       },
                       {
@@ -1648,7 +1776,7 @@
                         "children": [
                           "So that’s what we built: certified instructors, dual-brake safety cars, and a plan that meets each teen exactly where they are — from a white-knuckle first drive to a confident, licensed driver."
                         ],
-                        "id": "357cdd08-f53a-40e2-b0ab-ab76b7c38df9",
+                        "id": "0090b3ce-88b9-4860-8c0b-ad3cdd0c5fce",
                         "ord": "a2"
                       },
                       {
@@ -1664,23 +1792,23 @@
                               "href": "/book"
                             },
                             "children": ["Book a lesson"],
-                            "id": "c14cbe8d-d726-484f-950b-c4e11b6f0b55",
+                            "id": "79b24b31-148b-4409-84e0-fcafeb5d55e8",
                             "ord": "a0"
                           }
                         ],
-                        "id": "0fc37133-42fd-433c-a1aa-2a70ddc1e6ab",
+                        "id": "172cd0bc-9fde-4f87-879f-41fbbb0fe808",
                         "ord": "a3"
                       }
                     ],
-                    "id": "9de795e2-9b81-4751-b696-52e2584f16ad",
+                    "id": "13fc027b-09ea-4715-9273-b22a46595332",
                     "ord": "a1"
                   }
                 ],
-                "id": "8137d62f-1263-43ae-ae0c-d41dd1471229",
+                "id": "64675153-7631-45a5-ad0a-3b38da4d2879",
                 "ord": "a0"
               }
             ],
-            "id": "1e7717c4-cbf8-48d0-9657-e0682807e58c",
+            "id": "c0510b88-f782-468c-b615-4d9a1436634a",
             "ord": "a0"
           },
           {
@@ -1698,7 +1826,7 @@
                     "tag": "h2",
                     "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
                     "children": ["How we keep it safe and encouraging"],
-                    "id": "8bdfa06a-cdbb-4be8-9d3d-81eea95d49cf",
+                    "id": "8618d04a-43cc-495e-9aa4-8378e42909ea",
                     "ord": "a0"
                   },
                   {
@@ -1716,7 +1844,7 @@
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
                             "children": ["Safety comes first, always"],
-                            "id": "cb64d0c4-06e0-40d4-9d4a-7a5ab39654b9",
+                            "id": "f7fa3fe5-e6a1-4d94-a733-2f863dc38ba9",
                             "ord": "a0"
                           },
                           {
@@ -1726,11 +1854,11 @@
                             "children": [
                               "Dual-brake cars, quiet practice routes to start, and instructors trained to keep a lesson calm — because a relaxed driver is a safe driver."
                             ],
-                            "id": "b6ae716d-645f-4f08-9e25-f9cd94ed9d6c",
+                            "id": "56342d84-d8ad-4f30-a9cd-b99d8793b7cf",
                             "ord": "a1"
                           }
                         ],
-                        "id": "fb148a0b-c4f9-45bf-83c4-dd07fe1d1970",
+                        "id": "41a81e2b-17ca-4e80-9c6d-2911f83c6147",
                         "ord": "a0"
                       },
                       {
@@ -1743,7 +1871,7 @@
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
                             "children": ["A real plan, not random hours"],
-                            "id": "1b490aeb-cd3c-4b21-a0b7-b3e466c4c6ac",
+                            "id": "02adb3f5-6208-409a-b96b-db2972152869",
                             "ord": "a0"
                           },
                           {
@@ -1753,11 +1881,11 @@
                             "children": [
                               "Every student gets a path: what to practice, what comes next, and exactly what the DMV will ask on test day."
                             ],
-                            "id": "eb2e5b71-b3c2-46f5-acb0-7e1f607a46c8",
+                            "id": "aece6b2e-c5a4-4d55-b870-0377ffd9c4c7",
                             "ord": "a1"
                           }
                         ],
-                        "id": "c86e24f1-0e12-4be8-a217-ad88bcc0fbb0",
+                        "id": "fa646dd4-722e-44a0-b267-d49a8ca0d102",
                         "ord": "a1"
                       },
                       {
@@ -1770,7 +1898,7 @@
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
                             "children": ["Parents in the loop"],
-                            "id": "80d2545a-d80c-4741-a480-107c6ff19233",
+                            "id": "5c7aa239-0155-4443-a49d-8d07e0642237",
                             "ord": "a0"
                           },
                           {
@@ -1780,23 +1908,23 @@
                             "children": [
                               "We’ll tell you honestly how it’s going and what to practice together between lessons — no surprises, no upselling."
                             ],
-                            "id": "554cfb23-3503-4ce9-8c58-896951b3e89f",
+                            "id": "1ded627d-1ca3-41bc-8bee-bec8f9126c2b",
                             "ord": "a1"
                           }
                         ],
-                        "id": "b9b0905a-8320-4ac5-8a01-57f564ae6914",
+                        "id": "d41093a8-8776-4133-9367-659ead298b7f",
                         "ord": "a2"
                       }
                     ],
-                    "id": "23db9453-3d5f-4c8b-bed1-c38d5a57a616",
+                    "id": "4a4b759d-9655-4b63-b696-118a482e0cff",
                     "ord": "a1"
                   }
                 ],
-                "id": "3a6041f1-cd3c-4e45-880e-02e8368e7bbb",
+                "id": "0ccc84e5-9b63-4eec-bd47-15e470efbb87",
                 "ord": "a0"
               }
             ],
-            "id": "20d74a54-34af-4e2e-b544-6bfad0cf8730",
+            "id": "ceffaabe-acf3-48fc-b792-69d7476e7f7e",
             "ord": "a1"
           }
         ]
@@ -1813,8 +1941,294 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "bff9f4e9-20fa-4407-be27-38c8bfeb1ff5",
+        "id": "a0caf542-d11f-4acc-b661-078be3e47553",
         "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-8",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h1",
+                        "class": "text-4xl font-bold tracking-tight text-base-content @3xl:text-5xl",
+                        "children": ["Get in touch"],
+                        "id": "a695c44f-9dab-49ea-8537-d86d9e2bdf44",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Questions before you book? Send a note and RoadReady Driving School will get back to you — usually the same day."
+                        ],
+                        "id": "1cad365f-9732-4040-b970-728ab603b221",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "76a76929-3d2d-4c3b-b411-1d28468954d9",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-1",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "span",
+                        "class": "text-base font-medium text-base-content",
+                        "children": ["Call us"],
+                        "id": "d3e56012-ee09-48a4-9fcf-db4e9b80a4bc",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "text-lg font-semibold text-base-content underline underline-offset-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "children": ["(555) 123-4567"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "site.identity.phone"
+                            },
+                            "id": "bf8fa8ac-19ef-497e-8222-3935e122d475",
+                            "ord": "a0"
+                          }
+                        ],
+                        "data": {
+                          "kind": "value",
+                          "ref": "site.identity.phoneHref",
+                          "attr": "href"
+                        },
+                        "id": "60a4f2c0-f010-442c-9ff5-60d2297adf35",
+                        "ord": "a1"
+                      }
+                    ],
+                    "data": {
+                      "kind": "visible",
+                      "ref": "site.identity.phone"
+                    },
+                    "id": "61d245bd-62ef-4996-bbb9-22f4156c06ee",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-1",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "span",
+                        "class": "text-base font-medium text-base-content",
+                        "children": ["Email us"],
+                        "id": "78effbf3-0492-4d5b-9f90-77b743fe34bb",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "text-lg font-semibold text-base-content underline underline-offset-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "children": ["hello@yourbusiness.com"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "site.identity.email"
+                            },
+                            "id": "7e429d4e-f1b8-4a05-82f0-68de631b886c",
+                            "ord": "a0"
+                          }
+                        ],
+                        "data": {
+                          "kind": "value",
+                          "ref": "site.identity.emailHref",
+                          "attr": "href"
+                        },
+                        "id": "9edd4c50-7b15-48ce-a4fc-d5b1374df2a0",
+                        "ord": "a1"
+                      }
+                    ],
+                    "data": {
+                      "kind": "visible",
+                      "ref": "site.identity.email"
+                    },
+                    "id": "895063e3-9276-45f5-b29c-90afd8da818b",
+                    "ord": "a2"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "form",
+                    "class": "flex w-full max-w-xl flex-col gap-5",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "label",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-base font-medium text-base-content",
+                            "children": ["Your name"],
+                            "id": "6b4ba66f-b94e-46fe-af65-d61dee36829a",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "input",
+                            "class": "input input-bordered w-full",
+                            "attrs": {
+                              "type": "text",
+                              "name": "name",
+                              "required": true
+                            },
+                            "id": "360f5e99-78ce-443a-98d5-0d752f5835d3",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "0f7e326c-8e37-4b57-bf57-867b0bc394cc",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "label",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-base font-medium text-base-content",
+                            "children": ["Email address"],
+                            "id": "d9ee40bf-7208-46ed-8993-4a1e648f7f2d",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "input",
+                            "class": "input input-bordered w-full",
+                            "attrs": {
+                              "type": "email",
+                              "name": "email",
+                              "required": true
+                            },
+                            "id": "1953ebee-6084-4cb4-898d-8f257213a495",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "b0e9d681-078a-4b90-95d0-d1784254f52b",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "label",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-base font-medium text-base-content",
+                            "children": ["Phone number"],
+                            "id": "e082ba20-99d5-4d0f-b58d-adacc3008014",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "input",
+                            "class": "input input-bordered w-full",
+                            "attrs": {
+                              "type": "tel",
+                              "name": "phone"
+                            },
+                            "id": "675c487b-0504-4b4f-b7b3-f8a617753c92",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "5a004936-5a97-48db-8564-8c45cef2d4b4",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "label",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-base font-medium text-base-content",
+                            "children": ["How can we help?"],
+                            "id": "e053a034-8a68-4afe-9a32-16f51218e1c6",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "textarea",
+                            "class": "textarea textarea-bordered min-h-32 w-full",
+                            "attrs": {
+                              "name": "message"
+                            },
+                            "id": "5a64dfcf-216d-4c01-a2f3-10a679e4d478",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "a8b005e0-6f2f-4a9d-9765-c16b572730fa",
+                        "ord": "a3"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-wrap items-center gap-3",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "button",
+                            "class": "btn btn-primary btn-lg",
+                            "attrs": {
+                              "type": "submit"
+                            },
+                            "children": ["Send my request"],
+                            "id": "ca819d5f-4bcb-4f1b-a6e8-1e55147728da",
+                            "ord": "a0"
+                          }
+                        ],
+                        "id": "347d5391-f334-4966-acb8-491d08075bd1",
+                        "ord": "a4"
+                      }
+                    ],
+                    "behavior": {
+                      "type": "form"
+                    },
+                    "data": {
+                      "kind": "action",
+                      "ref": "submit"
+                    },
+                    "id": "8e85815d-1b3d-410d-8b62-b891df8ce1dc",
+                    "ord": "a3"
+                  }
+                ],
+                "id": "d149170d-f744-49b0-83c2-f7de50c78b15",
+                "ord": "a0"
+              }
+            ],
+            "id": "ab5f0e7c-c8aa-4a37-9949-a30a415c9181",
+            "ord": "a0"
+          },
           {
             "kind": "element",
             "tag": "section",
@@ -1835,40 +2249,21 @@
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
                         "children": ["Visit RoadReady"],
-                        "id": "2a1a8e99-e15b-462b-a96d-69eb2cf59c8c",
+                        "id": "0798181a-0e3b-4ee1-bd67-f92203da7bc5",
                         "ord": "a0"
                       },
                       {
                         "kind": "element",
-                        "tag": "div",
-                        "class": "flex flex-col gap-1",
+                        "tag": "address",
+                        "class": "text-lg leading-relaxed whitespace-pre-line not-italic text-base-content",
                         "children": [
-                          {
-                            "kind": "element",
-                            "tag": "p",
-                            "class": "text-lg leading-relaxed text-base-content",
-                            "children": ["RoadReady Driving School"],
-                            "id": "d2ac54cb-b6b3-497c-8464-3e7432ea1112",
-                            "ord": "a0"
-                          },
-                          {
-                            "kind": "element",
-                            "tag": "p",
-                            "class": "text-lg leading-relaxed text-base-content",
-                            "children": ["412 Maple Avenue"],
-                            "id": "8c6f59d7-61c7-48ed-be2a-4cda4ae04026",
-                            "ord": "a1"
-                          },
-                          {
-                            "kind": "element",
-                            "tag": "p",
-                            "class": "text-lg leading-relaxed text-base-content",
-                            "children": ["Suite 5 · Springfield, IL 62704"],
-                            "id": "242d97aa-a2f4-46f7-a9c8-3ad0efdc2e33",
-                            "ord": "a2"
-                          }
+                          "RoadReady Driving School\n412 Maple Avenue\nSuite 5 · Springfield, IL 62704"
                         ],
-                        "id": "65662dbf-9569-4dfc-93f0-e4acf8c6f8a7",
+                        "data": {
+                          "kind": "value",
+                          "ref": "site.identity.address"
+                        },
+                        "id": "ba267d92-2774-4ddc-9320-a4b8198f87ee",
                         "ord": "a1"
                       },
                       {
@@ -1886,7 +2281,7 @@
                                 "tag": "span",
                                 "class": "font-medium text-base-content",
                                 "children": ["Monday – Friday"],
-                                "id": "1dd055cd-54d4-472d-afb7-202b48a264b4",
+                                "id": "4bc1c599-5e02-4a72-a5a6-81801f6436bb",
                                 "ord": "a0"
                               },
                               {
@@ -1894,11 +2289,11 @@
                                 "tag": "span",
                                 "class": "text-base-content",
                                 "children": ["3:00 – 8:00"],
-                                "id": "464e643b-05cd-45a1-ac10-23bfea52ef33",
+                                "id": "9f236166-34eb-44bd-ae41-46c6e4ea4e52",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "b0f6e228-b739-41d2-8b45-463a9313aa35",
+                            "id": "968c33f2-6ea4-4d38-b47f-41235b158783",
                             "ord": "a0"
                           },
                           {
@@ -1911,7 +2306,7 @@
                                 "tag": "span",
                                 "class": "font-medium text-base-content",
                                 "children": ["Saturday"],
-                                "id": "2862d199-23bd-4218-b90d-e728184f16e9",
+                                "id": "99be097e-aad5-462d-98ee-c90b1a3baafa",
                                 "ord": "a0"
                               },
                               {
@@ -1919,11 +2314,11 @@
                                 "tag": "span",
                                 "class": "text-base-content",
                                 "children": ["9:00 – 5:00"],
-                                "id": "285eda37-413d-4e36-8b4b-cc91194720a2",
+                                "id": "b35d7508-20a9-4383-9690-238fb94f2417",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "64565040-13c4-418b-b807-1524aa4eca22",
+                            "id": "598d6a9d-3bbd-47a0-9db1-c19345d1e786",
                             "ord": "a1"
                           },
                           {
@@ -1936,7 +2331,7 @@
                                 "tag": "span",
                                 "class": "font-medium text-base-content",
                                 "children": ["Sunday"],
-                                "id": "b4190cde-a680-46fa-bf8c-a197d632abbf",
+                                "id": "32eee000-9d52-41ae-b3a8-7d40b46b9b1d",
                                 "ord": "a0"
                               },
                               {
@@ -1944,11 +2339,11 @@
                                 "tag": "span",
                                 "class": "text-base-content",
                                 "children": ["9:00 – 5:00"],
-                                "id": "3d4b8f40-1468-44cd-9347-24c84e2cd543",
+                                "id": "dd4312de-cfed-4a19-b77b-0d9371cf7705",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "e7542147-7bf3-481b-a727-bc32f5f354eb",
+                            "id": "ea7965e9-cd27-4e5a-b553-0eae5a6db1b7",
                             "ord": "a2"
                           },
                           {
@@ -1961,7 +2356,7 @@
                                 "tag": "span",
                                 "class": "font-medium text-base-content",
                                 "children": ["Holidays"],
-                                "id": "60b585de-cccd-441b-a340-5fb8159b9045",
+                                "id": "32edf7a5-8907-41ff-ac21-55e695d7b71a",
                                 "ord": "a0"
                               },
                               {
@@ -1969,19 +2364,19 @@
                                 "tag": "span",
                                 "class": "text-base-content",
                                 "children": ["Closed"],
-                                "id": "7e5416d7-8492-4ef0-8b1c-144a47a6807c",
+                                "id": "66d4d971-beb6-40ec-9e4e-9fa612786809",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "f0401cf1-823f-4475-8ee6-7715a63bb7d8",
+                            "id": "a6b62fc7-8e01-418e-aa60-00dc5ca03cf6",
                             "ord": "a3"
                           }
                         ],
-                        "id": "edb3e8b9-3d33-450d-b6e2-f7f2b49b3d7a",
+                        "id": "28f661e0-af3d-4d15-8200-728bd4565bc4",
                         "ord": "a2"
                       }
                     ],
-                    "id": "cbde4cb5-877e-4ac4-a5c5-90f3c5291333",
+                    "id": "9b1dc40f-c0a6-4432-b41f-9f6801baeb97",
                     "ord": "a0"
                   },
                   {
@@ -1994,16 +2389,16 @@
                       "zoom": 15,
                       "ratio": "classic"
                     },
-                    "id": "db73fac0-c9d8-4fe5-8d26-72295ad7097d",
+                    "id": "ac08d73c-b3bf-406f-ab8b-90d3274f43e6",
                     "ord": "a1"
                   }
                 ],
-                "id": "ecc0a381-0c9e-4ca8-95af-5ac9953be3f1",
+                "id": "5a12ae6f-2a03-44a9-8365-01b459782c1a",
                 "ord": "a0"
               }
             ],
-            "id": "25eb826b-af34-4aa4-b239-231ab9b02d76",
-            "ord": "a0"
+            "id": "b740c771-fab1-403c-abf4-ec8d6391ced2",
+            "ord": "a1"
           },
           {
             "kind": "element",
@@ -2020,7 +2415,7 @@
                     "tag": "h2",
                     "class": "text-3xl font-bold tracking-tight @3xl:text-4xl",
                     "children": ["Rather book than call?"],
-                    "id": "b34daf21-2b98-49e2-a1da-15ce0307ce32",
+                    "id": "be28bb6c-063f-418c-aa13-05419fb17f87",
                     "ord": "a0"
                   },
                   {
@@ -2030,7 +2425,7 @@
                     "children": [
                       "See live availability for every instructor and car, and reserve your lesson online — no phone tag."
                     ],
-                    "id": "2666c0a8-a55b-4fdb-a42a-c7b2bd357a90",
+                    "id": "023a61fd-79c1-4dc8-b8d9-645f6290f91b",
                     "ord": "a1"
                   },
                   {
@@ -2041,16 +2436,16 @@
                       "href": "/book"
                     },
                     "children": ["Book a lesson"],
-                    "id": "1d4bdaba-d455-439e-9482-134c21876f23",
+                    "id": "03844246-8e02-4881-9941-88f618c31ad2",
                     "ord": "a2"
                   }
                 ],
-                "id": "033444fb-275a-4114-939c-47f3809a1b3e",
+                "id": "fe40ea08-3f12-41a0-8a7e-d202534e37dc",
                 "ord": "a0"
               }
             ],
-            "id": "ba412c33-ee6d-48df-b6aa-d0ad7f0c5017",
-            "ord": "a1"
+            "id": "0c922dd3-bde5-4ccf-942d-fb46e3b1cf5c",
+            "ord": "a2"
           }
         ]
       }

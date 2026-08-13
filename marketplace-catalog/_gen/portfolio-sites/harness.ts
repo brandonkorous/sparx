@@ -57,7 +57,7 @@ const blueprintsDir = join(here, '..', '..', 'blueprints');
  *  changes — a marketplace artifact is IMMUTABLE per `(category, slug, version)`, so without
  *  a bump the catalog keeps serving the OLD payload and a fresh install never sees the new
  *  pages. 1.0.0 is the first, full five-page portfolio pass. */
-const BUNDLE_VERSION = '1.1.0';
+const BUNDLE_VERSION = '1.2.0';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -237,26 +237,18 @@ function defaultAbout(spec: PortfolioSiteSpec): Node[] {
   ];
 }
 
-/** A neutral default Contact body — used when a spec doesn't author its own. */
+/** The Contact page — the maker's own channels (each hidden until set in Site settings)
+ *  over a working enquiry form that lands in the tenant's Form submissions inbox.
+ *
+ *  It used to end at a button pointing at `mailto:hello@example.com`: a placeholder
+ *  domain, shipped live, as the one and only way to commission the person whose
+ *  portfolio it is. See shared/contact-section.ts. */
 function defaultContact(): Node[] {
   return [
-    el('section', 'bg-base-100 @container px-6 py-20 text-center', {
-      children: [
-        el('div', 'mx-auto flex w-full max-w-xl flex-col items-center gap-5', {
-          children: [
-            el('h1', 'text-4xl font-bold tracking-tight text-base-content @2xl:text-5xl', {
-              text: 'Get in touch',
-            }),
-            el('p', 'text-lg leading-relaxed text-base-content', {
-              text: 'Available for select projects. Tell me a little about what you have in mind and I will get back to you.',
-            }),
-            el('a', 'btn btn-primary btn-lg', {
-              attrs: { href: 'mailto:hello@example.com' },
-              text: 'Email me',
-            }),
-          ],
-        }),
-      ],
+    contactSection({
+      heading: 'Get in touch',
+      intro: 'Available for select projects. Tell me a little about what you have in mind and I will get back to you.',
+      submitLabel: 'Send enquiry',
     }),
   ];
 }
@@ -298,6 +290,8 @@ export function composePortfolioSite(spec: PortfolioSiteSpec): Record<string, un
     singleton('Home', '', pageBody(spec.home), seo.home),
     singleton('Work', 'work', workBody, seo.work),
     singleton('About', 'about', pageBody(spec.about ?? defaultAbout(spec)), seo.about),
+    // Each portfolio authors its own Contact copy as a `contactSection(…)` call — see
+    // the template harness note: shared shape, per-template words.
     singleton('Contact', 'contact', pageBody(spec.contact ?? defaultContact()), seo.contact),
     // The BESPOKE case-study detail — a `cms.blog_post` collection page (`isDefault`) the
     // installer lands at `/blog/:slug`, so every project wears the template's own design.

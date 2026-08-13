@@ -3,7 +3,7 @@
   "category": "blueprint",
   "slug": "sparx-weddingplanner-luxe",
   "name": "sparx — Wedding Planner (Luxe)",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "tagline": "A romantic, editorial template for wedding planners — book consultations from day one.",
   "description": "An elegant, romantic wedding-studio site — a soft-ivory palette, a dusty-rose primary and a champagne-gold accent, with editorial wedding photography carrying the page. Installs online booking for planning consultations, planners you book by name as bookable resources, and a booking-deposit policy. Ships as \"Ever After Events\", a luxury full-service wedding planner.",
   "payload": "blueprint.ts",

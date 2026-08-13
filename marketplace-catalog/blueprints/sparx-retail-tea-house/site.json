@@ -33,7 +33,7 @@
                         "type": "link",
                         "label": "Product"
                       },
-                      "id": "685995ed-5ec4-42f5-b1a7-8f371ebd2fdd",
+                      "id": "bbb05928-46e8-453e-ad74-f032676d8fb4",
                       "ord": "a0"
                     },
                     {
@@ -49,11 +49,11 @@
                         "type": "link",
                         "label": "Pricing"
                       },
-                      "id": "13dd4cf6-3559-4e09-9728-b8672fc89d5e",
+                      "id": "7e46e3b5-862b-4c58-9372-00303c9affc6",
                       "ord": "a1"
                     }
                   ],
-                  "id": "ca15d6ad-b5ec-4bb9-93de-ac1acb9208f6",
+                  "id": "83fe080a-67e8-4610-ae2b-bcb723eb3191",
                   "ord": "a0"
                 },
                 {
@@ -63,7 +63,7 @@
                   "props": {
                     "show": "both"
                   },
-                  "id": "424ec521-e22a-4239-933f-3fe34163b434",
+                  "id": "cf5d6147-124a-4e8f-96c6-8e885fe0fa92",
                   "ord": "a1"
                 },
                 {
@@ -89,7 +89,7 @@
                             "type": "link",
                             "label": "Docs"
                           },
-                          "id": "88749517-2260-4c1d-84da-d6e9db219883",
+                          "id": "a3291813-5af1-437a-ad71-805d7533c3db",
                           "ord": "a0"
                         },
                         {
@@ -105,18 +105,18 @@
                             "type": "link",
                             "label": "Company"
                           },
-                          "id": "14512ae4-24e2-4dad-8603-de8012865189",
+                          "id": "7b06c3bb-1dda-41c7-ae49-5a2200e89f62",
                           "ord": "a1"
                         }
                       ],
-                      "id": "e54e1d77-7f9d-4288-a59d-23918c92cae6",
+                      "id": "f720a18c-b8b2-4ed2-8f87-af84b6bf6b4c",
                       "ord": "a0"
                     },
                     {
                       "kind": "host",
                       "component": "site.theme-toggle",
                       "class": "inline-flex items-center",
-                      "id": "74eddaa3-55d9-4a7f-b30f-723427045a72",
+                      "id": "4cb65bbd-ec91-42b0-94b2-7291aa7371f1",
                       "ord": "a1"
                     },
                     {
@@ -132,7 +132,7 @@
                         "type": "link",
                         "label": "Primary action"
                       },
-                      "id": "dc71245b-49c6-4eff-a120-c973c6893331",
+                      "id": "8c32b513-0299-419e-a883-472b4956a366",
                       "ord": "a2"
                     },
                     {
@@ -150,20 +150,20 @@
                           "props": {
                             "name": "menu"
                           },
-                          "id": "ce7333af-c8a0-4e0b-a943-a1da36ff2b58",
+                          "id": "4927b363-971e-4cbb-8ee0-d237361c6c88",
                           "ord": "a0"
                         }
                       ],
                       "part": "trigger",
-                      "id": "39e4d427-2e25-46f4-940b-c5529d81c283",
+                      "id": "f5b03325-609e-4d67-ad62-8bdd7e6ef19d",
                       "ord": "a3"
                     }
                   ],
-                  "id": "7439b117-4aa8-46ac-a8de-21fc56cf34f2",
+                  "id": "e6526a11-19ec-4e58-acbe-230285489fec",
                   "ord": "a2"
                 }
               ],
-              "id": "a5349c3c-2d65-4430-ae45-d3ec1089947a",
+              "id": "4fb870c6-713e-4132-96fc-0afd6b68409c",
               "ord": "a0"
             },
             {
@@ -187,7 +187,7 @@
                     "type": "link",
                     "label": "Product"
                   },
-                  "id": "b4759f35-5341-4a2f-98d1-1ca3181200e2",
+                  "id": "36a4295a-e31c-4e53-8e7b-017c42a59172",
                   "ord": "a0"
                 },
                 {
@@ -203,7 +203,7 @@
                     "type": "link",
                     "label": "Pricing"
                   },
-                  "id": "11c3d809-7e20-43b8-8703-120f241a75bc",
+                  "id": "ca3228cb-60b7-411f-adb6-c971a4ff267d",
                   "ord": "a1"
                 },
                 {
@@ -219,7 +219,7 @@
                     "type": "link",
                     "label": "Docs"
                   },
-                  "id": "921c0bfe-2acc-49b5-a0e0-bea6930f7387",
+                  "id": "007d104e-26e3-4e3b-8815-ee955965af79",
                   "ord": "a2"
                 },
                 {
@@ -235,7 +235,7 @@
                     "type": "link",
                     "label": "Company"
                   },
-                  "id": "ec677b02-6f3f-4c88-9aad-b75997e45ee3",
+                  "id": "314f85ef-730a-4d0b-9ee9-4686733e2909",
                   "ord": "a3"
                 },
                 {
@@ -251,19 +251,19 @@
                     "type": "link",
                     "label": "Primary action"
                   },
-                  "id": "48b9c0b4-a8ce-4584-ba3d-18d31411c65d",
+                  "id": "929b4fbe-4f73-480c-8793-35122f4ada9e",
                   "ord": "a4"
                 }
               ],
               "part": "panel",
-              "id": "ff7d9b15-6d23-4d0d-b1f7-449b12506a7a",
+              "id": "54478e1d-9376-4728-9a19-d6615feab576",
               "ord": "a1"
             }
           ],
           "behavior": {
             "type": "disclosure"
           },
-          "id": "e0be306c-7f9e-413b-8e8c-4272957b4a4a",
+          "id": "14946707-8ff9-46d1-ad1a-149aa8ce70ed",
           "ord": "a0"
         },
         {
@@ -279,7 +279,7 @@
               "kind": "outlet"
             }
           ],
-          "id": "9fea92fa-8590-4a3a-9245-7ff73c8b16cb",
+          "id": "fac050fe-5dfa-40b2-b005-e1b1f87fab4f",
           "ord": "a1"
         },
         {
@@ -309,7 +309,7 @@
                           "props": {
                             "show": "both"
                           },
-                          "id": "47ff7488-4352-4302-87bb-be5ab58a9d58",
+                          "id": "59a67522-87ae-42c9-a295-7f74aa327121",
                           "ord": "a0"
                         },
                         {
@@ -327,7 +327,7 @@
                           "attrs": {
                             "href": "/"
                           },
-                          "id": "bab714d5-8d4b-47c0-b05a-aeaa0c7a3335",
+                          "id": "9b5e1d4c-6f51-48f5-84cf-832597767bba",
                           "ord": "a1"
                         },
                         {
@@ -348,7 +348,7 @@
                                 "placeholder": "you@example.com",
                                 "required": true
                               },
-                              "id": "d0e1edf6-0b47-46d1-b5b7-bae146e5eb7e",
+                              "id": "af95a28d-363f-4990-b9d8-bbf594864aa7",
                               "ord": "a0"
                             },
                             {
@@ -364,11 +364,11 @@
                                 "type": "text",
                                 "label": "Button label"
                               },
-                              "id": "5e012463-432a-4f34-918f-59216c8dd9b8",
+                              "id": "2241bbf1-ee2c-4b41-8522-042a03063dc7",
                               "ord": "a1"
                             }
                           ],
-                          "id": "d851bd5f-e044-4897-b7d9-9d8461b44163",
+                          "id": "9669c71e-4d40-4665-95f5-9dbec7f7023e",
                           "ord": "a2"
                         },
                         {
@@ -381,11 +381,11 @@
                             "type": "text",
                             "label": "Reassurance line"
                           },
-                          "id": "30ec40d5-afeb-44fc-98ee-370511ab99d9",
+                          "id": "1386dc6f-86c2-4a94-8574-6c55a5beb266",
                           "ord": "a3"
                         }
                       ],
-                      "id": "89870042-b736-4ab4-98f7-5875efa95c0a",
+                      "id": "eed129f6-eed2-4790-94a7-06f8d74a538f",
                       "ord": "a0"
                     },
                     {
@@ -411,7 +411,7 @@
                               "attrs": {
                                 "href": "/"
                               },
-                              "id": "65ce31e7-5049-4e03-b012-90f6d2085338",
+                              "id": "0468f831-bd92-41eb-ad11-1f81732643de",
                               "ord": "a0"
                             },
                             {
@@ -436,11 +436,11 @@
                                         "type": "link",
                                         "label": "Features"
                                       },
-                                      "id": "886a2658-9941-431a-8f8c-57a4ad722470",
+                                      "id": "ea4af7e7-2de6-4a10-b762-8730f357b078",
                                       "ord": "a0"
                                     }
                                   ],
-                                  "id": "07a7d448-34eb-40a0-be34-f4cb1a46a2b1",
+                                  "id": "fde5d24d-dcd8-40f2-a15a-10deeb64bcba",
                                   "ord": "a0"
                                 },
                                 {
@@ -460,11 +460,11 @@
                                         "type": "link",
                                         "label": "Pricing"
                                       },
-                                      "id": "7dc50568-1c21-40e4-8c93-05029c8aa0a5",
+                                      "id": "cdb16ce0-6ad0-41e5-8734-48ae6c18380f",
                                       "ord": "a0"
                                     }
                                   ],
-                                  "id": "cf462d57-d02a-4f87-94b9-45b6d8e9f10e",
+                                  "id": "c9e42497-811a-4764-a2e9-b77d2e2b226f",
                                   "ord": "a1"
                                 },
                                 {
@@ -484,11 +484,11 @@
                                         "type": "link",
                                         "label": "Changelog"
                                       },
-                                      "id": "e8e3dfd3-30da-4b23-9aa6-4d6e857e3195",
+                                      "id": "56db8dbd-dc51-4381-9211-5bb7986a3c63",
                                       "ord": "a0"
                                     }
                                   ],
-                                  "id": "0e84c7e0-672e-41b9-af1a-1b3de6714972",
+                                  "id": "b288cb5f-fcc2-44d5-9789-d3df322e7214",
                                   "ord": "a2"
                                 },
                                 {
@@ -508,11 +508,11 @@
                                         "type": "link",
                                         "label": "Roadmap"
                                       },
-                                      "id": "e22b9ef3-4875-4714-924e-e2354ab9260d",
+                                      "id": "e2f1b7da-c675-44e0-8e07-50118dbc4071",
                                       "ord": "a0"
                                     }
                                   ],
-                                  "id": "6ff76804-17f5-4d65-9878-c48273fe52ec",
+                                  "id": "8592e98c-10d1-4fbe-b017-705fc10386a1",
                                   "ord": "a3"
                                 },
                                 {
@@ -527,19 +527,19 @@
                                         "href": "/search"
                                       },
                                       "children": ["Search"],
-                                      "id": "932d239b-bce9-4ece-99eb-b03bbd6da6af",
+                                      "id": "09d68ce5-174d-49e8-8982-57d45738ae07",
                                       "ord": "a0"
                                     }
                                   ],
-                                  "id": "0e560fe0-c176-4c64-bae3-c5b6a6d045c8",
+                                  "id": "b932e9f4-de94-4315-9737-599909cda239",
                                   "ord": "a4"
                                 }
                               ],
-                              "id": "b808de0c-f129-4a56-8eff-19fa0d93cda9",
+                              "id": "c0d8bb11-b5f1-4bf2-8812-8d19f7c6a003",
                               "ord": "a1"
                             }
                           ],
-                          "id": "e0776d6c-7ab8-43fd-b0dd-047a02fd9fb8",
+                          "id": "532b14d2-9671-4227-944b-c5d289309f3e",
                           "ord": "a0"
                         },
                         {
@@ -560,7 +560,7 @@
                               "attrs": {
                                 "href": "/account"
                               },
-                              "id": "36ed0cae-5416-47e2-b5c2-69b1181c7757",
+                              "id": "f3aff0ad-11f3-47bf-a932-1b5a1d51ebb3",
                               "ord": "a0"
                             },
                             {
@@ -585,11 +585,11 @@
                                         "type": "link",
                                         "label": "About"
                                       },
-                                      "id": "ac678c65-fdab-4995-9480-9d1073348abe",
+                                      "id": "290613f6-81c7-45ae-bd05-5804b0d13ddc",
                                       "ord": "a0"
                                     }
                                   ],
-                                  "id": "8ee61445-19fe-4150-a87f-707638835d76",
+                                  "id": "e46b62c4-e7f1-4712-b589-a1ee4e544ee1",
                                   "ord": "a0"
                                 },
                                 {
@@ -609,11 +609,11 @@
                                         "type": "link",
                                         "label": "Careers"
                                       },
-                                      "id": "3043d776-29e4-49be-9a65-f008250e9398",
+                                      "id": "49ce5c59-f6fc-4a2b-bd35-5a5de3df2d86",
                                       "ord": "a0"
                                     }
                                   ],
-                                  "id": "878af0c7-2e65-409b-b4a8-b7158e195f54",
+                                  "id": "54fd1e10-9021-4472-bd1e-d75453cadc78",
                                   "ord": "a1"
                                 },
                                 {
@@ -633,27 +633,27 @@
                                         "type": "link",
                                         "label": "Press"
                                       },
-                                      "id": "9b089f28-2135-402d-9f1e-51c92a0979e5",
+                                      "id": "b237c94c-d7ad-4265-b71f-d14241eb55d8",
                                       "ord": "a0"
                                     }
                                   ],
-                                  "id": "06f9967f-c554-4421-9111-f2643d1336c4",
+                                  "id": "a84a44d4-a996-44d0-bfa4-5a81ff6db2c9",
                                   "ord": "a2"
                                 }
                               ],
-                              "id": "5682f6ea-94ca-4c83-a852-13da5ecff803",
+                              "id": "3ff92181-5114-4024-b75d-2e4e441da7b7",
                               "ord": "a1"
                             }
                           ],
-                          "id": "8f07c588-e65b-44c8-96ca-1fa307f48135",
+                          "id": "3613e032-ea48-44b1-bc41-c3ec5945b541",
                           "ord": "a1"
                         }
                       ],
-                      "id": "0373f107-b636-475a-8e6f-a582906b4b3e",
+                      "id": "23272901-959e-420a-808a-2fb2fba639eb",
                       "ord": "a1"
                     }
                   ],
-                  "id": "4f3db992-073f-426f-9784-ccb871577158",
+                  "id": "bdbadcdb-1efb-47e0-930c-3b40b88fa47f",
                   "ord": "a0"
                 },
                 {
@@ -676,11 +676,11 @@
                             "kind": "value",
                             "ref": "site.identity.name"
                           },
-                          "id": "f0f7942f-63dc-4bbd-b6e4-9595e96542bd",
+                          "id": "dc08819f-c7f0-4126-8d6c-cce0be81cd71",
                           "ord": "a0"
                         }
                       ],
-                      "id": "e68dcf6a-5333-4552-a811-1d4ab28a6318",
+                      "id": "81e0db89-fd5e-43bb-a12e-8d260ece80ca",
                       "ord": "a0"
                     },
                     {
@@ -688,23 +688,23 @@
                       "tag": "ul",
                       "class": "flex items-center gap-5",
                       "children": [],
-                      "id": "4c985d45-51d3-473e-a1de-46c472ca0e0e",
+                      "id": "4db450dc-e500-4369-85cd-740981066835",
                       "ord": "a1"
                     }
                   ],
-                  "id": "7ad8617c-7108-4bb3-9f3b-df42f9996e5e",
+                  "id": "31995f39-dd9e-4420-865b-4a5441cdd139",
                   "ord": "a1"
                 }
               ],
-              "id": "22a9556b-8f7e-477d-94c3-d3eed34579d1",
+              "id": "2679d42d-dac0-4d3a-a92a-f54fc1043458",
               "ord": "a0"
             }
           ],
-          "id": "820886ce-5fd6-47f1-be97-318b55543346",
+          "id": "eb54caa1-f9b4-4c66-bcca-9239aff2a5a8",
           "ord": "a2"
         }
       ],
-      "id": "3ca7a4ef-4af0-468c-b088-8d4f17f8618a"
+      "id": "ce61290f-85b5-4420-9a92-8bd6b78ac7d5"
     }
   },
   "pages": [
@@ -718,7 +718,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "22558a81-e05d-4051-8b6f-5b977a58b3d3",
+        "id": "388f547e-8906-4266-ad85-403a335b2659",
         "children": [
           {
             "kind": "element",
@@ -734,7 +734,7 @@
                   "alt": "A cup of loose-leaf tea steeping",
                   "loading": "lazy"
                 },
-                "id": "0fe87364-f276-45fe-8c41-cfa165911b8e",
+                "id": "319dd381-bc20-4085-ae5a-564f4a301616",
                 "ord": "a0"
               },
               {
@@ -752,7 +752,7 @@
                         "tag": "h1",
                         "class": "text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl",
                         "children": ["Slow down. Steep well."],
-                        "id": "3ca41b3f-ebc9-4612-a344-63e57f9bfff2",
+                        "id": "104fb920-2f05-460f-9ded-d2c78585708d",
                         "ord": "a0"
                       },
                       {
@@ -762,7 +762,7 @@
                         "children": [
                           "Steepwell is a small loose-leaf tea house. We source whole-leaf tea from gardens we can name, keep it in small batches so it stays fragrant, and send it fresh — so the cup in your hands tastes like the hillside it came from."
                         ],
-                        "id": "44dfbbdc-6f89-40bb-87f2-8c22544436c8",
+                        "id": "0d4af050-7314-405f-a586-38cab3b012d1",
                         "ord": "a1"
                       },
                       {
@@ -778,7 +778,7 @@
                               "href": "/shop"
                             },
                             "children": ["Shop tea"],
-                            "id": "22d58f97-8ba8-44c3-ad0b-f869740f2f11",
+                            "id": "594ceb48-13f6-4010-9848-b67aced5aec9",
                             "ord": "a0"
                           },
                           {
@@ -789,23 +789,23 @@
                               "href": "/shop/subscription"
                             },
                             "children": ["Join the tea club"],
-                            "id": "0350ab85-cbf2-4f93-96f1-55403f450666",
+                            "id": "62a19b37-ec2d-445c-91b2-931fba817cb9",
                             "ord": "a1"
                           }
                         ],
-                        "id": "90a72a97-f19d-4448-a29d-8f6df5b232d9",
+                        "id": "3c68cd5d-4e6e-4ff5-acd5-1ca8022b12d3",
                         "ord": "a2"
                       }
                     ],
-                    "id": "5536b99d-fbcf-4a55-a996-d75c22e4c32e",
+                    "id": "97f56f17-a9e8-4f1f-870e-c2fb49ff5879",
                     "ord": "a0"
                   }
                 ],
-                "id": "da3cb0f0-0ba5-4dab-b476-df6716f638fc",
+                "id": "3f53a25e-0965-4fc5-936b-9bd01052ba65",
                 "ord": "a1"
               }
             ],
-            "id": "9f3cfc50-4f75-4cf8-a19a-8f8db5bc3891",
+            "id": "ed5b1807-f073-4d23-a19d-9e2bd693c691",
             "ord": "a0"
           },
           {
@@ -823,7 +823,7 @@
                     "tag": "h2",
                     "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
                     "children": ["Find your tea"],
-                    "id": "c7c4565f-92b7-4754-b024-415b3a51242d",
+                    "id": "408a71d4-6237-4210-ab68-f79b1b515d7f",
                     "ord": "a0"
                   },
                   {
@@ -848,7 +848,7 @@
                               "alt": "Curled green tea leaves in a dish",
                               "loading": "lazy"
                             },
-                            "id": "873e52e1-d5bb-44db-8cb5-5258458ce740",
+                            "id": "a62dd9ff-adb1-42ca-8e3b-258994fdbad8",
                             "ord": "a0"
                           },
                           {
@@ -856,11 +856,11 @@
                             "tag": "span",
                             "class": "text-center text-base font-semibold text-base-content",
                             "children": ["Green & white"],
-                            "id": "024cb210-c262-4fff-95fb-6d3fcd250cdd",
+                            "id": "1186c9b2-7854-4eec-838b-eb43d8e2a4e9",
                             "ord": "a1"
                           }
                         ],
-                        "id": "9eb9f52e-a1b0-46c0-b634-fddc0686c47d",
+                        "id": "61177d7d-7183-40ad-ade2-f79b0e881d6a",
                         "ord": "a0"
                       },
                       {
@@ -880,7 +880,7 @@
                               "alt": "Whole-leaf black tea in a scoop",
                               "loading": "lazy"
                             },
-                            "id": "16ea9ad6-5175-42cd-b3d7-81ff38bc9c80",
+                            "id": "e919345d-8a40-4e0d-a7e9-0dda4a236733",
                             "ord": "a0"
                           },
                           {
@@ -888,11 +888,11 @@
                             "tag": "span",
                             "class": "text-center text-base font-semibold text-base-content",
                             "children": ["Black & oolong"],
-                            "id": "c27ead72-2261-4b95-9359-2cc04e840c6a",
+                            "id": "489bdfe7-168f-4452-b940-31c11f81c624",
                             "ord": "a1"
                           }
                         ],
-                        "id": "dc24d06c-b505-479c-adbd-eebf29308ebf",
+                        "id": "e8e5b935-a03e-4a03-857f-6aacd0930f4f",
                         "ord": "a1"
                       },
                       {
@@ -912,7 +912,7 @@
                               "alt": "Dried chamomile and botanicals",
                               "loading": "lazy"
                             },
-                            "id": "e6669ec9-7a5c-469b-b624-b92447fbe849",
+                            "id": "8d11b968-888b-4690-813e-c519f2ac8992",
                             "ord": "a0"
                           },
                           {
@@ -920,11 +920,11 @@
                             "tag": "span",
                             "class": "text-center text-base font-semibold text-base-content",
                             "children": ["Herbal"],
-                            "id": "a70b1a0e-472a-4cac-a8f4-3e5a3fe847f2",
+                            "id": "4b12f5e6-b4a1-44f3-96e1-4c5c6aeff892",
                             "ord": "a1"
                           }
                         ],
-                        "id": "caf9a09a-8eb0-4729-8b1d-cbe639c32c41",
+                        "id": "1631df22-9969-45d2-8c77-7999161ce558",
                         "ord": "a2"
                       },
                       {
@@ -944,7 +944,7 @@
                               "alt": "A cast-iron teapot and infuser",
                               "loading": "lazy"
                             },
-                            "id": "7582b4ca-63c7-447e-9eeb-3bf6f5fa88e2",
+                            "id": "0d8e49f5-4f6c-4498-82e1-9373b9cb22b2",
                             "ord": "a0"
                           },
                           {
@@ -952,23 +952,23 @@
                             "tag": "span",
                             "class": "text-center text-base font-semibold text-base-content",
                             "children": ["Brewing tools"],
-                            "id": "f8e318aa-3fe4-43c4-b382-345071d662d2",
+                            "id": "9d28c6e1-d98f-41cb-bb69-c54408b74bca",
                             "ord": "a1"
                           }
                         ],
-                        "id": "2ca3eb1b-4d6e-41c3-8dfc-8e7b16a17f6f",
+                        "id": "041573a0-d612-479e-a3fc-906521801b3b",
                         "ord": "a3"
                       }
                     ],
-                    "id": "0a8736f2-ac6e-4760-af5b-b4252464eea1",
+                    "id": "09331587-0584-4141-adcf-41a2b784af7f",
                     "ord": "a1"
                   }
                 ],
-                "id": "088efa4d-fb62-404d-aaeb-031af2ee3847",
+                "id": "978480fe-b8e8-4ed0-adaf-dd3c0087f0b8",
                 "ord": "a0"
               }
             ],
-            "id": "c6c48213-ee0c-4797-b1ef-bd8b35fbade0",
+            "id": "1fb59c61-8437-4154-ac59-b596f6bfaf35",
             "ord": "a1"
           },
           {
@@ -986,7 +986,7 @@
                     "tag": "h2",
                     "class": "text-2xl font-semibold text-base-content",
                     "children": ["This season’s teas"],
-                    "id": "7132e5d7-f973-442d-9488-5b62ff2c12de",
+                    "id": "0269a926-b1a3-4e36-b4f5-bf818608f82f",
                     "ord": "a0"
                   },
                   {
@@ -1010,12 +1010,12 @@
                             "props": {
                               "name": "arrow-left"
                             },
-                            "id": "0f613f28-afd5-4f95-b208-9d7d1543ba33",
+                            "id": "dbd7bcaf-f4cf-4932-91c1-9a7e35a4cc50",
                             "ord": "a0"
                           }
                         ],
                         "part": "prev",
-                        "id": "3a68f22d-567f-449a-b760-dd16ec362d97",
+                        "id": "583387fa-7054-4d90-84e8-7a9b96f83763",
                         "ord": "a0"
                       },
                       {
@@ -1034,20 +1034,20 @@
                             "props": {
                               "name": "arrow-right"
                             },
-                            "id": "00de0653-2523-4739-841e-d559c39e9c9d",
+                            "id": "798ca802-a91f-402a-ba3a-10e549558314",
                             "ord": "a0"
                           }
                         ],
                         "part": "next",
-                        "id": "f8752e13-bb17-42ca-ae03-53b4dc85c8d7",
+                        "id": "8a9c12c1-a5ae-4293-9296-ed5e90cef227",
                         "ord": "a1"
                       }
                     ],
-                    "id": "ea5a921b-43e9-4449-8d8a-aef2bc8575e3",
+                    "id": "6eb0aa29-74eb-4abe-85f8-e984db3c018d",
                     "ord": "a1"
                   }
                 ],
-                "id": "49e090ef-7586-4fef-b30e-395c52b8768b",
+                "id": "00846deb-0912-4543-baf6-7f77a309ea5f",
                 "ord": "a0"
               },
               {
@@ -1072,7 +1072,7 @@
                           "kind": "value",
                           "ref": "image"
                         },
-                        "id": "81256ba6-dd7c-4938-96fe-25f6799d6b50",
+                        "id": "0a43bc72-b817-4edd-8856-3dc913b2a4bc",
                         "ord": "a0"
                       },
                       {
@@ -1089,7 +1089,7 @@
                               "kind": "value",
                               "ref": "title"
                             },
-                            "id": "566907ad-6cc6-43ec-ba40-9f2f51eabf02",
+                            "id": "51fa2691-3e3d-499d-b37a-fa6c6b4753e6",
                             "ord": "a0"
                           },
                           {
@@ -1101,11 +1101,11 @@
                               "kind": "value",
                               "ref": "price"
                             },
-                            "id": "769012ad-56d8-4d8a-ba9c-8b141362647e",
+                            "id": "ad7fdc2f-f119-4c16-bf39-dcca8a36a792",
                             "ord": "a1"
                           }
                         ],
-                        "id": "bc075953-a4a6-4c52-9b11-5616b7ada5f0",
+                        "id": "d64021c9-5550-4fbf-a802-bc07a27cc164",
                         "ord": "a1"
                       }
                     ],
@@ -1115,7 +1115,7 @@
                       "attr": "href"
                     },
                     "part": "slide",
-                    "id": "971523ed-e59d-4300-85ed-6dd5a638ebb2",
+                    "id": "0600e251-5c5e-4559-9793-2e71b919b09d",
                     "ord": "a0"
                   }
                 ],
@@ -1124,14 +1124,14 @@
                   "kind": "collection",
                   "ref": "commerce.featured"
                 },
-                "id": "af08d9a9-8362-4310-acb2-272fc9c169c2",
+                "id": "c8aa1c4c-b976-4a7a-af37-d1282bccb58a",
                 "ord": "a1"
               }
             ],
             "behavior": {
               "type": "carousel"
             },
-            "id": "71ea3e3d-fd82-47e0-abb1-157e64bcf367",
+            "id": "a57858ee-b11a-4d9b-8282-61aa3e84ad17",
             "ord": "a2"
           },
           {
@@ -1148,7 +1148,7 @@
                   "alt": "Steam rising from a glass teapot",
                   "loading": "lazy"
                 },
-                "id": "15dc7f9e-1f60-413f-8e63-7aca2d80a8ee",
+                "id": "4dd7e527-aa39-4961-9e20-6c420f85811c",
                 "ord": "a0"
               },
               {
@@ -1166,7 +1166,7 @@
                         "tag": "h2",
                         "class": "text-4xl font-bold leading-none tracking-tight text-base-content @3xl:text-5xl",
                         "children": ["Whole leaf, small batches"],
-                        "id": "940b9b00-d3d4-4bcc-9038-25841ed826df",
+                        "id": "921d36f7-d077-47c3-bda9-310f0c268aef",
                         "ord": "a0"
                       },
                       {
@@ -1176,7 +1176,7 @@
                         "children": [
                           "We buy whole-leaf tea, not the broken dust that fills most bags, and we keep it in small sealed batches so it stays fragrant instead of fading on a warehouse shelf. Every tea is tasted before it’s tinned — if the cup isn’t right, it doesn’t go out."
                         ],
-                        "id": "afea4495-467a-4517-883d-64c229f0f8aa",
+                        "id": "1cd1c882-559f-42b1-a2a6-873c3cde88ae",
                         "ord": "a1"
                       },
                       {
@@ -1187,19 +1187,19 @@
                           "href": "/blog/where-the-leaves-come-from"
                         },
                         "children": ["How we source"],
-                        "id": "ab110309-1756-42c1-aae6-61a9943f9e72",
+                        "id": "e4110c78-f9e8-4709-aa5b-600b301edece",
                         "ord": "a2"
                       }
                     ],
-                    "id": "f12afbe9-bad7-4b31-8e6c-66afda83be23",
+                    "id": "497648c9-3299-4003-80ee-ef0ecbb02a89",
                     "ord": "a0"
                   }
                 ],
-                "id": "d029e8d6-a055-4074-9d51-c3a17c060811",
+                "id": "04acc07c-2b51-44dc-acb8-54641fade478",
                 "ord": "a1"
               }
             ],
-            "id": "50e421ac-5f04-40d0-b00b-794b3593b732",
+            "id": "48160328-2ac2-490a-b630-c13e00ada6d4",
             "ord": "a3"
           },
           {
@@ -1217,7 +1217,7 @@
                     "tag": "h2",
                     "class": "text-2xl font-semibold text-base-content",
                     "children": ["Green & white"],
-                    "id": "5b0b9b40-c19f-4c59-a209-186d162f0a43",
+                    "id": "2ded9b22-3c05-4e30-b3e4-801abf7bf565",
                     "ord": "a0"
                   },
                   {
@@ -1241,12 +1241,12 @@
                             "props": {
                               "name": "arrow-left"
                             },
-                            "id": "7a88da2e-ceda-41be-b43a-d90e5ce39637",
+                            "id": "370e26de-2928-44de-9a9b-6596f2eb2f6b",
                             "ord": "a0"
                           }
                         ],
                         "part": "prev",
-                        "id": "8a7c56b1-a629-462e-8832-6aebd5034709",
+                        "id": "1dc5cffb-77cb-4bd2-8c19-deecd08e4dd2",
                         "ord": "a0"
                       },
                       {
@@ -1265,20 +1265,20 @@
                             "props": {
                               "name": "arrow-right"
                             },
-                            "id": "de8acde2-3bb3-4c89-928c-0fa4f81f6a0b",
+                            "id": "29a3f3a7-6e2d-429d-98b8-b2c94b744d27",
                             "ord": "a0"
                           }
                         ],
                         "part": "next",
-                        "id": "817c8746-3e42-43c9-8d82-872a6b215a2a",
+                        "id": "1e41ba03-8557-4789-aab4-7f1955e2e644",
                         "ord": "a1"
                       }
                     ],
-                    "id": "47c48a56-36fd-4827-a9a9-ded8f5529300",
+                    "id": "e789c3fa-d958-4266-a5fb-b1aa98fdacb1",
                     "ord": "a1"
                   }
                 ],
-                "id": "e3d1998a-9082-4ca5-bddd-85026527d16b",
+                "id": "37c9cf4b-04bc-4cf5-990b-1b15c22d6d9f",
                 "ord": "a0"
               },
               {
@@ -1303,7 +1303,7 @@
                           "kind": "value",
                           "ref": "image"
                         },
-                        "id": "a6cd8c8a-00e7-4a10-8297-a469c8fbfa77",
+                        "id": "3548cfaf-d8ec-4b2d-bf44-c38328168ded",
                         "ord": "a0"
                       },
                       {
@@ -1320,7 +1320,7 @@
                               "kind": "value",
                               "ref": "title"
                             },
-                            "id": "700a1a80-fb61-460b-a66b-b290d1a286eb",
+                            "id": "578ff264-a836-46d0-a17a-be7156798882",
                             "ord": "a0"
                           },
                           {
@@ -1332,11 +1332,11 @@
                               "kind": "value",
                               "ref": "price"
                             },
-                            "id": "b21a7399-4401-423e-b1eb-f5a302c1099d",
+                            "id": "96aa451b-dcba-4723-b4c1-a89c9cdee775",
                             "ord": "a1"
                           }
                         ],
-                        "id": "8af262d5-e6d6-4ec1-8157-1690e1a94603",
+                        "id": "b9b85ba3-0030-45f4-b935-397cf9e7f011",
                         "ord": "a1"
                       }
                     ],
@@ -1346,7 +1346,7 @@
                       "attr": "href"
                     },
                     "part": "slide",
-                    "id": "ef9799ba-3bd8-4e19-b846-c981d5f9b212",
+                    "id": "5205f505-28bd-4f3b-a1ba-8b9236adecdd",
                     "ord": "a0"
                   }
                 ],
@@ -1355,14 +1355,14 @@
                   "kind": "collection",
                   "ref": "commerce.category.green-white"
                 },
-                "id": "f47032ff-a3a4-40c0-a778-6e4708642134",
+                "id": "14849257-65cb-48b0-b2ce-f968442c41d9",
                 "ord": "a1"
               }
             ],
             "behavior": {
               "type": "carousel"
             },
-            "id": "7b44b26d-5a7a-45d2-bde5-6e51daabf0cf",
+            "id": "a2febaa9-b4cf-4486-906f-91266124465a",
             "ord": "a4"
           },
           {
@@ -1379,7 +1379,7 @@
                   "alt": "A parcel of tea tins on a doorstep",
                   "loading": "lazy"
                 },
-                "id": "04df257a-3448-492d-9f6e-05f29597d8cb",
+                "id": "587a0b73-fdac-4d7a-9ac9-620dd9edd1a2",
                 "ord": "a0"
               },
               {
@@ -1397,7 +1397,7 @@
                         "tag": "h2",
                         "class": "text-4xl font-bold leading-none tracking-tight text-base-content @3xl:text-5xl",
                         "children": ["A pot a week, handled"],
-                        "id": "d6f6aef8-7561-4940-b331-8d7a92d8ac17",
+                        "id": "c78a6bd2-c297-4401-8ee4-e50d56615548",
                         "ord": "a0"
                       },
                       {
@@ -1407,7 +1407,7 @@
                         "children": [
                           "The tea club is the easy way to keep the shelf stocked: choose your tins, choose how often, and they arrive fresh on your schedule. Rotate through the whole shelf or stay with your favourite — skip, swap or cancel any time, no lock-in."
                         ],
-                        "id": "4a444f72-8329-48af-bb9f-577eb3e3efcb",
+                        "id": "49924fe8-2d00-4fbb-bf22-31551d77b419",
                         "ord": "a1"
                       },
                       {
@@ -1418,19 +1418,19 @@
                           "href": "/shop/subscription"
                         },
                         "children": ["Join the tea club"],
-                        "id": "687bfbff-3854-4ab5-a242-46be81e538ca",
+                        "id": "83a2ec49-b294-4f28-b585-37a632129cde",
                         "ord": "a2"
                       }
                     ],
-                    "id": "17727c85-a336-4eff-9d9a-604836f6c28b",
+                    "id": "83b58fa9-5947-41d0-8032-77daf6c102fd",
                     "ord": "a0"
                   }
                 ],
-                "id": "4ccfc5ae-a75b-4e5f-85ac-17707fcd77f7",
+                "id": "554dce99-620f-49b4-928e-a2e786da8835",
                 "ord": "a1"
               }
             ],
-            "id": "10c59f19-dfdf-4a66-a2fc-30dd99abeff0",
+            "id": "52546bf8-88f6-4fe5-9936-cf7305108566",
             "ord": "a5"
           }
         ]
@@ -1447,7 +1447,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "101ddc92-2798-4965-b3ad-fb8e3c556e22",
+        "id": "a9f6d901-2756-4b4c-8140-ed514c539f2d",
         "children": [
           {
             "kind": "element",
@@ -1464,7 +1464,7 @@
                     "tag": "h1",
                     "class": "text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl",
                     "children": ["Shop tea"],
-                    "id": "b9679ccb-bb00-46fb-8d9a-5386bdb8c051",
+                    "id": "a8e9e109-45f5-4e79-beb5-68a382a62b2c",
                     "ord": "a0"
                   },
                   {
@@ -1474,15 +1474,15 @@
                     "children": [
                       "Every tea on the shelf right now — green and white, black and oolong, spiced chai and caffeine-free herbals, plus the pots and infusers to brew them. Filter by type or caffeine, or sort however you like; all of it ships fresh from small batches."
                     ],
-                    "id": "2d6f3491-7eda-4dfa-8547-4db3b249598d",
+                    "id": "1d53ea16-8f41-4631-9196-45dafef0b428",
                     "ord": "a1"
                   }
                 ],
-                "id": "1cbe4726-6826-45b2-b511-f1b43e68c9d4",
+                "id": "66ee455c-27c2-4888-9669-835d97f3a43f",
                 "ord": "a0"
               }
             ],
-            "id": "26c5201a-ba0e-4a7c-97cb-1b32cff693e5",
+            "id": "6465fb66-b8fb-4128-8764-5e4d91fe72db",
             "ord": "a0"
           },
           {
@@ -1490,7 +1490,7 @@
             "component": "commerce.plp",
             "class": "mx-auto w-full max-w-6xl px-6 py-6",
             "locked": "host",
-            "id": "e12815ce-8ddf-46ea-a6ae-e62e0530b68e",
+            "id": "4ad9adf5-99ea-4fb3-bded-1b710789b5ce",
             "ord": "a1"
           }
         ]
@@ -1507,7 +1507,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "c810f53e-0b04-462b-9fd6-b9ab19ed15cd",
+        "id": "b5641858-9b3c-4523-883a-cae1ed424565",
         "children": [
           {
             "kind": "element",
@@ -1524,7 +1524,7 @@
                     "tag": "h1",
                     "class": "text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl",
                     "children": ["Collections"],
-                    "id": "bef65aa4-9319-452d-a4f2-4e45c915adfa",
+                    "id": "c2f890e9-20a1-49ee-a9c2-592e316e72a9",
                     "ord": "a0"
                   },
                   {
@@ -1534,15 +1534,15 @@
                     "children": [
                       "The teas grouped the way people actually drink them — this season’s harvest, the everyday favourites, the caffeine-free evening cups, and starter kits for a new brewing ritual."
                     ],
-                    "id": "1036bac5-9dfb-4e6f-92bd-97ed60f2f659",
+                    "id": "72e5aafb-abf3-416f-bc88-effcba200d83",
                     "ord": "a1"
                   }
                 ],
-                "id": "e90432ef-e019-4863-a31d-da57623d8d22",
+                "id": "d5133e7d-1e8e-43b5-8cec-fa75be0b6d85",
                 "ord": "a0"
               }
             ],
-            "id": "e31bdcf6-018a-4b19-b045-6c947f76ea95",
+            "id": "8766aec0-8fab-4ac7-a947-414807d0d20e",
             "ord": "a0"
           },
           {
@@ -1550,7 +1550,7 @@
             "component": "commerce.collections",
             "class": "mx-auto w-full max-w-6xl px-6 py-6",
             "locked": "host",
-            "id": "4cdd26ea-c628-46b7-8fd6-10b3c161c142",
+            "id": "9a91726f-7cea-4b3b-9008-95564c6ea098",
             "ord": "a1"
           }
         ]
@@ -1567,7 +1567,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "020297cd-e09b-42bc-9b66-47189adcd86d",
+        "id": "e3c2f989-5cf6-4a98-bce6-7256897a40dc",
         "children": [
           {
             "kind": "element",
@@ -1584,7 +1584,7 @@
                     "tag": "h1",
                     "class": "text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl",
                     "children": ["Your cart"],
-                    "id": "0f782418-e085-480f-ab56-1fb06f89f5b5",
+                    "id": "3b9ffc6f-beaa-4909-95de-3a34753b8a77",
                     "ord": "a0"
                   },
                   {
@@ -1594,15 +1594,15 @@
                     "children": [
                       "Free shipping on orders over $40, and every tin is filled from a small fresh batch and sent within two days. Not sure a tea is for you? Tell us and we’ll make it right — a good cup should be a small pleasure, never a gamble."
                     ],
-                    "id": "bb9d481b-55ae-4fc7-8c80-26fb51e0652c",
+                    "id": "6bda287a-5b0e-45ee-9332-91149c9eec54",
                     "ord": "a1"
                   }
                 ],
-                "id": "455eca6b-fcdd-4afa-bf3c-3e3825abf840",
+                "id": "0a05989a-fae5-43b1-b17f-f3ba148898bd",
                 "ord": "a0"
               }
             ],
-            "id": "02136448-330b-4a95-9e83-8a67eb240046",
+            "id": "47c9ad34-2c62-43a6-bff5-ce52431a39cc",
             "ord": "a0"
           },
           {
@@ -1610,7 +1610,7 @@
             "component": "commerce.cart",
             "class": "mx-auto w-full max-w-4xl px-6 py-10",
             "locked": "host",
-            "id": "900e9f9e-47b3-4fac-9cf3-9bc0a1b546b1",
+            "id": "f3964e4f-d73d-470f-adae-0e14f52dbfd7",
             "ord": "a1"
           }
         ]
@@ -1627,7 +1627,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "0f80ad11-83fe-4a0c-98e1-e4f0d7aea771",
+        "id": "a7130a8a-8edf-48b7-88c1-888dee8d60ec",
         "children": [
           {
             "kind": "element",
@@ -1644,7 +1644,7 @@
                     "tag": "h1",
                     "class": "text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl",
                     "children": ["Search Steepwell"],
-                    "id": "1d431814-0ab0-44fc-9865-85bf3e1c0700",
+                    "id": "62d298df-80b2-4530-bbf7-58d34657bb45",
                     "ord": "a0"
                   },
                   {
@@ -1654,15 +1654,15 @@
                     "children": [
                       "Looking for a green, a chai, or a brewing guide? Search the whole shelf and the journal below."
                     ],
-                    "id": "26893684-e1d1-4f29-8b0e-6bf97e746b46",
+                    "id": "2a491a85-defb-4606-8e3a-6c8566b67699",
                     "ord": "a1"
                   }
                 ],
-                "id": "b25ba290-21bb-48f4-9624-4320c8ede4b8",
+                "id": "eb5dd723-2436-4a60-93c6-008e0e8f5706",
                 "ord": "a0"
               }
             ],
-            "id": "a2099b12-9f59-418d-a21d-e011ffa07ba0",
+            "id": "7ee63a19-5642-4007-b372-371a6e452d35",
             "ord": "a0"
           },
           {
@@ -1670,7 +1670,7 @@
             "component": "commerce.search",
             "class": "mx-auto w-full max-w-6xl px-6 py-6",
             "locked": "host",
-            "id": "be2076da-8701-4006-83e4-2469db9e6e25",
+            "id": "e094ecc4-73a0-43f7-8754-ccc644bcdbca",
             "ord": "a1"
           }
         ]
@@ -1687,7 +1687,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "6e3e656c-a28b-4d3a-ab16-e086e1d8d70d",
+        "id": "a51d7c32-40f1-4a2e-a636-563182f3ab53",
         "children": [
           {
             "kind": "element",
@@ -1704,7 +1704,7 @@
                     "tag": "h1",
                     "class": "text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl",
                     "children": ["The Steepwell journal"],
-                    "id": "cda45942-cc77-479c-8a3b-df007809305f",
+                    "id": "27634172-d0d1-4be6-b092-4c1518011e83",
                     "ord": "a0"
                   },
                   {
@@ -1714,15 +1714,15 @@
                     "children": [
                       "Notes from the tea room — how to steep a better cup, where the leaves actually come from, and how to make an unhurried few minutes of it. Plain, useful, no tea snobbery."
                     ],
-                    "id": "fd83c8bf-2c82-4655-b9ff-f117e3a835bf",
+                    "id": "9a4f4a8b-1bf2-4095-bcd9-0ede1d50be7a",
                     "ord": "a1"
                   }
                 ],
-                "id": "0ac10b18-aae2-48e4-bae1-3c2600bd3152",
+                "id": "f06aa3ff-dc5d-4958-86b9-e91075fdec85",
                 "ord": "a0"
               }
             ],
-            "id": "b5cb1eb9-c716-4391-9ff5-c81aa9b68f2f",
+            "id": "e92ae61e-fca6-40ac-be50-156cb1c39b77",
             "ord": "a0"
           },
           {
@@ -1760,7 +1760,7 @@
                               "kind": "value",
                               "ref": "featuredImage"
                             },
-                            "id": "1a0da6eb-86a7-450f-b767-d114e9c5ae8a",
+                            "id": "00135860-bdde-455d-8911-7f34a8f4f3c4",
                             "ord": "a0"
                           },
                           {
@@ -1772,7 +1772,7 @@
                               "kind": "value",
                               "ref": "date"
                             },
-                            "id": "7c8e6ad0-2a67-4740-b23b-c6f2a4240b57",
+                            "id": "4882143e-b095-4dd2-abee-7decfb4fe6ae",
                             "ord": "a1"
                           },
                           {
@@ -1784,7 +1784,7 @@
                               "kind": "value",
                               "ref": "title"
                             },
-                            "id": "bc949eec-86b6-4b41-b41e-a36134b91c09",
+                            "id": "88147d47-7ec3-4ab8-b9f2-bc3d341f1eaa",
                             "ord": "a2"
                           },
                           {
@@ -1796,7 +1796,7 @@
                               "kind": "value",
                               "ref": "excerpt"
                             },
-                            "id": "05b62588-4f8d-4436-b25f-55ce340ed4d8",
+                            "id": "654b6855-9c75-480b-aa34-f9cfebfc0e6c",
                             "ord": "a3"
                           }
                         ],
@@ -1805,7 +1805,7 @@
                           "ref": "url",
                           "attr": "href"
                         },
-                        "id": "e322550a-875c-4238-a757-939410b6aab0",
+                        "id": "907811e1-58c6-46b2-9390-94b746e9c12b",
                         "ord": "a0"
                       }
                     ],
@@ -1813,15 +1813,15 @@
                       "kind": "collection",
                       "ref": "cms.blog_post"
                     },
-                    "id": "4105ff34-502d-4ba1-8c99-3e150dc19f19",
+                    "id": "aefa5305-8191-4311-89ff-4623d500abd3",
                     "ord": "a0"
                   }
                 ],
-                "id": "6cc94aeb-d540-4211-b31d-5fc5437044a3",
+                "id": "0845dd02-39df-43df-b8a1-d2d40dd7ede7",
                 "ord": "a0"
               }
             ],
-            "id": "dcf0cf9b-00a9-44b4-8b05-83c5a5e7b6c5",
+            "id": "67178757-d4b9-40d4-a53b-9f71582ba370",
             "ord": "a1"
           }
         ]
@@ -1838,7 +1838,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "aebe0c26-3b70-455e-add6-f20d132126aa",
+        "id": "9adad38b-1fc7-492f-8d71-dea135f963d4",
         "children": [
           {
             "kind": "element",
@@ -1855,7 +1855,7 @@
                     "tag": "h1",
                     "class": "text-5xl font-bold tracking-tight text-base-content @2xl:text-6xl",
                     "children": ["About Steepwell"],
-                    "id": "4c2e31dc-74d7-4a73-ac49-c4063dd23494",
+                    "id": "c10324c3-8072-4017-916a-6daef20c2480",
                     "ord": "a0"
                   },
                   {
@@ -1865,7 +1865,7 @@
                     "children": [
                       "Steepwell began with a shelf of tins, a small kettle, and the plain frustration of never being able to buy a green tea that still tasted alive. It grew the slow way — one garden, one regular, one shared pot at a time — and it still runs on the same idea: source well, keep it fresh, and never rush the cup."
                     ],
-                    "id": "af12103f-8018-4d51-bafa-1987d1f85268",
+                    "id": "3e84a5bb-d93b-4041-a357-b16fdc33ea94",
                     "ord": "a1"
                   },
                   {
@@ -1875,7 +1875,7 @@
                     "children": [
                       "We buy whole-leaf tea from growers and importers we can name, and we pay above the commodity rate because the people who tend these gardens deserve a living from them. Then we keep the tea in small sealed batches, taste every one, and only tin what’s worth pouring a second cup of."
                     ],
-                    "id": "b29a04ac-0f61-402d-9499-d5203488aa1d",
+                    "id": "345a8da5-3946-45c0-9ee3-50050b66a21a",
                     "ord": "a2"
                   },
                   {
@@ -1885,15 +1885,15 @@
                     "children": [
                       "No mystery blends, no tea gone dusty and grey, nothing older than it should be. Just good leaf, handled with care from the hillside to your kitchen — and a quiet few minutes to enjoy it."
                     ],
-                    "id": "957061e8-522f-42a1-bc6b-024bf1b40167",
+                    "id": "253f74bd-21fc-4f14-a271-cc057f05b3e3",
                     "ord": "a3"
                   }
                 ],
-                "id": "6373637b-32f4-49e1-b3e2-f01e1ac7a7d7",
+                "id": "754aa316-f9e0-44f5-a651-a911f518d984",
                 "ord": "a0"
               }
             ],
-            "id": "3b242e88-a331-43e5-bca5-116b2c6e8ced",
+            "id": "f71f99dc-2e29-4518-ac85-17b68e3c5abc",
             "ord": "a0"
           }
         ]
@@ -1910,53 +1910,297 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "babfe9fe-5189-4677-8c37-0576cee7d8cb",
+        "id": "2accb0aa-c0ff-4885-954f-3300856324ed",
         "children": [
           {
             "kind": "element",
             "tag": "section",
-            "class": "bg-base-100 @container px-6 py-20 text-center",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-20",
             "children": [
               {
                 "kind": "element",
                 "tag": "div",
-                "class": "mx-auto flex w-full max-w-xl flex-col items-center gap-5",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-8",
                 "children": [
                   {
                     "kind": "element",
-                    "tag": "h1",
-                    "class": "text-5xl font-bold tracking-tight text-base-content @2xl:text-6xl",
-                    "children": ["Say hello"],
-                    "id": "934f0777-f0c7-4471-986b-9fb1d7ecd9e6",
+                    "tag": "div",
+                    "class": "flex flex-col gap-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h1",
+                        "class": "text-4xl font-bold tracking-tight text-base-content @3xl:text-5xl",
+                        "children": ["Say hello"],
+                        "id": "8423caa7-1e1a-4d92-b777-2674afdfd066",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "A question about a tea, a wholesale enquiry, or want us to blend for your café or shop? Tell us what you’re after and a real person at the tea house will get back to you."
+                        ],
+                        "id": "0d66bd80-6abc-4d9b-b7a6-f21f03e3e73b",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "9183d91e-b6b1-453f-868a-f202bd993f0f",
                     "ord": "a0"
                   },
                   {
                     "kind": "element",
-                    "tag": "p",
-                    "class": "text-lg leading-relaxed text-base-content",
+                    "tag": "div",
+                    "class": "flex flex-col gap-1",
                     "children": [
-                      "A question about a tea, a wholesale enquiry, or want us to blend for your café or shop? Tell us what you’re after and a real person at the tea house will get back to you."
+                      {
+                        "kind": "element",
+                        "tag": "span",
+                        "class": "text-base font-medium text-base-content",
+                        "children": ["Call us"],
+                        "id": "ff54bf77-28ff-4a2b-b2a6-0735d3bf5f77",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "text-lg font-semibold text-base-content underline underline-offset-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "children": ["(555) 123-4567"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "site.identity.phone"
+                            },
+                            "id": "16c2314e-5c85-4ced-b333-8667a9c8b236",
+                            "ord": "a0"
+                          }
+                        ],
+                        "data": {
+                          "kind": "value",
+                          "ref": "site.identity.phoneHref",
+                          "attr": "href"
+                        },
+                        "id": "5f7f0bf8-621a-4a09-9f32-4437143f37e6",
+                        "ord": "a1"
+                      }
                     ],
-                    "id": "643147f8-5a96-4cc8-b598-bc12d81b515d",
+                    "data": {
+                      "kind": "visible",
+                      "ref": "site.identity.phone"
+                    },
+                    "id": "a316c044-1b8a-4464-bcd0-cfebe2ec28fe",
                     "ord": "a1"
                   },
                   {
                     "kind": "element",
-                    "tag": "a",
-                    "class": "btn btn-primary btn-lg",
-                    "attrs": {
-                      "href": "mailto:hello@steepwelltea.example"
+                    "tag": "div",
+                    "class": "flex flex-col gap-1",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "span",
+                        "class": "text-base font-medium text-base-content",
+                        "children": ["Email us"],
+                        "id": "46dfce44-cc70-4911-acd1-efa8742f8bc7",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "text-lg font-semibold text-base-content underline underline-offset-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "children": ["hello@yourbusiness.com"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "site.identity.email"
+                            },
+                            "id": "dee77ee3-1e14-4df7-afe2-062e32a28978",
+                            "ord": "a0"
+                          }
+                        ],
+                        "data": {
+                          "kind": "value",
+                          "ref": "site.identity.emailHref",
+                          "attr": "href"
+                        },
+                        "id": "791124ab-85be-4965-9418-925ea91095cb",
+                        "ord": "a1"
+                      }
+                    ],
+                    "data": {
+                      "kind": "visible",
+                      "ref": "site.identity.email"
                     },
-                    "children": ["Email the tea house"],
-                    "id": "c0daf2ba-b6b3-40f9-bd5c-56a6484030ae",
+                    "id": "d3cd77ed-dfef-453b-8d89-47ad683a4d39",
                     "ord": "a2"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-1",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "span",
+                        "class": "text-base font-medium text-base-content",
+                        "children": ["Visit us"],
+                        "id": "22caf601-903d-486d-80c6-45c38c05cdc9",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "address",
+                        "class": "text-lg leading-relaxed whitespace-pre-line not-italic text-base-content",
+                        "children": ["123 Main Street\nPortland, OR 97204"],
+                        "data": {
+                          "kind": "value",
+                          "ref": "site.identity.address"
+                        },
+                        "id": "5173ecf2-a585-43ff-bad5-956cf1b10dff",
+                        "ord": "a1"
+                      }
+                    ],
+                    "data": {
+                      "kind": "visible",
+                      "ref": "site.identity.address"
+                    },
+                    "id": "3955ac15-0e4c-49f5-93ad-4325b1f925f0",
+                    "ord": "a3"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "form",
+                    "class": "flex w-full max-w-xl flex-col gap-5",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "label",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-base font-medium text-base-content",
+                            "children": ["Your name"],
+                            "id": "b26067c8-9343-4147-9cf5-6125be41ea8a",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "input",
+                            "class": "input input-bordered w-full",
+                            "attrs": {
+                              "type": "text",
+                              "name": "name",
+                              "required": true
+                            },
+                            "id": "8f09d91b-16bd-4831-b79c-681e27cd7c33",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "725add93-34ad-4ce1-b63a-9f7fcc0b8f25",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "label",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-base font-medium text-base-content",
+                            "children": ["Email address"],
+                            "id": "961e15e8-0d65-4db4-9eb1-f60ec2ad67e6",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "input",
+                            "class": "input input-bordered w-full",
+                            "attrs": {
+                              "type": "email",
+                              "name": "email",
+                              "required": true
+                            },
+                            "id": "53890d98-9107-4696-b529-3bb1aaab6334",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "e83b3110-3693-4063-afe9-06d3e7753796",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "label",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-base font-medium text-base-content",
+                            "children": ["How can we help?"],
+                            "id": "1d5953a3-306c-4625-8681-37f984876ef2",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "textarea",
+                            "class": "textarea textarea-bordered min-h-32 w-full",
+                            "attrs": {
+                              "name": "message"
+                            },
+                            "id": "a088a74a-631c-4c01-8dc2-c674bf1c159f",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "c9da41d0-d86f-40d9-8ae4-6107cb738458",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-wrap items-center gap-3",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "button",
+                            "class": "btn btn-primary btn-lg",
+                            "attrs": {
+                              "type": "submit"
+                            },
+                            "children": ["Email the tea house"],
+                            "id": "58884996-2415-441a-84e9-dd23b81d128b",
+                            "ord": "a0"
+                          }
+                        ],
+                        "id": "dfc12367-146b-45c9-9f41-faee9bf87608",
+                        "ord": "a3"
+                      }
+                    ],
+                    "behavior": {
+                      "type": "form"
+                    },
+                    "data": {
+                      "kind": "action",
+                      "ref": "submit"
+                    },
+                    "id": "8fc78dae-e0e6-4dc6-a73f-d040e914603e",
+                    "ord": "a4"
                   }
                 ],
-                "id": "e4243bbc-403e-4347-89c2-c4df65528bd2",
+                "id": "bb1a8fe4-2a35-4301-be21-b8062f15c84a",
                 "ord": "a0"
               }
             ],
-            "id": "07ca2fa8-a0ab-4022-9899-8f49531692b3",
+            "id": "2e4f685f-ef57-45e5-8e27-8c1ccab1bb9e",
             "ord": "a0"
           }
         ]
@@ -1996,7 +2240,7 @@
                       "kind": "value",
                       "ref": "image"
                     },
-                    "id": "0a1a1a03-9d74-4af0-8660-868ce5b6745c",
+                    "id": "e7e2d6cb-927f-4563-8f74-cf8264b9ed20",
                     "ord": "a0"
                   },
                   {
@@ -2014,7 +2258,7 @@
                             "tag": "p",
                             "class": "text-sm font-semibold uppercase tracking-widest text-secondary",
                             "children": ["Steepwell Tea House"],
-                            "id": "5bae0dbd-b696-4f0a-a8da-dee718c75c1f",
+                            "id": "3932cf00-e3ec-4152-b29a-592abcac6c0d",
                             "ord": "a0"
                           },
                           {
@@ -2026,7 +2270,7 @@
                               "kind": "value",
                               "ref": "title"
                             },
-                            "id": "3cf272d5-930b-4d6f-bede-524e65831dcb",
+                            "id": "82e5a2a4-daa1-4105-972a-7ff09ebfaa06",
                             "ord": "a1"
                           },
                           {
@@ -2043,7 +2287,7 @@
                                   "kind": "value",
                                   "ref": "price"
                                 },
-                                "id": "61da4391-90f6-45b4-9702-a7777e9fa0aa",
+                                "id": "1962566a-6c15-4f91-b19d-4b191966973f",
                                 "ord": "a0"
                               },
                               {
@@ -2059,7 +2303,7 @@
                                       "kind": "value",
                                       "ref": "compareAtPrice"
                                     },
-                                    "id": "05e1f1b2-1fe3-4842-ba02-52f730d1c3ab",
+                                    "id": "6430e0c9-aaa9-4417-b20a-4bbdd92603d8",
                                     "ord": "a0"
                                   }
                                 ],
@@ -2067,11 +2311,11 @@
                                   "kind": "visible",
                                   "ref": "compareAtPrice"
                                 },
-                                "id": "6395dd95-18b9-4839-9a88-af416dde0a3b",
+                                "id": "69f342eb-62ab-426c-a481-e8525f20b21b",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "84a0d611-feb1-4184-8596-0646fa5f51c3",
+                            "id": "e521ffe1-d391-4fde-9547-9fd5b92d23ca",
                             "ord": "a2"
                           },
                           {
@@ -2083,11 +2327,11 @@
                               "kind": "visible",
                               "ref": "lowStock"
                             },
-                            "id": "ef5e25f5-e20d-484f-a4c9-7887f79f4974",
+                            "id": "3239bfdf-e49f-43a1-bd25-9da04981f6f6",
                             "ord": "a3"
                           }
                         ],
-                        "id": "adfd756d-3279-4857-9cd3-41dcb80690c7",
+                        "id": "999a4d4d-ddff-40c0-90af-2d418270e7df",
                         "ord": "a0"
                       },
                       {
@@ -2099,7 +2343,7 @@
                           "kind": "value",
                           "ref": "description"
                         },
-                        "id": "0135e9d0-e61d-4289-ac88-e52cbfe8014f",
+                        "id": "91d583b0-a67f-470d-9a22-e8ce7ce53655",
                         "ord": "a1"
                       },
                       {
@@ -2118,7 +2362,7 @@
                               "kind": "value",
                               "ref": "variantId"
                             },
-                            "id": "b5049d4d-0fc5-4abd-8c6e-2a63a22ec03b",
+                            "id": "eb5c81cf-a3d2-4e32-b466-4793fc3c27a3",
                             "ord": "a0"
                           },
                           {
@@ -2131,7 +2375,7 @@
                                 "tag": "span",
                                 "class": "font-medium",
                                 "children": ["Quantity"],
-                                "id": "b4ebd7cd-1ab8-4ce2-a313-d7679e5b4d55",
+                                "id": "1f55d182-d013-40ca-9fb2-2baea453f7a8",
                                 "ord": "a0"
                               },
                               {
@@ -2145,11 +2389,11 @@
                                   "min": "1",
                                   "step": "1"
                                 },
-                                "id": "e7d3a977-3d79-409b-8006-98de463fa06d",
+                                "id": "bd1a9e6e-40a4-478c-a86c-58afbec07e36",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "f3dc30fd-8276-4493-83b0-a9f0696550bb",
+                            "id": "258efcec-df43-4d18-9f48-5232e002989e",
                             "ord": "a1"
                           },
                           {
@@ -2160,7 +2404,7 @@
                               "type": "submit"
                             },
                             "children": ["Add to cart"],
-                            "id": "62bdfa3a-a417-41e4-8be5-384b002887de",
+                            "id": "39fdafd8-a31e-41c4-b4fa-573f9a75a443",
                             "ord": "a2"
                           }
                         ],
@@ -2171,7 +2415,7 @@
                           "kind": "action",
                           "ref": "add-to-cart"
                         },
-                        "id": "5a60e89b-3960-48f0-8d05-797e48a8bdd2",
+                        "id": "d8b799cb-0f42-43a0-a1c8-8568b9e6b8d0",
                         "ord": "a2"
                       },
                       {
@@ -2184,7 +2428,7 @@
                             "tag": "h2",
                             "class": "text-sm font-semibold uppercase tracking-widest text-secondary",
                             "children": ["How to steep it"],
-                            "id": "0cd1226a-2dc6-4983-a6b7-dbf9e76fa809",
+                            "id": "f3eaa0af-45f9-4b42-953e-ef0cbf18023c",
                             "ord": "a0"
                           },
                           {
@@ -2194,11 +2438,11 @@
                             "children": [
                               "One teaspoon per cup, water just off the boil for black and herbal or a touch cooler for green and white, and a two-to-four-minute steep. Every tin carries its own time and temperature — good tea forgives a little, so taste as you go and steep it the way you like it."
                             ],
-                            "id": "91d1261f-de8a-4513-8a1c-1b34895a58c9",
+                            "id": "6e000faa-21fd-4cc4-8f72-7b2188e59d39",
                             "ord": "a1"
                           }
                         ],
-                        "id": "96b5d8de-eda6-4348-9670-f19d2599eb77",
+                        "id": "ea6cd2aa-b653-4821-9370-517088361e50",
                         "ord": "a3"
                       },
                       {
@@ -2214,7 +2458,7 @@
                               "href": "/shipping-policy"
                             },
                             "children": ["Shipping & delivery"],
-                            "id": "6d2bb195-86ef-45da-a070-8cb320e76a7a",
+                            "id": "ac1674e1-547f-4542-98d0-646d487ae33a",
                             "ord": "a0"
                           },
                           {
@@ -2225,19 +2469,19 @@
                               "href": "/returns-policy"
                             },
                             "children": ["Returns & refunds"],
-                            "id": "c8bf8726-b819-4c60-931e-c35cb06fd3b2",
+                            "id": "342714ea-1c83-4bad-9615-f932473f03f2",
                             "ord": "a1"
                           }
                         ],
-                        "id": "d5f3835d-3661-407b-a248-5d4ff22e5e2f",
+                        "id": "a71170a0-954e-4ca4-9579-c0e6935e981f",
                         "ord": "a4"
                       }
                     ],
-                    "id": "c8f747d1-065f-4e47-8671-28807aa3134e",
+                    "id": "e220a98c-5f6c-4281-9b94-d091cd34f692",
                     "ord": "a1"
                   }
                 ],
-                "id": "d47c6c32-a8e7-4069-b467-36b89517a69e",
+                "id": "4e85ffc2-d618-4c09-aed8-7b3fcc8f61f3",
                 "ord": "a0"
               }
             ],
@@ -2245,7 +2489,7 @@
               "kind": "collection",
               "ref": "product"
             },
-            "id": "e6caaae8-85dd-47e4-bd5b-beb7a9c7a718",
+            "id": "727ab821-4bac-43af-88aa-4b22347a5295",
             "ord": "a0"
           },
           {
@@ -2263,7 +2507,7 @@
                     "tag": "h2",
                     "class": "text-2xl font-semibold text-base-content",
                     "children": ["Pairs well with"],
-                    "id": "52512ea4-eeb2-4c3c-8fd9-72422642f717",
+                    "id": "99604635-6a9c-4eac-beb2-762183965f6d",
                     "ord": "a0"
                   },
                   {
@@ -2287,12 +2531,12 @@
                             "props": {
                               "name": "arrow-left"
                             },
-                            "id": "17b0630f-17b1-4fd2-94ad-c986b5b595a2",
+                            "id": "a491fa89-5145-49eb-b10d-298aaaea62dd",
                             "ord": "a0"
                           }
                         ],
                         "part": "prev",
-                        "id": "1b80ce2f-f17c-490c-82ad-27ff2a3e5757",
+                        "id": "8c9ab869-5769-4721-8ea5-485a7de46c35",
                         "ord": "a0"
                       },
                       {
@@ -2311,20 +2555,20 @@
                             "props": {
                               "name": "arrow-right"
                             },
-                            "id": "5f817ecb-3008-4802-98df-d70835f96191",
+                            "id": "54ef301e-64b1-4a4f-bb63-d56f47d0a1b2",
                             "ord": "a0"
                           }
                         ],
                         "part": "next",
-                        "id": "0ddd489f-17ab-47bc-a8ab-90e4e649ba7a",
+                        "id": "ebec852d-76e4-4c5e-b05c-bc62819a4220",
                         "ord": "a1"
                       }
                     ],
-                    "id": "bea43a6c-af18-4e08-93ff-778c50a2adc5",
+                    "id": "81b8c377-14b0-4c51-b2c2-99941c6fd03e",
                     "ord": "a1"
                   }
                 ],
-                "id": "ba9b6382-165f-4e9a-a17e-4b6b46f4b9ab",
+                "id": "56cb556d-9d7e-45e8-bc3d-a5a5779ac3c8",
                 "ord": "a0"
               },
               {
@@ -2349,7 +2593,7 @@
                           "kind": "value",
                           "ref": "image"
                         },
-                        "id": "09dc593f-073b-4800-a864-9d549b249bcb",
+                        "id": "f4761a67-fc81-4690-9507-0e9fba1b6cc5",
                         "ord": "a0"
                       },
                       {
@@ -2366,7 +2610,7 @@
                               "kind": "value",
                               "ref": "title"
                             },
-                            "id": "a871fff0-3fd3-4916-80af-9571a19bf832",
+                            "id": "2a1d7ebd-ec00-4df4-8905-88e2aa556d18",
                             "ord": "a0"
                           },
                           {
@@ -2378,11 +2622,11 @@
                               "kind": "value",
                               "ref": "price"
                             },
-                            "id": "a4552cb2-23dd-4cc6-896a-131acc4f342a",
+                            "id": "9164d2fc-11d4-40b0-86c8-ac34ffd4cc73",
                             "ord": "a1"
                           }
                         ],
-                        "id": "0a1602d1-03c5-477a-8df3-3e7da5c757c0",
+                        "id": "5aab7d1d-d920-445f-93c3-aa8ff2caeee0",
                         "ord": "a1"
                       }
                     ],
@@ -2392,7 +2636,7 @@
                       "attr": "href"
                     },
                     "part": "slide",
-                    "id": "bed04f68-40e1-45ea-8cdf-ec408789dd32",
+                    "id": "ba82e128-7e24-4b7b-a5da-4910f69b5f07",
                     "ord": "a0"
                   }
                 ],
@@ -2401,18 +2645,18 @@
                   "kind": "collection",
                   "ref": "commerce.related"
                 },
-                "id": "e1d60025-9e4b-4520-8925-49e4c4551e13",
+                "id": "748fb7e2-bac7-44ad-9664-e02722c41b0f",
                 "ord": "a1"
               }
             ],
             "behavior": {
               "type": "carousel"
             },
-            "id": "ed714362-914b-477e-89a3-838ce6b2af03",
+            "id": "177b7c50-2855-4f07-9987-1a816fc47b2b",
             "ord": "a1"
           }
         ],
-        "id": "4a2ee515-1c55-4d64-9ebb-9443b33b408a"
+        "id": "4af459d7-9497-4c56-a509-dcda3fb89269"
       }
     }
   ],

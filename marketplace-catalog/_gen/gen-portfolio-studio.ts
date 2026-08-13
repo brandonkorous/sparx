@@ -34,6 +34,7 @@ import {
 } from '../../packages/silica-catalog/node_modules/@wizeworks/silicaui-html/dist/index.js';
 import { safeParseBlueprint } from '../../packages/blueprints/src/validate';
 
+import { contactSection } from './shared/contact-section';
 import { emitPortfolioBundle, type PortfolioSiteSpec } from './portfolio-sites/harness';
 import { writePortfolioPreview } from './portfolio-sites/preview';
 import {
@@ -508,34 +509,18 @@ const ABOUT: Node[] = [
 ];
 
 const CONTACT: Node[] = [
-  el('section', 'bg-base-100 @container px-6 py-20', {
-    children: [
-      el('div', 'mx-auto flex w-full max-w-2xl flex-col gap-6', {
-        children: [
-          el('h1', 'text-5xl font-bold uppercase tracking-tight text-base-content @2xl:text-6xl', {
-            text: 'Start a project',
-          }),
-          el('p', 'text-lg leading-relaxed text-base-content', {
-            text: 'I’m taking on a small number of new projects. A good first enquiry tells me the site or building, who it’s for, roughly what you hope to do, and when you’d like to start — but if you only have a plot and an idea, that’s a fine place to begin too.',
-          }),
-          el('p', 'text-lg leading-relaxed text-base-content', {
-            text: 'I’ll usually reply within a few days to say whether it’s a good fit and to suggest a first conversation. New work generally begins two to three months out.',
-          }),
-          el('div', 'flex flex-wrap gap-3', {
-            children: [
-              el('a', 'btn btn-primary btn-lg', {
-                attrs: { href: 'mailto:hello@rehmanstudio.example' },
-                text: 'Email the studio',
-              }),
-              el('a', 'btn btn-neutral btn-outline btn-lg', {
-                attrs: { href: '/work' },
-                text: 'See the work first',
-              }),
-            ],
-          }),
-        ],
-      }),
+  // The page's own words, over the shared contact band: the business's phone and email
+  // (each hidden until set in Site settings — never an invented number) and a working
+  // enquiry form that reaches the tenant's Form submissions inbox. This used to end at a
+  // `mailto:` to a placeholder domain, which was the only way to reach the business.
+  contactSection({
+    heading: 'Start a project',
+    intro: [
+      'I’m taking on a small number of new projects. A good first enquiry tells me the site or building, who it’s for, roughly what you hope to do, and when you’d like to start — but if you only have a plot and an idea, that’s a fine place to begin too.',
+      'I’ll usually reply within a few days to say whether it’s a good fit and to suggest a first conversation. New work generally begins two to three months out.',
     ],
+    submitLabel: 'Email the studio',
+    secondary: { label: 'See the work first', href: '/work' },
   }),
 ];
 

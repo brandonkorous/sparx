@@ -22,7 +22,7 @@
                   "props": {
                     "show": "both"
                   },
-                  "id": "6453218c-6e13-4558-9398-fb61f8297e7b",
+                  "id": "f550f2dd-a3ea-438b-ac06-59e1e4821953",
                   "ord": "a0"
                 },
                 {
@@ -43,7 +43,7 @@
                         "type": "link",
                         "label": "Product"
                       },
-                      "id": "bd3c5207-5219-4ea6-863b-a746f3a837f4",
+                      "id": "f8ec9eeb-f636-4063-9440-aa9b9dcbd5c1",
                       "ord": "a0"
                     },
                     {
@@ -59,7 +59,7 @@
                         "type": "link",
                         "label": "Pricing"
                       },
-                      "id": "ee63c85f-7079-4e40-9627-b41182084630",
+                      "id": "3a9a1670-1353-4e2f-b208-92b6d4a301f0",
                       "ord": "a1"
                     },
                     {
@@ -75,11 +75,11 @@
                         "type": "link",
                         "label": "Docs"
                       },
-                      "id": "831a4756-a34f-4ef8-a845-8561bdedd812",
+                      "id": "03d436ab-4a3a-4225-aac9-0d7beda001f2",
                       "ord": "a2"
                     }
                   ],
-                  "id": "4b3d73b2-75f2-4d08-a037-526744445fa0",
+                  "id": "21004b0d-c914-4df8-9180-6a130410f5e9",
                   "ord": "a1"
                 },
                 {
@@ -100,14 +100,14 @@
                         "type": "link",
                         "label": "Secondary link"
                       },
-                      "id": "26f3d4d6-9986-4e30-b669-26fae3cef599",
+                      "id": "268b8095-65e0-4655-89bb-cd4fcf4dcc5e",
                       "ord": "a0"
                     },
                     {
                       "kind": "host",
                       "component": "site.theme-toggle",
                       "class": "inline-flex items-center",
-                      "id": "d71104ae-d93b-4781-833f-ee57f55ce522",
+                      "id": "3bf1859e-6b74-4dd5-ab4d-411dd5cbb916",
                       "ord": "a1"
                     },
                     {
@@ -123,7 +123,7 @@
                         "type": "link",
                         "label": "Primary action"
                       },
-                      "id": "e7331e01-5f71-4210-8412-539191355216",
+                      "id": "6c28b9d7-c5ef-4be0-8179-f4ce2527185f",
                       "ord": "a2"
                     },
                     {
@@ -141,20 +141,20 @@
                           "props": {
                             "name": "menu"
                           },
-                          "id": "228f789d-703d-4772-a149-1e611389cc4f",
+                          "id": "5decd0b4-6082-4ba5-bfd3-13898710895b",
                           "ord": "a0"
                         }
                       ],
                       "part": "trigger",
-                      "id": "e33ea6f6-8fb7-44e5-a407-6bed4126a682",
+                      "id": "3953d199-6436-4ebe-ba1c-afb6448b1957",
                       "ord": "a3"
                     }
                   ],
-                  "id": "73ee46b7-87e8-427e-aec1-7479a7107eb2",
+                  "id": "8cfeb18c-9932-424c-8172-0ed25faa94f9",
                   "ord": "a2"
                 }
               ],
-              "id": "958ef502-e1d8-4993-9b64-cd21d43823f0",
+              "id": "845eca24-db9f-4eb7-b94c-d4d77a02be06",
               "ord": "a0"
             },
             {
@@ -178,7 +178,7 @@
                     "type": "link",
                     "label": "Product"
                   },
-                  "id": "2f4756b9-5d39-48e9-b2b6-feee8277b479",
+                  "id": "de3e9ad6-9541-45de-b389-8ee802e2d4b5",
                   "ord": "a0"
                 },
                 {
@@ -194,7 +194,7 @@
                     "type": "link",
                     "label": "Pricing"
                   },
-                  "id": "dcf7b1d4-abb9-489f-be87-b95810cbd5ad",
+                  "id": "92677185-b33d-44c6-addd-bd3a647b9073",
                   "ord": "a1"
                 },
                 {
@@ -210,7 +210,7 @@
                     "type": "link",
                     "label": "Docs"
                   },
-                  "id": "1f053355-97bb-46fe-8599-6d1ee006a788",
+                  "id": "1db128b0-d328-41dd-8c8c-cb090c746ec2",
                   "ord": "a2"
                 },
                 {
@@ -226,7 +226,7 @@
                     "type": "link",
                     "label": "Secondary link"
                   },
-                  "id": "d8c15bc7-4bbc-4d8a-b108-0f7a60de8ba7",
+                  "id": "d6c2e958-3f5d-4f9f-a1b6-69ad40188986",
                   "ord": "a3"
                 },
                 {
@@ -242,19 +242,19 @@
                     "type": "link",
                     "label": "Primary action"
                   },
-                  "id": "a3a5baac-9c23-4848-a327-eee1b73bc154",
+                  "id": "7b0ed8c4-b4fc-41f1-979a-63e46953c1ec",
                   "ord": "a4"
                 }
               ],
               "part": "panel",
-              "id": "94350cd6-428b-4791-92f5-027fba590c2e",
+              "id": "8e967e66-7bc1-4df5-8e08-1e4c7d1c990d",
               "ord": "a1"
             }
           ],
           "behavior": {
             "type": "disclosure"
           },
-          "id": "9e51df54-2990-4488-b759-5cfbe5f1df37",
+          "id": "e4f1ee5d-5244-46a4-be36-d098b411eefe",
           "ord": "a0"
         },
         {
@@ -270,7 +270,7 @@
               "kind": "outlet"
             }
           ],
-          "id": "86593317-b902-4508-8e18-6c64c1d157a1",
+          "id": "ff61d693-aa8c-4fca-925d-2d6a8c5c5b78",
           "ord": "a1"
         },
         {
@@ -300,7 +300,7 @@
                           "props": {
                             "show": "both"
                           },
-                          "id": "ceb0d19d-c8b7-4cdd-b1ad-19b752cf5601",
+                          "id": "cf389c67-cd45-4b9f-825a-6b6c9de6523b",
                           "ord": "a0"
                         },
                         {
@@ -316,7 +316,7 @@
                           "attrs": {
                             "href": "/"
                           },
-                          "id": "1b34fdb2-4ab7-4747-8343-e1021be53ada",
+                          "id": "6a77b7bb-d7e2-4147-87e1-75794b020eb8",
                           "ord": "a1"
                         },
                         {
@@ -324,11 +324,11 @@
                           "tag": "ul",
                           "class": "mt-2 flex items-center gap-5",
                           "children": [],
-                          "id": "e76091d4-6e3f-4bfd-8eab-7b3fd668f9a1",
+                          "id": "6ad35ab7-557a-4215-afb3-a25c7900568e",
                           "ord": "a2"
                         }
                       ],
-                      "id": "fa519484-2e33-4961-8e48-80e06f5dea29",
+                      "id": "90eef9f4-aba0-462e-a682-20d87d12da58",
                       "ord": "a0"
                     },
                     {
@@ -349,7 +349,7 @@
                           "attrs": {
                             "href": "/"
                           },
-                          "id": "f51028d8-2687-4a06-9373-8929e2e577e9",
+                          "id": "2d5ecf01-0815-4e74-a57f-654c14d69bd3",
                           "ord": "a0"
                         },
                         {
@@ -374,11 +374,11 @@
                                     "type": "link",
                                     "label": "Features"
                                   },
-                                  "id": "eda920b8-e97d-4848-923e-e7492f1371b2",
+                                  "id": "d8b0e1c6-2b91-4550-9508-0364a7182ac4",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "7fcb7fb1-a0d5-4ff5-9513-a0a28c30f37e",
+                              "id": "3abbddb9-c807-4343-81b2-715ec0a4e440",
                               "ord": "a0"
                             },
                             {
@@ -398,11 +398,11 @@
                                     "type": "link",
                                     "label": "Pricing"
                                   },
-                                  "id": "9e5ce0ab-c5d7-4f45-8cdf-ac6219c1a8e2",
+                                  "id": "cc84d753-8e37-4d2c-a00f-b0113405cad8",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "39b825f3-6178-43e0-97fb-87a5d70ba6b1",
+                              "id": "2a166c3a-11c0-496d-b224-85297dbdc0ab",
                               "ord": "a1"
                             },
                             {
@@ -422,11 +422,11 @@
                                     "type": "link",
                                     "label": "Integrations"
                                   },
-                                  "id": "5c8c765b-3b8b-407c-b017-efc1a18ab1ab",
+                                  "id": "44726172-0d32-49d6-924a-1d047cc7ee7d",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "bd44189f-af03-40d6-a266-a543e0622001",
+                              "id": "290691a9-f103-4a78-8833-e29b89b83853",
                               "ord": "a2"
                             },
                             {
@@ -446,19 +446,19 @@
                                     "type": "link",
                                     "label": "Changelog"
                                   },
-                                  "id": "622122be-3e07-440f-8888-6ef9b00c81dc",
+                                  "id": "4c6ef952-e4a1-4521-810e-d4fe15596e37",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "80882ad0-0248-4f09-ada6-687d80923da1",
+                              "id": "786eb94e-de59-43e3-8a6b-e2d0ef723808",
                               "ord": "a3"
                             }
                           ],
-                          "id": "cfe8fd58-36ce-46ec-b1ff-b125b1e9c62b",
+                          "id": "7b55c586-8a9f-468a-8fc9-a86317d22c3c",
                           "ord": "a1"
                         }
                       ],
-                      "id": "4f3a8113-0b22-46a6-bd1d-190adc9d0cd1",
+                      "id": "75153099-20f4-4c00-b8ee-0a7943a0b373",
                       "ord": "a1"
                     },
                     {
@@ -471,11 +471,11 @@
                           "tag": "ul",
                           "class": "flex flex-col gap-2",
                           "children": [],
-                          "id": "b301f87d-de8c-4609-90eb-4252e8786a23",
+                          "id": "c4e2c3f5-8223-48a7-b24f-8d58438d9801",
                           "ord": "a0"
                         }
                       ],
-                      "id": "608700e9-5ffb-44d8-8adb-894c7d8601e4",
+                      "id": "a0ed3b56-0dca-40e2-a809-0abf6f3813f9",
                       "ord": "a2"
                     },
                     {
@@ -499,23 +499,23 @@
                                   "props": {
                                     "heading": "Legal"
                                   },
-                                  "id": "2960aaee-f4dc-416f-8b89-bfbc915cc662",
+                                  "id": "173a0c5f-c837-4e95-b76a-ecc744125fa3",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "31d1ddbe-d33b-49cf-afa5-ad8ab664c9cf",
+                              "id": "01a75459-67ae-4c7e-93c4-f30ea6c562af",
                               "ord": "a0"
                             }
                           ],
-                          "id": "0c76b6df-c115-401a-9e86-8b9e92420a5a",
+                          "id": "bfe6bb53-2f78-4107-ba55-8a54602fca69",
                           "ord": "a0"
                         }
                       ],
-                      "id": "3eb3e212-0f83-4b3d-870e-fd9225d36e36",
+                      "id": "96dbf95c-8a04-411a-a70f-05f03ec9b1bc",
                       "ord": "a3"
                     }
                   ],
-                  "id": "b78eeae2-f3af-46a1-8bd0-dfbe03bf671a",
+                  "id": "c5543763-f24a-4d2e-8d36-c7137b6074d0",
                   "ord": "a0"
                 },
                 {
@@ -538,11 +538,11 @@
                             "kind": "value",
                             "ref": "site.identity.name"
                           },
-                          "id": "9fe9eef1-5eab-42f1-9ddc-176c64e8d943",
+                          "id": "72213ff7-0197-4e95-b86d-862289217d6a",
                           "ord": "a0"
                         }
                       ],
-                      "id": "14aabaa8-b396-4f13-95d5-3d761a2f74f7",
+                      "id": "2808c482-252c-46a1-a086-fa7410741cef",
                       "ord": "a0"
                     },
                     {
@@ -550,23 +550,23 @@
                       "tag": "ul",
                       "class": "flex flex-wrap items-center gap-x-6 gap-y-2",
                       "children": [],
-                      "id": "9dfe2a16-5bcd-468b-b275-a417df4e8dbe",
+                      "id": "d9d6af2a-f590-4789-b7d1-5e7361cedb13",
                       "ord": "a1"
                     }
                   ],
-                  "id": "c51361ab-e8e1-4910-9bb2-8e7b4795d441",
+                  "id": "ddb37278-8014-4f58-8906-f78e60d65cad",
                   "ord": "a1"
                 }
               ],
-              "id": "a8316c2d-69b2-4c6c-b2f5-4222cfd4699f",
+              "id": "7b295140-1a4c-48fa-a6c0-a617db6b09a3",
               "ord": "a0"
             }
           ],
-          "id": "67147f29-12d7-4081-999b-f62d8564def5",
+          "id": "740fae06-8c05-489e-95b9-f142d171b4c3",
           "ord": "a2"
         }
       ],
-      "id": "cc937ac5-99a5-4a45-8ecf-5f82ab287f54"
+      "id": "3a01fdfb-18a6-4d43-a2c6-23da7c038e21"
     }
   },
   "pages": [
@@ -580,7 +580,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "c9d42937-898a-43d3-9a77-f57752d90008",
+        "id": "a16bc116-6b04-444a-8bb3-3fa217aeb95e",
         "children": [
           {
             "kind": "element",
@@ -597,7 +597,7 @@
                     "tag": "h1",
                     "class": "text-5xl font-bold leading-none tracking-tight @2xl:text-6xl @3xl:text-7xl",
                     "children": ["Show up. Get strong. No ego."],
-                    "id": "3f9c86a7-2941-478c-aa95-1863e223b552",
+                    "id": "9e48f1f5-2867-4dda-b7c7-2e74fc0a007d",
                     "ord": "a0"
                   },
                   {
@@ -607,7 +607,7 @@
                     "children": [
                       "A strength & conditioning studio built on small groups, real coaching and loads that meet you where you are. Every level scaled. Every session coached. Claim your spot."
                     ],
-                    "id": "e51fa1b9-7fea-4dbb-878f-2d3ab3ac540c",
+                    "id": "6bdee713-30b5-4c6a-a750-e8284bfcbac7",
                     "ord": "a1"
                   },
                   {
@@ -618,12 +618,12 @@
                       {
                         "kind": "element",
                         "tag": "a",
-                        "class": "btn btn-primary btn-lg",
+                        "class": "btn btn-lg btn-neutral",
                         "attrs": {
                           "href": "/book"
                         },
                         "children": ["Claim your spot"],
-                        "id": "81fe4cfc-b9bb-4d67-8379-fa9b3a5aaa27",
+                        "id": "8da8a963-02ff-46ac-96a4-f7a801ab43ba",
                         "ord": "a0"
                       },
                       {
@@ -634,19 +634,19 @@
                           "href": "/book"
                         },
                         "children": ["See the board"],
-                        "id": "4afd370c-9885-4024-b33d-a4eacba9a06b",
+                        "id": "3b4e11ce-a609-4e19-9b87-505f579feffa",
                         "ord": "a1"
                       }
                     ],
-                    "id": "d9e2b307-cd0a-41d0-90ce-1040a2850fbf",
+                    "id": "f3f4a0b2-d5cb-4fad-b89c-018921d873c8",
                     "ord": "a2"
                   }
                 ],
-                "id": "a28bf79e-9c8d-4822-8e40-f896416af9ec",
+                "id": "9b9110a7-c36e-44f2-9bd3-60b0b7d7f5d8",
                 "ord": "a0"
               }
             ],
-            "id": "219e6c3e-e742-434b-9f55-26d240910fa6",
+            "id": "d4ef53d4-7b77-4d4d-839c-3ddeee4ef7df",
             "ord": "a0"
           },
           {
@@ -674,7 +674,7 @@
                             "tag": "h2",
                             "class": "text-xl font-semibold text-base-content",
                             "children": ["Coaches, not a playlist"],
-                            "id": "8da7e617-df51-422b-8bf7-36d44f5300d3",
+                            "id": "a7c627b0-a808-4668-affc-e416a8872bdb",
                             "ord": "a0"
                           },
                           {
@@ -684,11 +684,11 @@
                             "children": [
                               "Every class is run by a certified coach who watches your reps, scales the load and knows your name — not a screen counting you down."
                             ],
-                            "id": "36ed1979-2a2f-4be9-a44f-cb50455eda03",
+                            "id": "10bd84fe-a246-4c75-a3f2-4bc099c34abc",
                             "ord": "a1"
                           }
                         ],
-                        "id": "e4941afd-a31c-42ca-82ae-7b96d6844efd",
+                        "id": "1c9ced3d-909f-445e-9684-58f8c573b105",
                         "ord": "a0"
                       },
                       {
@@ -701,7 +701,7 @@
                             "tag": "h2",
                             "class": "text-xl font-semibold text-base-content",
                             "children": ["Small groups, hard caps"],
-                            "id": "d7b15f9e-b10d-4605-bfa3-1e59571686c3",
+                            "id": "92ade372-3e37-4a42-a868-c06f6267d214",
                             "ord": "a0"
                           },
                           {
@@ -711,11 +711,11 @@
                             "children": [
                               "Classes are capped so you always have space, a barbell and eyes on your form. No fighting for a rack, no getting lost in a crowd."
                             ],
-                            "id": "874e516a-8e37-450f-a221-490b50be0d24",
+                            "id": "699868f8-36f8-4ab3-859c-30b90aa2e80e",
                             "ord": "a1"
                           }
                         ],
-                        "id": "4104c669-29d9-4c6f-a4b1-263bdfeccf4d",
+                        "id": "d31ad05b-4ae1-4fad-baf5-a49942ed771c",
                         "ord": "a1"
                       },
                       {
@@ -728,7 +728,7 @@
                             "tag": "h2",
                             "class": "text-xl font-semibold text-base-content",
                             "children": ["Every level scaled"],
-                            "id": "6eecffc8-033a-48cb-889c-c61b4465bc45",
+                            "id": "7ee58fc5-416c-4b24-862e-d2365f114d60",
                             "ord": "a0"
                           },
                           {
@@ -738,23 +738,23 @@
                             "children": [
                               "First week or tenth year, the workout bends to you. We scale the weight and the movement so it’s the right kind of hard for your body today."
                             ],
-                            "id": "77a770ca-a4c2-476c-8893-f35f1dc864a9",
+                            "id": "ac738dfe-0849-425c-8829-cc6ad9b29feb",
                             "ord": "a1"
                           }
                         ],
-                        "id": "c894c163-4779-4b39-8d8a-ceaabed1cc57",
+                        "id": "91f17764-a1f7-4fe8-ab66-6d36b94c61ed",
                         "ord": "a2"
                       }
                     ],
-                    "id": "b60bfe61-e3e7-4e6b-9fef-30973add5a3e",
+                    "id": "7b350bab-05c8-4ac4-be2f-1ceb91fc2ab7",
                     "ord": "a0"
                   }
                 ],
-                "id": "7217ea19-8f51-4947-b9ca-628b752c4b6a",
+                "id": "bcedabf4-58ac-47fe-b8fb-5017d1c5f777",
                 "ord": "a0"
               }
             ],
-            "id": "0f6b970e-3d9a-4f25-a3a9-a17ae9723e30",
+            "id": "12f405c6-7f3a-4cab-8890-2e139b18dcbc",
             "ord": "a1"
           },
           {
@@ -776,7 +776,7 @@
                       "alt": "The open training floor with racks, plates and turf",
                       "loading": "lazy"
                     },
-                    "id": "66feb989-de32-4e20-9215-055ef9d9f1a1",
+                    "id": "708424db-fa1d-4f26-94d5-c7bd438249cc",
                     "ord": "a0"
                   },
                   {
@@ -789,7 +789,7 @@
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
                         "children": ["Real programming, not random punishment"],
-                        "id": "750ef2b1-ef9e-466d-b5a8-a5287016307b",
+                        "id": "ee8e1009-8e4a-4733-9714-40025d04fdb6",
                         "ord": "a0"
                       },
                       {
@@ -799,7 +799,7 @@
                         "children": [
                           "Forge runs on a written plan that builds week over week — strength blocks that add load on purpose, conditioning that grows an engine, and deloads before you need them."
                         ],
-                        "id": "8e242223-6a86-4955-a3da-06db9f3c8216",
+                        "id": "c4e7521b-e46c-4ee9-84c2-a23c32834216",
                         "ord": "a1"
                       },
                       {
@@ -809,7 +809,7 @@
                         "children": [
                           "You’ll see your numbers move because we track them. Nothing here is a bootcamp free-for-all designed to smoke you and forget you."
                         ],
-                        "id": "8d843fa5-4c55-4e90-8b71-3771427f96da",
+                        "id": "f77a302e-587f-4733-8db5-c1efb073ef96",
                         "ord": "a2"
                       },
                       {
@@ -825,23 +825,23 @@
                               "href": "/book"
                             },
                             "children": ["Start free"],
-                            "id": "52287330-9dc4-4b8d-93dc-dc29d5d7d37d",
+                            "id": "2afa3b53-c5f7-4f37-8ac8-5e20751a41ba",
                             "ord": "a0"
                           }
                         ],
-                        "id": "97f76f2c-d501-4e7f-ae7b-6e74ab101909",
+                        "id": "61f5d349-8b40-4e0e-a24d-246374052b9b",
                         "ord": "a3"
                       }
                     ],
-                    "id": "8e04deae-3a1e-4bb3-b16a-76043d8fc8b0",
+                    "id": "daf30a03-244f-4137-9b20-d57668b585c6",
                     "ord": "a1"
                   }
                 ],
-                "id": "c4aef7b8-688b-4890-98ab-8acf215e158c",
+                "id": "9a96abdc-b264-43c8-bf77-eb9d8feef18f",
                 "ord": "a0"
               }
             ],
-            "id": "39e52acb-b011-40c9-8f37-fb350ddbcec6",
+            "id": "d4395beb-1adc-4674-892f-3083c825bd80",
             "ord": "a2"
           },
           {
@@ -864,7 +864,7 @@
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
                         "children": ["The board"],
-                        "id": "c4b19ab5-f244-4e80-bf1a-d3aaede58687",
+                        "id": "01dee6fb-f092-4a7c-b623-f25f3e12bc9e",
                         "ord": "a0"
                       },
                       {
@@ -874,11 +874,11 @@
                         "children": [
                           "Book a class by capacity or a coach one-to-one. Live times, spots left and full pricing are on the booking page."
                         ],
-                        "id": "c9782de1-0958-428e-8439-a979961a5c45",
+                        "id": "c20d4c31-6a1c-4a72-8d87-70f51e5dcb54",
                         "ord": "a1"
                       }
                     ],
-                    "id": "13792abf-e597-41a6-9a6b-717f41ee89cc",
+                    "id": "54eaa117-0633-4915-aeeb-f88b01daabfd",
                     "ord": "a0"
                   },
                   {
@@ -904,7 +904,7 @@
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
                                 "children": ["Strength"],
-                                "id": "b4aec483-4191-4feb-b077-9cde8089ba7a",
+                                "id": "025c333e-ecd5-4f78-9a6f-138836757578",
                                 "ord": "a0"
                               },
                               {
@@ -912,11 +912,11 @@
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-bold text-base-content",
                                 "children": ["$30"],
-                                "id": "ddb904bf-07d6-42b8-8433-31a70b2bfadd",
+                                "id": "dd66e380-1dfa-4245-b2e7-c0d272b0040e",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "e8c0e162-23b3-4901-a70b-1dba58e6ca06",
+                            "id": "1a850790-f951-4bde-a9e4-8cf0135a464e",
                             "ord": "a0"
                           },
                           {
@@ -924,7 +924,7 @@
                             "tag": "p",
                             "class": "text-sm font-medium uppercase tracking-wide text-secondary",
                             "children": ["1 hr"],
-                            "id": "08539143-3fad-43e1-8cae-e59dc0015c91",
+                            "id": "2c722aad-c604-4daa-bf71-60a8d63dd130",
                             "ord": "a1"
                           },
                           {
@@ -932,11 +932,11 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": ["Barbell strength, coached, capped at 14."],
-                            "id": "72778d8c-cc5e-4d9b-b430-a7e42eb5bcce",
+                            "id": "a7c47b7d-3ef1-4f93-8f06-43c0f76821f4",
                             "ord": "a2"
                           }
                         ],
-                        "id": "f3ff7cb3-766a-41a2-aaa5-63d24a38a15a",
+                        "id": "8bb674fe-2aa9-4457-aa0e-06692e2e0f93",
                         "ord": "a0"
                       },
                       {
@@ -957,7 +957,7 @@
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
                                 "children": ["HIIT"],
-                                "id": "c3dfba8d-4269-4d3f-9e7c-00d2a9c3ea09",
+                                "id": "3409a511-17c8-4f47-8845-d7cd74eac6af",
                                 "ord": "a0"
                               },
                               {
@@ -965,11 +965,11 @@
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-bold text-base-content",
                                 "children": ["$28"],
-                                "id": "717c0dbd-490b-4eb1-b3d2-bad5033c4f7e",
+                                "id": "67e8efde-d947-4c24-af96-a1075e2fea41",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "8fa46239-ad80-4bc4-8daa-5780f0ebf8fc",
+                            "id": "aaa7471e-51e7-4099-843d-a94bc410e4be",
                             "ord": "a0"
                           },
                           {
@@ -977,7 +977,7 @@
                             "tag": "p",
                             "class": "text-sm font-medium uppercase tracking-wide text-secondary",
                             "children": ["45 min"],
-                            "id": "47f32ac6-a437-4021-b5e0-35c70200c265",
+                            "id": "2429f0df-af9b-4124-b5d2-414d54810775",
                             "ord": "a1"
                           },
                           {
@@ -985,11 +985,11 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": ["Loud intervals, full recoveries, your intensity."],
-                            "id": "a57457ad-abf5-46ea-819b-60fce52a7d5b",
+                            "id": "72b8b1e9-fc4d-4f67-9539-90dc16591fc8",
                             "ord": "a2"
                           }
                         ],
-                        "id": "2f204e39-7f69-4564-a3a3-3136a01c6d8e",
+                        "id": "a700b39b-405c-42dd-abc5-ee64a03a09c7",
                         "ord": "a1"
                       },
                       {
@@ -1010,7 +1010,7 @@
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
                                 "children": ["Metcon"],
-                                "id": "3c1a85d4-b956-4e7d-a88e-13f48751bf13",
+                                "id": "ce08a5b6-3a16-41ce-93f4-8407cb5fb70a",
                                 "ord": "a0"
                               },
                               {
@@ -1018,11 +1018,11 @@
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-bold text-base-content",
                                 "children": ["$28"],
-                                "id": "45582a03-6441-4612-aada-2f8100fdbf5f",
+                                "id": "87e62106-dbf0-47f8-8dda-538c3dcde443",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "c3b02d5f-936d-4b97-81cb-02568c254586",
+                            "id": "29a323af-d569-4539-ab16-8dcecad284b0",
                             "ord": "a0"
                           },
                           {
@@ -1030,7 +1030,7 @@
                             "tag": "p",
                             "class": "text-sm font-medium uppercase tracking-wide text-secondary",
                             "children": ["45 min"],
-                            "id": "95647a8c-447a-46f3-aa49-374bfa328e8c",
+                            "id": "2a9a9534-1530-4298-ae56-ae1bafe63d0c",
                             "ord": "a1"
                           },
                           {
@@ -1038,11 +1038,11 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": ["Mixed-modal conditioning with a score to chase."],
-                            "id": "f110a041-1b82-4a9c-af3b-dc2686ee0293",
+                            "id": "1f59d1bd-4032-4ef8-9c2b-533226852c43",
                             "ord": "a2"
                           }
                         ],
-                        "id": "05a9110a-e37c-464f-bb75-0639cfe7cc9d",
+                        "id": "ffbb30bd-27c2-4583-90f8-b466f617337f",
                         "ord": "a2"
                       },
                       {
@@ -1063,7 +1063,7 @@
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
                                 "children": ["Foundations"],
-                                "id": "13246f85-42bb-4fd4-b891-ced852344ccb",
+                                "id": "7ca07cc0-abe2-49c8-82fc-257611263c2e",
                                 "ord": "a0"
                               },
                               {
@@ -1071,11 +1071,11 @@
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-bold text-base-content",
                                 "children": ["$25"],
-                                "id": "ce185e69-8fcc-475f-8d30-840bace2ca51",
+                                "id": "3e2cd0d9-6e2c-4a71-88ab-8f6e644f8cdc",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "4a15b5c9-9876-4850-bf73-3638337583fa",
+                            "id": "89d05508-d22f-4ae8-8875-4c3e1b32f380",
                             "ord": "a0"
                           },
                           {
@@ -1083,7 +1083,7 @@
                             "tag": "p",
                             "class": "text-sm font-medium uppercase tracking-wide text-secondary",
                             "children": ["45 min"],
-                            "id": "a9057d49-01ea-4f5e-ad88-62e7f6e6451d",
+                            "id": "649efcf5-69be-4b7f-a0b4-fb9367abf791",
                             "ord": "a1"
                           },
                           {
@@ -1091,11 +1091,11 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": ["The six core lifts, drilled from zero."],
-                            "id": "1c9106c1-ee60-4c58-8e73-c686381d41cb",
+                            "id": "3ccc34cc-2ea4-4dee-a8f6-e128aa285544",
                             "ord": "a2"
                           }
                         ],
-                        "id": "d8a086b7-933d-4b71-930c-caa5ea431e79",
+                        "id": "7b79fe1b-9da0-4ab6-abf4-55bbe2d9919d",
                         "ord": "a3"
                       },
                       {
@@ -1116,7 +1116,7 @@
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
                                 "children": ["Engine"],
-                                "id": "76a78538-b2ab-4b9d-89e5-7cae98dcad05",
+                                "id": "4cac21fd-fc6d-4a1b-a671-1686297866a7",
                                 "ord": "a0"
                               },
                               {
@@ -1124,11 +1124,11 @@
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-bold text-base-content",
                                 "children": ["$25"],
-                                "id": "459333ce-b46c-4bb8-96c2-42002a2bdbcb",
+                                "id": "be517521-ec55-430f-b415-5dfc0be9d631",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "1dc3ea9c-1df1-43e9-af08-3eccb876960b",
+                            "id": "a5cd300a-05c1-4a79-9ca5-d6dae8034a81",
                             "ord": "a0"
                           },
                           {
@@ -1136,7 +1136,7 @@
                             "tag": "p",
                             "class": "text-sm font-medium uppercase tracking-wide text-secondary",
                             "children": ["30 min"],
-                            "id": "a1cc5d14-e30b-40a4-a119-7b350fbe3d9b",
+                            "id": "a5cc70c3-f5f3-49d4-ab0b-7fa6637af2e5",
                             "ord": "a1"
                           },
                           {
@@ -1144,11 +1144,11 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": ["Thirty minutes of pure conditioning."],
-                            "id": "083e802a-2459-4137-b17c-bd8b88a33a93",
+                            "id": "76f9884f-1e75-414c-b1d9-0c22ca6e0595",
                             "ord": "a2"
                           }
                         ],
-                        "id": "7316af36-b59f-4d2d-bb77-ecd2be801398",
+                        "id": "bd065ecf-7faa-4e0c-bc02-3c6eec04d8c0",
                         "ord": "a4"
                       },
                       {
@@ -1169,7 +1169,7 @@
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
                                 "children": ["1:1 Personal training"],
-                                "id": "7e8ba310-5a3f-4149-a588-f773302b7b4e",
+                                "id": "01d72437-bc86-4f43-a0b5-e4223b07cfb7",
                                 "ord": "a0"
                               },
                               {
@@ -1177,11 +1177,11 @@
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-bold text-base-content",
                                 "children": ["$85"],
-                                "id": "749f857a-54e9-416f-8bb9-5f6f659bae97",
+                                "id": "e4a5445d-342f-4431-81c5-78cf88472b55",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "ac9445b2-7b4f-4e3f-8fbb-75e220a44087",
+                            "id": "968f3135-69a5-486f-8849-f83c10285213",
                             "ord": "a0"
                           },
                           {
@@ -1189,7 +1189,7 @@
                             "tag": "p",
                             "class": "text-sm font-medium uppercase tracking-wide text-secondary",
                             "children": ["1 hr"],
-                            "id": "dca8c795-4dad-4e9f-994b-61b2339f7f3c",
+                            "id": "2f661ecd-d6e3-48c4-8a4d-c990536a719c",
                             "ord": "a1"
                           },
                           {
@@ -1197,15 +1197,15 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": ["Your coach, your plan, your schedule."],
-                            "id": "53f661c1-39df-4464-a45a-f19e2167f2f8",
+                            "id": "e23481c8-6851-4084-8ccd-da0e16d94eb8",
                             "ord": "a2"
                           }
                         ],
-                        "id": "013f0e23-962f-4f0e-b661-b9238c8835ac",
+                        "id": "a81f2ec5-9185-4bf9-a6e5-f730de7a98d8",
                         "ord": "a5"
                       }
                     ],
-                    "id": "cf3de8ab-84e0-41e3-befc-96004463dd4e",
+                    "id": "2d3b9416-b5bb-4a6c-8f3c-67bb385fc585",
                     "ord": "a1"
                   },
                   {
@@ -1221,19 +1221,19 @@
                           "href": "/book"
                         },
                         "children": ["See the schedule & book"],
-                        "id": "1d85fef9-6ee4-4ac5-860c-4f8187a9bce5",
+                        "id": "eb47fb18-187f-4b16-ad16-de5629c33d2f",
                         "ord": "a0"
                       }
                     ],
-                    "id": "3fd37e0f-d4bb-4df5-b277-d280e72c10c5",
+                    "id": "f2a524a9-9f78-4faa-8819-76e82e7c9187",
                     "ord": "a2"
                   }
                 ],
-                "id": "be94797f-291e-4f5d-8736-2a18d770bb69",
+                "id": "373bd96b-6b3b-4513-afeb-e62e8228e506",
                 "ord": "a0"
               }
             ],
-            "id": "9faed91f-1c51-4be8-a774-fa24f38f4a51",
+            "id": "3aa64388-4f07-4a15-8538-6d6b9ac5feca",
             "ord": "a3"
           },
           {
@@ -1256,7 +1256,7 @@
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
                         "children": ["Your coaches"],
-                        "id": "244e4dd7-de5c-47e8-b12b-729c48ca5f2c",
+                        "id": "70499f1a-0155-4651-a5e4-f2f4d98293c8",
                         "ord": "a0"
                       },
                       {
@@ -1266,11 +1266,11 @@
                         "children": [
                           "The people under the bar with you. Book a class or grab any of them for 1:1."
                         ],
-                        "id": "9ff94051-6c54-4683-be99-e245bfbe4d57",
+                        "id": "70fb5cd2-f175-4107-9b10-0b7683fcce6f",
                         "ord": "a1"
                       }
                     ],
-                    "id": "32dead7e-7f81-4ac1-aff8-f303c275e20e",
+                    "id": "df716b05-53d8-4ef3-9dcb-16e590fc79e3",
                     "ord": "a0"
                   },
                   {
@@ -1292,7 +1292,7 @@
                               "alt": "Marcus Vane, head strength coach",
                               "loading": "lazy"
                             },
-                            "id": "be2ba210-9af7-4499-9ad5-28324f63caa8",
+                            "id": "159c4b3f-5fd2-4aed-ad80-0079cc47dd0c",
                             "ord": "a0"
                           },
                           {
@@ -1305,7 +1305,7 @@
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
                                 "children": ["Marcus Vane"],
-                                "id": "25ed8840-66ce-40d0-8e0c-34756ca27db2",
+                                "id": "37effd77-2c9d-49ec-b3b4-84a2ab9a675d",
                                 "ord": "a0"
                               },
                               {
@@ -1313,7 +1313,7 @@
                                 "tag": "p",
                                 "class": "text-sm font-medium uppercase tracking-wide text-secondary",
                                 "children": ["Head strength coach"],
-                                "id": "8c0e65e4-7522-414c-b33d-344ed69495f6",
+                                "id": "8d7ed460-5f98-4eb6-8d77-0561bc64228e",
                                 "ord": "a1"
                               },
                               {
@@ -1323,15 +1323,15 @@
                                 "children": [
                                   "Powerlifting background, obsessed with clean technique and slow, stubborn PRs."
                                 ],
-                                "id": "318ae250-93ca-4b40-98f7-a66f5eb4cad4",
+                                "id": "ea0f7f53-0e69-4cb6-b7d2-7ebcbdea602f",
                                 "ord": "a2"
                               }
                             ],
-                            "id": "40c69062-1d36-48d4-be94-33c996441ce2",
+                            "id": "6f8dedf6-8de2-47e9-a4ac-b1fee8490c02",
                             "ord": "a1"
                           }
                         ],
-                        "id": "5fe389c1-9059-439a-a716-31f370d39ad0",
+                        "id": "cb4f173d-aef3-424c-8e0c-e32e53700e59",
                         "ord": "a0"
                       },
                       {
@@ -1348,7 +1348,7 @@
                               "alt": "Déja Okafor, conditioning coach",
                               "loading": "lazy"
                             },
-                            "id": "2987f7f6-b0bb-4592-a581-4ac508baa8f0",
+                            "id": "d1c4dee7-2a43-4789-bb52-2af773bbe78e",
                             "ord": "a0"
                           },
                           {
@@ -1361,7 +1361,7 @@
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
                                 "children": ["Déja Okafor"],
-                                "id": "0671c34c-2e52-4c8e-8902-f0c9e32b3a6b",
+                                "id": "532e0dba-60fe-4ec5-a9d3-c32c11c81e62",
                                 "ord": "a0"
                               },
                               {
@@ -1369,7 +1369,7 @@
                                 "tag": "p",
                                 "class": "text-sm font-medium uppercase tracking-wide text-secondary",
                                 "children": ["Conditioning coach"],
-                                "id": "65671e3d-e4c3-4324-8ec3-32cc442a0d7b",
+                                "id": "c7d1f74f-f1d7-4615-a014-af542586e824",
                                 "ord": "a1"
                               },
                               {
@@ -1379,15 +1379,15 @@
                                 "children": [
                                   "Runs the HIIT, Metcon and Engine floors — the loudest, most contagious energy in the room."
                                 ],
-                                "id": "f27a0616-fe37-4c05-9457-0d834218fb2c",
+                                "id": "ebfb9774-cdf0-48b9-b919-a34ede598293",
                                 "ord": "a2"
                               }
                             ],
-                            "id": "9aa1937e-7d86-4c4a-bac7-7fd51a44e902",
+                            "id": "fd5bcee2-156b-47d6-a39b-7853066a814f",
                             "ord": "a1"
                           }
                         ],
-                        "id": "21c19e37-2403-4232-aed6-1b9453f8e8d7",
+                        "id": "f5dbf096-07d3-4b42-a42a-3a32f55e93be",
                         "ord": "a1"
                       },
                       {
@@ -1404,7 +1404,7 @@
                               "alt": "Theo Marsh, foundations coach",
                               "loading": "lazy"
                             },
-                            "id": "37a126ab-a813-4517-b850-b2999b75dd60",
+                            "id": "3dd49c2a-f56f-48bf-be41-5ca38e904df4",
                             "ord": "a0"
                           },
                           {
@@ -1417,7 +1417,7 @@
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
                                 "children": ["Theo Marsh"],
-                                "id": "b7ea5dda-26c7-4c05-8951-dbcd332fef36",
+                                "id": "aa3b1f49-4b81-4a05-a0c5-170d527c8adf",
                                 "ord": "a0"
                               },
                               {
@@ -1425,7 +1425,7 @@
                                 "tag": "p",
                                 "class": "text-sm font-medium uppercase tracking-wide text-secondary",
                                 "children": ["Foundations coach"],
-                                "id": "913669df-b440-4bdf-809f-97730e7d3190",
+                                "id": "a103db6b-81ff-4c39-bac6-c3ccac0c93f8",
                                 "ord": "a1"
                               },
                               {
@@ -1435,15 +1435,15 @@
                                 "children": [
                                   "Gets nervous first-timers under a barbell and grinning by the end of week one."
                                 ],
-                                "id": "83df73b6-016f-4d3d-8897-f86f1efdd9a7",
+                                "id": "3bcb7744-ff20-4360-9285-1084e6d59605",
                                 "ord": "a2"
                               }
                             ],
-                            "id": "e57b031a-8144-4c99-a6fd-e2d6d5e362d3",
+                            "id": "cb5cf256-65e0-4420-a265-30a576294152",
                             "ord": "a1"
                           }
                         ],
-                        "id": "eec6a357-5837-44a2-9ea4-a3810606c3f6",
+                        "id": "71aa29cb-0468-417c-9bba-95d7fe4022ad",
                         "ord": "a2"
                       },
                       {
@@ -1460,7 +1460,7 @@
                               "alt": "Rae Calloway, strength & personal-training coach",
                               "loading": "lazy"
                             },
-                            "id": "95e60ce6-5a24-4e44-8f4f-f50936a57d5d",
+                            "id": "1a1dadc9-7c8b-46f1-aa51-d0c32cd3c761",
                             "ord": "a0"
                           },
                           {
@@ -1473,7 +1473,7 @@
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
                                 "children": ["Rae Calloway"],
-                                "id": "0e7faa29-cd26-4381-8d2c-e7fe50520794",
+                                "id": "1eb1840d-8f94-44ba-ae29-46bd6ac56145",
                                 "ord": "a0"
                               },
                               {
@@ -1481,7 +1481,7 @@
                                 "tag": "p",
                                 "class": "text-sm font-medium uppercase tracking-wide text-secondary",
                                 "children": ["Strength & PT coach"],
-                                "id": "e525a3f1-1559-41aa-a347-5e0b962c207d",
+                                "id": "83b4267d-eaad-41f6-a0be-0374e0983742",
                                 "ord": "a1"
                               },
                               {
@@ -1491,27 +1491,27 @@
                                 "children": [
                                   "Strength and hybrid conditioning; builds the 1:1 plans people actually stick to."
                                 ],
-                                "id": "19f7a8e8-2801-409a-b344-3f61ef196ac0",
+                                "id": "ddc7f063-499e-464c-a9a7-95fbe550ccd4",
                                 "ord": "a2"
                               }
                             ],
-                            "id": "7cdeadb5-07ae-4034-b4e5-da73d859ac97",
+                            "id": "14f6f316-ef9d-4b39-a9e6-6ccf2d479827",
                             "ord": "a1"
                           }
                         ],
-                        "id": "a5f1f799-38e7-459f-a139-527d59556b3c",
+                        "id": "a0c58d22-388e-4357-b5b9-96faeaad4e90",
                         "ord": "a3"
                       }
                     ],
-                    "id": "f3e4d7ae-3aa6-454b-ac6c-6ea3b357cc3a",
+                    "id": "93c84c81-d764-4c62-a90c-1504146f5375",
                     "ord": "a1"
                   }
                 ],
-                "id": "d0c34fae-47c6-4b4a-9de2-02e6e563d34f",
+                "id": "3ad9005d-b38c-49dc-96a8-d8e2f92d5a4a",
                 "ord": "a0"
               }
             ],
-            "id": "edf9adee-9c9e-4075-a229-e4da860a89cb",
+            "id": "9e694e7c-8b59-4d1d-ae24-af109916da19",
             "ord": "a4"
           },
           {
@@ -1529,7 +1529,7 @@
                     "tag": "h2",
                     "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
                     "children": ["Inside the room"],
-                    "id": "89ac7460-c55e-4d8c-bb62-17901bf30b2b",
+                    "id": "c1a20eb9-b1aa-420c-a7a4-b811e38a976e",
                     "ord": "a0"
                   },
                   {
@@ -1546,7 +1546,7 @@
                           "alt": "An athlete slamming a heavy rope in a metcon set",
                           "loading": "lazy"
                         },
-                        "id": "236590e5-2c7c-47f0-b529-ce417519b20b",
+                        "id": "8ed54582-2f09-471d-9439-62c5f624e3a7",
                         "ord": "a0"
                       },
                       {
@@ -1558,7 +1558,7 @@
                           "alt": "A small group hitting kettlebell swings together",
                           "loading": "lazy"
                         },
-                        "id": "8fee4c96-4311-4542-90c0-8c82d2709dab",
+                        "id": "7f29aec5-9584-4bf5-a685-04fad1d056ec",
                         "ord": "a1"
                       },
                       {
@@ -1570,19 +1570,19 @@
                           "alt": "Chalked hands gripping a deadlift bar",
                           "loading": "lazy"
                         },
-                        "id": "a6c3ffec-5522-4619-9c6c-f5b6f079fe3b",
+                        "id": "4ed1745c-b904-43af-87bd-3544a6a34da1",
                         "ord": "a2"
                       }
                     ],
-                    "id": "6afb71de-70c7-4655-a44d-e1295298837c",
+                    "id": "def7c464-3a33-4325-8df3-9f0c6fe87455",
                     "ord": "a1"
                   }
                 ],
-                "id": "a5c97cb7-bdfe-432f-8f13-380dd8455ef1",
+                "id": "fa466d7d-ae7a-4429-9752-c51f91692b5a",
                 "ord": "a0"
               }
             ],
-            "id": "37ebd04d-e2ba-4db1-9e12-f6b19537db2d",
+            "id": "690c2829-0fc5-48e0-90dd-119f03edf974",
             "ord": "a5"
           },
           {
@@ -1602,7 +1602,7 @@
                     "children": [
                       "“Walked in twelve weeks ago unable to squat the empty bar. Hit 135 for five today and the whole class lost their minds for me. That’s Forge — you get strong and nobody lets you do it quietly.”"
                     ],
-                    "id": "a01b5ab4-8e92-4fac-b204-387acdb6e042",
+                    "id": "79d132f4-21d5-4c77-a17d-5954acbe057b",
                     "ord": "a0"
                   },
                   {
@@ -1610,15 +1610,15 @@
                     "tag": "p",
                     "class": "text-sm font-semibold uppercase tracking-wide opacity-80",
                     "children": ["Devon, member since this spring"],
-                    "id": "6f539989-e48e-4a32-af60-242e790e28ec",
+                    "id": "8b929816-aae1-45b8-8d57-d2a5ea6a38d6",
                     "ord": "a1"
                   }
                 ],
-                "id": "431bcc11-b242-4472-b8cd-0bcbbc0e8c29",
+                "id": "9dc55070-e71f-4f96-9cee-0684c1a33f2e",
                 "ord": "a0"
               }
             ],
-            "id": "f81bd641-e5ae-4722-8709-2cf12e6f00ce",
+            "id": "8e2a5708-a96e-41a0-a3ec-487ec9b25c7b",
             "ord": "a6"
           },
           {
@@ -1636,7 +1636,7 @@
                     "tag": "h2",
                     "class": "text-3xl font-bold tracking-tight @3xl:text-4xl",
                     "children": ["Your first session is on us"],
-                    "id": "82c1ae74-26cf-4344-8489-b976e411522f",
+                    "id": "5ff4a0b7-4299-4a18-a9c8-16c9d7b9589f",
                     "ord": "a0"
                   },
                   {
@@ -1646,7 +1646,7 @@
                     "children": [
                       "Book the free intro, meet a coach and see the floor. No membership, no pressure — just show up."
                     ],
-                    "id": "eab61020-1a2d-4752-b332-19f27d7a2f4f",
+                    "id": "09d0d590-a45c-4fc2-aa81-cea92097e297",
                     "ord": "a1"
                   },
                   {
@@ -1657,15 +1657,15 @@
                       "href": "/book"
                     },
                     "children": ["Claim your spot"],
-                    "id": "233d9985-5cf5-4c0d-b977-d46e6886eca2",
+                    "id": "b4491103-9759-4746-bbcb-d24e767ceea4",
                     "ord": "a2"
                   }
                 ],
-                "id": "10d340e7-fa8d-4d9d-91ee-120cc01e3121",
+                "id": "297454a7-942f-47f7-a6c1-ed4b0e09f9b6",
                 "ord": "a0"
               }
             ],
-            "id": "f988b441-1808-4e8d-a01a-cb3c60d43ac0",
+            "id": "e3e4543f-42dc-4166-8f8c-90f3835329f7",
             "ord": "a7"
           }
         ]
@@ -1682,7 +1682,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "20f37600-88ad-4b54-8f1c-6be06b887553",
+        "id": "92bb0c10-bf19-4dff-aa05-4d1e327745c1",
         "children": [
           {
             "kind": "element",
@@ -1698,14 +1698,14 @@
                   "alt": "A row of squat rigs loaded and ready",
                   "loading": "eager"
                 },
-                "id": "f776cdb8-e51d-4aa3-ba99-d033b659c7f7",
+                "id": "41657a6d-19da-4313-baed-7e380cdb2570",
                 "ord": "a0"
               },
               {
                 "kind": "element",
                 "tag": "div",
                 "class": "absolute inset-0 bg-black/65",
-                "id": "32cdb324-e7b9-45e1-b9d7-ddb8ff2fe91d",
+                "id": "6f81bb8a-55f6-4819-a616-b94f66536d16",
                 "ord": "a1"
               },
               {
@@ -1718,7 +1718,7 @@
                     "tag": "h1",
                     "class": "max-w-3xl text-4xl font-bold leading-tight tracking-tight @2xl:text-5xl @3xl:text-6xl",
                     "children": ["Book your session"],
-                    "id": "f23c5e57-b2ff-4c31-ae47-27fdaa85ce62",
+                    "id": "d11a7a83-3013-41e0-956e-7b44f140fc70",
                     "ord": "a0"
                   },
                   {
@@ -1728,7 +1728,7 @@
                     "children": [
                       "Pick a class to see live times and spots left, or book a coach one-to-one. New here? Start with the free intro."
                     ],
-                    "id": "ced7ce94-ddd3-44b8-847c-214913a549fb",
+                    "id": "f1c3cac6-1411-443b-910b-bb6169e84d19",
                     "ord": "a1"
                   },
                   {
@@ -1744,19 +1744,19 @@
                           "href": "/book"
                         },
                         "children": ["See the board below"],
-                        "id": "3abd8c38-a7bc-4348-a569-f3f28fa4d7ea",
+                        "id": "a4179664-0d15-4b40-846b-28333519a5ff",
                         "ord": "a0"
                       }
                     ],
-                    "id": "e7cee1f5-1dfa-4300-a843-d53fe83fe8ba",
+                    "id": "91d983b0-0457-4dfc-9d2c-be358b0d95e2",
                     "ord": "a2"
                   }
                 ],
-                "id": "c3753c7a-c8c7-4886-a54d-b7d60492e76c",
+                "id": "b24b6cb0-e931-4ccf-8f1c-143e86971a99",
                 "ord": "a2"
               }
             ],
-            "id": "e19e8200-0e16-41c2-84e2-262daa7685eb",
+            "id": "b2f7c8aa-a54f-4e1f-afda-67e86cc2b228",
             "ord": "a0"
           },
           {
@@ -1764,8 +1764,134 @@
             "component": "scheduling.services",
             "class": "mx-auto w-full max-w-5xl px-6 py-8",
             "locked": "host",
-            "id": "255b3f81-9e19-431a-814d-9fdf114cfb38",
+            "id": "5137a410-5cb7-4f73-92bd-c4616d057f43",
             "ord": "a1"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-8",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["Good to know"],
+                        "id": "f6ffe1d9-0361-4b03-9445-b5e098dad1a6",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "What happens once you pick a time — and how to change it if something comes up."
+                        ],
+                        "id": "e4663832-2e18-43fb-927e-1fc425b74a4f",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "27b4610b-dda2-4266-9c4c-d89266c23555",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-6 @3xl:grid-cols-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-3 rounded-box border border-base-300 bg-base-100 p-6",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Class booking"],
+                            "id": "c07cf8ea-57cc-4e51-8032-4777c0da9975",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Class spots are capped, so cancel at least 8 hours out to free your place for someone on the waitlist. We remind you the day before and two hours ahead."
+                            ],
+                            "id": "37ec1830-7e9e-44b4-84ab-297082e01067",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base font-medium text-base-content",
+                            "children": [
+                              "No deposit to book. Change or cancel free up to 8 hours before."
+                            ],
+                            "id": "1a690378-3de9-4152-8be7-def97114e296",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "d9330ecc-3663-4428-a40b-ec778a3183c5",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-3 rounded-box border border-base-300 bg-base-100 p-6",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Personal-training hold"],
+                            "id": "4c7d6e80-5ac2-41ad-be25-36e5b461fefe",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "One-to-one sessions place a card hold to lock your coach’s time. Reschedule with 24 hours’ notice and nothing is charged; no-shows forfeit the hold."
+                            ],
+                            "id": "71e7bb3c-add9-4033-a710-dc56b5102b4b",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base font-medium text-base-content",
+                            "children": ["Change or cancel free up to 24 hours before."],
+                            "id": "7d4fca53-1b08-434d-8ef9-11e835772262",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "d5b5453d-9dfc-45a5-bda0-fa67e4bbb283",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "3683f3c1-80da-428b-8ba1-a516967ded39",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "78024da9-79ee-4fe4-989a-adaf9316df52",
+                "ord": "a0"
+              }
+            ],
+            "id": "47b641ac-80d2-4596-8e4f-a51a4a40331e",
+            "ord": "a2"
           }
         ]
       }
@@ -1781,7 +1907,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "005b8877-a827-41e8-81bb-a9be7eeee5f8",
+        "id": "93dab039-3804-48eb-8b44-17781a8bd734",
         "children": [
           {
             "kind": "element",
@@ -1802,7 +1928,7 @@
                       "alt": "A lifter mid-set under a loaded barbell in a dark gym",
                       "loading": "lazy"
                     },
-                    "id": "878ca86c-b361-4a09-8bc9-474234af002b",
+                    "id": "773002cf-7fc4-4ed2-a3e7-09ec3f64976f",
                     "ord": "a0"
                   },
                   {
@@ -1812,10 +1938,10 @@
                     "children": [
                       {
                         "kind": "element",
-                        "tag": "h2",
+                        "tag": "h1",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
                         "children": ["Built for people, not personal records they’ll never chase"],
-                        "id": "b72256bc-bdb9-4732-a914-f4db75e559c1",
+                        "id": "0a07f271-c396-4471-888a-ef2038e13051",
                         "ord": "a0"
                       },
                       {
@@ -1825,7 +1951,7 @@
                         "children": [
                           "Forge started because the big-box gym wasn’t working — no coaching, no plan, no one who noticed if you showed up or quit. So we built the opposite: small groups, real programming, and coaches who know your name and your numbers."
                         ],
-                        "id": "d393d478-353f-423f-a02e-a251008d30ae",
+                        "id": "62f01834-230a-4999-bc78-067b3c6059f1",
                         "ord": "a1"
                       },
                       {
@@ -1835,7 +1961,7 @@
                         "children": [
                           "Strong isn’t a look here, it’s a habit. We keep classes capped and the ego at the door so the person on their first day trains next to the person on their thousandth, and both leave better than they came."
                         ],
-                        "id": "cca0a3c7-ba95-4c50-aa44-a4f0f8fa7baf",
+                        "id": "c24ae5f1-33bc-4e5d-bbe3-12f4f12c27bf",
                         "ord": "a2"
                       },
                       {
@@ -1851,23 +1977,23 @@
                               "href": "/book"
                             },
                             "children": ["Start free"],
-                            "id": "e7c21de7-8d55-4ec4-8570-6aa9e8883baf",
+                            "id": "dc8957a3-7f1c-43d7-972b-91aa3270b30c",
                             "ord": "a0"
                           }
                         ],
-                        "id": "0e86924e-c8f9-463a-9334-68887cc8f26e",
+                        "id": "e25ecfb6-4b7f-4f9a-9d28-9e669b6c3bd4",
                         "ord": "a3"
                       }
                     ],
-                    "id": "192dd2d1-9298-4580-89da-29582cba9ac1",
+                    "id": "f6be2253-68bd-4bec-962d-0ce9c9d01982",
                     "ord": "a1"
                   }
                 ],
-                "id": "4c9b2a07-2123-4faf-9e94-4274cb7499da",
+                "id": "59a8e43f-48f6-450b-8e71-c0317ceb41db",
                 "ord": "a0"
               }
             ],
-            "id": "e13a95d4-f0cd-48f0-ba34-14f1f4b16336",
+            "id": "52529e94-6c52-4c18-8558-d36b78cbfba8",
             "ord": "a0"
           },
           {
@@ -1885,7 +2011,7 @@
                     "tag": "h2",
                     "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
                     "children": ["How we train"],
-                    "id": "22f842de-2366-4a96-8f60-bf15bac50041",
+                    "id": "66df8c70-d6bb-4680-b9ea-5c4da29d7530",
                     "ord": "a0"
                   },
                   {
@@ -1903,7 +2029,7 @@
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
                             "children": ["Coached every rep"],
-                            "id": "f3bc8b47-1d19-40a9-85d1-77cd2eca2305",
+                            "id": "f8ad52a0-0c8b-483d-aff1-09cf7d7901c1",
                             "ord": "a0"
                           },
                           {
@@ -1913,11 +2039,11 @@
                             "children": [
                               "A certified coach runs every session — cueing form, scaling load and keeping you honest. You’re never just clocking time on a machine."
                             ],
-                            "id": "ef02379d-d4c1-4738-9680-7c6deda0ae5c",
+                            "id": "b81e500f-0e72-40e7-87da-9753e1452afe",
                             "ord": "a1"
                           }
                         ],
-                        "id": "ecee230e-6587-4139-9ccf-d810cfc1b8a5",
+                        "id": "09b37d51-cb74-4b77-8c53-a69a9b008394",
                         "ord": "a0"
                       },
                       {
@@ -1930,7 +2056,7 @@
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
                             "children": ["Programmed on purpose"],
-                            "id": "3d1e498e-a3be-4b11-a20c-787053fd840b",
+                            "id": "74ad8d98-00b5-43a9-8918-9f227a1c1a91",
                             "ord": "a0"
                           },
                           {
@@ -1940,11 +2066,11 @@
                             "children": [
                               "Strength that adds weight over blocks, conditioning that builds an engine, deloads before you’re fried. It’s written, tracked and it moves your numbers."
                             ],
-                            "id": "b0e1a758-8db0-4df9-9324-7ee76540396f",
+                            "id": "1de2eeee-d87c-41c6-a3f5-16c38e7f19f5",
                             "ord": "a1"
                           }
                         ],
-                        "id": "f9b09e16-56f5-4a0e-8f0b-c72b453bc876",
+                        "id": "4db23bab-6806-44ae-9339-9ef309078763",
                         "ord": "a1"
                       },
                       {
@@ -1957,7 +2083,7 @@
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
                             "children": ["Scaled for you"],
-                            "id": "22c6bb90-f7ff-459c-a7ca-1fc0dd865d1b",
+                            "id": "4168f55a-adde-444f-9a10-8c52ba5c999b",
                             "ord": "a0"
                           },
                           {
@@ -1967,23 +2093,23 @@
                             "children": [
                               "Every workout scales up or down on the spot. Injury, first week, off day — we adjust the movement and the load so it’s the right hard for you."
                             ],
-                            "id": "2397a497-8181-4cd6-9ebc-63f9261a27f6",
+                            "id": "dd1db956-39cf-4d7c-8123-874b8897903d",
                             "ord": "a1"
                           }
                         ],
-                        "id": "6958dafd-dcdd-42b7-86a1-38ebab1c4d8f",
+                        "id": "e0481df3-22b9-4a58-9ece-3ea81d940f45",
                         "ord": "a2"
                       }
                     ],
-                    "id": "45aa445d-bc6a-4f9d-b572-e7b3fee63a81",
+                    "id": "d5d0af28-7bc3-4d80-b61a-90446e481bce",
                     "ord": "a1"
                   }
                 ],
-                "id": "ef7e802a-d458-4d28-a2f4-d0fc8c69c459",
+                "id": "8c623dbd-a192-4da5-ad26-ed12214e2986",
                 "ord": "a0"
               }
             ],
-            "id": "2c65a7ea-29bd-4023-abc8-575bcea0bdb1",
+            "id": "3e8f3ea8-f3f6-49f6-8fd1-f5889dc374dd",
             "ord": "a1"
           }
         ]
@@ -2000,8 +2126,294 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "e43c9393-f1fa-44aa-a5d8-0ad82192c89d",
+        "id": "c259d36c-96e9-4856-ad48-5b8828902565",
         "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-8",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h1",
+                        "class": "text-4xl font-bold tracking-tight text-base-content @3xl:text-5xl",
+                        "children": ["Get in touch"],
+                        "id": "d1d8ee1d-03ea-4c8d-b9cd-af8b477d4a86",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Questions before you book? Send a note and Forge will get back to you — usually the same day."
+                        ],
+                        "id": "d19d5657-f1ca-420b-87c5-f0504ee7fcc8",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "95fb4321-a190-4e68-a252-de9fc14d8d54",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-1",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "span",
+                        "class": "text-base font-medium text-base-content",
+                        "children": ["Call us"],
+                        "id": "e40adf26-464f-489d-9edc-09a576d1208a",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "text-lg font-semibold text-base-content underline underline-offset-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "children": ["(555) 123-4567"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "site.identity.phone"
+                            },
+                            "id": "fe45ca49-f741-4f65-adcb-a9b207c14971",
+                            "ord": "a0"
+                          }
+                        ],
+                        "data": {
+                          "kind": "value",
+                          "ref": "site.identity.phoneHref",
+                          "attr": "href"
+                        },
+                        "id": "260946ab-e9a1-49f3-a462-c94248fb9edb",
+                        "ord": "a1"
+                      }
+                    ],
+                    "data": {
+                      "kind": "visible",
+                      "ref": "site.identity.phone"
+                    },
+                    "id": "c0bf68e6-86a6-49eb-bd3a-59df0f07f207",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-1",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "span",
+                        "class": "text-base font-medium text-base-content",
+                        "children": ["Email us"],
+                        "id": "2964eaa2-698f-4d16-8e4f-45abd0b71d2a",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "text-lg font-semibold text-base-content underline underline-offset-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "children": ["hello@yourbusiness.com"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "site.identity.email"
+                            },
+                            "id": "a9c1def2-0406-44c1-8d30-0cfc84b55c11",
+                            "ord": "a0"
+                          }
+                        ],
+                        "data": {
+                          "kind": "value",
+                          "ref": "site.identity.emailHref",
+                          "attr": "href"
+                        },
+                        "id": "4866355a-7f98-427e-8f75-f98363a4f4fb",
+                        "ord": "a1"
+                      }
+                    ],
+                    "data": {
+                      "kind": "visible",
+                      "ref": "site.identity.email"
+                    },
+                    "id": "016f3e3b-d4e7-45b0-8e09-c1e92de78978",
+                    "ord": "a2"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "form",
+                    "class": "flex w-full max-w-xl flex-col gap-5",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "label",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-base font-medium text-base-content",
+                            "children": ["Your name"],
+                            "id": "c76ab9d2-3f18-4378-b431-a82edc075950",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "input",
+                            "class": "input input-bordered w-full",
+                            "attrs": {
+                              "type": "text",
+                              "name": "name",
+                              "required": true
+                            },
+                            "id": "885b5bb8-1634-4431-9c7e-6d32d9439be0",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "1599adf5-2eb3-49c6-944a-cc6a4b396329",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "label",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-base font-medium text-base-content",
+                            "children": ["Email address"],
+                            "id": "c4872dc1-78ae-4498-8cf4-e8ebb52258c5",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "input",
+                            "class": "input input-bordered w-full",
+                            "attrs": {
+                              "type": "email",
+                              "name": "email",
+                              "required": true
+                            },
+                            "id": "46574e4a-5729-4f3a-9f4b-7e863633f6f9",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "2ae0ce90-f3b9-4d4e-9bf6-809ce03b0f5e",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "label",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-base font-medium text-base-content",
+                            "children": ["Phone number"],
+                            "id": "ed3aa421-f77a-4e0b-a9c2-331622d04227",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "input",
+                            "class": "input input-bordered w-full",
+                            "attrs": {
+                              "type": "tel",
+                              "name": "phone"
+                            },
+                            "id": "6b71b6b1-df06-4f4d-b7b0-5daeb0ec21e6",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "82e0727b-b5bd-41cd-8062-f09412b5106b",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "label",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-base font-medium text-base-content",
+                            "children": ["How can we help?"],
+                            "id": "561718cd-0e0f-46d9-b336-914b54be334a",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "textarea",
+                            "class": "textarea textarea-bordered min-h-32 w-full",
+                            "attrs": {
+                              "name": "message"
+                            },
+                            "id": "d49b0e22-bd72-458e-8abc-63a6d17f4366",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "083d8ea5-172e-420b-8e01-02a4ab03d345",
+                        "ord": "a3"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-wrap items-center gap-3",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "button",
+                            "class": "btn btn-primary btn-lg",
+                            "attrs": {
+                              "type": "submit"
+                            },
+                            "children": ["Send my request"],
+                            "id": "9861f874-2428-4404-9009-2def210167c6",
+                            "ord": "a0"
+                          }
+                        ],
+                        "id": "f0fcf0e8-f7a7-41b9-881c-899d39749931",
+                        "ord": "a4"
+                      }
+                    ],
+                    "behavior": {
+                      "type": "form"
+                    },
+                    "data": {
+                      "kind": "action",
+                      "ref": "submit"
+                    },
+                    "id": "a3c8b2dc-4edc-43ef-848e-e7d8eccc4a1d",
+                    "ord": "a3"
+                  }
+                ],
+                "id": "be2a2d7c-6085-40c3-82cd-777cf7104747",
+                "ord": "a0"
+              }
+            ],
+            "id": "0c631642-02a3-4c71-a272-b94d4ee2689e",
+            "ord": "a0"
+          },
           {
             "kind": "element",
             "tag": "section",
@@ -2022,40 +2434,21 @@
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
                         "children": ["Find the floor"],
-                        "id": "b88ba56c-f5f3-4680-9024-149e89029d41",
+                        "id": "3d6a7ad0-46c5-47ee-8723-9f7e736421ca",
                         "ord": "a0"
                       },
                       {
                         "kind": "element",
-                        "tag": "div",
-                        "class": "flex flex-col gap-1",
+                        "tag": "address",
+                        "class": "text-lg leading-relaxed whitespace-pre-line not-italic text-base-content",
                         "children": [
-                          {
-                            "kind": "element",
-                            "tag": "p",
-                            "class": "text-lg leading-relaxed text-base-content",
-                            "children": ["Forge Strength & Conditioning"],
-                            "id": "cb667b54-4ed6-49d1-b608-4d8c79880093",
-                            "ord": "a0"
-                          },
-                          {
-                            "kind": "element",
-                            "tag": "p",
-                            "class": "text-lg leading-relaxed text-base-content",
-                            "children": ["414 Foundry Ave"],
-                            "id": "f6f89b0f-5bae-4b3b-9735-0c1982c2d667",
-                            "ord": "a1"
-                          },
-                          {
-                            "kind": "element",
-                            "tag": "p",
-                            "class": "text-lg leading-relaxed text-base-content",
-                            "children": ["Unit B · Denver, CO 80216"],
-                            "id": "dcfcd5f8-4ec6-4156-be94-825c34226517",
-                            "ord": "a2"
-                          }
+                          "Forge Strength & Conditioning\n414 Foundry Ave\nUnit B · Denver, CO 80216"
                         ],
-                        "id": "ce62556c-577e-4917-9a18-275f0389271e",
+                        "data": {
+                          "kind": "value",
+                          "ref": "site.identity.address"
+                        },
+                        "id": "6fd7031b-52c8-4f37-8692-d6b7f4a0a95e",
                         "ord": "a1"
                       },
                       {
@@ -2073,7 +2466,7 @@
                                 "tag": "span",
                                 "class": "font-medium text-base-content",
                                 "children": ["Monday – Friday"],
-                                "id": "e76d39b2-c62c-4ade-b6d6-73cc490bee7c",
+                                "id": "504cf09c-7210-4732-98a6-f7f1542336f7",
                                 "ord": "a0"
                               },
                               {
@@ -2081,11 +2474,11 @@
                                 "tag": "span",
                                 "class": "text-base-content",
                                 "children": ["5:00 – 21:00"],
-                                "id": "dbb2934f-da8d-4a49-8232-23ad939cc876",
+                                "id": "3713bafe-12e2-4263-8052-4a6204126795",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "f166c299-f6fe-4bcf-965e-3bca042d817e",
+                            "id": "9fa270c9-bdf3-4644-aa69-90e37e4ed43e",
                             "ord": "a0"
                           },
                           {
@@ -2098,7 +2491,7 @@
                                 "tag": "span",
                                 "class": "font-medium text-base-content",
                                 "children": ["Saturday"],
-                                "id": "e8f14bdf-b08c-49d6-92d3-d5c82a932ac5",
+                                "id": "bb158c0a-4783-4e6a-a5d0-939217017c16",
                                 "ord": "a0"
                               },
                               {
@@ -2106,11 +2499,11 @@
                                 "tag": "span",
                                 "class": "text-base-content",
                                 "children": ["7:00 – 15:00"],
-                                "id": "5c552960-eb46-4730-814d-49b540d83297",
+                                "id": "e9ef5ef8-551a-47c4-be4d-62e34d066dae",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "3a51812d-b1b4-45b4-b5f4-6e67ac12e0ca",
+                            "id": "5129e2d6-7489-4605-a417-97fab22e8298",
                             "ord": "a1"
                           },
                           {
@@ -2123,7 +2516,7 @@
                                 "tag": "span",
                                 "class": "font-medium text-base-content",
                                 "children": ["Sunday"],
-                                "id": "79a9b858-fb02-4101-936b-352ed194088c",
+                                "id": "b19c4a07-bdf8-408d-8270-131b8370f889",
                                 "ord": "a0"
                               },
                               {
@@ -2131,11 +2524,11 @@
                                 "tag": "span",
                                 "class": "text-base-content",
                                 "children": ["8:00 – 13:00"],
-                                "id": "fbf29ec2-2b34-4d10-9656-80040575f982",
+                                "id": "0f3295b0-cf8d-418a-b488-d26df6d73771",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "ad895406-f533-496a-b51e-14e60c8c9964",
+                            "id": "ca841138-5151-4f97-8090-3326a426e95a",
                             "ord": "a2"
                           },
                           {
@@ -2148,7 +2541,7 @@
                                 "tag": "span",
                                 "class": "font-medium text-base-content",
                                 "children": ["Staffed coaching"],
-                                "id": "026f798e-6dcd-41ac-81e2-b00afb39692a",
+                                "id": "bea68ed9-93b3-43e3-ad7d-dc1f3d520685",
                                 "ord": "a0"
                               },
                               {
@@ -2156,19 +2549,19 @@
                                 "tag": "span",
                                 "class": "text-base-content",
                                 "children": ["See class times"],
-                                "id": "8c1acf31-e195-480c-aa34-8da67f0d7aeb",
+                                "id": "808a3464-fb2f-4b31-9956-d6775b852692",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "815abd98-c3ab-42e1-a45c-fd06e1a4cdb8",
+                            "id": "c0192355-31ad-4cda-8949-6c9eb56e83db",
                             "ord": "a3"
                           }
                         ],
-                        "id": "59aa0ce8-46a1-4668-a43c-db460c27e14c",
+                        "id": "052822f6-8eea-4064-8c88-ee3d35ed6528",
                         "ord": "a2"
                       }
                     ],
-                    "id": "0301d767-a48f-4be8-a02b-060e08d1571b",
+                    "id": "eb86cdf5-cb3b-47c7-a1f8-76d43862de58",
                     "ord": "a0"
                   },
                   {
@@ -2181,16 +2574,16 @@
                       "zoom": 15,
                       "ratio": "classic"
                     },
-                    "id": "1cf3e08b-d3ba-4167-b452-809f3aed55c9",
+                    "id": "890aff31-a1ed-4d67-a4c4-bf714972d811",
                     "ord": "a1"
                   }
                 ],
-                "id": "96f40956-5bc0-4cfd-bb67-240236ea76a3",
+                "id": "641b925b-bead-4920-a0d9-738d5e466334",
                 "ord": "a0"
               }
             ],
-            "id": "e50d4cc2-467b-4d47-8214-cb95a43ab413",
-            "ord": "a0"
+            "id": "fa0abbaf-69a1-4f3e-8b5f-2e755c0624b3",
+            "ord": "a1"
           },
           {
             "kind": "element",
@@ -2207,7 +2600,7 @@
                     "tag": "h2",
                     "class": "text-3xl font-bold tracking-tight @3xl:text-4xl",
                     "children": ["Stop scrolling. Start lifting."],
-                    "id": "845a6bed-8d5f-495f-b0c7-1ddbcbd71807",
+                    "id": "b81c2281-90b8-419e-bb27-bf3775972b6d",
                     "ord": "a0"
                   },
                   {
@@ -2217,7 +2610,7 @@
                     "children": [
                       "Book the free intro online and pick a time this week — no phone call, no sales pitch."
                     ],
-                    "id": "fae2a645-3c87-4636-8c53-e261fd67cf55",
+                    "id": "c087600f-c808-4d55-8614-18d5b141b900",
                     "ord": "a1"
                   },
                   {
@@ -2228,16 +2621,16 @@
                       "href": "/book"
                     },
                     "children": ["Book online"],
-                    "id": "0db216dd-64f4-4938-947e-6ae04cb7be27",
+                    "id": "7b780932-4bfe-45b6-aaec-d2249fcf447b",
                     "ord": "a2"
                   }
                 ],
-                "id": "4c05b1c1-3773-40dc-8f38-568cd05f7fea",
+                "id": "6d1373e6-2f00-463e-b87f-b63cadf524ea",
                 "ord": "a0"
               }
             ],
-            "id": "d249db1c-71c4-48f8-9779-836ca0574f88",
-            "ord": "a1"
+            "id": "d3a655db-f30e-426d-8cf3-18abe1cf3c14",
+            "ord": "a2"
           }
         ]
       }

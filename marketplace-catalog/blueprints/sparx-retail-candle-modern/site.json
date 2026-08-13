@@ -22,7 +22,7 @@
                   "props": {
                     "show": "both"
                   },
-                  "id": "e429fcfc-fcd5-42ca-bb91-7ec10722b678",
+                  "id": "57d14e66-e727-4b17-9de1-f1b0ebd14894",
                   "ord": "a0"
                 },
                 {
@@ -43,7 +43,7 @@
                         "type": "link",
                         "label": "Product"
                       },
-                      "id": "2bbac1ce-ea6e-4e6e-9d21-50f612d4add7",
+                      "id": "2189f4a3-7657-403e-ad1b-ef590a8bde79",
                       "ord": "a0"
                     },
                     {
@@ -59,7 +59,7 @@
                         "type": "link",
                         "label": "Pricing"
                       },
-                      "id": "71881268-b99e-4d7c-8aaf-7031280e013e",
+                      "id": "7cd0f3a3-2f78-4551-b388-4627cb1fef91",
                       "ord": "a1"
                     },
                     {
@@ -75,7 +75,7 @@
                         "type": "link",
                         "label": "Docs"
                       },
-                      "id": "a982dbf1-0efa-4acf-883d-78fa7d5ae13b",
+                      "id": "f53329cf-4725-4ec6-ad8d-14bcc40a6ab7",
                       "ord": "a2"
                     },
                     {
@@ -91,11 +91,11 @@
                         "type": "link",
                         "label": "Company"
                       },
-                      "id": "6f040bb9-9929-4905-b5ae-0a5c8d19e56f",
+                      "id": "e2d0e2f4-92c1-48b6-8f80-3847e5bb8939",
                       "ord": "a3"
                     }
                   ],
-                  "id": "5f53f7a6-f2c1-4b62-843d-4e6e491bca21",
+                  "id": "d4f76a77-3501-4742-a77f-c73f9a89e157",
                   "ord": "a1"
                 },
                 {
@@ -116,14 +116,14 @@
                         "type": "link",
                         "label": "Secondary link"
                       },
-                      "id": "46b6a204-bfc3-462e-963f-617dd6a1c17e",
+                      "id": "ec688fd6-7d8d-4067-855c-98524960ed45",
                       "ord": "a0"
                     },
                     {
                       "kind": "host",
                       "component": "site.theme-toggle",
                       "class": "inline-flex items-center",
-                      "id": "4c98205f-e9fc-45d1-9b7e-bfa0fd21f7fd",
+                      "id": "1d05e56e-40be-4a15-bab2-e26d032555b4",
                       "ord": "a1"
                     },
                     {
@@ -139,7 +139,7 @@
                         "type": "link",
                         "label": "Primary action"
                       },
-                      "id": "23ef0992-9264-43b2-a9c5-18c2c524d37e",
+                      "id": "24d294de-eed5-4504-8865-8ed4f7a1dd8c",
                       "ord": "a2"
                     },
                     {
@@ -157,20 +157,20 @@
                           "props": {
                             "name": "menu"
                           },
-                          "id": "1cfb10e8-8cec-411a-ad5b-e21b1c8b8efb",
+                          "id": "8df4559a-fc7a-4bf1-af54-3acde605bede",
                           "ord": "a0"
                         }
                       ],
                       "part": "trigger",
-                      "id": "0adb22eb-bb25-4578-a5dc-d8bd5d8c250c",
+                      "id": "04a83cfc-bfb8-482b-bace-641b8b7c565d",
                       "ord": "a3"
                     }
                   ],
-                  "id": "7c5c2441-4b28-4db7-9591-f6fd24f8902b",
+                  "id": "1def75a1-a70c-4901-a511-40d02d6289bb",
                   "ord": "a2"
                 }
               ],
-              "id": "455be04b-f27c-416f-8afb-e4c0e4b1c552",
+              "id": "73a81fc3-9366-46de-89d3-763e8af0aebb",
               "ord": "a0"
             },
             {
@@ -194,7 +194,7 @@
                     "type": "link",
                     "label": "Product"
                   },
-                  "id": "01ffac19-e989-4209-8c75-bb589b1eb390",
+                  "id": "69f98f5b-c53b-4847-82a3-321ddf4311a7",
                   "ord": "a0"
                 },
                 {
@@ -210,7 +210,7 @@
                     "type": "link",
                     "label": "Pricing"
                   },
-                  "id": "270972bc-d74f-4451-b5dd-6737129e8b29",
+                  "id": "35e3914b-07cc-4406-9bbc-842d017ae893",
                   "ord": "a1"
                 },
                 {
@@ -226,7 +226,7 @@
                     "type": "link",
                     "label": "Docs"
                   },
-                  "id": "c8f764e4-5d1d-4871-b2fd-aae0ed0022b4",
+                  "id": "6ea1ae0d-ab0b-4cac-bd75-a65bb7a05ea8",
                   "ord": "a2"
                 },
                 {
@@ -242,7 +242,7 @@
                     "type": "link",
                     "label": "Company"
                   },
-                  "id": "add0526e-fa98-4d16-980a-e42d55585157",
+                  "id": "1ec0f12e-e93b-4621-8b2f-76ab55d31e3e",
                   "ord": "a3"
                 },
                 {
@@ -258,7 +258,7 @@
                     "type": "link",
                     "label": "Secondary link"
                   },
-                  "id": "691074c1-48af-4a36-a36d-767377ff9a2a",
+                  "id": "d9843c68-9cd0-4d84-bb41-548f456c8ff1",
                   "ord": "a4"
                 },
                 {
@@ -274,19 +274,19 @@
                     "type": "link",
                     "label": "Primary action"
                   },
-                  "id": "8d5136bf-5d7b-412e-bc7c-c7e65a4f4cba",
+                  "id": "82376a43-5032-4830-bb2f-623fcbba0710",
                   "ord": "a5"
                 }
               ],
               "part": "panel",
-              "id": "d882eb60-8a8b-4087-860f-12e839765e4d",
+              "id": "4f194ac4-8210-4b93-bc97-4728ceb890af",
               "ord": "a1"
             }
           ],
           "behavior": {
             "type": "disclosure"
           },
-          "id": "9f8f71ae-e3d6-4820-953b-6f1c08aacbc3",
+          "id": "3373782f-de90-49ac-b8bc-751bb8fef301",
           "ord": "a0"
         },
         {
@@ -302,7 +302,7 @@
               "kind": "outlet"
             }
           ],
-          "id": "9eb556ec-606d-418c-b8e4-f4d48bf96d68",
+          "id": "011504be-ce89-4749-85cf-6485c97c6645",
           "ord": "a1"
         },
         {
@@ -332,7 +332,7 @@
                           "props": {
                             "show": "both"
                           },
-                          "id": "f05af726-b59a-4115-8b7f-335d71347ef0",
+                          "id": "093816af-c766-4b1b-a620-6d330948778f",
                           "ord": "a0"
                         },
                         {
@@ -350,7 +350,7 @@
                           "attrs": {
                             "href": "/"
                           },
-                          "id": "b7b8abf2-66cb-4471-bfee-b86c5a3f7252",
+                          "id": "5062bef3-12fe-4341-81f0-cc4dd93db539",
                           "ord": "a1"
                         },
                         {
@@ -371,7 +371,7 @@
                                 "placeholder": "you@example.com",
                                 "required": true
                               },
-                              "id": "120f9c85-ab48-41f0-b062-cd9b2708b51e",
+                              "id": "be21e1d4-a3c1-4979-a692-969385337d3b",
                               "ord": "a0"
                             },
                             {
@@ -387,11 +387,11 @@
                                 "type": "text",
                                 "label": "Button label"
                               },
-                              "id": "c68103bf-ca72-4ed3-bebd-10194a1d9db1",
+                              "id": "4a9e70ba-6fec-4c00-ad0a-3681397a26a9",
                               "ord": "a1"
                             }
                           ],
-                          "id": "e4112ead-3867-4c67-b033-f88bb915170d",
+                          "id": "ddc74c4b-d2d8-47d7-8f13-588be4e8f99b",
                           "ord": "a2"
                         },
                         {
@@ -404,11 +404,11 @@
                             "type": "text",
                             "label": "Reassurance line"
                           },
-                          "id": "696a57be-b5ae-4ae9-8f3e-0c6862a13498",
+                          "id": "6f6dba7c-6a11-4e89-b41e-95144dee60df",
                           "ord": "a3"
                         }
                       ],
-                      "id": "4241a82a-0102-4134-96f6-20b090084607",
+                      "id": "d478a318-aa45-4595-aaa5-a794d6591cdd",
                       "ord": "a0"
                     },
                     {
@@ -434,7 +434,7 @@
                               "attrs": {
                                 "href": "/"
                               },
-                              "id": "003ca342-c7ec-4fd5-a7d3-856fbffcc818",
+                              "id": "9c1668d3-00a3-4a50-8541-334263d3914f",
                               "ord": "a0"
                             },
                             {
@@ -459,11 +459,11 @@
                                         "type": "link",
                                         "label": "Features"
                                       },
-                                      "id": "2f3c78da-af24-4fb4-9706-9dfe955b004d",
+                                      "id": "906cecb7-9836-4dbb-a791-6d9bccee88eb",
                                       "ord": "a0"
                                     }
                                   ],
-                                  "id": "154b2363-0c24-4ba3-8e14-21344d8e15dd",
+                                  "id": "100b05b4-f697-429d-9421-94abb31e2e44",
                                   "ord": "a0"
                                 },
                                 {
@@ -483,11 +483,11 @@
                                         "type": "link",
                                         "label": "Pricing"
                                       },
-                                      "id": "c85931e5-5761-40cf-870c-6ffddb01e64f",
+                                      "id": "28337bcf-8108-4c46-be6e-218818f175a4",
                                       "ord": "a0"
                                     }
                                   ],
-                                  "id": "7b79d836-c55e-4e37-945a-179f443b4cf5",
+                                  "id": "132d2cdf-8e93-4bf7-b158-1716b4a72974",
                                   "ord": "a1"
                                 },
                                 {
@@ -507,11 +507,11 @@
                                         "type": "link",
                                         "label": "Changelog"
                                       },
-                                      "id": "a00c2d7b-497e-4c1a-8ea7-d8bcc7d2d076",
+                                      "id": "c128d956-6676-4f98-8877-1063d3b48716",
                                       "ord": "a0"
                                     }
                                   ],
-                                  "id": "a0fea5ae-9540-4ce4-b0cf-2ed17a1d36b7",
+                                  "id": "9c062412-9347-4710-8c6c-817b4433e4ca",
                                   "ord": "a2"
                                 },
                                 {
@@ -531,11 +531,11 @@
                                         "type": "link",
                                         "label": "Roadmap"
                                       },
-                                      "id": "645736da-3bec-4e5c-a3d7-15f28c8e3ca2",
+                                      "id": "70e55662-7f5c-4785-b6ef-523e65c7435f",
                                       "ord": "a0"
                                     }
                                   ],
-                                  "id": "20a357a6-3451-474a-bea0-978aaf1fb3b7",
+                                  "id": "f99be652-c426-489f-bde5-94c82508cc55",
                                   "ord": "a3"
                                 },
                                 {
@@ -550,19 +550,19 @@
                                         "href": "/search"
                                       },
                                       "children": ["Search"],
-                                      "id": "3d221c3d-4a37-4d77-82e4-53bd11cc52cf",
+                                      "id": "7ecd8d4f-914e-468c-bfc9-3af201086d97",
                                       "ord": "a0"
                                     }
                                   ],
-                                  "id": "a4e5e3b0-935a-4a86-9c68-443a7954390d",
+                                  "id": "5472434c-3251-4596-867e-9a56fafc634d",
                                   "ord": "a4"
                                 }
                               ],
-                              "id": "a165642c-6947-4482-a0c8-2d962c75b6ed",
+                              "id": "a26e1f98-ef10-422c-965c-d254bf4400a7",
                               "ord": "a1"
                             }
                           ],
-                          "id": "560e6eb4-a056-4d07-a6f5-9d3979e10e1e",
+                          "id": "97230667-80ed-4cfb-92db-b479255b9f84",
                           "ord": "a0"
                         },
                         {
@@ -583,7 +583,7 @@
                               "attrs": {
                                 "href": "/account"
                               },
-                              "id": "a21e7a82-ce57-4286-8bbd-54d254f4c884",
+                              "id": "3e52b54b-00c3-4dcc-8dd9-255c977ed117",
                               "ord": "a0"
                             },
                             {
@@ -608,11 +608,11 @@
                                         "type": "link",
                                         "label": "About"
                                       },
-                                      "id": "74af0a9d-97f8-4203-b513-b53e8bbfa32c",
+                                      "id": "4b3cb6bd-2b30-4b2c-88b6-94329c59c2dd",
                                       "ord": "a0"
                                     }
                                   ],
-                                  "id": "3f23f967-14ab-4da0-a4b9-872c9d9b0076",
+                                  "id": "64da51ef-116f-4244-89e1-d4288da8ea53",
                                   "ord": "a0"
                                 },
                                 {
@@ -632,11 +632,11 @@
                                         "type": "link",
                                         "label": "Careers"
                                       },
-                                      "id": "0de2e329-9fe5-4ddd-bfc1-1e385e70e61d",
+                                      "id": "cfd3575d-bf99-4673-9d5c-2c45e4bd41f6",
                                       "ord": "a0"
                                     }
                                   ],
-                                  "id": "7b8fd216-9d3a-4936-bd15-6eb126c6e38f",
+                                  "id": "c4c4de75-16c5-40e9-b9a7-c864b10be70e",
                                   "ord": "a1"
                                 },
                                 {
@@ -656,27 +656,27 @@
                                         "type": "link",
                                         "label": "Press"
                                       },
-                                      "id": "d192a22e-b0b5-4047-82f2-f013b010f3ff",
+                                      "id": "d045caad-3352-4f8a-9bcb-0cbfc9956fa3",
                                       "ord": "a0"
                                     }
                                   ],
-                                  "id": "ff965563-1332-4c7f-99fe-0cb4106dd246",
+                                  "id": "396346da-d22e-4113-94b9-c8d9d6f0ee26",
                                   "ord": "a2"
                                 }
                               ],
-                              "id": "cfb683c6-16c6-41fb-8a8b-61712f2961de",
+                              "id": "c06ee9ec-3a44-4ea4-ac3c-938e22429267",
                               "ord": "a1"
                             }
                           ],
-                          "id": "fc385762-d4a4-4966-b764-9e44d3d31864",
+                          "id": "e026e378-7f50-44ea-908f-186f61615526",
                           "ord": "a1"
                         }
                       ],
-                      "id": "a51f5448-3d11-4254-814e-558cb171bbb5",
+                      "id": "b014ea6e-01d1-456b-87c4-5972998dac66",
                       "ord": "a1"
                     }
                   ],
-                  "id": "a3c0cac7-a96c-4cc3-9e61-933614bfdae8",
+                  "id": "d9d9f46f-3375-4b40-9aa4-d96a5989c666",
                   "ord": "a0"
                 },
                 {
@@ -699,11 +699,11 @@
                             "kind": "value",
                             "ref": "site.identity.name"
                           },
-                          "id": "2026169c-6760-4a93-844d-88f69ecbf4e5",
+                          "id": "f45b0fc9-de0d-4f4f-9ac1-bc309c074bf9",
                           "ord": "a0"
                         }
                       ],
-                      "id": "91497e27-0a5b-463d-9ab2-cbd822efa1e6",
+                      "id": "e15a3d62-c49a-42e7-ab4d-7c7e2bcefddb",
                       "ord": "a0"
                     },
                     {
@@ -711,23 +711,23 @@
                       "tag": "ul",
                       "class": "flex items-center gap-5",
                       "children": [],
-                      "id": "9e4cb08a-e3dc-46d3-aed8-f09232333c51",
+                      "id": "4f4e0230-b158-4e09-b526-85b2822dd754",
                       "ord": "a1"
                     }
                   ],
-                  "id": "c931ab04-8130-400e-9191-4458bb250403",
+                  "id": "23ef45d7-7716-4815-9e58-f7669025f5c5",
                   "ord": "a1"
                 }
               ],
-              "id": "c2cf1c2b-e823-455c-8302-f618c151b1e9",
+              "id": "923bcb69-52a3-45e8-9761-1bb47c76db9b",
               "ord": "a0"
             }
           ],
-          "id": "3b610cb6-e1a2-4527-b8f4-85f29385ac92",
+          "id": "5421a6f6-60cf-4522-9247-261f245d730b",
           "ord": "a2"
         }
       ],
-      "id": "a824906a-f53f-477e-8c2a-0e414e7d507a"
+      "id": "11752370-e6aa-4563-923c-278a0a441b9b"
     }
   },
   "pages": [
@@ -741,7 +741,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "92045347-4a82-4db5-a2e5-c7a69b4cecf5",
+        "id": "d21103f4-a6df-44b8-af97-54265e04830f",
         "children": [
           {
             "kind": "element",
@@ -763,7 +763,7 @@
                         "tag": "h1",
                         "class": "text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl",
                         "children": ["Clean fragrance, for the light everyday."],
-                        "id": "639165db-e7a1-49ee-aaf2-651182cb7e61",
+                        "id": "bada681c-3f9f-4a1e-8d32-3d501fef89e2",
                         "ord": "a0"
                       },
                       {
@@ -773,7 +773,7 @@
                         "children": [
                           "Lumen is a small home-fragrance studio making candles the honest way — coconut-soy wax, cotton wicks, phthalate-free scent, and vessels built to be refilled rather than thrown out. Fragrance that smells fresh and clean, with nothing to hide on the label."
                         ],
-                        "id": "22a0be6b-9096-4ac8-a864-25292ca2449e",
+                        "id": "303d7353-99bd-4295-b434-28cf18025803",
                         "ord": "a1"
                       },
                       {
@@ -789,7 +789,7 @@
                               "href": "/shop"
                             },
                             "children": ["Shop candles"],
-                            "id": "eb8da0a9-9440-4353-97a4-316273c2c46a",
+                            "id": "a8eeedad-5be9-4a24-bca1-6344ceaff636",
                             "ord": "a0"
                           },
                           {
@@ -800,15 +800,15 @@
                               "href": "/shop/refills"
                             },
                             "children": ["Refill your vessel"],
-                            "id": "b13bd4b6-8b03-4bdb-9c1b-5c29e2fc45b3",
+                            "id": "43f097c2-a273-4715-82e4-b6ee1adaa027",
                             "ord": "a1"
                           }
                         ],
-                        "id": "9c80fae4-ea80-4918-96ab-ced390596bbd",
+                        "id": "b446588b-c80b-47a9-b116-37f327b87cbb",
                         "ord": "a2"
                       }
                     ],
-                    "id": "6da97fe1-81a6-40e4-9078-e4629dec38dc",
+                    "id": "c989501c-0f45-4e1d-8af4-da778c8addd5",
                     "ord": "a0"
                   },
                   {
@@ -820,15 +820,15 @@
                       "alt": "A pale candle on a bright sunlit table",
                       "loading": "lazy"
                     },
-                    "id": "6ce02a23-b2b6-4c54-be3c-af8e4daaa039",
+                    "id": "87b80598-8958-4b92-b68a-dad317a29485",
                     "ord": "a1"
                   }
                 ],
-                "id": "1197948c-6ae2-49ab-b9dd-f4571c27ce2c",
+                "id": "14ab5d6d-a45a-443a-b0de-b7fca27331f4",
                 "ord": "a0"
               }
             ],
-            "id": "b3bd0f68-8c5c-4645-b8c0-3d22496f4ead",
+            "id": "c4c410d0-64d8-474e-9213-c9fc40bd0e20",
             "ord": "a0"
           },
           {
@@ -846,7 +846,7 @@
                     "tag": "h2",
                     "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
                     "children": ["Find your everyday scent"],
-                    "id": "ee412ab7-5963-4c50-a67a-9b95fa2ab197",
+                    "id": "82ec471f-d0b6-4686-a1a6-e5b360b3e5ce",
                     "ord": "a0"
                   },
                   {
@@ -871,7 +871,7 @@
                               "alt": "A row of minimalist candles",
                               "loading": "lazy"
                             },
-                            "id": "742f20a3-5f8b-4323-837a-83da875feae7",
+                            "id": "2acb4411-7f7e-4524-8960-b2c900889086",
                             "ord": "a0"
                           },
                           {
@@ -879,11 +879,11 @@
                             "tag": "span",
                             "class": "text-center text-base font-semibold text-base-content",
                             "children": ["Candles"],
-                            "id": "9e6ccd0e-f801-4c2d-bda1-a1c55c6780a6",
+                            "id": "324a66bb-3f8d-496c-bf67-06c46ed33ac2",
                             "ord": "a1"
                           }
                         ],
-                        "id": "a84ead68-0819-4b09-9888-bf7334ab2f72",
+                        "id": "6aab2ac0-77b0-40fc-a827-1b50bb8e2214",
                         "ord": "a0"
                       },
                       {
@@ -903,7 +903,7 @@
                               "alt": "A diffuser and a room spray",
                               "loading": "lazy"
                             },
-                            "id": "d442769b-4436-481e-a0b2-d8be31680c78",
+                            "id": "1099d2ec-d05d-4c10-b4ae-db0459ac425f",
                             "ord": "a0"
                           },
                           {
@@ -911,11 +911,11 @@
                             "tag": "span",
                             "class": "text-center text-base font-semibold text-base-content",
                             "children": ["Diffusers & sprays"],
-                            "id": "4d9d5547-0edf-4bda-8345-b4423ded12c6",
+                            "id": "eed7319a-524b-424e-957a-51f21976d279",
                             "ord": "a1"
                           }
                         ],
-                        "id": "c7a3f26e-cfd0-4a83-84be-9cc164307852",
+                        "id": "15058eba-afb6-4ecb-9b3a-ba061e339b6d",
                         "ord": "a1"
                       },
                       {
@@ -935,7 +935,7 @@
                               "alt": "A refill pouch and an empty vessel",
                               "loading": "lazy"
                             },
-                            "id": "c0eb65f9-8a5f-4fe2-b630-d8ddceac27a2",
+                            "id": "5b70fd24-8640-4940-8436-34f49d99d44b",
                             "ord": "a0"
                           },
                           {
@@ -943,11 +943,11 @@
                             "tag": "span",
                             "class": "text-center text-base font-semibold text-base-content",
                             "children": ["Refills"],
-                            "id": "52a44ae5-3a2f-4a29-b355-88b91cbdf100",
+                            "id": "e8d09bcf-289f-43bc-aaa6-37ae118c003b",
                             "ord": "a1"
                           }
                         ],
-                        "id": "d919b2da-359c-4f13-8c93-3523db597b82",
+                        "id": "3b1d2a39-213a-4114-bc69-614a54079e33",
                         "ord": "a2"
                       },
                       {
@@ -967,7 +967,7 @@
                               "alt": "A wrapped candle gift set",
                               "loading": "lazy"
                             },
-                            "id": "711c2375-ad86-4484-ba40-21cf3b987024",
+                            "id": "5d77f478-c486-4fdd-b816-510a674a0f19",
                             "ord": "a0"
                           },
                           {
@@ -975,23 +975,23 @@
                             "tag": "span",
                             "class": "text-center text-base font-semibold text-base-content",
                             "children": ["Gifts"],
-                            "id": "0605b1d9-5e9f-4b8d-a1a5-4e50d3d3bb94",
+                            "id": "801e0e90-998d-41c5-9027-786743718a20",
                             "ord": "a1"
                           }
                         ],
-                        "id": "b88adb23-002b-4e7c-a3a5-6873843f6067",
+                        "id": "53378c35-fead-47e4-a2db-2ff0346eb043",
                         "ord": "a3"
                       }
                     ],
-                    "id": "9a0923f0-747c-4960-9d64-f6d1cd08e2f5",
+                    "id": "6e80e030-93b7-4d4e-a6af-d0db6144b48c",
                     "ord": "a1"
                   }
                 ],
-                "id": "6de9ff24-e7b1-4106-8651-dedbe083ca34",
+                "id": "f8fda47c-655f-494d-ab01-e48d0d1b8546",
                 "ord": "a0"
               }
             ],
-            "id": "93f47c3d-2ad7-4d3a-9123-3dfcb9f24b83",
+            "id": "89401ac8-8995-4514-b1b2-981bc4426de9",
             "ord": "a1"
           },
           {
@@ -1014,7 +1014,7 @@
                         "tag": "h3",
                         "class": "text-lg font-bold tracking-tight text-accent",
                         "children": ["Coconut-soy wax"],
-                        "id": "d0ab5784-055b-4b9f-a009-76e879296a8b",
+                        "id": "5904f3a7-bbd7-4a30-985a-f7510f893335",
                         "ord": "a0"
                       },
                       {
@@ -1024,11 +1024,11 @@
                         "children": [
                           "A clean coconut-soy blend with cotton wicks — a slow, even burn and no paraffin soot on the ceiling."
                         ],
-                        "id": "268e14b5-29d3-4d9e-9ca1-733376e296da",
+                        "id": "4e3ae2e6-4fa6-4b47-830c-7adb76e67a77",
                         "ord": "a1"
                       }
                     ],
-                    "id": "ecce777b-a248-4b7b-be52-6ed4bd523e08",
+                    "id": "9653fd59-424e-4ac0-8490-a182308b6e55",
                     "ord": "a0"
                   },
                   {
@@ -1041,7 +1041,7 @@
                         "tag": "h3",
                         "class": "text-lg font-bold tracking-tight text-accent",
                         "children": ["Phthalate-free scent"],
-                        "id": "e180a097-335b-4b88-97fb-afa77743a0d6",
+                        "id": "9a460b80-47fd-4fe5-8353-468500158eab",
                         "ord": "a0"
                       },
                       {
@@ -1051,11 +1051,11 @@
                         "children": [
                           "Fragrance blended without phthalates or parabens, and a full ingredient list on every product. Nothing hidden."
                         ],
-                        "id": "6722f086-c9ab-4b29-9430-9ca31175b1b4",
+                        "id": "b74dd7ef-de81-4952-bdc1-10c788788124",
                         "ord": "a1"
                       }
                     ],
-                    "id": "f502f0e4-c594-47db-a59c-8b9ba6866716",
+                    "id": "10cc197f-2c5b-451b-92d0-f2800f07c14b",
                     "ord": "a1"
                   },
                   {
@@ -1068,7 +1068,7 @@
                         "tag": "h3",
                         "class": "text-lg font-bold tracking-tight text-accent",
                         "children": ["Made to be refilled"],
-                        "id": "a1d575e9-effd-478d-a6e3-3d5833cc1572",
+                        "id": "45cf4acb-a08c-4b53-b0af-19a7b1c18fa2",
                         "ord": "a0"
                       },
                       {
@@ -1078,19 +1078,19 @@
                         "children": [
                           "Every vessel is built to be washed and refilled — buy the candle once, then top it up for less, forever."
                         ],
-                        "id": "87645024-d61b-4052-a54d-579b19351b05",
+                        "id": "3002ef1b-078e-4d68-b535-019a2528ea36",
                         "ord": "a1"
                       }
                     ],
-                    "id": "f3d974db-11f8-44e7-9d4c-e8599c9c354c",
+                    "id": "c0fd35d5-61a1-41f8-9e17-b00e6e6e37dd",
                     "ord": "a2"
                   }
                 ],
-                "id": "01f3d807-2af9-4239-b730-f17dacde4201",
+                "id": "f549b847-1262-4a93-80f5-9fd6a9e99202",
                 "ord": "a0"
               }
             ],
-            "id": "b4ca3c74-341f-4674-9b26-106ed0690b76",
+            "id": "ba5ad450-7aea-4b82-8df8-aeac60e6d8ca",
             "ord": "a2"
           },
           {
@@ -1108,7 +1108,7 @@
                     "tag": "h2",
                     "class": "text-2xl font-semibold text-base-content",
                     "children": ["New this season"],
-                    "id": "f6b51477-0588-4490-a339-0562b83895e2",
+                    "id": "51090b1d-9b1c-4651-b22e-586878614f54",
                     "ord": "a0"
                   },
                   {
@@ -1132,12 +1132,12 @@
                             "props": {
                               "name": "arrow-left"
                             },
-                            "id": "edb28197-910d-42b7-8375-df7b9307895e",
+                            "id": "31ba23ad-347e-4724-9e65-0848514f6128",
                             "ord": "a0"
                           }
                         ],
                         "part": "prev",
-                        "id": "7d9f4fef-6829-4e75-adde-d37c247bbcd4",
+                        "id": "9da85bf9-8bfe-4318-b858-4bfedf849896",
                         "ord": "a0"
                       },
                       {
@@ -1156,20 +1156,20 @@
                             "props": {
                               "name": "arrow-right"
                             },
-                            "id": "8c67ce25-93e4-4c71-bbfa-d9577f1f95f1",
+                            "id": "7cfbadb6-a95f-4438-9236-d8f07dbf2f59",
                             "ord": "a0"
                           }
                         ],
                         "part": "next",
-                        "id": "63695e31-9948-4dc6-8570-3d82e6f5c3d6",
+                        "id": "85beef2d-4c58-4be0-9dfe-a7aa989514d5",
                         "ord": "a1"
                       }
                     ],
-                    "id": "c82353bc-8f83-40e4-9b91-a5ece408efbf",
+                    "id": "c2c97ee3-9437-41d5-bd86-4a76b7703608",
                     "ord": "a1"
                   }
                 ],
-                "id": "65a48f9e-92fb-460e-8131-1cff6cee9bd8",
+                "id": "04a0d368-257c-4f69-8bbb-3f004c79f908",
                 "ord": "a0"
               },
               {
@@ -1194,7 +1194,7 @@
                           "kind": "value",
                           "ref": "image"
                         },
-                        "id": "4a5002c9-3db8-48e5-a222-46dc43015b6d",
+                        "id": "8b0c6425-cad0-460b-acea-fca3906ecfdd",
                         "ord": "a0"
                       },
                       {
@@ -1211,7 +1211,7 @@
                               "kind": "value",
                               "ref": "title"
                             },
-                            "id": "7206e568-fbab-471c-a07c-7ba3f4ea7a40",
+                            "id": "0c4ee06f-4206-41cf-bac4-6c273a13fd3c",
                             "ord": "a0"
                           },
                           {
@@ -1223,11 +1223,11 @@
                               "kind": "value",
                               "ref": "price"
                             },
-                            "id": "f9a07093-e1cb-4916-a734-853a25edc1d9",
+                            "id": "a6c0c511-f057-43b6-b436-e27afdf60932",
                             "ord": "a1"
                           }
                         ],
-                        "id": "4b9db738-3f55-4aa5-b76d-6b97346b30f0",
+                        "id": "55080593-3de2-4983-b148-3378c643e74a",
                         "ord": "a1"
                       }
                     ],
@@ -1237,7 +1237,7 @@
                       "attr": "href"
                     },
                     "part": "slide",
-                    "id": "661b8766-6467-457e-90c3-6f1d5ffb9d16",
+                    "id": "3c62008a-7434-4b52-b64c-08402b6b019e",
                     "ord": "a0"
                   }
                 ],
@@ -1246,14 +1246,14 @@
                   "kind": "collection",
                   "ref": "commerce.featured"
                 },
-                "id": "6d068acf-e413-4470-b076-9a5b8f4ea8df",
+                "id": "30cbe8fa-9ff9-4017-88bb-6f116b8b62e6",
                 "ord": "a1"
               }
             ],
             "behavior": {
               "type": "carousel"
             },
-            "id": "9b453eb7-3870-4694-8285-e30f16c29832",
+            "id": "f425f9a0-bad1-4ed3-be95-6f68adac1bb8",
             "ord": "a3"
           },
           {
@@ -1275,7 +1275,7 @@
                       "alt": "Coconut-soy wax and a cotton wick in a bright workshop",
                       "loading": "lazy"
                     },
-                    "id": "d4adea9f-0edb-48dc-9297-27f4a937bf50",
+                    "id": "3b0d54ff-dc46-4ccd-9707-385cc99f0b10",
                     "ord": "a0"
                   },
                   {
@@ -1288,7 +1288,7 @@
                         "tag": "h2",
                         "class": "text-4xl font-bold leading-none tracking-tight text-base-content @3xl:text-5xl",
                         "children": ["Clean fragrance, honestly made"],
-                        "id": "3209336d-4044-4736-b0f8-b948a1ba916d",
+                        "id": "5962cb49-edec-44d6-86f4-c6de8817d873",
                         "ord": "a0"
                       },
                       {
@@ -1298,7 +1298,7 @@
                         "children": [
                           "We pour in coconut-soy wax with cotton wicks, blend our scents phthalate-free, and print the whole ingredient list on every candle. No mystery “fragrance,” no soot, no guessing what you’re breathing in — just a clean, even burn and a scent that stays true from the first hour to the last."
                         ],
-                        "id": "f2f6ee17-6bc6-4bd4-ab37-0b91ecf79e12",
+                        "id": "02e2f157-4555-4790-8bea-a683d314e2d4",
                         "ord": "a1"
                       },
                       {
@@ -1309,19 +1309,19 @@
                           "href": "/blog/whats-in-a-lumen-candle"
                         },
                         "children": ["What’s in a Lumen candle"],
-                        "id": "72753347-d0b7-4fad-b177-f002950881d4",
+                        "id": "dcd2c949-ce60-4f86-91cc-4a4fe827c1ad",
                         "ord": "a2"
                       }
                     ],
-                    "id": "eca2e46d-d3e7-4e62-96ec-9886c936ef35",
+                    "id": "28955e44-489e-49ee-9e9a-937d8a4cca03",
                     "ord": "a1"
                   }
                 ],
-                "id": "6040321c-ee7a-45f6-b5d2-c57bd36d0869",
+                "id": "976536dd-34be-42c8-a521-24bd9b8e3e6f",
                 "ord": "a0"
               }
             ],
-            "id": "335b967d-6f69-4ab2-9c4d-6355f6d33ed5",
+            "id": "84aae9f3-9d69-43b0-a2d5-d7f60c9902fb",
             "ord": "a4"
           },
           {
@@ -1339,7 +1339,7 @@
                     "tag": "h2",
                     "class": "text-2xl font-semibold text-base-content",
                     "children": ["The candles"],
-                    "id": "e87720d9-9560-495a-a94c-1b9e310ec5e3",
+                    "id": "941da9b5-d3da-4e1e-bab5-625abae44e49",
                     "ord": "a0"
                   },
                   {
@@ -1363,12 +1363,12 @@
                             "props": {
                               "name": "arrow-left"
                             },
-                            "id": "0beb59e2-0226-4f7c-ae5a-68d9e5f360f2",
+                            "id": "ce3ba40b-ee7c-41dd-bb39-0fb6f486ccd9",
                             "ord": "a0"
                           }
                         ],
                         "part": "prev",
-                        "id": "bdc45c92-5748-4867-a4a8-f12e3fa63902",
+                        "id": "a5f7b39b-fdd3-4705-9097-1d1463ec5e4d",
                         "ord": "a0"
                       },
                       {
@@ -1387,20 +1387,20 @@
                             "props": {
                               "name": "arrow-right"
                             },
-                            "id": "21e09c4a-3dc9-4199-b079-cd19096f7abd",
+                            "id": "de236e8b-51b6-45bf-bdd9-9bb21545a685",
                             "ord": "a0"
                           }
                         ],
                         "part": "next",
-                        "id": "233248a1-c4d8-419d-817d-139b6ae5f9c4",
+                        "id": "eb5dee71-2f47-4799-99cc-0e6bdc5fad18",
                         "ord": "a1"
                       }
                     ],
-                    "id": "50dbb6f4-0f4a-44ec-b746-524177b40eb2",
+                    "id": "a53678b2-623b-47c2-b9e6-13cf53a4738d",
                     "ord": "a1"
                   }
                 ],
-                "id": "a18ce987-7e09-423d-9bd3-7e3d049b0cbf",
+                "id": "cdf32b21-4fdf-4975-b1c6-49d0854dec46",
                 "ord": "a0"
               },
               {
@@ -1425,7 +1425,7 @@
                           "kind": "value",
                           "ref": "image"
                         },
-                        "id": "2ccc4552-0f7d-45cf-941f-ea5de82459a8",
+                        "id": "71df1bcd-2e7b-43bf-b1df-f72f896496f1",
                         "ord": "a0"
                       },
                       {
@@ -1442,7 +1442,7 @@
                               "kind": "value",
                               "ref": "title"
                             },
-                            "id": "e8ea9e96-edc3-4f3f-b983-6bfdf26e8763",
+                            "id": "018d55e4-a32b-4618-bed5-54c193173bef",
                             "ord": "a0"
                           },
                           {
@@ -1454,11 +1454,11 @@
                               "kind": "value",
                               "ref": "price"
                             },
-                            "id": "d17ba079-384e-4e28-8d3e-8046e304a98a",
+                            "id": "e9b517ae-e144-4547-827f-e8e250158190",
                             "ord": "a1"
                           }
                         ],
-                        "id": "09fcda52-88f9-408b-bb48-ceb745478703",
+                        "id": "7c0e7add-8e60-4204-b4d7-9acb70ba60dd",
                         "ord": "a1"
                       }
                     ],
@@ -1468,7 +1468,7 @@
                       "attr": "href"
                     },
                     "part": "slide",
-                    "id": "e23930a7-4192-4317-b13d-0c41fb7f89bc",
+                    "id": "6a20e69d-97d7-4fc5-873b-3836be2e59a5",
                     "ord": "a0"
                   }
                 ],
@@ -1477,14 +1477,14 @@
                   "kind": "collection",
                   "ref": "commerce.category.candles"
                 },
-                "id": "0b919a50-2830-4486-acdb-436a25b6b8ea",
+                "id": "a0f2c07d-daf4-41c4-a4c0-b0d3887ecbbb",
                 "ord": "a1"
               }
             ],
             "behavior": {
               "type": "carousel"
             },
-            "id": "99dc83a6-8601-4401-b247-2ce4990ccb0b",
+            "id": "a4c64585-4a54-469e-b3bf-809bf8c2e548",
             "ord": "a5"
           },
           {
@@ -1507,7 +1507,7 @@
                         "tag": "h2",
                         "class": "text-4xl font-bold leading-none tracking-tight text-base-content @3xl:text-5xl",
                         "children": ["Buy the candle once. Refill it forever."],
-                        "id": "7eb485bb-d269-4b6d-81c4-84a15dff07da",
+                        "id": "0d5403b7-2de6-46e9-a446-a914a1950376",
                         "ord": "a0"
                       },
                       {
@@ -1517,7 +1517,7 @@
                         "children": [
                           "Every Lumen vessel is made to be washed out and poured again. When a candle burns down, a refill drops straight back in — same ceramic, same shelf, a little less money and a lot less waste. It’s the easy, quiet way to keep a home smelling good without a bin full of glass."
                         ],
-                        "id": "6d4f40e9-02b2-4c42-b297-bfb597428a78",
+                        "id": "475504f0-2cec-4863-bdd0-9d7a4383a9b6",
                         "ord": "a1"
                       },
                       {
@@ -1528,11 +1528,11 @@
                           "href": "/shop/refills"
                         },
                         "children": ["Shop refills"],
-                        "id": "100f0ed3-66c8-4948-bc9a-f20cf0888814",
+                        "id": "ad2f6124-fad9-41ba-a047-f6d70183beed",
                         "ord": "a2"
                       }
                     ],
-                    "id": "c18b0036-f47b-4714-aba2-7b96dc70b3df",
+                    "id": "1f3a214c-351b-485f-84f3-5ecb5f0ba564",
                     "ord": "a0"
                   },
                   {
@@ -1544,15 +1544,15 @@
                       "alt": "A refill being poured into a reusable ceramic vessel in daylight",
                       "loading": "lazy"
                     },
-                    "id": "cba716f1-2b66-4874-8d31-1d3896f56fad",
+                    "id": "992ba1bc-c189-4730-b831-ef15d58e704d",
                     "ord": "a1"
                   }
                 ],
-                "id": "36e24cb6-3713-49b9-8a9c-35f509b0499f",
+                "id": "83d985f9-5ad8-49a7-90ca-d9303abfe1c0",
                 "ord": "a0"
               }
             ],
-            "id": "c2051234-a1a2-45d1-b9f6-79b1511e0eec",
+            "id": "b37478f6-9d24-4f7e-bba3-958c710d38c2",
             "ord": "a6"
           }
         ]
@@ -1569,7 +1569,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "699116dc-8fe2-465a-b72f-f621d4ac96e0",
+        "id": "dafd3535-9ace-4eaa-8121-eb5ea86362c8",
         "children": [
           {
             "kind": "element",
@@ -1586,7 +1586,7 @@
                     "tag": "h1",
                     "class": "text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl",
                     "children": ["The whole studio"],
-                    "id": "16a1f357-2dd9-426a-9e48-58214fae81aa",
+                    "id": "55b1237f-ce30-41f7-9512-ba7b51db9a4d",
                     "ord": "a0"
                   },
                   {
@@ -1596,15 +1596,15 @@
                     "children": [
                       "Every candle, diffuser, spray, refill and gift we make — poured in small batches in coconut-soy wax, blended phthalate-free, and built to be refilled. Filter by scent or format, or sort however you like."
                     ],
-                    "id": "b5a38554-1c3d-4f0c-824c-1cd125031351",
+                    "id": "2ff17ecc-f66d-4ba1-9212-8141f0c6a428",
                     "ord": "a1"
                   }
                 ],
-                "id": "b77a3e24-4e6b-4183-a0bc-5c0204900783",
+                "id": "fdf9886f-94f8-4dc4-986c-ddc73fcb0670",
                 "ord": "a0"
               }
             ],
-            "id": "3a5f50b2-648c-4dfc-a3e0-2c2e0e850d0c",
+            "id": "9990c04e-1254-42bb-a59a-b594a0b31cf4",
             "ord": "a0"
           },
           {
@@ -1612,7 +1612,7 @@
             "component": "commerce.plp",
             "class": "mx-auto w-full max-w-6xl px-6 py-6",
             "locked": "host",
-            "id": "8958ab26-b719-433e-8426-d57595bed6c5",
+            "id": "912e2ed6-fbac-418c-bbba-3ddeff9a1d77",
             "ord": "a1"
           }
         ]
@@ -1629,7 +1629,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "946fd0a7-203d-45f8-a42a-980e4ae809a4",
+        "id": "51f468f5-aa24-45cf-abd4-6d130cdab81a",
         "children": [
           {
             "kind": "element",
@@ -1646,7 +1646,7 @@
                     "tag": "h1",
                     "class": "text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl",
                     "children": ["Collections"],
-                    "id": "df7ec309-5dae-4062-a543-4a6c22aa05a1",
+                    "id": "f39284dc-6318-403d-956f-18fc7dd47926",
                     "ord": "a0"
                   },
                   {
@@ -1656,15 +1656,15 @@
                     "children": [
                       "The range grouped the way people actually shop — what’s new this season, the best-sellers, flame-free fragrance for every room, and the refills that keep a vessel going."
                     ],
-                    "id": "c7b340d5-0e3b-4a09-be70-e80bfdfd3d01",
+                    "id": "839c87dc-048b-4ca6-a344-dd882c6c3393",
                     "ord": "a1"
                   }
                 ],
-                "id": "ec352b49-d75d-4544-b7f5-94a081a85fb0",
+                "id": "9a400156-26b3-49be-802c-ee7947922306",
                 "ord": "a0"
               }
             ],
-            "id": "e08ce68c-255b-4ac4-8229-4a78cff294ae",
+            "id": "35062a38-057a-4d07-a488-34734fc29343",
             "ord": "a0"
           },
           {
@@ -1672,7 +1672,7 @@
             "component": "commerce.collections",
             "class": "mx-auto w-full max-w-6xl px-6 py-6",
             "locked": "host",
-            "id": "e5014427-6c34-44b2-9bd6-72d6a14be7d6",
+            "id": "ddbfa197-a36a-45b1-8a3d-8f7323bcc43d",
             "ord": "a1"
           }
         ]
@@ -1689,7 +1689,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "983345ef-8fbb-4379-a79b-6f968c65550a",
+        "id": "30b66197-8439-4d0c-aad3-ed8844b6d490",
         "children": [
           {
             "kind": "element",
@@ -1706,7 +1706,7 @@
                     "tag": "h1",
                     "class": "text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl",
                     "children": ["Your cart"],
-                    "id": "b4af9394-3a33-4dc0-a57d-5ba8f62ac519",
+                    "id": "9ac1e24b-4e5d-44a0-a070-5db3064f6101",
                     "ord": "a0"
                   },
                   {
@@ -1716,15 +1716,15 @@
                     "children": [
                       "Free shipping on orders over $50, and everything ships in plastic-free, recyclable packaging. Changed your mind on a scent? Tell us within 30 days and we’ll swap it — clean fragrance should feel good all the way through."
                     ],
-                    "id": "72b9e476-f42b-4518-9d83-8bf3dc88da6a",
+                    "id": "8b6906b1-3b53-4b10-9fda-f62e0daeec59",
                     "ord": "a1"
                   }
                 ],
-                "id": "9171b07a-6f12-4de3-92fe-b25fc71c879f",
+                "id": "4a95d988-1bfd-425f-bd09-c9615847428c",
                 "ord": "a0"
               }
             ],
-            "id": "526f1d33-b3f7-4b7e-8015-cf8c4079ec26",
+            "id": "19456388-09b6-4eda-adaf-28510152b22d",
             "ord": "a0"
           },
           {
@@ -1732,7 +1732,7 @@
             "component": "commerce.cart",
             "class": "mx-auto w-full max-w-4xl px-6 py-10",
             "locked": "host",
-            "id": "a65de901-d33e-4edf-b762-9221ffe5a6a6",
+            "id": "32bc8fc4-8dbf-408b-a17c-b82e89a07863",
             "ord": "a1"
           }
         ]
@@ -1749,7 +1749,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "953d1eb6-c937-452b-9628-b2dab651595f",
+        "id": "8f8d06a5-1eef-4fad-8959-644dadc5392d",
         "children": [
           {
             "kind": "element",
@@ -1766,7 +1766,7 @@
                     "tag": "h1",
                     "class": "text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl",
                     "children": ["Search Lumen"],
-                    "id": "c2e701ca-8c33-4ea1-bd1a-31f04b4ff717",
+                    "id": "78ef3d61-84ab-4342-bdb4-576848140378",
                     "ord": "a0"
                   },
                   {
@@ -1776,15 +1776,15 @@
                     "children": [
                       "Looking for a scent, a format, or a refill? Search the whole studio and the journal below."
                     ],
-                    "id": "18263716-50a8-4c77-b477-a01b8c40b3f4",
+                    "id": "07f8cc62-4dea-4e0a-a395-b359d05e1c13",
                     "ord": "a1"
                   }
                 ],
-                "id": "639dce3a-1f4e-4a74-812d-205d711384b4",
+                "id": "c76958fc-c03b-465b-8e86-64c5e6c60196",
                 "ord": "a0"
               }
             ],
-            "id": "28e22427-e9d9-4085-8a06-1aad4bc14d59",
+            "id": "e258da09-4a8c-421f-be1e-31466f9877d5",
             "ord": "a0"
           },
           {
@@ -1792,7 +1792,7 @@
             "component": "commerce.search",
             "class": "mx-auto w-full max-w-6xl px-6 py-6",
             "locked": "host",
-            "id": "e4917007-ffb7-486b-9365-34ab76d2818e",
+            "id": "d8bad1fc-1773-4abf-ae82-ccce3934cd49",
             "ord": "a1"
           }
         ]
@@ -1809,7 +1809,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "4ca42012-90ca-4c6d-aaf2-681f9d6b39d5",
+        "id": "927059a9-15cd-41b1-b0dd-a4c21caf090f",
         "children": [
           {
             "kind": "element",
@@ -1826,7 +1826,7 @@
                     "tag": "h1",
                     "class": "text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl",
                     "children": ["The Lumen journal"],
-                    "id": "bccf4c89-53c9-4668-9679-865d560b6ef9",
+                    "id": "c26c4fd0-208a-4f48-a0e2-aa1b1e2cc9e3",
                     "ord": "a0"
                   },
                   {
@@ -1836,15 +1836,15 @@
                     "children": [
                       "Notes from the studio — what actually goes into a clean candle, how the refill system works, and how to get every even hour out of a burn. Plain, honest, no wellness fog."
                     ],
-                    "id": "2f198596-fb65-4a63-be6d-249ddbcef65f",
+                    "id": "83050d4a-d563-4258-be49-1f0773aa68a6",
                     "ord": "a1"
                   }
                 ],
-                "id": "190c500d-430d-4e54-bdbe-946192448afc",
+                "id": "6d5aebfd-6175-4638-b8b1-d259f8e96815",
                 "ord": "a0"
               }
             ],
-            "id": "9da5e4a6-84db-41c2-a2d5-2d1294fc3e0b",
+            "id": "89624ab6-4568-42f5-b27b-2928eeb41f59",
             "ord": "a0"
           },
           {
@@ -1882,7 +1882,7 @@
                               "kind": "value",
                               "ref": "featuredImage"
                             },
-                            "id": "0c96dc91-b862-48d5-8dd3-17195b95c311",
+                            "id": "e976404f-5cc4-4ae2-92db-143996f5870f",
                             "ord": "a0"
                           },
                           {
@@ -1894,7 +1894,7 @@
                               "kind": "value",
                               "ref": "date"
                             },
-                            "id": "0e262e58-ada9-4b0d-a5b3-d37035dfbce6",
+                            "id": "c857aeb5-642a-4890-8cbb-2d02fa025c3a",
                             "ord": "a1"
                           },
                           {
@@ -1906,7 +1906,7 @@
                               "kind": "value",
                               "ref": "title"
                             },
-                            "id": "537940bc-803d-451e-ac88-ab7d9729b7c0",
+                            "id": "8f9f037b-0440-489a-8d8e-d03bc1f8be64",
                             "ord": "a2"
                           },
                           {
@@ -1918,7 +1918,7 @@
                               "kind": "value",
                               "ref": "excerpt"
                             },
-                            "id": "a18ae741-618b-4b9a-8160-679d30507675",
+                            "id": "7d441ef8-1ed1-4cc4-bb8f-a3da23924f61",
                             "ord": "a3"
                           }
                         ],
@@ -1927,7 +1927,7 @@
                           "ref": "url",
                           "attr": "href"
                         },
-                        "id": "f2b9cd8a-b3a3-41c3-b558-9972cd962c40",
+                        "id": "5f9d528f-7f5a-456e-9f58-be95cf812e8b",
                         "ord": "a0"
                       }
                     ],
@@ -1935,15 +1935,15 @@
                       "kind": "collection",
                       "ref": "cms.blog_post"
                     },
-                    "id": "40bbc805-1140-4b47-a1af-e7a438fc8ac2",
+                    "id": "7384f85f-00f6-4670-94b7-77d11d53ea40",
                     "ord": "a0"
                   }
                 ],
-                "id": "5919d5ce-310d-4a35-98b3-bb1481967ced",
+                "id": "a621c69b-092e-4726-8284-e8d185c55e5a",
                 "ord": "a0"
               }
             ],
-            "id": "cd26d322-8034-49ae-85dd-0ff82777c13d",
+            "id": "7f4997ea-e3dd-448e-92ea-bee94f0d4cbc",
             "ord": "a1"
           }
         ]
@@ -1960,7 +1960,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "edc3e23f-16c5-43a0-80d8-366ccf42b77a",
+        "id": "fe697e32-1361-4778-9ca9-c9e3aca28bbf",
         "children": [
           {
             "kind": "element",
@@ -1977,7 +1977,7 @@
                     "tag": "h1",
                     "class": "text-5xl font-bold tracking-tight text-base-content @2xl:text-6xl",
                     "children": ["About Lumen"],
-                    "id": "8a71534c-5363-4510-8403-62442468a98d",
+                    "id": "75a52cde-34d6-41b3-9d03-7c76bf5ee451",
                     "ord": "a0"
                   },
                   {
@@ -1987,7 +1987,7 @@
                     "children": [
                       "Lumen started with a simple, slightly annoyed question: why is it so hard to find out what’s actually in a candle? Most of them list one word — “fragrance” — and burn a black ring onto the ceiling. We wanted the opposite: a candle we could read the whole label of, that smelled clean and fresh and burned without leaving anything behind."
                     ],
-                    "id": "87245cbd-e731-42f9-b5d4-39ef0853f3d4",
+                    "id": "fc61ffca-6abe-4728-aace-259cf5c86234",
                     "ord": "a1"
                   },
                   {
@@ -1997,7 +1997,7 @@
                     "children": [
                       "So everything is poured by hand in a coconut-soy blend, with lead-free cotton wicks and fragrance we blend phthalate- and paraben-free, then tested for weeks before a scent earns a place. We print the full ingredient list on every box, and we design each vessel to be washed out and refilled — because the cleanest candle is also the one you don’t throw away."
                     ],
-                    "id": "7c3acb0f-57f5-4d32-845a-11c73739dd15",
+                    "id": "b319631e-04c1-4191-ab50-f4ac19f6710c",
                     "ord": "a2"
                   },
                   {
@@ -2007,15 +2007,15 @@
                     "children": [
                       "No mystery scent, no soot, no landfill of empty glass. Just bright, honest fragrance for ordinary days — and a refill waiting when it burns down."
                     ],
-                    "id": "7efd6414-8e7a-4268-b174-62241513281d",
+                    "id": "861fc8ca-d9e7-49d3-9f07-3f5bb352405e",
                     "ord": "a3"
                   }
                 ],
-                "id": "f1cdacc8-ba0c-4ba3-9cac-43f09f0ad862",
+                "id": "fc9c83bf-d3a4-4cc7-a352-a12e703c623a",
                 "ord": "a0"
               }
             ],
-            "id": "2f22e1a9-cbc5-4982-9a46-9bb0caf2ccd2",
+            "id": "8003b8b2-e324-45c0-8efa-d94399ba22f6",
             "ord": "a0"
           }
         ]
@@ -2032,53 +2032,297 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "c04387fc-c4e1-4551-9816-1757ad619fff",
+        "id": "13ab4db6-9401-4570-a26c-74a42346b496",
         "children": [
           {
             "kind": "element",
             "tag": "section",
-            "class": "bg-base-100 @container px-6 py-20 text-center",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-20",
             "children": [
               {
                 "kind": "element",
                 "tag": "div",
-                "class": "mx-auto flex w-full max-w-xl flex-col items-center gap-5",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-8",
                 "children": [
                   {
                     "kind": "element",
-                    "tag": "h1",
-                    "class": "text-5xl font-bold tracking-tight text-base-content @2xl:text-6xl",
-                    "children": ["Say hello"],
-                    "id": "1c6ff672-26cb-41a9-933d-418131190da3",
+                    "tag": "div",
+                    "class": "flex flex-col gap-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h1",
+                        "class": "text-4xl font-bold tracking-tight text-base-content @3xl:text-5xl",
+                        "children": ["Say hello"],
+                        "id": "cd788c65-df7a-4575-bdea-8ab896bea8d3",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Questions about a scent, a refill, or a wholesale order for your shop or hotel? Tell us what you’re after and a real person at the studio will write back."
+                        ],
+                        "id": "9970ecc7-13b9-4831-88cc-ed72281d63cc",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "4c9b03c3-ae8f-409c-a27a-0f92a7945c5e",
                     "ord": "a0"
                   },
                   {
                     "kind": "element",
-                    "tag": "p",
-                    "class": "text-lg leading-relaxed text-base-content",
+                    "tag": "div",
+                    "class": "flex flex-col gap-1",
                     "children": [
-                      "Questions about a scent, a refill, or a wholesale order for your shop or hotel? Tell us what you’re after and a real person at the studio will write back."
+                      {
+                        "kind": "element",
+                        "tag": "span",
+                        "class": "text-base font-medium text-base-content",
+                        "children": ["Call us"],
+                        "id": "b4379381-7f59-4709-a5fa-216b8d71d469",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "text-lg font-semibold text-base-content underline underline-offset-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "children": ["(555) 123-4567"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "site.identity.phone"
+                            },
+                            "id": "0e20acea-9c0c-4dbb-a3ab-2d10fbf5d8c8",
+                            "ord": "a0"
+                          }
+                        ],
+                        "data": {
+                          "kind": "value",
+                          "ref": "site.identity.phoneHref",
+                          "attr": "href"
+                        },
+                        "id": "bb1c5a33-123f-41af-b33b-4849352846c9",
+                        "ord": "a1"
+                      }
                     ],
-                    "id": "ba5845f0-8c7d-4931-9bdd-d7e92aa6b5d0",
+                    "data": {
+                      "kind": "visible",
+                      "ref": "site.identity.phone"
+                    },
+                    "id": "4140c8bc-975a-4174-bf7a-daefd46337fe",
                     "ord": "a1"
                   },
                   {
                     "kind": "element",
-                    "tag": "a",
-                    "class": "btn btn-primary btn-lg",
-                    "attrs": {
-                      "href": "mailto:hello@lumengoods.example"
+                    "tag": "div",
+                    "class": "flex flex-col gap-1",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "span",
+                        "class": "text-base font-medium text-base-content",
+                        "children": ["Email us"],
+                        "id": "3ba01344-a8d4-4268-8ec6-9a35f20c9ad3",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "text-lg font-semibold text-base-content underline underline-offset-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "children": ["hello@yourbusiness.com"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "site.identity.email"
+                            },
+                            "id": "421ac752-4266-40a3-a75c-330e2b99770a",
+                            "ord": "a0"
+                          }
+                        ],
+                        "data": {
+                          "kind": "value",
+                          "ref": "site.identity.emailHref",
+                          "attr": "href"
+                        },
+                        "id": "50ba928c-2db0-437c-91e5-e53e8440c9ea",
+                        "ord": "a1"
+                      }
+                    ],
+                    "data": {
+                      "kind": "visible",
+                      "ref": "site.identity.email"
                     },
-                    "children": ["Email the studio"],
-                    "id": "8d795657-d438-4077-a364-c5a55be52a25",
+                    "id": "0ac9f15c-fe45-4652-96a6-d94c76d0b3cf",
                     "ord": "a2"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-1",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "span",
+                        "class": "text-base font-medium text-base-content",
+                        "children": ["Visit us"],
+                        "id": "172947c1-a36c-40ac-ac9c-22711b99db13",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "address",
+                        "class": "text-lg leading-relaxed whitespace-pre-line not-italic text-base-content",
+                        "children": ["123 Main Street\nPortland, OR 97204"],
+                        "data": {
+                          "kind": "value",
+                          "ref": "site.identity.address"
+                        },
+                        "id": "9ab56acc-6ce9-4d89-8fe3-068f9974e368",
+                        "ord": "a1"
+                      }
+                    ],
+                    "data": {
+                      "kind": "visible",
+                      "ref": "site.identity.address"
+                    },
+                    "id": "57c2fd05-b90b-42e9-8c58-c2d8b7a09ae9",
+                    "ord": "a3"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "form",
+                    "class": "flex w-full max-w-xl flex-col gap-5",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "label",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-base font-medium text-base-content",
+                            "children": ["Your name"],
+                            "id": "b6f5b94e-9572-43d4-b719-f5bd1bc8437e",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "input",
+                            "class": "input input-bordered w-full",
+                            "attrs": {
+                              "type": "text",
+                              "name": "name",
+                              "required": true
+                            },
+                            "id": "05aafe97-9881-430d-b729-c4cd5ee19b50",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "8d56628c-bbcc-41de-af1a-3f2270e026c0",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "label",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-base font-medium text-base-content",
+                            "children": ["Email address"],
+                            "id": "7c1a9a0c-f082-4f32-829a-047c545b89e0",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "input",
+                            "class": "input input-bordered w-full",
+                            "attrs": {
+                              "type": "email",
+                              "name": "email",
+                              "required": true
+                            },
+                            "id": "87cd1e16-4f6d-4342-911d-beab8fd42148",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "59994076-6615-4fce-95ee-6a25382ee332",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "label",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-base font-medium text-base-content",
+                            "children": ["How can we help?"],
+                            "id": "f7c05582-8f17-403f-a494-0145f40518a4",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "textarea",
+                            "class": "textarea textarea-bordered min-h-32 w-full",
+                            "attrs": {
+                              "name": "message"
+                            },
+                            "id": "408080ee-5e16-42ee-a64b-1b8bf09d4101",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "ee2933a4-6615-43e6-933c-4e61c0488129",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-wrap items-center gap-3",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "button",
+                            "class": "btn btn-primary btn-lg",
+                            "attrs": {
+                              "type": "submit"
+                            },
+                            "children": ["Email the studio"],
+                            "id": "20e1e2cd-89b2-4c72-857c-38b5c850d931",
+                            "ord": "a0"
+                          }
+                        ],
+                        "id": "3c4eb586-2a8e-4d23-8fcf-69a5cb32da07",
+                        "ord": "a3"
+                      }
+                    ],
+                    "behavior": {
+                      "type": "form"
+                    },
+                    "data": {
+                      "kind": "action",
+                      "ref": "submit"
+                    },
+                    "id": "2f31f958-3568-42c4-960e-757531378337",
+                    "ord": "a4"
                   }
                 ],
-                "id": "ae745136-f957-43f3-a3f0-8429ce8e8925",
+                "id": "b3095853-bd3b-4aa6-930c-b08425680309",
                 "ord": "a0"
               }
             ],
-            "id": "6cbe93d0-0a14-4a3d-8b4e-405adb2087cd",
+            "id": "e9e19f05-e600-42cf-af38-7af00e5a6257",
             "ord": "a0"
           }
         ]
@@ -2118,7 +2362,7 @@
                       "kind": "value",
                       "ref": "image"
                     },
-                    "id": "d3eef565-2b00-4ed7-87c2-dbf66f69b888",
+                    "id": "1035721c-bd2c-40c8-80f1-54fa1a71c582",
                     "ord": "a0"
                   },
                   {
@@ -2136,7 +2380,7 @@
                             "tag": "p",
                             "class": "text-sm font-semibold uppercase tracking-widest text-secondary",
                             "children": ["Lumen"],
-                            "id": "02039e5d-83ca-4f33-a78b-f4ff2f78ba6b",
+                            "id": "a1dc2724-2a9d-470e-b79c-621cb4923618",
                             "ord": "a0"
                           },
                           {
@@ -2148,7 +2392,7 @@
                               "kind": "value",
                               "ref": "title"
                             },
-                            "id": "89f2f331-8260-4a2b-96bf-df6ca599794a",
+                            "id": "983f6839-9b9b-45ed-ab57-e1ac0a698b3f",
                             "ord": "a1"
                           },
                           {
@@ -2165,7 +2409,7 @@
                                   "kind": "value",
                                   "ref": "price"
                                 },
-                                "id": "0a5f8af5-9c1b-48ae-b869-1e2ba7244dff",
+                                "id": "18611356-00b6-457c-beba-4a9d589e6c93",
                                 "ord": "a0"
                               },
                               {
@@ -2181,7 +2425,7 @@
                                       "kind": "value",
                                       "ref": "compareAtPrice"
                                     },
-                                    "id": "563852b9-e805-4340-92ca-d3ce59f6e2a7",
+                                    "id": "f20187e4-e7b8-4591-8bcb-75cf64da0117",
                                     "ord": "a0"
                                   }
                                 ],
@@ -2189,11 +2433,11 @@
                                   "kind": "visible",
                                   "ref": "compareAtPrice"
                                 },
-                                "id": "f500d106-a91e-47e4-93ac-b539e80b36e2",
+                                "id": "a09b824f-8276-48dd-a768-168a7a83ea54",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "618a412d-704f-4663-a017-92462483101f",
+                            "id": "8cf66b62-e19e-4ce2-8c1e-4ca854d04198",
                             "ord": "a2"
                           },
                           {
@@ -2205,11 +2449,11 @@
                               "kind": "visible",
                               "ref": "lowStock"
                             },
-                            "id": "b61bb772-008b-44d2-b08b-c2dc93fc6907",
+                            "id": "8af151e1-7ab0-4f65-b97c-534a467f1203",
                             "ord": "a3"
                           }
                         ],
-                        "id": "d04fa8f5-fa04-457d-af7e-fdc2d6cd88f8",
+                        "id": "c5114e3d-41ee-435f-8e2a-8281e4dd0083",
                         "ord": "a0"
                       },
                       {
@@ -2221,7 +2465,7 @@
                           "kind": "value",
                           "ref": "description"
                         },
-                        "id": "50b8d681-3779-4560-99d5-aed7b1e74554",
+                        "id": "6887dda9-bb5b-418a-8f27-7db3cafc9ec0",
                         "ord": "a1"
                       },
                       {
@@ -2240,7 +2484,7 @@
                               "kind": "value",
                               "ref": "variantId"
                             },
-                            "id": "71e0f9a9-d421-4b59-9a41-36a2858f3e15",
+                            "id": "03944d54-7e96-484d-8799-2df98a5a5da3",
                             "ord": "a0"
                           },
                           {
@@ -2253,7 +2497,7 @@
                                 "tag": "span",
                                 "class": "font-medium",
                                 "children": ["Quantity"],
-                                "id": "e8145e9e-17ff-4427-b681-947ea298bfee",
+                                "id": "6769015c-5006-4db9-9e51-f4f446a2416c",
                                 "ord": "a0"
                               },
                               {
@@ -2267,11 +2511,11 @@
                                   "min": "1",
                                   "step": "1"
                                 },
-                                "id": "2c9cb963-71fe-4e4d-9339-5f34e40584bc",
+                                "id": "27c772ee-8225-4bd3-b4c2-7ea55c422418",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "4e5be14b-12e2-428e-8fac-50724cc3ada5",
+                            "id": "e0245f07-8586-40ff-b234-16b64250d363",
                             "ord": "a1"
                           },
                           {
@@ -2282,7 +2526,7 @@
                               "type": "submit"
                             },
                             "children": ["Add to cart"],
-                            "id": "47cfbd63-d22b-441f-9e5e-7f865c87a41a",
+                            "id": "690cf786-cb70-4d41-bffb-16eb0a648411",
                             "ord": "a2"
                           }
                         ],
@@ -2293,7 +2537,7 @@
                           "kind": "action",
                           "ref": "add-to-cart"
                         },
-                        "id": "b7a5d219-04d2-4fb7-96c7-eb72412d27e3",
+                        "id": "c8d49520-42a2-4216-9655-b01d6f5132e2",
                         "ord": "a2"
                       },
                       {
@@ -2306,7 +2550,7 @@
                             "tag": "h2",
                             "class": "text-sm font-semibold uppercase tracking-widest text-secondary",
                             "children": ["Clean by design"],
-                            "id": "3bb30053-43c4-4109-99c0-824c6246de08",
+                            "id": "f998ff4c-1444-467e-a480-bf09957edd72",
                             "ord": "a0"
                           },
                           {
@@ -2316,11 +2560,11 @@
                             "children": [
                               "Coconut-soy wax, a lead-free cotton wick and phthalate-free fragrance — the full ingredient list is on the box. Roughly a 45-hour burn. Trim the wick to a quarter inch before each light, and when it’s done, wash the vessel and drop in a refill."
                             ],
-                            "id": "db153adb-de2d-48bf-9581-eefe0472e429",
+                            "id": "78418d1b-3e40-4dc7-9246-06f66a6414a4",
                             "ord": "a1"
                           }
                         ],
-                        "id": "d3f4772c-9c4d-4e4d-973e-d601909a3c38",
+                        "id": "43975f98-5df8-4ac2-b109-fa8a22933589",
                         "ord": "a3"
                       },
                       {
@@ -2336,7 +2580,7 @@
                               "href": "/shipping-policy"
                             },
                             "children": ["Shipping & delivery"],
-                            "id": "6060d645-bc7f-4aa0-967d-7d2fc5baa0b4",
+                            "id": "8d4e7417-92fc-464c-9a7f-f4a6c46e7ca4",
                             "ord": "a0"
                           },
                           {
@@ -2347,19 +2591,19 @@
                               "href": "/returns-policy"
                             },
                             "children": ["Returns & refunds"],
-                            "id": "3fc454fb-8c36-48f5-b8f0-54a3aaad3f97",
+                            "id": "a8f8a8e6-e8cd-43bd-9aac-9e65bfbb3fb1",
                             "ord": "a1"
                           }
                         ],
-                        "id": "66775473-c4c0-49d1-9b12-1c81d88f9b68",
+                        "id": "a6f14727-4c6a-4798-b3b9-a41de0cbd436",
                         "ord": "a4"
                       }
                     ],
-                    "id": "17593498-5d0d-4372-a2b3-01f888991928",
+                    "id": "e42ae8be-1eec-449e-96b4-67653da57d52",
                     "ord": "a1"
                   }
                 ],
-                "id": "8d801ec2-79ec-454b-914d-0ac90a2205eb",
+                "id": "8695f400-9fa9-447c-bc14-a8d40ae5ecb3",
                 "ord": "a0"
               }
             ],
@@ -2367,7 +2611,7 @@
               "kind": "collection",
               "ref": "product"
             },
-            "id": "a16c15a6-275a-4327-ae36-4777cb8decce",
+            "id": "5986f919-0a1b-4800-88ee-2247aed2b4c4",
             "ord": "a0"
           },
           {
@@ -2385,7 +2629,7 @@
                     "tag": "h2",
                     "class": "text-2xl font-semibold text-base-content",
                     "children": ["Goes well with"],
-                    "id": "21198acf-e6bc-4ce9-821f-c2e7f9eab02a",
+                    "id": "08a1ce8a-62ee-44eb-ab00-faf663a7358b",
                     "ord": "a0"
                   },
                   {
@@ -2409,12 +2653,12 @@
                             "props": {
                               "name": "arrow-left"
                             },
-                            "id": "86f6dfb0-1e05-427c-b0ea-6f576aa5d718",
+                            "id": "95f9fefd-b15a-4197-be81-7bb72f9ce0e0",
                             "ord": "a0"
                           }
                         ],
                         "part": "prev",
-                        "id": "1b80211d-115e-4ea7-a909-1c6b8fcf3550",
+                        "id": "3998ed62-a2b5-44f0-8e68-383c9e5e4899",
                         "ord": "a0"
                       },
                       {
@@ -2433,20 +2677,20 @@
                             "props": {
                               "name": "arrow-right"
                             },
-                            "id": "c80b38dd-c88d-487f-a464-ae69058131d8",
+                            "id": "e006ee54-62b9-49d0-9d99-df8edcf1b8a6",
                             "ord": "a0"
                           }
                         ],
                         "part": "next",
-                        "id": "0a050810-bcd5-4a64-9b1e-7b8f739aaf3b",
+                        "id": "9eac6b4a-2ff4-4394-92f5-5f1dab8d00f3",
                         "ord": "a1"
                       }
                     ],
-                    "id": "8810a067-53aa-4837-9327-56392ad036f5",
+                    "id": "2b35f5d5-9ea9-4513-bffe-c29085d18626",
                     "ord": "a1"
                   }
                 ],
-                "id": "4f5fe378-82a5-45dd-977a-432df0fecb02",
+                "id": "4b8e6ab7-3225-4c00-976a-88c9771690f2",
                 "ord": "a0"
               },
               {
@@ -2471,7 +2715,7 @@
                           "kind": "value",
                           "ref": "image"
                         },
-                        "id": "a7f89a60-d81c-45db-8bca-a10ee327c606",
+                        "id": "5636e768-3c64-47a6-aece-2dce085f11fe",
                         "ord": "a0"
                       },
                       {
@@ -2488,7 +2732,7 @@
                               "kind": "value",
                               "ref": "title"
                             },
-                            "id": "0b5edffc-4218-406f-ada4-49ae2c853122",
+                            "id": "8c8c3546-73b9-4efd-a991-e78462ee71cb",
                             "ord": "a0"
                           },
                           {
@@ -2500,11 +2744,11 @@
                               "kind": "value",
                               "ref": "price"
                             },
-                            "id": "487a225a-f04d-4f5e-a774-2b980e25ba57",
+                            "id": "4e891b99-3a56-484b-8727-07e98183bc52",
                             "ord": "a1"
                           }
                         ],
-                        "id": "9d7cabdc-1000-4cc5-9ee6-881217003b3a",
+                        "id": "6f715f37-5099-403c-9ba8-c14f3802f07e",
                         "ord": "a1"
                       }
                     ],
@@ -2514,7 +2758,7 @@
                       "attr": "href"
                     },
                     "part": "slide",
-                    "id": "27e9936f-817b-4f37-b3fe-2bd4178b39b1",
+                    "id": "3e54acaa-ebea-4482-a2a4-1ad3d888046c",
                     "ord": "a0"
                   }
                 ],
@@ -2523,18 +2767,18 @@
                   "kind": "collection",
                   "ref": "commerce.related"
                 },
-                "id": "ba362cd7-3436-4de5-8d23-1a40f2cc815d",
+                "id": "58ac4b17-f270-40f8-9a54-75c6a63fc824",
                 "ord": "a1"
               }
             ],
             "behavior": {
               "type": "carousel"
             },
-            "id": "088aea66-7039-4a0e-9548-4eae32f74cf4",
+            "id": "25a5c0ca-f780-4078-9e8c-8b25e2a341ab",
             "ord": "a1"
           }
         ],
-        "id": "6493a782-1ea4-4d6f-bee7-e8004a49bf96"
+        "id": "decd7e86-520e-452d-9173-981be72deead"
       }
     }
   ],

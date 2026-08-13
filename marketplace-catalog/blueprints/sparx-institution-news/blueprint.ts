@@ -15,7 +15,7 @@ import emails from './emails.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-institution-news',
-  version: '1.2.0',
+  version: '1.4.0',
   name: 'sparx — Institution News',
   summary:
     'A curated institutional newsroom for a university, hospital system, museum or agency — a marquee research lead over a rail of the day’s stories, a live feed, a departments directory, an upcoming-events band, and a bespoke bylined research writeup, in a paper-ground navy-primary + crimson-accent serif theme. Shipped as the Northgate University news office, with a light university-press + alumni store to demo content + commerce together.',

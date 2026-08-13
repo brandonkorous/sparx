@@ -156,7 +156,7 @@ import welcomeEmail2 from './welcome-email-2.json' with { type: 'json' };
 
 const blueprint = {
   key: ${JSON.stringify(opts.key)},
-  version: '1.1.0',
+  version: '1.2.0',
   name: ${JSON.stringify(opts.name)},
   summary: ${JSON.stringify(opts.summary)},
   vertical: ${JSON.stringify(opts.vertical)},
@@ -206,7 +206,7 @@ function manifestJson(opts: {
     category: 'blueprint',
     slug: opts.key,
     name: opts.name,
-    version: '1.1.0',
+    version: '1.2.0',
     tagline: opts.tagline,
     description: opts.summary,
     payload: 'blueprint.ts',

@@ -15,7 +15,7 @@ import emails from './emails.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-natural-clean',
-  version: '1.2.0',
+  version: '1.4.0',
   name: 'sparx — Natural Clean',
   summary:
     'A calm, oat-tinted storefront for a natural or sustainable brand — a full-bleed hero over color-blocked category tiles and a repeating shoppable-carousel and material-story rhythm that closes on a quiet mission moment, in a warm paper-ground theme. Modelled on the natural/sustainable-clean archetype; shipped as Fernwood Goods.',

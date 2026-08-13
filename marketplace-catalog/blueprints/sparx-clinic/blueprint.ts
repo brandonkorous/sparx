@@ -16,7 +16,7 @@ import welcomeEmail2 from './welcome-email-2.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-clinic',
-  version: '1.1.0',
+  version: '1.2.0',
   name: 'sparx — Clinic',
   summary:
     'The complete sparx starter — a faceted shop, a journal, a booking page, and a wholesale page — in the Clinic look, tuned for medical, dental, and wellness practices. Install it, make it yours, and launch a polished working site in minutes.',
@@ -42,7 +42,7 @@ const blueprint = {
   },
 
   // The provisioned SiteTheme the installer creates + applies — the 'clinic'
-  // look as a tenant-editable saved theme (base preset clinic + this theme's brand look).
+  // look as a tenant-editable saved theme (base preset apex + this theme's brand look).
   theme: {
     name: 'clinic',
     basePresetKey: 'clinic',

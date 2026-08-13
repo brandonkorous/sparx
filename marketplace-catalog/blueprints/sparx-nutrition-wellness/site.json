@@ -22,7 +22,7 @@
                   "props": {
                     "show": "both"
                   },
-                  "id": "15c8f0b2-2a06-4fbb-b2e2-b63e28b0ae67",
+                  "id": "2a958b0a-e38f-45d1-891f-1e1cf8b4da5f",
                   "ord": "a0"
                 },
                 {
@@ -43,7 +43,7 @@
                         "type": "link",
                         "label": "Product"
                       },
-                      "id": "e63e3bd0-47fe-4313-8295-970444ef8da6",
+                      "id": "1070865f-e5a6-4e45-b5ce-d7cff78f031d",
                       "ord": "a0"
                     },
                     {
@@ -59,7 +59,7 @@
                         "type": "link",
                         "label": "Pricing"
                       },
-                      "id": "d1acb551-dc16-462d-81c2-4c4465c7770f",
+                      "id": "1933610c-971a-4cd0-b958-8cff19088496",
                       "ord": "a1"
                     },
                     {
@@ -75,11 +75,11 @@
                         "type": "link",
                         "label": "Docs"
                       },
-                      "id": "a185be30-4f16-470e-81ba-cc1cfd30eb62",
+                      "id": "cabfdc39-b73b-40b8-a0b2-f745614d3745",
                       "ord": "a2"
                     }
                   ],
-                  "id": "95f66c93-f752-4f12-abf4-ba701ad61ffe",
+                  "id": "463c942b-c45d-4f93-9435-eab71a668931",
                   "ord": "a1"
                 },
                 {
@@ -100,14 +100,14 @@
                         "type": "link",
                         "label": "Secondary link"
                       },
-                      "id": "3487f0b5-b00c-4b91-b790-cc1a9d71fd6e",
+                      "id": "86ca1a9d-6c15-4cec-a8dc-598d0a030b07",
                       "ord": "a0"
                     },
                     {
                       "kind": "host",
                       "component": "site.theme-toggle",
                       "class": "inline-flex items-center",
-                      "id": "351209f9-902f-411c-9afb-782b463d21ca",
+                      "id": "486972d6-0fdc-4c68-ad58-29960a40cd45",
                       "ord": "a1"
                     },
                     {
@@ -123,7 +123,7 @@
                         "type": "link",
                         "label": "Primary action"
                       },
-                      "id": "dd2b0458-b475-44f2-8f99-12bdf9a59b02",
+                      "id": "5fc1fae3-a3e0-44a3-879e-34422277b613",
                       "ord": "a2"
                     },
                     {
@@ -141,20 +141,20 @@
                           "props": {
                             "name": "menu"
                           },
-                          "id": "7dde28f8-cfed-409e-b803-d96d8d554604",
+                          "id": "872594e5-6f27-40d8-9534-1bb30994ac2d",
                           "ord": "a0"
                         }
                       ],
                       "part": "trigger",
-                      "id": "97512251-97db-499b-82a4-4a0da987085e",
+                      "id": "056fa286-2608-48e8-a9b5-ab19c91a6149",
                       "ord": "a3"
                     }
                   ],
-                  "id": "3a4b51a1-a5ef-4de2-9037-63e675c91427",
+                  "id": "f231bc65-9ee6-48c2-8b11-428f2d867f7d",
                   "ord": "a2"
                 }
               ],
-              "id": "69d2f7e7-bfc5-4f30-a0a7-5c1624b8970f",
+              "id": "880da41e-d33d-47bb-9f8f-d387a9b7c450",
               "ord": "a0"
             },
             {
@@ -178,7 +178,7 @@
                     "type": "link",
                     "label": "Product"
                   },
-                  "id": "f6e33724-05c4-404e-a0a3-d428a7129452",
+                  "id": "b37acc3f-bdc7-464a-b1b9-b77f744b05b0",
                   "ord": "a0"
                 },
                 {
@@ -194,7 +194,7 @@
                     "type": "link",
                     "label": "Pricing"
                   },
-                  "id": "9289f5a2-01ae-465e-af65-8b6e5c772305",
+                  "id": "69673ff2-3b37-479e-a337-433661776ba1",
                   "ord": "a1"
                 },
                 {
@@ -210,7 +210,7 @@
                     "type": "link",
                     "label": "Docs"
                   },
-                  "id": "367ab748-da07-46c3-a2d8-510bb9412ebc",
+                  "id": "a4621dd8-e589-4c57-a7e5-03f8cb82c1ab",
                   "ord": "a2"
                 },
                 {
@@ -226,7 +226,7 @@
                     "type": "link",
                     "label": "Secondary link"
                   },
-                  "id": "69287acb-4d6c-4df8-95a9-19936339319a",
+                  "id": "ecfd1779-557b-46f1-bcbf-e8e6c604b5b9",
                   "ord": "a3"
                 },
                 {
@@ -242,19 +242,19 @@
                     "type": "link",
                     "label": "Primary action"
                   },
-                  "id": "cf0a2d1d-d46e-4572-8467-9efc83d8a4b8",
+                  "id": "a2765d33-ade9-47ed-b8c4-128da3e201e6",
                   "ord": "a4"
                 }
               ],
               "part": "panel",
-              "id": "ad812a94-9fd5-425b-be10-5c284d232ed4",
+              "id": "2248b980-46f4-4b5c-81bf-a53460c1feb2",
               "ord": "a1"
             }
           ],
           "behavior": {
             "type": "disclosure"
           },
-          "id": "f3806f76-18f1-40e5-b982-dd431ee1fd19",
+          "id": "73ea512a-0d0b-4530-a21d-6f1954275a08",
           "ord": "a0"
         },
         {
@@ -270,7 +270,7 @@
               "kind": "outlet"
             }
           ],
-          "id": "8943eb04-042c-4757-b5eb-cb57538d3446",
+          "id": "769bff63-0faf-4444-af1a-fc15992d5b8a",
           "ord": "a1"
         },
         {
@@ -300,7 +300,7 @@
                           "props": {
                             "show": "both"
                           },
-                          "id": "acb977de-4ad5-46a2-8bec-b073894c99c9",
+                          "id": "fb248beb-bdcc-4a34-9b87-f995ff51a7e7",
                           "ord": "a0"
                         },
                         {
@@ -316,7 +316,7 @@
                           "attrs": {
                             "href": "/"
                           },
-                          "id": "e756f052-141a-444f-a385-56ddf45b4726",
+                          "id": "d4eaca1e-583d-4e0f-bd63-9b4b1065ba16",
                           "ord": "a1"
                         },
                         {
@@ -324,11 +324,11 @@
                           "tag": "ul",
                           "class": "mt-2 flex items-center gap-5",
                           "children": [],
-                          "id": "4913e000-f9e8-4ec4-a887-70d13578313c",
+                          "id": "912e22f4-48d4-4c5f-880d-5d2dc2605370",
                           "ord": "a2"
                         }
                       ],
-                      "id": "f94df554-d4c2-4601-9830-a9f1fe91efdc",
+                      "id": "4d26f165-2f34-4fc4-a4fa-ca98500cffd6",
                       "ord": "a0"
                     },
                     {
@@ -349,7 +349,7 @@
                           "attrs": {
                             "href": "/"
                           },
-                          "id": "9c06c77d-7db0-48d2-a3c1-419aa2d6dd40",
+                          "id": "c25d23a2-bd7e-4694-9ce0-8be5081c61b3",
                           "ord": "a0"
                         },
                         {
@@ -374,11 +374,11 @@
                                     "type": "link",
                                     "label": "Features"
                                   },
-                                  "id": "c1c4cecd-c954-4f00-8c24-4917cbcc9ce0",
+                                  "id": "9ba5b33c-7233-4da8-a539-b665e296d351",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "17f5e631-bf12-4f05-a73d-e52837175987",
+                              "id": "f5a1d5da-a8d2-438c-93cb-3e51d7f22b5c",
                               "ord": "a0"
                             },
                             {
@@ -398,11 +398,11 @@
                                     "type": "link",
                                     "label": "Pricing"
                                   },
-                                  "id": "450eb9a9-fa3a-4d28-b29e-96c4c22e6550",
+                                  "id": "69bd0217-a441-4dfa-90ff-b858534d783c",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "a038da1d-871c-4595-aaef-0e5f94a3dbbc",
+                              "id": "5a463022-da1f-4c70-b1ae-45a012888f43",
                               "ord": "a1"
                             },
                             {
@@ -422,11 +422,11 @@
                                     "type": "link",
                                     "label": "Integrations"
                                   },
-                                  "id": "db2aa18e-de2b-4ec5-a651-1867bf3896bb",
+                                  "id": "871dbf68-b2aa-49c3-acf4-0bab0f0239b3",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "2490dae1-cb8b-4b07-930b-fd6736ea8f48",
+                              "id": "cdea01d7-0f3b-44c9-a8c0-9b7682f42a43",
                               "ord": "a2"
                             },
                             {
@@ -446,19 +446,19 @@
                                     "type": "link",
                                     "label": "Changelog"
                                   },
-                                  "id": "42a33fee-e0db-45a9-9210-dc34cfd00c39",
+                                  "id": "df5fb89c-39e9-4a2a-9ab0-3d46d6498851",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "6800b133-d6b0-4302-87a5-f6ee7dd387d4",
+                              "id": "159e224f-8abf-472b-ad3e-489348320245",
                               "ord": "a3"
                             }
                           ],
-                          "id": "3658194d-fc9d-4ea7-9744-5dd4c0e89e37",
+                          "id": "1b8ba992-e686-4bd6-a429-48a8143edb84",
                           "ord": "a1"
                         }
                       ],
-                      "id": "1763c140-24ce-4fec-af3b-3f439774e3e7",
+                      "id": "3abde8ad-1690-4f1e-8721-e4fd01041330",
                       "ord": "a1"
                     },
                     {
@@ -471,11 +471,11 @@
                           "tag": "ul",
                           "class": "flex flex-col gap-2",
                           "children": [],
-                          "id": "db9cb852-0f06-46f4-92f3-cc2adf6989c9",
+                          "id": "af8a1229-e883-486f-b730-92f8541e0611",
                           "ord": "a0"
                         }
                       ],
-                      "id": "87ea8d66-1e87-4874-b6b9-335dc336695f",
+                      "id": "42a7a819-d817-4ced-9e1b-daf5737c3159",
                       "ord": "a2"
                     },
                     {
@@ -499,23 +499,23 @@
                                   "props": {
                                     "heading": "Legal"
                                   },
-                                  "id": "84bdcb18-2a8e-46f7-943e-9165d163f833",
+                                  "id": "6a2622c0-165a-4c5f-bd1c-ae41895f5d9b",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "1dbebe2a-3d43-49a6-ac12-84dd671ad0f0",
+                              "id": "2d48b5af-aa2f-4f8d-bb81-2e36d73ada30",
                               "ord": "a0"
                             }
                           ],
-                          "id": "c69feab3-9fba-4ed7-b7bf-7b6266cf02a8",
+                          "id": "beb3b8bd-3dc8-4172-a5a4-6131b73c4a9a",
                           "ord": "a0"
                         }
                       ],
-                      "id": "e24893b7-f95c-402a-9772-e50b1d1342a0",
+                      "id": "5b325f3f-93c8-4d30-a024-b81880875abc",
                       "ord": "a3"
                     }
                   ],
-                  "id": "8203977b-9fb1-405e-b327-2d6beea7e3de",
+                  "id": "f1b6733e-bcd7-49cd-b2d1-64c1e2576bcf",
                   "ord": "a0"
                 },
                 {
@@ -538,11 +538,11 @@
                             "kind": "value",
                             "ref": "site.identity.name"
                           },
-                          "id": "9c89c23b-da26-41dc-bdfc-4a1c3d185216",
+                          "id": "5dd236d6-c4c2-4adf-a439-b5631a23da6d",
                           "ord": "a0"
                         }
                       ],
-                      "id": "e72f04aa-b029-43e1-846b-e78e66345a75",
+                      "id": "02d021b2-8362-412e-8a98-878663b71613",
                       "ord": "a0"
                     },
                     {
@@ -550,23 +550,23 @@
                       "tag": "ul",
                       "class": "flex flex-wrap items-center gap-x-6 gap-y-2",
                       "children": [],
-                      "id": "0a09148d-5640-404f-a580-386707fb7397",
+                      "id": "14438b6d-554e-43ac-a96d-b1ee57cea07c",
                       "ord": "a1"
                     }
                   ],
-                  "id": "fe8ff598-b0d3-4ac8-ab44-cc3d5d86477b",
+                  "id": "2304f8d8-8474-44d8-8ed4-495e92d7e0c3",
                   "ord": "a1"
                 }
               ],
-              "id": "8de21112-9934-4263-9a38-b850be832dcb",
+              "id": "79cf4114-c287-4090-98d7-67bdd84ce46b",
               "ord": "a0"
             }
           ],
-          "id": "a433021f-9396-4f8a-8ca6-bdb623b259e5",
+          "id": "6a349d05-cad2-49eb-840f-68cd73ba0a0c",
           "ord": "a2"
         }
       ],
-      "id": "fe61b988-5448-41ed-804e-66751fb46476"
+      "id": "50df4cb2-0760-4f48-a0b6-a5191f1deabe"
     }
   },
   "pages": [
@@ -580,7 +580,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "d4f7a977-42af-46d7-a9cc-11231c07f399",
+        "id": "d06123e1-c016-42bc-9358-91acff1a5fbd",
         "children": [
           {
             "kind": "element",
@@ -596,14 +596,14 @@
                   "alt": "A bright wooden table of fresh vegetables, fruit and whole grains",
                   "loading": "eager"
                 },
-                "id": "c95f9205-0717-4437-8813-3908857f2fca",
+                "id": "0c9af9a5-ec7f-4e9f-b131-99935f82362e",
                 "ord": "a0"
               },
               {
                 "kind": "element",
                 "tag": "div",
                 "class": "absolute inset-0 bg-black/30",
-                "id": "fada92b9-04fe-4b9b-ad01-9c65f13a543f",
+                "id": "ddf861ee-8a90-4bef-a6a6-1a4d91fb4610",
                 "ord": "a1"
               },
               {
@@ -616,7 +616,7 @@
                     "tag": "h1",
                     "class": "max-w-3xl text-4xl font-bold leading-tight tracking-tight @2xl:text-5xl @3xl:text-6xl",
                     "children": ["Food that feels good again"],
-                    "id": "e4fe41cb-e9c2-430b-9c21-06a554aa9ad5",
+                    "id": "19cfa41d-9f5f-4f82-b66b-03aaa5f8ecac",
                     "ord": "a0"
                   },
                   {
@@ -626,7 +626,7 @@
                     "children": [
                       "Work one-to-one with a registered dietitian on real, sustainable changes — weight, gut health, energy and your whole relationship with food. In person or by video, whenever suits you."
                     ],
-                    "id": "793602ce-2db5-4fc7-bc22-ffd4134d4346",
+                    "id": "75394296-5ed3-48d5-8b79-09ad29080b6e",
                     "ord": "a1"
                   },
                   {
@@ -642,7 +642,7 @@
                           "href": "/book"
                         },
                         "children": ["Book a consultation"],
-                        "id": "4cf4788c-048d-413d-9edf-f46b1f418245",
+                        "id": "a77dc762-c128-4186-8541-86ab3c3e92f8",
                         "ord": "a0"
                       },
                       {
@@ -653,19 +653,19 @@
                           "href": "/book"
                         },
                         "children": ["Start with a free call"],
-                        "id": "c10672cb-763c-4d3b-b190-c66b6cae79f6",
+                        "id": "77128d86-b469-43be-bf7b-eea6da2d6bab",
                         "ord": "a1"
                       }
                     ],
-                    "id": "0185dd51-30c1-4abb-88a7-8f3ee80e788c",
+                    "id": "764d3a87-0293-441c-80ab-ad12dcddc9bc",
                     "ord": "a2"
                   }
                 ],
-                "id": "602172b1-4158-476e-89dc-9f7ae12bcccf",
+                "id": "9759290b-f9b5-42f0-b8fe-ebf722a3296a",
                 "ord": "a2"
               }
             ],
-            "id": "20f173e2-c15b-4a7d-b9a2-69c0576ff4ff",
+            "id": "c4561f62-0aac-4fb5-80e5-b022c5283fc0",
             "ord": "a0"
           },
           {
@@ -683,7 +683,7 @@
                     "tag": "h2",
                     "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
                     "children": ["Care you can actually keep up"],
-                    "id": "c42ced46-649b-4812-bec8-8ce4bd19c5a2",
+                    "id": "6a013c5b-0f12-4e89-a922-cd7bf3dc9355",
                     "ord": "a0"
                   },
                   {
@@ -701,7 +701,7 @@
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
                             "children": ["Registered dietitians"],
-                            "id": "ef0db030-f0b7-48a5-92b6-baa230e3cacd",
+                            "id": "b03ccb08-8a29-4020-9c93-19ccf9ca04e3",
                             "ord": "a0"
                           },
                           {
@@ -711,11 +711,11 @@
                             "children": [
                               "Every plan comes from a qualified, registered dietitian — real credentials and real science, translated into food you’ll genuinely eat."
                             ],
-                            "id": "5391a7b9-7f72-4779-a1a1-fdb2f4952a92",
+                            "id": "9c5539de-4e66-4023-92a7-5a296cbf6aec",
                             "ord": "a1"
                           }
                         ],
-                        "id": "1dd30429-be07-4be2-98c9-c1614c0ac0cb",
+                        "id": "e929400a-f390-4542-a27a-33096318d2fd",
                         "ord": "a0"
                       },
                       {
@@ -728,7 +728,7 @@
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
                             "children": ["Non-diet & judgment-free"],
-                            "id": "57c4bba5-b334-49a8-bb76-28c221ae8d93",
+                            "id": "bc98a70f-4b4a-425e-b5fd-0c37f75e974e",
                             "ord": "a0"
                           },
                           {
@@ -738,11 +738,11 @@
                             "children": [
                               "No shame, no crash plans, no forbidden foods. We build steady habits around your life, your budget and your body — not against them."
                             ],
-                            "id": "9449971e-a42b-404b-a786-c0d8e1fb4da0",
+                            "id": "618e9145-db77-474b-843f-f51b43cae371",
                             "ord": "a1"
                           }
                         ],
-                        "id": "cd4c857f-8e75-47a4-a60a-6a203b5e91ad",
+                        "id": "1c4b74d6-d185-4ea7-934e-cf8357b83cf0",
                         "ord": "a1"
                       },
                       {
@@ -755,7 +755,7 @@
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
                             "children": ["Insurance often covers it"],
-                            "id": "7b922f12-a62d-4bf4-bbf2-3134bf560c8e",
+                            "id": "dd892b6c-1349-4be7-bd8a-430dceb3c842",
                             "ord": "a0"
                           },
                           {
@@ -765,11 +765,11 @@
                             "children": [
                               "Many plans cover nutrition counseling, especially with a referral. We’ll help you check your benefits before your first visit."
                             ],
-                            "id": "c679aa0d-1ba1-4e9d-b18a-c1af5c5a05bb",
+                            "id": "2d6954a7-c604-46c6-bda1-99eac9c48d1b",
                             "ord": "a1"
                           }
                         ],
-                        "id": "6e0aa30e-e191-41df-9156-ac0043380e8c",
+                        "id": "4742e0c7-cfc3-48b4-a200-9cf1051c917f",
                         "ord": "a2"
                       },
                       {
@@ -782,7 +782,7 @@
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
                             "children": ["In person & virtual"],
-                            "id": "27fd5f09-acac-4e08-83e6-dd07847fe3e3",
+                            "id": "77596315-5130-473b-bde7-5fa6d3594c99",
                             "ord": "a0"
                           },
                           {
@@ -792,23 +792,23 @@
                             "children": [
                               "Meet us at the office or by secure video from your own kitchen — evenings and a Saturday morning included, so it fits your week."
                             ],
-                            "id": "55a81217-bc72-4f01-9a98-729b93745584",
+                            "id": "5e21fb55-b6ca-40e5-a721-bfd34ffe4eab",
                             "ord": "a1"
                           }
                         ],
-                        "id": "1f8124d4-dfa6-4b15-b9d9-3f96d5923d58",
+                        "id": "6a949ed1-3829-4de3-9f7f-2e1da1b5d866",
                         "ord": "a3"
                       }
                     ],
-                    "id": "7bd6b86c-6ddb-454c-9c99-87ed07e8d4fc",
+                    "id": "df328746-a382-44e2-b25a-765ef8d27ae5",
                     "ord": "a1"
                   }
                 ],
-                "id": "4a56b6a8-7131-4123-9e44-eaef1e95d072",
+                "id": "4b18df49-e4ea-4dbf-b70b-2d3e75f4c095",
                 "ord": "a0"
               }
             ],
-            "id": "863af2c5-cfac-4fb0-a059-bc2bfbd6423a",
+            "id": "e3061a3a-c73f-4503-9d35-d3f870fe8aa8",
             "ord": "a1"
           },
           {
@@ -831,7 +831,7 @@
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
                         "children": ["Ways we can work together"],
-                        "id": "b65ef4d8-5257-40bd-b28c-42f2a296d09f",
+                        "id": "59524bbc-ef1e-4cbe-9758-fcac86a3fda1",
                         "ord": "a0"
                       },
                       {
@@ -841,11 +841,11 @@
                         "children": [
                           "Start with a free discovery call, then choose the consultation that fits. Full prices and live availability are on the booking page."
                         ],
-                        "id": "d3b3e6c5-5d44-4f0a-be2e-3478b251248a",
+                        "id": "32a613b6-3616-4127-ab21-9322ebf4c827",
                         "ord": "a1"
                       }
                     ],
-                    "id": "2a177e11-80b5-4f79-b0e4-05b26b33db9f",
+                    "id": "60afd8eb-917f-4989-929f-eb686114fbbd",
                     "ord": "a0"
                   },
                   {
@@ -871,7 +871,7 @@
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
                                 "children": ["Free discovery call"],
-                                "id": "7aed059f-81a8-46d7-9dde-5316362ffde2",
+                                "id": "fe616345-e4c9-4d19-9f85-e7af634a84f0",
                                 "ord": "a0"
                               },
                               {
@@ -879,11 +879,11 @@
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-bold text-base-content",
                                 "children": ["$0"],
-                                "id": "95c1459f-d1a9-420b-9764-216353987b1a",
+                                "id": "64c89368-1cd8-4c4b-a394-62be260064f4",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "e809d76e-f188-4b69-90b3-c83e895fd4fd",
+                            "id": "3c36cec9-1e6d-4a1b-a8f5-5ba968e11f48",
                             "ord": "a0"
                           },
                           {
@@ -891,7 +891,7 @@
                             "tag": "p",
                             "class": "text-sm font-medium uppercase tracking-wide text-secondary",
                             "children": ["20 min"],
-                            "id": "5b497f39-2989-447d-8620-18547cfbd9f9",
+                            "id": "c44bb60a-8f31-40a2-86a3-fc23729aca4f",
                             "ord": "a1"
                           },
                           {
@@ -899,11 +899,11 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": ["A no-cost call to match you with the right dietitian."],
-                            "id": "0585f761-6435-4168-965f-b33683c9415a",
+                            "id": "706bfbf5-b29b-4d9e-95c4-d4988de3492c",
                             "ord": "a2"
                           }
                         ],
-                        "id": "dfdd3850-4acd-449e-8575-d7fd383e3dfb",
+                        "id": "fdaa58fb-a623-4472-ad85-9925d11ca828",
                         "ord": "a0"
                       },
                       {
@@ -924,7 +924,7 @@
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
                                 "children": ["Initial consultation"],
-                                "id": "7de3a5e6-61e8-47fd-b730-ff9acd19262f",
+                                "id": "91c3f167-6250-4fd3-9308-e01bcc496ebf",
                                 "ord": "a0"
                               },
                               {
@@ -932,11 +932,11 @@
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-bold text-base-content",
                                 "children": ["$165"],
-                                "id": "4d661cea-5f28-4c34-a663-798658a92953",
+                                "id": "407e4331-17fb-4c79-b64f-89983e824943",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "62f6beff-c9c3-48cb-bbcf-36daef06831d",
+                            "id": "13dd55da-07c1-43d1-85d3-b379bd9c5aed",
                             "ord": "a0"
                           },
                           {
@@ -944,7 +944,7 @@
                             "tag": "p",
                             "class": "text-sm font-medium uppercase tracking-wide text-secondary",
                             "children": ["1 hr"],
-                            "id": "8a313bce-f418-4450-ac71-081e031b11d1",
+                            "id": "2d6a455e-0f2c-47a3-8369-c735fa1f14d0",
                             "ord": "a1"
                           },
                           {
@@ -954,11 +954,11 @@
                             "children": [
                               "A full first session and a personal plan you leave with."
                             ],
-                            "id": "157478a3-c100-4f0e-bd58-396057b0212d",
+                            "id": "4beaf62f-4225-4f2b-bf8b-3b5dd3235e1d",
                             "ord": "a2"
                           }
                         ],
-                        "id": "e4ea032a-39f7-49c6-849e-736623fe5adb",
+                        "id": "d5530d60-fca1-4169-b58a-288ce85fb142",
                         "ord": "a1"
                       },
                       {
@@ -979,7 +979,7 @@
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
                                 "children": ["Gut health consult"],
-                                "id": "ef16ba9d-64c3-4960-9629-ea936a7f3e17",
+                                "id": "8f210535-fef0-4170-b08b-da0b58143103",
                                 "ord": "a0"
                               },
                               {
@@ -987,11 +987,11 @@
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-bold text-base-content",
                                 "children": ["$150"],
-                                "id": "880e274e-3f53-45d2-a9a8-3a171b50f383",
+                                "id": "b914fbf9-1c92-47b2-91e5-ed6e3b263400",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "17db70e6-efd7-4944-9a95-9dac187856bb",
+                            "id": "bcf8a31e-08c0-47f7-8f03-f4c87c7a4c07",
                             "ord": "a0"
                           },
                           {
@@ -999,7 +999,7 @@
                             "tag": "p",
                             "class": "text-sm font-medium uppercase tracking-wide text-secondary",
                             "children": ["50 min"],
-                            "id": "85be54d3-c954-4d5c-85ac-96eb1bf122b4",
+                            "id": "82675b21-97de-444e-8ea1-e559eee7e62d",
                             "ord": "a1"
                           },
                           {
@@ -1007,11 +1007,11 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": ["Food-first support for bloating, IBS and digestion."],
-                            "id": "ebfafb95-1adb-4178-b566-5605246043bd",
+                            "id": "f7e5942f-61e6-47b7-8b0f-dc3e4727f9eb",
                             "ord": "a2"
                           }
                         ],
-                        "id": "08bc2e08-3776-4d5d-afe8-5bcf8a6f8d50",
+                        "id": "1c3cfb9c-d220-43b7-bf4c-03a3d67259b6",
                         "ord": "a2"
                       },
                       {
@@ -1032,7 +1032,7 @@
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
                                 "children": ["Intuitive eating session"],
-                                "id": "4a28ec86-3668-4f5c-8cf3-4ce87e9cf390",
+                                "id": "831509a3-c349-4e93-9855-def8759d63e1",
                                 "ord": "a0"
                               },
                               {
@@ -1040,11 +1040,11 @@
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-bold text-base-content",
                                 "children": ["$150"],
-                                "id": "3d6f2691-dc92-4d3b-b6cb-edb0a3aeaf38",
+                                "id": "d0af17e1-86fb-4767-a700-eea10720ef86",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "5aecfdc7-5e50-4ed4-8662-3c343ce9b860",
+                            "id": "aaf3b2a8-a596-4d74-a34a-6c2566ffa1fb",
                             "ord": "a0"
                           },
                           {
@@ -1052,7 +1052,7 @@
                             "tag": "p",
                             "class": "text-sm font-medium uppercase tracking-wide text-secondary",
                             "children": ["50 min"],
-                            "id": "2cb9badd-658c-476f-83af-409156012710",
+                            "id": "52fc0ee5-1136-4b3b-bf47-6da060143b89",
                             "ord": "a1"
                           },
                           {
@@ -1060,15 +1060,15 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": ["Gentle coaching to step off the diet cycle for good."],
-                            "id": "b87dcf7c-a0b5-4968-82d5-bf405a0a9ca2",
+                            "id": "b826db99-d4ed-4c0b-b772-c0d52161acaa",
                             "ord": "a2"
                           }
                         ],
-                        "id": "39c0a384-6132-45b9-98d0-e0eef8ae704b",
+                        "id": "e43a5a3f-904e-45e1-b0a6-9b1523744b64",
                         "ord": "a3"
                       }
                     ],
-                    "id": "95986fbf-cf6e-49ab-b7f2-3270f536916b",
+                    "id": "a8eb4a09-98f0-43b1-8584-f234b901ca0b",
                     "ord": "a1"
                   },
                   {
@@ -1084,19 +1084,19 @@
                           "href": "/book"
                         },
                         "children": ["See everything & book"],
-                        "id": "4fd50a7a-c54b-4bcc-9a42-a50002f849de",
+                        "id": "dff27773-4a2a-4b38-a3fb-2ae28b4e27a5",
                         "ord": "a0"
                       }
                     ],
-                    "id": "d10cb8c5-1116-43c9-9b8b-70df08f2447f",
+                    "id": "b07ee22b-1d93-4866-bdd6-9ed53d6e2899",
                     "ord": "a2"
                   }
                 ],
-                "id": "f841a77b-99a1-4187-823d-28ff387d202f",
+                "id": "86c7d748-81fe-4dff-9bde-ad3a26579174",
                 "ord": "a0"
               }
             ],
-            "id": "bd584317-62b5-4228-bcb0-3274c129b77f",
+            "id": "27095edc-1c89-46f8-9181-31517bea524d",
             "ord": "a2"
           },
           {
@@ -1118,7 +1118,7 @@
                       "alt": "A dietitian and client talking warmly over a cup of tea",
                       "loading": "lazy"
                     },
-                    "id": "6144442a-5801-4c6f-96b2-f448d82aa033",
+                    "id": "6aa9630f-e0bc-4579-a306-a195b90b041e",
                     "ord": "a0"
                   },
                   {
@@ -1131,7 +1131,7 @@
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
                         "children": ["Whole-health nutrition, not another diet"],
-                        "id": "f2c81051-78ed-4673-a7ed-f345408c920b",
+                        "id": "100f06ff-d672-4c65-8898-d1f7e688fdb5",
                         "ord": "a0"
                       },
                       {
@@ -1141,7 +1141,7 @@
                         "children": [
                           "Diets ask you to shrink your life to fit a plan. We do the opposite — build the plan around your real days, your favourite foods and the health goals that matter to you."
                         ],
-                        "id": "c03f8290-a0e1-4e6f-b3ab-072ea0e0cf34",
+                        "id": "830aa645-4871-4274-949c-fea859336635",
                         "ord": "a1"
                       },
                       {
@@ -1151,7 +1151,7 @@
                         "children": [
                           "That means no food is off-limits and no number defines you. Just warm, evidence-based guidance that helps you feel steadier, more energised and more at ease at the table — for good, not for six weeks."
                         ],
-                        "id": "23c7193c-e8d2-4a90-9bef-dfd9c8d82f8f",
+                        "id": "d7a24809-90a8-4e4d-95d8-f26b8376a3e0",
                         "ord": "a2"
                       },
                       {
@@ -1167,23 +1167,23 @@
                               "href": "/book"
                             },
                             "children": ["Book a consultation"],
-                            "id": "802c7b93-4e5f-438d-bcbf-8cdecc81a274",
+                            "id": "9802d0d4-0925-48ef-af2f-a5e43a51a2ff",
                             "ord": "a0"
                           }
                         ],
-                        "id": "e73583ab-7f4c-4482-8952-1975e3ab2276",
+                        "id": "b14c0612-1c72-40e3-b632-f317b0f2b0c3",
                         "ord": "a3"
                       }
                     ],
-                    "id": "de79624b-e85c-40a8-b4a8-e0264ddc208c",
+                    "id": "f8c00a92-d54c-46e0-b723-fc8c94023103",
                     "ord": "a1"
                   }
                 ],
-                "id": "0d4c87ea-a2c3-41c5-b667-104ccb79284a",
+                "id": "8838db4a-8804-4a92-9088-81e3591ed10f",
                 "ord": "a0"
               }
             ],
-            "id": "82f132ee-faec-4795-8be9-756fdac9ba5d",
+            "id": "047f1e67-4fc6-4fd2-a47e-fc8cbc269c10",
             "ord": "a3"
           },
           {
@@ -1206,7 +1206,7 @@
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
                         "children": ["Meet your dietitians"],
-                        "id": "d4176c5e-c4b1-43d8-9bc3-2c32d8bdc20a",
+                        "id": "f035b548-17b4-4e83-a912-0156f7e5ca52",
                         "ord": "a0"
                       },
                       {
@@ -1216,11 +1216,11 @@
                         "children": [
                           "Book by name — you’ll see the same dietitian each visit, someone who gets to know you, your health and your story."
                         ],
-                        "id": "6911f6c8-a94a-4231-8d4c-9ee9dea4f657",
+                        "id": "497bc196-5c1d-4c30-b24b-2e207f3f2735",
                         "ord": "a1"
                       }
                     ],
-                    "id": "d3124da2-3c90-4702-9d91-b38fc02dad52",
+                    "id": "dc66eaeb-168b-4d23-a29d-2b06097a1ac6",
                     "ord": "a0"
                   },
                   {
@@ -1242,7 +1242,7 @@
                               "alt": "Hannah Okafor, registered dietitian",
                               "loading": "lazy"
                             },
-                            "id": "a2f21eed-1781-47ac-b7d8-d81e4109c171",
+                            "id": "f72dc0bb-389f-463a-9134-f92f74b93ad9",
                             "ord": "a0"
                           },
                           {
@@ -1255,7 +1255,7 @@
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
                                 "children": ["Hannah Okafor"],
-                                "id": "5c7a21f3-8fe8-4254-a109-53aa38920514",
+                                "id": "635aac19-6038-4a69-be0d-c06afc2b6c38",
                                 "ord": "a0"
                               },
                               {
@@ -1263,7 +1263,7 @@
                                 "tag": "p",
                                 "class": "text-sm font-medium uppercase tracking-wide text-secondary",
                                 "children": ["Registered dietitian"],
-                                "id": "626dff41-cc0d-49fa-945d-7bea9f1795bb",
+                                "id": "19b45883-b1c6-49c0-ad52-12819644918e",
                                 "ord": "a1"
                               },
                               {
@@ -1273,15 +1273,15 @@
                                 "children": [
                                   "Weight, gut health and everyday energy, with a warm, no-nonsense style. Hannah leads the practice."
                                 ],
-                                "id": "48104cf8-86b3-4863-bfa4-1577bc1e97e9",
+                                "id": "c05670d8-4157-4a42-aad3-a523acdeeffe",
                                 "ord": "a2"
                               }
                             ],
-                            "id": "a79b1c97-7af7-4930-a5f8-590dc4c082f4",
+                            "id": "b49ac79c-9522-44c5-80ca-59ad304c899b",
                             "ord": "a1"
                           }
                         ],
-                        "id": "83edbc17-e05d-4c2c-8e32-50fc8b880062",
+                        "id": "2ac84eab-040c-4fc5-a33a-b613b561645b",
                         "ord": "a0"
                       },
                       {
@@ -1298,7 +1298,7 @@
                               "alt": "David Alvarez, registered dietitian",
                               "loading": "lazy"
                             },
-                            "id": "876e7dd9-0ed9-4cff-98e1-6312e5f735ae",
+                            "id": "37fea9ba-47a4-47c5-8f41-12c63a70749b",
                             "ord": "a0"
                           },
                           {
@@ -1311,7 +1311,7 @@
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
                                 "children": ["David Alvarez"],
-                                "id": "801a1afc-51e4-408e-900e-226886d4a192",
+                                "id": "17d71669-9fa6-4b92-8c10-734de0454963",
                                 "ord": "a0"
                               },
                               {
@@ -1319,7 +1319,7 @@
                                 "tag": "p",
                                 "class": "text-sm font-medium uppercase tracking-wide text-secondary",
                                 "children": ["Registered dietitian"],
-                                "id": "25056cce-6623-41de-a1a2-e1dbdb008fd6",
+                                "id": "d4dc4695-a92b-4f4f-b241-bbe671fccc24",
                                 "ord": "a1"
                               },
                               {
@@ -1329,15 +1329,15 @@
                                 "children": [
                                   "Diabetes and heart health — turning a diagnosis into calm, doable everyday choices."
                                 ],
-                                "id": "30a09438-ddd4-434d-9e89-dbcbcb698292",
+                                "id": "b9415184-e238-4105-bbe2-f22956542753",
                                 "ord": "a2"
                               }
                             ],
-                            "id": "547c9a56-e23b-4943-b350-14aebc606cbb",
+                            "id": "c9e4a3a2-753b-4951-82b7-1437cdf0068a",
                             "ord": "a1"
                           }
                         ],
-                        "id": "69718f4b-fb29-400d-8806-82fe94389bc3",
+                        "id": "7e338b90-b310-4b58-8a05-51ce34378021",
                         "ord": "a1"
                       },
                       {
@@ -1354,7 +1354,7 @@
                               "alt": "Sofia Lindqvist, registered dietitian",
                               "loading": "lazy"
                             },
-                            "id": "d2dc0051-ff9a-482b-8998-7bd11c69239d",
+                            "id": "31dc033c-9cfb-46fa-8938-4fbbea873605",
                             "ord": "a0"
                           },
                           {
@@ -1367,7 +1367,7 @@
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
                                 "children": ["Sofia Lindqvist"],
-                                "id": "b3f1a9b8-9d86-47d4-b51e-eebe0d5ebeed",
+                                "id": "9a6e431d-4715-4a37-b070-df584c6a3afc",
                                 "ord": "a0"
                               },
                               {
@@ -1375,7 +1375,7 @@
                                 "tag": "p",
                                 "class": "text-sm font-medium uppercase tracking-wide text-secondary",
                                 "children": ["Registered dietitian"],
-                                "id": "8e55271d-3237-4d41-8f0c-d6e3c72d61f1",
+                                "id": "11035abc-8f15-452b-8e2a-2f635154cbde",
                                 "ord": "a1"
                               },
                               {
@@ -1385,27 +1385,27 @@
                                 "children": [
                                   "Intuitive eating and family nutrition, judgment-free — feeding yourself and your kids without the stress."
                                 ],
-                                "id": "0372d1c4-7b9d-460e-99c3-d9d522bc81e8",
+                                "id": "8ebf9e87-a538-4e2b-9712-4b72b61d4fbe",
                                 "ord": "a2"
                               }
                             ],
-                            "id": "d87b5a84-e54d-41ea-b57a-d286f28ffbcf",
+                            "id": "fcd21266-4b53-4410-9aa3-07930265f2b0",
                             "ord": "a1"
                           }
                         ],
-                        "id": "8baac971-e24c-4f12-bff2-a24a01b230dd",
+                        "id": "06eaa4ae-ebaf-4033-aad5-96c604ca7ecb",
                         "ord": "a2"
                       }
                     ],
-                    "id": "28c5a774-2cca-4ba3-89e5-221f2689eca5",
+                    "id": "e2829641-09fd-4a99-8269-0e672fedf69c",
                     "ord": "a1"
                   }
                 ],
-                "id": "5fa25159-d1e1-4e25-953e-cad281ed1ae3",
+                "id": "886056b8-b897-46f8-8d66-5ad2fa3a3680",
                 "ord": "a0"
               }
             ],
-            "id": "51e8fd01-aa42-4c31-a660-e137e989e599",
+            "id": "0ad5abee-b286-4123-807f-1c9b9266443b",
             "ord": "a4"
           },
           {
@@ -1425,7 +1425,7 @@
                     "children": [
                       "“I came in expecting another diet and a list of foods to fear. Instead I got a plan that fits my actual life — and the first calm relationship with food I’ve had in years.”"
                     ],
-                    "id": "5f93e26f-4e37-4a0a-89da-6ee0d1ae7cb2",
+                    "id": "10188fc0-f4d1-46e1-aa5f-75cff51e4850",
                     "ord": "a0"
                   },
                   {
@@ -1433,15 +1433,15 @@
                     "tag": "p",
                     "class": "text-sm font-semibold uppercase tracking-wide opacity-80",
                     "children": ["Rachel, client since 2024"],
-                    "id": "87e47f58-aab0-4e57-a736-c0176b3a8c45",
+                    "id": "dc3fab50-6009-497f-b543-5384cf83212d",
                     "ord": "a1"
                   }
                 ],
-                "id": "ff3881d8-b2c9-4fe2-bc60-de8e1564de8e",
+                "id": "03f3ae7c-4ace-409c-9630-eb4fbf19a5d0",
                 "ord": "a0"
               }
             ],
-            "id": "1de9a00b-de74-4cd3-a0aa-1ec45465682e",
+            "id": "4712f836-26a0-42a5-b4f9-beca876b4352",
             "ord": "a5"
           },
           {
@@ -1459,7 +1459,7 @@
                     "tag": "h2",
                     "class": "text-3xl font-bold tracking-tight @3xl:text-4xl",
                     "children": ["Start with one small, kind step"],
-                    "id": "95220816-8971-41df-836b-7dfbfce79b6c",
+                    "id": "51b21cb1-c89a-4e3e-8233-a206f08cc738",
                     "ord": "a0"
                   },
                   {
@@ -1469,7 +1469,7 @@
                     "children": [
                       "Book a free 20-minute discovery call — no cost, no commitment, just a conversation about what you’re hoping to change. It takes about a minute."
                     ],
-                    "id": "77b97d74-6f84-43e2-a081-4459e0c585f5",
+                    "id": "b4deb65f-c5d6-48d5-9346-0ebea0fb637a",
                     "ord": "a1"
                   },
                   {
@@ -1480,15 +1480,15 @@
                       "href": "/book"
                     },
                     "children": ["Book a consultation"],
-                    "id": "33a4073b-2a88-4238-84ab-71a4379fe70c",
+                    "id": "36e61b5d-fc17-435d-9a72-01f3dc6feddd",
                     "ord": "a2"
                   }
                 ],
-                "id": "53f8e16a-3905-478b-a969-bc1f78ed4b1e",
+                "id": "58f7c98e-5709-425f-a326-7b927d84b2a0",
                 "ord": "a0"
               }
             ],
-            "id": "51e0a80e-ecc1-4a25-ae57-6fd9e7da4579",
+            "id": "4c3a3bdd-dd85-4088-be5a-3e3c83f3ae52",
             "ord": "a6"
           }
         ]
@@ -1505,7 +1505,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "6ed8a94c-d87c-44ec-8d0a-6bd0e3426a32",
+        "id": "32bd1ead-a276-441b-8763-87e68a635fa1",
         "children": [
           {
             "kind": "element",
@@ -1521,14 +1521,14 @@
                   "alt": "A dietitian and client talking warmly over a cup of tea",
                   "loading": "eager"
                 },
-                "id": "6ae151f0-4be7-4fa9-9cb6-097c8094f916",
+                "id": "fb7e5c30-df6b-4ba2-a6fb-d92aef304940",
                 "ord": "a0"
               },
               {
                 "kind": "element",
                 "tag": "div",
                 "class": "absolute inset-0 bg-black/65",
-                "id": "8082522d-7f86-459d-9746-7a62046d6d48",
+                "id": "31271b44-c8ce-4457-b963-5627991141af",
                 "ord": "a1"
               },
               {
@@ -1541,7 +1541,7 @@
                     "tag": "h1",
                     "class": "max-w-3xl text-4xl font-bold leading-tight tracking-tight @2xl:text-5xl @3xl:text-6xl",
                     "children": ["Book your consultation"],
-                    "id": "211fb80e-66a0-412a-8c46-bab75326e14e",
+                    "id": "965ea7ae-3c9a-44f4-b6a3-7a61e2f0ef73",
                     "ord": "a0"
                   },
                   {
@@ -1551,7 +1551,7 @@
                     "children": [
                       "Choose a consultation to see live availability, then pick your dietitian and a time that works for you. New here? Start with the free discovery call."
                     ],
-                    "id": "39feb774-33aa-4750-968a-e4e8f2fb6561",
+                    "id": "b8562ef3-350f-4ebd-a93d-3ada215637d7",
                     "ord": "a1"
                   },
                   {
@@ -1567,19 +1567,19 @@
                           "href": "/book"
                         },
                         "children": ["See consultations below"],
-                        "id": "5b59ab22-e3da-4278-86da-20a0209616e7",
+                        "id": "88b948ac-3241-43d7-9962-17249bf55bde",
                         "ord": "a0"
                       }
                     ],
-                    "id": "b07314ef-3d7c-43c0-9fce-a712fe0a6f97",
+                    "id": "8a7dbbd4-285c-4f6b-aa6a-fb9fe50ac2db",
                     "ord": "a2"
                   }
                 ],
-                "id": "199e1589-50b2-4f53-ab12-9e5df0e69a92",
+                "id": "c860c43f-ebbf-4452-94e4-19eabdba0393",
                 "ord": "a2"
               }
             ],
-            "id": "23d7036c-c87a-42a8-9ab4-d6f67bf8f309",
+            "id": "2a5770a4-6e3e-4a57-96a6-c486e8bee105",
             "ord": "a0"
           },
           {
@@ -1587,8 +1587,136 @@
             "component": "scheduling.services",
             "class": "mx-auto w-full max-w-5xl px-6 py-8",
             "locked": "host",
-            "id": "d42030ca-e796-4b38-9819-4c8805450b64",
+            "id": "85aae7e5-560d-47ce-ad97-a877e5fd5b5d",
             "ord": "a1"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-8",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["Good to know"],
+                        "id": "cb0a4d3f-6b36-4d9c-a6aa-4379982160cf",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "What happens once you pick a time — and how to change it if something comes up."
+                        ],
+                        "id": "a318f9a5-b802-46b6-928a-ea123cc3993e",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "f2724570-4cb0-4109-8500-58dfc896424b",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-6 @3xl:grid-cols-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-3 rounded-box border border-base-300 bg-base-100 p-6",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Standard booking"],
+                            "id": "42a46303-dcd6-4250-8d0b-8a763ee92a55",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Please give at least 24 hours’ notice to reschedule or cancel — life happens, and there’s no charge when you let us know in time. We send a reminder the day before and two hours ahead."
+                            ],
+                            "id": "c1ed66a7-a866-45a9-81f2-c0caa260bccd",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base font-medium text-base-content",
+                            "children": [
+                              "No deposit to book. Change or cancel free up to 24 hours before."
+                            ],
+                            "id": "7c20cc62-231a-42a6-bfbf-50e4f86b989c",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "3f3b1cbe-54d1-4373-af41-08f7dafcef63",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-3 rounded-box border border-base-300 bg-base-100 p-6",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Session hold"],
+                            "id": "437b9fb8-f5b5-4fb7-86c0-5cf2b3806a68",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Booked consultations are time held just for you. Reschedule with 24 hours’ notice at no cost; a missed session or a same-day cancellation is billed as the full fee so your dietitian’s time is respected."
+                            ],
+                            "id": "a88060ee-7e67-48e6-a358-19c7f763d010",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base font-medium text-base-content",
+                            "children": [
+                              "No deposit to book. Change or cancel free up to 24 hours before."
+                            ],
+                            "id": "60429caa-d3b7-4dd5-b438-47f2011b4367",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "8cc324f4-68e2-4fbe-8dc0-f518edad3a25",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "6df2c491-d2a8-4fe2-82dd-7c258fc3aad5",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "e673d05d-9cbd-449c-8b21-126308b448c1",
+                "ord": "a0"
+              }
+            ],
+            "id": "19ca1218-a905-4a4e-a806-912a9400c2c9",
+            "ord": "a2"
           }
         ]
       }
@@ -1604,7 +1732,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "3e7357cf-740c-4a89-8973-44f5df1ebb59",
+        "id": "b4d6ca06-8fc9-4e69-9b6a-49488c0f6673",
         "children": [
           {
             "kind": "element",
@@ -1625,7 +1753,7 @@
                       "alt": "A bright wooden table of fresh vegetables, fruit and whole grains",
                       "loading": "lazy"
                     },
-                    "id": "1ed4273f-d6f2-4658-8938-7148ccb5c4c7",
+                    "id": "840c5e04-93bd-4147-b588-e809693094ea",
                     "ord": "a0"
                   },
                   {
@@ -1635,10 +1763,10 @@
                     "children": [
                       {
                         "kind": "element",
-                        "tag": "h2",
+                        "tag": "h1",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
                         "children": ["About Nourish Nutrition"],
-                        "id": "0838a8d7-244c-4440-982b-843419eaa657",
+                        "id": "a09c3c1a-b642-48f6-8623-81c44e20fd1c",
                         "ord": "a0"
                       },
                       {
@@ -1648,7 +1776,7 @@
                         "children": [
                           "We started Nourish because so much of what people are told about food is loud, contradictory and unkind. Cutting out whole food groups, chasing the newest diet, feeling guilty for eating — none of it lasts, and none of it feels good."
                         ],
-                        "id": "966ad5e0-f95d-4c63-8096-85d27a85bcc9",
+                        "id": "5941d26b-42fd-4559-a792-45b1f94c99f8",
                         "ord": "a1"
                       },
                       {
@@ -1658,7 +1786,7 @@
                         "children": [
                           "So we built a practice around the opposite: registered dietitians, real science, and warm, practical support that meets you exactly where you are. Whether it’s gut trouble, a new diagnosis, or just wanting to feel at ease with food again, our job is to make the next step feel doable."
                         ],
-                        "id": "07abd1aa-1856-474e-bc64-8add7c5ad736",
+                        "id": "22e274f6-39e4-4fdc-909f-a15b78bbcc5d",
                         "ord": "a2"
                       },
                       {
@@ -1674,23 +1802,23 @@
                               "href": "/book"
                             },
                             "children": ["Book a consultation"],
-                            "id": "a07fda4a-d7c6-4808-8aae-e5efadf4f568",
+                            "id": "8479668e-d032-45a4-a475-868ca2a9394e",
                             "ord": "a0"
                           }
                         ],
-                        "id": "d092c597-5c52-4d90-9845-7803fc2cadeb",
+                        "id": "31af4e4a-dbc2-4cf0-9355-d5b7848f11d4",
                         "ord": "a3"
                       }
                     ],
-                    "id": "7c7a4e65-6508-4fb4-b6ed-9757755ba2d2",
+                    "id": "a61d1117-8474-40a4-8d57-fe96c5d773d5",
                     "ord": "a1"
                   }
                 ],
-                "id": "a046d0df-ebcb-457f-a84c-eec6957dcab5",
+                "id": "9a002757-b1de-464e-b556-aa6756650f2e",
                 "ord": "a0"
               }
             ],
-            "id": "76d744c2-1561-4500-afa2-8177fb6d3d5c",
+            "id": "d0187ae6-9cd1-421b-bcbd-a6e4f95a858a",
             "ord": "a0"
           },
           {
@@ -1708,7 +1836,7 @@
                     "tag": "h2",
                     "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
                     "children": ["What we believe"],
-                    "id": "4bf97296-479a-4dfe-9460-39a734b9d3ad",
+                    "id": "eed365c3-91cf-4306-b6e1-13a1d5be2746",
                     "ord": "a0"
                   },
                   {
@@ -1726,7 +1854,7 @@
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
                             "children": ["All foods fit"],
-                            "id": "030debb4-fd5d-4825-94a8-9aeecb962f8d",
+                            "id": "3869ad97-1052-49f5-b8d3-e439de337e1f",
                             "ord": "a0"
                           },
                           {
@@ -1736,11 +1864,11 @@
                             "children": [
                               "No forbidden lists and no guilt. Lasting change comes from adding what helps and finding balance, not from cutting out everything you love."
                             ],
-                            "id": "86464472-0e14-42b4-88cd-e81b88b66ca7",
+                            "id": "960bf743-86fb-4a7e-805d-1a4c00b7a564",
                             "ord": "a1"
                           }
                         ],
-                        "id": "142f7932-a4e9-4cae-a52c-4c05aee4b61f",
+                        "id": "f739f583-4ced-49bc-95fc-1a23a3b7dc45",
                         "ord": "a0"
                       },
                       {
@@ -1753,7 +1881,7 @@
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
                             "children": ["Evidence over trends"],
-                            "id": "a8e20900-3569-4c2e-8eda-34cba609d685",
+                            "id": "bb666802-3468-43b4-b2bb-8eb3d5c68fa9",
                             "ord": "a0"
                           },
                           {
@@ -1763,11 +1891,11 @@
                             "children": [
                               "Fads come and go; good science stays. Every recommendation is grounded in real nutrition research, not the latest headline or supplement."
                             ],
-                            "id": "acbd8718-7390-46f0-8590-87e6b85af7bf",
+                            "id": "59f648f3-51ce-4f24-add3-75ee3b632b1e",
                             "ord": "a1"
                           }
                         ],
-                        "id": "d578e927-7ba6-4b6c-a9b8-709094a48c17",
+                        "id": "e1fdf572-96ec-4d1b-8ecc-c5076d14af9a",
                         "ord": "a1"
                       },
                       {
@@ -1780,7 +1908,7 @@
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
                             "children": ["Your goals, your pace"],
-                            "id": "2f83b176-5ca3-49d7-90b7-28553b4c5c2f",
+                            "id": "8a368c05-f68f-4285-bed5-9309636fcd70",
                             "ord": "a0"
                           },
                           {
@@ -1790,23 +1918,23 @@
                             "children": [
                               "You set the direction and the speed. We’re here to guide, adjust and cheer you on — never to hand you a rigid plan and walk away."
                             ],
-                            "id": "d4473b17-cf4b-4943-8177-684e5ccd54e8",
+                            "id": "333707b2-1f8d-4aa8-ae49-1a7af77b4ac1",
                             "ord": "a1"
                           }
                         ],
-                        "id": "ceca0aa6-18cf-4558-9353-5651dc4228b2",
+                        "id": "c0a98b02-4ded-4ba2-94d8-fc18e4e1354b",
                         "ord": "a2"
                       }
                     ],
-                    "id": "fcb43e76-7833-4fef-bb6c-6fb7a23ec8b3",
+                    "id": "e0acb351-9c77-49e9-bc3c-851477090c0b",
                     "ord": "a1"
                   }
                 ],
-                "id": "444d0cde-3b0a-403f-88e9-32a2a1bdb16d",
+                "id": "070c75e6-11c2-4513-aa56-c4352bd2950a",
                 "ord": "a0"
               }
             ],
-            "id": "ee87f836-c1e8-46e3-a4dd-09cdfc0f6b79",
+            "id": "827a947c-f56a-4d60-8b7d-16c98266c5c6",
             "ord": "a1"
           }
         ]
@@ -1823,8 +1951,294 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "a6e1e8ec-2eeb-4b00-a264-98b8dd413ab5",
+        "id": "18d9c0c6-2096-403f-a200-97dac380f15b",
         "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-8",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h1",
+                        "class": "text-4xl font-bold tracking-tight text-base-content @3xl:text-5xl",
+                        "children": ["Get in touch"],
+                        "id": "a4aaeb4f-9cb3-4640-aff6-4b97564e2b2d",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Questions before you book? Send a note and Nourish Nutrition will get back to you — usually the same day."
+                        ],
+                        "id": "691edd12-af5f-4885-adbd-b559697e8fa0",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "3a353cf2-4455-4be2-8128-556571d5fa32",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-1",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "span",
+                        "class": "text-base font-medium text-base-content",
+                        "children": ["Call us"],
+                        "id": "f39efb44-89f3-4f39-8c9a-96dbc3cf04fe",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "text-lg font-semibold text-base-content underline underline-offset-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "children": ["(555) 123-4567"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "site.identity.phone"
+                            },
+                            "id": "80f62f88-bfd1-4f42-bbfc-af83d80b91dd",
+                            "ord": "a0"
+                          }
+                        ],
+                        "data": {
+                          "kind": "value",
+                          "ref": "site.identity.phoneHref",
+                          "attr": "href"
+                        },
+                        "id": "52cfccfd-75af-4d4e-83c9-929491772a54",
+                        "ord": "a1"
+                      }
+                    ],
+                    "data": {
+                      "kind": "visible",
+                      "ref": "site.identity.phone"
+                    },
+                    "id": "1de786b0-c8cc-48fd-86b0-3b860953b4a4",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-1",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "span",
+                        "class": "text-base font-medium text-base-content",
+                        "children": ["Email us"],
+                        "id": "b8db1235-8f01-4d49-8189-0076636f02a9",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "text-lg font-semibold text-base-content underline underline-offset-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "children": ["hello@yourbusiness.com"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "site.identity.email"
+                            },
+                            "id": "71f58258-a725-46ce-8f55-11608b3700ee",
+                            "ord": "a0"
+                          }
+                        ],
+                        "data": {
+                          "kind": "value",
+                          "ref": "site.identity.emailHref",
+                          "attr": "href"
+                        },
+                        "id": "54d15d0f-0d0e-455f-ae07-9e48765cbc79",
+                        "ord": "a1"
+                      }
+                    ],
+                    "data": {
+                      "kind": "visible",
+                      "ref": "site.identity.email"
+                    },
+                    "id": "8ba2d7ef-1c1c-4eba-93fe-9595ba96a24b",
+                    "ord": "a2"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "form",
+                    "class": "flex w-full max-w-xl flex-col gap-5",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "label",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-base font-medium text-base-content",
+                            "children": ["Your name"],
+                            "id": "4655078a-1898-4fb5-a5a2-4cdb9fb55ef5",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "input",
+                            "class": "input input-bordered w-full",
+                            "attrs": {
+                              "type": "text",
+                              "name": "name",
+                              "required": true
+                            },
+                            "id": "6e13e7d6-b146-479d-a080-b0ab5b1bdb72",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "6e59ee7b-1eaa-4bf8-b45a-a8980600d92b",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "label",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-base font-medium text-base-content",
+                            "children": ["Email address"],
+                            "id": "ca514f70-e4a4-4278-a705-8386e9f9f5b3",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "input",
+                            "class": "input input-bordered w-full",
+                            "attrs": {
+                              "type": "email",
+                              "name": "email",
+                              "required": true
+                            },
+                            "id": "e1d3e655-6bc8-4df9-be0e-77b90a0e3520",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "2713e68c-67ae-4289-93d1-055b5bb1a97b",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "label",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-base font-medium text-base-content",
+                            "children": ["Phone number"],
+                            "id": "365a8941-1e11-4f4a-8c33-20a869b742b9",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "input",
+                            "class": "input input-bordered w-full",
+                            "attrs": {
+                              "type": "tel",
+                              "name": "phone"
+                            },
+                            "id": "9e2e90bc-2d73-40b9-8c87-849020f2f477",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "2846a55c-d18a-4254-a21b-e69f97be2c4e",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "label",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-base font-medium text-base-content",
+                            "children": ["How can we help?"],
+                            "id": "c4d9ad3c-d328-4fd5-a4f2-6642a58848ab",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "textarea",
+                            "class": "textarea textarea-bordered min-h-32 w-full",
+                            "attrs": {
+                              "name": "message"
+                            },
+                            "id": "42578990-75e1-436e-8bc9-4c5262fabbd8",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "7900a27d-f658-42eb-9090-9070cc646946",
+                        "ord": "a3"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-wrap items-center gap-3",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "button",
+                            "class": "btn btn-primary btn-lg",
+                            "attrs": {
+                              "type": "submit"
+                            },
+                            "children": ["Send my request"],
+                            "id": "9d5eb6a6-9756-49fe-9d56-618014184c98",
+                            "ord": "a0"
+                          }
+                        ],
+                        "id": "a3838f0b-f569-4632-9d02-c1d24257f519",
+                        "ord": "a4"
+                      }
+                    ],
+                    "behavior": {
+                      "type": "form"
+                    },
+                    "data": {
+                      "kind": "action",
+                      "ref": "submit"
+                    },
+                    "id": "be739624-31b4-4da0-a330-2c3256782422",
+                    "ord": "a3"
+                  }
+                ],
+                "id": "a51b16ec-fd98-467e-b993-a50641914f0d",
+                "ord": "a0"
+              }
+            ],
+            "id": "2fe18329-9b5d-4c02-bf71-7f5e337d028a",
+            "ord": "a0"
+          },
           {
             "kind": "element",
             "tag": "section",
@@ -1845,40 +2259,21 @@
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
                         "children": ["Reach the practice"],
-                        "id": "f436b612-7382-4f44-99b3-e17cccd7200c",
+                        "id": "9b7a7555-b920-47b9-b33f-a3597371aabd",
                         "ord": "a0"
                       },
                       {
                         "kind": "element",
-                        "tag": "div",
-                        "class": "flex flex-col gap-1",
+                        "tag": "address",
+                        "class": "text-lg leading-relaxed whitespace-pre-line not-italic text-base-content",
                         "children": [
-                          {
-                            "kind": "element",
-                            "tag": "p",
-                            "class": "text-lg leading-relaxed text-base-content",
-                            "children": ["Nourish Nutrition"],
-                            "id": "10d72003-d307-4f23-b80d-586ffa47cc9b",
-                            "ord": "a0"
-                          },
-                          {
-                            "kind": "element",
-                            "tag": "p",
-                            "class": "text-lg leading-relaxed text-base-content",
-                            "children": ["In person & virtual · secure video sessions"],
-                            "id": "c842f916-beda-4339-99c4-4064b461d375",
-                            "ord": "a1"
-                          },
-                          {
-                            "kind": "element",
-                            "tag": "p",
-                            "class": "text-lg leading-relaxed text-base-content",
-                            "children": ["84 Maple Court, Suite 3 · Portland, OR 97209"],
-                            "id": "c86f2e82-eaca-405c-8f09-cdd74d9fb7a0",
-                            "ord": "a2"
-                          }
+                          "Nourish Nutrition\nIn person & virtual · secure video sessions\n84 Maple Court, Suite 3 · Portland, OR 97209"
                         ],
-                        "id": "24fde53f-64b2-45e3-a2fe-adb6817ca0bf",
+                        "data": {
+                          "kind": "value",
+                          "ref": "site.identity.address"
+                        },
+                        "id": "b82fd81d-528a-4223-8d6b-6c9457f20262",
                         "ord": "a1"
                       },
                       {
@@ -1896,7 +2291,7 @@
                                 "tag": "span",
                                 "class": "font-medium text-base-content",
                                 "children": ["Monday & Friday"],
-                                "id": "f6e46f37-b022-4d1e-9e3e-438fc9d60ee2",
+                                "id": "19f34816-d559-40df-9957-ff2d00bd427d",
                                 "ord": "a0"
                               },
                               {
@@ -1904,11 +2299,11 @@
                                 "tag": "span",
                                 "class": "text-base-content",
                                 "children": ["8:00 – 5:00"],
-                                "id": "5baf8c92-8f69-448b-bd53-19a3801d532c",
+                                "id": "aa088a50-06b7-4411-bc4c-f813158e6cf5",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "52488785-a6c3-4872-8c30-299a5159f102",
+                            "id": "c7ef62db-606b-425f-9659-303ceb1d0484",
                             "ord": "a0"
                           },
                           {
@@ -1921,7 +2316,7 @@
                                 "tag": "span",
                                 "class": "font-medium text-base-content",
                                 "children": ["Tuesday – Thursday"],
-                                "id": "a055f7b2-248a-48bf-b79b-26529b328d2a",
+                                "id": "f695ccb7-b108-42cd-b50a-12a0069d9bc9",
                                 "ord": "a0"
                               },
                               {
@@ -1929,11 +2324,11 @@
                                 "tag": "span",
                                 "class": "text-base-content",
                                 "children": ["9:00 – 8:00 (evenings)"],
-                                "id": "88410f8b-6f25-4cae-b075-8cc8951bb1d8",
+                                "id": "1efce616-df00-4eff-b0b5-ffd5fb5e29e0",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "c750f2ea-697c-44ef-89b8-cc2d215c0198",
+                            "id": "5dcbd88e-0692-4ac4-9e6f-e6da40bb3dc6",
                             "ord": "a1"
                           },
                           {
@@ -1946,7 +2341,7 @@
                                 "tag": "span",
                                 "class": "font-medium text-base-content",
                                 "children": ["Saturday"],
-                                "id": "9bd052a5-8158-47da-b524-472a1871031a",
+                                "id": "e68b2dc0-1100-4705-8a08-9cf386958ad8",
                                 "ord": "a0"
                               },
                               {
@@ -1954,11 +2349,11 @@
                                 "tag": "span",
                                 "class": "text-base-content",
                                 "children": ["9:00 – 1:00"],
-                                "id": "d4a3074f-b701-499d-b600-b9733b75e98f",
+                                "id": "63903e43-2752-48bd-a4fe-d840991231ac",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "9a9ef55f-eb5e-48db-8b4e-9133597927ab",
+                            "id": "e527f8aa-5c6f-470c-9885-15b52daa35a1",
                             "ord": "a2"
                           },
                           {
@@ -1971,7 +2366,7 @@
                                 "tag": "span",
                                 "class": "font-medium text-base-content",
                                 "children": ["Sunday"],
-                                "id": "2d0d273a-bf3b-4ac2-97a1-40845c810531",
+                                "id": "0f040007-9aeb-48b3-a2aa-0fea0a80761d",
                                 "ord": "a0"
                               },
                               {
@@ -1979,19 +2374,19 @@
                                 "tag": "span",
                                 "class": "text-base-content",
                                 "children": ["Closed"],
-                                "id": "857ebd37-f4fb-4fe9-9343-efd290d3f46b",
+                                "id": "9a0fbe23-bdcb-4392-802d-054014554df6",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "949ce838-86cd-45b3-b901-9002d5a18b61",
+                            "id": "22514e53-17f9-465c-b20f-5a0bb0416cca",
                             "ord": "a3"
                           }
                         ],
-                        "id": "5705426d-d8a5-477c-8972-ee723901f49b",
+                        "id": "276b9526-23af-4990-b6eb-79e33b39c2c1",
                         "ord": "a2"
                       }
                     ],
-                    "id": "240b66bc-e641-4f70-9b07-a3bed2d8ebc6",
+                    "id": "b3e555bf-9d78-4620-af07-8935be196f18",
                     "ord": "a0"
                   },
                   {
@@ -2004,16 +2399,16 @@
                       "zoom": 15,
                       "ratio": "classic"
                     },
-                    "id": "0aaecf51-bd82-4f1a-8b77-a5ae0bdf7ca2",
+                    "id": "fb2c3ded-7f4f-4e8f-b0c0-0338513fcab4",
                     "ord": "a1"
                   }
                 ],
-                "id": "2fa9d180-40b4-4610-a24c-72a681af9310",
+                "id": "8efe2cf7-ae63-4970-8ebc-5843d5ff3b31",
                 "ord": "a0"
               }
             ],
-            "id": "7d51a1de-bfdf-4a4b-b85e-1b6d87af1b46",
-            "ord": "a0"
+            "id": "dcb8d451-0dbf-4a36-b794-1824f991d380",
+            "ord": "a1"
           },
           {
             "kind": "element",
@@ -2030,7 +2425,7 @@
                     "tag": "h2",
                     "class": "text-3xl font-bold tracking-tight @3xl:text-4xl",
                     "children": ["Rather book than email?"],
-                    "id": "a353ec3b-4e0a-4298-a851-e04ce579054a",
+                    "id": "2ab4937f-f90a-4c07-854f-7b262647ed3e",
                     "ord": "a0"
                   },
                   {
@@ -2040,7 +2435,7 @@
                     "children": [
                       "See live availability and reserve a free discovery call online — no phone tag, no waiting."
                     ],
-                    "id": "eff36950-b237-4658-a196-6e3814730604",
+                    "id": "1812d5e3-22c2-4c7d-be89-6d7dafeb28ac",
                     "ord": "a1"
                   },
                   {
@@ -2051,16 +2446,16 @@
                       "href": "/book"
                     },
                     "children": ["Book a consultation"],
-                    "id": "169beeec-d610-434c-9bed-baad2607b21e",
+                    "id": "8a1e330a-806a-48c3-9154-b8a8aca9005f",
                     "ord": "a2"
                   }
                 ],
-                "id": "ae331fcb-cb07-4855-99ee-38a07188339c",
+                "id": "11232cbe-0efa-44a5-9612-0b42d2a012a9",
                 "ord": "a0"
               }
             ],
-            "id": "34d654ec-f17a-44b3-b4bc-86906090c035",
-            "ord": "a1"
+            "id": "9309f3bb-971f-4ef0-8d22-c9e3cf21fcb7",
+            "ord": "a2"
           }
         ]
       }

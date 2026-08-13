@@ -16,7 +16,7 @@ import welcomeEmail2 from './welcome-email-2.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-gallery',
-  version: '1.1.0',
+  version: '1.2.0',
   name: 'sparx — Gallery',
   summary:
     'The complete sparx starter — a faceted shop, a journal, a booking page, and a wholesale page — in the Gallery look, tuned for artists, makers, and portfolios. Install it, make it yours, and launch a polished working site in minutes.',
@@ -42,7 +42,7 @@ const blueprint = {
   },
 
   // The provisioned SiteTheme the installer creates + applies — the 'gallery'
-  // look as a tenant-editable saved theme (base preset gallery + this theme's brand look).
+  // look as a tenant-editable saved theme (base preset apex + this theme's brand look).
   theme: {
     name: 'gallery',
     basePresetKey: 'gallery',

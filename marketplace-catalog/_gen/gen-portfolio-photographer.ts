@@ -33,6 +33,7 @@ import {
 } from '../../packages/silica-catalog/node_modules/@wizeworks/silicaui-html/dist/index.js';
 import { safeParseBlueprint } from '../../packages/blueprints/src/validate';
 
+import { contactSection } from './shared/contact-section';
 import { emitPortfolioBundle, type PortfolioSiteSpec } from './portfolio-sites/harness';
 import { writePortfolioPreview } from './portfolio-sites/preview';
 import {
@@ -426,41 +427,18 @@ const ABOUT: Node[] = [
 ];
 
 const CONTACT: Node[] = [
-  el('section', 'bg-base-100 @container px-6 py-20', {
-    children: [
-      el('div', 'mx-auto flex w-full max-w-2xl flex-col gap-6', {
-        children: [
-          el('h1', 'text-5xl font-normal tracking-tight text-base-content @2xl:text-6xl', {
-            text: 'Commissions & prints',
-          }),
-          el('p', 'text-lg leading-relaxed text-base-content', {
-            text: 'I take on a few portrait and editorial commissions a year, and sell a small edition of archival prints from each series. Tell me a little about what you have in mind — the subject, roughly when, and where — and I will write back.',
-          }),
-          el('div', 'mt-2 flex flex-wrap gap-4', {
-            children: [
-              el('a', 'btn btn-primary btn-lg', {
-                attrs: { href: 'mailto:studio@marailic.example' },
-                text: 'Write to the studio',
-              }),
-              el('a', 'btn btn-neutral btn-outline btn-lg', {
-                attrs: { href: '/work' },
-                text: 'See the series first',
-              }),
-            ],
-          }),
-          el('div', 'flex flex-col gap-2 border-t border-base-300 pt-6', {
-            children: [
-              el('span', 'text-sm font-semibold uppercase tracking-wide text-secondary', {
-                text: 'Studio',
-              }),
-              el('p', 'text-base leading-relaxed text-secondary', {
-                text: 'By appointment, on the north coast. Print orders ship worldwide.',
-              }),
-            ],
-          }),
-        ],
-      }),
+  // The page's own words, over the shared contact band: the business's phone and email
+  // (each hidden until set in Site settings — never an invented number) and a working
+  // enquiry form that reaches the tenant's Form submissions inbox. This used to end at a
+  // `mailto:` to a placeholder domain, which was the only way to reach the business.
+  contactSection({
+    heading: 'Commissions & prints',
+    intro: [
+      'I take on a few portrait and editorial commissions a year, and sell a small edition of archival prints from each series. Tell me a little about what you have in mind — the subject, roughly when, and where — and I will write back.',
+      'By appointment, on the north coast. Print orders ship worldwide.',
     ],
+    submitLabel: 'Write to the studio',
+    secondary: { label: 'See the series first', href: '/work' },
   }),
 ];
 

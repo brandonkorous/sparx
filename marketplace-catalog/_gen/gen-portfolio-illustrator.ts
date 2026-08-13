@@ -32,6 +32,7 @@ import {
 } from '../../packages/silica-catalog/node_modules/@wizeworks/silicaui-html/dist/index.js';
 import { safeParseBlueprint } from '../../packages/blueprints/src/validate';
 
+import { contactSection } from './shared/contact-section';
 import { emitPortfolioBundle, type PortfolioSiteSpec } from './portfolio-sites/harness';
 import { writePortfolioPreview } from './portfolio-sites/preview';
 import {
@@ -428,31 +429,15 @@ const ABOUT: Node[] = [
 ];
 
 const CONTACT: Node[] = [
-  el('section', 'bg-base-100 @container px-6 py-20', {
-    children: [
-      el('div', 'mx-auto flex w-full max-w-2xl flex-col gap-6', {
-        children: [
-          el('h1', 'text-6xl font-bold leading-none tracking-tight text-primary @2xl:text-7xl', {
-            text: 'Let’s make something loud',
-          }),
-          el('p', 'text-lg leading-relaxed text-base-content', {
-            text: 'I take on editorial, covers, character design, packaging and short motion — commissions and the occasional wall. Tell me what you’re making, who it’s for, and roughly when you need it. A rough idea and a deadline is a perfect place to start; I’ll come back with how I’d draw it and what it costs.',
-          }),
-          el('div', 'flex flex-wrap gap-3', {
-            children: [
-              el('a', 'btn btn-primary btn-lg', {
-                attrs: { href: 'mailto:hello@pilarortega.example' },
-                text: 'Email me',
-              }),
-              el('a', 'btn btn-accent btn-outline btn-lg', {
-                attrs: { href: '/work' },
-                text: 'See the work first',
-              }),
-            ],
-          }),
-        ],
-      }),
-    ],
+  // The page's own words, over the shared contact band: the business's phone and email
+  // (each hidden until set in Site settings — never an invented number) and a working
+  // enquiry form that reaches the tenant's Form submissions inbox. This used to end at a
+  // `mailto:` to a placeholder domain, which was the only way to reach the business.
+  contactSection({
+    heading: 'Let’s make something loud',
+    intro: 'I take on editorial, covers, character design, packaging and short motion — commissions and the occasional wall. Tell me what you’re making, who it’s for, and roughly when you need it. A rough idea and a deadline is a perfect place to start; I’ll come back with how I’d draw it and what it costs.',
+    submitLabel: 'Email me',
+    secondary: { label: 'See the work first', href: '/work' },
   }),
 ];
 
