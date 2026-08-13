@@ -6,6 +6,7 @@ import { z } from 'zod';
 import {
   paymentMethodService,
   providerService,
+  returnDispositionService,
   returnService,
   subscriptionService,
 } from '@sparx/commerce';
@@ -157,6 +158,44 @@ const providerRoutes: FastifyPluginAsync = async (app) => {
     const body = (request.body as Record<string, unknown>) ?? {};
     await returnService.recordInspection(toCommerceContext(request), { ...body, returnId: id });
     return ok({ id, inspected: true });
+  });
+
+  // What actually happens to the goods (docs/146 Phase 9.7). Separate from
+  // `/inspection` because they are separate moments: inspection is a judgement
+  // about condition, disposition is a decision about where the units go, and a
+  // returns bench routinely makes the second one hours after the first — or
+  // never, which is exactly what the list below is for.
+  app.get('/v1/commerce/returns/:id/dispositions', async (request) => {
+    requireRole(request, 'viewer');
+    await requireCommerceModule(request);
+    const { id } = PathId.parse(request.params);
+    const rows = await returnDispositionService.listReturnDispositions(
+      toCommerceContext(request),
+      id
+    );
+    return paged(rows, { total: rows.length, skip: 0, per_page: rows.length || 1 });
+  });
+
+  app.post('/v1/commerce/returns/:id/disposition', async (request) => {
+    requireRole(request, 'editor');
+    await requireCommerceModule(request);
+    // The return id is in the path for routing and audit symmetry; the decision
+    // is per INSPECTED LINE, so the inspection id in the body is what identifies
+    // the goods being decided about.
+    return ok(
+      await returnDispositionService.setReturnDisposition(toCommerceContext(request), request.body)
+    );
+  });
+
+  app.get('/v1/commerce/returns-dispositions/summary', async (request) => {
+    requireRole(request, 'viewer');
+    await requireCommerceModule(request);
+    const q = z
+      .object({ days: z.coerce.number().int().min(1).max(730).optional() })
+      .parse(request.query);
+    return ok(
+      await returnDispositionService.summarizeDispositions(toCommerceContext(request), q.days ?? 90)
+    );
   });
 
   app.post('/v1/commerce/returns/:id/refund', async (request) => {

@@ -340,3 +340,105 @@ export function outcomeLabel(code: string): string {
 export function conditionLabel(code: string): string {
   return CONDITION_LABELS[code] ?? code;
 }
+
+/* ── What happens to the goods (docs/146 Phase 9.7) ─────────────────────── */
+//
+// `restockable` was the whole decision and could not carry it. Four things
+// happen to returned goods and only one of them is "put it back"; the other
+// three were all recorded as the same `false` and physically went wherever the
+// person holding them decided.
+//
+// `disposition` is null until somebody chooses, and that null is the work list.
+// There is no safe default in either direction — defaulting to restock puts a
+// customer's damaged goods back on the shelf, defaulting to scrap throws away
+// stock that was fine.
+
+export interface ReturnDispositionRow {
+  inspectionId: string;
+  returnId: string;
+  returnLineItemId: string;
+  variantId: string | null;
+  variantSku: string | null;
+  variantName: string | null;
+  quantity: number;
+  condition: string;
+  /** Null until somebody decides. */
+  disposition: string | null;
+  dispositionBinId: string | null;
+  dispositionBinCode: string | null;
+  dispositionAt: string | null;
+  dispositionNote: string | null;
+  warehouseId: string | null;
+  inspectedAt: string;
+}
+
+export function useReturnDispositions(returnId: string) {
+  return useQuery({
+    queryKey: [...RETURNS_KEY, 'dispositions', returnId],
+    queryFn: () => api.list<ReturnDispositionRow>(`/v1/commerce/returns/${returnId}/dispositions`),
+    enabled: returnId !== '',
+  });
+}
+
+export interface SetDispositionBody {
+  inspectionId: string;
+  disposition: string;
+  binId?: string;
+  note?: string;
+}
+
+export interface SetDispositionResult {
+  inspectionId: string;
+  disposition: string;
+  unitsRestocked: number;
+  binId: string | null;
+}
+
+export function useSetReturnDisposition(returnId: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (body: SetDispositionBody) =>
+      api.post<SetDispositionResult>(`/v1/commerce/returns/${returnId}/disposition`, body),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: RETURNS_KEY });
+      // Three of the four dispositions move stock, so every stock screen is
+      // stale the moment one is recorded.
+      void queryClient.invalidateQueries({ queryKey: ['inventory'] });
+    },
+  });
+}
+
+/** What each decision is called in the words a person would use. */
+export function dispositionLabel(disposition: string): string {
+  switch (disposition) {
+    case 'restock':
+      return 'Back on sale';
+    case 'quarantine':
+      return 'Quarantined';
+    case 'repair':
+      return 'Awaiting repair';
+    case 'scrap':
+      return 'Scrapped';
+    default:
+      return 'Not decided';
+  }
+}
+
+/** Colour carries the distinction: back-on-sale is a recovery, scrap is a loss,
+ *  and the two middle states are different kinds of "not yet" (DESIGN.md). */
+export function dispositionTone(
+  disposition: string | null
+): 'success' | 'warning' | 'info' | 'danger' | 'neutral' {
+  switch (disposition) {
+    case 'restock':
+      return 'success';
+    case 'quarantine':
+      return 'warning';
+    case 'repair':
+      return 'info';
+    case 'scrap':
+      return 'danger';
+    default:
+      return 'neutral';
+  }
+}

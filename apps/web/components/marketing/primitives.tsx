@@ -177,6 +177,15 @@ const MODULE_COLORS = {
     ink: 'text-module-finance',
     content: 'text-module-finance-content',
   },
+  // The people who do the work (docs/149). A deep rust brown — the one hue
+  // family the palette had never used, and deliberately far from commerce's
+  // orange (L 31% against 66%) so the two never read as the same module at 16px.
+  staff: {
+    color: 'var(--color-module-staff)',
+    bg: 'bg-module-staff',
+    ink: 'text-module-staff',
+    content: 'text-module-staff-content',
+  },
 } as const;
 
 export type MarketingModule = keyof typeof MODULE_COLORS;

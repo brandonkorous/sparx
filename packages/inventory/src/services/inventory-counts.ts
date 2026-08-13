@@ -31,6 +31,12 @@ import {
 } from './inventory-count-shared';
 import type { InventoryCountDetail, InventoryCountRow } from './inventory-count-shared';
 
+/** How many items an opening count will put on one sheet before refusing.
+ *  A count of twenty thousand lines is not a count, it is a week — and offering
+ *  it as a single step of a thirty-minute setup would be a promise the product
+ *  cannot keep. */
+const OPENING_COUNT_CAP = 10_000;
+
 // ─── Queries ───────────────────────────────────────────────────────────────────
 
 export async function listInventoryCounts(
@@ -196,6 +202,38 @@ async function buildInitialLines(
       binId: l.binId,
       expected: l.onHand,
     }));
+  }
+
+  // ── The opening balance (docs/146 Phase 11.4) ──
+  //
+  // Seeded from the CATALOGUE, not from the levels. On day one there may be no
+  // levels at all — that is precisely the state an opening count exists to end —
+  // so seeding from levels would produce an empty sheet for the one count where
+  // an empty sheet is guaranteed to be wrong.
+  if (input.type === 'opening') {
+    const variants = await tx.productVariant.findMany({
+      where: { deletedAt: null },
+      select: { id: true },
+      // One more than the cap, so the refusal below is triggered by knowing
+      // there are more rather than by having exactly the cap.
+      take: OPENING_COUNT_CAP + 1,
+      orderBy: { sku: 'asc' },
+    });
+    if (variants.length > OPENING_COUNT_CAP) {
+      throw new InventoryValidationError(
+        `An opening count covers everything you sell, and you have more than ${OPENING_COUNT_CAP.toLocaleString()} items. Count one area at a time instead — import your quantities, then count the fast movers first.`,
+        [{ field: 'type', message: 'catalogue too large for a single opening count' }]
+      );
+    }
+    const levels = await tx.inventoryLevel.findMany({
+      where: { warehouseId: input.warehouseId },
+      select: { variantId: true, onHand: true },
+    });
+    const onHand = new Map(levels.map((l) => [l.variantId, l.onHand]));
+    // Expected 0 for an item with no level yet is a real expectation, not an
+    // absence: nobody has ever recorded a unit of it here, so zero is what the
+    // system genuinely believes.
+    return variants.map((v) => ({ variantId: v.id, expected: onHand.get(v.id) ?? 0 }));
   }
 
   if (input.type === 'full') {

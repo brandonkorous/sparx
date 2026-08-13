@@ -45,6 +45,11 @@ export interface InventoryFixture {
   productId: string;
   variantId: string;
   warehouseId: string;
+  /** The generated SKU and location code. Exposed because the import tests
+   *  build a CSV a person would upload, and a file that names ids rather than
+   *  codes is not the file anybody has. */
+  sku: string;
+  warehouseCode: string;
 }
 
 /** Create a product + one variant + an active warehouse the ledger can move
@@ -78,6 +83,12 @@ export async function createInventoryFixture(tenantId: string): Promise<Inventor
         isDefault: true,
       },
     });
-    return { productId: product.id, variantId: variant.id, warehouseId: warehouse.id };
+    return {
+      productId: product.id,
+      variantId: variant.id,
+      warehouseId: warehouse.id,
+      sku: variant.sku,
+      warehouseCode: warehouse.code,
+    };
   });
 }

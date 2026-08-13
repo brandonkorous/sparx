@@ -9,6 +9,7 @@
 // convention is what lets every caller pass the result straight to
 // `applyMovement({ binId })` without first asking whether bins are on.
 
+import { withTenant } from '@sparx/db';
 import type { TxClient } from '@sparx/db';
 
 import { InventoryValidationError } from '../errors';
@@ -17,15 +18,31 @@ import type { ServiceContext } from '../errors';
 /**
  * Find a location's platform-provisioned shelf of a given kind.
  *
- * `quarantine` and `damaged` are looked up by TYPE rather than by the literal
- * code, because a tenant is allowed to rename them — and code that hunts for the
- * string 'DAMAGED' breaks silently the moment someone calls it "Write-offs".
- * Returns null when the location does not use bins.
+ * `quarantine`, `damaged` and `repair` are looked up by TYPE rather than by the
+ * literal code, because a tenant is allowed to rename them — and code that hunts
+ * for the string 'DAMAGED' breaks silently the moment someone calls it
+ * "Write-offs". Returns null when the location does not use bins.
  */
+/**
+ * The public form of {@link systemBinFor} — opens its own tenant transaction.
+ *
+ * For callers outside the inventory module (returns disposition in
+ * `@sparx/commerce`) that need to know which shelf a kind of goods belongs on
+ * before they call `adjust`. Returns null on a location that does not use
+ * shelves, which the caller treats as "no shelf named, let the ledger decide".
+ */
+export async function resolveSystemBin(
+  ctx: ServiceContext,
+  warehouseId: string,
+  type: 'quarantine' | 'damaged' | 'repair'
+): Promise<string | null> {
+  return withTenant(ctx, (tx) => systemBinFor(tx, warehouseId, type));
+}
+
 export async function systemBinFor(
   tx: TxClient,
   warehouseId: string,
-  type: 'quarantine' | 'damaged'
+  type: 'quarantine' | 'damaged' | 'repair'
 ): Promise<string | null> {
   const warehouse = await tx.warehouse.findFirst({
     where: { id: warehouseId },

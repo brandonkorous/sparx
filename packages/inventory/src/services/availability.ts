@@ -7,15 +7,31 @@
 // UNTRACKED: availability is unbounded and the variant is always in stock — the
 // reserve/commit/decrement seam degrades to a no-op. Stock tracking switches on
 // only with the module (which, per §7, rides free with Commerce/B2B). When it's
-// ON, availability is the real ledger rollup — Σ max(0, onHand − allocated) across
-// every warehouse — and `inventoryPolicy` governs whether a zero-available variant
-// still sells (`continue`/`preorder`) or hides (`deny`).
+// ON, availability is the real ledger rollup — Σ max(0, onHand − allocated −
+// buffer − unsellable) across every warehouse — and `inventoryPolicy` governs
+// whether a zero-available variant still sells (`continue`/`preorder`) or hides
+// (`deny`).
+//
+// Ownership is deliberately NOT a term in that sum (docs/146 Phase 9.5).
+// Consigned stock is somebody else's asset and entirely sellable — being able to
+// sell it is the whole reason to hold it — so it counts here and is excluded
+// from valuation instead. The asymmetry is the feature.
 
 export interface AvailabilityLevel {
   onHand: number;
   allocated: number;
   /** Units withheld from sale at this level (docs/28 §5.3 oversell guard). 0 when absent. */
   safetyBuffer?: number;
+  /** Units physically here but on a shelf nothing may be sold from — quarantine,
+   *  damaged, awaiting repair (docs/146 Phase 9.7). 0 when absent, and 0 for
+   *  every location that does not use shelves, which is correct: with no shelves
+   *  there is nowhere unsellable to be.
+   *
+   *  Netting this out is what makes a disposition MEAN something. Without it,
+   *  routing a returned item to quarantine moves it on a screen and leaves it on
+   *  sale — the on-hand total counts the whole location and availability
+   *  subtracts only what is allocated. */
+  unsellableOnHand?: number;
 }
 
 export interface VariantAvailability {
@@ -39,7 +55,8 @@ export function computeAvailability(
     return { available: null, inStock: true, tracked: false };
   }
   const available = levels.reduce(
-    (sum, l) => sum + Math.max(0, l.onHand - l.allocated - (l.safetyBuffer ?? 0)),
+    (sum, l) =>
+      sum + Math.max(0, l.onHand - l.allocated - (l.safetyBuffer ?? 0) - (l.unsellableOnHand ?? 0)),
     0
   );
   return {

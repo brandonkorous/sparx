@@ -20,6 +20,7 @@ import {
   Boxes,
   Building2,
   CalendarClock,
+  ContactRound,
   FileText,
   MessagesSquare,
   PiggyBank,
@@ -193,9 +194,19 @@ export const MODULES: ModuleEntry[] = [
       'Track every cost — parts, wages, rent, subscriptions — against what came in, and see which jobs actually made money. Exports clean to QuickBooks, Sage 50 or your accountant. Free with Commerce or B2B.',
     price: 29,
     includedWith: ['Commerce', 'B2B'],
-    // No `href` yet — /finance is not built, same as invoicing / inventory /
-    // chat. The tile still appears everywhere modules are enumerated; it just
-    // carries no "Learn" link until the page exists.
+    href: '/finance',
+  },
+  {
+    id: 'staff',
+    label: 'Team',
+    title: 'What an hour of work actually costs.',
+    // NOT payroll, and the description says so before someone buys it expecting
+    // one. What it IS: the record that makes the wages line in Finance a derived
+    // number instead of one you type in and hope.
+    description:
+      'Hours, pay rates, shifts, time off and licence renewals — so the biggest cost in your business stops being a guess. Not payroll: sparx records what people worked and what it cost, and hands the hours to whoever runs yours.',
+    price: 29,
+    href: '/staff',
   },
   {
     id: 'social',
@@ -259,6 +270,7 @@ export const MODULE_COLOR: Record<MarketingModule, string> = {
   automations: 'module-automations',
   social: 'module-social',
   finance: 'module-finance',
+  staff: 'module-staff',
 };
 
 export const MODULE_BACKGROUND_COLOR: Record<MarketingModule, string> = {
@@ -278,6 +290,7 @@ export const MODULE_BACKGROUND_COLOR: Record<MarketingModule, string> = {
   automations: 'bg-module-automations',
   social: 'bg-module-social',
   finance: 'bg-module-finance',
+  staff: 'bg-module-staff',
 };
 
 /**
@@ -309,6 +322,7 @@ export const MODULE_CONTENT_COLOR: Record<MarketingModule, string> = {
   automations: 'text-module-automations-content',
   social: 'text-module-social-content',
   finance: 'text-module-finance-content',
+  staff: 'text-module-staff-content',
 };
 
 export const MODULE_BORDER_COLOR: Record<MarketingModule, string> = {
@@ -328,6 +342,7 @@ export const MODULE_BORDER_COLOR: Record<MarketingModule, string> = {
   automations: 'border-module-automations',
   social: 'border-module-social',
   finance: 'border-module-finance',
+  staff: 'border-module-staff',
 };
 
 /** Module glyphs — the SAME Lucide icons the dashboard sidebar uses (each
@@ -352,4 +367,5 @@ export const MODULE_ICON: Record<MarketingModule, LucideIcon> = {
   automations: Workflow,
   social: Share2,
   finance: PiggyBank,
+  staff: ContactRound,
 };

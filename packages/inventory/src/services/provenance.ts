@@ -225,7 +225,7 @@ export async function stockProvenance(
       resolveStalenessPenaltyOnTx(tx, ctx, input),
     ]);
 
-    const sellable = level.onHand - level.allocated - level.safetyBuffer;
+    const sellable = level.onHand - level.allocated - level.safetyBuffer - level.unsellableOnHand;
 
     let channel: StockProvenance['channel'] = null;
     if (opts.channel) {
@@ -240,7 +240,12 @@ export async function stockProvenance(
         buffer: resolved.buffer,
         bufferSource: resolved.source,
         stalenessExtraBuffer: staleness.extraBuffer,
-        sellable: level.onHand - level.allocated - resolved.buffer - staleness.extraBuffer,
+        sellable:
+          level.onHand -
+          level.allocated -
+          resolved.buffer -
+          staleness.extraBuffer -
+          level.unsellableOnHand,
         channelsPaused: staleness.pauseChannels,
       };
     }

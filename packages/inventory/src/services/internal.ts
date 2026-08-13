@@ -70,7 +70,13 @@ export async function syncProductInStock(
     tx.inventoryLevel.findMany({
       where: { variant: { productId: variant.productId, deletedAt: null } },
       // safetyBuffer + reorderPoint feed the low-stock predicate below.
-      select: { onHand: true, allocated: true, safetyBuffer: true, reorderPoint: true },
+      select: {
+        onHand: true,
+        allocated: true,
+        safetyBuffer: true,
+        unsellableOnHand: true,
+        reorderPoint: true,
+      },
     }),
     tx.productVariant.count({
       where: {
@@ -80,7 +86,7 @@ export async function syncProductInStock(
       },
     }),
   ]);
-  const total = levels.reduce((acc, l) => acc + (l.onHand - l.allocated), 0);
+  const total = levels.reduce((acc, l) => acc + (l.onHand - l.allocated - l.unsellableOnHand), 0);
   const inStock = total > 0 || sellableWithoutStock > 0;
   // "Low stock" = still sellable, but at least one level has crossed its reorder
   // point per the module's ONE canonical predicate (isLowStock). A level with no

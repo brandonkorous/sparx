@@ -46,6 +46,7 @@ import {
 import { barcodeSvg, encodeBarcode } from '@sparx/commerce-schemas';
 import { Barcode as BarcodeIcon, Printer, Sparkles } from 'lucide-react';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import { PrintSheet } from '../../components/print-sheet';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { plural } from './data';
 import { useBarcodes, useGenerateBarcodes, type Barcode } from './scan-data';
@@ -359,10 +360,9 @@ export function ProductLabelsSurface({ ctx }: { ctx: SurfaceContext }) {
               </Alert>
             ) : null}
 
-            {/* The sheet. Fixed white and black on purpose: a printed label has
-                no theme, and previewing it in the app's colours would show
-                something the printer will never produce. */}
-            <div className="flex flex-wrap gap-2 bg-white p-2">
+            {/* The sheet. `PrintSheet` is what keeps the workbench itself off the
+                paper — see components/print-sheet.tsx. */}
+            <PrintSheet>
               {rows.map((row, index) => (
                 <LabelCell
                   key={`${row.id}-${index}`}
@@ -371,7 +371,7 @@ export function ProductLabelsSurface({ ctx }: { ctx: SurfaceContext }) {
                   preset={presetSpec}
                 />
               ))}
-            </div>
+            </PrintSheet>
 
             <Text className="text-sm print:hidden">
               Set your printer to actual size — scaling a barcode to fit the page narrows the bars

@@ -14,7 +14,7 @@ import { ArticleJsonLd } from '@/components/article-json-ld';
 // renderer — the silica host reads the same record shape, so the name outlived the tier.
 import { postToBuilderRecord } from '@/lib/builder-data';
 import { getPublishedSilicaCollection } from '@/lib/silica';
-import { buildSilicaHost } from '@/lib/silica-data';
+import { buildSilicaHost, silicaSiteIdentity } from '@/lib/silica-data';
 import { SilicaFunctionalBody } from '@/components/silica-chrome';
 import { SiteHostRenderer } from '@/components/silica-host-cores';
 import { getBlogPostBySlug } from '@/lib/content';
@@ -117,6 +117,9 @@ export default async function BlogPostPage({ params, searchParams }: BlogPagePro
       record: { key: 'blog_post', value: postToBuilderRecord(post, site.slug) },
       currency: site.commerce.defaultCurrency,
       locale: site.commerce.defaultLocale,
+      // A post template binds `site.*` for the same reason every other route does
+      // — the byline block and any "written by <site name>" line resolve from it.
+      site: silicaSiteIdentity(site),
     });
     // The FUNCTIONAL walk, not the HTML-string one: a post template's whole point is
     // showing the written body, and the body is a rich-text document no binding can

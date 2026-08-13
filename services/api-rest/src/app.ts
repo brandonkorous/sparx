@@ -58,6 +58,7 @@ import {
   SlotUnavailableError,
 } from '@sparx/scheduling';
 import { FinanceError } from '@sparx/finance';
+import { StaffError } from '@sparx/staff';
 import { createAuthPlugin } from '@sparx/api-core/auth';
 import { createErrorsPlugin, type ErrorEnvelope } from '@sparx/api-core/errors-plugin';
 import { env } from './env.js';
@@ -150,6 +151,7 @@ import crmRoutes from './routes/v1/crm/index.js';
 import orderRoutes from './routes/v1/orders.js';
 import invoicingRoutes from './routes/v1/invoicing/index.js';
 import financeRoutes from './routes/v1/finance/index.js';
+import staffRoutes from './routes/v1/staff/index.js';
 import b2bRoutes from './routes/v1/b2b/index.js';
 import chatRoutes from './routes/v1/chat/index.js';
 import publicChatRoutes from './routes/v1/public/chat.js';
@@ -160,6 +162,7 @@ import analyticsRoutes from './routes/v1/analytics/index.js';
 import formsRoutes from './routes/v1/forms.js';
 import commerceRoutes from './routes/v1/commerce/index.js';
 import presetRoutes from './routes/v1/presets.js';
+import savedViewRoutes from './routes/v1/saved-views.js';
 import industryStarterRoutes from './routes/v1/industry-starters.js';
 import sampleDataRoutes from './routes/v1/sample-data.js';
 import dropshipRoutes from './routes/v1/dropship/index.js';
@@ -737,6 +740,39 @@ function financeErrorMapper(
   return reply.code(status).send(body);
 }
 
+// Staff errors (@sparx/staff) — same envelope vocabulary again.
+//
+// Three are 409s, and they share a shape: the request is fine, the WORLD is in a
+// state that has to change first, and the message already says which change.
+// Overlapping a pay rate wants the existing window ended; editing approved time
+// wants it reopened; deriving wages with no finance module wants finance turned
+// on. A 422 would tell the caller to fix a field, and there is no field to fix.
+//
+// Everything else falls through to 422 — a well-formed request the module cannot
+// honour (clocking in twice, clocking out when nobody is clocked in, a shift
+// window that inverts).
+function staffErrorMapper(
+  err: unknown,
+  request: { id: string },
+  reply: FastifyReply
+): FastifyReply | undefined {
+  if (!(err instanceof StaffError)) return undefined;
+
+  const status = err.code.endsWith('_NOT_FOUND')
+    ? 404
+    : err.code === 'STAFF_PAY_RATE_OVERLAP' ||
+        err.code === 'STAFF_TIME_APPROVED_LOCKED' ||
+        err.code === 'STAFF_WAGES_CATEGORY_MISSING'
+      ? 409
+      : 422;
+
+  const body: ErrorEnvelope = {
+    success: false,
+    error: { code: err.code, message: err.message, request_id: request.id },
+  };
+  return reply.code(status).send(body);
+}
+
 export async function createApp(): Promise<FastifyInstance> {
   // Populate the integration-framework registry + wire the SecretReader
   // before any route can call providerService.runPayment*.
@@ -786,6 +822,7 @@ export async function createApp(): Promise<FastifyInstance> {
         automationErrorMapper,
         schedulingErrorMapper,
         financeErrorMapper,
+        staffErrorMapper,
       ],
     })
   );
@@ -935,6 +972,7 @@ export async function createApp(): Promise<FastifyInstance> {
   await app.register(orderRoutes);
   await app.register(invoicingRoutes);
   await app.register(financeRoutes);
+  await app.register(staffRoutes);
   await app.register(b2bRoutes);
   await app.register(chatRoutes);
   await app.register(pushRoutes);
@@ -944,6 +982,10 @@ export async function createApp(): Promise<FastifyInstance> {
   await app.register(formsRoutes);
   await app.register(commerceRoutes);
   await app.register(presetRoutes);
+  // Platform list persistence — a named snapshot of a list's query params, for
+  // any list in any app (docs/146 Phase 10.2). CRM keeps its own; everything
+  // else shares this.
+  await app.register(savedViewRoutes);
   await app.register(industryStarterRoutes);
   await app.register(sampleDataRoutes);
   await app.register(dropshipRoutes);

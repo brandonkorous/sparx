@@ -480,4 +480,34 @@ export const TemplateSendSchema = z.discriminatedUnion('template', [
       reconnectUrl: z.string().url(),
     }),
   }),
+  // A scheduled inventory report (docs/146 Phase 10.4). `lines` carries the
+  // headline figures already formatted by the report, and `isGap` marks the ones
+  // that report something the platform could NOT measure — the template sets
+  // those apart rather than listing them among the statistics.
+  z.object({
+    template: z.literal('inventory-report'),
+    ...TemplateMeta,
+    props: z.object({
+      businessName: z.string().min(1),
+      scheduleName: z.string().min(1),
+      reportLabel: z.string().min(1),
+      reportDescription: z.string().optional(),
+      periodLabel: z.string().optional(),
+      lines: z
+        .array(
+          z.object({
+            label: z.string().min(1),
+            value: z.string(),
+            isGap: z.boolean().optional(),
+          })
+        )
+        .min(1),
+      rowCount: z.number().int().nonnegative().nullable().optional(),
+      attachmentName: z.string().nullable().optional(),
+      attachmentTooLarge: z.boolean().optional(),
+      // `.min(1)` not `.url()` — this can be a bare path, and a url() here would
+      // fail the gate silently and drop the send.
+      reportUrl: z.string().min(1),
+    }),
+  }),
 ]);

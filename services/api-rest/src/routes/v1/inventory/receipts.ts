@@ -101,6 +101,74 @@ const inventoryReceiptRoutes: FastifyPluginAsync = async (app) => {
       )
     );
   });
+
+  // ── Receipt → supplier bill (docs/146 Phase 10.10) ─────────────────────
+  //
+  // The path for a business with no accounting package: the delivery has just
+  // been booked in, the invoice is in the driver's hand, and entering it should
+  // be typing the invoice number.
+  //
+  // The draft is a READ, deliberately, and the operator confirms it against the
+  // paper before anything is written. A bill created straight from the receipt
+  // would match the receipt perfectly by construction, and a three-way match
+  // that cannot fail is not a check.
+  app.get('/v1/inventory/receipts/:id/bill-draft', async (request, reply) => {
+    await requireInventoryModule(request);
+    // Costs are the whole content of a bill draft, so this is not a scanner
+    // surface — `editor` and up, and `redactCosts` would empty it anyway.
+    requireRole(request, 'editor');
+    const { id } = PathId.parse(request.params);
+    return reply.send(
+      ok(await inventoryService.draftBillFromReceipt(toInventoryContext(request), id))
+    );
+  });
+
+  app.post('/v1/inventory/receipts/:id/bill', async (request, reply) => {
+    await requireInventoryModule(request);
+    requireRole(request, 'editor');
+    const { id } = PathId.parse(request.params);
+    const body = BillFromReceiptBody.parse(request.body);
+    return reply.status(201).send(
+      ok(
+        await inventoryService.createSupplierBillFromReceipt(toInventoryContext(request), {
+          goodsReceiptId: id,
+          number: body.number,
+          ...(body.billed_at ? { billedAt: body.billed_at } : {}),
+          ...(body.due_at ? { dueAt: body.due_at } : {}),
+          ...(body.tax_cents !== undefined ? { taxCents: body.tax_cents } : {}),
+          ...(body.shipping_cents !== undefined ? { shippingCents: body.shipping_cents } : {}),
+          ...(body.notes ? { notes: body.notes } : {}),
+          ...(body.lines ? { lines: body.lines } : {}),
+        })
+      )
+    );
+  });
 };
+
+/** What the operator corrected the draft to. `lines` omitted means "the delivery
+ *  as recorded", which is the common case and the reason this is short. */
+const BillFromReceiptBody = z.object({
+  number: z.string().trim().min(1).max(40),
+  billed_at: z.string().datetime().optional(),
+  due_at: z.string().datetime().optional(),
+  tax_cents: z.number().int().nonnegative().max(1_000_000_000).optional(),
+  shipping_cents: z.number().int().nonnegative().max(1_000_000_000).optional(),
+  notes: z.string().max(2000).optional(),
+  lines: z
+    .array(
+      z.object({
+        purchaseOrderLineId: z.string().uuid().optional(),
+        variantId: z.string().uuid().optional(),
+        description: z.string().trim().max(255).optional(),
+        quantity: z.number().int().positive().max(10_000_000),
+        unitCostCents: z.number().int().nonnegative().max(1_000_000_000),
+        amountCents: z.number().int().max(1_000_000_000).optional(),
+        uomCode: z.string().trim().min(1).max(12).optional(),
+      })
+    )
+    .min(1)
+    .max(500)
+    .optional(),
+});
 
 export default inventoryReceiptRoutes;

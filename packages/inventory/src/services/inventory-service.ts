@@ -59,6 +59,32 @@ export type {
   ReorderAnalysisRow,
 } from './analytics';
 
+// ─── Performance reporting (docs/146 Phase 10.1) ──────────────────────
+// The five ratios the platform held every input for and could not state:
+// sell-through, GMROI, fill rate, stock-out frequency, and where the stock went.
+// Every one of them can refuse to answer — each report carries the count of what
+// it could not measure, because a ratio hides its own inputs and a comfortable
+// 100% is indistinguishable from nobody looking.
+export {
+  sellThroughReport,
+  gmroiReport,
+  fillRateReport,
+  stockoutFrequencyReport,
+  movementSummaryReport,
+} from './performance-reports';
+export type {
+  PerformanceFilter,
+  SellThroughReport,
+  SellThroughRow,
+  GmroiReport,
+  GmroiRow,
+  FillRateReport,
+  FillRateVariantRow,
+  StockoutFrequencyReport,
+  StockoutFrequencyRow,
+  MovementSummaryReport,
+} from './performance-reports';
+
 // ─── B2B inventory consumer (docs/100 P6d) ────────────────────────────
 // Account-scoped availability + fleet/work-order holds (a hold is an account-
 // scoped reservation with a work-order ref). B2B consumes the master (docs/99 §4.0).
@@ -400,7 +426,7 @@ export type {
 export { applyBinMovement, mirrorMovementToBins, lockBinOnHand, defaultBinFor } from './bin-ledger';
 export type { BinMovementInput, BinMovementResult } from './bin-ledger';
 
-export { systemBinFor, resolvePutAwayBin } from './bin-routing';
+export { systemBinFor, resolveSystemBin, resolvePutAwayBin } from './bin-routing';
 
 // ─── Barcodes + scanning (docs/146 Phase 3) ───────────────────────────
 // The registry that makes a scan resolve to exactly one thing, the minter for
@@ -827,6 +853,12 @@ export {
   disputeSupplierBill,
   recordBillPayment,
   cancelSupplierBill,
+  // Receipt → bill (docs/146 Phase 10.10) — the path for a business with no
+  // accounting package. The draft is returned for checking against the paper
+  // BEFORE anything is written: a bill created straight from the receipt would
+  // match it perfectly by construction, and a match that cannot fail is not one.
+  draftBillFromReceipt,
+  createSupplierBillFromReceipt,
 } from './supplier-bills';
 export type {
   SupplierBillRow,
@@ -836,4 +868,230 @@ export type {
   BillMatch,
   SupplierBillsReport,
   ListSupplierBillsFilter,
+  BillDraft,
+  BillDraftLine,
+  CreateBillFromReceiptInput,
 } from './supplier-bills';
+
+// ─── Demand-side commitments (docs/146 Phase 9) ───────────────────────
+// The backorder queue: who is owed stock that does not exist yet, in what
+// order, and what they were told. `recordBackorderOnTx` is called by the sell
+// path at commit; `allocateBackordersOnTx` by every inbound path. Nothing here
+// writes a level — the hold already exists in `allocated`.
+export {
+  listBackorders,
+  getBackorder,
+  updateBackorder,
+  cancelBackorder,
+  markBackorderNotified,
+  markBackordersFulfilled,
+  refreshBackorderPromises,
+  getVariantCommitmentSummary,
+  recordBackorderOnTx,
+  allocateBackordersOnTx,
+  emitBackorderAllocations,
+  resolvePromiseForVariant,
+} from './backorders';
+export type {
+  BackorderRow,
+  BackorderDetail,
+  BackorderAllocationRow,
+  ListBackordersResult,
+  ListBackordersParams,
+  BackorderFilled,
+  BackorderSweepResult,
+  VariantCommitmentSummary,
+} from './backorders';
+
+// Preorder windows — turning `inventoryPolicy = 'preorder'` from a synonym for
+// "sell it anyway" into a bounded, dated offer.
+export {
+  listPreorderWindows,
+  getPreorderWindow,
+  getLivePreorderWindow,
+  openPreorderWindow,
+  updatePreorderWindow,
+  closePreorderWindow,
+  syncPreorderWindowStatuses,
+  consumePreorderOnTx,
+  assertPreorderHeadroomOnTx,
+} from './preorders';
+export type {
+  PreorderWindowRow,
+  ListPreorderWindowsFilter,
+  PreorderSweepResult,
+} from './preorders';
+
+// The stock-ownership axis — which of the goods in the building are actually
+// yours. Changes exactly one thing: whether they count toward valuation.
+export { listNonOwnedStock, setStockOwnership } from './stock-ownership';
+export type { OwnedStockRow, ListOwnedStockFilter } from './stock-ownership';
+
+// Consignment settlement — paying the owner for what sold from their stock,
+// one closed period at a time.
+export {
+  listConsignmentSettlements,
+  getConsignmentSettlement,
+  createConsignmentSettlement,
+  refreshConsignmentSettlement,
+  closeConsignmentSettlement,
+  invoiceConsignmentSettlement,
+  markConsignmentSettlementPaid,
+  cancelConsignmentSettlement,
+  listUnsettledConsignment,
+} from './consignment';
+export type {
+  ConsignmentSettlementRow,
+  ConsignmentSettlementDetail,
+  ConsignmentSettlementLineRow,
+  ListConsignmentSettlementsFilter,
+  UnsettledConsignmentRow,
+} from './consignment';
+
+// Expiring stock — the money that goes off. The report, the two things you can
+// do about it, and the once-per-lot alert.
+export {
+  listExpiringStock,
+  markdownExpiringLot,
+  writeOffExpiringLot,
+  sweepExpiringLots,
+  rearmExpiryAlert,
+} from './expiry';
+export type {
+  ExpiringLotRow,
+  ExpiringStockReport,
+  ExpiringStockFilter,
+  ExpirySweepResult,
+} from './expiry';
+
+// ─── Reporting, portability + the accounting handoff (docs/146 Phase 10) ──
+//
+// The registry is the list of reports. The API iterates it, the scheduler
+// resolves through it, and the workbench picker is served from it — so a report
+// added to one and forgotten in the others is not a thing that can happen.
+export { REPORTS, reportCatalog, reportDefinition, runReport } from './report-registry';
+export type {
+  ReportDefinition,
+  ReportCatalogEntry,
+  ReportRun,
+  SummaryLine,
+} from './report-registry';
+
+// A standing instruction to email a report, and the evidence that it went. A
+// report nobody opens is a report that does not exist, and the only reliable way
+// to be read is to arrive.
+export {
+  listReportSchedules,
+  getReportSchedule,
+  createReportSchedule,
+  updateReportSchedule,
+  deleteReportSchedule,
+  runReportSchedule,
+  sweepDueReports,
+} from './report-schedules';
+export type {
+  ReportScheduleRow,
+  ReportDeliveryRow,
+  DeliveryResult as ReportDeliveryResult,
+  ReportSweepResult,
+} from './report-schedules';
+
+// Stock versus the books. sparx keeps no ledger, so the inventory account's
+// balance is something it must be TOLD — and until it is told, the unexplained
+// difference is NULL rather than zero.
+export { glReconciliationReport, recordGlSnapshot, listGlSnapshots } from './gl-reconciliation';
+export type {
+  GlReconciliationReport,
+  GlReconciliationFilter,
+  ReconciliationLine,
+  ReconciliationLineKind,
+  GlSnapshotRow,
+  RecordGlSnapshotInput,
+} from './gl-reconciliation';
+
+// A spreadsheet of counts, turned into stock movements — planned first, applied
+// second, and reversible as a unit afterwards.
+export {
+  planAdjustmentImport,
+  resolveImportRows,
+  applyImportBatch,
+  discardImportBatch,
+  reverseImportBatch,
+  listImportBatches,
+  getImportBatch,
+  adjustmentTemplate,
+} from './adjustment-import';
+export type {
+  PlanImportInput,
+  ImportBatchRow,
+  ImportBatchDetail,
+  ApplyImportResult,
+  ListImportBatchesFilter,
+} from './adjustment-import';
+
+// ─── Onboarding: beating the spreadsheet (docs/146 Phase 11) ──
+//
+// The first thirty minutes. Every export here is part of one argument: that
+// arriving with a spreadsheet should take half an hour rather than a fortnight,
+// and that a guess about somebody else's data must always show its confidence.
+
+// The guided setup and its clock. Two honest numbers — hands-on time and how
+// many sittings — because one would have to count somebody's lunch or discard it.
+export { getSetupProgress, completeSetupStep, dismissSetup, noteSetupStep } from './setup-progress';
+export type { SetupProgressView, SetupStepView, SetupReadiness } from './setup-progress';
+
+// Reading somebody else's headings: the preview, the saved mapping that makes
+// the second import one click, and the recipes for the files people arrive with.
+export {
+  listImportProfiles,
+  getImportProfile,
+  createImportProfile,
+  updateImportProfile,
+  deleteImportProfile,
+  markProfileUsed,
+  previewImport,
+  listMigrationRecipes,
+} from './import-profiles';
+export type { ImportProfileRow, ImportPreview, ImportPreviewInput } from './import-profiles';
+
+// The count that closes setup, so day one starts from evidence rather than an
+// assumption. Its movements post as `opening`, not `recount`.
+export { openingBalanceStatus, startOpeningBalance } from './opening-balance';
+export type { OpeningBalanceStatus } from './opening-balance';
+
+// Stock as a spreadsheet: inline edit, paste a column, act on a selection. The
+// quantity edit sends a TARGET and the server computes the delta under the row
+// lock, so a sale landing while the grid was open is reconciled rather than lost.
+export { stockGrid, saveStockGrid, stockGridCsv } from './stock-grid';
+export type {
+  StockGridRow,
+  StockGridFilter,
+  StockGridPage,
+  StockGridSaveResult,
+} from './stock-grid';
+
+// The tenant's own columns. One coercion, one merge, one place a field's type is
+// a promise rather than a hope.
+export {
+  listCustomFields,
+  createCustomField,
+  updateCustomField,
+  deleteCustomField,
+  getCustomFieldValues,
+  setCustomFieldValues,
+  loadCustomFieldDefinitions,
+  applyCustomFields,
+} from './custom-fields';
+export type { CustomFieldRowOut, ListCustomFieldsFilter } from './custom-fields';
+
+// The inventory journal (docs/146 Phase 10.7–10.8). Computed from the ledger,
+// handed over, never stored — sparx keeps no books and this does not change
+// that. The arithmetic is pure and shared, so the entry QuickBooks receives, the
+// entry Xero receives and the entry on screen are the same object.
+export {
+  inventoryJournalForPeriod,
+  previewInventoryJournal,
+  journalReference,
+  journalMemo,
+} from './accounting-journal';
+export type { JournalPeriod, JournalPreview } from './accounting-journal';

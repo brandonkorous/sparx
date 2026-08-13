@@ -319,6 +319,44 @@ export interface SilicaSiteData {
   logoDarkUrl?: string | null;
   tagline?: string | null;
   socials?: { platform: string; url: string }[];
+  /** How a customer reaches the business — set once in Site settings, bound by
+   *  every starter site's Contact page. Each field null when the business has
+   *  not filled it in. */
+  contact?: { phone?: string | null; email?: string | null; address?: string | null };
+}
+
+/** A phone number as a dialable `tel:` URI — `+` and digits only, since that is
+ *  what a dialer parses. Null in, null out (an unset number must not become the
+ *  string "tel:"), and a number with no digits at all is treated as unset. */
+function telHref(phone: string | null): string | null {
+  if (!phone) return null;
+  const digits = phone.replace(/[^\d+]/g, '').replace(/(?!^)\+/g, '');
+  return /\d/.test(digits) ? `tel:${digits}` : null;
+}
+
+/** The identity payload every render path supplies, built from the resolved site
+ *  in ONE place.
+ *
+ *  It was the layout's alone, so `site.*` resolved in the navbar and footer and
+ *  NOWHERE else — a Contact page binding `site.identity.phone` got an absent
+ *  source. Since the whole point of storing contact details once is that a page
+ *  binds them, every route that renders a silica tree passes this. */
+export function silicaSiteIdentity(site: {
+  name: string;
+  slug: string;
+  tagline: string | null;
+  socials: { platform: string; url: string }[];
+  contact: { phone: string | null; email: string | null; address: string | null };
+  theme: { logoMediaId?: string | null; logoDarkMediaId?: string | null } | null;
+}): SilicaSiteData {
+  return {
+    name: site.name,
+    tagline: site.tagline,
+    logoUrl: mediaUrl(site.theme?.logoMediaId ?? null, site.slug),
+    logoDarkUrl: mediaUrl(site.theme?.logoDarkMediaId ?? null, site.slug),
+    socials: site.socials,
+    contact: site.contact,
+  };
 }
 
 function siteRoot(site: SilicaSiteData): DataSources {
@@ -331,6 +369,20 @@ function siteRoot(site: SilicaSiteData): DataSources {
     tagline: site.tagline ?? null,
     logo: site.logoUrl ? { url: site.logoUrl, alt: site.name } : null,
     logoDark: site.logoDarkUrl ? { url: site.logoDarkUrl, alt: site.name } : null,
+    // Same null-not-'' rule as tagline, and it matters more here: a starter site
+    // authors "Call us" against `site.identity.phone`, and a blank would replace
+    // that with nothing rather than leaving the placeholder the owner still needs
+    // to see in order to know there is a number to fill in.
+    phone: site.contact?.phone ?? null,
+    email: site.contact?.email ?? null,
+    address: site.contact?.address ?? null,
+    // The LINK forms, composed here rather than in the tree, for the same reason
+    // price formatting is the host's job: an attribute binding fills a value
+    // verbatim (`bindAttr`) and cannot prefix it, so an authored tree has no way to
+    // turn "(555) 123-4567" into a dialable `tel:`. Stripping to `+` and digits is
+    // what makes it dialable — a `tel:` with spaces and brackets is not.
+    phoneHref: telHref(site.contact?.phone ?? null),
+    emailHref: site.contact?.email ? `mailto:${site.contact.email}` : null,
   });
   setAtPath(
     root,

@@ -165,6 +165,28 @@ export interface PublicProductVariant {
   available: number;
   /** True when stock is available OR the variant accepts back-orders. */
   inStock: boolean;
+  /** A live preorder offer, when the merchant is running one (docs/146 Phase
+   *  9.4). Null for the overwhelming majority of variants. */
+  preorder: PublicPreorderOffer | null;
+  /** The soonest date anybody waiting on this item has been promised it back
+   *  (docs/146 Phase 9.3). Null when nobody has been able to promise anything —
+   *  which is common, and is shown as "we will confirm a date" rather than as an
+   *  invented one or as silence. */
+  expectedBackAt: string | null;
+}
+
+export interface PublicPreorderOffer {
+  /** The date the customer is told. Null means TO BE CONFIRMED — a factory that
+   *  has not committed to a date is ordinary, and filling this field with a
+   *  guess turns a placeholder into a promise. */
+  availableAt: string | null;
+  /** The merchant's own words, shown alongside or instead of the date. */
+  availabilityNote: string | null;
+  isTakingOrders: boolean;
+  /** Null when uncapped — render NOTHING, never a number. */
+  remaining: number | null;
+  chargeUpFront: boolean;
+  blockedBy: string | null;
 }
 
 export interface PublicProductImage {

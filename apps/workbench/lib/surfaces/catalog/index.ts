@@ -37,6 +37,7 @@ import { EMAIL_SURFACES } from './email';
 import { SCHEDULING_SURFACES } from './scheduling';
 import { SOCIAL_SURFACES } from './social';
 import { FINANCE_SURFACES } from './finance';
+import { STAFF_SURFACES } from './staff';
 import { DROPSHIP_SURFACES } from './dropship';
 import { AUTOMATION_SURFACES } from './automations';
 import { SMALL_MODULE_SURFACES } from './small-modules';
@@ -62,6 +63,9 @@ registerSurfaces([
   ...SCHEDULING_SURFACES,
   ...SOCIAL_SURFACES,
   ...FINANCE_SURFACES,
+  // Your team — immediately after finance, because that is the relationship:
+  // staff is where the biggest number in the ledger comes from.
+  ...STAFF_SURFACES,
   // Dropshipping — its own module block (suppliers, catalog, orders, profit).
   ...DROPSHIP_SURFACES,
   // Automations — the cross-module rule engine (rules, runs, reporting).

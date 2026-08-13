@@ -19,6 +19,11 @@ import {
 import type { ServiceContext } from '../errors';
 import { publishInventoryEvent } from '../events';
 
+import {
+  allocateBackordersOnTx,
+  emitBackorderAllocations,
+  type BackorderFilled,
+} from './backorders';
 import { applyMovement, emitStockEvents, resolveActorType } from './ledger';
 import type { MovementResult } from './ledger';
 import { ensureInTransitWarehouse, loadTransferDetail } from './inventory-transfer-shared';
@@ -127,6 +132,7 @@ export async function receiveInventoryTransfer(
   const overrides = new Map((input.lines ?? []).map((l) => [l.lineId, l.receivedQuantity]));
   const inTransitId = await ensureInTransitWarehouse(ctx);
 
+  const filled: BackorderFilled[] = [];
   const events = await withTenant(ctx, async (tx) => {
     const transfer = await loadTransfer(tx, transferId);
     if (transfer.status !== 'in_transit') {
@@ -171,6 +177,21 @@ export async function receiveInventoryTransfer(
           delta: inbound.appliedDelta,
           reason: 'transfer_in',
         });
+
+        // Stock arriving is stock arriving (docs/146 Phase 9.2). A branch that
+        // moves units in from the main warehouse to cover a waiting customer is
+        // the everyday way a backorder gets cleared for a business with more
+        // than one location — and if only the purchasing path allocated, that
+        // customer would stay in the queue with the goods sitting behind them.
+        const allocation = await allocateBackordersOnTx(tx, ctx, {
+          variantId: line.variantId,
+          warehouseId: transfer.toWarehouseId,
+          unitsArrived: received,
+          sourceType: 'transfer',
+          sourceId: transferId,
+          movementId: inbound.movementId || null,
+        });
+        filled.push(...allocation.filled);
       }
       const shortfall = line.quantity - received;
       if (shortfall > 0) {
@@ -202,6 +223,7 @@ export async function receiveInventoryTransfer(
   });
 
   await emitLegEvents(ctx, events);
+  await emitBackorderAllocations(ctx, filled);
   await publishInventoryEvent({
     tenantId: ctx.tenantId,
     actorId: ctx.userId ?? null,

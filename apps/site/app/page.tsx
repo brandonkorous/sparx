@@ -7,7 +7,7 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 
 import { getPublishedSilicaHome, treeHasHostNode } from '@/lib/silica';
-import { buildSilicaHost, pageOutOfRange } from '@/lib/silica-data';
+import { buildSilicaHost, pageOutOfRange, silicaSiteIdentity } from '@/lib/silica-data';
 import { SilicaBody, SilicaFunctionalBody } from '@/components/silica-chrome';
 import { SiteHostRenderer } from '@/components/silica-host-cores';
 import { ogImageUrl } from '@/lib/og';
@@ -95,6 +95,9 @@ export default async function SiteRoot({ searchParams }: RootPageProps) {
     const { resolver, paging } = await buildSilicaHost(site.slug, silicaHome.root, {
       currency: site.commerce.defaultCurrency,
       locale: site.commerce.defaultLocale,
+      // The PAGE binds `site.*` too, not just the frame — a home page carries the
+      // business name, and a starter's contact band binds its phone and email.
+      site: silicaSiteIdentity(site),
       // Where `?page=` is read from. A home page carrying a product grid or a journal
       // index is paginated like any other, and without this it was permanently stuck
       // on the first 24 records with no way to say so.

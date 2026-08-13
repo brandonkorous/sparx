@@ -67,15 +67,15 @@ export const INCLUDED: { icon: LucideIcon; title: string; body: string }[] = [
 /** Three headline savings figures. */
 export const STATS: { value: string; suffix?: string; label: string }[] = [
   {
-    value: '$41,700',
+    value: '$42,100',
     suffix: '+/yr',
     label:
-      'Kept by running all thirteen capabilities as sparx instead of thirteen separate subscriptions.',
+      'Kept by running all fourteen capabilities as sparx instead of fourteen separate subscriptions.',
   },
   {
-    value: '13 → 1',
+    value: '14 → 1',
     label:
-      'Thirteen logins, renewal dates, and support queues collapse into a single monthly invoice.',
+      'Fourteen logins, renewal dates, and support queues collapse into a single monthly invoice.',
   },
   {
     value: '0%',
@@ -131,6 +131,11 @@ export const LEDGER: { key: string; name: string; price: string; alt: string; am
     alt: 'Expensify — Control, 3 seats',
     amt: '$54',
   },
+  // Priced against scheduling-plus-time-clock, which is what a nine-person
+  // business actually buys. NOT against a payroll bureau: sparx does not run
+  // payroll, and comparing itself to one would be the line on this page that
+  // makes an owner distrust every other line.
+  { key: 'staff', name: 'Team', price: '$29', alt: 'Homebase — Plus, one location', amt: '$60' },
 ];
 
 /** Two worked scenarios: separate-tools total vs. the sparx total, plus savings. */
@@ -151,16 +156,16 @@ export const SCENARIOS: {
   },
   {
     title: 'The full platform',
-    sub: 'All thirteen modules — Invoicing, Inventory & Finance included free',
-    separate: '$3,886/mo',
-    sparx: '$411/mo',
-    save: 'You keep $3,475/mo — about $41,700 a year',
+    sub: 'All fourteen modules — Invoicing, Inventory & Finance included free',
+    separate: '$3,946/mo',
+    sparx: '$440/mo',
+    save: 'You keep $3,506/mo — about $42,100 a year',
     featured: true,
   },
 ];
 
 export const LEDGER_FOOTNOTE =
-  'Comparison uses publicly listed 2026 monthly prices for representative growth-tier plans of the tools each module replaces — Webflow Premium, Shopify Advanced and Plus, a headless CMS, HubSpot Sales Professional, Klaviyo, a dropshipping app, FreshBooks, an inventory app, Intercom, an expense tracker, and Zapier for the glue between them. Those prices scale up with seats, contacts, and usage, so a real-world stack usually costs more. Invoicing, Inventory and Finance come free with Commerce or B2B, so they add $0 to the full-platform total. sparx is flat — the module price is the price. Finance is not accounting software and does not replace QuickBooks or Sage 50 — it tracks spending and profit, and exports to whichever package keeps your books.';
+  'Comparison uses publicly listed 2026 monthly prices for representative growth-tier plans of the tools each module replaces — Webflow Premium, Shopify Advanced and Plus, a headless CMS, HubSpot Sales Professional, Klaviyo, a dropshipping app, FreshBooks, an inventory app, Intercom, an expense tracker, a staff scheduling and time-clock app, and Zapier for the glue between them. Those prices scale up with seats, contacts, and usage, so a real-world stack usually costs more. Invoicing, Inventory and Finance come free with Commerce or B2B, so they add $0 to the full-platform total. sparx is flat — the module price is the price. Finance is not accounting software and does not replace QuickBooks or Sage 50 — it tracks spending and profit, and exports to whichever package keeps your books. Team is not payroll — it records hours and pay rates and exports them to whoever runs yours.';
 
 /** Every module, its price, what it replaces, and the full feature list. */
 export const FEATURES: {
@@ -342,6 +347,23 @@ export const FEATURES: {
     ],
   },
   {
+    key: 'staff',
+    name: 'Team',
+    price: '$29/mo',
+    // "Not payroll" is the first thing this card says, in the slot where every
+    // other card names what it replaces. Anything vaguer sells a payroll system
+    // by implication and produces a refund.
+    repl: 'Replaces a scheduling and time-clock app — not your payroll',
+    feats: [
+      'Hours, clocked or typed in — approved before they count',
+      'Pay rates that change on a date, so last year’s costs stay put',
+      'Shifts and time off, published to the team in one act',
+      'Licence and ticket renewals, warned about before they lapse',
+      'Wages flow straight into your Finance figures',
+      'An hours export for whoever runs your payroll',
+    ],
+  },
+  {
     key: 'chat',
     name: 'Live Chat',
     price: '$19/mo',
@@ -390,7 +412,7 @@ export const PRICING_FAQ: { id: string; question: string; answer: string }[] = [
     id: 'what-is-a-module',
     question: 'What counts as a module?',
     answer:
-      'The thirteen capabilities in the switchboard — Builder, Commerce, CMS, CRM, Invoicing, Email, B2B, Dropship, Inventory, Live Chat, Scheduling, Finance, and AI. Each is a flat monthly price you switch on or off independently — and Invoicing, Inventory and Finance come free the moment you turn on Commerce or B2B. The platform underneath (hosting, security, API) is included on every plan.',
+      'The fourteen capabilities in the switchboard — Builder, Commerce, CMS, CRM, Invoicing, Email, B2B, Dropship, Inventory, Live Chat, Scheduling, Finance, Team, and AI. Each is a flat monthly price you switch on or off independently — and Invoicing, Inventory and Finance come free the moment you turn on Commerce or B2B. The platform underneath (hosting, security, API) is included on every plan.',
   },
   {
     id: 'start-with-builder',

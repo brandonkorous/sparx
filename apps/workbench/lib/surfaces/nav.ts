@@ -14,6 +14,7 @@ import {
   Boxes,
   Building2,
   CalendarClock,
+  ContactRound,
   CreditCard,
   FileText,
   Globe,
@@ -64,6 +65,9 @@ const MODULE_LABELS: Partial<Record<WorkbenchModule, string>> = {
   email: 'Email',
   b2b: 'Wholesale',
   finance: 'Finance',
+  // "Your team", not "Staff" or "HR". The audience is an owner with nine people,
+  // and "HR" names a department they do not have.
+  staff: 'Your team',
   scheduling: 'Scheduling',
   social: 'Social',
   dropship: 'Dropshipping',
@@ -148,6 +152,9 @@ const MODULE_ORDER: WorkbenchModule[] = [
   'social',
   'invoicing',
   'finance',
+  // Immediately after finance, because that is the relationship: staff is where
+  // the biggest number in the ledger comes from.
+  'staff',
   'automations',
   'ai',
   'storefront',
@@ -182,6 +189,9 @@ const MODULE_ICONS: Partial<Record<WorkbenchModule, LucideIcon>> = {
   email: Mail,
   b2b: Building2,
   finance: CreditCard,
+  // A person on a card, NOT `Users` — that is Customers, and the rail's two
+  // people-shaped modules must not be the same glyph at 16px.
+  staff: ContactRound,
   scheduling: CalendarClock,
   social: Share2,
   dropship: Truck,

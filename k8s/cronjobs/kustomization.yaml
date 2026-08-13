@@ -35,5 +35,8 @@ resources:
   # nothing ever measures how fast anything sells or how long a supplier takes.
   - inventory-planning-sweep.yaml
   - inventory-valuation-snapshot.yaml
+  # Without this, every report in the module is something you have to remember
+  # to go and look at, which is the same as not having it.
+  - inventory-report-delivery.yaml
   - channel-order-poll.yaml
   - market-settlement.yaml

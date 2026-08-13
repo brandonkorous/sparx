@@ -27,6 +27,7 @@ const MODULE_SLUGS: ModuleSlug[] = [
   'scheduling',
   'social',
   'finance',
+  'staff',
   'invoicing',
 ];
 

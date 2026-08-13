@@ -10,6 +10,7 @@
 import {
   withTenant,
   type FinanceAccountingConnection,
+  type FinanceAccountingMapping,
   type Prisma,
   type TxClient,
 } from '@sparx/db';
@@ -17,6 +18,7 @@ import {
 import { FinanceError } from '../errors';
 import type { AccountingProvider } from '../schemas';
 import { exportColumns } from './export';
+import { accountingProviderAvailability } from './providers';
 
 export class AccountingConnectionNotFoundError extends FinanceError {
   constructor(id: string) {
@@ -72,6 +74,25 @@ export function accountingCatalog(): AccountingProviderDescriptor[] {
     exportColumns: exportColumns(provider),
   });
 
+  /** A provider with a real adapter behind it. `coming_soon` only when this
+   *  deployment has no OAuth app for the vendor. */
+  const live = (
+    provider: AccountingProvider,
+    name: string,
+    blurb: string
+  ): AccountingProviderDescriptor => {
+    const availability = accountingProviderAvailability(provider);
+    return {
+      provider,
+      name,
+      connect: 'oauth',
+      availability: availability.available ? 'available' : 'coming_soon',
+      ...(availability.reason ? { unavailableReason: availability.reason } : {}),
+      blurb,
+      exportColumns: exportColumns(provider),
+    };
+  };
+
   return [
     {
       provider: 'csv',
@@ -82,13 +103,17 @@ export function accountingCatalog(): AccountingProviderDescriptor[] {
         'Download your spending as a spreadsheet, with every column labelled. Works with any accounting package, and with an accountant who just wants the numbers.',
       exportColumns: exportColumns('csv'),
     },
-    soon(
+    // QuickBooks and Xero have LIVE adapters (docs/146 Phase 10.7–10.8). Whether
+    // a tenant can press connect depends on whether this installation has an
+    // OAuth app registered with the vendor, which is an environment variable
+    // rather than a feature — so availability is asked, not asserted, and the
+    // export below stays the honest answer where it is not configured.
+    live(
       'quickbooks_online',
       'QuickBooks Online',
-      'oauth',
-      'Send bills and expenses straight to QuickBooks Online.'
+      'Send stock journals, bills and expenses straight to QuickBooks Online.'
     ),
-    soon('xero', 'Xero', 'oauth', 'Send bills and expenses straight to Xero.'),
+    live('xero', 'Xero', 'Send stock journals, bills and expenses straight to Xero.'),
     soon(
       'quickbooks_desktop',
       'QuickBooks Desktop',
@@ -189,7 +214,17 @@ export async function deleteConnection(tenantId: string, id: string): Promise<vo
 /* ── Mapping ───────────────────────────────────────────────────────────────── */
 
 export interface MappingInput {
-  sparxType: 'expense_category' | 'tax_rate' | 'payment_method' | 'income_account' | 'vendor';
+  /** `inventory_account` maps the five ROLES a stock journal posts to (docs/146
+   *  Phase 10.7) rather than an expense category. Same table by design — docs/148
+   *  §6 built this loosely-keyed precisely so the mappable set could grow without
+   *  a nullable FK column per concept. */
+  sparxType:
+    | 'expense_category'
+    | 'tax_rate'
+    | 'payment_method'
+    | 'income_account'
+    | 'vendor'
+    | 'inventory_account';
   sparxId: string;
   categoryId?: string | null;
   externalId: string;
@@ -237,6 +272,25 @@ export async function setMappings(
     }
     return mappings.length;
   });
+}
+
+/**
+ * Every mapping saved against a connection, for the settings screen to READ
+ * BACK. `mappingsForExport` below answers a different question — it is the
+ * narrow lookup the export needs and is keyed for that — and a settings surface
+ * that could only write would leave someone unable to see what they had already
+ * mapped, which is the state that makes people re-enter it.
+ */
+export async function listMappings(
+  tenantId: string,
+  connectionId: string
+): Promise<FinanceAccountingMapping[]> {
+  return withTenant({ tenantId }, (tx) =>
+    tx.financeAccountingMapping.findMany({
+      where: { connectionId },
+      orderBy: [{ sparxType: 'asc' }, { createdAt: 'asc' }],
+    })
+  );
 }
 
 /** The category → account lookup `buildExport` takes. */

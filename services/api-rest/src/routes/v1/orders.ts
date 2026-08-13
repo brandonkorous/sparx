@@ -42,6 +42,7 @@ import {
   orderRefundsService,
 } from '@sparx/crm';
 import { listFulfillmentLabels, quoteOutboundRates, shippingService } from '@sparx/commerce';
+import { inventoryService } from '@sparx/inventory';
 import { ok, paged } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
 import { requireOrderAccess, toOrderContext } from '../../lib/order-context.js';
@@ -208,10 +209,25 @@ const orderRoutes: FastifyPluginAsync = (app) => {
     await requireOrderAccess(request);
     const { id } = PathId.parse(request.params);
     const body = (request.body ?? {}) as Record<string, unknown>;
-    const fulfillment = await orderFulfillmentsService.createFulfillment(toOrderContext(request), {
+    const orderCtx = toOrderContext(request);
+    const fulfillment = await orderFulfillmentsService.createFulfillment(orderCtx, {
       ...body,
       orderId: id,
     });
+
+    // Discharge any backorder commitments this order was carrying (docs/146
+    // Phase 9.1). The pack bench does the same on its own path; this covers a
+    // fulfillment recorded straight through the API, which is how a business
+    // that ships from a desk rather than a bench does it every time.
+    //
+    // Best-effort, and unguarded by the inventory module on purpose: with the
+    // module off the queue is empty, so this updates nothing and costs one
+    // query. Failing a shipment that has physically happened because a queue row
+    // would not move would be the wrong trade in every direction.
+    await inventoryService
+      .markBackordersFulfilled(orderCtx, { holderType: 'order', holderId: id })
+      .catch(() => undefined);
+
     reply.code(201);
     return ok(fulfillment);
   });

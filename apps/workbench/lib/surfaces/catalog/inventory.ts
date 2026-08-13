@@ -6,6 +6,7 @@ import {
   BarChart3,
   Boxes,
   CalendarClock,
+  CalendarX2,
   CircleAlert,
   ClipboardCheck,
   ClipboardList,
@@ -17,6 +18,8 @@ import {
   PackageSearch,
   Grid3x3,
   Gauge,
+  Handshake,
+  Hourglass,
   PackageOpen,
   Printer,
   QrCode,
@@ -31,12 +34,16 @@ import {
   SlidersHorizontal,
   Snail,
   Receipt,
+  FileSpreadsheet,
+  TrendingUp,
   // Aliased because `ShieldCheck` is already the Integrity surface's icon, and
   // sign-offs are a different idea wearing the same glyph.
   ShieldCheck as ShieldSign,
   Undo2,
   Truck,
   Warehouse,
+  Columns3,
+  Rocket,
 } from 'lucide-react';
 import type { SurfaceDefinition } from '../registry';
 import { StockItemSurface } from '../../../surfaces/inventory/stock-item';
@@ -58,6 +65,11 @@ import { ReceivingListSurface } from '../../../surfaces/inventory/receiving-list
 import { ReceiptDetailSurface } from '../../../surfaces/inventory/receipt-detail';
 import { ReorderListSurface } from '../../../surfaces/inventory/reorder-list';
 import { ReportsSurface } from '../../../surfaces/inventory/reports';
+import { PerformanceReportsSurface } from '../../../surfaces/inventory/performance';
+import { ReportSchedulesSurface } from '../../../surfaces/inventory/report-schedules';
+import { ReportScheduleDetailSurface } from '../../../surfaces/inventory/report-schedule-detail';
+import { StockImportSurface } from '../../../surfaces/inventory/stock-import';
+import { GlReconciliationSurface } from '../../../surfaces/inventory/gl-reconciliation';
 import { SourcesListSurface } from '../../../surfaces/inventory/sources-list';
 import { SourceDetailSurface } from '../../../surfaces/inventory/source-detail';
 import { IntegritySurface } from '../../../surfaces/inventory/integrity';
@@ -103,6 +115,18 @@ import { SupplierReturnsListSurface } from '../../../surfaces/inventory/supplier
 import { SupplierReturnDetailSurface } from '../../../surfaces/inventory/supplier-return-detail';
 import { SupplierBillsListSurface } from '../../../surfaces/inventory/supplier-bills-list';
 import { SupplierBillDetailSurface } from '../../../surfaces/inventory/supplier-bill-detail';
+// Demand-side commitments (docs/146 Phase 9)
+import { BackordersSurface } from '../../../surfaces/inventory/backorders';
+import { BackorderDetailSurface } from '../../../surfaces/inventory/backorder-detail';
+import { PreordersSurface } from '../../../surfaces/inventory/preorders';
+import { StockOwnershipSurface } from '../../../surfaces/inventory/stock-ownership';
+import { ConsignmentSettlementsSurface } from '../../../surfaces/inventory/consignment-settlements';
+import { ConsignmentSettlementDetailSurface } from '../../../surfaces/inventory/consignment-settlement-detail';
+import { ExpiringStockSurface } from '../../../surfaces/inventory/expiring-stock';
+// Onboarding — beating the spreadsheet (docs/146 Phase 11)
+import { InventorySetupSurface } from '../../../surfaces/inventory/setup-wizard';
+import { StockGridSurface } from '../../../surfaces/inventory/stock-grid';
+import { InventoryCustomFieldsSurface } from '../../../surfaces/inventory/custom-fields';
 
 export const INVENTORY_SURFACES: SurfaceDefinition[] = [
   {
@@ -878,6 +902,89 @@ export const INVENTORY_SURFACES: SurfaceDefinition[] = [
     component: ReportsSurface,
   },
   {
+    // The five ratios a business is asked for and could not previously get out
+    // of sparx. Beside Reports rather than inside it: those are about what the
+    // stock IS WORTH, these are about whether it is WORKING, and putting nine
+    // cards on one screen is how neither question gets read.
+    key: 'inventory.reports.performance',
+    title: 'How it is performing',
+    module: 'inventory',
+    icon: TrendingUp,
+    section: 'Reporting',
+    order: 31,
+    keywords: [
+      'sell-through',
+      'gmroi',
+      'fill rate',
+      'stockout',
+      'margin',
+      'return on stock',
+      'movement summary',
+    ],
+    component: PerformanceReportsSurface,
+  },
+  {
+    key: 'inventory.reports.schedules',
+    title: 'Sent to your inbox',
+    module: 'inventory',
+    icon: CalendarClock,
+    section: 'Reporting',
+    order: 32,
+    keywords: ['scheduled report', 'email report', 'weekly', 'monthly', 'subscription'],
+    component: ReportSchedulesSurface,
+  },
+  {
+    key: 'inventory.reports.schedule',
+    title: (params) => (params.id === 'new' ? 'Send a report' : 'Scheduled report'),
+    module: 'inventory',
+    icon: CalendarClock,
+    component: ReportScheduleDetailSurface,
+    listed: false,
+  },
+  {
+    // Reporting, not Setup: it starts with a download of what you already have
+    // and ends with figures. Somebody reaching for it is reconciling, not
+    // configuring.
+    key: 'inventory.reconciliation.books',
+    title: 'Stock versus your books',
+    module: 'inventory',
+    icon: Scale,
+    section: 'Reporting',
+    order: 36,
+    keywords: [
+      'reconcile',
+      'accounting',
+      'general ledger',
+      'quickbooks',
+      'xero',
+      'year end',
+      'inventory account',
+    ],
+    component: GlReconciliationSurface,
+  },
+  {
+    // "Counting" rather than "Setup": the round trip this screen exists for —
+    // download what the system thinks, count the shelves, upload the
+    // differences — is the stock-take a business already does, not a thing
+    // somebody configures once.
+    key: 'inventory.stock.import',
+    title: 'Import from a spreadsheet',
+    module: 'inventory',
+    icon: FileSpreadsheet,
+    section: 'Counting',
+    order: 20,
+    keywords: [
+      'import',
+      'csv',
+      'spreadsheet',
+      'upload',
+      'bulk adjust',
+      'stock take',
+      'opening balance',
+    ],
+    component: StockImportSurface,
+  },
+  {
     // Reporting rather than Buying: it is something you READ about people you
     // already buy from, and it belongs next to the other numbers.
     key: 'inventory.suppliers.scorecards',
@@ -1015,5 +1122,184 @@ export const INVENTORY_SURFACES: SurfaceDefinition[] = [
     component: SourceDetailSurface,
     listed: false,
     besideWidth: 0.45,
+  },
+  /* ── Demand-side commitments (docs/146 Phase 9) ────────────────────────── */
+  {
+    // "Waiting list" rather than "backorders": the people using this are not
+    // supply-chain people, and what the screen holds is a list of customers
+    // waiting. The URL and the API keep `backorders`, which IS the industry
+    // term and is what an integrator should not have to relearn.
+    key: 'inventory.backorders',
+    title: 'Waiting list',
+    module: 'inventory',
+    icon: Hourglass,
+    section: 'Going out',
+    order: 27,
+    keywords: [
+      'backorder',
+      'back order',
+      'waiting',
+      'owed',
+      'queue',
+      'promised date',
+      'when will it arrive',
+      'allocate',
+    ],
+    component: BackordersSurface,
+  },
+  {
+    key: 'inventory.backorders.detail',
+    title: 'Owed',
+    module: 'inventory',
+    icon: Hourglass,
+    component: BackorderDetailSurface,
+    listed: false,
+    besideWidth: 0.5,
+  },
+  {
+    key: 'inventory.preorders',
+    title: 'Preorders',
+    module: 'inventory',
+    icon: CalendarClock,
+    section: 'Going out',
+    order: 28,
+    keywords: [
+      'preorder',
+      'pre-order',
+      'sell before it arrives',
+      'coming soon',
+      'ships in',
+      'launch',
+      'drop',
+    ],
+    component: PreordersSurface,
+  },
+  {
+    // Under "Where it lives" rather than a money section: the question it
+    // answers is physical — whose goods are on my shelves — and the accounting
+    // consequence follows from that rather than the other way round.
+    key: 'inventory.ownership',
+    title: 'Whose stock',
+    module: 'inventory',
+    icon: Handshake,
+    section: 'Where it lives',
+    order: 18,
+    keywords: [
+      'consignment',
+      'ownership',
+      'not mine',
+      'customer owned',
+      '3pl',
+      'third party',
+      'belongs to',
+      'valuation',
+    ],
+    component: StockOwnershipSurface,
+  },
+  {
+    key: 'inventory.consignment',
+    title: 'Consignment settlement',
+    module: 'inventory',
+    icon: Handshake,
+    section: 'Buying',
+    order: 47,
+    keywords: ['consignment', 'settle', 'owed to supplier', 'pay for what sold', 'sale or return'],
+    component: ConsignmentSettlementsSurface,
+  },
+  {
+    key: 'inventory.consignment.detail',
+    title: 'Settlement',
+    module: 'inventory',
+    icon: Handshake,
+    component: ConsignmentSettlementDetailSurface,
+    listed: false,
+    besideWidth: 0.55,
+  },
+  {
+    key: 'inventory.expiring',
+    title: 'Expiring stock',
+    module: 'inventory',
+    icon: CalendarX2,
+    section: 'Reporting',
+    order: 35,
+    keywords: [
+      'expiry',
+      'expires',
+      'use by',
+      'best before',
+      'short dated',
+      'going off',
+      'shelf life',
+      'markdown',
+      'write off',
+      'fefo',
+    ],
+    component: ExpiringStockSurface,
+  },
+
+  // ── Onboarding: beating the spreadsheet (docs/146 Phase 11) ──
+
+  {
+    // Sectionless and first: this is where somebody with no stock in sparx yet
+    // is supposed to land, and burying it under a settings group would be the
+    // product hiding its own front door.
+    key: 'inventory.setup',
+    title: 'Set up your stock',
+    module: 'inventory',
+    icon: Rocket,
+    order: 1,
+    // One setup per account — a second copy would be two screens ticking the
+    // same five steps.
+    singleton: true,
+    keywords: [
+      'setup',
+      'get started',
+      'onboarding',
+      'wizard',
+      'first time',
+      'import my stock',
+      'opening balance',
+      'thirty minutes',
+    ],
+    component: InventorySetupSurface,
+  },
+  {
+    // "Counting", beside the importer: editing four hundred reorder points is
+    // the same job as importing them, done by hand.
+    key: 'inventory.stock.grid',
+    title: 'Edit stock in a grid',
+    module: 'inventory',
+    icon: Grid3x3,
+    section: 'Counting',
+    order: 21,
+    keywords: [
+      'grid',
+      'spreadsheet',
+      'bulk edit',
+      'inline edit',
+      'paste',
+      'mass update',
+      'reorder points',
+      'edit many',
+    ],
+    component: StockGridSurface,
+  },
+  {
+    key: 'inventory.custom-fields',
+    title: 'Your own columns',
+    module: 'inventory',
+    icon: Columns3,
+    section: 'Settings',
+    order: 40,
+    keywords: [
+      'custom fields',
+      'extra columns',
+      'my own field',
+      'aisle',
+      'attributes',
+      'metadata',
+      'bespoke',
+    ],
+    component: InventoryCustomFieldsSurface,
   },
 ];

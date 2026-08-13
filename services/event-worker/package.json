@@ -24,6 +24,7 @@
     "@sparx/email-worker": "workspace:*",
     "@sparx/events": "workspace:*",
     "@sparx/finance-worker": "workspace:*",
+    "@sparx/staff-worker": "workspace:*",
     "@sparx/inventory-worker": "workspace:*",
     "@sparx/legal-seed-worker": "workspace:*",
     "@sparx/markup-recompute-worker": "workspace:*",

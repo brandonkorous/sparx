@@ -56,7 +56,25 @@ export type ModuleSlug =
   // data the tenant already paid for through commerce/invoicing/b2b, so they carry
   // their own `requiresModules` in the workbench catalog and stay reachable
   // without this flag. Only the spend + profitability half is billable.
-  | 'finance';
+  | 'finance'
+  // The people who do the work (docs/149) — who they are, what they cost, when
+  // they work, what they are qualified to do. It exists next to finance because
+  // wages are the largest single expense in most service businesses, so job
+  // profitability is arithmetically impossible without it: staff is the SOURCE of
+  // the biggest number in the ledger, not an adjacent HR ambition.
+  //
+  // Priced standalone at $29 and deliberately NOT bundled with finance in either
+  // direction. They are independently valuable — a business that only wants a rota
+  // and certification-expiry alerts is a valid staff-only tenant — and the
+  // sequencing story ("finance now, staff makes it sharper") is a far easier second
+  // sale than one large module that has to be right all at once. Also NOT per-seat:
+  // every other module is a flat monthly price, and inventing a headcount billing
+  // dimension for one of them complicates reconciliation, the pricing page and the
+  // `activeTotalCents` math for no real gain.
+  //
+  // NOT payroll, permanently. sparx records hours and rates and hands them to
+  // whoever runs payroll. It never withholds, never files, never pays anyone.
+  | 'staff';
 
 // Canonical ordering is irrelevant here — callers (sidebar, breadcrumb) order
 // by their own manifest list. This is just the closed set we probe.
@@ -75,6 +93,7 @@ const ALL_MODULES: readonly ModuleSlug[] = [
   'scheduling',
   'social',
   'finance',
+  'staff',
 ];
 
 // ── Module dependency graph ──────────────────────────────────────────────────

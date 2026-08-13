@@ -65,6 +65,7 @@ import * as markupRecompute from '@sparx/markup-recompute-worker';
 import * as platformCrm from '@sparx/platform-crm-worker';
 import * as push from '@sparx/push-worker';
 import * as social from '@sparx/social-worker';
+import * as staff from '@sparx/staff-worker';
 
 import { env } from './env.js';
 import { createHttpServer, PORT } from './http.js';
@@ -101,6 +102,7 @@ const SUBSCRIPTIONS: WorkerSubscription[] = [
   platformCrm.createSubscription(forWorker(platformCrm.DURABLE)),
   push.createSubscription(forWorker(push.DURABLE)),
   social.createSubscription(forWorker(social.DURABLE)),
+  staff.createSubscription(forWorker(staff.DURABLE)),
 ];
 
 const consumers: RunningConsumer[] = [];

@@ -47,6 +47,11 @@ import {
   type SocialConnectionExpiredEmailProps,
 } from './templates/social-connection-expired';
 import {
+  InventoryReportEmail,
+  inventoryReportSubject,
+  type InventoryReportEmailProps,
+} from './templates/inventory-report';
+import {
   MarketSettlementReportEmail,
   marketSettlementReportSubject,
   type MarketSettlementReportEmailProps,
@@ -238,7 +243,10 @@ export type TemplateId =
   | 'feedback-received'
   // The social module's two "something needs you" emails (docs/social-audit GAPs 1+2).
   | 'social-post-failed'
-  | 'social-connection-expired';
+  | 'social-connection-expired'
+  // A scheduled inventory report (docs/146 Phase 10.4) — the figures in the
+  // body, the spreadsheet attached.
+  | 'inventory-report';
 
 // The same set as a VALUE lives in `./template-ids` — a JSX-free module, so a
 // backend can ask "what templates exist" without loading React. Re-exported
@@ -488,6 +496,13 @@ export type TemplateSend =
       template: 'social-connection-expired';
       to: string;
       props: SocialConnectionExpiredEmailProps;
+      from?: string;
+      replyTo?: string;
+    }
+  | {
+      template: 'inventory-report';
+      to: string;
+      props: InventoryReportEmailProps;
       from?: string;
       replyTo?: string;
     };
@@ -1081,6 +1096,22 @@ export async function renderTemplate(
         html,
         text,
         templateId: 'social-connection-expired',
+      };
+    }
+    case 'inventory-report': {
+      const element = wrap(<InventoryReportEmail {...input.props} />);
+      const [html, text] = await Promise.all([
+        render(element),
+        render(element, { plainText: true }),
+      ]);
+      return {
+        from: input.from ?? defaultFrom(),
+        to: input.to,
+        replyTo: input.replyTo,
+        subject: inventoryReportSubject(input.props.scheduleName, input.props.periodLabel),
+        html,
+        text,
+        templateId: 'inventory-report',
       };
     }
   }

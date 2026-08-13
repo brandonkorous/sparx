@@ -513,11 +513,13 @@ model SupplierBill {
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
   updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
 
-  tenant             Tenant             @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  supplier           Supplier           @relation(fields: [supplierId], references: [id], onDelete: Cascade)
-  purchaseOrder      PurchaseOrder?     @relation(fields: [purchaseOrderId], references: [id], onDelete: SetNull)
-  varianceAcceptedBy User?              @relation("SupplierBillVarianceAccepter", fields: [varianceAcceptedByUserId], references: [id], onDelete: SetNull)
-  lines              SupplierBillLine[]
+  tenant                 Tenant                  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  supplier               Supplier                @relation(fields: [supplierId], references: [id], onDelete: Cascade)
+  purchaseOrder          PurchaseOrder?          @relation(fields: [purchaseOrderId], references: [id], onDelete: SetNull)
+  varianceAcceptedBy     User?                   @relation("SupplierBillVarianceAccepter", fields: [varianceAcceptedByUserId], references: [id], onDelete: SetNull)
+  lines                  SupplierBillLine[]
+  /// Consignment periods billed through this document (docs/146 Phase 9.6).
+  consignmentSettlements ConsignmentSettlement[]
 
   @@unique([tenantId, supplierId, number], map: "inventory_supplier_bills_tenant_supplier_number_unique")
   @@index([tenantId, status, dueAt])

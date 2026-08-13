@@ -71,6 +71,31 @@ export function useSiteProperty(propertyId: string | undefined) {
   return useSite(propertyId ?? 'new');
 }
 
+/** How a customer reaches this business, stored per-site beside `socials` in the
+ *  property settings bag. The storefront binds these as `site.identity.phone` /
+ *  `.email` / `.address`, which is what lets a starter site's Contact page carry
+ *  the owner's REAL details the moment they type them here — rather than shipping
+ *  an invented number nobody ever replaces. */
+export interface SiteContact {
+  phone: string;
+  email: string;
+  address: string;
+}
+
+export const EMPTY_CONTACT: SiteContact = { phone: '', email: '', address: '' };
+
+/** Read a property's own contact details out of its settings bag. Defensive for
+ *  the same reason `socialsOf` is — the column is free-form JSON. */
+export function contactOf(property: Site | undefined): SiteContact {
+  const raw = (property?.settings as { contact?: unknown } | undefined)?.contact;
+  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return EMPTY_CONTACT;
+  const str = (key: keyof SiteContact): string => {
+    const v = (raw as Record<string, unknown>)[key];
+    return typeof v === 'string' ? v : '';
+  };
+  return { phone: str('phone'), email: str('email'), address: str('address') };
+}
+
 /** Read a property's own social links out of its settings bag. Defensive — the
  *  column is free-form JSON. */
 export function socialsOf(property: Site | undefined): SocialLink[] {
@@ -199,6 +224,7 @@ export interface SaveIdentityInput {
   propertyId: string;
   name: string;
   socials: SocialLink[];
+  contact: SiteContact;
   identity: IdentityFields;
   effective: Brand;
   base: Brand;
@@ -223,6 +249,13 @@ export function useSaveIdentity() {
       const cleanSocials = input.socials
         .map((s) => ({ platform: s.platform.trim(), url: s.url.trim() }))
         .filter((s) => s.platform && s.url);
+      // Sent whole (all three keys, trimmed), so clearing a field really clears it.
+      // api-rest merges the block key-by-key, so a caller that omits one keeps it.
+      const cleanContact = {
+        phone: input.contact.phone.trim(),
+        email: input.contact.email.trim(),
+        address: input.contact.address.trim(),
+      };
       const trimmedName = input.name.trim();
       const name = trimmedName === '' ? undefined : trimmedName;
 
@@ -239,6 +272,7 @@ export function useSaveIdentity() {
       await api.patch(`/v1/properties/${input.propertyId}`, {
         name,
         socials: cleanSocials,
+        contact: cleanContact,
         brandOverride,
       });
     },

@@ -28,6 +28,30 @@ export interface SendableEmail {
    * webhook receiver can write the right EmailEvent / EmailSuppression rows.
    */
   variables?: Record<string, string>;
+  /**
+   * Files to send with the message.
+   *
+   * Added for scheduled inventory reports (docs/146 Phase 10.4), where the
+   * whole point is that the spreadsheet ARRIVES — a link to a login-walled
+   * download is no use to the bookkeeper the report was addressed to.
+   *
+   * Deliberately small and deliberately capped by callers. An attachment
+   * travels through the broker inside the `email.send` payload, and JetStream's
+   * default message limit is 1 MB; a caller with a large file must link to it
+   * instead and say so in the body, rather than producing an event that is
+   * silently too big to deliver.
+   */
+  attachments?: EmailAttachment[];
+}
+
+export interface EmailAttachment {
+  /** As it should appear in the recipient's mail client. */
+  filename: string;
+  /** e.g. "text/csv". */
+  contentType: string;
+  /** The file itself, base64. Base64 rather than a Buffer because this crosses
+   *  the event bus as JSON before it reaches a provider. */
+  contentBase64: string;
 }
 
 export interface DeliveryResult {

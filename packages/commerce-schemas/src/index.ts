@@ -69,6 +69,39 @@ export * from './planning';
 // is shown and the cost the order records cannot come out different.
 export * from './procurement';
 
+// Demand-side commitments (docs/146 Phase 9) — the promises made against the
+// stock, and the stock that was never yours. The promised-date resolution,
+// queue fill, preorder state and expiry bucketing are PURE and live here,
+// because these are the numbers a CUSTOMER reads: a backorder screen and the
+// confirmation email disagreeing about a date is a business calling itself
+// unreliable in writing.
+export * from './demand';
+
+// Reporting, portability and the accounting handoff (docs/146 Phase 10) — the
+// five ratios a business is asked for and could not previously answer, plus the
+// report vocabulary that the API, the CSV export and the scheduled email all
+// name a report by. A ratio hides its own inputs, so every one of these returns
+// null rather than a comfortable number when nothing was measured.
+export * from './reporting';
+
+// Onboarding (docs/146 Phase 11) — the first thirty minutes. The setup clock,
+// the fuzzy column matcher, the number formats other people's spreadsheets are
+// written in, and the migration recipes. Pure because a guess must carry its
+// confidence identically in the wizard, the importer and the API — a mapping
+// screen that arrives pre-filled with a wrong answer is worse than an empty one.
+export * from './onboarding';
+
+// Custom fields on inventory records (docs/146 Phase 11.8) — the one or two
+// columns a business keeps that no schema anticipated. Coercion lives here so a
+// field's type is a promise kept in exactly one place.
+export * from './custom-fields';
+
+// The inventory journal (docs/146 Phase 10.7–10.8) — what an accountant needs
+// from a stock system, expressed as double entry. Pure, because the journal that
+// goes to QuickBooks, the one that goes to Xero and the one shown on screen
+// before either is sent must be the SAME journal.
+export * from './accounting';
+
 // Phase 3 — pricing + discounts + gift cards + account credit.
 export * from './pricing';
 export * from './discounts';

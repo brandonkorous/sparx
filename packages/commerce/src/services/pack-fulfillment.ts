@@ -127,6 +127,14 @@ export async function fulfillPackedShipment(
 
   await inventoryService.attachFulfillment(ctx, box.id, fulfillment.id);
 
+  // The goods have left the building, so any commitment this order was carrying
+  // is discharged (docs/146 Phase 9.1). Best-effort on purpose: a box that has
+  // physically shipped must be recorded as shipped even if a queue row will not
+  // update, and the nightly pass re-reads the queue anyway.
+  await inventoryService
+    .markBackordersFulfilled(ctx, { holderType: 'order', holderId: box.orderId })
+    .catch(() => undefined);
+
   return {
     fulfillmentId: fulfillment.id,
     packageId: box.id,

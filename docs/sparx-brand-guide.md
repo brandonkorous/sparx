@@ -11,7 +11,7 @@
 **Platform:** sparx
 **Company:** WizeWorks
 **Primary domain:** sparx.works
-**Tagline:** _[Offering]_, ignited. — the hero rotates the leading noun through the offerings (Commerce · Content · Customers · Email · Wholesale · AI · Everything), each landing on **ignited.** with the indigo spark. Static form for page titles, OG, and social: **Everything, ignited.**
+**Tagline:** _[Offering]_, ignited. — the hero rotates the leading noun through the offerings (Commerce · Content · Customers · Email · Wholesale · AI · Everything), each landing on **ignited.** with the indigo spark. Static form for page titles, OG, and social: **Your business, multiplied.**
 
 sparx is a modular content and commerce operating system. The brand communicates precision, intelligence, and simplicity — not corporate friendliness or startup energy. The name contains a spark: the moment something ignites, the instant a business goes live.
 

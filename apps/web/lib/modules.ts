@@ -22,6 +22,8 @@ export type ModulePageSlug = Extract<
   | 'dropship'
   | 'scheduling'
   | 'social'
+  | 'finance'
+  | 'staff'
 >;
 
 export interface ModuleFeature {
@@ -564,6 +566,106 @@ export const MODULES: Record<ModulePageSlug, ModuleMeta> = {
         'Free with sparx. Organic posting to Facebook, Instagram, and Pinterest for every tenant — switch it on alongside whatever modules you run, at no added cost and on the same one bill.',
     },
   },
+  finance: {
+    slug: 'finance',
+    module: 'finance',
+    label: 'Finance',
+    headlinePrimary: 'What you spent,',
+    headlineSecondary: 'what you kept',
+    title: 'sparx Finance — What you spent, what you kept.',
+    description:
+      'Track every cost against what actually came in, and see which jobs made money. Not accounting software — your accountant keeps the books and gets a clean export. $29/mo, free with Commerce or B2B.',
+    lede: 'Record every cost your business has — parts, wages, rent, fuel, the software nobody remembers signing up for — against what actually came in, so “did we make money” has an answer instead of a shrug. Because sparx already knows what you sold and what each part cost coming off the shelf, half the sum is done before you start. That lets it go one better than a spend tracker: which individual jobs made money, and which quietly did not.',
+    features: [
+      {
+        number: '01',
+        title: 'Half the sum is already here.',
+        body: 'Your sales, what each part cost at the price you actually paid, and what a marketplace or card processor took are already recorded. Finance reads them where they live rather than asking you to enter them again, so you only ever type the half nothing else in your business has seen.',
+      },
+      {
+        number: '02',
+        title: 'Recording a cost takes seconds.',
+        body: 'How much, what for, which kind — then Enter, with the cursor back on the amount and the category still set. Rent, insurance and subscriptions are set up once and post themselves every month, and a bank or card statement imports on your bank’s own column layout, with a preview before anything is written.',
+      },
+      {
+        number: '03',
+        title: 'Bills to pay, not just money owed.',
+        body: 'You already track who owes you, because chasing it is how you get paid. What you owe tends to live in an inbox and a rough sense that rent is due soon. Both directions get the same screen, sorted by how late something is rather than when it arrived.',
+      },
+      {
+        number: '04',
+        title: 'Profit, netted against real sales.',
+        body: 'What came in, what the work cost, what the wages cost, what it took to keep the doors open, and what was left — for any period, for one of your businesses or all of them, with the period before it alongside. A month that lost money reads red before you parse a minus sign.',
+      },
+      {
+        number: '05',
+        title: 'Which jobs were worth doing.',
+        body: 'Every order and booking ranked by what you kept on it, worst first, each opening into the parts, the hours and the share of running costs that got it there. A booking valued from a service’s list price rather than a collected amount is labelled as such instead of being averaged into the same column.',
+      },
+      {
+        number: '06',
+        title: 'Your accountant keeps the books.',
+        body: 'No general ledger, no chart of accounts, no payroll, no tax filing — sparx does not do bookkeeping and is not going to. What it does is hand over a clean export: every cost for a period, posted to the account codes you mapped once, with nothing ever dated inside a month your accountant has already closed.',
+      },
+    ],
+    pricing: {
+      price: '$29',
+      period: '/mo',
+      modifier: '',
+      bundleNote:
+        'A flat $29/mo standalone — and free with Commerce or B2B, the same way Invoicing and Inventory are. That is not a promotion: profit is what came in minus what went out, a tenant selling through sparx has already bought the revenue half, and billing separately for the part we subtract from it would be charging twice for one number.',
+    },
+  },
+  staff: {
+    slug: 'staff',
+    module: 'staff',
+    label: 'Team',
+    headlinePrimary: 'What an hour',
+    headlineSecondary: 'actually costs',
+    title: 'sparx Team — What an hour of work actually costs.',
+    description:
+      'Hours, pay rates, shifts, time off and licence renewals — so the biggest cost in your business stops being a guess. Not payroll: sparx records what people worked and what it cost. $29/mo.',
+    lede: 'For most businesses that do work rather than ship boxes, wages are the largest single number on the page — and it is usually the one nobody can break down. sparx records who worked, for how long, on what, and at what rate, then hands the answer to your profit figures as a derived number instead of a line you type in and hope. It is not payroll and never will be: nothing here withholds tax, files a return, or pays anybody.',
+    features: [
+      {
+        number: '01',
+        title: 'A rate is a row, not a column.',
+        body: 'The day someone gets a raise, a system that stores their rate on the person quietly rewrites the cost of every job they have ever worked — and last quarter’s profit moves for a reason nothing on the screen can explain. Here a pay rate has a start date. Give someone a new one and the old one closes the day before, so March still costs what March cost.',
+      },
+      {
+        number: '02',
+        title: 'Hours count once somebody says so.',
+        body: 'Clock in from a phone or type in the three and a half hours you spent at the Ellison job on Tuesday. Either way it waits until a manager approves it — because a timesheet that pushed straight into the profit figure would mean every mistyped shift moved the month before anyone had looked at it.',
+      },
+      {
+        number: '03',
+        title: 'Wages become a real line in Finance.',
+        body: 'Approved hours are costed at the rate in force on the day worked, marked up by whatever employer costs you told us about, and filed as spending under Wages — split across your businesses and, where the hours named a job, charged to that job. The wages figure stops being something you estimate.',
+      },
+      {
+        number: '04',
+        title: 'Nobody’s hours are ever quietly free.',
+        body: 'If somebody worked and no rate covers those dates, sparx does not cost them at zero. The timesheet says so, the total says “so far”, and the derivation reports exactly how many hours it could not price — because a zero here becomes a zero in your profit, and you would read that as a month where labour cost nothing.',
+      },
+      {
+        number: '05',
+        title: 'The rota is planned time, not paid time.',
+        body: 'Build next week as a draft, publish it in one act, and see approved time off sitting on the same grid so you know who is actually available on Thursday. Nobody is paid from the schedule — a shift is what you planned, a time entry is what happened, and keeping them apart is why the two numbers never quietly become one.',
+      },
+      {
+        number: '06',
+        title: 'A lapsed licence finds you first.',
+        body: 'Record the tickets, licences and certificates your work depends on, each with as much notice as you need — more for the one you renew by post. Expired shows red on the roster before you assign the job, not after the inspection. A qualification that never expires is recorded as exactly that, and never nags you.',
+      },
+    ],
+    pricing: {
+      price: '$29',
+      period: '/mo',
+      modifier: '',
+      bundleNote:
+        'A flat $29/mo, whatever size your team is — not per person, because charging per head would price the module against the exact thing it measures. It is not bundled with Finance in either direction: Finance is useful without it, and a business that only wants hours, rotas and licence renewals should not have to buy a spend ledger to get them.',
+    },
+  },
 };
 
 export const MODULE_ORDER: ModulePageSlug[] = [
@@ -577,6 +679,8 @@ export const MODULE_ORDER: ModulePageSlug[] = [
   'dropship',
   'scheduling',
   'social',
+  'finance',
+  'staff',
 ];
 
 export function getModule(slug: string): ModuleMeta | undefined {

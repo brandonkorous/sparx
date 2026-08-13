@@ -1,0 +1,93 @@
+# Scheduled inventory report delivery (docs/146 Phase 10.4).
+#
+# Sends every report schedule whose next run time has passed, across every
+# tenant. The reports themselves are good and nobody opens them, because opening
+# them means remembering to log in on a Monday morning — so the report goes to
+# the person instead, and this is the thing that makes that true.
+#
+# ── Why hourly, and why that is not a compromise ─────────────────────────────
+#
+# A schedule names an HOUR in the TENANT's timezone, and tenants are in many
+# timezones, so there is no single time of day this could run at. Hourly means
+# every schedule fires within the hour it asked for, worldwide, with one cheap
+# indexed query per tick: `is_active AND next_run_at <= now()`. On a platform
+# with no due schedules that is a single index scan returning nothing.
+#
+# Firing on the hour rather than at :00 exactly staggers it away from the other
+# hourly work on the node.
+#
+# ── Idempotent by advancing, not by remembering ──────────────────────────────
+#
+# A sent schedule immediately gets a NEW `next_run_at`, computed from the same
+# pure function the screen shows. So a re-run five minutes later finds nothing
+# due and sends nothing; there is no "already sent today" flag to get out of step
+# with reality. A manual send deliberately does NOT advance the clock — pressing
+# "send it now" to check a new schedule works must not cost the recipients their
+# Monday copy.
+#
+# Forbid concurrency: two overlapping passes would both see the same due row
+# before either advanced it, and the recipients would get the report twice.
+#
+# `--max-time 900` against a 20-minute deadline. The work is one report per due
+# schedule; the reports are the same ones the screens run, and a platform-wide
+# tick that has not finished in fifteen minutes has something wrong with it that
+# a longer timeout will not fix.
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: inventory-report-delivery
+  namespace: sparx-prod
+  labels:
+    app: inventory-report-cron
+    job: report-delivery
+spec:
+  schedule: '5 * * * *'
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 3
+  startingDeadlineSeconds: 300
+  jobTemplate:
+    spec:
+      backoffLimit: 2
+      ttlSecondsAfterFinished: 3600
+      template:
+        metadata:
+          labels:
+            app: inventory-report-cron
+            job: report-delivery
+        spec:
+          serviceAccountName: sparx-app
+          restartPolicy: OnFailure
+          containers:
+            - name: curl
+              image: curlimages/curl:8.10.1
+              command: ['sh', '-c']
+              args:
+                - >
+                  curl --fail-with-body --silent --show-error
+                  --max-time 900
+                  -X POST
+                  -H "X-Sparx-Internal-Cron-Token: $SPARX_INTERNAL_CRON_TOKEN"
+                  http://api-rest.sparx-prod.svc.cluster.local:3000/internal/inventory/report-delivery
+              env:
+                - name: SPARX_INTERNAL_CRON_TOKEN
+                  valueFrom:
+                    secretKeyRef:
+                      name: sparx-app-secrets
+                      key: SPARX_INTERNAL_CRON_TOKEN
+              resources:
+                requests:
+                  cpu: '25m'
+                  memory: '16Mi'
+                limits:
+                  cpu: '100m'
+                  memory: '32Mi'
+              securityContext:
+                runAsNonRoot: true
+                runAsUser: 1000
+                allowPrivilegeEscalation: false
+                capabilities:
+                  drop: ['ALL']
+                seccompProfile:
+                  type: RuntimeDefault

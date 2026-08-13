@@ -397,10 +397,19 @@ export async function buildableQuantity(
         ? []
         : await tx.inventoryLevel.findMany({
             where: { variantId: { in: variantIds }, warehouseId: params.warehouseId },
-            select: { variantId: true, onHand: true, allocated: true, safetyBuffer: true },
+            select: {
+              variantId: true,
+              onHand: true,
+              allocated: true,
+              safetyBuffer: true,
+              unsellableOnHand: true,
+            },
           });
     const availableByVariant = new Map(
-      levels.map((l) => [l.variantId, Math.max(0, l.onHand - l.allocated - l.safetyBuffer)])
+      levels.map((l) => [
+        l.variantId,
+        Math.max(0, l.onHand - l.allocated - l.safetyBuffer - l.unsellableOnHand),
+      ])
     );
 
     const components = bom.components.map((c) => {

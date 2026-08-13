@@ -53,13 +53,20 @@ model InventoryBin {
   rack  String? @db.VarChar(60)
   shelf String? @db.VarChar(60)
 
-  // pick | bulk | receiving | staging | quarantine | damaged. A CHECK pins it.
+  // pick | bulk | receiving | staging | quarantine | damaged | repair. A CHECK
+  // pins it.
   //   pick        the shelf a picker walks to. The default.
   //   bulk        overstock; feeds the pick face, not picked from directly.
   //   receiving   where a delivery lands before it is put away.
   //   staging     picked goods waiting to be packed or shipped.
   //   quarantine  arrived or returned but not yet passed — NOT sellable.
   //   damaged     written off but physically still here — NOT sellable.
+  //   repair      awaiting work before it can be sold again — NOT sellable.
+  //               Distinct from `damaged` because the two have opposite futures:
+  //               damaged stock is a write-off looking for a bin, repair stock is
+  //               an asset with a job queued against it, and a business that
+  //               refurbishes needs to see the second pile without it being read
+  //               as shrinkage (docs/146 Phase 9.7).
   type String @default("pick") @db.VarChar(20)
 
   // Whether stock here counts toward what a customer may buy.
@@ -101,15 +108,18 @@ model InventoryBin {
   tenant    Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   warehouse Warehouse @relation(fields: [warehouseId], references: [id], onDelete: Cascade)
 
-  levels            InventoryBinLevel[]
-  movements         InventoryBinMovement[]
-  movementsFrom     InventoryBinMovement[] @relation("BinMoveFrom")
-  movementsTo       InventoryBinMovement[] @relation("BinMoveTo")
-  defaultForVariant ProductVariant[]       @relation("VariantDefaultBin")
-  receiptLines      GoodsReceiptLine[]
-  countLines        InventoryCountLine[]
-  scanEvents        InventoryScanEvent[]
-  pickListLines     PickListLine[]
+  levels             InventoryBinLevel[]
+  movements          InventoryBinMovement[]
+  movementsFrom      InventoryBinMovement[] @relation("BinMoveFrom")
+  movementsTo        InventoryBinMovement[] @relation("BinMoveTo")
+  defaultForVariant  ProductVariant[]       @relation("VariantDefaultBin")
+  receiptLines       GoodsReceiptLine[]
+  countLines         InventoryCountLine[]
+  scanEvents         InventoryScanEvent[]
+  pickListLines      PickListLine[]
+  /// Returned goods routed here by an inspector's disposition
+  /// (docs/146 Phase 9.7).
+  returnDispositions ReturnInspection[]     @relation("ReturnInspectionDispositionBin")
 
   @@unique([warehouseId, code], map: "inventory_bins_warehouse_code_unique")
   @@index([tenantId, warehouseId, isActive])

@@ -156,6 +156,11 @@ model Customer {
   // Site forms (docs/115) — contact/lead submissions mirrored onto this contact
   formSubmissions FormSubmission[]
 
+  // Consignment settled back to this contact, for the case where the stock in
+  // your building is THEIRS (docs/146 Phase 9.6) — a workshop holding a fleet
+  // operator's own parts is the everyday version.
+  consignmentSettlements ConsignmentSettlement[]
+
   // THIS IS HALF THE RULE. Postgres counts NULLs as DISTINCT, so this index
   // never fires for TENANT-WIDE contacts (propertyId null) — two of them could
   // hold one address. The other half is `customers_tenant_global_email_unique`,

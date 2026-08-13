@@ -51,6 +51,9 @@ const BTN_COLOR: Record<ColorKey, string> = {
   scheduling: 'btn-scheduling',
   automations: 'btn-automations',
   seo: 'btn-seo',
+  social: 'btn-social',
+  finance: 'btn-finance',
+  staff: 'btn-staff',
 };
 
 // `variant` (treatment) → silica modifier. `solid` is silica's default `.btn`

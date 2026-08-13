@@ -27,7 +27,7 @@
 // someone to go record their first count when they have four hundred rows and
 // mistyped a SKU is the worse of the mistakes.
 
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import {
   Badge,
   Button,
@@ -45,6 +45,7 @@ import {
 import { ArrowDown, ArrowUp, Boxes, ShieldCheck, TrendingDown } from 'lucide-react';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import { SavedViewsBar } from '../../components/saved-views';
 import { RefreshButton } from '../../components/refresh-button';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import {
@@ -92,6 +93,19 @@ export function StockListSurface({ ctx }: { ctx: SurfaceContext }) {
     key: 'updatedAt',
     dir: 'desc',
   });
+
+  // What this list is showing, as plain strings — the shape a saved view stores
+  // and re-applies. Derived rather than held separately so a view can never
+  // drift out of step with the controls above it.
+  const viewParams = useMemo(
+    () => ({
+      q: search.trim(),
+      warehouse: locationId,
+      low: lowOnly ? '1' : '',
+      sort: `${sort.key}:${sort.dir}`,
+    }),
+    [search, locationId, lowOnly, sort]
+  );
 
   const [pageSize, setPageSize] = useState<PageSize>(50);
   const [page, setPage] = useState(1);
@@ -398,9 +412,28 @@ export function StockListSurface({ ctx }: { ctx: SurfaceContext }) {
           </ToggleGroupItem>
         </ToggleGroup>
 
+        {/* Saved views (docs/146 Phase 10.2). A person who has got this list
+            exactly right — one location, running low, sorted by what to sell —
+            should not rebuild it tomorrow. `ml-auto` moves here so the views
+            control and refresh sit together on the right. */}
+        <SavedViewsBar
+          target="/inventory/stock"
+          params={viewParams}
+          className="ml-auto"
+          onApply={(next) => {
+            setSearch(next.q ?? '');
+            setLocationId(next.warehouse ?? '');
+            setLowOnly(next.low === '1');
+            const [key, dir] = (next.sort ?? '').split(':');
+            if (key && (dir === 'asc' || dir === 'desc')) {
+              setSort({ key: key as StockSortKey, dir });
+            }
+            resetWindow();
+          }}
+        />
+
         {/* ALWAYS the last child of a list toolbar — see RefreshButton. */}
         <RefreshButton
-          className="ml-auto"
           isFetching={isFetching}
           updatedAt={data ? dataUpdatedAt : undefined}
           onRefresh={() => {

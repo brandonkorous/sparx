@@ -33,6 +33,14 @@ import poApprovalRoutes from './po-approvals.js';
 import advanceShipNoticeRoutes from './advance-ship-notices.js';
 import supplierReturnRoutes from './supplier-returns.js';
 import supplierBillRoutes from './supplier-bills.js';
+// Demand-side commitments (docs/146 Phase 9)
+import backorderRoutes from './backorders.js';
+import demandRoutes from './demand.js';
+// Reporting, portability and the accounting handoff (docs/146 Phase 10)
+import inventoryReportingRoutes from './reporting.js';
+import inventoryAccountingRoutes from './accounting.js';
+// Onboarding — beating the spreadsheet (docs/146 Phase 11)
+import inventoryOnboardingRoutes from './onboarding.js';
 
 const inventoryRoutes: FastifyPluginAsync = async (app) => {
   // The documented public API (docs/06 §7) — registered first so its canonical
@@ -76,6 +84,27 @@ const inventoryRoutes: FastifyPluginAsync = async (app) => {
   await app.register(advanceShipNoticeRoutes);
   await app.register(supplierReturnRoutes);
   await app.register(supplierBillRoutes);
+
+  // Phase 9 — the promises made against the stock, the stock that is not ours,
+  // and the stock that is running out of time.
+  await app.register(backorderRoutes);
+  await app.register(demandRoutes);
+
+  // Phase 10 — one addressable report endpoint over the registry, the schedules
+  // that email them, the file import, and the reconciliation against the books.
+  // Registered AFTER analytics-reports so the four published named report URLs
+  // keep their own handlers; `/reports/:key` picks up everything else.
+  await app.register(inventoryReportingRoutes);
+  // The stock side of the accounting handoff — the journal, its account
+  // mapping, and pulling their inventory balance back for the reconciliation.
+  await app.register(inventoryAccountingRoutes);
+
+  // Phase 11 — the first thirty minutes: the guided setup and its clock, the
+  // column matcher and the saved mappings that make a re-import one click, the
+  // opening count, the spreadsheet-grade grid, and the tenant's own columns.
+  // Registered after reporting so `/imports/preview` and `/imports/:id/resolve`
+  // sit alongside the import routes they extend.
+  await app.register(inventoryOnboardingRoutes);
 };
 
 export default inventoryRoutes;

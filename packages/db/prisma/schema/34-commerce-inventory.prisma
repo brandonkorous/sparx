@@ -94,6 +94,13 @@ model Warehouse {
   poApprovalRules     PurchaseOrderApprovalRule[]
   supplierReturns     SupplierReturn[]
 
+  // Demand-side commitments (docs/146 Phase 9)
+  backorders             Backorder[]
+  consignmentSettlements ConsignmentSettlementLine[]
+
+  // Reporting + portability (docs/146 Phase 10)
+  importBatches InventoryImportBatch[]
+
   @@unique([tenantId, code], map: "inventory_warehouses_tenant_code_unique")
   @@index([tenantId, isActive])
   @@map("inventory_warehouses")
@@ -146,6 +153,51 @@ model InventoryLevel {
   forecastDailyDemand Decimal?  @map("forecast_daily_demand") @db.Decimal(12, 4)
   dynamicReorderPoint Int?      @map("dynamic_reorder_point")
   planningComputedAt  DateTime? @map("planning_computed_at") @db.Timestamptz
+
+  // ── Who owns these units (docs/146 Phase 9.5) ──
+  //
+  // owned | consignment | customer_owned | 3pl_owned. `owned` is the honest
+  // default here, unlike most defaults in this schema: stock you received onto
+  // your own shelves under your own purchase order IS yours, and every existing
+  // row got there that way. The other three are states a person opts a level
+  // into, never states something is silently classified as.
+  //
+  // The axis is deliberately ORTHOGONAL to availability: consigned stock is
+  // sellable — that is the entire point of holding it — while being none of your
+  // asset. So valuation filters on this column and availability does not, which
+  // is the single behavioural difference the whole feature comes down to.
+  //
+  // At the LEVEL, not per unit: mixing owned and consigned units of one SKU at
+  // one location has no answer to "which one did I just sell", so the model
+  // refuses to pretend. A tenant holding both uses a second location or a bin,
+  // and gets a real answer instead of a plausible one.
+  ownership String @default("owned") @db.VarChar(20)
+
+  /// The tenant's own columns for this stock position (docs/146 Phase 11.8) —
+  /// keyed by an `inventory_custom_fields` definition with `entity = 'level'`.
+  /// At the LEVEL rather than the item because the facts kept here are
+  /// location-specific: the aisle in the old numbering, the customer a position
+  /// is earmarked for, the date this shelf was last tidied.
+  customFields Json @default("{}") @map("custom_fields")
+
+  /// Whose, when `ownership` is not `owned`. Exactly one is set (a CHECK pins
+  /// it), and settlement will not run against a consigned level that names
+  /// nobody — there is no such thing as owing money to no one.
+  ownerSupplierId String? @map("owner_supplier_id") @db.Uuid
+  ownerCustomerId String? @map("owner_customer_id") @db.Uuid
+
+  /// Units on hand here that a customer may NOT buy, because they sit on a shelf
+  /// marked unsellable — quarantine, damaged, awaiting repair (docs/146 Phase
+  /// 9.7).
+  ///
+  /// Denormalised from `inventory_bin_levels` and maintained by
+  /// `applyBinMovement`, the single writer of bin levels, inside the same
+  /// transaction. It exists because without it the quarantine shelf is decor:
+  /// `on_hand` counts the whole location, availability subtracts only
+  /// `allocated`, and a return routed to quarantine is back on sale the instant
+  /// it is booked in. Zero for every location that does not use shelves, which
+  /// is exactly right — with no shelves there is nowhere unsellable to be.
+  unsellableOnHand Int @default(0) @map("unsellable_on_hand")
 
   asOf      DateTime @default(now()) @map("as_of") @db.Timestamptz
   updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
@@ -211,6 +263,21 @@ model InventoryMovement {
   // `unitCostCents` above, and stamping the same number twice under two names
   // is how two numbers start to disagree.
   costConsumedCents Int? @map("cost_consumed_cents")
+
+  /// Who owned the units AT THE TIME this movement happened (docs/146 Phase 9.5).
+  ///
+  /// Stamped from the level's `ownership`, and stamped rather than joined
+  /// because ownership CHANGES: a supplier's consignment gets bought outright,
+  /// a 3PL contract ends and the stock comes in-house. Reading today's ownership
+  /// to classify a sale from three months ago would silently re-write what you
+  /// owed that quarter, and a settlement that moves after it was paid is worse
+  /// than no settlement at all.
+  ///
+  /// NULL on every movement written before the axis existed. Null is NOT
+  /// `owned` — it means nobody recorded it, and consignment settlement counts
+  /// only rows explicitly stamped `consignment`, so an old ledger is silent
+  /// rather than wrong.
+  ownership String? @db.VarChar(20)
 
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
 

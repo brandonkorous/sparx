@@ -10,7 +10,7 @@ import { notFound } from 'next/navigation';
 import { Breadcrumbs } from '@/components/breadcrumbs';
 import { SectionRenderer } from '@/components/section-renderer';
 import { getPublishedSilicaCollection, treeHasHostNode } from '@/lib/silica';
-import { buildSilicaHost, productToSilicaRecord } from '@/lib/silica-data';
+import { buildSilicaHost, productToSilicaRecord, silicaSiteIdentity } from '@/lib/silica-data';
 import { SilicaBody, SilicaFunctionalBody } from '@/components/silica-chrome';
 import { SiteHostRenderer } from '@/components/silica-host-cores';
 import {
@@ -120,6 +120,9 @@ export default async function ProductDetailPage({ params, searchParams }: PagePr
         record: { key: 'product', value: productToSilicaRecord(product, site.slug) },
         currency: site.commerce.defaultCurrency,
         locale: site.commerce.defaultLocale,
+        // A PDP binds `site.*` too — "questions? call us" beside an add-to-cart is
+        // an ordinary thing for a product template to author.
+        site: silicaSiteIdentity(site),
       });
       // Bare, like the catch-all route — the root layout's silica chrome frames it
       // at the Outlet; the template owns its own section widths.

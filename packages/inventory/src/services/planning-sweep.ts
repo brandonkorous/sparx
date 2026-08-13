@@ -49,11 +49,14 @@ import { withTenant } from '@sparx/db';
 
 import type { ServiceContext } from '../errors';
 
+import { refreshBackorderPromises } from './backorders';
 import { recomputeClassifications } from './classification';
 import { generateDueCounts } from './count-schedules';
 import { recomputeDemandVelocity } from './demand';
+import { sweepExpiringLots } from './expiry';
 import { recomputeLeadTimes } from './lead-times';
 import { markSweepCompleted } from './planning-policy';
+import { syncPreorderWindowStatuses } from './preorders';
 import { sweepLatePurchaseOrders } from './purchase-order-alerts';
 import { recomputeReorderPoints } from './reorder-planning';
 import { recomputeSupplierScorecards } from './supplier-scorecard';
@@ -77,7 +80,10 @@ export interface PlanningSweepStage {
     | 'reorder_points'
     | 'count_schedules'
     | 'supplier_scorecards'
-    | 'late_purchase_orders';
+    | 'late_purchase_orders'
+    | 'backorder_promises'
+    | 'preorder_windows'
+    | 'expiring_lots';
   ok: boolean;
   /** A short, human-readable account of what the stage found. */
   summary: string;
@@ -213,6 +219,58 @@ export async function runPlanningSweep(
           r.lateOrders === 0
             ? 'Nothing on order is overdue.'
             : `${r.lateOrders} order(s) overdue; ${r.newlyFlagged} flagged tonight.`,
+        detail: { ...r },
+      };
+    })
+  );
+
+  // ── Demand-side commitments (docs/146 Phase 9) ────────────────────────────
+  //
+  // Three stages rather than three CronJobs, for the reason the Phase 8 pair are
+  // here: one pass over the catalogue, and one place to look when it did not run.
+  //
+  // Promises first, because a purchase order raised today is exactly what turns
+  // "no date" into a date, and a buyer opening the queue in the morning should
+  // find last night's answer rather than yesterday's.
+  stages.push(
+    await stage('backorder_promises', async () => {
+      const r = await refreshBackorderPromises(ctx);
+      return {
+        summary:
+          r.considered === 0
+            ? 'Nobody is waiting on stock.'
+            : r.stillUndated > 0
+              ? `${r.newlyDated} newly dated, ${r.redated} moved — ${r.stillUndated} still have no date anybody can give.`
+              : `${r.newlyDated} newly dated, ${r.redated} moved; every commitment has a date.`,
+        detail: { ...r },
+      };
+    })
+  );
+
+  stages.push(
+    await stage('preorder_windows', async () => {
+      const r = await syncPreorderWindowStatuses(ctx);
+      return {
+        summary:
+          r.reconciled === 0
+            ? 'No preorder windows changed state.'
+            : `${r.opened} opened, ${r.closed} closed.`,
+        detail: { ...r },
+      };
+    })
+  );
+
+  stages.push(
+    await stage('expiring_lots', async () => {
+      const r = await sweepExpiringLots(ctx);
+      const parts: string[] = [];
+      if (r.newlyFlagged > 0) parts.push(`${r.newlyFlagged} batch(es) newly within 30 days`);
+      if (r.expired > 0) parts.push(`${r.expired} already past their date`);
+      // Reported, not swallowed. A dated business with undated batches has a
+      // data-entry problem, and a sweep that says nothing lets it grow.
+      if (r.undated > 0) parts.push(`${r.undated} carrying no date at all`);
+      return {
+        summary: parts.length === 0 ? 'Nothing is close to expiring.' : `${parts.join('; ')}.`,
         detail: { ...r },
       };
     })

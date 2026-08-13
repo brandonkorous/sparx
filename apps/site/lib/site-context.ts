@@ -73,6 +73,11 @@ export interface ResolvedSite {
   // docs/45 §3): an ordered { platform, url }[] the layout chrome binds
   // `site.social` to.
   socials: { platform: string; url: string }[];
+  // How a customer reaches this business (per-site, docs/49): the phone number,
+  // the address to write to, and the place to turn up. Bound by the page tree as
+  // `site.identity.phone` / `.email` / `.address`. Each is null when unset — an
+  // empty string would blank the authored node instead of leaving it standing.
+  contact: { phone: string | null; email: string | null; address: string | null };
   // Whether the always-on "Made with sparx" footer credit renders for this site.
   // Defaults true; a future merchant toggle can hide it.
   showSparxCredit: boolean;
@@ -303,6 +308,10 @@ export const resolveSite = cache(async (): Promise<ResolvedSite | null> => {
       // Defaults to [] so a storefront served by an older api-rest that doesn't
       // yet return `socials` behaves exactly as before (no links).
       socials: data.socials ?? [],
+      // All-null on an older api-rest that doesn't return it, which is the same
+      // thing as "the business has not filled these in" — the authored content
+      // stands rather than being blanked.
+      contact: data.contact ?? { phone: null, email: null, address: null },
       // Defaults null on an older api-rest that doesn't return it — the chrome
       // then renders whatever the node was authored with, rather than blanking.
       tagline: data.tagline ?? null,

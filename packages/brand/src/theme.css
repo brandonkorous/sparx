@@ -271,6 +271,17 @@
   --color-module-social-content: #ffffff;
   --color-module-finance: #16a34a; /* money green (green-600, deeper than success) */
   --color-module-finance-content: #ffffff; /* white fails AA on this fill */
+  /* Staff — a deep rust BROWN, and the choice is deliberate rather than
+     decorative. The purple/violet arc already holds FOUR modules (chat violet-600,
+     partner violet-700, automations fuchsia-600, ai pink-600), so a fifth there
+     would be indistinguishable in the rail and on the module grid — which is the
+     only job a module hue has. Brown is the one family this palette has never
+     used: no other token is in it, it is far in lightness from commerce's bright
+     orange (L 31% vs 66%) and far in saturation from b2b's slate, and it reads
+     warm and human for the module about people. White ink clears AA comfortably
+     (~8:1), in both themes, because the fill is dark. */
+  --color-module-staff: #92400e;
+  --color-module-staff-content: #ffffff;
   --color-module-partner: #6d28d9; /* violet-700, one notch deeper than chat */
   --color-module-partner-content: #ffffff;
   /* Social posting — a true blue (blue-600), the hue business owners map to social
@@ -345,6 +356,12 @@
   --color-module-social-content: #ffffff;
   --color-module-finance: #16a34a; /* money green (green-600, deeper than success) */
   --color-module-finance-content: #052e16; /* white fails AA on this fill */
+  /* Staff keeps WHITE ink in dark mode, unlike finance above: the rust brown is
+     a genuinely DARK fill, so the dark-theme flip that rescues a light green
+     would put near-black on near-brown here. See the light-theme note for why
+     the hue is brown. */
+  --color-module-staff: #92400e;
+  --color-module-staff-content: #ffffff;
   --color-module-partner: #6d28d9; /* violet-700, one notch deeper than chat */
   --color-module-partner-content: #ffffff;
   /* Social posting — a true blue (blue-600), the hue business owners map to social
@@ -462,6 +479,10 @@
 [data-module='finance'] {
   --color-module: var(--color-module-finance);
   --color-module-content: var(--color-module-finance-content);
+}
+[data-module='staff'] {
+  --color-module: var(--color-module-staff);
+  --color-module-content: var(--color-module-staff-content);
 }
 [data-module='partner'] {
   --color-module: var(--color-module-partner);

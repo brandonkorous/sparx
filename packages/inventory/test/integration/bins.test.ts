@@ -104,12 +104,13 @@ describe('inventory bins — DB-backed', () => {
 
   /* ── 2. Turning them on ────────────────────────────────────────────────── */
 
-  it('provisions the three system shelves and seats existing stock in DEFAULT', async () => {
+  it('provisions the system shelves and seats existing stock in DEFAULT', async () => {
     const f = await createInventoryFixture(tenantId);
     await receive(f, 40);
 
     const result = await enableBinsForWarehouse(ctx(), f.warehouseId);
-    expect(result.binsCreated).toBe(3);
+    // DEFAULT, QUARANTINE, DAMAGED and — since docs/146 Phase 9.7 — REPAIR.
+    expect(result.binsCreated).toBe(4);
     expect(result.levelsSeated).toBeGreaterThanOrEqual(1);
 
     // The invariant holds from the first instant, not from the first put-away —
@@ -125,11 +126,14 @@ describe('inventory bins — DB-backed', () => {
         orderBy: { code: 'asc' },
       })
     );
-    expect(bins.map((b) => b.code)).toEqual(['DAMAGED', 'DEFAULT', 'QUARANTINE']);
-    // The two holding shelves must not be sellable. If they were, quarantining
-    // something would do nothing at all.
+    expect(bins.map((b) => b.code)).toEqual(['DAMAGED', 'DEFAULT', 'QUARANTINE', 'REPAIR']);
+    // The three holding shelves must not be sellable. If they were, quarantining
+    // something would do nothing at all — and since docs/146 Phase 9.7 that is
+    // load-bearing rather than decorative: `unsellable_on_hand` is summed from
+    // exactly these, and it is what a returns disposition relies on.
     expect(bins.find((b) => b.code === 'QUARANTINE')?.isSellable).toBe(false);
     expect(bins.find((b) => b.code === 'DAMAGED')?.isSellable).toBe(false);
+    expect(bins.find((b) => b.code === 'REPAIR')?.isSellable).toBe(false);
     expect(bins.filter((b) => b.isDefault)).toHaveLength(1);
   });
 

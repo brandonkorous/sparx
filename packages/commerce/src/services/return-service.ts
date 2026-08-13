@@ -31,6 +31,9 @@ interface RestockLine {
   warehouseId: string | null;
   quantity: number;
   inspectionId: string;
+  /** The shelf an explicit disposition already chose (docs/146 Phase 9.7).
+   *  Null on the ordinary path. */
+  binId: string | null;
 }
 
 export interface ReturnSummary {
@@ -567,7 +570,11 @@ export async function issueRefund(
         reason: 'return',
         referenceType: 'Return',
         referenceId: input.returnId,
+        // The SAME key `setReturnDisposition` uses for a restock, so a line that
+        // was already dispositioned is a no-op here rather than a second
+        // movement (docs/146 Phase 9.7).
         idempotencyKey: `return-restock:${input.returnId}:${line.inspectionId}`,
+        ...(line.binId ? { binId: line.binId } : {}),
       });
     }
   }
@@ -595,7 +602,7 @@ export async function issueRefund(
 async function collectRestockLines(tx: TxClient, returnId: string): Promise<RestockLine[]> {
   const inspections = await tx.returnInspection.findMany({
     where: { returnId, restockable: true },
-    select: { id: true, returnLineItemId: true, warehouseId: true },
+    select: { id: true, returnLineItemId: true, warehouseId: true, dispositionBinId: true },
   });
   if (inspections.length === 0) return [];
 
@@ -619,7 +626,16 @@ async function collectRestockLines(tx: TxClient, returnId: string): Promise<Rest
     if (!variantId) continue; // free-text line — untracked
     const quantity = line.approvedQuantity > 0 ? line.approvedQuantity : line.quantity;
     if (quantity <= 0) continue;
-    lines.push({ variantId, warehouseId: ins.warehouseId, quantity, inspectionId: ins.id });
+    lines.push({
+      variantId,
+      warehouseId: ins.warehouseId,
+      quantity,
+      inspectionId: ins.id,
+      // Carry the shelf an explicit disposition already chose (docs/146 Phase
+      // 9.7). Null on the ordinary path, where the ledger's mirror picks the
+      // location's default — which is the right answer for a plain restock.
+      binId: ins.dispositionBinId,
+    });
   }
   return lines;
 }

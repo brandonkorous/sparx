@@ -47,6 +47,9 @@ export type InventoryTopic = Extract<
   | 'inventory.assembly.completed'
   | 'inventory.classification.changed'
   | 'inventory.purchase_order.late'
+  | 'inventory.backorder.created'
+  | 'inventory.backorder.allocated'
+  | 'inventory.lot.expiring'
 >;
 
 export interface InventoryEventInput<T = Record<string, unknown>> {

@@ -96,6 +96,34 @@ function coerceSocials(raw: unknown): { platform: string; url: string }[] {
   });
 }
 
+/** How a customer reaches this business, bindable as `site.identity.phone` /
+ *  `.email` / `.address`. Per-site only — there is no tenant-level fallback,
+ *  because a shared phone number across two unrelated businesses is the defect,
+ *  not the convenience. */
+export interface SiteContact {
+  phone: string | null;
+  email: string | null;
+  address: string | null;
+}
+
+/** Read `Property.settings.contact` into a clean shape. Trims, and maps a blank
+ *  to NULL rather than '' — an empty string is a KNOWN-but-empty value, which the
+ *  silica resolver fills OVER the authored content and blanks the node. Null reads
+ *  as unset and leaves the starter's own wording standing. */
+function readSiteContact(settings: unknown): SiteContact {
+  const empty: SiteContact = { phone: null, email: null, address: null };
+  if (!settings || typeof settings !== 'object' || Array.isArray(settings)) return empty;
+  const raw = (settings as { contact?: unknown }).contact;
+  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return empty;
+  const field = (key: keyof SiteContact): string | null => {
+    const v = (raw as Record<string, unknown>)[key];
+    if (typeof v !== 'string') return null;
+    const t = v.trim();
+    return t.length > 0 ? t : null;
+  };
+  return { phone: field('phone'), email: field('email'), address: field('address') };
+}
+
 // The active site's social links: its OWN (Property.settings.socials) when set,
 // else the tenant-level links (legacy / not-yet-personalised). Per-site is the
 // authoritative model (docs/49 "full per-site brand"); the tenant fallback keeps
@@ -642,6 +670,9 @@ const publicContentRoutes: FastifyPluginAsync = (app) => {
       // own, stored in the property settings bag. Falls back to the tenant-level
       // links (legacy / not-yet-set) so existing single-site links keep rendering.
       socials: readSiteSocials(propertyRow?.settings, tenant.socials),
+      // PER-SITE contact details — the phone/email/postal address a starter site's
+      // Contact page binds. No tenant fallback (see readSiteContact).
+      contact: readSiteContact(propertyRow?.settings),
       theme: mergedTheme,
       commerce: {
         // Per-site override wins; falls back to tenant CommerceSiteSettings then hardcoded default.

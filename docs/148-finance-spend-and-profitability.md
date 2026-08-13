@@ -1,13 +1,21 @@
 # 148 — Finance: spend, profitability, and the accounting handoff
 
-Version: 0.3 (built)
+Version: 0.4 (built)
 Author: Brandon Korous
-Last Updated: 2026-08-11
+Last Updated: 2026-08-12
 
 > Status: **built end to end.** Schema + migration, [`@sparx/finance`](../packages/finance/)
 > (85 pure-unit tests plus a DB-backed integration suite), the whole `/v1/finance/*`
-> spend API, the finance worker, the CSV connector, **all nine workbench panes**, and
-> the marketing-site entry. See §10 for what each step actually shipped.
+> spend API, the finance worker, the CSV connector, **all nine workbench panes**, the
+> marketing-site entry, and — new in 0.4 — the **`/finance` landing page** itself.
+> See §10 for what each step actually shipped.
+>
+> One thing is still unverified and typecheck cannot see it: **the module turning on
+> in a browser.** `finance` was missing from `MODULE_SLUGS` in
+> [module-toggle.ts](../services/api-rest/src/lib/module-toggle.ts) — that gate is
+> what makes activation possible at all, and a missing slug fails as "Request
+> validation failed" rather than as a build error. The fix is in; nobody has clicked
+> the switch. Do that before this doc claims 1.0.
 >
 > Pricing changed in 0.3: **$29/month standalone, and free with Commerce or B2B**
 > (§2). A tenant already selling through sparx has bought the revenue half of its
@@ -387,6 +395,15 @@ Three jobs: generate due recurring expenses, recompute dirty days of
    reader parses a minus sign, and the per-day chart colours each bar by its own
    sign rather than hanging negatives below an axis line someone has to find.
 
+   A second pass caught the Accounting surface shipping two of its three parts —
+   the connection and the sync history were there, the **mapping table** was not,
+   and `useSaveMappings` had zero consumers. Found by grepping the data layer for
+   exported hooks nothing calls, which is the check worth repeating on any module
+   that looks finished. Building it also needed a route that did not exist:
+   `setMappings` could write but nothing could READ a saved mapping back, so a
+   settings screen would have shown an empty table over saved data. Added
+   `listMappings()` + `GET /v1/finance/accounting/:id/mappings`.
+
    One backend gap surfaced while building: `GET /v1/finance/jobs/:type/:id`
    answered "what did this job cost" but nothing RANKED jobs, which is the whole
    point of the surface. Added `jobProfitability()` + `GET /v1/finance/jobs`
@@ -424,9 +441,37 @@ Three jobs: generate due recurring expenses, recompute dirty days of
    footnote says so outright. Claiming otherwise on the pricing page would
    contradict §1 in the one place a buyer is deciding whether to trust us.
 
-   **Not built: `/finance` itself.** The tile carries no "Learn" link, the same as
-   Invoicing, Inventory and Live Chat. A module landing page is a six-beat story
-   (§ the `/crm` worked example), not a stub, and a stub would be worse than the
-   honest absence.
+8. ~~**The `/finance` landing page**~~ — **done.** A bespoke six-beat page
+   ([finance-page.tsx](../apps/web/components/marketing/finance-page.tsx) +
+   `finance-sections` / `finance-profit` / `finance-money`), registered in
+   `ModulePageSlug` + `MODULE_ORDER` so the sitemap, both `llms*.txt` routes and
+   the platform page picked it up with no further edits, and the catalog tile
+   finally carries its `href`. Five layers present, per DESIGN.md §2.5.
 
-8. **Labour** — lands with [149](149-staff-management.md).
+   Three decisions in it are worth keeping:
+   - **The false fix concedes.** Beat 3 shows an accountant's category list that
+     is CORRECT and sums to the same $8,090 the rest of the page uses, then
+     attacks the grain rather than the accuracy. "Your books are right and still
+     cannot tell you whether the van wrap made money" is a much harder claim to
+     argue with than "accounting software is bad", and it is the only version
+     compatible with §1. The concession is what buys the turn its credibility.
+   - **The price lives in the TURN**, not only in the pricing band. "Free with
+     Commerce or B2B" is the same sentence beat 4 is already making — you bought
+     the revenue half, so the subtrahend is not a second product (§2). Anywhere
+     else on the page it degrades from a principle into a promotion.
+   - **One worked example reconciles across every device**: a sign shop's March,
+     sales $48,210 / work $19,640 / wages $14,300 / running $6,180 / kept $8,090.
+     The hero's proportion bar, the false-fix ledger, the profit card and the
+     twenty-one daily bars all land on those figures — the bars sum to $8,090
+     exactly. A page about money whose own columns do not add up is arguing
+     against itself.
+
+   The page's three cost hues are imported from the same vocabulary the product
+   uses (`kindColor` in the workbench's `format.ts`), so a visitor who signs up
+   meets the colours they were just shown. And the accounting section says
+   **download** rather than **sync**: only the spreadsheet provider is
+   `available` today, and the page names direct QuickBooks Online / Xero sync as
+   coming — the alternative is exactly the "we integrate with QuickBooks" lie §6
+   opens by naming.
+
+9. **Labour** — lands with [149](149-staff-management.md).

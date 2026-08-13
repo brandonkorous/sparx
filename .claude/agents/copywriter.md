@@ -79,7 +79,7 @@ tools.
 
 **Tagline system:** _[Offering], ignited._ — the leading noun rotates (Commerce ·
 Content · Customers · Email · Wholesale · AI · Everything), each landing on
-**ignited.** Static form: **Everything, ignited.**
+**ignited.** Static form: **Your business, multiplied.**
 
 **Positioning rules:**
 

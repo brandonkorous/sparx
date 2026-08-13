@@ -333,6 +333,27 @@ export function useAccounting() {
   });
 }
 
+export interface AccountingMapping {
+  id: string;
+  sparxType: string;
+  sparxId: string;
+  categoryId: string | null;
+  externalId: string;
+  externalName: string | null;
+  externalCode: string | null;
+}
+
+export function useMappings(connectionId: string | null) {
+  return useQuery({
+    queryKey: [...SPEND_KEY, 'accounting', 'mappings', connectionId],
+    queryFn: () =>
+      api.get<AccountingMapping[]>(
+        `/v1/finance/accounting/${encodeURIComponent(connectionId ?? '')}/mappings`
+      ),
+    enabled: connectionId !== null,
+  });
+}
+
 export function useSyncRuns(connectionId: string | null) {
   return useQuery({
     queryKey: [...SPEND_KEY, 'accounting', 'runs', connectionId],

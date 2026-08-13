@@ -54,10 +54,15 @@ export function createMailgunProvider(config: MailgunConfig): EmailProvider {
       const domain = config.defaultDomain;
       const url = `${base}/v3/${encodeURIComponent(domain)}/messages`;
 
-      // Mailgun's send endpoint is form-encoded (multipart for attachments;
-      // url-encoded is fine for our HTML+text body shape). Custom headers
-      // go in h:* fields; tags ride o:tag (max 3 per send, so we dedupe).
-      const form = new URLSearchParams();
+      // Mailgun's send endpoint is form-encoded. url-encoded is fine for the
+      // HTML+text body shape; the moment there is a file it has to be multipart,
+      // which is what `FormData` gives us. Both are built the same way below and
+      // only the container differs, so a field cannot be set on one and
+      // forgotten on the other. Custom headers go in h:* fields; tags ride o:tag.
+      const hasAttachments = (email.attachments?.length ?? 0) > 0;
+      const form: URLSearchParams | FormData = hasAttachments
+        ? new FormData()
+        : new URLSearchParams();
       form.set('from', email.from);
       form.set('to', email.to);
       form.set('subject', email.subject);
@@ -79,11 +84,24 @@ export function createMailgunProvider(config: MailgunConfig): EmailProvider {
         }
       }
 
+      if (form instanceof FormData) {
+        for (const file of email.attachments ?? []) {
+          form.append(
+            'attachment',
+            new Blob([Buffer.from(file.contentBase64, 'base64')], { type: file.contentType }),
+            file.filename
+          );
+        }
+      }
+
       const res = await fetch(url, {
         method: 'POST',
         headers: {
           authorization: authHeader,
-          'content-type': 'application/x-www-form-urlencoded',
+          // Only set for the url-encoded case. `fetch` writes its own
+          // content-type for FormData, boundary and all, and overriding it with
+          // a hand-written value is how a multipart body arrives unparseable.
+          ...(hasAttachments ? {} : { 'content-type': 'application/x-www-form-urlencoded' }),
         },
         body: form,
       });

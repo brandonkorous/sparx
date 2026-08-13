@@ -323,6 +323,17 @@ module "pubsub" {
     # of 140 that bounced.
     "finance.accounting.sync.completed" = []
 
+    # Staff (docs/149 §6). `staff.time.approved` is the one that does work: it is
+    # the labour deriver's trigger, and the deriver is a handler inside
+    # services/event-worker (a pull subscriber), so it carries no push
+    # subscription of its own. The rest are topic-only — the notification fan-out
+    # rides the publish() tee, and they are the activity-feed hooks.
+    "staff.member.created"         = []
+    "staff.time.approved"          = []
+    "staff.certification.expiring" = []
+    "staff.timeoff.requested"      = []
+    "staff.timeoff.decided"        = []
+
     # Module lifecycle. Topic-only here: the platform-crm-worker consumes both
     # via Cloud Run PUSH subscriptions (serverless.tf) — the first activation is
     # what moves a tenant out of Trial on sparx's own signup board (docs/140).
@@ -527,6 +538,13 @@ module "pubsub" {
     # received against it (docs/146 Phase 8.3). Fired once per order, the first
     # night it goes late; moving the expected arrival date re-arms it.
     "inventory.purchase_order.late" = []
+
+    # Demand-side commitments (docs/146 Phase 9) — somebody is owed units that
+    # do not exist yet, a delivery covered one of those commitments, and a dated
+    # lot crossed into its nearest expiry horizon.
+    "inventory.backorder.created"   = []
+    "inventory.backorder.allocated" = []
+    "inventory.lot.expiring"        = []
 
     # Integration providers, blueprint/template installs, imports, chat
     "provider.installed"      = []

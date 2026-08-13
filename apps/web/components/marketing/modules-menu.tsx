@@ -29,6 +29,11 @@ const MODULE_GROUP: Record<MarketingModule, ModuleGroup> = {
   // correctly next to Invoicing, which has the same "standalone, but bundled
   // with selling" shape.
   finance: 'Commerce',
+  // Team sits with Accounts & service rather than Commerce: what it manages is
+  // the people who DO the work, which is the same column as serving an account.
+  // Filing it under Commerce would also imply it needs a store, and a landscaping
+  // firm with nine crew and no online sales is exactly who buys it.
+  staff: 'Accounts & service',
   // B2B carries wholesale AND fleet; Scheduling and Live Chat are how you serve
   // an account once you have one. Deliberately NOT named for any one vertical —
   // a "Fleet" column would read as an auto-parts platform to everyone else.

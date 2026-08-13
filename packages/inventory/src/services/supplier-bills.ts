@@ -459,6 +459,222 @@ export async function cancelSupplierBill(
   });
 }
 
+// ─── Receipt → bill (docs/146 Phase 10.10) ───────────────────────────────────
+//
+// The path for a business with no accounting package: the delivery has just
+// been booked in, the invoice is in the driver's hand, and the whole of entering
+// it should be typing the invoice number.
+//
+// ── Why a DRAFT and not a create ─────────────────────────────────────────────
+//
+// The draft is returned for the operator to check against the paper before
+// anything is written. That is not politeness — it is the three-way match doing
+// its job at the only moment it is cheap. A bill created straight from the
+// receipt would always match the receipt perfectly, by construction, and a match
+// that cannot fail is not a check. What the operator is comparing is the
+// supplier's numbers against ours, and the supplier's numbers are on the paper
+// in their hand.
+//
+// So this pre-fills OUR side and asks them to correct it to THEIRS. Where they
+// differ the match fires, which is exactly what was wanted.
+
+export interface BillDraftLine {
+  purchaseOrderLineId: string | null;
+  variantId: string | null;
+  sku: string | null;
+  description: string;
+  /** Base units, as received. */
+  quantity: number;
+  /** What we recorded paying per base unit — the landed cost where one was
+   *  worked out, otherwise the receipt's own figure. */
+  unitCostCents: number;
+  amountCents: number;
+  uomCode: string | null;
+  unitsPerUom: number;
+}
+
+export interface BillDraft {
+  goodsReceiptId: string;
+  receiptNumber: string | null;
+  supplierId: string;
+  supplierName: string | null;
+  purchaseOrderId: string | null;
+  purchaseOrderNumber: string | null;
+  currency: string;
+  /** The delivery date, offered as the invoice date because it is the closest
+   *  thing to a fact we have. The operator overwrites it with what the paper
+   *  says, which is frequently a different day. */
+  suggestedBilledAt: string;
+  /** From the supplier's payment terms where they have any, otherwise null —
+   *  never "30 days" invented on their behalf. */
+  suggestedDueAt: string | null;
+  lines: BillDraftLine[];
+  subtotalCents: number;
+  /** An invoice already entered against this delivery, if there is one. The
+   *  screen offers to open it rather than letting the same delivery be billed
+   *  twice — the single most expensive mistake in accounts payable. */
+  existingBillId: string | null;
+  existingBillNumber: string | null;
+}
+
+/**
+ * Everything needed to enter the supplier's invoice for one delivery.
+ *
+ * Reads only. Nothing is written until the operator confirms, and what they
+ * confirm goes through `createSupplierBill` like any other bill — same
+ * duplicate-number guard, same three-way match, same audit line.
+ */
+export async function draftBillFromReceipt(
+  ctx: ServiceContext,
+  goodsReceiptId: string
+): Promise<BillDraft> {
+  return withTenant(ctx, async (tx) => {
+    const receipt = await tx.goodsReceipt.findFirst({
+      where: { id: goodsReceiptId },
+      include: {
+        purchaseOrder: {
+          select: {
+            id: true,
+            number: true,
+            supplierId: true,
+            supplier: { select: { name: true, paymentTerms: true } },
+          },
+        },
+        lines: {
+          include: {
+            variant: { select: { sku: true, title: true, product: { select: { title: true } } } },
+          },
+        },
+      },
+    });
+    if (!receipt) throw new InventoryNotFoundError('GoodsReceipt', goodsReceiptId);
+
+    // A receipt cannot exist without a purchase order — the FK is required — so
+    // there is always somebody to bill it to.
+    const po = receipt.purchaseOrder;
+
+    const lines: BillDraftLine[] = receipt.lines.map((line) => {
+      // Landed cost first: it is what the goods actually cost us once freight
+      // and duty were spread over them, and it is the figure the match should
+      // argue with. Falling back to the base then the raw receipt cost keeps a
+      // draft possible before charges have been allocated.
+      const unitCostCents =
+        line.landedUnitCostCents ?? line.baseUnitCostCents ?? line.unitCostCents;
+      return {
+        purchaseOrderLineId: line.purchaseOrderLineId,
+        variantId: line.variantId,
+        sku: line.variant?.sku ?? null,
+        description: line.variant?.title ?? line.variant?.product.title ?? 'Item',
+        quantity: line.quantityReceived,
+        unitCostCents,
+        amountCents: line.quantityReceived * unitCostCents,
+        uomCode: line.uomCode,
+        unitsPerUom: line.unitsPerUom,
+      };
+    });
+
+    const existing = await tx.supplierBill.findFirst({
+      where: { purchaseOrderId: po.id, status: { not: 'cancelled' } },
+      orderBy: { createdAt: 'desc' },
+      select: { id: true, number: true },
+    });
+
+    const termsDays = netDays(po.supplier?.paymentTerms ?? null);
+    const billedAt = receipt.receivedAt;
+
+    return {
+      goodsReceiptId,
+      receiptNumber: receipt.number,
+      supplierId: po.supplierId,
+      supplierName: po.supplier?.name ?? null,
+      purchaseOrderId: po.id,
+      purchaseOrderNumber: po.number,
+      currency: receipt.currency,
+      suggestedBilledAt: billedAt.toISOString(),
+      suggestedDueAt:
+        termsDays === null ? null : new Date(billedAt.getTime() + termsDays * DAY_MS).toISOString(),
+      lines,
+      subtotalCents: lines.reduce((sum, line) => sum + line.amountCents, 0),
+      existingBillId: existing?.id ?? null,
+      existingBillNumber: existing?.number ?? null,
+    };
+  });
+}
+
+export interface CreateBillFromReceiptInput {
+  goodsReceiptId: string;
+  /** Theirs, off the paper. Required — a bill with no invoice number cannot be
+   *  quoted back to the supplier when it is queried. */
+  number: string;
+  billedAt?: string;
+  dueAt?: string;
+  taxCents?: number;
+  shippingCents?: number;
+  notes?: string;
+  /** Corrected lines, when the operator has changed something. Omitted means
+   *  "the delivery as recorded", which is the common case. */
+  lines?: SupplierBillLineInput[];
+}
+
+/**
+ * Enter the invoice for a delivery.
+ *
+ * A thin wrapper: it resolves the draft and hands it to `createSupplierBill`, so
+ * every guard that path has applies here too. The wrapper exists so the surface
+ * has one call to make and so the audit line records where the bill came from.
+ */
+export async function createSupplierBillFromReceipt(
+  ctx: ServiceContext,
+  input: CreateBillFromReceiptInput
+): Promise<SupplierBillDetail> {
+  const draft = await draftBillFromReceipt(ctx, input.goodsReceiptId);
+
+  const lines: SupplierBillLineInput[] =
+    input.lines ??
+    draft.lines.map((line) => ({
+      ...(line.purchaseOrderLineId ? { purchaseOrderLineId: line.purchaseOrderLineId } : {}),
+      ...(line.variantId ? { variantId: line.variantId } : {}),
+      description: line.description,
+      quantity: line.quantity,
+      unitCostCents: line.unitCostCents,
+      amountCents: line.amountCents,
+    }));
+
+  const bill = await createSupplierBill(ctx, {
+    supplierId: draft.supplierId,
+    ...(draft.purchaseOrderId ? { purchaseOrderId: draft.purchaseOrderId } : {}),
+    number: input.number,
+    billedAt: input.billedAt ?? draft.suggestedBilledAt,
+    ...((input.dueAt ?? draft.suggestedDueAt)
+      ? { dueAt: input.dueAt ?? draft.suggestedDueAt }
+      : {}),
+    currency: draft.currency,
+    taxCents: input.taxCents ?? 0,
+    shippingCents: input.shippingCents ?? 0,
+    ...(input.notes ? { notes: input.notes } : {}),
+    lines,
+  });
+
+  await withTenant(ctx, (tx) =>
+    audit(tx, ctx, bill.id, 'created_from_receipt', {
+      goodsReceiptId: input.goodsReceiptId,
+      receiptNumber: draft.receiptNumber,
+      number: input.number,
+    })
+  );
+
+  return bill;
+}
+
+/** `net30` → 30. Null for anything that is not a net-N term, INCLUDING terms we
+ *  simply do not parse: inventing a due date from "COD" or "2/10 net 30" would
+ *  put a wrong date on a payable, and a blank one is honest. */
+function netDays(terms: string | null): number | null {
+  if (!terms) return null;
+  const match = /^net[\s_-]?(\d{1,3})$/i.exec(terms.trim());
+  return match?.[1] ? Number(match[1]) : null;
+}
+
 // ─── plumbing ────────────────────────────────────────────────────────────────
 
 const HEADER_INCLUDE = {

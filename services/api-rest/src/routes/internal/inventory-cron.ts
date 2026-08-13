@@ -227,6 +227,22 @@ const inventoryCronRoutes: FastifyPluginAsync = (app) => {
     return { success: true, data: { tenants: tenants.length, outcomes } };
   });
 
+  //   POST /internal/inventory/report-delivery
+  //     → sends every report schedule whose next run time has passed, across
+  //       every tenant, then advances each one's clock.
+  //
+  // Hourly, because a schedule names an hour in the TENANT's timezone and there
+  // is no single time of day that could serve all of them. The sweep enumerates
+  // due rows itself (one indexed query platform-wide) rather than looping
+  // tenants: unlike the sweeps above, most tenants have nothing due on most
+  // ticks, so iterating every Inventory tenant to ask would be the expensive
+  // part of the job.
+  app.post('/internal/inventory/report-delivery', async (request) => {
+    authorize(request);
+    const result = await inventoryService.sweepDueReports();
+    return { success: true, data: result };
+  });
+
   return Promise.resolve();
 };
 

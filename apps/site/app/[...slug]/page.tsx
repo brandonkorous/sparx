@@ -11,7 +11,7 @@ import { applyRedirect } from '@/lib/redirects';
 import { getPublishedSite, sectionsForPage } from '@/lib/site';
 import { getPublishedBuilderPage, getPublishedBuilderStyles } from '@/lib/builder';
 import { getPublishedSilicaPage, treeHasHostNode } from '@/lib/silica';
-import { buildSilicaHost, pageOutOfRange } from '@/lib/silica-data';
+import { buildSilicaHost, pageOutOfRange, silicaSiteIdentity } from '@/lib/silica-data';
 import { loadBuilderData } from '@/lib/builder-data';
 import { PageView } from '@/components/page-view';
 import { SectionRenderer } from '@/components/section-renderer';
@@ -181,6 +181,9 @@ export default async function SitePage({ params, searchParams }: SlugPageProps) 
     const { resolver, paging } = await buildSilicaHost(site.slug, silicaPage.root, {
       currency: site.commerce.defaultCurrency,
       locale: site.commerce.defaultLocale,
+      // The PAGE binds `site.*` too, not just the frame — this route renders the
+      // Contact page, whose whole job is the business's own phone, email and address.
+      site: silicaSiteIdentity(site),
       // Where `?page=` is read from — an authored page carrying a product grid or a
       // journal index paginates like any other.
       searchParams: sp,

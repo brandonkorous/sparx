@@ -12,6 +12,7 @@ import { costingReadTools, costingWriteTools } from './costing-tools';
 import { assemblyReadTools, assemblyWriteTools } from './assembly-tools';
 import { planningReadTools, planningWriteTools } from './planning-tools';
 import { managementWriteTools } from './write-management-tools';
+import { onboardingReadTools, onboardingWriteTools } from './onboarding-tools';
 
 export * from './tools';
 export { managementWriteTools } from './write-management-tools';
@@ -22,6 +23,7 @@ export { pickReadTools, pickWriteTools } from './pick-tools';
 export { costingReadTools, costingWriteTools } from './costing-tools';
 export { assemblyReadTools, assemblyWriteTools } from './assembly-tools';
 export { planningReadTools, planningWriteTools } from './planning-tools';
+export { onboardingReadTools, onboardingWriteTools } from './onboarding-tools';
 
 /** The full Inventory tool set the MCP server publishes. */
 export const inventoryMcpTools = [
@@ -65,4 +67,11 @@ export const inventoryMcpTools = [
   // that a person made it knowingly.
   ...planningReadTools,
   ...planningWriteTools,
+  // "Where am I up to, and what would this spreadsheet do" (docs/146 Phase 11),
+  // plus the tenant's own columns. APPLYING an import is deliberately absent:
+  // it posts hundreds of movements from a file the agent read and the person
+  // did not. So is creating or removing a field DEFINITION, which changes every
+  // form and every export at once — both stay where somebody can see them.
+  ...onboardingReadTools,
+  ...onboardingWriteTools,
 ];

@@ -43,6 +43,7 @@ export const MODULE_SLUGS: ModuleSlug[] = [
   'scheduling',
   'social',
   'finance',
+  'staff',
 ];
 export const MODULE_SLUG_SET = new Set<string>(MODULE_SLUGS);
 

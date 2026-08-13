@@ -28,6 +28,7 @@ import { notFound } from '@sparx/api-core/errors';
 import { prisma, withTenant } from '@sparx/db';
 import { isModuleEnabled } from '@sparx/auth';
 import { computeAvailability } from '@sparx/inventory';
+import { preorderState } from '@sparx/commerce-schemas';
 import { pricingService, productTypeService, projectProductAttributes } from '@sparx/commerce';
 import type { ProductTypeSchema as ProductTypeSchemaT } from '@sparx/commerce-schemas';
 import { searchProducts } from '@sparx/search';
@@ -1237,7 +1238,49 @@ function fullProductSelect(propertyId: string) {
         isDefault: true,
         inventoryPolicy: true,
         optionAssignments: { select: { optionValueId: true } },
-        inventoryLevels: { select: { onHand: true, allocated: true, safetyBuffer: true } },
+        inventoryLevels: {
+          select: {
+            onHand: true,
+            allocated: true,
+            safetyBuffer: true,
+            // Quarantined / damaged / awaiting-repair units are on the
+            // shelf and not for sale (docs/146 Phase 9.7).
+            unsellableOnHand: true,
+          },
+        },
+        // What a shopper is allowed to be told about stock that is not here yet
+        // (docs/146 Phase 9.3/9.4).
+        //
+        // Two different promises, and the page needs both because they answer
+        // different questions. A PREORDER window is an offer with a stated date:
+        // "ships in March". An open BACKORDER date is the soonest anybody has
+        // been promised this item back — which is a real, useful thing to show
+        // on an out-of-stock page, and enormously better than "unavailable".
+        //
+        // Neither exposes the QUEUE. How many other people are waiting is the
+        // tenant's business, not a shopper's, and publishing it would turn every
+        // shortage into a scarcity tactic nobody chose to run.
+        preorderWindows: {
+          where: { status: { in: ['scheduled', 'open'] } },
+          take: 1,
+          select: {
+            status: true,
+            startsAt: true,
+            endsAt: true,
+            availableAt: true,
+            availabilityNote: true,
+            isCapped: true,
+            maxQuantity: true,
+            soldQuantity: true,
+            chargeUpFront: true,
+          },
+        },
+        backorders: {
+          where: { status: { in: ['open', 'partial'] }, promisedAt: { not: null } },
+          orderBy: { promisedAt: 'asc' as const },
+          take: 1,
+          select: { promisedAt: true },
+        },
       },
     },
     images: {
@@ -1306,6 +1349,40 @@ function mapFullProduct(
       const { available, inStock } = computeAvailability(v.inventoryLevels, v.inventoryPolicy, {
         inventoryActive,
       });
+
+      // The preorder offer, resolved through the SAME function the workbench and
+      // the checkout guard use, so the date on the product page and the date in
+      // the confirmation email cannot come out different.
+      const window = v.preorderWindows[0];
+      const preorder = window
+        ? (() => {
+            const state = preorderState(
+              {
+                status: window.status as never,
+                startsAt: window.startsAt,
+                endsAt: window.endsAt,
+                isCapped: window.isCapped,
+                maxQuantity: window.maxQuantity,
+                soldQuantity: window.soldQuantity,
+              },
+              new Date()
+            );
+            return {
+              // Null means nobody has committed to a date. The storefront renders
+              // that as "date to be confirmed" — which sells honestly — and never
+              // as an estimate dressed up as a commitment.
+              availableAt: window.availableAt?.toISOString() ?? null,
+              availabilityNote: window.availabilityNote,
+              isTakingOrders: state.isTakingOrders,
+              // Null when uncapped. There is no honest integer for "no limit",
+              // and every value used as one ends up on a page as "999999 left".
+              remaining: state.remaining,
+              chargeUpFront: window.chargeUpFront,
+              blockedBy: state.blockedBy,
+            };
+          })()
+        : null;
+
       return {
         id: v.id,
         sku: v.sku,
@@ -1321,6 +1398,12 @@ function mapFullProduct(
         optionValueIds: v.optionAssignments.map((ov) => ov.optionValueId),
         available: available ?? 0,
         inStock,
+        preorder,
+        // The soonest date anybody waiting on this item has been promised it
+        // back. Null when nobody has been able to promise anything, which is
+        // common and is rendered as "we will confirm a date" rather than as
+        // silence or an invented one.
+        expectedBackAt: v.backorders[0]?.promisedAt?.toISOString() ?? null,
       };
     }),
     images: result.images.map((img) => ({

@@ -58,6 +58,7 @@ export const SPARX_MODULES = [
   'automations',
   'seo',
   'finance',
+  'staff',
   'partner',
   'platform',
 ] as const;

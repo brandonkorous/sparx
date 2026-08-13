@@ -296,16 +296,39 @@ model Tenant {
 
   // Supplier performance + procurement discipline (docs/146 Phase 8) — how the
   // people you buy from actually behave, and the controls over spending with them
-  supplierScorecards         SupplierScorecard[]
-  supplierPriceBreaks        SupplierPriceBreak[]
-  poApprovalRules            PurchaseOrderApprovalRule[]
-  poApprovals                PurchaseOrderApproval[]
-  advanceShipNotices         AdvanceShipNotice[]
-  advanceShipNoticeLines     AdvanceShipNoticeLine[]
-  supplierReturns            SupplierReturn[]
-  supplierReturnLines        SupplierReturnLine[]
-  supplierBills              SupplierBill[]
-  supplierBillLines          SupplierBillLine[]
+  supplierScorecards     SupplierScorecard[]
+  supplierPriceBreaks    SupplierPriceBreak[]
+  poApprovalRules        PurchaseOrderApprovalRule[]
+  poApprovals            PurchaseOrderApproval[]
+  advanceShipNotices     AdvanceShipNotice[]
+  advanceShipNoticeLines AdvanceShipNoticeLine[]
+  supplierReturns        SupplierReturn[]
+  supplierReturnLines    SupplierReturnLine[]
+  supplierBills          SupplierBill[]
+  supplierBillLines      SupplierBillLine[]
+
+  // Demand-side commitments (docs/146 Phase 9) — what has been promised against
+  // the stock, and which of the stock was never ours to begin with
+  backorders                 Backorder[]
+  backorderAllocations       BackorderAllocation[]
+  preorderWindows            PreorderWindow[]
+  consignmentSettlements     ConsignmentSettlement[]
+  consignmentSettlementLines ConsignmentSettlementLine[]
+
+  // Reporting, portability and the accounting handoff (docs/146 Phase 10) —
+  // standing report deliveries, what the accountant says the stock is worth, and
+  // what each uploaded file did to it
+  inventoryReportSchedules  InventoryReportSchedule[]
+  inventoryReportDeliveries InventoryReportDelivery[]
+  inventoryGlSnapshots      InventoryGlSnapshot[]
+  inventoryImportBatches    InventoryImportBatch[]
+
+  // Onboarding — beating the spreadsheet (docs/146 Phase 11): the guided setup
+  // and its clock, the saved column mappings that make a re-import one click,
+  // and the tenant's own columns on stock records
+  inventorySetupProgress InventorySetupProgress?
+  inventoryImportProfiles InventoryImportProfile[]
+  inventoryCustomFields   InventoryCustomField[]
 
   // Commerce module — pricing + discounts
   priceLists             PriceList[]
@@ -582,6 +605,20 @@ model Tenant {
   financeAccountingMappings    FinanceAccountingMapping[]
   financeAccountingSyncRuns    FinanceAccountingSyncRun[]
   rollupFinanceDailyProfit     RollupFinanceDailyProfit[]
+
+  // Staff module (docs/149) — the people who do the work, their effective-dated
+  // rates, the time they actually worked, the roster, and the paper. Deliberately
+  // NOT payroll: sparx records hours and rates and exports them; it never withholds,
+  // never files, and never pays anyone.
+  staffMembers         StaffMember[]
+  staffMemberSites     StaffMemberSite[]
+  staffPayRates        StaffPayRate[]
+  staffTimeEntries     StaffTimeEntry[]
+  staffShifts          StaffShift[]
+  staffTimeOffRequests StaffTimeOffRequest[]
+  staffCertifications  StaffCertification[]
+  staffDocuments       StaffDocument[]
+  staffCommissions     StaffCommission[]
 
   @@map("tenants")
 }

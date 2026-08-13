@@ -15,7 +15,7 @@ const ROLES: Role[] = [
     role: 'Display',
     specimen: (
       <span className="font-sans text-[clamp(34px,5vw,52px)] leading-[1.05] font-medium tracking-[-0.025em]">
-        Everything, ignited.
+        Your business, multiplied.
       </span>
     ),
     specs: ['Geist', '500', '-0.025em'],

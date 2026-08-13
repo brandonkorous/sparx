@@ -31,6 +31,11 @@ export type SparxModule =
   // so its surfaces pop AND a finance signal embedded in another module (e.g. the
   // Payouts card on the Commerce overview) reads as finance, not that module.
   | 'finance'
+  // Staff (docs/149) — the people who do the work. A real billable module with its
+  // own surfaces, and a hue of its own so a staff signal embedded in another
+  // module (the technician on a job, the person a booking is assigned to) reads as
+  // staff rather than as that module.
+  | 'staff'
   // Partner Portal (docs/114 §B.7) — a first-class platform area (the Finance
   // pattern), NOT a module: no manifest, no billing. It owns a violet hue so the
   // whole portal + any partner signal (a referral badge, a commission tile) reads

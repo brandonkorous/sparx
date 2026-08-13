@@ -441,6 +441,10 @@ model FinanceAccountingConnection {
   property Property?                  @relation(fields: [propertyId], references: [id], onDelete: Cascade)
   mappings FinanceAccountingMapping[]
   syncRuns FinanceAccountingSyncRun[]
+  /// Inventory-account balances imported through this connection (docs/146
+  /// Phase 10.9). SET NULL on disconnect — unplugging the accounting system must
+  /// not delete the evidence of what it said.
+  glSnapshots InventoryGlSnapshot[]
 
   // Hand-edited to NULLS NOT DISTINCT in the migration, same as SocialConnection —
   // otherwise unlimited (tenant, NULL, 'xero') rows coexist.
@@ -463,8 +467,15 @@ model FinanceAccountingMapping {
   tenantId     String @map("tenant_id") @db.Uuid
   connectionId String @map("connection_id") @db.Uuid
 
-  // expense_category | tax_rate | payment_method | income_account | vendor.
-  // CHECK-constrained.
+  // expense_category | tax_rate | payment_method | income_account | vendor |
+  // inventory_account. CHECK-constrained.
+  //
+  // `inventory_account` (docs/146 Phase 10.7) maps the five ROLES a stock journal
+  // posts to — the asset, cost of goods, accrued purchases, shrinkage,
+  // corrections — onto whatever those accounts are called in the tenant's chart.
+  // Not a category: a category is the owner's word for money going out, and these
+  // are fixed positions in double entry. It rides this table rather than a new
+  // one because that is exactly the growth this loose key was built for.
   sparxType String @map("sparx_type") @db.VarChar(30)
   // The sparx-side id. Uuid-as-text because `payment_method` maps a vocabulary value
   // ('card'), not a row.

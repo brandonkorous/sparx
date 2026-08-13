@@ -23,7 +23,7 @@
 // accountant has already closed — the single thing that would make a bookkeeper
 // stop trusting the feed.
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
   Alert,
   AlertContent,
@@ -45,7 +45,7 @@ import {
   Textarea,
   useToast,
 } from '@wizeworks/silicaui-react';
-import { Check, Download, Link2, Plug, Trash2, Upload } from 'lucide-react';
+import { Check, Download, Link2, Plug, Save, Trash2, Upload } from 'lucide-react';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import { FormSection } from '../../components/form-section';
@@ -59,14 +59,16 @@ import {
   useDeleteConnection,
   useExpenseCategories,
   useImportPreview,
+  useMappings,
   useSaveConnection,
+  useSaveMappings,
   useSyncRuns,
   type AccountingConnection,
   type AccountingProvider,
   type ImportPreview,
 } from './spend-data';
 import { PERIOD_OPTIONS, rangeFor, type PeriodKey } from './period';
-import { formatCents, formatDate, formatDateTime } from './format';
+import { formatCents, formatDate, formatDateTime, kindColor } from './format';
 
 /* ── Export ─────────────────────────────────────────────────────────────────*/
 
@@ -565,6 +567,157 @@ function ImportPanel({ categories }: { categories: { id: string; name: string }[
 
 /* ── Connections ────────────────────────────────────────────────────────────*/
 
+/**
+ * Category → their account code.
+ *
+ * The whole reason the export is worth anything to a bookkeeper. Without it,
+ * every cost lands in their books under whatever sparx happened to call the
+ * category ("Fuel"), and someone re-files all of it by hand every month. With
+ * it, "Fuel" arrives as `6420` and posts straight to the right account.
+ *
+ * Left blank is a REAL and fine answer, not an unfinished row: `accountFor`
+ * falls back to the category's export code and then to its name, so an unmapped
+ * category still exports something a human recognises rather than a blank column
+ * or a failed row. The screen says so, because otherwise a half-filled table
+ * looks like a job someone abandoned.
+ */
+function MappingTable({ connectionId }: { connectionId: string }) {
+  const toast = useToast();
+  const categories = useExpenseCategories();
+  const saved = useMappings(connectionId);
+  const saveMappings = useSaveMappings(connectionId);
+
+  // Category id → the code typed against it. Seeded from the server once loaded;
+  // `dirty` guards the seed so typing is never overwritten by a background refetch.
+  const [codes, setCodes] = useState<Record<string, string>>({});
+  const [dirty, setDirty] = useState(false);
+
+  useEffect(() => {
+    if (dirty || !saved.data) return;
+    const next: Record<string, string> = {};
+    for (const mapping of saved.data) {
+      if (mapping.sparxType !== 'expense_category') continue;
+      next[mapping.sparxId] = mapping.externalCode ?? mapping.externalName ?? '';
+    }
+    setCodes(next);
+  }, [saved.data, dirty]);
+
+  const rows = (categories.data ?? []).filter((category) => category.archivedAt === null);
+
+  const onSave = () => {
+    saveMappings.mutate(
+      rows
+        // Only send rows that carry a code. A blank is "no mapping", and writing
+        // an empty mapping row would be indistinguishable from one at read time
+        // while still counting as a saved decision.
+        .filter((category) => (codes[category.id] ?? '').trim() !== '')
+        .map((category) => ({
+          sparxType: 'expense_category' as const,
+          sparxId: category.id,
+          categoryId: category.id,
+          externalId: codes[category.id]!.trim(),
+          externalCode: codes[category.id]!.trim(),
+          externalName: category.name,
+        })),
+      {
+        onSuccess: (result) => {
+          setDirty(false);
+          afterPaneChange(() => {
+            toast.add({
+              title:
+                result.saved === 0
+                  ? 'Nothing mapped yet'
+                  : `${String(result.saved)} ${result.saved === 1 ? 'category' : 'categories'} mapped`,
+              description:
+                result.saved === 0
+                  ? 'Exports will use your own category names, which still works.'
+                  : 'Your next export will use these codes.',
+              type: 'success',
+            });
+          });
+        },
+        onError: (error) => {
+          toast.add({
+            title: 'Could not save the mapping',
+            description: spendErrorMessage(error, 'Nothing was changed.'),
+            type: 'error',
+          });
+        },
+      }
+    );
+  };
+
+  if (rows.length === 0) return null;
+
+  const mappedCount = rows.filter((c) => (codes[c.id] ?? '').trim() !== '').length;
+
+  return (
+    <div className="flex flex-col gap-3">
+      <div className="flex flex-wrap items-baseline justify-between gap-2">
+        <Text className="text-sm font-medium">Where each cost lands in their books</Text>
+        <Badge color={mappedCount === 0 ? 'neutral' : 'module'} variant="soft" size="sm">
+          {mappedCount} of {rows.length} mapped
+        </Badge>
+      </div>
+
+      <Text className="text-sm">
+        Type the account code your accountant uses for each kind of cost. Leave any of them blank
+        and the export sends the category name instead — that still works, it just means someone
+        files it at the other end.
+      </Text>
+
+      <Card className="overflow-hidden">
+        <Table size="sm">
+          <thead>
+            <tr>
+              <th>Your category</th>
+              <th>Their account code</th>
+            </tr>
+          </thead>
+          <tbody>
+            {rows.map((category) => (
+              <tr key={category.id}>
+                <td>
+                  <Badge color={kindColor(category.kind)} variant="soft" size="sm">
+                    {category.name}
+                  </Badge>
+                </td>
+                <td>
+                  <Input
+                    color="module"
+                    size="sm"
+                    spellCheck={false}
+                    aria-label={`Account code for ${category.name}`}
+                    placeholder={category.exportCode ?? 'e.g. 6420'}
+                    value={codes[category.id] ?? ''}
+                    onChange={(event) => {
+                      setDirty(true);
+                      setCodes((current) => ({ ...current, [category.id]: event.target.value }));
+                    }}
+                  />
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </Table>
+      </Card>
+
+      <div>
+        <Button
+          size="sm"
+          color="module"
+          disabled={!dirty}
+          loading={saveMappings.isPending}
+          onClick={onSave}
+        >
+          <Save className="size-4" aria-hidden />
+          Save the mapping
+        </Button>
+      </div>
+    </div>
+  );
+}
+
 function ConnectionCard({ connection }: { connection: AccountingConnection }) {
   const toast = useToast();
   const confirm = useConfirm();
@@ -692,6 +845,8 @@ function ConnectionCard({ connection }: { connection: AccountingConnection }) {
           stops a re-send re-posting a period your accountant has already closed.
         </FieldDescription>
       </Field>
+
+      <MappingTable connectionId={connection.id} />
 
       {(runs.data ?? []).length > 0 ? (
         <div className="flex flex-col gap-2">

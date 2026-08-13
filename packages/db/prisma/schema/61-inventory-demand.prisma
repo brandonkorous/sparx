@@ -1,0 +1,355 @@
+// Inventory — demand-side commitments (docs/146 Phase 9).
+//
+// Every phase up to here has been about SUPPLY: what is on the shelf, what it
+// cost, who you bought it from, when the next lot lands. This one is about the
+// promises made against that supply, and about stock that is physically here
+// while belonging to somebody else.
+//
+// The four things it adds are one idea seen from four sides — a commitment and
+// the stock that answers it are separate facts, and pretending otherwise is what
+// produces the two failures this phase exists to end:
+//
+//   1. A shortfall that leaves no record. Under a `continue`/`preorder` policy
+//      an order that outruns stock succeeds silently: `allocated` goes past
+//      `on_hand`, the level reads negative-available, and NOTHING says who is
+//      owed what, in what order, or when they were told to expect it. When the
+//      delivery finally lands, whoever is standing at the desk decides who gets
+//      it. `Backorder` is that queue, written down.
+//
+//   2. Stock counted as an asset that was never yours. Consigned goods sit in
+//      your building, sell through your till, and belong to your supplier until
+//      the moment they sell. Valuing them as inventory overstates the balance
+//      sheet by the whole consignment.
+//
+// ── The rule this file inherits ──────────────────────────────────────────────
+//
+// Phase 7 shipped a classification that defaulted to "erratic" and a cost that
+// COALESCEd to zero; Phase 8 answered with "a metric nobody could measure is
+// NULL, and its sample count sits beside it". Phase 9's version of the same rule
+// is about DATES, and it is the sharpest form yet:
+//
+//   A PROMISED DATE IS NULL UNTIL SOMEBODY OR SOMETHING ACTUALLY PROMISED IT,
+//   AND THE ROW RECORDS WHICH.
+//
+// A backorder screen that shows a date for every line is enormously reassuring
+// and, where the date was invented from a default lead time nobody has ever
+// measured, completely false. The customer is told a week; the supplier has
+// never once delivered inside three. So `promised_at` is nullable, and
+// `promise_source` says whether it came from a real purchase order's expected
+// arrival, from a measured lead time, or from a person typing it — and "no date
+// yet" is a first-class thing to display.
+
+// ─── 9.1 The backorder queue ─────────────────────────────────────────────────
+//
+// One row per (order line, shortfall). Created by `reserveOnTx` at the moment a
+// hold is taken that stock cannot cover, so it is a record of what was true when
+// the promise was made rather than a nightly reconstruction of it.
+//
+// ── What this is NOT ──
+//
+// It is not a second allocation mechanism, and it must never become one. The
+// hold that matters already exists: `reserveOnTx` has incremented
+// `inventory_levels.allocated` past `on_hand`, and that is what makes the units
+// unavailable to the next customer. A backorder row records WHO is owed, HOW
+// MANY, in WHAT ORDER, and WHAT they were told — and that is all it does. If it
+// also moved stock there would be two writers to the same number, which is the
+// one thing docs/146 §7 forbids outright.
+//
+// ── Why position is derived and not stored ──
+//
+// The obvious design gives each row an integer position. It is wrong: a
+// cancellation in the middle leaves a hole, a priority bump renumbers the tail,
+// and every one of those writes is a chance for two rows to claim third place.
+// Position is `ROW_NUMBER() OVER (ORDER BY priority DESC, created_at ASC)` at
+// read time — always contiguous, always correct, never written.
+//
+// `priority` IS stored, because bumping a customer up the queue is a real
+// decision a person makes and it has to survive.
+
+model Backorder {
+  id          String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId    String @map("tenant_id") @db.Uuid
+  variantId   String @map("variant_id") @db.Uuid
+  /// Where the units are owed FROM. A backorder is per-location because that is
+  /// where the delivery that clears it will land.
+  warehouseId String @map("warehouse_id") @db.Uuid
+
+  /// Units short at the moment the hold was taken — NOT the order line quantity.
+  /// An order for 10 against 4 on hand backorders 6, and the 4 ship today.
+  quantity          Int
+  /// How many of `quantity` a delivery has since covered. Reaches `quantity` and
+  /// the row is `allocated`.
+  allocatedQuantity Int @default(0) @map("allocated_quantity")
+
+  status String @default("open") @db.VarChar(20)
+  // ^ open | partial | allocated | fulfilled | cancelled
+  //   open       nothing has arrived for it yet
+  //   partial    some units covered, still short
+  //   allocated  fully covered by stock that has landed; awaiting fulfillment
+  //   fulfilled  the order line it belongs to has shipped
+  //   cancelled  the order was cancelled, or an operator dropped the commitment
+
+  // ── Who is owed ──
+  //
+  // holderType/holderId mirror `inventory_reservations` deliberately: a backorder
+  // is the shortfall SIDE of a reservation, and keeping the same vocabulary means
+  // the two can always be lined up against each other.
+  holderType  String  @map("holder_type") @db.VarChar(20) // order | subscription
+  holderId    String  @map("holder_id") @db.Uuid
+  /// The specific line, when the caller knows it. Null for a subscription
+  /// occurrence, which reserves per variant rather than per line.
+  orderItemId String? @map("order_item_id") @db.Uuid
+  /// Denormalised so the queue can be read, sorted and searched by customer
+  /// without joining orders — and so a cancelled order's history survives.
+  customerId  String? @map("customer_id") @db.Uuid
+
+  /// Higher goes first. 0 for everyone by default, so the queue is pure arrival
+  /// order until a human deliberately intervenes.
+  priority Int @default(0)
+
+  // ── The promise ──
+  //
+  // Nullable, and the whole point of the phase. Null means NOBODY HAS PROMISED
+  // ANYTHING, which is an honest and common state — the supplier has not been
+  // asked yet. The UI renders that as "no date yet", never as a blank cell that
+  // reads like a bug and never as a date computed to fill the space.
+  promisedAt              DateTime? @map("promised_at") @db.Timestamptz
+  /// Where the date came from, and therefore how much it is worth. Null exactly
+  /// when `promisedAt` is null (a CHECK pins the pair together).
+  ///   purchase_order  a real PO's expected arrival — the strongest kind
+  ///   lead_time       supplier's measured lead time; a forecast, not a promise
+  ///   manual          a person typed it
+  promiseSource           String?   @map("promise_source") @db.VarChar(20)
+  /// The order expected to clear this, when one exists. SET NULL rather than
+  /// CASCADE: deleting a draft PO must not erase the customer commitment that
+  /// justified raising it.
+  expectedPurchaseOrderId String?   @map("expected_purchase_order_id") @db.Uuid
+
+  /// Whether the customer has been told about this date. Separate from having a
+  /// date, because those are genuinely different: a promise nobody communicated
+  /// is not a promise, and re-notifying on every sweep is how a business teaches
+  /// its customers to filter its email.
+  notifiedAt         DateTime? @map("notified_at") @db.Timestamptz
+  /// The date the customer was last actually told, so a SLIP can be detected —
+  /// `promisedAt` moving away from this is the thing worth a second email.
+  notifiedPromisedAt DateTime? @map("notified_promised_at") @db.Timestamptz
+
+  note String? @db.Text
+
+  createdAt   DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt   DateTime  @updatedAt @map("updated_at") @db.Timestamptz
+  allocatedAt DateTime? @map("allocated_at") @db.Timestamptz
+  fulfilledAt DateTime? @map("fulfilled_at") @db.Timestamptz
+  cancelledAt DateTime? @map("cancelled_at") @db.Timestamptz
+
+  tenant                Tenant                @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  variant               ProductVariant        @relation(fields: [variantId], references: [id], onDelete: Cascade)
+  warehouse             Warehouse             @relation(fields: [warehouseId], references: [id], onDelete: Cascade)
+  expectedPurchaseOrder PurchaseOrder?        @relation(fields: [expectedPurchaseOrderId], references: [id], onDelete: SetNull)
+  allocations           BackorderAllocation[]
+
+  /// The queue read: everything still owed at a location, in the order it will
+  /// be filled.
+  @@index([tenantId, variantId, warehouseId, status, priority(sort: Desc), createdAt])
+  @@index([tenantId, status, promisedAt])
+  @@index([tenantId, holderType, holderId])
+  @@index([tenantId, customerId])
+  @@map("inventory_backorders")
+}
+
+/// One arrival's contribution to one backorder. Append-only.
+///
+/// A separate table rather than a running total on the backorder because a
+/// commitment is commonly cleared by more than one delivery, and "when did we
+/// stop owing this" is a question the audit has to answer with dates and
+/// document numbers rather than with a final tally.
+model BackorderAllocation {
+  id          String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId    String @map("tenant_id") @db.Uuid
+  backorderId String @map("backorder_id") @db.Uuid
+
+  quantity Int
+
+  /// What brought the units in. goods_receipt | transfer | count | manual.
+  sourceType String  @map("source_type") @db.VarChar(20)
+  sourceId   String? @map("source_id") @db.Uuid
+
+  /// The ledger row the arrival wrote, so an allocation can always be traced to
+  /// the movement that justified it. Null for a manual allocation, which is a
+  /// person asserting the units are here rather than a ledger event.
+  movementId String? @map("movement_id") @db.Uuid
+
+  allocatedAt DateTime @default(now()) @map("allocated_at") @db.Timestamptz
+  actorType   String   @default("system") @map("actor_type") @db.VarChar(20)
+  actorId     String?  @map("actor_id") @db.VarChar(127)
+
+  tenant    Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  backorder Backorder @relation(fields: [backorderId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId, backorderId])
+  @@index([tenantId, sourceType, sourceId])
+  @@map("inventory_backorder_allocations")
+}
+
+// ─── 9.4 Preorder windows ────────────────────────────────────────────────────
+//
+// `inventoryPolicy = 'preorder'` has existed since the beginning and has always
+// been a synonym for `continue`: sell it, let on-hand go negative, say nothing.
+// That is not a preorder, it is an unannounced backorder. A preorder is a
+// deliberate, bounded, DATED offer, and each of those three words is a column
+// here.
+//
+// One active window per variant. A second, later window is a separate row — a
+// product can be preordered for its second production run after its first has
+// landed, and squashing both into one row loses the first run's history.
+
+model PreorderWindow {
+  id        String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId  String @map("tenant_id") @db.Uuid
+  variantId String @map("variant_id") @db.Uuid
+
+  status String @default("scheduled") @db.VarChar(20)
+  // ^ scheduled | open | closed | cancelled
+  //   Derived from the dates on every read and STORED so a list can filter on it;
+  //   the sweep reconciles the two. A window whose start has passed is `open`
+  //   whatever the column says — the dates win, and `syncPreorderWindowStatus`
+  //   is what keeps the column from drifting into a lie.
+
+  /// When the offer opens. Null = open from the moment it was created.
+  startsAt DateTime? @map("starts_at") @db.Timestamptz
+  /// When the offer closes. Null = open until stock arrives or someone closes it.
+  endsAt   DateTime? @map("ends_at") @db.Timestamptz
+
+  /// THE DATE THE CUSTOMER IS TOLD. Nullable on purpose, and this is the
+  /// hardest-won column in the file: a factory that has not committed to a date
+  /// is extremely common, and a business that invents one to fill the field has
+  /// just made a promise it did not make. Null renders as "date to be confirmed"
+  /// — which sells, honestly — never as an estimate dressed as a commitment.
+  availableAt      DateTime? @map("available_at") @db.Timestamptz
+  /// What the customer sees instead of, or alongside, the date. "Ships with the
+  /// spring run", "awaiting a shipping date from the maker".
+  availabilityNote String?   @map("availability_note") @db.VarChar(255)
+
+  /// How many units may be sold on preorder. Null = uncapped, which is a real
+  /// choice for a made-to-order item and a dangerous one for anything else.
+  maxQuantity  Int     @default(0) @map("max_quantity")
+  /// Whether `maxQuantity` means anything. Stored rather than using `null` on
+  /// the integer so that "unlimited" is a decision somebody made rather than a
+  /// field they left blank.
+  isCapped     Boolean @default(false) @map("is_capped")
+  /// Units committed so far. Incremented in the same transaction as the hold, so
+  /// the cap cannot be raced past.
+  soldQuantity Int     @default(0) @map("sold_quantity")
+
+  /// Whether taking payment now is intended. sparx does not hold the card here —
+  /// this drives the storefront's wording and the checkout's capture choice.
+  chargeUpFront Boolean @default(true) @map("charge_up_front")
+
+  note String? @db.Text
+
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamptz
+  closedAt  DateTime? @map("closed_at") @db.Timestamptz
+
+  tenant  Tenant         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  variant ProductVariant @relation(fields: [variantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId, variantId, status])
+  @@index([tenantId, status, availableAt])
+  @@map("inventory_preorder_windows")
+}
+
+// ─── 9.6 Consignment settlement ──────────────────────────────────────────────
+//
+// Consigned stock belongs to the supplier until it sells. The moment it sells,
+// you owe them for it — and until somebody adds that up over a period and sends
+// it, the supplier is financing you by accident and both sides are guessing.
+//
+// A settlement is a PERIOD closed against an OWNER: everything that sold from
+// their consigned stock between two dates, at the cost agreed when it arrived,
+// with a document to pay against. Once closed it is immutable; a late-arriving
+// correction is the next period's line, never an edit to a settled one.
+
+model ConsignmentSettlement {
+  id       String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId String @map("tenant_id") @db.Uuid
+
+  number String @db.VarChar(31)
+
+  /// Whose stock. A supplier today; the column pair leaves room for consigning
+  /// FROM a customer (a workshop holding a fleet's own parts) without a schema
+  /// change, and a CHECK insists on exactly one.
+  ownerType  String  @map("owner_type") @db.VarChar(20) // supplier | customer
+  supplierId String? @map("supplier_id") @db.Uuid
+  customerId String? @map("customer_id") @db.Uuid
+
+  /// Half-open: `[periodStart, periodEnd)`. Half-open because adjacent periods
+  /// must not both claim a sale that happened at midnight, and a closed interval
+  /// makes that impossible to guarantee.
+  periodStart DateTime @map("period_start") @db.Timestamptz
+  periodEnd   DateTime @map("period_end") @db.Timestamptz
+
+  status String @default("draft") @db.VarChar(20)
+  // ^ draft | closed | invoiced | paid | cancelled
+
+  currency   String @default("USD") @db.VarChar(3)
+  /// What is owed for the period, at the cost recorded on each sale's movement.
+  totalCents Int    @default(0) @map("total_cents")
+  unitsSold  Int    @default(0) @map("units_sold")
+
+  /// The supplier's own document reference, once they bill for it.
+  supplierBillId String? @map("supplier_bill_id") @db.Uuid
+
+  note String? @db.Text
+
+  closedAt    DateTime? @map("closed_at") @db.Timestamptz
+  invoicedAt  DateTime? @map("invoiced_at") @db.Timestamptz
+  paidAt      DateTime? @map("paid_at") @db.Timestamptz
+  cancelledAt DateTime? @map("cancelled_at") @db.Timestamptz
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant       Tenant                      @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  supplier     Supplier?                   @relation(fields: [supplierId], references: [id], onDelete: Restrict)
+  customer     Customer?                   @relation(fields: [customerId], references: [id], onDelete: Restrict)
+  supplierBill SupplierBill?               @relation(fields: [supplierBillId], references: [id], onDelete: SetNull)
+  lines        ConsignmentSettlementLine[]
+
+  @@unique([tenantId, number], map: "inventory_consignment_settlements_tenant_number_unique")
+  @@index([tenantId, status, periodEnd(sort: Desc)])
+  @@index([tenantId, supplierId])
+  @@map("inventory_consignment_settlements")
+}
+
+/// One variant's worth of a settled period, with the movements it stands on.
+///
+/// `movementIds` is a JSONB array rather than a join table: these rows are
+/// written once and never queried FROM the movement side, and the array is what
+/// lets a disputed line be opened back up to the exact sales it came from.
+model ConsignmentSettlementLine {
+  id           String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId     String @map("tenant_id") @db.Uuid
+  settlementId String @map("settlement_id") @db.Uuid
+  variantId    String @map("variant_id") @db.Uuid
+  warehouseId  String @map("warehouse_id") @db.Uuid
+
+  unitsSold     Int @map("units_sold")
+  /// The agreed cost per unit, taken from the movement's own recorded cost, not
+  /// from today's average. What you owe is what it cost when it sold.
+  unitCostCents Int @map("unit_cost_cents")
+  amountCents   Int @map("amount_cents")
+
+  movementIds Json @default("[]") @map("movement_ids")
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+
+  tenant     Tenant                @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  settlement ConsignmentSettlement @relation(fields: [settlementId], references: [id], onDelete: Cascade)
+  variant    ProductVariant        @relation(fields: [variantId], references: [id], onDelete: Cascade)
+  warehouse  Warehouse             @relation(fields: [warehouseId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId, settlementId])
+  @@index([tenantId, variantId])
+  @@map("inventory_consignment_settlement_lines")
+}

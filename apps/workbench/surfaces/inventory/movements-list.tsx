@@ -26,7 +26,7 @@
 // year of history to "make their first change" because they mistyped a product
 // name is the worse of the two mistakes.
 
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import {
   Badge,
   Button,
@@ -45,6 +45,7 @@ import { History, Search, ShieldCheck } from 'lucide-react';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
+import { SavedViewsBar } from '../../components/saved-views';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { movementReason, useStockLocations } from './data';
 import {
@@ -82,6 +83,14 @@ export function MovementsListSurface({ ctx }: { ctx: SurfaceContext }) {
   const [reason, setReason] = useState('');
   const [from, setFrom] = useState('');
   const [to, setTo] = useState('');
+
+  // What this list is showing, as plain strings — the shape a saved view stores
+  // and re-applies (docs/146 Phase 10.2). "Everything written off last month",
+  // saved once, is the whole point of the feature on this particular list.
+  const viewParams = useMemo(
+    () => ({ q: search.trim(), warehouse: locationId, reason, from, to }),
+    [search, locationId, reason, from, to]
+  );
 
   const [pageSize, setPageSize] = useState<PageSize>(50);
   const [page, setPage] = useState(1);
@@ -375,9 +384,22 @@ export function MovementsListSurface({ ctx }: { ctx: SurfaceContext }) {
           />
         </label>
 
+        <SavedViewsBar
+          target="/inventory/movements"
+          params={viewParams}
+          className="ml-auto"
+          onApply={(next) => {
+            setSearch(next.q ?? '');
+            setLocationId(next.warehouse ?? '');
+            setReason(next.reason ?? '');
+            setFrom(next.from ?? '');
+            setTo(next.to ?? '');
+            resetWindow();
+          }}
+        />
+
         {/* ALWAYS the last child of a list toolbar — see RefreshButton. */}
         <RefreshButton
-          className="ml-auto"
           isFetching={isFetching}
           updatedAt={data ? dataUpdatedAt : undefined}
           onRefresh={() => {

@@ -126,6 +126,10 @@ interface LockedLevel {
   allocated: number;
   avg_cost_cents: number | null;
   reorder_point: number | null;
+  /** Who owns the units at this level RIGHT NOW (docs/146 Phase 9.5). Read off
+   *  the same locked row rather than in a query of its own, so stamping every
+   *  movement with it costs nothing. */
+  ownership: string;
 }
 
 /** Resolve the movement actor: an explicit override wins, else derive from ctx. */
@@ -176,7 +180,7 @@ export async function applyMovement(tx: TxClient, input: MovementInput): Promise
 
   // 2. Lock the row FOR UPDATE — serializes concurrent writers on this level.
   const locked = await tx.$queryRaw<LockedLevel[]>`
-    SELECT on_hand, allocated, avg_cost_cents, reorder_point
+    SELECT on_hand, allocated, avg_cost_cents, reorder_point, ownership
     FROM inventory_levels
     WHERE variant_id = ${input.variantId}::uuid AND warehouse_id = ${input.warehouseId}::uuid
     FOR UPDATE
@@ -210,7 +214,18 @@ export async function applyMovement(tx: TxClient, input: MovementInput): Promise
   }
 
   const newOnHand = current.on_hand + delta;
-  if (newOnHand < 0 && !input.allowNegative) {
+  // Refuse only a movement that CAUSES the negative.
+  //
+  // `delta > 0` is excluded deliberately, and the omission was a real bug that
+  // Phase 9 surfaced: a level driven to −12 by a permitted oversell could not
+  // then be RECEIVED into, because +8 still leaves −4 and the guard fired on the
+  // result rather than on the cause. That is the exact sequence backorders exist
+  // to serve — sell past zero, then take a delivery — and it failed the delivery.
+  //
+  // An inbound movement can never make the position worse, so a still-negative
+  // balance after one is a pre-existing shortfall being partially repaid, not a
+  // new overdraft to block.
+  if (newOnHand < 0 && delta < 0 && !input.allowNegative) {
     throw new InventoryValidationError(
       `Movement would drive onHand negative (current ${current.on_hand}, delta ${delta})`
     );
@@ -323,6 +338,12 @@ export async function applyMovement(tx: TxClient, input: MovementInput): Promise
       note: input.note ?? null,
       unitCostCents: input.unitCostCents ?? null,
       costConsumedCents,
+      // Who owned the units when this happened (docs/146 Phase 9.5). STAMPED,
+      // never joined at read time: ownership changes — a consignment gets bought
+      // outright, a 3PL contract ends — and classifying a three-month-old sale
+      // by today's ownership silently rewrites what was owed that quarter. A
+      // settlement that moves after it was paid is worse than none at all.
+      ownership: current.ownership,
     },
   });
 

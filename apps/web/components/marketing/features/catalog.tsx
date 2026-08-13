@@ -367,8 +367,8 @@ function PlatformArea({ group, filtered }: { group: Group; filtered: boolean }) 
       {/* Quieter than a module card by design — these are the free foundation,
           the secondary tier of the page. The hue rides a filled marker, which is
           a SHAPE and therefore legible at any hue; the name takes the surface's
-          own ink. Thirteen filled headers inside one panel would out-shout the
-          thirteen modules a reader is actually choosing between. */}
+          own ink. A wall of filled headers inside one panel would out-shout the
+          fourteen modules a reader is actually choosing between. */}
       <div className="flex items-center gap-2.5">
         <span className={cx('h-2.5 w-2.5 shrink-0 rounded-full', area.fill)} aria-hidden />
         <Heading level={3} size={5} className="tracking-tight">

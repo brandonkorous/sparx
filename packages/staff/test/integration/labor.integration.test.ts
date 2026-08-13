@@ -1,0 +1,300 @@
+// The labour deriver, against a real Postgres.
+//
+// The unit suites prove the arithmetic. This proves the CHAIN: staff tables →
+// approved time → a finance expense filed under `wages`, with the job
+// allocations that make job profitability include labour. Everything here runs
+// through `withTenant`, so it is also a live check that RLS lets the deriver do
+// its job.
+//
+// Excluded under CI (no database there) exactly like the finance suites.
+
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { prisma, withTenant } from '@sparx/db';
+import { categoryBySlug } from '@sparx/finance';
+
+import { createMember } from '../../src/members.js';
+import { setRate } from '../../src/rates.js';
+import { approveTimeEntries, createTimeEntry } from '../../src/time.js';
+import { deriveLaborForPeriod, deriveLaborForRoster } from '../../src/labor.js';
+import { timesheetPeriod } from '../../src/timesheets.js';
+import { createTestTenant, day, dropTestTenant, type TestTenant } from '../helpers.js';
+
+let ctx: TestTenant;
+
+const MARCH = { periodStart: day('2026-03-01'), periodEnd: day('2026-03-31') };
+
+beforeEach(async () => {
+  ctx = await createTestTenant();
+});
+
+afterEach(async () => {
+  await dropTestTenant(ctx.tenantId);
+});
+
+/** An hourly person on the primary site, with a rate covering all of March. */
+async function hireHourly(rateCents = 3000, burdenPercent = 0) {
+  const member = await createMember(ctx.tenantId, {
+    firstName: 'Sam',
+    lastName: 'Okafor',
+    siteIds: [ctx.propertyId],
+    primarySiteId: ctx.propertyId,
+  });
+  await setRate(ctx.tenantId, member.id, {
+    basis: 'hourly',
+    amountCents: rateCents,
+    burdenPercent,
+    effectiveFrom: day('2026-01-01'),
+  });
+  return member;
+}
+
+async function logAndApprove(
+  staffMemberId: string,
+  entries: { workedOn: string; minutes: number; jobId?: string; propertyId?: string }[]
+) {
+  const ids: string[] = [];
+  for (const e of entries) {
+    const row = await createTimeEntry(ctx.tenantId, {
+      staffMemberId,
+      workedOn: day(e.workedOn),
+      minutes: e.minutes,
+      propertyId: e.propertyId ?? null,
+      jobType: e.jobId ? 'order' : null,
+      jobId: e.jobId ?? null,
+    });
+    ids.push(row.id);
+  }
+  return approveTimeEntries(ctx.tenantId, ids, null, new Date('2026-04-01T09:00:00Z'));
+}
+
+describe('deriveLaborForPeriod', () => {
+  it('writes one wage expense, filed under the seeded wages category', async () => {
+    const member = await hireHourly();
+    await logAndApprove(member.id, [
+      { workedOn: '2026-03-02', minutes: 480 },
+      { workedOn: '2026-03-03', minutes: 240 },
+    ]);
+
+    const result = await deriveLaborForPeriod(ctx.tenantId, {
+      staffMemberId: member.id,
+      ...MARCH,
+    });
+
+    expect(result.expenseIds).toHaveLength(1);
+    expect(result.totalCents).toBe(36_000);
+
+    const wages = await categoryBySlug(ctx.tenantId, 'wages');
+    const expense = await withTenant({ tenantId: ctx.tenantId }, (tx) =>
+      tx.financeExpense.findFirstOrThrow({ where: { id: result.expenseIds[0] } })
+    );
+    expect(expense.categoryId).toBe(wages?.id);
+    expect(expense.amountCents).toBe(36_000);
+    expect(expense.source).toBe('labor');
+    expect(expense.propertyId).toBe(ctx.propertyId);
+    // The period the cost BELONGS to, not when anyone was paid.
+    expect(expense.incurredAt.toISOString().slice(0, 10)).toBe('2026-03-31');
+  });
+
+  it('is idempotent — re-running updates the row instead of doubling the month', async () => {
+    const member = await hireHourly();
+    await logAndApprove(member.id, [{ workedOn: '2026-03-02', minutes: 480 }]);
+
+    const first = await deriveLaborForPeriod(ctx.tenantId, { staffMemberId: member.id, ...MARCH });
+    const second = await deriveLaborForPeriod(ctx.tenantId, { staffMemberId: member.id, ...MARCH });
+
+    expect(second.expenseIds).toEqual(first.expenseIds);
+    const count = await withTenant({ tenantId: ctx.tenantId }, (tx) =>
+      tx.financeExpense.count({ where: { source: 'labor' } })
+    );
+    expect(count).toBe(1);
+  });
+
+  it('re-derives to a NEW total after a timesheet correction', async () => {
+    const member = await hireHourly();
+    const approved = await logAndApprove(member.id, [{ workedOn: '2026-03-02', minutes: 480 }]);
+    await deriveLaborForPeriod(ctx.tenantId, { staffMemberId: member.id, ...MARCH });
+
+    // Reopen, halve the hours, re-approve, re-derive — the correction path.
+    await withTenant({ tenantId: ctx.tenantId }, (tx) =>
+      tx.staffTimeEntry.updateMany({
+        where: { id: { in: approved.approvedIds } },
+        data: { minutes: 240, status: 'approved' },
+      })
+    );
+    const again = await deriveLaborForPeriod(ctx.tenantId, { staffMemberId: member.id, ...MARCH });
+
+    expect(again.totalCents).toBe(12_000);
+    const expenses = await withTenant({ tenantId: ctx.tenantId }, (tx) =>
+      tx.financeExpense.findMany({ where: { source: 'labor' } })
+    );
+    expect(expenses).toHaveLength(1);
+    expect(expenses[0]?.amountCents).toBe(12_000);
+  });
+
+  it('writes the job allocations that make job profitability include labour', async () => {
+    const member = await hireHourly();
+    const orderId = crypto.randomUUID();
+    await logAndApprove(member.id, [
+      { workedOn: '2026-03-02', minutes: 480, jobId: orderId },
+      { workedOn: '2026-03-03', minutes: 120 },
+    ]);
+
+    const result = await deriveLaborForPeriod(ctx.tenantId, { staffMemberId: member.id, ...MARCH });
+
+    const allocations = await withTenant({ tenantId: ctx.tenantId }, (tx) =>
+      tx.financeExpenseAllocation.findMany({ where: { expenseId: result.expenseIds[0] } })
+    );
+    expect(allocations).toHaveLength(1);
+    expect(allocations[0]?.targetType).toBe('order');
+    expect(allocations[0]?.targetId).toBe(orderId);
+    // The job's own 8 hours, NOT the whole 10 — the sweeping-up time stays
+    // unallocated rather than being charged to the one job that was recorded.
+    expect(allocations[0]?.amountCents).toBe(24_000);
+  });
+
+  it('keeps two businesses apart instead of overwriting one with the other', async () => {
+    // The reason the site is in the idempotency key. With `<staffId>:<period>`
+    // alone, the second site's expense would replace the first on every run and
+    // the month would silently come up short.
+    const member = await createMember(ctx.tenantId, {
+      firstName: 'Rae',
+      lastName: 'Lindqvist',
+      siteIds: [ctx.propertyId, ctx.secondPropertyId],
+      primarySiteId: ctx.propertyId,
+    });
+    await setRate(ctx.tenantId, member.id, {
+      basis: 'hourly',
+      amountCents: 3000,
+      effectiveFrom: day('2026-01-01'),
+    });
+    await logAndApprove(member.id, [
+      { workedOn: '2026-03-02', minutes: 300, propertyId: ctx.propertyId },
+      { workedOn: '2026-03-03', minutes: 180, propertyId: ctx.secondPropertyId },
+    ]);
+
+    const result = await deriveLaborForPeriod(ctx.tenantId, { staffMemberId: member.id, ...MARCH });
+    expect(result.expenseIds).toHaveLength(2);
+
+    const expenses = await withTenant({ tenantId: ctx.tenantId }, (tx) =>
+      tx.financeExpense.findMany({ where: { source: 'labor' }, orderBy: { amountCents: 'desc' } })
+    );
+    expect(expenses.map((e) => [e.propertyId, e.amountCents])).toEqual([
+      [ctx.propertyId, 15_000],
+      [ctx.secondPropertyId, 9_000],
+    ]);
+  });
+
+  it('derives NOTHING and reports unpriced hours when nobody set a rate', async () => {
+    const member = await createMember(ctx.tenantId, {
+      firstName: 'Uma',
+      siteIds: [ctx.propertyId],
+      primarySiteId: ctx.propertyId,
+    });
+    await logAndApprove(member.id, [{ workedOn: '2026-03-02', minutes: 480 }]);
+
+    const result = await deriveLaborForPeriod(ctx.tenantId, { staffMemberId: member.id, ...MARCH });
+
+    expect(result.expenseIds).toEqual([]);
+    expect(result.unpricedMinutes).toBe(480);
+    const count = await withTenant({ tenantId: ctx.tenantId }, (tx) =>
+      tx.financeExpense.count({ where: { source: 'labor' } })
+    );
+    // No $0.00 expense. An unpriced hour is not a free hour.
+    expect(count).toBe(0);
+  });
+
+  it('ignores time that has not been approved', async () => {
+    const member = await hireHourly();
+    await createTimeEntry(ctx.tenantId, {
+      staffMemberId: member.id,
+      workedOn: day('2026-03-02'),
+      minutes: 480,
+    });
+
+    const result = await deriveLaborForPeriod(ctx.tenantId, { staffMemberId: member.id, ...MARCH });
+    expect(result.totalCents).toBe(0);
+    expect(result.expenseIds).toEqual([]);
+  });
+
+  it('adds employer burden to what reaches the ledger', async () => {
+    const member = await hireHourly(3000, 20);
+    await logAndApprove(member.id, [{ workedOn: '2026-03-02', minutes: 60 }]);
+    const result = await deriveLaborForPeriod(ctx.tenantId, { staffMemberId: member.id, ...MARCH });
+    expect(result.totalCents).toBe(3_600);
+  });
+});
+
+describe('deriveLaborForRoster', () => {
+  it('includes a salaried person who logged nothing at all', async () => {
+    // The obvious bug this guards: selecting only from timesheets drops every
+    // salaried person who never clocks — usually the biggest wages in the
+    // business.
+    const salaried = await createMember(ctx.tenantId, {
+      firstName: 'Ines',
+      siteIds: [ctx.propertyId],
+      primarySiteId: ctx.propertyId,
+    });
+    await setRate(ctx.tenantId, salaried.id, {
+      basis: 'salary',
+      amountCents: 7_300_000, // $200/day across a 365-day year
+      effectiveFrom: day('2026-01-01'),
+    });
+
+    const { staffMemberIds, derived } = await deriveLaborForRoster(ctx.tenantId, MARCH);
+
+    expect(staffMemberIds).toContain(salaried.id);
+    expect(derived.reduce((sum, d) => sum + d.totalCents, 0)).toBe(31 * 20_000);
+  });
+});
+
+describe('timesheetPeriod', () => {
+  it('shows an uncostable row as null, never as zero', async () => {
+    const paid = await hireHourly();
+    await logAndApprove(paid.id, [{ workedOn: '2026-03-02', minutes: 120 }]);
+
+    const unpaid = await createMember(ctx.tenantId, {
+      firstName: 'Nas',
+      siteIds: [ctx.propertyId],
+      primarySiteId: ctx.propertyId,
+    });
+    await logAndApprove(unpaid.id, [{ workedOn: '2026-03-02', minutes: 480 }]);
+
+    const grid = await timesheetPeriod(ctx.tenantId, {
+      from: MARCH.periodStart,
+      to: MARCH.periodEnd,
+    });
+
+    const paidRow = grid.rows.find((r) => r.staffMemberId === paid.id);
+    const unpaidRow = grid.rows.find((r) => r.staffMemberId === unpaid.id);
+
+    expect(paidRow?.costCents).toBe(6_000);
+    expect(unpaidRow?.costCents).toBeNull();
+    expect(unpaidRow?.costCents).not.toBe(0);
+    expect(unpaidRow?.approvedMinutes).toBe(480);
+    // The number the screen leads with when it is non-zero.
+    expect(grid.rowsNeedingRates).toBe(1);
+    // The total counts only what is costable — it does NOT silently include the
+    // person whose hours nobody can price.
+    expect(grid.costCents).toBe(6_000);
+  });
+});
+
+describe('tenant isolation', () => {
+  it('cascades every staff table from the tenant', async () => {
+    const member = await hireHourly();
+    await logAndApprove(member.id, [{ workedOn: '2026-03-02', minutes: 60 }]);
+
+    const doomed = ctx.tenantId;
+    await dropTestTenant(doomed);
+
+    const [members, entries, rates] = await Promise.all([
+      prisma.staffMember.count({ where: { tenantId: doomed } }),
+      prisma.staffTimeEntry.count({ where: { tenantId: doomed } }),
+      prisma.staffPayRate.count({ where: { tenantId: doomed } }),
+    ]);
+    expect([members, entries, rates]).toEqual([0, 0, 0]);
+
+    // afterEach deletes again; make that a no-op rather than a failure.
+    ctx = await createTestTenant();
+  });
+});

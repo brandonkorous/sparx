@@ -161,12 +161,22 @@ export interface FefoLot {
 
 /**
  * The batch a FEFO warehouse should ship next: the nearest expiry that is not
- * recalled and still has units at this location.
+ * recalled, not already expired, and still has units at this location.
  *
  * Recalled and pending-recall batches are excluded outright rather than ranked
  * last. A recall is a decision that stock must not leave the building, and a
  * strategy that would ship it "only if there is nothing else" is a strategy that
  * ships it on the day it matters most.
+ *
+ * EXPIRED batches are excluded for the same reason, and their absence from this
+ * query until Phase 9.8 was the sharpest edge in the picking path: sorting by
+ * `expires_at ASC` puts the most expired batch FIRST, so a location holding one
+ * out-of-date box would ship it to every customer until it ran out. FEFO exists
+ * precisely to stop that, and it was doing the opposite.
+ *
+ * The expired stock does not vanish — `listExpiringStock` reports it and it has
+ * to be written off by a person, which is the correct amount of friction for
+ * destroying goods.
  *
  * Returns null for an item that carries no dated lot — which is most items, and
  * why FEFO falls back to FIFO rather than refusing.
@@ -185,6 +195,7 @@ export async function resolveFefoLot(
        AND warehouse_id = ${input.warehouseId}::uuid
        AND quantity > 0
        AND expires_at IS NOT NULL
+       AND expires_at > now()
        AND (recall_status IS NULL OR recall_status = 'cleared')
      ORDER BY expires_at ASC
      LIMIT 1

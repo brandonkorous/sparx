@@ -1,0 +1,27 @@
+{
+  "name": "@sparx/staff-worker",
+  "version": "0.0.0",
+  "private": true,
+  "description": "sparx staff worker (docs/149 §4). Derives approved timesheet hours into a finance wage expense and asks finance to recompute the affected period. A LIBRARY registered by services/event-worker — not a service, not a Deployment.",
+  "type": "module",
+  "main": "src/index.ts",
+  "scripts": {
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run --passWithNoTests",
+    "test:watch": "vitest",
+    "clean": "rm -rf .turbo dist *.tsbuildinfo"
+  },
+  "dependencies": {
+    "@sparx/db": "workspace:*",
+    "@sparx/events": "workspace:*",
+    "@sparx/staff": "workspace:*",
+    "pino": "^9.5.0",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@types/node": "^25.9.1",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.7"
+  }
+}

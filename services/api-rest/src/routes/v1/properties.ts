@@ -123,6 +123,7 @@ const MODULE_SLUGS = [
   'scheduling',
   'social',
   'finance',
+  'staff',
 ] as const;
 
 // All fields optional → PATCH semantics. `slug` is intentionally immutable here
@@ -138,6 +139,22 @@ const SocialLink = z.object({
   url: z.string().min(1).max(2048),
 });
 
+// How a customer reaches this business — the phone number, the address to write
+// to, and the place to turn up. Site-scoped for the same reason `socials` is: two
+// unrelated businesses under one owner do not share a phone line.
+//
+// Every field is a plain string the business types once and the storefront binds
+// as `site.identity.phone` / `.email` / `.address`. `address` is multi-line free
+// text (a postal address is not a fixed set of fields worldwide), rendered with
+// its line breaks preserved. Empty string clears a field — the resolver reads a
+// blank as UNSET and leaves the authored content standing, so a starter site does
+// not render an empty label where a phone number should be.
+const SiteContact = z.object({
+  phone: z.string().max(40).optional(),
+  email: z.string().max(320).optional(),
+  address: z.string().max(500).optional(),
+});
+
 const PatchProperty = z.object({
   name: z.string().min(1).max(255).optional(),
   settings: z.record(z.string(), z.unknown()).optional(),
@@ -145,6 +162,8 @@ const PatchProperty = z.object({
   // need no schema column. Merged into existing settings (does not clobber other
   // keys). A present-but-empty array clears the site's own links.
   socials: z.array(SocialLink).max(50).optional(),
+  // Per-site contact details — same storage rationale as `socials` above.
+  contact: SiteContact.optional(),
   brandOverride: PropertyBrandOverrideSchema.nullable().optional(),
   moduleScope: z.array(z.enum(MODULE_SLUGS)).optional(),
 });
@@ -283,9 +302,14 @@ const propertiesRoutes: FastifyPluginAsync = async (app) => {
         select: { id: true, settings: true },
       });
       if (!existing) return null;
-      // settings + socials both live in the settings JSON. Layer: existing →
-      // caller's explicit `settings` (replace those keys) → caller's `socials`.
-      if (input.settings !== undefined || input.socials !== undefined) {
+      // settings, socials + contact all live in the settings JSON. Layer:
+      // existing → caller's explicit `settings` (replace those keys) → the
+      // caller's `socials`/`contact`.
+      if (
+        input.settings !== undefined ||
+        input.socials !== undefined ||
+        input.contact !== undefined
+      ) {
         const base =
           existing.settings &&
           typeof existing.settings === 'object' &&
@@ -294,6 +318,16 @@ const propertiesRoutes: FastifyPluginAsync = async (app) => {
             : {};
         const merged: Record<string, unknown> = { ...base, ...(input.settings ?? {}) };
         if (input.socials !== undefined) merged.socials = input.socials;
+        // MERGED field-by-field, unlike socials: the identity surface sends the
+        // whole contact block, but a caller patching only `phone` must not blank
+        // the address it never mentioned.
+        if (input.contact !== undefined) {
+          const prior =
+            base.contact && typeof base.contact === 'object' && !Array.isArray(base.contact)
+              ? (base.contact as Record<string, unknown>)
+              : {};
+          merged.contact = { ...prior, ...input.contact };
+        }
         data.settings = merged as Prisma.InputJsonValue;
       }
       return tx.property.update({ where: { id }, data });

@@ -87,6 +87,7 @@ import {
   type ChargeKind,
 } from './costing-data';
 import { describeQuantityShort } from './assembly-data';
+import { ReceiptBillPanel } from './receipt-bill-panel';
 
 const COLUMN = 'mx-auto flex w-full max-w-4xl flex-col gap-4';
 
@@ -1245,6 +1246,13 @@ function ViewReceipt({ ctx, id }: { ctx: SurfaceContext; id: string }) {
           </FormSection>
 
           <LandedCostSection receipt={data} />
+
+          {/* The invoice for this delivery (docs/146 Phase 10.10). Below the
+              landed cost on purpose: the freight that was just spread over the
+              lines is the thing most likely to differ from what the supplier
+              actually billed, and it should be on screen when the paper is
+              being read. */}
+          <ReceiptBillPanel ctx={ctx} goodsReceiptId={data.id} />
 
           {data.note ? (
             <FormSection title="Note">

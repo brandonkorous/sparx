@@ -67,6 +67,10 @@ export interface BinMovementResult {
 
 interface LockedBinLevel {
   on_hand: number;
+  /** Whether this shelf's stock counts toward what a customer may buy. Joined in
+   *  on the locking read so the level's unsellable rollup can be maintained for
+   *  free (docs/146 Phase 9.7). */
+  is_sellable: boolean;
 }
 
 /**
@@ -91,12 +95,15 @@ export async function applyBinMovement(
     ON CONFLICT (variant_id, bin_id) DO NOTHING
   `;
 
-  // 2. Lock it — serializes concurrent writers on this shelf.
+  // 2. Lock it — serializes concurrent writers on this shelf. `is_sellable` is
+  //    read off the same statement so the unsellable rollup below costs no extra
+  //    query (docs/146 Phase 9.7).
   const locked = await tx.$queryRaw<LockedBinLevel[]>`
-    SELECT on_hand
-    FROM inventory_bin_levels
-    WHERE variant_id = ${input.variantId}::uuid AND bin_id = ${input.binId}::uuid
-    FOR UPDATE
+    SELECT bl.on_hand, b.is_sellable
+    FROM inventory_bin_levels bl
+    JOIN inventory_bins b ON b.id = bl.bin_id
+    WHERE bl.variant_id = ${input.variantId}::uuid AND bl.bin_id = ${input.binId}::uuid
+    FOR UPDATE OF bl
   `;
   const current = locked[0];
   if (!current) {
@@ -124,7 +131,12 @@ export async function applyBinMovement(
   }
 
   const newOnHand = current.on_hand + input.delta;
-  if (newOnHand < 0 && !input.allowNegative) {
+  // Only a movement that CAUSES the negative is refused — the same correction
+  // the warehouse ledger needed (see `applyMovement`). A shelf mirroring a level
+  // that was driven negative by a permitted oversell must still be able to take
+  // a delivery: +8 onto −12 is a shelf being partially restocked, and refusing
+  // it blocks the receipt that was going to fix the shortfall.
+  if (newOnHand < 0 && input.delta < 0 && !input.allowNegative) {
     throw new InventoryValidationError(
       `A shelf cannot hold a negative quantity — this bin has ${current.on_hand} and the change is ${input.delta}. ` +
         `Check whether the stock is on a different shelf before forcing it.`
@@ -139,6 +151,23 @@ export async function applyBinMovement(
       ...(input.confirmsPhysicalCount ? { lastCountedAt: new Date() } : {}),
     },
   });
+
+  // Keep the level's unsellable rollup in step (docs/146 Phase 9.7).
+  //
+  // Without this the quarantine shelf is decoration: `on_hand` counts the whole
+  // location, availability subtracts only `allocated`, and a return routed to
+  // quarantine is back on sale the instant it is booked in. Written HERE because
+  // this function is the single writer of bin levels — anywhere else and the two
+  // numbers would drift.
+  if (!current.is_sellable) {
+    await tx.$executeRaw`
+      UPDATE inventory_levels
+         SET unsellable_on_hand = GREATEST(0, unsellable_on_hand + ${input.delta}),
+             updated_at = now()
+       WHERE variant_id   = ${input.variantId}::uuid
+         AND warehouse_id = ${input.warehouseId}::uuid
+    `;
+  }
 
   const row = await tx.inventoryBinMovement.create({
     data: {

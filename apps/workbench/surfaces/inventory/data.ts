@@ -357,7 +357,26 @@ export function useSetSafetyBuffer() {
 
 /* ── Saying what a number means ─────────────────────────────────────────── */
 
-export type Tone = 'success' | 'warning' | 'danger' | 'info' | 'neutral';
+/**
+ * The colour a value's MEANING resolves to, handed straight to a silicaui
+ * `color` prop.
+ *
+ * The five semantics carry state — is this good, bad, or worth a second look.
+ * The two module identities carry WHOSE functionality a value belongs to, which
+ * is a different axis and one the semantics cannot express: an ownership badge
+ * saying "on consignment" is not a warning and not a success, it is a fact about
+ * which module owns the arrangement (DESIGN.md, RULE #4). Reaching for `neutral`
+ * there would flatten four distinct classes into the same grey, which is exactly
+ * what neutral has to be earned against.
+ */
+export type Tone =
+  | 'success'
+  | 'warning'
+  | 'danger'
+  | 'info'
+  | 'neutral'
+  | 'module-inventory'
+  | 'module-crm';
 
 /**
  * How many a shopper could actually buy right now.

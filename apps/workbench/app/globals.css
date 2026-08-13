@@ -233,6 +233,49 @@ body {
   overscroll-behavior: none;
 }
 
+/* ── Printing a sheet ────────────────────────────────────────────────────────
+
+   Paper is the one place the application shell must not go. `window.print()`
+   prints the whole document, so without these rules a sheet of shelf labels
+   comes out as a picture of the workbench — rail, tabs, status bar and all —
+   with the labels squeezed into a corner.
+
+   The counterpart is components/print-sheet.tsx, which portals a copy of the
+   sheet to <body> and stamps `data-print-sheet` on it at `beforeprint`. Read
+   that file's header for why the sheet is duplicated rather than lifted out of
+   the dock by CSS. What matters here: the printable copy is always a DIRECT
+   CHILD of <body>, which is what lets these rules stay so blunt. They touch
+   body's own children and nothing deeper, so they can never reach inside a
+   dockview group and drag a hidden pane onto the page.
+
+   Everything is guarded on `body:has([data-print-sheet])` so that printing from
+   a surface with no sheet — a list, a report — behaves exactly as it did. */
+@media print {
+  /* The shell is `h-dvh` over a body that never scrolls. Left alone that clips
+     the sheet to one screenful and the rest of the labels never reach paper. */
+  html:has([data-print-sheet]),
+  body:has([data-print-sheet]) {
+    height: auto !important;
+    overflow: visible !important;
+    background: #fff !important;
+  }
+
+  body:has([data-print-sheet]) > *:not([data-print-sheet]) {
+    display: none !important;
+  }
+
+  /* Beats the `hidden` the portal wears on screen. */
+  [data-print-sheet] {
+    display: flex !important;
+  }
+}
+
+/* Printer margins for every sheet the app produces. Labels carry their own
+   padding, so this is only keeping the cells off the unprintable edge. */
+@page {
+  margin: 8mm;
+}
+
 h1,
 h2,
 h3,

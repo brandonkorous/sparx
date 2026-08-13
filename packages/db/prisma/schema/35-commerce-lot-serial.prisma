@@ -22,6 +22,13 @@ model LotBatch {
   supplierBatchRef             String?   @map("supplier_batch_ref") @db.VarChar(127)
   certificateOfAnalysisMediaId String?   @map("coa_media_id") @db.Uuid
 
+  /// When somebody was told this batch is running out of time (docs/146 Phase
+  /// 9.8). Stamped on the first crossing into the nearest horizon so the alert
+  /// fires ONCE rather than every night for the month the lot spends there.
+  /// Cleared when the expiry date itself is corrected — a new date is new news.
+  /// Null is NOT "fine": it means nobody has looked or nobody has been told.
+  expiryAlertedAt DateTime? @map("expiry_alerted_at") @db.Timestamptz
+
   recallStatus String?   @map("recall_status") @db.VarChar(20)
   // ^ null | pending | active | cleared
   recallReason String?   @map("recall_reason") @db.Text

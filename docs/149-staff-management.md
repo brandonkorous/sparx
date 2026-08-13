@@ -1,12 +1,23 @@
 # 149 — Staff management (the `staff` module)
 
-Version: 0.1 (design)
+Version: 0.3 (built)
 Author: Brandon Korous
-Last Updated: 2026-08-11
+Last Updated: 2026-08-13
 
-> Status: **design / not started.** Sequenced behind [148](148-finance-spend-and-profitability.md),
-> which ships first and works without this. Staff then turns 148's hand-typed "Wages"
-> line into derived labour cost and unlocks true job profitability.
+> Status: **built end to end — schema, services, API, six surfaces, marketing.** Every
+> step of §8 is done. 84 tests pass: 57 pure units plus 27 DB-backed integration tests
+> that walk approved time all the way into a `finance_expenses` row and out again as a
+> payroll hours file.
+>
+> **Unverified in a browser.** Dev has been down for the whole build, so every surface
+> here is typecheck-, lint- and build-green but has never been clicked. The `/staff`
+> marketing page IS browser-proven in the sense that matters — `next build` prerenders
+> it and `.bg-module-staff` is emitted into the CSS bundle, which is the failure this
+> module was most likely to ship silently.
+>
+> Sequenced behind [148](148-finance-spend-and-profitability.md), which shipped first
+> and works without this. Staff turns 148's hand-typed "Wages" line into derived labour
+> cost and unlocks true job profitability.
 
 ---
 
@@ -149,6 +160,11 @@ rather than an exception to it.
 
 ## 5. Surfaces
 
+All six are built — [apps/workbench/surfaces/staff/](../apps/workbench/surfaces/staff/),
+registered in `catalog/staff.ts`, addressed under `/team/*`. Keys are `staff.people`,
+`staff.person`, `staff.timesheets`, `staff.schedule`, `staff.timeoff`,
+`staff.certifications`.
+
 - **People** — the roster. Role, status, sites, at-a-glance certification warnings.
 - **Person** (detail pane) — identity, pay history, documents, certifications, time,
   commission. Identity is an editable field and lifecycle sits in the pane header, per
@@ -180,10 +196,176 @@ rather than an exception to it.
 
 ## 8. Build plan
 
-1. `StaffMember` + `StaffMemberSite` + `StaffPayRate`, and the links to `Member` /
-   `SchedulingResource`. Roster and person surfaces.
-2. `StaffTimeEntry` + timesheets + approval.
-3. The labour deriver into `FinanceExpense` (§4) — the payoff milestone.
-4. Shifts, time off, and the `AvailabilityException` write-through.
-5. Certifications + expiry reminders.
-6. Commission.
+1. ~~**Schema + migration**~~ — **done.** Nine tables in
+   [90-staff.prisma](../packages/db/prisma/schema/90-staff.prisma) +
+   [20270320000000_staff_management](../packages/db/prisma/migrations/20270320000000_staff_management/migration.sql).
+   Applied locally; RLS audit passes over all nine (ENABLE + FORCE + `tenant_isolation`);
+   `migrate diff` reports zero staff drift. No backfill and no seeded content, so the
+   FORCE-RLS backfill footgun never applies.
+
+   Two schema notes worth carrying: the `(tenant_id, user_id)` and
+   `(tenant_id, resource_id)` uniques are PLAIN, not `NULLS NOT DISTINCT` — most staff
+   have neither link, and nulls-not-distinct would cap a tenant at one staff member
+   without a login. And `staff_time_off_requests`' member index is `map`ped, because
+   Prisma's generated name for that triple is exactly 63 characters.
+
+2. ~~**Module wiring**~~ — **done.** `staff` is in `ModuleSlug` + `ALL_MODULES`, priced
+   `staff: 2900`, and added to the **twelve** other lists that re-declare the module
+   vocabulary — including `MODULE_SLUGS` in
+   [module-toggle.ts](../services/api-rest/src/lib/module-toggle.ts), which is THE
+   activation gate: a slug missing there fails as "Request validation failed" and the
+   module can never be turned on. No `REQUIRES`, no `BUNDLED_FREE` in either direction
+   (§2).
+
+   The hue is a deep rust brown `#92400e`. It was purple-600 for about an hour and
+   Brandon rejected it: chat, partner, automations and ai already occupy that arc, so a
+   fifth is indistinguishable in the rail. Brown is the one family the palette had never
+   used. Rail label is **"Your team"** — "HR" names a department the audience does not
+   have — and the icon is `ContactRound`, deliberately not `Users`, which is Customers.
+
+3. ~~**`@sparx/staff`**~~ — **done.** Roster, effective-dated rates, time entries + the
+   clock, timesheets, shifts, time off, certifications, documents, commissions, and the
+   labour deriver. 68 tests.
+
+   **The layout is load-bearing, not tidiness.** `pay.ts` imports NOTHING; `costing.ts`
+   imports only `pay.ts`; everything else touches Postgres. That split is what let the
+   arithmetic be verified before the package was even linked into the workspace — and it
+   immediately earned itself by catching a real bug: the salary allocator weighted only
+   the entries that carried a job, so someone with 100 minutes on one job and 300 on
+   untracked admin would have had **the entire month's salary charged to that one job**.
+   The fix weights over all the site's minutes and lets the jobless share fall out
+   unallocated. Regression test: "leaves the share of unlogged time unallocated rather
+   than inflating the jobs".
+
+   Three refusals are encoded and tested: an hour with no rate in force is reported as
+   UNPRICED, never costed at zero; a salary costs the CALENDAR, not the timesheet (so
+   `deriveLaborForRoster` unions timesheet people with salaried people who logged
+   nothing — otherwise the biggest wages in the business go missing); and the deriver
+   never invents a category, raising `WagesCategoryMissingError` when finance is absent.
+
+   **The idempotency key gained a segment.** §4 above writes it as
+   `<staffId>:<periodKey>`; the shipped key is `<staffId>:<periodKey>:<siteId|none>`,
+   because the same paragraph specifies one expense per person per period PER SITE and
+   without the site the second business overwrites the first on every run. There is an
+   integration test for exactly that.
+
+4. ~~**Shifts, time off, and the `AvailabilityException` write-through**~~ — **done**,
+   service layer and surface. `schedule.ts` writes a `blackout` exception on approval and
+   releases it on cancellation; a person with no scheduling resource is the ORDINARY case
+   and the decision is still recorded, so the API reports `blocksBookings` rather than
+   letting the surface imply the block always happens.
+
+5. ~~**staff-worker**~~ — **done.** A package inside `services/event-worker`, subscribing
+   to `staff.time.approved` only — approval is the trigger, not clock-out. Five `staff.*`
+   events added to the catalog AND provisioned in `terraform/envs/prod/main.tf`
+   (`check:events` green). Unpriced hours are logged at WARN, because the wages figure
+   being incomplete is otherwise invisible outside the timesheet screen.
+
+6. **Certifications + expiry reminders** — service layer, API and surface all done,
+   including the pure `certificationState` (where a NULL expiry is its own state and never
+   sorts as urgent) and the once-per-lead-window reminder filter. `state` and
+   `daysUntilExpiry` are resolved SERVER-side and sent on the wire, because "expiring"
+   depends on each certification's own lead time and a client re-deriving it would
+   eventually disagree with the roster badge. **The nightly sweep is still not wired** —
+   see "Still to build".
+
+7. **Commission** — service layer and API done, upserted on
+   `(tenant, member, sourceType, sourceId)` so a recalculation cannot pay twice, and read
+   on the person pane behind the pay gate. **Nothing calculates one yet** — see "Still to
+   build".
+
+8. ~~**`/v1/staff/*`**~~ — **done.** Six route files under
+   [routes/v1/staff/](../services/api-rest/src/routes/v1/staff/), one per surface plus
+   `pay.ts`, mounted from one `app.register`. `staffErrorMapper` in `app.ts` sends
+   `*_NOT_FOUND` → 404, the three "the world has to change first" errors
+   (`STAFF_PAY_RATE_OVERLAP`, `STAFF_TIME_APPROVED_LOCKED`, `STAFF_WAGES_CATEGORY_MISSING`)
+   → 409, and everything else → 422.
+
+   **`pay.ts` is a separate file because the GATE is, and that is the one decision here
+   worth keeping.** Every other module in the platform treats `viewer` as "may read
+   everything in this module"; that default is wrong exactly once, and it is here. Pay
+   rates, personnel documents, commissions and the costed timesheet require **`admin`**
+   (`requirePayAccess` in [staff-context.ts](../services/api-rest/src/lib/staff-context.ts));
+   hours, shifts, time off and certifications answer to the ordinary ladder. A dispatcher
+   who needs the rota and a bookkeeper who needs the wage total are both `editor` in most
+   tenants, and only one of them should be able to open a salary. Putting the split in one
+   file rather than in each route's judgement is what stops somebody forgetting it.
+
+   A person's rate history is **absent, not empty**, on a read without pay access — an
+   empty array reads as "nobody has ever recorded what this person earns", which is a
+   different and much more alarming claim than "you may not see this".
+
+   `approveTimeEntries` was changed to return the moved entries with their `workedOn`
+   rather than bare ids: the caller has to publish `staff.time.approved` naming a PERIOD,
+   and bare ids sent it back to the database for rows the function already had.
+
+9. ~~**The six surfaces**~~ — **done.** [surfaces/staff/](../apps/workbench/surfaces/staff/):
+   People, Person, Timesheets, Schedule, Time off, Certifications, over a shared
+   `data.ts`/`format.ts`. Registered in
+   [catalog/staff.ts](../apps/workbench/lib/surfaces/catalog/staff.ts) and addressed under
+   `/team/*` in `packages/links` (`check:routes`: 324 surfaces, all addressed).
+
+   Two surfaces carry the module's convictions rather than just its data. **Timesheets**
+   renders an uncostable person as `N hours unpriced` in solid `error` and labels the
+   period total "so far", never `$0.00`. **Certifications** is the colour argument:
+   expired is solid `error`, inside the item's own lead window is `warning`, and a
+   qualification that never expires is `info` labelled "No expiry" — a real answer that
+   must never sort to the top of a list about what needs attention.
+
+   The schedule's shift editor is one of the few sanctioned **dialogs** (four fields,
+   seconds of work, no surface to return to, and the week behind it is the context you
+   need while filling it in). `updateShift` gained a pair-validation guard —
+   `InvalidShiftWindowError` — because a PATCH that moves only the end time can invert a
+   window and nothing upstream can see both halves; the table's CHECK would otherwise
+   answer with a constraint violation instead of a sentence.
+
+10. ~~**Marketing**~~ — **done.** Catalog tile (label **"Team"**, $29), all four colour
+    maps, `ContactRound`, the megamenu column (Accounts & service, not Commerce — a
+    landscaping firm with nine crew and no online sales is exactly the buyer), the pricing
+    ledger row and feature card, both `ELSEWHERE_MONTHLY` maps at $60, the platform page,
+    the `MarketingModule` union, `ModulePageSlug` + `MODULE_ORDER` in `lib/modules.ts`
+    (which carries sitemap, both `llms*.txt` and the module page for free), the OG story
+    card, and `module-staff` in `apps/web`'s `@plugin` block — **verified emitted**:
+    `.bg-module-staff` is in the built CSS bundle, which is the silent-grey failure this
+    step exists to avoid. Module count moved 13 → 14 and every derived figure with it
+    (`$440/mo`, `$3,946` separate, `$42,100/yr` saved, "fourteen" in six copy locations).
+
+11. ~~**`/staff` landing page**~~ — **done**, on the six-beat shape. The map is in the
+    header of [staff-page.tsx](../apps/web/components/marketing/staff-page.tsx).
+
+    The beat that makes the page work is **3**: it concedes the payroll run is CORRECT and
+    then attacks the grain — payroll has never heard of a job. That concession is what
+    buys beat 4 its credibility, and it is also simply true, which matters more. Beat 6
+    hands payroll back. Wages render in the SAME blue the product uses, imported from
+    `finance-money` rather than re-picked, because the page's claim is that hours become
+    that line.
+
+    One worked example reconciles across every section, including the part that is easy to
+    fudge: the payroll run's **gross** $18,470 and the **cost** $22,533.40 are different
+    numbers and the page says why out loud, since the 22% between them is the entire
+    argument of beat 5b.
+
+12. ~~**The payroll hours export**~~ — **done**, and it was not on the original plan.
+    §1 promises "whoever runs payroll gets an export" and nothing implemented it, so the
+    landing page would have been describing something that did not exist.
+    [payroll-export.ts](../packages/staff/src/payroll-export.ts) +
+    `GET /v1/staff/timesheets/export` + a button on the Timesheets surface.
+
+    Two columns are load-bearing: the person's **payroll id**, without which somebody
+    matches names in a spreadsheet every fortnight; and **unpriced hours**, which are ON
+    the file because they were worked and must be paid, and flagged separately because
+    sparx cannot say what they cost. Leaving them off would underpay a real person —
+    a different class of bug from a wrong figure on a screen, and the reason six of the
+    27 integration tests are about this file.
+
+### Still to build
+
+- **Browser verification of all six surfaces.** Everything is typecheck/lint/build green
+  and none of it has been clicked ([[feedback_test_as_a_business_owner]] — a green
+  endpoint proves nothing about whether anyone can reach the screen).
+- **The nightly certification sweep.** `certificationsNeedingReminder` and `markReminded`
+  are built and tested; nothing calls them yet. It wants an api-rest tick publishing
+  `staff.certification.expiring` per certification, and an email template behind it.
+- **A commission surface.** The service layer and the API are done and the person pane
+  READS commissions; nothing writes one from the UI, because nothing yet calculates them
+  from an order or a deal. That calculation is the missing piece, not the screen.

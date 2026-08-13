@@ -88,6 +88,7 @@
     "@sparx/sitebuilder": "workspace:*",
     "@sparx/sms": "workspace:*",
     "@sparx/social": "workspace:*",
+    "@sparx/staff": "workspace:*",
     "@sparx/voice": "workspace:*",
     "@wizeworks/silicaui-html": "catalog:",
     "fastify": "^5.6.1",

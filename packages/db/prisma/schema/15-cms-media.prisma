@@ -54,6 +54,9 @@ model MediaAsset {
   // one upload path, so a receipt is an asset like any other rather than a second
   // file store nobody remembers to back up.
   financeReceipts FinanceExpenseAttachment[]
+  // Staff paper (docs/149) — contracts, handbooks, ID, certificates. Same storage
+  // as a finance receipt: the media library is the one place files live.
+  staffDocuments  StaffDocument[]
 
   @@index([tenantId, status])
   @@index([tenantId, updatedAt(sort: Desc)])

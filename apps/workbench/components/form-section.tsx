@@ -13,18 +13,28 @@
 import { Heading, Text } from '@wizeworks/silicaui-react';
 
 interface FormSectionProps {
-  title: string;
+  /** Usually a plain string. A node is allowed for the one case that earns it —
+   *  a count badge sitting with the words, where splitting them into title and
+   *  `action` would put the number at the far end of the row from what it
+   *  counts. */
+  title: React.ReactNode;
   /** One line on what this group is for, in plain language. Optional — a
    *  self-evident group doesn't need explaining, and filler is worse than none. */
   description?: string;
   /** Right-aligned slot on the heading row for a section-level action. */
   action?: React.ReactNode;
+  /** Layout only — sizing, flex behaviour, overflow, or a module tint. The
+   *  section's own chrome (card surface, padding, the heading rule) stays here
+   *  so every group in the app keeps the same shape. */
+  className?: string;
   children: React.ReactNode;
 }
 
-export function FormSection({ title, description, action, children }: FormSectionProps) {
+export function FormSection({ title, description, action, className, children }: FormSectionProps) {
   return (
-    <section className="card bg-base-100 flex flex-col gap-4 p-4">
+    <section
+      className={`card bg-base-100 flex flex-col gap-4 p-4${className ? ` ${className}` : ''}`}
+    >
       <div className="border-base-300 flex items-start justify-between gap-3 border-b pb-2">
         <div className="flex flex-col gap-0.5">
           {/* Has to clearly outrank a FieldLabel (14px/500) or the grouping does

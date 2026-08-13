@@ -37,6 +37,7 @@ import {
   Input,
   NativeSelect,
   Text,
+  Textarea,
   useToast,
 } from '@wizeworks/silicaui-react';
 import { ImageIcon, ImagePlus, Palette, PanelTop, Plus, Save, Trash2, X } from 'lucide-react';
@@ -50,6 +51,7 @@ import { useMediaAssets } from '../cms/media';
 import { useDomains } from '../domains/data';
 import type { Site } from '../sites/data';
 import {
+  contactOf,
   effectiveBrand,
   saveErrorMessage,
   socialsOf,
@@ -57,6 +59,7 @@ import {
   useSaveIdentity,
   useSiteProperty,
   type Brand,
+  type SiteContact,
   type SocialLink,
 } from './site-identity-data';
 
@@ -165,12 +168,13 @@ function IdentityEditor({
   const [logoDark, setLogoDark] = useState<string | null>(effective.logoDarkMediaId);
   const [favicon, setFavicon] = useState<string | null>(effective.faviconMediaId);
   const [socials, setSocials] = useState<SocialLink[]>(() => socialsOf(property));
+  const [contact, setContact] = useState<SiteContact>(() => contactOf(property));
 
   // The draft as a stable signature; its divergence from the last-saved baseline
   // is what makes the pane dirty. Preview URLs aren't tracked — only stored ids.
   const signature = useMemo(
-    () => JSON.stringify({ name, tagline, logoLight, logoDark, favicon, socials }),
-    [name, tagline, logoLight, logoDark, favicon, socials]
+    () => JSON.stringify({ name, tagline, logoLight, logoDark, favicon, socials, contact }),
+    [name, tagline, logoLight, logoDark, favicon, socials, contact]
   );
   const [savedSignature, setSavedSignature] = useState(signature);
   const dirty = signature !== savedSignature;
@@ -199,6 +203,7 @@ function IdentityEditor({
         propertyId: property.id,
         name,
         socials,
+        contact,
         identity: {
           // Normalised (trimmed, empty → null) in the data layer's save.
           tagline,
@@ -348,6 +353,77 @@ function IdentityEditor({
               value={favicon}
               onChange={setFavicon}
             />
+          </FormSection>
+
+          {/* Typed once here, shown everywhere the site asks people to get in touch —
+              the Contact page, the footer, a "call us" beside a product. Every starter
+              site binds these, so filling them in is what turns its placeholder contact
+              band into your real details. */}
+          <FormSection
+            title="How customers reach you"
+            description="Your phone, email and address, shown on this site's contact page and footer. Leave any blank and it simply isn't shown."
+          >
+            <Field>
+              <FieldLabel>Phone number</FieldLabel>
+              <FieldControl
+                render={
+                  <Input
+                    color="module"
+                    type="tel"
+                    value={contact.phone}
+                    placeholder="(555) 123-4567"
+                    onChange={(event) => {
+                      setContact((c) => ({ ...c, phone: event.target.value }));
+                    }}
+                  />
+                }
+              />
+              <FieldDescription>
+                Written exactly as you want it read. On a phone it becomes a tap-to-call link.
+              </FieldDescription>
+            </Field>
+
+            <Field>
+              <FieldLabel>Email address</FieldLabel>
+              <FieldControl
+                render={
+                  <Input
+                    color="module"
+                    type="email"
+                    value={contact.email}
+                    placeholder="hello@yourbusiness.com"
+                    onChange={(event) => {
+                      setContact((c) => ({ ...c, email: event.target.value }));
+                    }}
+                  />
+                }
+              />
+              <FieldDescription>
+                Where people write to you. This is separate from the address your site sends email
+                from, which lives in Email settings.
+              </FieldDescription>
+            </Field>
+
+            <Field>
+              <FieldLabel>Address</FieldLabel>
+              <FieldControl
+                render={
+                  <Textarea
+                    color="module"
+                    rows={3}
+                    value={contact.address}
+                    placeholder={'123 Main Street\nSuite 4\nPortland, OR 97204'}
+                    onChange={(event) => {
+                      setContact((c) => ({ ...c, address: event.target.value }));
+                    }}
+                  />
+                }
+              />
+              <FieldDescription>
+                One line per line, laid out how you would write it on an envelope. Leave it blank if
+                you have no address customers visit.
+              </FieldDescription>
+            </Field>
           </FormSection>
 
           <FormSection

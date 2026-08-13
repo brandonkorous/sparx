@@ -35,6 +35,7 @@ export const WORKBENCH_MODULES = [
   'automations',
   'seo',
   'finance',
+  'staff',
   'partner',
   'social',
   'platform',

@@ -26,6 +26,11 @@ import {
 import type { ServiceContext } from '../errors';
 
 import { consumeAdvanceShipNoticeOnTx } from './advance-ship-notices';
+import {
+  allocateBackordersOnTx,
+  emitBackorderAllocations,
+  type BackorderFilled,
+} from './backorders';
 import { resolvePutAwayBin, systemBinFor } from './bin-routing';
 import { loadPolicy } from './costing-policy';
 import { reallocateOrderCharges } from './landed-cost';
@@ -169,7 +174,7 @@ export async function createGoodsReceipt(
 
   // The receipt number is allocated count+1; a lost race trips the unique
   // constraint and poisons the pg tx, so the WHOLE attempt retries.
-  let created: { receiptId: string; events: ReceiptEvent[] } | undefined;
+  let created: { receiptId: string; events: ReceiptEvent[]; filled: BackorderFilled[] } | undefined;
   for (let attempt = 0; attempt < 5; attempt++) {
     try {
       created = await createOnce(ctx, input);
@@ -187,6 +192,13 @@ export async function createGoodsReceipt(
   for (const e of created.events) {
     await emitStockEvents(ctx, e.variantId, e.warehouseId, e.result, e.delta, e.reason);
   }
+
+  // Tell whoever was waiting, but only now — after the transaction committed and
+  // the units are genuinely on the shelf. An email that says "your part is here"
+  // sent from inside a transaction that then rolls back is the one failure mode
+  // a backorder queue must never have (docs/146 Phase 9.2).
+  await emitBackorderAllocations(ctx, created.filled);
+
   return getGoodsReceipt(ctx, created.receiptId);
 }
 
@@ -201,7 +213,7 @@ interface ReceiptEvent {
 async function createOnce(
   ctx: ServiceContext,
   input: CreateGoodsReceiptInput
-): Promise<{ receiptId: string; events: ReceiptEvent[] }> {
+): Promise<{ receiptId: string; events: ReceiptEvent[]; filled: BackorderFilled[] }> {
   return withTenant(ctx, async (tx) => {
     const po = await tx.purchaseOrder.findFirst({
       where: { id: input.purchaseOrderId },
@@ -314,6 +326,29 @@ async function createOnce(
       );
     }
 
+    // ── Pass 4: hand the arrival to whoever has been waiting for it ─────────
+    //
+    // Deliberately AFTER the stock has moved and after the PO is credited, and
+    // deliberately inside the same transaction: two deliveries of the same item
+    // landing at once must not both promise the same units to the same customer.
+    // The queue is locked, so the second one waits and sees the first one's work.
+    //
+    // Only the GOOD units are offered. Damaged units arrived and were written off
+    // in the same breath — promising a customer a unit that is already on the
+    // damaged shelf is worse than saying nothing.
+    const filled: BackorderFilled[] = [];
+    for (const draft of drafts) {
+      if (draft.good <= 0) continue;
+      const allocation = await allocateBackordersOnTx(tx, ctx, {
+        variantId: draft.poLine.variantId,
+        warehouseId: po.warehouseId,
+        unitsArrived: draft.good,
+        sourceType: 'goods_receipt',
+        sourceId: receipt.id,
+      });
+      filled.push(...allocation.filled);
+    }
+
     await advancePurchaseOrderStatus(tx, po.id, po.status);
 
     // Settle the supplier's advance notice, if the receiver booked against one
@@ -342,7 +377,7 @@ async function createOnce(
       },
     });
 
-    return { receiptId: receipt.id, events };
+    return { receiptId: receipt.id, events, filled };
   });
 }
 

@@ -36,6 +36,12 @@ model Supplier {
   currency     String  @default("USD") @db.VarChar(3)
   notes        String? @db.Text
 
+  /// The tenant's own columns on a supplier (docs/146 Phase 11.8) — the account
+  /// number in their old system, the certification that expires, the rep's
+  /// mobile. Keyed by an `inventory_custom_fields` definition with
+  /// `entity = 'supplier'`.
+  customFields Json @default("{}") @map("custom_fields")
+
   isActive  Boolean   @default(true) @map("is_active")
   createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz
   updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamptz
@@ -59,6 +65,10 @@ model Supplier {
   advanceShipNotices AdvanceShipNotice[]
   returns            SupplierReturn[]
   bills              SupplierBill[]
+
+  /// Periods settled for stock of theirs that sold from your shelves
+  /// (docs/146 Phase 9.6).
+  consignmentSettlements ConsignmentSettlement[]
 
   @@unique([tenantId, code], map: "inventory_suppliers_tenant_code_unique")
   @@index([tenantId, isActive])

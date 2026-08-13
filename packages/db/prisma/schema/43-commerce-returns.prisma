@@ -77,10 +77,42 @@ model ReturnInspection {
   note             String? @db.Text
   inspectedBy      String? @map("inspected_by") @db.Uuid
 
+  // ── What is actually to be DONE with it (docs/146 Phase 9.7) ──
+  //
+  // `restockable` above is a boolean, and a boolean cannot describe this. Four
+  // things happen to returned goods and only one of them is "put it back":
+  //
+  //   restock     back to a sellable shelf, at the cost it was relieved at
+  //   quarantine  physically here, not sellable, decision pending
+  //   repair      here, not sellable, work required before it can be sold again
+  //   scrap       worthless; it never re-enters stock at all
+  //
+  // The boolean is KEPT and kept in step (restock ⇒ true, everything else ⇒
+  // false) rather than dropped: it is read by the refund path and by tenants'
+  // existing API calls, and a silent change of meaning is worse than a
+  // redundant column. `disposition` is the decision; `restockable` is its
+  // shadow.
+  //
+  // NULL until somebody decides. That matters more here than anywhere else in
+  // the phase — defaulting an undecided return to `restock` puts a customer's
+  // damaged goods back on the shelf, and defaulting it to `scrap` throws away
+  // stock that was fine. There is no safe default, so there is no default.
+  disposition      String?   @db.VarChar(20)
+  /// Where the goods physically went. Null on `scrap` (nowhere) and on a
+  /// location that does not use shelves.
+  dispositionBinId String?   @map("disposition_bin_id") @db.Uuid
+  dispositionAt    DateTime? @map("disposition_at") @db.Timestamptz
+  dispositionBy    String?   @map("disposition_by") @db.Uuid
+  /// Why this outcome, in the inspector's words. Required by the service for
+  /// `scrap` — writing off a customer's returned goods is a decision that has
+  /// to carry a reason somebody can be asked about later.
+  dispositionNote  String?   @map("disposition_note") @db.Text
+
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
 
-  tenant Tenant        @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  return ReturnRequest @relation(fields: [returnId], references: [id], onDelete: Cascade)
+  tenant         Tenant        @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  return         ReturnRequest @relation(fields: [returnId], references: [id], onDelete: Cascade)
+  dispositionBin InventoryBin? @relation("ReturnInspectionDispositionBin", fields: [dispositionBinId], references: [id], onDelete: SetNull)
 
   @@index([tenantId, returnId])
   @@index([returnLineItemId])

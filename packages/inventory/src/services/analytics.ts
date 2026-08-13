@@ -26,6 +26,16 @@ export interface InventoryValuationReport {
   totalCostCents: number;
   totalRetailCents: number;
   currency: string;
+  /** Units physically here that belong to somebody else (docs/146 Phase 9.5).
+   *
+   *  Reported rather than silently dropped. A merchant who has just watched
+   *  their valuation fall by forty thousand needs the sentence that explains it
+   *  on the same screen, not a support ticket. Zero for the overwhelming
+   *  majority of tenants, who own everything they hold. */
+  nonOwnedUnits: number;
+  /** What that stock would be worth if it were yours — the size of somebody
+   *  else's money sitting on your shelves. */
+  nonOwnedValueCents: number;
 }
 
 interface ValuationRow {
@@ -34,9 +44,20 @@ interface ValuationRow {
   totalAvailable: bigint;
   totalCostCents: bigint;
   totalRetailCents: bigint;
+  nonOwnedUnits: bigint;
+  nonOwnedValueCents: bigint;
 }
 
-/** Current valuation: on-hand units + value at cost (moving-average) and retail. */
+/**
+ * Current valuation: on-hand units + value at cost (moving-average) and retail.
+ *
+ * `totalCostCents` counts OWNED stock only (docs/146 Phase 9.5). Consigned,
+ * customer-owned and 3PL-owned goods are physically here and entirely sellable,
+ * and they are not your asset — valuing them overstates the balance sheet by the
+ * whole arrangement. `totalUnits` still counts everything, because "how much is
+ * in the building" is a different and equally real question; the two numbers
+ * coming apart is the finding, and `nonOwnedUnits` is the bridge between them.
+ */
 export async function inventoryValuation(ctx: ServiceContext): Promise<InventoryValuationReport> {
   return withTenant(ctx, async (tx) => {
     const [row] = await tx.$queryRaw<ValuationRow[]>`
@@ -44,8 +65,12 @@ export async function inventoryValuation(ctx: ServiceContext): Promise<Inventory
         COALESCE(SUM(l.on_hand), 0)::bigint                                                        AS "totalUnits",
         COALESCE(SUM(l.allocated), 0)::bigint                                                      AS "totalAllocated",
         COALESCE(SUM(l.on_hand - l.allocated), 0)::bigint                                          AS "totalAvailable",
-        COALESCE(SUM(l.on_hand * COALESCE(l.avg_cost_cents, l.unit_cost_cents, v.cost_cents, 0)), 0)::bigint AS "totalCostCents",
-        COALESCE(SUM(l.on_hand * v.price_cents), 0)::bigint                                        AS "totalRetailCents"
+        COALESCE(SUM(l.on_hand * COALESCE(l.avg_cost_cents, l.unit_cost_cents, v.cost_cents, 0))
+                 FILTER (WHERE l.ownership = 'owned'), 0)::bigint                                  AS "totalCostCents",
+        COALESCE(SUM(l.on_hand * v.price_cents), 0)::bigint                                        AS "totalRetailCents",
+        COALESCE(SUM(l.on_hand) FILTER (WHERE l.ownership <> 'owned'), 0)::bigint                  AS "nonOwnedUnits",
+        COALESCE(SUM(l.on_hand * COALESCE(l.avg_cost_cents, l.unit_cost_cents, v.cost_cents, 0))
+                 FILTER (WHERE l.ownership <> 'owned'), 0)::bigint                                 AS "nonOwnedValueCents"
       FROM inventory_levels l
       JOIN commerce_product_variants v ON v.id = l.variant_id AND v.deleted_at IS NULL
       JOIN inventory_warehouses w ON w.id = l.warehouse_id AND w.deleted_at IS NULL
@@ -58,6 +83,8 @@ export async function inventoryValuation(ctx: ServiceContext): Promise<Inventory
       totalCostCents: Number(row?.totalCostCents ?? 0),
       totalRetailCents: Number(row?.totalRetailCents ?? 0),
       currency: DEFAULT_CURRENCY,
+      nonOwnedUnits: Number(row?.nonOwnedUnits ?? 0),
+      nonOwnedValueCents: Number(row?.nonOwnedValueCents ?? 0),
     };
   });
 }

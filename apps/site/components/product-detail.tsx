@@ -12,7 +12,7 @@ import { Button } from '@wizeworks/silicaui-react';
 
 import { formatMoney, formatPriceRange } from '@/lib/format';
 import { mediaUrl } from '@/lib/media';
-import type { PublicProduct, PublicProductVariant } from '@/lib/commerce';
+import type { PublicPreorderOffer, PublicProduct, PublicProductVariant } from '@/lib/commerce';
 import { useCart } from './cart-provider';
 import { WishlistButton } from './wishlist-button';
 
@@ -144,6 +144,15 @@ export function ProductDetail({
   const available = resolvedVariant?.available ?? null;
   const lowStock = available != null && available > 0 && available <= showStockBelow;
 
+  // What we can honestly say about stock that is not here (docs/146 Phase
+  // 9.3/9.4). A preorder is an offer with a stated date; `expectedBackAt` is the
+  // soonest anybody waiting has been promised this item back. Either is worth
+  // far more to a shopper than a bare "Sold out", and neither is ever invented —
+  // both are null when nobody has committed to anything, and the copy says so.
+  const preorder = resolvedVariant?.preorder ?? null;
+  const isPreorder = preorder != null && preorder.isTakingOrders && !(available && available > 0);
+  const expectedBackAt = resolvedVariant?.expectedBackAt ?? null;
+
   function selectValue(optionId: string, valueId: string) {
     setSelected((prev) => ({ ...prev, [optionId]: valueId }));
     // Switch gallery to a matching image if one exists.
@@ -256,7 +265,14 @@ export function ProductDetail({
           )}
         </div>
 
-        <StockLine inStock={inStock} lowStock={lowStock} available={available} />
+        <StockLine
+          inStock={inStock}
+          lowStock={lowStock}
+          available={available}
+          preorder={preorder}
+          expectedBackAt={expectedBackAt}
+          locale={locale}
+        />
 
         {/* Variant selector — option-less products with multiple SKUs. The
             per-option chips below render nothing (no options), so this is the
@@ -376,7 +392,9 @@ export function ProductDetail({
                 ? 'Sold out'
                 : adding
                   ? 'Adding…'
-                  : 'Add to cart'}
+                  : isPreorder
+                    ? 'Preorder'
+                    : 'Add to cart'}
           </Button>
           {(resolvedVariant ?? defaultVariant) ? (
             <WishlistButton variantId={(resolvedVariant ?? defaultVariant)!.id} />
@@ -397,23 +415,86 @@ export function ProductDetail({
   );
 }
 
+/** A calendar date in the shopper's own language. Date only — an expected
+ *  arrival is never accurate to the hour, and printing one implies it is. */
+function formatArrival(iso: string, locale: string): string {
+  return new Date(iso).toLocaleDateString(locale, {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
+}
+
+/**
+ * What the buy box says about supply.
+ *
+ * Five states, and the order they are tested in is the order of how much the
+ * shopper gets to know. The two new ones both exist to replace a dead end:
+ * "Sold out" ends the visit, "Preorder — ships 14 March" and "Back in stock 14
+ * March" do not.
+ *
+ * Neither invents a date. A preorder with no confirmed date says exactly that,
+ * which still sells, and an out-of-stock item nobody has promised back reads the
+ * way it always has.
+ */
 function StockLine({
   inStock,
   lowStock,
   available,
+  preorder,
+  expectedBackAt,
+  locale,
 }: {
   inStock: boolean;
   lowStock: boolean;
   available: number | null;
+  preorder: PublicPreorderOffer | null;
+  expectedBackAt: string | null;
+  locale: string;
 }) {
-  if (!inStock) {
+  const hasStock = available != null && available > 0;
+
+  // A live preorder wins over the plain out-of-stock line even when the policy
+  // would let the item sell: the merchant has said something specific about this
+  // one, and it is more use than anything derived.
+  if (preorder && preorder.isTakingOrders && !hasStock) {
     return (
-      <span className="text-base-content inline-flex items-center gap-1.5 text-sm font-medium">
-        <span className="bg-base-content/40 h-2 w-2 rounded-full" />
-        Out of stock
+      <span className="text-base-content inline-flex flex-wrap items-center gap-1.5 text-sm font-medium">
+        <span className="bg-info h-2 w-2 rounded-full" />
+        {preorder.availableAt
+          ? `Preorder — ships ${formatArrival(preorder.availableAt, locale)}`
+          : 'Preorder — shipping date to be confirmed'}
+        {preorder.availabilityNote ? (
+          <span className="text-base-content font-normal">· {preorder.availabilityNote}</span>
+        ) : null}
+        {/* Only when capped. `remaining` is null for an uncapped run, and there
+            is no honest number to print for "no limit". */}
+        {preorder.remaining != null ? (
+          <span className="text-base-content font-normal">· {preorder.remaining} left</span>
+        ) : null}
       </span>
     );
   }
+
+  if (!inStock || !hasStock) {
+    return (
+      <span className="text-base-content inline-flex items-center gap-1.5 text-sm font-medium">
+        <span
+          className={
+            expectedBackAt
+              ? 'bg-warning h-2 w-2 rounded-full'
+              : 'bg-base-content/40 h-2 w-2 rounded-full'
+          }
+        />
+        {expectedBackAt
+          ? `Back in stock ${formatArrival(expectedBackAt, locale)}`
+          : inStock
+            ? 'Available to order'
+            : 'Out of stock'}
+      </span>
+    );
+  }
+
   if (lowStock && available != null) {
     return (
       <span className="text-base-content inline-flex items-center gap-1.5 text-sm font-medium">

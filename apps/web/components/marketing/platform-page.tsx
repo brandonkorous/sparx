@@ -623,6 +623,13 @@ function ModulesStrip() {
       title: 'Know what you kept',
       body: 'Spending, profit and job margins — free with Commerce or B2B.',
     },
+    {
+      module: 'staff',
+      label: 'Team',
+      price: '$29/mo',
+      title: 'Cost the work',
+      body: 'Hours, rates, shifts and licence renewals. Not payroll.',
+    },
   ];
 
   return (
@@ -630,7 +637,7 @@ function ModulesStrip() {
       <BandHeader
         headline={
           <>
-            Thirteen modules. <span>Mix any combination</span>
+            Fourteen modules. <span>Mix any combination</span>
           </>
         }
       />
@@ -860,7 +867,7 @@ function PricingTeaser() {
   const tiers = [
     { name: 'Start', price: '$10', note: 'one module', highlight: false },
     { name: 'Grow', price: '$108', note: 'Builder + Commerce + CMS', highlight: true },
-    { name: 'Everything', price: '$411', note: 'all thirteen modules', highlight: false },
+    { name: 'Everything', price: '$440', note: 'all fourteen modules', highlight: false },
   ];
 
   return (

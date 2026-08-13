@@ -58,6 +58,12 @@ model PurchaseOrder {
   // because a new promised date deserves a new alert when it is missed.
   lateAlertedAt DateTime? @map("late_alerted_at") @db.Timestamptz
 
+  /// The tenant's own columns on an order (docs/146 Phase 11.8) — the project it
+  /// is charged to, the internal requisition it came from, whoever asked for it.
+  /// Keyed by an `inventory_custom_fields` definition with
+  /// `entity = 'purchase_order'`.
+  customFields Json @default("{}") @map("custom_fields")
+
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
   updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
 
@@ -74,6 +80,9 @@ model PurchaseOrder {
   advanceShipNotices AdvanceShipNotice[]
   supplierReturns    SupplierReturn[]
   bills              SupplierBill[]
+
+  /// Customer commitments this order was raised to clear (docs/146 Phase 9.1).
+  backordersExpected Backorder[]
 
   @@unique([tenantId, number], map: "inventory_purchase_orders_tenant_number_unique")
   @@index([tenantId, status])
@@ -113,9 +122,9 @@ model PurchaseOrderLine {
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
   updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
 
-  tenant        Tenant             @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  purchaseOrder PurchaseOrder      @relation(fields: [purchaseOrderId], references: [id], onDelete: Cascade)
-  variant       ProductVariant     @relation(fields: [variantId], references: [id], onDelete: Cascade)
+  tenant        Tenant                  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  purchaseOrder PurchaseOrder           @relation(fields: [purchaseOrderId], references: [id], onDelete: Cascade)
+  variant       ProductVariant          @relation(fields: [variantId], references: [id], onDelete: Cascade)
   receiptLines  GoodsReceiptLine[]
   asnLines      AdvanceShipNoticeLine[]
   billLines     SupplierBillLine[]

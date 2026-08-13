@@ -249,6 +249,21 @@ const CASES: { [K in TemplateId]: PropsFor<K> } = {
     scheduledCount: 3,
     reconnectUrl: 'https://app.sparx.works/social/connections',
   },
+  'inventory-report': {
+    businessName: 'Rosa Flowers',
+    scheduleName: 'Monday morning stock check',
+    reportLabel: 'Stock that is not paying its rent',
+    reportDescription: 'Dead, overstocked and slow lines, with what each costs you to keep.',
+    periodLabel: '1 – 31 March 2027',
+    lines: [
+      { label: 'Lines not paying their rent', value: '42' },
+      { label: 'Cash trapped in excess', value: '$18,204.00' },
+      { label: 'Lines with no cost price', value: '6', isGap: true },
+    ],
+    rowCount: 42,
+    attachmentName: 'dead-stock.csv',
+    reportUrl: 'https://app.sparx.works/inventory/reports',
+  },
 };
 
 const IDS = Object.keys(CASES) as TemplateId[];
@@ -286,6 +301,6 @@ describe('every coded template renders', () => {
     // the other direction — an id removed from the union but left behind here — and
     // pins the count so a silent drop is visible.
     expect(new Set(IDS).size).toBe(IDS.length);
-    expect(IDS.length).toBe(35);
+    expect(IDS.length).toBe(36);
   });
 });

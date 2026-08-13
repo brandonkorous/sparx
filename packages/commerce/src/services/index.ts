@@ -81,6 +81,9 @@ export * as providerService from './provider-service';
 
 // Phase 5/7 — returns / RMA
 export * as returnService from './return-service';
+// What actually happens to returned goods — restock / quarantine / repair /
+// scrap, each routed to its own shelf (docs/146 Phase 9.7).
+export * as returnDispositionService from './return-disposition';
 
 // Phase 6 — reviews + Q&A + wishlists
 export * as reviewService from './review-service';

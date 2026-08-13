@@ -38,6 +38,13 @@ export const MODULE_MONTHLY_CENTS: Partial<Record<ModuleSlug, number>> = {
   // NEITHER selling module pays; Commerce/B2B bundle it free (BUNDLED_FREE),
   // because profit is revenue minus spend and they already bought the revenue.
   finance: 2900,
+  // Staff (docs/149 §2) — the same $29 tier, and deliberately NOT bundled with
+  // finance in either direction: the two are independently valuable, and "finance
+  // now, staff makes it sharper" is a far easier second sale than one large module
+  // that has to be right all at once. Also deliberately NOT per-seat — every other
+  // module here is a flat monthly price, and a headcount billing dimension for one
+  // of them complicates reconciliation and `activeTotalCents` for no real gain.
+  staff: 2900,
   // NOTE: `social` (docs/133) is intentionally absent — it is a FREE module. No
   // entry ⇒ `isBillableModule` is false ⇒ the toggle path creates no Stripe item,
   // so it activates at $0 through the normal flow. Do not add a price here without

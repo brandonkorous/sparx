@@ -39,6 +39,12 @@ export { syncProductInStock } from './services/internal';
 // path that decides whether a level is low routes through these.
 export { SELLABLE_SQL, LOW_STOCK_SQL, sellableUnits, isLowStock } from './services/low-stock';
 
+// One CSV writer and one CSV reader (docs/146 Phase 10.3 + 10.6). Exported
+// because api-rest serves the exports and accepts the uploads, and a second
+// implementation on that side is exactly how an export stops re-importing.
+export { toCsv, parseCsv, csvCell, csvSafeText, csvField, csvInt } from './csv';
+export type { CsvTable, CsvValue, CsvParseResult } from './csv';
+
 export type {
   WarehouseRow,
   InventoryLevelRow,

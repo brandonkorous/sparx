@@ -886,7 +886,7 @@ async function assertEnoughAvailable(
     where: {
       variantId_warehouseId: { variantId: params.variantId, warehouseId: params.warehouseId },
     },
-    select: { onHand: true, allocated: true, safetyBuffer: true },
+    select: { onHand: true, allocated: true, safetyBuffer: true, unsellableOnHand: true },
   });
   const available = Math.max(
     0,

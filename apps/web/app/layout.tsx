@@ -80,7 +80,7 @@ const WEBSITE_SCHEMA = {
 };
 
 export const metadata: Metadata = {
-  title: 'sparx — Everything, ignited.',
+  title: 'sparx — Your business, multiplied.',
   description:
     'A modular content and commerce operating system. Builder, CRM, CMS, email, B2B, and AI — one platform, one bill, one data layer. Pay only for what you use. Live in five minutes.',
   metadataBase: new URL('https://sparx.works'),
@@ -90,7 +90,7 @@ export const metadata: Metadata = {
   // OG + Twitter images are generated dynamically from app/opengraph-image.tsx
   // and app/twitter-image.tsx — Next auto-discovers them.
   openGraph: {
-    title: 'sparx — Everything, ignited.',
+    title: 'sparx — Your business, multiplied.',
     description:
       // "bring your own AI", never "MCP-native AI" — the latter parses as *our*
       // AI to anyone quoting it out of context, and this is the single most
@@ -104,7 +104,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'sparx — Everything, ignited.',
+    title: 'sparx — Your business, multiplied.',
     description: 'Modular content and commerce OS by WizeWorks.',
   },
   robots: {

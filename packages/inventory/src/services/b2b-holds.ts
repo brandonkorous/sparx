@@ -151,7 +151,13 @@ export async function accountAvailability(
           tenantId: ctx.tenantId,
           ...(input.warehouseId ? { warehouseId: input.warehouseId } : {}),
         },
-        select: { variantId: true, onHand: true, allocated: true, safetyBuffer: true },
+        select: {
+          variantId: true,
+          onHand: true,
+          allocated: true,
+          safetyBuffer: true,
+          unsellableOnHand: true,
+        },
       }),
       tx.b2bFleetHold.groupBy({
         by: ['variantId'],
@@ -170,7 +176,7 @@ export async function accountAvailability(
 
     const availableBy = new Map<string, number>();
     for (const l of levels) {
-      const net = l.onHand - l.allocated - l.safetyBuffer;
+      const net = l.onHand - l.allocated - l.safetyBuffer - l.unsellableOnHand;
       availableBy.set(l.variantId, (availableBy.get(l.variantId) ?? 0) + net);
     }
     const heldBy = new Map(heldGroups.map((g) => [g.variantId, g._sum.quantity ?? 0]));

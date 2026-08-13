@@ -375,7 +375,14 @@ export async function getListingDetail(slug: string): Promise<MarketListingDetai
               optionValue: { select: { value: true, option: { select: { name: true } } } },
             },
           },
-          inventoryLevels: { select: { onHand: true, allocated: true, safetyBuffer: true } },
+          inventoryLevels: {
+            select: {
+              onHand: true,
+              allocated: true,
+              safetyBuffer: true,
+              unsellableOnHand: true,
+            },
+          },
         },
       }),
       // Product-level gallery images (variantId null), primary first. Resolved to
@@ -407,7 +414,7 @@ export async function getListingDetail(slug: string): Promise<MarketListingDetai
       }
       const tracked = v.inventoryLevels.length > 0;
       const sellable = v.inventoryLevels.reduce(
-        (sum, l) => sum + Math.max(0, l.onHand - l.allocated - l.safetyBuffer),
+        (sum, l) => sum + Math.max(0, l.onHand - l.allocated - l.safetyBuffer - l.unsellableOnHand),
         0
       );
       return {

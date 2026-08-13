@@ -98,6 +98,11 @@ export const AdjustInventoryInput = z.object({
   referenceId: Uuid.optional(),
   note: z.string().max(2000).optional(),
   unitCostCents: z.number().int().nonnegative().optional(),
+  /** Which shelf the units land on or come off (docs/146 Phase 2). Omitted, the
+   *  ledger's mirror picks the location's default. Named, it decides — which is
+   *  what lets a returns disposition put quarantined goods somewhere a picker
+   *  will never walk (docs/146 Phase 9.7). Ignored on a location without bins. */
+  binId: Uuid.optional(),
   // Attribution + idempotency overrides (all optional; the service fills actor
   // from context when omitted). `idempotencyKey` makes a retried/redelivered
   // write apply exactly once.
@@ -535,7 +540,13 @@ export type DraftReorderInput = z.infer<typeof DraftReorderInput>;
 // sale). Variance VALUE over the per-count threshold gates the post behind an admin
 // approval (the roles model — docs/100 P4).
 
-export const InventoryCountType = z.enum(['cycle', 'full']);
+/** cycle covers a chosen subset, full covers every level in the warehouse, and
+ *  `opening` is the FIRST one — the count that closes setup (docs/146 Phase
+ *  11.4). It behaves like a full count and is recorded as its own type because
+ *  its movements post under the `opening` reason: establishing a starting point
+ *  is not the same event as finding a discrepancy, and a business's first day
+ *  must not read as its worst day of shrinkage. */
+export const InventoryCountType = z.enum(['cycle', 'full', 'opening']);
 export type InventoryCountType = z.infer<typeof InventoryCountType>;
 
 export const InventoryCountStatus = z.enum([
@@ -839,6 +850,12 @@ export const BinType = z.enum([
   'quarantine',
   // Written off but physically still here. NOT sellable.
   'damaged',
+  // Awaiting work before it can be sold again. NOT sellable, and deliberately
+  // not `damaged`: the two piles have opposite futures. Damaged stock is a
+  // write-off looking for a bin; repair stock is an asset with a job queued
+  // against it, and a refurbisher whose repair queue is reported as shrinkage is
+  // being told its best margin is a loss (docs/146 Phase 9.7).
+  'repair',
 ]);
 export type BinType = z.infer<typeof BinType>;
 
@@ -914,13 +931,23 @@ export const PutAwayInput = z.object({
 });
 export type PutAwayInput = z.infer<typeof PutAwayInput>;
 
-/** What to do with returned goods once someone has looked at them. */
+/** What to do with returned goods once someone has looked at them.
+ *
+ *  Declared here in Phase 2 alongside the shelf vocabulary and unused until
+ *  Phase 9.7 gave it somewhere to be stored (`commerce_return_inspections`).
+ *  The behaviour each value implies lives in `dispositionEffect` in ./demand. */
 export const ReturnDisposition = z.enum([
   // Back on the shelf and sellable again.
   'restock',
   // Held pending inspection — on the quarantine shelf, not sellable.
   'quarantine',
-  // Broken. On the damaged shelf, written off.
+  // Fixable, and worth fixing. On the repair shelf, not sellable, and
+  // deliberately NOT `damaged`: the two piles have opposite futures, and a
+  // refurbisher whose repair queue is reported as shrinkage is being told its
+  // best margin is a loss (docs/146 Phase 9.7).
+  'repair',
+  // Broken beyond use. Never re-enters stock — see `dispositionEffect` for why
+  // that means no movement at all rather than a receive/write-off pair.
   'scrap',
 ]);
 export type ReturnDisposition = z.infer<typeof ReturnDisposition>;

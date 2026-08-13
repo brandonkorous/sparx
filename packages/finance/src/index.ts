@@ -124,8 +124,42 @@ export {
   upsertConnection,
   deleteConnection,
   setMappings,
+  listMappings,
   mappingsForExport,
   recordSyncRun,
   listSyncRuns,
   markExported,
 } from './accounting/connections';
+
+// The two live adapters (docs/146 Phase 10.7–10.8). Complete code; whether a
+// tenant may connect one is a deployment fact reported by `isConfigured()`.
+export {
+  accountingAdapter,
+  accountingAdapters,
+  accountingProviderAvailability,
+  quickbooksAdapter,
+  xeroAdapter,
+  AccountingAuthError,
+  AccountingRequestError,
+  centsToAmount,
+  amountToCents,
+} from './accounting/providers';
+
+// The grant itself — stored encrypted, refreshed on read, and written back the
+// moment a provider rotates it.
+export {
+  storeCredentials,
+  loadCredentials,
+  clearCredentials,
+  markExpired,
+  AccountingCredentialsError,
+} from './accounting/credentials';
+export type { StoreCredentialsInput } from './accounting/credentials';
+export type {
+  AccountingAdapter,
+  AccountingCredentials,
+  RefreshedCredentials,
+  ExternalAccount,
+  PostJournalRequest,
+  PostJournalResult,
+} from './accounting/providers';

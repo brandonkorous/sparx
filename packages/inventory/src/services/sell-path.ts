@@ -15,6 +15,13 @@
 //   • resolveDefaultWarehouseId — the channel-default / first-active warehouse,
 //     for callers (returns restock) that have a quantity but no chosen location.
 //
+// It is also where a BACKORDER is written down (docs/146 Phase 9.1), and this is
+// the only place that happens. A commit is the exact moment an order stops being
+// a browsing artefact and becomes a promise to a person, and the sale movement's
+// resulting balance says precisely how much of that promise the shelves could
+// not cover. Recording it at reserve time instead would catch carts that are
+// abandoned; recording it in both places would count a B2B order twice.
+//
 // All threshold events are emitted AFTER the transaction commits — callers of
 // commitSaleOnTx get the per-line results back and emit; reverseOrderSale owns
 // its own transaction and emits itself.
@@ -23,7 +30,10 @@ import { withTenant } from '@sparx/db';
 import type { TxClient } from '@sparx/db';
 
 import type { ServiceContext } from '../errors';
+import { publishInventoryEvent } from '../events';
 
+import { cancelBackordersForHolderOnTx, recordBackorderOnTx } from './backorders';
+import { consumePreorderOnTx } from './preorders';
 import { applyMovement, emitStockEvents, resolveActorType } from './ledger';
 import type { MovementResult } from './ledger';
 import { pickWarehouseFor } from './reservations';
@@ -45,6 +55,11 @@ export interface CommittedSale {
   warehouseId: string;
   quantity: number;
   result: MovementResult;
+  /** Units of this line the shelves could not cover, and which are therefore
+   *  owed to the customer (docs/146 Phase 9.1). Zero on the ordinary path. */
+  backorderedQuantity: number;
+  /** The commitment row written for that shortfall, when there was one. */
+  backorderId: string | null;
 }
 
 /**
@@ -60,6 +75,31 @@ export async function commitSaleOnTx(
   const actorType = resolveActorType(ctx);
   const actorId = ctx.userId ?? null;
   const committed: CommittedSale[] = [];
+
+  // Read once, outside the line loop. A backorder is a promise to a PERSON, and
+  // a queue that cannot say whose commitment a row is cannot be worked from.
+  // Null is tolerated — a guest order is a real order — and the row still
+  // carries the order it belongs to.
+  const order = await tx.order.findFirst({
+    where: { id: input.orderId, tenantId: ctx.tenantId },
+    select: { customerId: true },
+  });
+
+  // The order's own line ids, by variant.
+  //
+  // `SellLine.lineKey` is deliberately NOT used for this: at checkout it is the
+  // CART item's id, and writing that into `order_item_id` would fill the column
+  // with ids that point at rows in a different table and are deleted with the
+  // cart. It is a perfectly good idempotency key and a completely wrong foreign
+  // key. Resolved from the order instead, which is the only place the answer
+  // actually lives.
+  const orderItems = await tx.orderItem.findMany({
+    where: { orderId: input.orderId },
+    select: { id: true, variantId: true },
+  });
+  const orderItemByVariant = new Map(
+    orderItems.filter((i) => i.variantId).map((i) => [i.variantId!, i.id])
+  );
 
   for (const line of input.lines) {
     if (!line.variantId || line.quantity <= 0) continue;
@@ -99,6 +139,15 @@ export async function commitSaleOnTx(
           warehouseId: res.warehouseId,
           quantity: res.quantity,
           result,
+          ...(await noteShortfall(tx, ctx, {
+            result,
+            quantity: res.quantity,
+            variantId: res.variantId,
+            warehouseId: res.warehouseId,
+            orderId: input.orderId,
+            orderItemId: orderItemByVariant.get(res.variantId) ?? null,
+            customerId: order?.customerId ?? null,
+          })),
         });
         continue;
       }
@@ -123,10 +172,77 @@ export async function commitSaleOnTx(
       actorId,
       allowNegative: true,
     });
-    committed.push({ variantId: line.variantId, warehouseId, quantity: line.quantity, result });
+    committed.push({
+      variantId: line.variantId,
+      warehouseId,
+      quantity: line.quantity,
+      result,
+      ...(await noteShortfall(tx, ctx, {
+        result,
+        quantity: line.quantity,
+        variantId: line.variantId,
+        warehouseId,
+        orderId: input.orderId,
+        orderItemId: orderItemByVariant.get(line.variantId) ?? null,
+        customerId: order?.customerId ?? null,
+      })),
+    });
   }
 
   return committed;
+}
+
+/**
+ * How much of a line the shelves could not cover, written down as a commitment.
+ *
+ * The measure is the sale movement's own resulting balance, which is the only
+ * number that is true after every concurrent writer has had its turn: on-hand at
+ * −6 after the movement means six units were sold that were not there. Clamped
+ * to the line quantity, because a level that was ALREADY negative before this
+ * order arrived is somebody else's shortfall, not this customer's.
+ *
+ * A deduplicated movement records nothing. That is the retry guard: the same
+ * order completing twice writes one sale and therefore one commitment, without
+ * needing a second idempotency scheme of its own.
+ */
+async function noteShortfall(
+  tx: TxClient,
+  ctx: ServiceContext,
+  params: {
+    result: MovementResult;
+    quantity: number;
+    variantId: string;
+    warehouseId: string;
+    orderId: string;
+    orderItemId: string | null;
+    customerId: string | null;
+  }
+): Promise<{ backorderedQuantity: number; backorderId: string | null }> {
+  if (params.result.deduped) return { backorderedQuantity: 0, backorderId: null };
+
+  const shortfall = Math.min(params.quantity, Math.max(0, -params.result.onHand));
+  if (shortfall <= 0) return { backorderedQuantity: 0, backorderId: null };
+
+  // Count the units against a live preorder window, if there is one (docs/146
+  // Phase 9.4). The cap was already enforced at reserve, where the customer
+  // could still be told no; this is the counting, and it is locked because the
+  // stored total is what the next customer's headroom is measured against.
+  await consumePreorderOnTx(tx, ctx, {
+    variantId: params.variantId,
+    quantity: shortfall,
+  }).catch(() => null);
+
+  const recorded = await recordBackorderOnTx(tx, ctx, {
+    variantId: params.variantId,
+    warehouseId: params.warehouseId,
+    shortfall,
+    holderType: 'order',
+    holderId: params.orderId,
+    orderItemId: params.orderItemId,
+    customerId: params.customerId,
+  });
+
+  return { backorderedQuantity: shortfall, backorderId: recorded?.backorderId ?? null };
 }
 
 /** Emit the post-commit threshold events for a set of committed sales. Call
@@ -135,6 +251,25 @@ export async function emitSaleEvents(ctx: ServiceContext, sales: CommittedSale[]
   for (const s of sales) {
     if (s.result.deduped) continue;
     await emitStockEvents(ctx, s.variantId, s.warehouseId, s.result, -s.quantity, 'sale');
+
+    // A commitment nobody can cover. Fired at the moment of the promise rather
+    // than by a nightly pass, because what reacts to it is a purchase decision —
+    // a buyer wants to know a customer is waiting before tonight. Deliberately
+    // carries no date: whether one can honestly be promised is resolved
+    // separately, and the answer is often no.
+    if (s.backorderId) {
+      await publishInventoryEvent({
+        tenantId: ctx.tenantId,
+        actorId: ctx.userId ?? null,
+        topic: 'inventory.backorder.created',
+        data: {
+          backorderId: s.backorderId,
+          variantId: s.variantId,
+          warehouseId: s.warehouseId,
+          quantity: s.backorderedQuantity,
+        },
+      });
+    }
   }
 }
 
@@ -200,6 +335,16 @@ export async function reverseOrderSale(
         data: { allocated: { decrement: r.quantity }, asOf: new Date() },
       });
     }
+
+    // Drop the customer commitments too (docs/146 Phase 9.1). Cancelling the
+    // order without this leaves the queue claiming somebody is waiting for
+    // units they no longer want — which then holds a delivery for a customer
+    // who has already been refunded, ahead of one who has not.
+    await cancelBackordersForHolderOnTx(tx, ctx, {
+      holderType: 'order',
+      holderId: input.orderId,
+      reason: 'The order was cancelled.',
+    });
   });
 
   for (const e of emissions) {

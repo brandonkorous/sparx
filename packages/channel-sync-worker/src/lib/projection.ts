@@ -40,6 +40,9 @@ interface LevelLite {
   onHand: number;
   allocated: number;
   safetyBuffer: number;
+  /** Units on a shelf nothing sells from — quarantine, damaged, awaiting repair
+   *  (docs/146 Phase 9.7). Zero on a location without shelves. */
+  unsellableOnHand: number;
 }
 
 /** Sellable units across warehouses, net of the safety buffer. `null` when the
@@ -47,7 +50,14 @@ interface LevelLite {
  *  @sparx/inventory computeAvailability. */
 function sellable(levels: LevelLite[]): number | null {
   if (levels.length === 0) return null;
-  return levels.reduce((sum, l) => sum + Math.max(0, l.onHand - l.allocated - l.safetyBuffer), 0);
+  return levels.reduce(
+    (sum, l) =>
+      // Quarantined / damaged / awaiting-repair units are in the building and
+      // not for sale (docs/146 Phase 9.7). Publishing them to a marketplace is
+      // an oversell with a third party's cancellation policy attached.
+      sum + Math.max(0, l.onHand - l.allocated - l.safetyBuffer - l.unsellableOnHand),
+    0
+  );
 }
 
 /** Sellable quantity for one variant — used by the inventory-push handler. */
@@ -58,7 +68,7 @@ export async function sellableForVariant(
   const levels = await withTenant({ tenantId }, (tx) =>
     tx.inventoryLevel.findMany({
       where: { tenantId, variantId },
-      select: { onHand: true, allocated: true, safetyBuffer: true },
+      select: { onHand: true, allocated: true, safetyBuffer: true, unsellableOnHand: true },
     })
   );
   return sellable(levels);
@@ -94,7 +104,14 @@ function loadProductData(tenantId: string, productId: string) {
                 optionValue: { select: { value: true, option: { select: { name: true } } } },
               },
             },
-            inventoryLevels: { select: { onHand: true, allocated: true, safetyBuffer: true } },
+            inventoryLevels: {
+              select: {
+                onHand: true,
+                allocated: true,
+                safetyBuffer: true,
+                unsellableOnHand: true,
+              },
+            },
           },
         },
         images: {

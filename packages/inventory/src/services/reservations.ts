@@ -24,6 +24,7 @@ import type { ServiceContext } from '../errors';
 import { CART_TTL_SECONDS_DEFAULT, syncProductInStock } from './internal';
 import { recordOversellIncidentDetached, recordOversellIncidentOnTx } from './integrity';
 import { applyMovement, emitStockEvents, resolveActorType } from './ledger';
+import { assertPreorderHeadroomOnTx } from './preorders';
 
 export interface ReservationResult {
   reservationId: string;
@@ -165,6 +166,24 @@ export async function reserveOnTx(
       // best-effort: observability must never be able to fail a checkout.
       await recordOversellIncidentDetached(ctx, { ...incident, kind: 'blocked' });
       throw new InventoryOutOfStockError(input.variantId, input.quantity, Math.max(0, available));
+    }
+
+    // A `preorder` variant with a live WINDOW is a bounded offer, not an open
+    // tap (docs/146 Phase 9.4). This is where the cap is enforced, because this
+    // is the moment a customer can still be told no — refusing at commit would
+    // mean refusing after they have paid. The units are COUNTED at commit, not
+    // here, since a cart is not yet a commitment.
+    //
+    // The gap between the two is deliberate and small: a cart that clears the
+    // cap and checks out ten minutes later, behind someone else's, can overshoot
+    // by that cart. The overshoot is then recorded truthfully rather than
+    // clamped away — `preorderState` reports zero remaining and the window
+    // refuses to have its limit edited below what is already owed.
+    if (variant.inventoryPolicy === 'preorder') {
+      await assertPreorderHeadroomOnTx(tx, ctx, {
+        variantId: input.variantId,
+        quantity: input.quantity - Math.max(0, available),
+      });
     }
 
     // `continue` / `preorder` — the hold succeeds and this transaction commits,

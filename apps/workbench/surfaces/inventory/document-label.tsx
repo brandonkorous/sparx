@@ -29,6 +29,7 @@ import { Alert, Button, NativeSelect, Text, ToolbarSeparator } from '@wizeworks/
 import { barcodeSvg, encodeBarcode } from '@sparx/commerce-schemas';
 import { Printer } from 'lucide-react';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import { PrintSheet } from '../../components/print-sheet';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 
 /** Copies, because a delivery gets one on the paperwork and one on the pallet. */
@@ -145,8 +146,9 @@ export function DocumentLabelSurface({ ctx }: { ctx: SurfaceContext }) {
               this {title.toLowerCase()} straight away.
             </Text>
 
-            {/* Black on white, fixed: a printed label is outside the theme. */}
-            <div className="flex flex-wrap gap-2 bg-white p-2">
+            {/* The sheet. `PrintSheet` is what keeps the workbench itself off the
+                paper — see components/print-sheet.tsx. */}
+            <PrintSheet>
               {Array.from({ length: copies }, (_, index) => (
                 <div
                   key={index}
@@ -166,7 +168,7 @@ export function DocumentLabelSurface({ ctx }: { ctx: SurfaceContext }) {
                   ) : null}
                 </div>
               ))}
-            </div>
+            </PrintSheet>
 
             <Text className="text-sm print:hidden">
               Print at actual size — scaling narrows the bars, which is the commonest reason a

@@ -142,7 +142,13 @@ async function loadBundleAvailability(
       ? []
       : await tx.inventoryLevel.findMany({
           where: { tenantId, variantId: { in: variantIds } },
-          select: { variantId: true, onHand: true, allocated: true, safetyBuffer: true },
+          select: {
+            variantId: true,
+            onHand: true,
+            allocated: true,
+            safetyBuffer: true,
+            unsellableOnHand: true,
+          },
         });
   const policies = await tx.productVariant.findMany({
     where: { id: { in: variantIds } },
@@ -152,7 +158,7 @@ async function loadBundleAvailability(
 
   const levelsByVariant = new Map<
     string,
-    { onHand: number; allocated: number; safetyBuffer: number }[]
+    { onHand: number; allocated: number; safetyBuffer: number; unsellableOnHand: number }[]
   >();
   for (const l of levels) {
     const list = levelsByVariant.get(l.variantId) ?? [];

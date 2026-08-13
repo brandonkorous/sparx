@@ -230,7 +230,14 @@ export async function projectMarketListing(ctx: ServiceContext, productId: strin
           where: { deletedAt: null },
           select: {
             currency: true,
-            inventoryLevels: { select: { onHand: true, allocated: true, safetyBuffer: true } },
+            inventoryLevels: {
+              select: {
+                onHand: true,
+                allocated: true,
+                safetyBuffer: true,
+                unsellableOnHand: true,
+              },
+            },
           },
         },
       },
@@ -278,7 +285,7 @@ export async function projectMarketListing(ctx: ServiceContext, productId: strin
       (sum, v) =>
         sum +
         v.inventoryLevels.reduce(
-          (s, l) => s + Math.max(0, l.onHand - l.allocated - l.safetyBuffer),
+          (s, l) => s + Math.max(0, l.onHand - l.allocated - l.safetyBuffer - l.unsellableOnHand),
           0
         ),
       0

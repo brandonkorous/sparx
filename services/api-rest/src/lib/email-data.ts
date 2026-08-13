@@ -949,6 +949,7 @@ async function resolveModules(ctx: ServiceContext): Promise<Record<string, strin
     'scheduling',
     'social',
     'finance',
+    'staff',
   ];
   const out: Record<string, string> = {};
   for (const m of ALL) out[m] = enabled.has(m) ? m : '';

@@ -105,6 +105,13 @@ model ProductVariant {
   position  Int     @default(0)
   metadata  Json    @default("{}")
 
+  /// The tenant's OWN columns (docs/146 Phase 11.8), keyed by the frozen `key`
+  /// of an `inventory_custom_fields` definition. Separate from `metadata`
+  /// deliberately: metadata is sparx's scratch space (sample-data markers,
+  /// import provenance) and this is the tenant's data, which must never be at
+  /// risk from a platform feature writing a key that happens to collide.
+  customFields Json @default("{}") @map("custom_fields")
+
   createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz
   updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamptz
   deletedAt DateTime? @map("deleted_at") @db.Timestamptz
@@ -168,6 +175,11 @@ model ProductVariant {
   classifications   InventoryClassification[]
   reorderPolicies   ReorderPolicy[]
   supplierLeadTimes SupplierLeadTime[]
+
+  // Demand-side commitments (docs/146 Phase 9)
+  backorders             Backorder[]
+  preorderWindows        PreorderWindow[]
+  consignmentSettlements ConsignmentSettlementLine[]
 
   @@unique([tenantId, sku], map: "product_variants_sku_unique")
   @@index([tenantId, productId])

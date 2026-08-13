@@ -43,6 +43,9 @@ const ELSEWHERE_MONTHLY: Record<string, number> = {
   // An expense tracker, NOT an accounting package — sparx does not replace
   // QuickBooks and must not price itself as though it did.
   finance: 54,
+  // Scheduling plus a time clock, which is what a nine-person business buys.
+  // NOT a payroll bureau — sparx does not run payroll.
+  staff: 60,
 };
 
 const idByLabel = new Map(MODULES.map((m) => [m.label, m.id]));

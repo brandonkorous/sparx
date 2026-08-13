@@ -26,6 +26,7 @@
   },
   "dependencies": {
     "@sparx/db": "workspace:*",
+    "@sparx/integration-framework": "workspace:*",
     "@sparx/modules": "workspace:*",
     "zod": "^4.4.3"
   },

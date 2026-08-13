@@ -32,6 +32,7 @@ import {
 } from '@wizeworks/silicaui-react';
 import { Printer, QrCode } from 'lucide-react';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import { PrintSheet } from '../../components/print-sheet';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { plural, useStockLocations } from './data';
 import { binTypeLabel, useBins, type Bin } from './bins-data';
@@ -269,14 +270,13 @@ export function BinLabelsSurface({ ctx }: { ctx: SurfaceContext }) {
               {sizeSpec.hint.toLowerCase()}. What you see here is exactly what prints.
             </Text>
 
-            {/* The sheet. Fixed white background and black borders on purpose: a
-                printed label has no theme, and rendering it in the app's colours
-                would preview something the printer will never produce. */}
-            <div className="flex flex-wrap gap-2 bg-white p-2">
+            {/* The sheet. `PrintSheet` is what keeps the workbench itself off the
+                paper — see components/print-sheet.tsx. */}
+            <PrintSheet>
               {bins.map((bin) => (
                 <LabelCell key={bin.id} bin={bin} size={sizeSpec} qr={qrs.get(bin.code)} />
               ))}
-            </div>
+            </PrintSheet>
 
             <Text className="text-sm print:hidden">
               The square holds the shelf label itself, not a web address — so it still scans when

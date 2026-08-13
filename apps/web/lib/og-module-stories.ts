@@ -153,6 +153,45 @@ const CARDS: Record<string, ModuleStoryCard> = {
       name: 'field-day-supply',
     },
   },
+  // "Your margins" rather than "Your money": the card has to say the module is
+  // about what is LEFT, not about takings — every other module on this page
+  // already moves money. The story is a services business that both sells and
+  // invoices, because that is the shape where a job can quietly lose money.
+  //
+  // There is no `finance` CLAUSE in the story grammar (clauses.ts) and this does
+  // not need one — the clause list is the onboarding composer's vocabulary, and
+  // adding a term there is an onboarding change, not a marketing one.
+  finance: {
+    lead: 'Your margins,',
+    module: 'finance',
+    story: {
+      tense: 'current',
+      industry: 'professional',
+      audience: 'businesses',
+      cust: ['book', 'shop'],
+      lines: [['invoicing'], ['inventory']],
+      slots: {},
+      name: 'northline-studio',
+    },
+  },
+  // "Your hours" — the unit this module turns into money, and the one word that
+  // says what it is without saying "payroll" (it is not). The vertical is the
+  // last one the set had not used, and it is also the honest one: a shop with
+  // technicians on the floor is exactly where an hour has a cost and a licence
+  // has an expiry date.
+  staff: {
+    lead: 'Your hours,',
+    module: 'staff',
+    story: {
+      tense: 'current',
+      industry: 'auto-parts',
+      audience: 'businesses',
+      cust: ['book', 'shop'],
+      lines: [['invoicing'], ['crm']],
+      slots: {},
+      name: 'ridgeline-service',
+    },
+  },
 };
 
 /** Render the story OG card for a built module page (its route slug). Throws on an

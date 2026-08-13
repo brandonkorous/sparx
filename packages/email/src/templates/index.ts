@@ -187,3 +187,10 @@ export {
   socialConnectionExpiredSubject,
   type SocialConnectionExpiredEmailProps,
 } from './social-connection-expired';
+
+export {
+  InventoryReportEmail,
+  inventoryReportSubject,
+  type InventoryReportEmailProps,
+  type InventoryReportLine,
+} from './inventory-report';

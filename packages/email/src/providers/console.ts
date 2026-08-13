@@ -14,6 +14,9 @@ export interface ConsoleSend {
   templateId?: string;
   html: string;
   text: string;
+  /** Filenames only — a dev log is for reading, and a base64 spreadsheet is not
+   *  readable. The bytes are still in the payload the provider received. */
+  attachments?: string[];
   acceptedAt: string;
 }
 
@@ -32,14 +35,20 @@ export const consoleProvider: EmailProvider = {
       templateId: email.templateId,
       html: email.html,
       text: email.text,
+      ...(email.attachments?.length
+        ? { attachments: email.attachments.map((a) => a.filename) }
+        : {}),
       acceptedAt,
     };
 
     // Compact, single-line summary by default; the text body follows as a
     // separate stdout line so reading dev logs is bearable. Set
     // SPARX_EMAIL_LOG_HTML=1 if you want the full HTML dumped too.
+    const files = email.attachments?.length
+      ? ` (+${email.attachments.map((a) => a.filename).join(', ')})`
+      : '';
     console.log(
-      `[email/console] ${email.templateId ?? 'unknown'} → ${email.to} :: ${email.subject}`
+      `[email/console] ${email.templateId ?? 'unknown'} → ${email.to} :: ${email.subject}${files}`
     );
     if (process.env.SPARX_EMAIL_LOG_HTML === '1') {
       console.log(email.html);

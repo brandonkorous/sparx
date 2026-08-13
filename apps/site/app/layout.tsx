@@ -34,7 +34,7 @@ import { SilicaBehaviors } from '@/components/silica-behaviors';
 import { SiteBuilderRuntime } from '@/components/site-builder-runtime';
 import type { PublishedSilicaFrameDto } from '@sparx/builder-schemas';
 import { getPublishedSilicaFrame } from '@/lib/silica';
-import { buildSilicaHost } from '@/lib/silica-data';
+import { buildSilicaHost, silicaSiteIdentity } from '@/lib/silica-data';
 import { buildSilicaThemeCssFromTheme, brandFontHref, themeFontFamilies } from '@sparx/site-themes';
 import { BASE_SILICA_THEME, buildCustomColorCss } from '@sparx/silica-catalog';
 import { getLegalFooterLinks, type LegalLink } from '@/lib/legal';
@@ -261,18 +261,13 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       ? await buildSilicaHost(site.slug, silicaFrame.frame.root, {
           currency: site.commerce.defaultCurrency,
           locale: site.commerce.defaultLocale,
-          // The frame binds site.* (brand name, logo, tagline, socials) — supply it
-          // so the navbar/footer render the tenant's identity, not a placeholder.
-          // Every field Site settings COLLECTS must be supplied here: a declared
-          // binding the host never fills resolves empty, and an empty value blanks
-          // the node it is bound to.
-          site: {
-            name: site.name,
-            tagline: site.tagline,
-            logoUrl: mediaUrl(site.theme?.logoMediaId ?? null, site.slug),
-            logoDarkUrl: mediaUrl(site.theme?.logoDarkMediaId ?? null, site.slug),
-            socials: site.socials,
-          },
+          // The frame binds site.* (brand name, logo, tagline, socials, contact
+          // details) — supply it so the navbar/footer render the tenant's identity,
+          // not a placeholder. Every field Site settings COLLECTS must be supplied
+          // here: a declared binding the host never fills resolves empty, and an
+          // empty value blanks the node it is bound to. Shared with the page routes
+          // via `silicaSiteIdentity` so the two can't drift.
+          site: silicaSiteIdentity(site),
         })
       : null;
 

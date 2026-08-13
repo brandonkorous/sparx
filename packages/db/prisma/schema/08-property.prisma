@@ -181,6 +181,14 @@ model Property {
   financeRecurringExpenses     FinanceRecurringExpense[]
   financeAccountingConnections FinanceAccountingConnection[]
 
+  // Staff (docs/149) — someone can work for both of an owner's businesses, so the
+  // roster link is a junction; their hours and commission land against the site
+  // whose job they worked.
+  staffMemberSites StaffMemberSite[]
+  staffTimeEntries StaffTimeEntry[]
+  staffShifts      StaffShift[]
+  staffCommissions StaffCommission[]
+
   // Per-site pricing (docs/131 §4): price lists apply via a junction (Discount
   // shape). Markup + surcharge rules are deliberately tenant-wide — markup writes a
   // variant's single shared list price, and a surcharge is a per-tenant payment fee.

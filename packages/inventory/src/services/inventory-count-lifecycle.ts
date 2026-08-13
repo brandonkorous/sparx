@@ -22,6 +22,7 @@ import { applyMovement, emitStockEvents, resolveActorType } from './ledger';
 import type { MovementResult } from './ledger';
 import { costBasisFor, loadCountDetail } from './inventory-count-shared';
 import type { InventoryCountDetail } from './inventory-count-shared';
+import { noteSetupStep } from './setup-progress';
 
 const DEFAULT_THRESHOLD_CENTS = 5000;
 
@@ -171,10 +172,24 @@ export async function postInventoryCount(
   const posted = await withTenant(ctx, async (tx) => {
     const count = await tx.inventoryCount.findFirst({
       where: { id: countId },
-      select: { id: true, number: true, status: true, warehouseId: true, requiresApproval: true },
+      select: {
+        id: true,
+        number: true,
+        status: true,
+        type: true,
+        warehouseId: true,
+        requiresApproval: true,
+      },
     });
     if (!count) throw new InventoryNotFoundError('InventoryCount', countId);
     assertPostable(count.status, count.requiresApproval);
+
+    // An opening count's movements are the first quantities this business ever
+    // recorded, not corrections to quantities it got wrong (docs/146 Phase
+    // 11.4). Under `recount` they would land in the shrinkage report and credit
+    // stock corrections in the journal — a business's first day reading as its
+    // worst day of losses.
+    const reason = count.type === 'opening' ? 'opening' : 'recount';
 
     const lines = await tx.inventoryCountLine.findMany({
       where: { countId, countedQuantity: { not: null } },
@@ -189,13 +204,21 @@ export async function postInventoryCount(
 
     const events: RecountEvent[] = [];
     for (const line of lines) {
-      events.push(await applyRecount(tx, ctx, count.warehouseId, countId, line));
+      events.push(await applyRecount(tx, ctx, count.warehouseId, countId, line, reason));
     }
 
     await tx.inventoryCount.update({
       where: { id: countId },
       data: { status: 'posted', postedAt: new Date() },
     });
+
+    if (count.type === 'opening') {
+      await noteSetupStep(tx, ctx.tenantId, 'opening_balance', {
+        countId,
+        number: count.number,
+        lines: lines.length,
+      });
+    }
     await writeAuditLog({
       tx,
       tenantId: ctx.tenantId,
@@ -206,13 +229,13 @@ export async function postInventoryCount(
       entityId: countId,
       diff: { after: { number: count.number, lineCount: lines.length } },
     });
-    return { number: count.number, events };
+    return { number: count.number, events, reason };
   });
 
   // Post-commit: threshold events per changed level + the completion signal.
   for (const e of posted.events) {
     if (e.delta !== 0)
-      await emitStockEvents(ctx, e.variantId, e.warehouseId, e.result, e.delta, 'recount');
+      await emitStockEvents(ctx, e.variantId, e.warehouseId, e.result, e.delta, posted.reason);
   }
   await publishInventoryEvent({
     tenantId: ctx.tenantId,
@@ -240,13 +263,16 @@ function assertPostable(status: string, requiresApproval: boolean): void {
 }
 
 /** Reconcile one level to its counted quantity via an absolute `setOnHand`
- *  `recount` movement; record the applied delta + movement id on the line. */
+ *  movement; record the applied delta + movement id on the line. The reason is
+ *  passed in rather than hardcoded because an opening count posts `opening` and
+ *  every other count posts `recount`. */
 async function applyRecount(
   tx: TxClient,
   ctx: ServiceContext,
   warehouseId: string,
   countId: string,
-  line: CountLineLite
+  line: CountLineLite,
+  reason: string
 ): Promise<RecountEvent> {
   const counted = line.countedQuantity ?? 0;
 
@@ -274,7 +300,7 @@ async function applyRecount(
       variantId: line.variantId,
       warehouseId,
       delta,
-      reason: 'recount',
+      reason,
       referenceType: 'InventoryCount',
       referenceId: countId,
       actorType: resolveActorType(ctx),
@@ -304,7 +330,7 @@ async function applyRecount(
     warehouseId,
     delta: 0,
     setOnHand: counted,
-    reason: 'recount',
+    reason,
     referenceType: 'InventoryCount',
     referenceId: countId,
     actorType: resolveActorType(ctx),

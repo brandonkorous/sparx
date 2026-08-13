@@ -51,7 +51,7 @@ function TaglineBand() {
         <Text size={17} className="max-w-[640px]">
           The hero rotates the leading noun through the offerings — each landing on{' '}
           <em className="not-italic">ignited.</em> with the Ember spark. Static form for titles, OG,
-          and social: <strong className="font-medium">Everything, ignited.</strong>
+          and social: <strong className="font-medium">Your business, multiplied.</strong>
         </Text>
         <div className="flex flex-wrap items-center gap-2">
           {ROTATION.map((w) => (

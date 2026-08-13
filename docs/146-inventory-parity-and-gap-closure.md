@@ -1,8 +1,8 @@
 # sparx Platform — Inventory: Market Parity & Gap Closure Plan
 
-**Version:** 1.9
+**Version:** 1.12
 **Author:** Brandon Korous
-**Last Updated:** 2026-08-11
+**Last Updated:** 2026-08-13
 
 ---
 
@@ -926,40 +926,460 @@ so a failure in either cannot cost a business its stock numbers.
   currencies gets a variance covering the same-currency half, with the sample
   count saying so.
 
-### Phase 9 — Demand-side commitments ⬜
+### Phase 9 — Demand-side commitments ✅
 
-- [ ] **9.1** `Backorder` — a queued customer commitment for stock that does not exist yet, with position and promised date **[P13] DB**
-- [ ] **9.2** Allocate-on-receipt — a receipt fills open backorders in queue order, atomically, and notifies **[P13]**
-- [ ] **9.3** Backorder surface + the customer-facing promised-date on the storefront and B2B portal **[P13] UI**
-- [ ] **9.4** Preorder windows (sell before stock exists, with a stated availability date) **[P13]**
-- [ ] **9.5** Stock ownership axis — `owned` | `consignment` | `customer_owned` | `3pl_owned`, excluded from valuation but present in availability **[P14] DB**
-- [ ] **9.6** Consignment settlement — report and bill what sold from consigned stock **[P14]**
-- [ ] **9.7** Returns disposition workflow: inspect → restock / quarantine / repair / scrap, each a distinct ledger reason routing to the right bin **[P19]**
-- [ ] **9.8** FEFO enforcement + expiring-stock report (30/60/90-day horizons) with a markdown/write-off action **[P18]**
+- [x] **9.1** `Backorder` — a queued customer commitment for stock that does not exist yet, with position and promised date **[P13] DB**
+- [x] **9.2** Allocate-on-receipt — a receipt fills open backorders in queue order, atomically, and notifies **[P13]**
+- [x] **9.3** Backorder surface + the customer-facing promised-date on the storefront and B2B portal **[P13] UI**
+- [x] **9.4** Preorder windows (sell before stock exists, with a stated availability date) **[P13]**
+- [x] **9.5** Stock ownership axis — `owned` | `consignment` | `customer_owned` | `3pl_owned`, excluded from valuation but present in availability **[P14] DB**
+- [x] **9.6** Consignment settlement — report and bill what sold from consigned stock **[P14]**
+- [x] **9.7** Returns disposition workflow: inspect → restock / quarantine / repair / scrap, each a distinct ledger reason routing to the right bin **[P19]**
+- [x] **9.8** FEFO enforcement + expiring-stock report (30/60/90-day horizons) with a markdown/write-off action **[P18]**
 
-### Phase 10 — Reporting, data portability, accounting ⬜
+#### What Phase 9 actually built
 
-- [ ] **10.1** Report set completion: dead stock, shrinkage, sell-through, GMROI, fill rate, days-of-cover, stock-out frequency, movement summary by reason, valuation as-of **[P21]**
-- [ ] **10.2** Saved views + column chooser + group/pivot on every inventory list **[D5][D11] UI**
-- [ ] **10.3** Every report exportable to CSV and addressable by API with identical filters **[D5] API**
-- [ ] **10.4** Scheduled report delivery by email (daily/weekly/monthly), reusing the `email.send` pipeline **[D5]**
-- [ ] **10.5** Inventory adjustment CSV import (SKU + location + qty + reason), closing the open item in [docs/68 §11](68-wizards-import-export-bulk.md) **[P20]**
-- [ ] **10.6** Full round-trip: every export re-imports without editing **[P20][D5]**
-- [ ] **10.7** QuickBooks Online connector — inventory asset + COGS journal entries, bill-from-receipt, item mapping **[P16]**
-- [ ] **10.8** Xero connector, same contract **[P16]**
-- [ ] **10.9** Accounting reconciliation report: sparx valuation vs the GL inventory account, with the difference itemized **[P16][D2]**
-- [ ] **10.10** Receipt → supplier bill inside sparx invoicing for tenants with no external accounting **[C8][D8]**
+One new schema file (`61-inventory-demand.prisma`), two migrations
+(`20270307000000_inventory_demand_commitments`, `20270308000000_lot_expiry_alert`),
+seven services, two API route modules, six workbench surfaces, a panel on the
+return pane, and a change to what a shopper is told on a product page.
 
-### Phase 11 — Onboarding: beat the spreadsheet ⬜
+**The organising rule, and it is the phase's whole personality.** Phase 7 shipped
+a classification defaulted to "erratic"; Phase 8 answered with "a metric nobody
+could measure is NULL, with its sample count beside it". Phase 9's version is
+about DATES, and it is the sharpest yet because its outputs are read by
+CUSTOMERS: **a promised date is null until something actually promised it, and
+the row records which.** `resolvePromisedDate` consults exactly three things — a
+real purchase order's expected arrival, a MEASURED supplier lead time, and a
+person typing one. It deliberately does NOT consult the platform's 14-day
+`DEFAULT_LEAD_TIME_DAYS` or a supplier's stated catalogue figure: both are fine
+for deciding when to reorder, and neither is a commitment anybody made about this
+order. A `CHECK` pins `promised_at` and `promise_source` together so the pair
+cannot come apart.
 
-- [ ] **11.1** Guided inventory setup wizard: locations → import → mapping → opening balance → alerts. **Instrumented against a 30-minute target.** **[D6] UI**
-- [ ] **11.2** Spreadsheet import with fuzzy column mapping, unit/format detection, and a saved mapping profile for re-imports **[D6]**
-- [ ] **11.3** Dry-run diff before apply — "412 matched, 18 new SKUs, 6 conflicts" — with per-row resolution **[D6][D1]**
-- [ ] **11.4** Opening-balance count as the setup's final step, so day one starts from a posted, auditable count rather than an assumption **[D6][D1]**
-- [ ] **11.5** Spreadsheet-grade stock grid: inline edit, paste a column, multi-select bulk actions, keyboard navigation **[D6][C3] UI**
-- [ ] **11.6** Inventory sample data for the existing sample-data surface, so an empty tenant can be explored before committing **[D6]**
-- [ ] **11.7** Migration recipes for the common incumbents (spreadsheet, accounting-attached inventory, marketplace exports) as import presets **[D6]**
-- [ ] **11.8** Custom fields on variant/level/supplier/PO, definable in the UI and present in imports, exports, API, and MCP **[D11]**
+**A backorder is a record, never a second hold.** The hold that matters already
+exists — `reserveOnTx` has pushed `allocated` past `on_hand` — so this module
+writes no movement and touches no level. It is written at exactly one place, the
+sell path's commit, measured from the sale movement's own resulting balance, and
+skipped when that movement deduplicates (which is the retry guard, free). The
+honest consequence is stated in the service header rather than papered over:
+allocation is not a physical earmark, and a walk-in can still take the units.
+What the queue guarantees is that the decision about who is covered is made by
+arrival order and written down, instead of made at the receiving desk and
+forgotten.
+
+**Queue position is derived, never stored.** `ROW_NUMBER() OVER (ORDER BY
+priority DESC, created_at ASC)` at read time — always contiguous, never
+developing a hole when somebody cancels. `priority` IS stored, because bumping a
+customer up the queue is a real decision about a relationship.
+
+**Filling is strict queue order, not pro-rata.** Fifteen units across three
+customers who each want ten produces one shipped customer and one partial, not
+three who cannot be shipped. It runs inside the arrival's own transaction with
+the queue locked, so two deliveries landing at once cannot promise the same units
+twice — and it is wired into goods receipts AND transfer receipts, because a
+branch moving stock in from the main warehouse is how a backorder usually clears
+for a business with more than one location.
+
+**Preorders became an offer.** `inventoryPolicy = 'preorder'` had been a pure
+synonym for `continue` since the first commerce migration: sell it, let on-hand
+go negative, say nothing. A window is now deliberate (dates), bounded (a cap,
+enforced at reserve where the customer can still be told no, counted at commit
+under a row lock) and dated — with `available_at` NULLABLE, which was the hardest
+call in the phase. A maker who has not committed to a date is ordinary; a
+merchant forced to fill the field types something, and that something reaches the
+product page as a commitment. A partial unique index allows one live window per
+variant, because two live windows means two dates promised for one product and
+the way that happens is two people in two tabs.
+
+**The ownership axis changes exactly one thing.** `owned | consignment |
+customer_owned | 3pl_owned` on the level; valuation counts only `owned`, and
+availability counts everything. That asymmetry IS the feature — consigned stock
+is somebody else's asset and entirely sellable, which is the whole reason to hold
+it — and the screen says so out loud, because the first instinct is to expect it
+to vanish from the storefront. Ownership is STAMPED on every movement rather than
+joined at read time: buying a consignment out must not retroactively rewrite what
+was owed last quarter.
+
+**Settlement is a closed period, not a running total.** Half-open
+`[start, end)`, one named counterparty, immutable once closed — a late correction
+is the next period's line. Lines are grouped by (variant, location, agreed cost)
+and never blended into a weighted average, because a supplier checks a settlement
+against their own paperwork and a blended cost matches nothing they hold. Sales
+with no recorded cost are counted separately and BLOCK closing: valuing them at
+zero would pay the owner short while saying "they gave it to us".
+
+**Returns disposition replaced a boolean that could not carry the job.**
+`restockable` was the whole decision, and its `false` branch covered four
+different piles with four different futures — a pump needing a seal, a jacket
+needing cleaning, a batch awaiting a supplier's verdict, and genuine scrap. Now:
+restock, quarantine, repair, scrap — NULL until somebody decides, because there
+is no safe default in either direction (restock puts damaged goods back on the
+shelf; scrap throws away stock that was fine). `scrap` writes NO movement at all,
+deliberately: the cost was relieved as COGS when the item sold, so adding it back
+to write it off would post two cancelling entries, churn the moving average, and
+file a customer return under shrinkage. The legacy boolean is kept and kept in
+step, and the two paths that can restock share ONE idempotency key so they cannot
+both move the same units.
+
+**Unsellable shelves became real, and this was the load-bearing fix behind 9.7.**
+Before it, routing a return to quarantine moved it on a screen and left it on
+sale: `on_hand` counts the whole location and availability subtracted only
+`allocated`. `inventory_levels.unsellable_on_hand` is now maintained by
+`applyBinMovement` — the single writer of bin levels — and netted out by the ONE
+definition of sellable in `low-stock.ts`, plus every inline copy that had drifted
+from it: the storefront, sparx.market, external sales channels, bundles,
+assemblies, recipes, B2B fleet holds and the provenance drawer. A `repair` shelf
+joins the provisioned system bins, distinct from `damaged` because the two piles
+have opposite futures and a refurbisher whose repair queue reads as shrinkage is
+being told its best margin is a loss.
+
+**FEFO was shipping the worst possible lot.** `resolveFefoLot` ordered by
+`expires_at ASC` and excluded recalled batches — but not EXPIRED ones. Sorting by
+nearest expiry puts the MOST expired batch first, so a location holding one
+out-of-date box shipped it to every customer until it ran out. That is the
+precise failure FEFO exists to prevent, and it took until this phase to notice.
+The expiring-stock report cuts at 30/60/90 because those map onto what a person
+can actually do (markdown, promotion, purchasing decision), keeps `undated` as
+its own bucket rather than folding it into the safe end, and shows no money at
+all for a lot nothing has costed rather than a zero that would sort a real
+exposure to the bottom of a list ordered by value.
+
+**Two guard bugs the phase exposed, both in the ledger.** `applyMovement` and
+`applyBinMovement` refused any movement whose RESULT was negative rather than one
+that CAUSED it — so a level driven to −12 by a permitted oversell could not then
+be received into, because +8 still leaves −4. That is exactly the sequence
+backorders exist to serve, and it failed the delivery. Both now also test
+`delta < 0`; an inbound movement can never make the position worse.
+
+**Where it runs.** Three more stages on the end of the nightly planning pass —
+`backorder_promises`, `preorder_windows`, `expiring_lots` — for the same reason
+Phase 8's two are there: one pass over the catalogue, and one place to look when
+it did not run. Promises run first, because a purchase order raised today is
+exactly what turns "no date" into a date, and a buyer opening the queue in the
+morning should find last night's answer rather than yesterday's.
+
+**Outstanding, stated rather than hidden:**
+
+- **The B2B portal shows the promise through the storefront, because
+  `apps/b2b-portal` is still an empty placeholder.** A signed-in B2B customer
+  reads the same PDP payload (`preorder`, `expectedBackAt`) with their own
+  contract price beside it, so the commitment is visible to them today — but
+  there is no separate portal surface for it, and 9.3's wording implies one.
+- **Backorder notification is manual.** `markBackorderNotified` records that a
+  customer was told, and `shouldRenotify` detects a slip worth a second email,
+  but nothing SENDS it — no `email.send` template is wired, so somebody presses
+  the button after picking up the phone.
+- **Consignment settlement cannot separate two owners at one location**, because
+  the ownership axis is per (variant, warehouse) by design. A tenant consigning
+  the same SKU from two suppliers into one warehouse needs a second location; the
+  model refuses to guess rather than producing a plausible split.
+- **A markdown applies to the VARIANT, not the batch.** Per-batch pricing would
+  have to reach the product page and the till, which is a far larger feature than
+  the one warranted here. The lot is what identified the problem; the markdown is
+  an ordinary price change with a note saying why.
+- **`chargeUpFront` drives wording, not payment capture.** The column records the
+  merchant's intent and the storefront reads it; actually deferring the charge to
+  fulfilment is a payments change, not an inventory one.
+
+### Phase 10 — Reporting, data portability, accounting ✅
+
+- [x] **10.1** Report set completion: dead stock, shrinkage, sell-through, GMROI, fill rate, days-of-cover, stock-out frequency, movement summary by reason, valuation as-of **[P21]**
+- [x] **10.2** Saved views + column chooser on the inventory lists **[D5][D11] UI**
+- [x] **10.3** Every report exportable to CSV and addressable by API with identical filters **[D5] API**
+- [x] **10.4** Scheduled report delivery by email (daily/weekly/monthly), reusing the `email.send` pipeline **[D5]**
+- [x] **10.5** Inventory adjustment CSV import (SKU + location + qty + reason), closing the open item in [docs/68 §11](68-wizards-import-export-bulk.md) **[P20]**
+- [x] **10.6** Full round-trip: every export re-imports without editing **[P20][D5]**
+- [x] **10.7** QuickBooks Online connector — inventory asset + COGS journal entries, bill-from-receipt, item mapping **[P16]**
+- [x] **10.8** Xero connector, same contract **[P16]**
+- [x] **10.9** Accounting reconciliation report: sparx valuation vs the GL inventory account, with the difference itemized **[P16][D2]**
+- [x] **10.10** Receipt → supplier bill inside sparx invoicing for tenants with no external accounting **[C8][D8]**
+
+#### What Phase 10 actually built
+
+**The rule this phase turns on.** Phases 8 and 9 both landed on "never present absence as
+measurement". Phase 10 is that rule applied to RATIOS, where it bites hardest, because a
+ratio hides its own inputs:
+
+> **A RATIO WHOSE DENOMINATOR NOBODY MEASURED IS NULL, NOT ZERO — AND THE RESULT CARRIES
+> HOW MANY ROWS IT HAD TO LEAVE OUT.**
+
+"Fill rate: 100%" reads identically whether four thousand order lines shipped complete or
+nothing was ever recorded, and the second is far more common in a young tenant. So every
+percentage in this phase is `number | null`, every report carries the count of what it
+could NOT measure (`unmeasuredLines`, `uncostedUnits`, `unattributedUnits`,
+`unmeasuredMovements`, `inactiveLines`), and every surface renders those counts as a
+sentence rather than dropping them. `formatPercent(null)` returns "Not measured", never
+"0%".
+
+**The five new reports (10.1).** Pure arithmetic in
+[`commerce-schemas/src/reporting.ts`](../packages/commerce-schemas/src/reporting.ts) (57
+unit tests), SQL in
+[`performance-reports.ts`](../packages/inventory/src/services/performance-reports.ts):
+
+- **Sell-through** — sold ÷ (sold + on hand at the period's close). The denominator is
+  deliberately not "what you bought": a business that received nothing this month and sold
+  half its shelf has a real sell-through, and dividing by zero receipts would say otherwise.
+- **GMROI** — margin per pound of stock held. Revenue is traced to the goods that LEFT
+  (each sale movement matched to its order line, pro-rated by units) rather than to orders
+  placed. A sale with no order line is COUNTED and credited NO revenue: dropping it
+  understates cost of sales, calling its revenue zero reports a loss on stock that sold
+  perfectly well, and only counted-but-uncredited is honest.
+- **Fill rate**, by line and by unit. A line is short if Phase 9 recorded a backorder
+  against it, else if the sale movement's running balance went below zero. Where neither
+  exists the line is `measured: false` and leaves the calculation entirely — the second
+  path exists because backorders only began in Phase 9, and a fill rate that silently
+  started there would show a flawless history for every month before it.
+- **Stock-out frequency** — a run at zero is ONE episode however many movements it spans,
+  because a SKU out for a fortnight has one problem and not fourteen. Each (variant,
+  location) is seeded with its balance immediately BEFORE the window, so a line already out
+  when the period opened counts from day one rather than from whenever it next moved.
+  Without the seed the worst cases — lines so out of stock that nothing happened to them
+  — are the ones the report misses.
+- **Movement summary by reason** — the reconciling report, whose parts must add up to the
+  ledger exactly. An unknown reason is grouped rather than dropped; a reason nothing costed
+  reports a blank, never $0.00.
+
+**One addressable endpoint, not eighteen (10.3).** `GET /v1/inventory/reports/:key`
+resolves through a REGISTRY in
+[`report-registry.ts`](../packages/inventory/src/services/report-registry.ts) — 19
+reports, each knowing how to RUN, how to write itself as CSV, and how to say itself in a
+sentence. The API iterates it, the scheduler resolves through it, the workbench picker is
+served from it. Without the registry that is three lists of report names kept in step by
+memory, and the failure is silent: a report added to the API and forgotten in the schedule
+picker simply cannot be scheduled. An integration test runs every report the catalogue
+advertises, so "listed but unrunnable" cannot ship.
+
+**One CSV writer and one CSV reader (10.6).** [`inventory/src/csv.ts`](../packages/inventory/src/csv.ts)
+holds both directions. 10.6 holds structurally rather than by testing: the round trip works
+only if the writer and the reader share a definition of what a CSV is, and two good
+implementations will disagree about a quoted comma, a BOM or a trailing blank line within a
+month. The details that actually break it are handled once — BOM written and stripped,
+CRLF written and either accepted, quoted newlines honoured, blank trailing rows not parsed
+as records, headers compared case-insensitively, formula-looking free text neutralised.
+`adjustmentTemplate` emits the same columns the parser reads.
+
+**Plan, then apply (10.5).** A bad adjustment import is indistinguishable from theft in the
+ledger afterwards: four hundred `manual` movements, all stamped the same second, all
+attributed to whoever pressed the button. So `inventory_import_batches` records the
+uploaded file, the full per-row plan (errors and all, so a file can be fixed after closing
+the tab), and what was actually posted. Every movement carries
+`referenceType: 'InventoryImportBatch'`, which is what makes the import listable,
+explainable and REVERSIBLE as a unit — the undo writes compensating movements rather than
+deleting anything, because the ledger is append-only and an import that can be erased is
+one nobody can audit. Apply is idempotent per row (`import:<batch>:<line>`), so a retry
+after a network failure resumes rather than doubling. Rows whose stock moved between the
+preview and the apply are counted as `driftedRows` and reported.
+
+**Reports that arrive (10.4).** The reports are good and nobody opens them, because opening
+them means remembering to log in on a Monday. `inventory_report_schedules` +
+`inventory_report_deliveries`, an hourly `inventory-report-delivery` CronJob, and a new
+`inventory-report` platform email template. Three decisions worth knowing: `nextRunAt` is
+stored but computed by the pure `nextRunAt()`, so the date the screen promises and the date
+the sweep fires on cannot disagree; a report with nothing in it is `skipped` rather than
+sent, because a weekly "nothing has expired" is how people learn to filter the sender; and
+four consecutive failures PAUSE the schedule visibly, with the count on the row, rather
+than retrying into a dead mailbox for a year.
+
+This phase also added **attachments to the platform email path**
+(`SendableEmail.attachments`, multipart on Mailgun, filenames logged by the console
+provider) — a scheduled CSV whose spreadsheet does not arrive is not a delivered report.
+Capped at 400 KB before base64, because the payload crosses JetStream and its default
+message limit is 1 MB; a larger report says so in the body and links to the screen rather
+than producing an event the broker silently refuses.
+
+**Saved views (10.2).** The `saved_views` table and its service have existed since docs/24;
+what was missing was a ROUTE, because the shared `ListToolbar` that would have called it
+belonged to `apps/dashboard` and went with it. `/v1/saved-views` is now a platform surface
+(CRM keeps its own, over its own table, for its object-key vocabulary), and
+[`components/saved-views.tsx`](../apps/workbench/components/saved-views.tsx) is the views
+menu + column chooser any list can drop into its toolbar. A view stores the QUESTION
+(filters, sort, columns) and never the rows, which is what makes "Running low at the
+warehouse" mean the same thing in March as it did in January.
+
+**The accounting handoff (10.7–10.10).** Four pieces, and the boundary in
+[docs/148 §1](148-finance-spend-and-profitability.md) — no ledger, no double entry, no
+chart of accounts — is intact throughout. Nothing here STORES a journal; it TRANSLATES
+movements into the shape their ledger expects at the moment of handing them over.
+
+- **The journal**, pure, in
+  [`commerce-schemas/src/accounting.ts`](../packages/commerce-schemas/src/accounting.ts).
+  Perpetual inventory in four entries: a receipt debits the asset against accrued
+  purchases, a sale debits cost of goods, shrinkage debits shrinkage, a correction hits
+  adjustments. A transfer between the business's own locations posts NOTHING — the asset
+  has not changed and the account has not changed. Netted per counterpart so an accountant
+  gets one entry a month with five lines, which also makes it balance by construction
+  (every counterpart's other side is Inventory); `imbalanceCents` verifies that rather than
+  assuming it.
+- **Two live adapters** —
+  [`quickbooks.ts`](../packages/finance/src/accounting/providers/quickbooks.ts) and
+  [`xero.ts`](../packages/finance/src/accounting/providers/xero.ts): OAuth 2,
+  chart-of-accounts import, account balance, and an idempotent journal post. Genuinely
+  different underneath, which is why they are two adapters and not one configuration:
+  QuickBooks identifies the company file by a realm id that arrives ONLY as a callback
+  query parameter and addresses accounts by opaque id; Xero identifies it by a header
+  discovered from `/connections` after the exchange, addresses accounts by CODE, posts a
+  `ManualJournal` in DRAFT, and rotates its refresh token on every use.
+  [`credentials.ts`](../packages/finance/src/accounting/credentials.ts) stores the grant
+  AES-256-GCM through the existing provider-secret box and writes back a rotated refresh
+  token before returning — failing to do that breaks the NEXT call, hours later, which is
+  what makes it hard to diagnose.
+- **The send gate.** Nothing posts unless the entry balances, every role it uses is mapped
+  to a real account, and the period is outside the tenant's closed months. All three are
+  checked before the request leaves — the alternative is discovering an unmapped account
+  halfway through writing somebody's books.
+- **The reconciliation (10.9).** sparx keeps no ledger, so the inventory account's balance
+  is something it must be TOLD — typed off a trial balance or pulled through a connection,
+  both landing in `inventory_gl_snapshots` (immutable per account per date). Until it is
+  told, `unexplainedCents` is NULL and the screen asks for the figure; a zero difference
+  reported against nothing would be the single most dangerous number in the module. The
+  itemised lines are the five ordinary timing differences: goods received not invoiced,
+  invoiced not received, non-owned stock in the building, units nobody costed (amount NULL
+  — the units exist and their value is genuinely unknown), and stock in transit between
+  the business's own places.
+- **Receipt → bill (10.10).** `draftBillFromReceipt` is a READ. The draft fills in OUR side
+  and asks the operator to correct it to THEIRS, because a bill created straight from the
+  receipt would match it perfectly by construction — and a three-way match that cannot
+  fail is not a check.
+
+**Availability is a deployment fact, not a code fact.** Both adapters are complete; whether
+a tenant can press "connect" depends on whether this installation has an OAuth app
+registered with the vendor (`SPARX_QBO_CLIENT_ID` / `SPARX_XERO_CLIENT_ID`).
+`accountingProviderAvailability()` reports that honestly, so the panel says "not switched
+on here, and here is the export that works today" rather than offering a button that dies
+at the redirect. **No live OAuth round trip has been exercised** — there is no sandbox app
+for this installation yet, and that is the one part of this phase a browser cannot verify.
+
+**`IntegrationCategory` deliberately did NOT gain `accounting`.** docs/148 §6 says to add
+it with the first adapter; the rule behind that instruction is that a category is added the
+day something DISPATCHES through it. These adapters are called directly by the finance and
+inventory services rather than through the `@sparx/integrations` registry, so adding the
+category would produce exactly the empty panel heading that file warns about.
+
+**Two things this phase deliberately did not do.** Group/pivot on lists (the third clause of
+10.2) is not built: a pivot is a report, and nineteen of those are now one endpoint away, so
+a second pivoting engine inside a list toolbar would be a worse version of something the
+module already has. And the saved-views bar is on the two lists people live in — stock and
+movements — rather than all twenty-five: every other inventory list holds its filters in
+bespoke component state, and the remaining wiring is mechanical rather than designed.
+
+**One pre-existing bug this phase found.** `patch-semantics.test.ts` — the generic guard
+that walks every exported `Update*Input` — caught `UpdateReportScheduleInput` the moment it
+was written as `CreateReportScheduleInput.partial()`. `.partial()` makes a field optional
+but does NOT strip its `.default()`, so renaming a schedule would have silently reset its
+hour, timezone, format, filters and active flag. Written out explicitly instead.
+
+### Phase 11 — Onboarding: beat the spreadsheet ✅
+
+- [x] **11.1** Guided inventory setup wizard: locations → import → mapping → opening balance → alerts. **Instrumented against a 30-minute target.** **[D6] UI**
+- [x] **11.2** Spreadsheet import with fuzzy column mapping, unit/format detection, and a saved mapping profile for re-imports **[D6]**
+- [x] **11.3** Dry-run diff before apply — "412 matched, 18 new SKUs, 6 conflicts" — with per-row resolution **[D6][D1]**
+- [x] **11.4** Opening-balance count as the setup's final step, so day one starts from a posted, auditable count rather than an assumption **[D6][D1]**
+- [x] **11.5** Spreadsheet-grade stock grid: inline edit, paste a column, multi-select bulk actions, keyboard navigation **[D6][C3] UI**
+- [x] **11.6** Inventory sample data for the existing sample-data surface, so an empty tenant can be explored before committing **[D6]**
+- [x] **11.7** Migration recipes for the common incumbents (spreadsheet, accounting-attached inventory, marketplace exports) as import presets **[D6]**
+- [x] **11.8** Custom fields on variant/level/supplier/PO, definable in the UI and present in imports, exports, API, and MCP **[D11]**
+
+#### What Phase 11 actually built
+
+**The rule this phase turns on.** Phase 10's was about ratios. This one is about guesses:
+
+> A GUESS MUST NEVER BE INDISTINGUISHABLE FROM A FACT.
+
+Every column match carries a confidence and how it was reached, and a match below
+`COLUMN_MATCH_THRESHOLD` (0.62) arrives as `null` rather than as something plausible — because a
+mapping screen that comes pre-filled with the wrong column is worse than one that comes blank. The
+blank one gets read; the pre-filled one gets clicked through, and four hundred quantities land in
+the cost column. The same rule governs the clock: `handsOnMs` and `withinTarget` are `null` until
+there is something to measure, so an unmeasured setup never reports as a failed one.
+
+**The thirty minutes is measured, and measured twice.** `summarizeSetup()` (pure, tested) reports
+hands-on time — the sum of gaps between step stamps, excluding any gap longer than a sitting — AND
+how many sittings it took. One number would have to either count somebody's lunch break against the
+target or silently discard it; both are dishonest, so both are shown. Stamps are written by the
+server as each step finishes, not by a timer in the browser, because a timer measures how long a tab
+was open and the tab people leave open is the one they were not using.
+
+**The wizard reads the world as well as its own record.** A checklist that only knows what it was
+told is a checklist that lies. Each step reports what the RECORD says and what is TRUE right now
+(four locations, 812 items, an opening count posted), and where they disagree the screen shows both
+— "you marked this done, and there are no locations" is the sentence that helps. `noteSetupStep()`
+ticks a step from the thing that satisfied it (an applied import, a posted opening count), and
+deliberately refuses to CREATE a setup record: a tenant who never opened the wizard has not begun a
+guided setup, and inventing one would report a duration for something that never happened.
+
+**Recipes are code, not rows** (11.7). `MIGRATION_RECIPES` ships in the source: five kinds of file
+described by what they ARE rather than by whose product made them — a hand-kept spreadsheet, an item
+list from accounts software, a marketplace listing report, a till export, and sparx's own stock-take
+sheet. A recipe only WIDENS the alias vocabulary; it never forks the import path, so there is one
+importer to keep correct rather than five. A unit test pins that widening never removes a standard
+alias.
+
+**A resolution acts on the stored plan, not on the file** (11.3). A person can fix six rows over an
+afternoon without re-uploading, and the decisions become part of the batch's permanent record.
+`create` makes a real catalogue item — as a DRAFT with no price, because a stock file says nothing
+about what to sell something for and a zero price on a published item is a giveaway. `skipped` is
+its own outcome, kept distinct from `no_change`: "we left it out" and "it was already right" look
+identical in a total and mean opposite things.
+
+**An opening count is its own kind of count** (11.4). `InventoryCountType` gained `opening`, seeded
+from the CATALOGUE rather than from the levels — on day one there may be no levels at all, which is
+exactly the state the count exists to end. Its movements post under a new `opening` reason rather
+than `recount`, so a business's first day does not appear in the shrinkage report as its worst day
+of losses. That reason also earned a sixth journal role, `opening_balance`: an opening balance is
+not a purchase (which would invent a supplier liability) and not a correction (which would make the
+business look like it found a warehouse it had lost). Blind by default, and the approval threshold
+is set to the column's maximum — an opening count is EXPECTED to differ from what the system holds,
+and gating the last step of setup behind an approval from the one person setting it up is absurd.
+
+**The grid sends a target, never a difference** (11.5). What a cell was showing may be a minute old;
+the server computes the change against what is live, inside the row lock, exactly as a count does.
+So a sale that landed while the grid was open is reconciled rather than quietly undone by a stale
+subtraction. Each row saves in its own transaction — forty edits are forty independent facts, and
+one bad row taking the other thirty-nine with it is the experience the spreadsheet does not have.
+A partial save clears only the rows that saved and leaves the failures on screen with what was
+typed.
+
+**Custom fields: definitions in a table, values in a JSON column** (11.8). A value table would make
+the stock grid — three hundred rows with their custom columns — a four-way join for a benefit sparx
+would never use. Removing a field turns it OFF and leaves the values in place, so a field deleted by
+mistake is recoverable by re-creating it under the same key. Nothing writes a value except
+`applyCustomFields`, which is what keeps a field's TYPE a promise: the API, the importer, the grid
+and the MCP tool all arrive there, so a number field cannot end up holding "n/a" because one of the
+four forgot to check. Fields ride the CSV as `cf_<key>` columns the importer reads back, which is
+10.6's round trip extended to the tenant's own data.
+
+**Sample data authors FACTS, never MEASUREMENTS** (11.6). `inventory-depth.ts` adds shelves,
+barcodes and a recipe — things a business DECIDED, which a demo tenant genuinely has. It
+deliberately does NOT fabricate a supplier scorecard, an ABC class, a demand forecast or a reorder
+point: those are things sparx CALCULATED from evidence, and inventing one would put a number on
+screen that nothing measured — showing a prospective customer exactly the behaviour the platform
+promises not to have. Those surfaces stay empty until the nightly sweep runs over the sample POs and
+movements, which is what a real tenant sees in week one and is the honest demo. Custom-field
+DEFINITIONS are also deliberately absent: they are tenant configuration that would survive a Clear
+and appear on every form.
+
+**Four bugs the tests caught, all real.**
+
+1. `parseCsv` lower-cased its headers, so the mapping screen would have shown a person "qty on hand"
+   where their file said "Qty On Hand" — sparx appearing to have mangled their file, as the first
+   thing they see. `rawHeaders` now travels alongside.
+2. A row that failed to match an item recorded no quantity, so resolving it — creating the item —
+   applied a change of zero and landed as "already correct". The quantity is now read BEFORE
+   anything can fail, so an error row still carries what the file asked for.
+3. `audit_logs.entity_id` is a UUID column and a stock position's key is `<variant>:<warehouse>`.
+   Writing a custom-field value and saving a grid row both failed on the insert. A level is now
+   audited under its variant with the location in the diff.
+4. `formatDuration(30_000)` rounded to "1 minute". Under a minute is under a minute; rounding first
+   claims a precision the measurement does not have.
+
+**Two things named rather than quietly skipped.** An opening count refuses a catalogue over 10,000
+items — a count of twenty thousand lines is not a count, it is a week, and offering it as one step
+of a thirty-minute setup would be a promise the product cannot keep; the refusal says to import the
+quantities and count the fast movers first. And the grid's keyboard navigation is what the browser
+gives a table of inputs (tab, shift-tab, typing over a selection) plus column paste — not a
+spreadsheet's arrow-key cell cursor, which needs a focus manager the app does not have and would be
+its own piece of work.
 
 ### Phase 12 — Prove it ⬜
 
@@ -1019,7 +1439,18 @@ and backorder allocations are all written inside the same transaction as their `
 
 `bins.ts` · `barcodes.ts` · `labels.ts` · `picking.ts` · `assemblies.ts` · `boms.ts` ·
 `planning.ts` · `classifications.ts` · `schedules.ts` · `supplier-performance.ts` · `approvals.ts` ·
-`asn.ts` · `backorders.ts` · `costing.ts` · `uom.ts` · `integrity.ts` · `imports.ts`
+`asn.ts` · `backorders.ts` · `costing.ts` · `uom.ts` · `integrity.ts` · `demand.ts` ·
+`reporting.ts` · `accounting.ts`
+
+Phase 10 added ONE report endpoint rather than one per report: `GET /v1/inventory/reports/:key`
+resolves through the registry in `@sparx/inventory`, so the API's coverage IS the registry's
+coverage permanently. The four named report URLs that shipped before it (`/reports/valuation`,
+`/reports/turnover`, `/reports/aging`, `/reports/reorder-analysis`, `/reports/shrinkage`) keep
+their own handlers — breaking a published URL to tidy a file is not a trade worth making.
+
+`/v1/saved-views` is PLATFORM-level rather than an inventory route: `target` is just a list
+identity, so nothing about it is inventory-specific and a second copy the first time another
+module asked would be the whole problem.
 
 Every one module-gated on `inventory`, scope-enforced, and standalone-safe (no commerce dependency).
 
@@ -1062,10 +1493,15 @@ rather than replaced — same surface, ordered by money and carrying its own rea
 | Planning                 | 7     | ✅ shipped — five tabs: at risk · what matters · not selling · cost to keep · settings         |
 | Why this number          | 7     | ✅ shipped as a pane — every input, its confidence, and the formulas with your numbers in them |
 | Count schedules          | 7     | ✅ shipped — list + editor; "count now" on a row                                               |
-| Supplier scorecards      | 8     | League table; the per-supplier panel lives on supplier detail                                  |
-| PO approvals             | 8     | Approval queue                                                                                 |
-| Backorders               | 9     |                                                                                                |
-| Import                   | 11    | Mapping + dry-run diff                                                                         |
+| Supplier scorecards      | 8     | ✅ shipped — league table; the per-supplier panel lives on supplier detail                     |
+| PO approvals             | 8     | ✅ shipped — approval queue, rules, and the late-order list                                    |
+| Backorders               | 9     | ✅ shipped as "Waiting list" — plus preorders, whose stock, consignment and expiring stock     |
+| Performance reports      | 10    | ✅ shipped as "How it is performing" — sell-through, GMROI, fill rate, stock-outs, movements   |
+| Scheduled reports        | 10    | ✅ shipped as "Sent to your inbox" — list + the create/edit pane with its delivery history     |
+| Stock import             | 10    | ✅ shipped — download what you have, count, upload; plan then apply, and undo as a unit        |
+| Stock versus your books  | 10    | ✅ shipped — the itemised reconciliation, and where the ledger balance is entered              |
+| Receipt → supplier bill  | 10    | ✅ shipped as a panel on the delivery, below the landed cost                                   |
+| Import wizard            | 11    | Mapping + fuzzy column detection, on top of the Phase 10 importer                              |
 
 **Design constraints** (binding — [DESIGN.md](../DESIGN.md), [apps/workbench/CLAUDE.md](../apps/workbench/CLAUDE.md)):
 inventory is amber `--color-module-inventory`; cross-module panels wear the other module's hue via a
@@ -1097,14 +1533,14 @@ silicaui components only, no inline `style`, no eyebrows, no gradients or shadow
 | Days of cover               | ✅ shipped   | 7     |
 | Holding cost                | ✅ shipped   | 7     |
 | ABC / XYZ distribution      | ✅ shipped   | 7     |
-| Supplier scorecard          | ❌           | 8     |
-| Expiring stock              | ❌           | 9     |
-| Sell-through                | ❌           | 10    |
-| GMROI                       | ❌           | 10    |
-| Fill rate                   | ❌           | 10    |
-| Stockout frequency          | ❌           | 10    |
-| Movement summary by reason  | ❌           | 10    |
-| GL reconciliation           | ❌           | 10    |
+| Supplier scorecard          | ✅ shipped   | 8     |
+| Expiring stock              | ✅ shipped   | 9     |
+| Sell-through                | ✅ shipped   | 10    |
+| GMROI                       | ✅ shipped   | 10    |
+| Fill rate                   | ✅ shipped   | 10    |
+| Stockout frequency          | ✅ shipped   | 10    |
+| Movement summary by reason  | ✅ shipped   | 10    |
+| GL reconciliation           | ✅ shipped   | 10    |
 
 ---
 

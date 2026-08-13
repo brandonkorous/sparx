@@ -122,6 +122,8 @@ export const SAMPLE_PRODUCT: PublicProduct = {
       optionValueIds: ['sample-val-white'],
       available: 42,
       inStock: true,
+      preorder: null,
+      expectedBackAt: null,
     },
     {
       id: 'sample-var-charcoal',
@@ -135,6 +137,8 @@ export const SAMPLE_PRODUCT: PublicProduct = {
       optionValueIds: ['sample-val-charcoal'],
       available: 8,
       inStock: true,
+      preorder: null,
+      expectedBackAt: null,
     },
   ],
   images: [],

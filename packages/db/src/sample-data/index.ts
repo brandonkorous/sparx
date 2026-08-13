@@ -12,6 +12,7 @@ import { withTenant, type TenantContext } from '../tenant-context';
 import { applyCatalog } from './engine/catalog';
 import { applyProductImages } from './engine/media';
 import { applyInventory } from './engine/inventory';
+import { applyInventoryDepth } from './engine/inventory-depth';
 import { applyCustomers, applyOrders } from './engine/commerce-activity';
 import { applyReviews } from './engine/reviews';
 import { applyContent } from './engine/content';
@@ -130,6 +131,10 @@ async function applyPack(ctx: ApplyCtx, pack: SampleDataPack): Promise<void> {
   await applyCatalog(ctx, eff);
   await applyProductImages(ctx, eff);
   await applyInventory(ctx, eff);
+  // Shelves, barcodes and a recipe (docs/146 Phase 11.6) — the phase 2–6
+  // surfaces, which would otherwise open empty in a sample tenant. Runs after
+  // the levels exist, because it distributes THEM across the shelves.
+  await applyInventoryDepth(ctx, eff);
   if (ctx.isOn('commerce') || ctx.isOn('crm') || ctx.isOn('scheduling') || ctx.isOn('b2b')) {
     await applyCustomers(ctx, eff);
   }

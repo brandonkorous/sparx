@@ -140,6 +140,23 @@ export type EventType =
   // mutates stock: it notifies whoever placed the order, and it is the trigger a
   // business actually wants for "chase the supplier".
   | 'inventory.purchase_order.late'
+  // Demand-side commitments (docs/146 Phase 9). A hold was taken that stock
+  // could not cover, so somebody is owed units that do not exist yet. Fired at
+  // the moment of the promise rather than by a sweep, because the thing that
+  // reacts to it is a purchase decision — a buyer wants to know a customer is
+  // waiting before tonight, not tomorrow. Carries no date: whether one can
+  // honestly be promised is resolved separately, and often the answer is no.
+  | 'inventory.backorder.created'
+  // A delivery covered one or more waiting commitments, in queue order
+  // (docs/146 Phase 9.2). One event per backorder filled, because each is a
+  // different customer to tell. Emitted after the receipt transaction commits,
+  // so the units are genuinely on the shelf before anyone is told they are.
+  | 'inventory.backorder.allocated'
+  // A dated lot has crossed into the nearest expiry horizon (docs/146 Phase
+  // 9.8). Fired ONCE per lot as it enters the 30-day window, not nightly for
+  // the whole month it spends there — the same muting logic as the late-order
+  // alert. What reacts to it is a markdown, a promotion, or a write-off.
+  | 'inventory.lot.expiring'
   // Cart + checkout
   | 'cart.created'
   | 'cart.updated'
@@ -373,7 +390,25 @@ export type EventType =
   // A sync with the tenant's accounting system finished. Carries the outcome so a
   // `partial` or `failed` run can raise a notification — the failure that matters
   // is the 3 records out of 140 that bounced, not the whole run.
-  | 'finance.accounting.sync.completed';
+  | 'finance.accounting.sync.completed'
+  // ── Staff (docs/149) ──────────────────────────────────────────────────────
+  // A person joined the roster. The activity-feed hook, and what an automation
+  // hangs an onboarding checklist off.
+  | 'staff.member.created'
+  // Timesheet time was APPROVED, and this is the labour deriver's trigger — not
+  // clock-out. Approval is a deliberate act precisely so a mistyped shift cannot
+  // move the month's profit before anyone has looked at it (docs/149 §5).
+  | 'staff.time.approved'
+  // A certification falls inside its reminder window, or has already lapsed.
+  // Emitted by the nightly sweep, consumed to send the reminder — a licence that
+  // expired is a van that cannot leave the yard, and nobody finds out from a
+  // spreadsheet.
+  | 'staff.certification.expiring'
+  // Someone asked for time off, and someone answered. Two events rather than one
+  // status-changed, because the approver and the requester are different people
+  // and the notifications go in opposite directions.
+  | 'staff.timeoff.requested'
+  | 'staff.timeoff.decided';
 
 /** Payload for `domain.purchased`. Consumed by the domain-worker to poll DNS
  *  propagation and mark the domain active once resolved (docs/24 §4 step 5). */
@@ -495,7 +530,8 @@ export interface EmailSendPayload {
     | 'new-device-signin'
     | 'feedback-received'
     | 'social-post-failed'
-    | 'social-connection-expired';
+    | 'social-connection-expired'
+    | 'inventory-report';
   /** Shape is enforced by @sparx/email's TemplateSend.props on render. */
   props: Record<string, unknown>;
   /** Optional From override; defaults to SPARX_EMAIL_FROM env in worker. */

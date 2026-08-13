@@ -42,6 +42,7 @@ const MODULE_COLOR_KEYS: ReadonlySet<string> = new Set<SparxModule>([
   'scheduling',
   'social',
   'finance',
+  'staff',
 ]);
 
 /** The `ModuleProvider` hue for a module key (`platform` fallback for unknowns). */

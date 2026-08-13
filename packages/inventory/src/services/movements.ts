@@ -38,6 +38,7 @@ export async function adjust(
       actorId: input.actorId ?? ctx.userId ?? null,
       source: input.source ?? null,
       idempotencyKey: input.idempotencyKey ?? null,
+      ...(input.binId ? { binId: input.binId } : {}),
     });
 
     if (!r.deduped) {

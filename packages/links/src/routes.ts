@@ -444,6 +444,24 @@ export const ROUTES: readonly AppRoute[] = [
   { path: '/inventory/supplier-bills', surface: 'inventory.supplier-bills' },
   { path: '/inventory/supplier-bills/:id', surface: 'inventory.supplier-bills.detail' },
   { path: '/inventory/reports/suppliers', surface: 'inventory.suppliers.scorecards' },
+  // Demand-side commitments (docs/146 Phase 9). The URLs keep the words an
+  // integrator would search for — `backorders`, `preorders`, `consignment` —
+  // while the surfaces are titled the way somebody running a shop would say it.
+  { path: '/inventory/backorders', surface: 'inventory.backorders' },
+  { path: '/inventory/backorders/:id', surface: 'inventory.backorders.detail' },
+  { path: '/inventory/preorders', surface: 'inventory.preorders' },
+  { path: '/inventory/ownership', surface: 'inventory.ownership' },
+  { path: '/inventory/consignment', surface: 'inventory.consignment' },
+  { path: '/inventory/consignment/:id', surface: 'inventory.consignment.detail' },
+  { path: '/inventory/reports/expiring', surface: 'inventory.expiring' },
+  { path: '/inventory/reports/performance', surface: 'inventory.reports.performance' },
+  { path: '/inventory/reports/schedules/:id', surface: 'inventory.reports.schedule' },
+  { path: '/inventory/reports/schedules', surface: 'inventory.reports.schedules' },
+  { path: '/inventory/reports/reconciliation', surface: 'inventory.reconciliation.books' },
+  { path: '/inventory/stock/import', surface: 'inventory.stock.import' },
+  { path: '/inventory/stock/grid', surface: 'inventory.stock.grid' },
+  { path: '/inventory/setup', surface: 'inventory.setup' },
+  { path: '/inventory/custom-fields', surface: 'inventory.custom-fields' },
   { path: '/inventory/reports', surface: 'inventory.reports' },
   { path: '/inventory/sources', surface: 'inventory.sources' },
   { path: '/inventory/sources/:id', surface: 'inventory.sources.detail' },
@@ -480,6 +498,14 @@ export const ROUTES: readonly AppRoute[] = [
     surface: 'finance.subscription',
     aliases: ['/finance/subscription'],
   },
+
+  /* ── Your team (docs/149) ─────────────────────────────────────────────── */
+  { path: '/team/people', surface: 'staff.people' },
+  { path: '/team/people/:id', surface: 'staff.person' },
+  { path: '/team/timesheets', surface: 'staff.timesheets' },
+  { path: '/team/schedule', surface: 'staff.schedule' },
+  { path: '/team/time-off', surface: 'staff.timeoff' },
+  { path: '/team/tickets', surface: 'staff.certifications' },
 
   /* ── Site builder ─────────────────────────────────────────────────────── */
   { path: '/builder', surface: 'builder.studio' },

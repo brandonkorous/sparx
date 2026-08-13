@@ -111,10 +111,12 @@ export interface ListBinsFilter {
  *
  * They are provisioned rather than left to the tenant because each one is load
  * bearing: DEFAULT is where the ledger lands when nobody named a shelf,
- * QUARANTINE is where a failed receipt or an inspected return goes, and DAMAGED
- * is where a write-off physically sits. Code that needs "the quarantine shelf"
- * cannot cope with it not existing, and asking a merchant to create three shelves
- * before they can receive anything is a setup wizard nobody finishes.
+ * QUARANTINE is where a failed receipt or an inspected return goes, DAMAGED is
+ * where a write-off physically sits, and REPAIR is where returned goods wait for
+ * the work that will make them sellable again (docs/146 Phase 9.7). Code that
+ * needs "the quarantine shelf" cannot cope with it not existing, and asking a
+ * merchant to create four shelves before they can receive anything is a setup
+ * wizard nobody finishes.
  */
 const SYSTEM_BINS = [
   {
@@ -138,6 +140,13 @@ const SYSTEM_BINS = [
     isSellable: false,
     isDefault: false,
   },
+  {
+    code: 'REPAIR',
+    name: 'Awaiting repair',
+    type: 'repair' as const,
+    isSellable: false,
+    isDefault: false,
+  },
 ];
 
 /** Whether stock on a shelf of this type counts toward what a customer may buy.
@@ -145,7 +154,7 @@ const SYSTEM_BINS = [
  *  two genuinely come apart (a bulk shelf pulled from the pick face while it is
  *  reorganised, a quarantine shelf reopened once its batch clears). */
 export function defaultSellableFor(type: BinType): boolean {
-  return type !== 'quarantine' && type !== 'damaged';
+  return type !== 'quarantine' && type !== 'damaged' && type !== 'repair';
 }
 
 /**

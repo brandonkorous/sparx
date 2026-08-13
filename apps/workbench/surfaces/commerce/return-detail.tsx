@@ -37,6 +37,7 @@ import { PackageCheck } from 'lucide-react';
 import { FormSection } from '../../components/form-section';
 import { ModuleScope } from '../../components/module-scope';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import { ReturnDispositionPanel } from './return-disposition-panel';
 import { deferTick } from '../../lib/defer';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { formatDate, formatDateTime, formatMoney, useOrder } from './data';
@@ -298,6 +299,13 @@ function ReturnDetailBody({ detail }: { detail: ReturnDetail }) {
               </FormSection>
             </ModuleScope>
           ) : null}
+
+          {/* What physically happens to the goods (docs/146 Phase 9.7). Appears
+              once anything has been inspected, because before that there is
+              nothing to decide about — and deciding where goods go before
+              somebody has looked at them is how a damaged item ends up back on
+              the shelf. */}
+          {detail.inspections.length > 0 ? <ReturnDispositionPanel returnId={detail.id} /> : null}
 
           {/* The settlement only exists once the money has gone back, so the card
               only appears then — no empty "Refund: none" on every open return. */}

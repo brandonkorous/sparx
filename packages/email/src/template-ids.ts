@@ -57,6 +57,7 @@ export const TEMPLATE_IDS = [
   'feedback-received',
   'social-post-failed',
   'social-connection-expired',
+  'inventory-report',
 ] as const satisfies readonly TemplateId[];
 
 /**
