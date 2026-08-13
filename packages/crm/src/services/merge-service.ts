@@ -131,6 +131,13 @@ export const MOVED_MODELS = [
   'bookingSeries',
   'waitlistEntry',
   'intakeSubmission',
+  // What they are owed, and what is theirs. A backorder is a promise of units
+  // to a specific person, so leaving it behind is the survivor waiting on a
+  // queue position held by a record nobody can open. A consignment settlement
+  // carries a customer when the stock is consigned FROM one — a workshop
+  // holding a fleet's own parts — and that is money owed to whoever survives.
+  'backorder',
+  'consignmentSettlement',
   // The audit trail of segment moves. The membership rows themselves are
   // handled separately — they have a composite primary key that a plain move
   // would collide on.
