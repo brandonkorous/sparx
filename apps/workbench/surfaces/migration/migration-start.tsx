@@ -27,16 +27,18 @@ import {
   Heading,
   Text,
 } from '@wizeworks/silicaui-react';
-import { ArrowRight, FileDown, History, Lock } from 'lucide-react';
+import { ArrowRight, FileDown, History, Lock, Plug } from 'lucide-react';
 import { ModuleScope } from '../../components/module-scope';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
-import { KIND_LABEL, useMigrationVendors, vendorHue, type VendorCard } from './data';
+import { KIND_LABEL, sentenceList, useMigrationVendors, vendorHue, type VendorCard } from './data';
 
 function VendorTile({ vendor, onPick }: { vendor: VendorCard; onPick: () => void }) {
   const locked = vendor.entities.filter((entity) => !entity.available);
   const available = vendor.entities.filter((entity) => entity.available);
+  // Things this vendor genuinely cannot export — reachable only by connecting.
+  const connectorOnly = available.filter((entity) => entity.connectorOnly === true);
 
   return (
     <ModuleScope module={vendorHue(vendor.kind)}>
@@ -48,7 +50,7 @@ function VendorTile({ vendor, onPick }: { vendor: VendorCard; onPick: () => void
             </Heading>
             <Text className="text-sm">
               {vendor.sources.length} file{vendor.sources.length === 1 ? '' : 's'} to fetch
-              {vendor.hasConnector ? ' · or connect it live' : ''}
+              {vendor.hasConnector ? ', or connect it live' : ''}
             </Text>
           </div>
           {vendor.hasConnector ? (
@@ -60,7 +62,18 @@ function VendorTile({ vendor, onPick }: { vendor: VendorCard; onPick: () => void
 
         <div className="flex flex-wrap gap-1.5">
           {available.map((entity) => (
-            <Badge key={entity.entity} color="module" variant="soft" size="sm">
+            // A live-connection-only entity wears the module hue as an OUTLINE.
+            // Same colour, because it is the same data landing in the same place;
+            // different weight, because it is the one thing on this card you
+            // cannot get by downloading a file, and the difference has to be
+            // visible before the tenant has committed to a route.
+            <Badge
+              key={entity.entity}
+              color="module"
+              variant={entity.connectorOnly === true ? 'outline' : 'soft'}
+              size="sm"
+            >
+              {entity.connectorOnly === true ? <Plug className="size-3" aria-hidden /> : null}
               {entity.label}
             </Badge>
           ))}
@@ -72,10 +85,18 @@ function VendorTile({ vendor, onPick }: { vendor: VendorCard; onPick: () => void
           ))}
         </div>
 
+        {connectorOnly.length > 0 ? (
+          <Text className="text-sm">
+            {sentenceList(connectorOnly.map((entity) => entity.label))} only come across through the
+            live connection — {vendor.name} has no export that produces{' '}
+            {connectorOnly.length === 1 ? 'it' : 'them'}.
+          </Text>
+        ) : null}
+
         {locked.length > 0 ? (
           <Text className="text-sm">
-            {locked.map((entity) => entity.label).join(' and ')} will come across once you switch on{' '}
-            {[...new Set(locked.map((entity) => entity.module))].join(' and ')}.
+            {sentenceList(locked.map((entity) => entity.label))} will come across once you switch on{' '}
+            {sentenceList([...new Set(locked.map((entity) => entity.module ?? 'that module'))])}.
           </Text>
         ) : null}
 

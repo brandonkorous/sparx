@@ -32,6 +32,29 @@ const ImportJobCreatedPayload = z.object({
   entityType: z.string().min(1).max(50),
 });
 
+/**
+ * The event as it is actually published — envelope and all.
+ *
+ * THIS IS THE SHAPE ON THE WIRE. `publish()` in @sparx/api-core wraps every
+ * payload as `{type, tenantId, actorId, occurredAt, data}`, and both delivery
+ * paths carry that: the broker publishes `JSON.stringify(event)`, and the HTTP
+ * push path base64s the same object into `message.data`.
+ *
+ * This worker used to parse the INNER shape at the top level, which no real
+ * event has ever matched. Every `import.job.created` was therefore rejected as
+ * off-schema and ACKED — so imports never processed, never retried, and never
+ * errored. A job simply sat at `pending` forever while everything upstream
+ * reported success, which is the most expensive way for something to be broken.
+ * `email-worker` parses the envelope; this now matches it.
+ */
+const ImportJobCreatedEvent = z.object({
+  type: z.literal('import.job.created'),
+  tenantId: z.string().min(1),
+  actorId: z.string().nullable().optional(),
+  occurredAt: z.string().optional(),
+  data: ImportJobCreatedPayload,
+});
+
 export interface HandleOutcome {
   jobId: string;
   status: 'completed' | 'failed' | 'unknown_job';
@@ -54,19 +77,43 @@ const JobOptions = z
   })
   .passthrough();
 
-export function parseEvent(raw: unknown): z.infer<typeof ImportJobCreatedPayload> | null {
-  const result = ImportJobCreatedPayload.safeParse(raw);
-  return result.success ? result.data : null;
+/**
+ * Unwrap the envelope down to the payload `handle` works on.
+ *
+ * Returns the payload PLUS the envelope's tenant, because the tenant is not a
+ * detail of the transport here — it is the only way to read the job at all. See
+ * the note on the job load in `handle`.
+ */
+export interface ImportJobEvent {
+  jobId: string;
+  entityType: string;
+  tenantId: string;
 }
 
-export async function handle(
-  payload: z.infer<typeof ImportJobCreatedPayload>,
-  logger: Logger
-): Promise<HandleOutcome> {
-  const { jobId, entityType } = payload;
-  const log = logger.child({ jobId, entityType });
+export function parseEvent(raw: unknown): ImportJobEvent | null {
+  const result = ImportJobCreatedEvent.safeParse(raw);
+  if (!result.success) return null;
+  return { ...result.data.data, tenantId: result.data.tenantId };
+}
 
-  const job = await prisma.importJob.findFirst({ where: { id: jobId } });
+export async function handle(payload: ImportJobEvent, logger: Logger): Promise<HandleOutcome> {
+  const { jobId, entityType, tenantId } = payload;
+  const log = logger.child({ jobId, entityType, tenantId });
+
+  // READ THE JOB INSIDE THE TENANT'S SESSION.
+  //
+  // `import_jobs` is ENABLE + FORCE row level security and `sparx_app` does not
+  // carry BYPASSRLS, so an unscoped `prisma.importJob.findFirst` matches zero
+  // rows — always, for every job, with no error. This used to be exactly that
+  // read, so every delivery ended at the `unknown_job` branch below and acked
+  // itself: the job stayed `pending`, the API had already returned 202, and the
+  // only trace was one debug line saying the job "may have been deleted".
+  //
+  // The tenant comes off the event envelope rather than off the job, which is
+  // the only order that works — the row cannot be read to find out whose it is.
+  const job = await withTenant({ tenantId }, (tx) =>
+    tx.importJob.findFirst({ where: { id: jobId, tenantId } })
+  );
   if (!job) {
     log.warn('job not found — may have been deleted; acking');
     return { jobId, status: 'unknown_job', imported: 0, updated: 0, errors: 0 };
@@ -150,6 +197,11 @@ export async function handle(
     // One statement instead of one per row. A 9,000-row file was 9,000 round trips,
     // which took longer than the import it was recording.
     if (results.length > 0) {
+      // Clear this job's previous report first. A redelivery is normal — the
+      // broker naks and retries on any transient failure — and without this the
+      // second attempt APPENDS, so the tenant's "worth knowing" list shows every
+      // problem twice and the row count stops matching the job's own counters.
+      await withTenant(ctx, (tx) => tx.importJobRow.deleteMany({ where: { jobId } }));
       await withTenant(ctx, (tx) =>
         tx.importJobRow.createMany({
           data: results.map((result) => ({

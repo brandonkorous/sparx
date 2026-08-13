@@ -277,6 +277,98 @@ describe('timesheetPeriod', () => {
     // person whose hours nobody can price.
     expect(grid.costCents).toBe(6_000);
   });
+
+  // Every test above this line calls timesheetPeriod with NO propertyId, which is
+  // how the site-scoped path shipped broken: an hour naming no site was filtered
+  // out while its OWNER stayed on the grid, so 7h 30m of real work rendered as a
+  // confident 0h with nothing to suggest anything was missing.
+  it('counts hours that name no site on their main business’s grid', async () => {
+    const member = await hireHourly();
+    await logAndApprove(member.id, [{ workedOn: '2026-03-02', minutes: 450 }]);
+
+    const grid = await timesheetPeriod(ctx.tenantId, {
+      from: MARCH.periodStart,
+      to: MARCH.periodEnd,
+      propertyId: ctx.propertyId,
+    });
+
+    const row = grid.rows.find((r) => r.staffMemberId === member.id);
+    expect(row?.approvedMinutes).toBe(450);
+    expect(row?.costCents).toBe(22_500);
+  });
+
+  it('counts hours still waiting to be approved on a site-scoped grid', async () => {
+    const member = await hireHourly();
+    await createTimeEntry(ctx.tenantId, {
+      staffMemberId: member.id,
+      workedOn: day('2026-03-02'),
+      minutes: 450,
+      propertyId: null,
+    });
+
+    const grid = await timesheetPeriod(ctx.tenantId, {
+      from: MARCH.periodStart,
+      to: MARCH.periodEnd,
+      propertyId: ctx.propertyId,
+    });
+
+    const row = grid.rows.find((r) => r.staffMemberId === member.id);
+    // Waiting, so it is on the grid to be approved but not yet a cost.
+    expect(row?.submittedMinutes).toBe(450);
+    expect(grid.pendingMinutes).toBe(450);
+  });
+
+  it('does not show a second business hours that fall to the first', async () => {
+    const member = await createMember(ctx.tenantId, {
+      firstName: 'Sam',
+      lastName: 'Okafor',
+      siteIds: [ctx.propertyId, ctx.secondPropertyId],
+      primarySiteId: ctx.propertyId,
+    });
+    await setRate(ctx.tenantId, member.id, {
+      basis: 'hourly',
+      amountCents: 3000,
+      effectiveFrom: day('2026-01-01'),
+    });
+    await logAndApprove(member.id, [{ workedOn: '2026-03-02', minutes: 450 }]);
+
+    const other = await timesheetPeriod(ctx.tenantId, {
+      from: MARCH.periodStart,
+      to: MARCH.periodEnd,
+      propertyId: ctx.secondPropertyId,
+    });
+
+    // She IS on that roster, so she has a row — but the hours belong to her main
+    // business and must not be counted a second time here.
+    const row = other.rows.find((r) => r.staffMemberId === member.id);
+    expect(row).toBeDefined();
+    expect(row?.approvedMinutes).toBe(0);
+  });
+
+  it('still counts an hour that names the site it was worked at', async () => {
+    const member = await createMember(ctx.tenantId, {
+      firstName: 'Sam',
+      lastName: 'Okafor',
+      siteIds: [ctx.propertyId, ctx.secondPropertyId],
+      primarySiteId: ctx.propertyId,
+    });
+    await setRate(ctx.tenantId, member.id, {
+      basis: 'hourly',
+      amountCents: 3000,
+      effectiveFrom: day('2026-01-01'),
+    });
+    await logAndApprove(member.id, [
+      { workedOn: '2026-03-02', minutes: 480, propertyId: ctx.secondPropertyId },
+    ]);
+
+    const other = await timesheetPeriod(ctx.tenantId, {
+      from: MARCH.periodStart,
+      to: MARCH.periodEnd,
+      propertyId: ctx.secondPropertyId,
+    });
+
+    expect(other.rows.find((r) => r.staffMemberId === member.id)?.approvedMinutes).toBe(480);
+  });
 });
 
 describe('tenant isolation', () => {

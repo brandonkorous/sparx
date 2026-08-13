@@ -91,14 +91,37 @@ export async function buildPayrollExport(
       where: {
         status: 'approved',
         workedOn: { gte: period.from, lte: period.to },
-        ...(period.propertyId ? { propertyId: period.propertyId } : {}),
+        // Hours that name no site belong to the person's main business — see the
+        // identical note in `timesheetPeriod`. Dropping them here is the same bug
+        // one step worse: on a screen it understates a cost, but on THIS file it
+        // is an hour somebody worked that nobody pays them for.
+        ...(period.propertyId
+          ? { OR: [{ propertyId: period.propertyId }, { propertyId: null }] }
+          : {}),
       },
     });
     return { members, entries };
   });
 
+  const primaries = new Map(
+    members.map((member) => [
+      member.id,
+      member.siteLinks.find((link) => link.isPrimary)?.propertyId ??
+        member.siteLinks[0]?.propertyId ??
+        null,
+    ])
+  );
+
   const byMember = new Map<string, typeof entries>();
   for (const entry of entries) {
+    // A two-site person's unattributed hours pay out on ONE file, not both.
+    if (
+      entry.propertyId === null &&
+      period.propertyId &&
+      primaries.get(entry.staffMemberId) !== period.propertyId
+    ) {
+      continue;
+    }
     byMember.set(entry.staffMemberId, [...(byMember.get(entry.staffMemberId) ?? []), entry]);
   }
 

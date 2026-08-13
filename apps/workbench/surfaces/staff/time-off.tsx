@@ -52,7 +52,13 @@ import {
   type TimeOffRequest,
   type TimeOffStatus,
 } from './data';
-import { formatDate, timeOffKindLabel, timeOffKindTone, timeOffState, toDateInput } from './format';
+import {
+  formatMoment,
+  timeOffKindLabel,
+  timeOffKindTone,
+  timeOffState,
+  toDateInput,
+} from './format';
 
 const FILTERS = [
   { value: 'requested', label: 'Waiting on you' },
@@ -312,7 +318,7 @@ export function TimeOffSurface({ ctx }: { ctx: SurfaceContext }) {
                           ) : null}
                         </td>
                         <td className="text-sm whitespace-nowrap">
-                          {formatDate(request.startsAt)}
+                          {formatMoment(request.startsAt)}
                           {days > 1 ? ` · ${String(days)} days` : ' · 1 day'}
                         </td>
                         <td>

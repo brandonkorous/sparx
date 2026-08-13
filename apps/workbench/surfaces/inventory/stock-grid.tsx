@@ -484,15 +484,26 @@ export function StockGridSurface(_props: { ctx: SurfaceContext }) {
                     }}
                   />
                 </th>
-                <th>Item</th>
+                {/* `w-full` on the item column is what makes every other column
+                    shrink to the width its input actually needs. Without it the
+                    inputs claim their intrinsic width — five of them across a
+                    row — and the item column collapses to "6a…", which is the
+                    one column you cannot edit a grid without reading. */}
+                <th className="w-full">Item</th>
                 <th className="hidden @lg:table-cell">Location</th>
+                {/* `min-w` and not just `w`: a width alone is a SUGGESTION the
+                    table drops when the row is crowded, and a dropped width
+                    here clips "312" to "3" — a number that is wrong rather than
+                    merely small. The item column gives up space; figures do not. */}
                 {EDITABLE.map((column) => (
-                  <th key={column} className="text-right">
+                  <th key={column} className="w-28 min-w-28 text-right">
                     {COLUMN_LABELS[column]}
                   </th>
                 ))}
                 {fields.map((field) => (
-                  <th key={field.id}>{field.label}</th>
+                  <th key={field.id} className="w-40 min-w-40">
+                    {field.label}
+                  </th>
                 ))}
               </tr>
             </thead>
@@ -519,7 +530,7 @@ export function StockGridSurface(_props: { ctx: SurfaceContext }) {
                         }}
                       />
                     </td>
-                    <td className="max-w-0">
+                    <td className="w-full max-w-0">
                       <span className="flex min-w-0 flex-col">
                         <span className="truncate font-mono text-sm">{row.sku}</span>
                         <span className="truncate text-sm">{row.title}</span>
@@ -528,7 +539,7 @@ export function StockGridSurface(_props: { ctx: SurfaceContext }) {
                     </td>
                     <td className="hidden whitespace-nowrap @lg:table-cell">{row.warehouseCode}</td>
                     {EDITABLE.map((column) => (
-                      <td key={column} className="text-right">
+                      <td key={column} className="w-28 min-w-28 text-right">
                         <GridCell
                           value={rowDraft[column] ?? currentValue(row, column)}
                           dirty={
@@ -544,7 +555,7 @@ export function StockGridSurface(_props: { ctx: SurfaceContext }) {
                       </td>
                     ))}
                     {fields.map((field) => (
-                      <td key={field.id}>
+                      <td key={field.id} className="w-40 min-w-40">
                         <GridCell
                           value={rowDraft[`cf:${field.key}`] ?? customValue(row, field)}
                           dirty={
@@ -608,9 +619,13 @@ function GridCell({
       // A changed cell is marked by its own border colour rather than by a dot
       // in a margin: the point of the grid is seeing at a glance what you have
       // changed and what you have not.
-      className={`${align === 'right' ? 'text-right tabular-nums' : ''}${
-        dirty ? 'font-medium' : ''
-      }`}
+      className={[
+        'w-full',
+        align === 'right' ? 'text-right tabular-nums' : '',
+        dirty ? 'font-medium' : '',
+      ]
+        .filter(Boolean)
+        .join(' ')}
       onChange={(event) => {
         onChange(event.target.value);
       }}

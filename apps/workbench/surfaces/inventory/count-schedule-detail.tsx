@@ -20,7 +20,7 @@
 // because a person counting one shelf on purpose usually wants the comparison in
 // front of them.
 
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   Alert,
   AlertContent,
@@ -101,7 +101,18 @@ export function CountScheduleDetailSurface({ ctx }: { ctx: SurfaceContext }) {
   const isNew = id === 'new';
 
   const locations = useStockLocations();
-  const activeLocations = (locations.data?.items ?? []).filter((location) => location.isActive);
+  // MEMOIZED because this array is a dependency of the seeding effect below. A bare
+  // `.filter(…)` returns a NEW array on every render, so the effect re-ran every render,
+  // and its `existing.data` branch calls `setDraft` with a fresh object each time — which
+  // re-renders, which rebuilds the array, which re-runs the effect. That is an unbounded
+  // loop: the pane pinned a core and filled the console with "Maximum update depth
+  // exceeded" for as long as it stayed open, and because React's depth counter is shared,
+  // the error surfaced against whatever component happened to setState next — including
+  // innocent `onChange` handlers in unrelated panes.
+  const activeLocations = useMemo(
+    () => (locations.data?.items ?? []).filter((location) => location.isActive),
+    [locations.data]
+  );
 
   const existing = useCountSchedule(id);
   const save = useSaveCountSchedule(id);
@@ -112,29 +123,56 @@ export function CountScheduleDetailSurface({ ctx }: { ctx: SurfaceContext }) {
   const [draft, setDraft] = useState<Draft>(NEW_DRAFT);
   const [dirty, setDirty] = useState(false);
 
-  // Seed from the server once it arrives, and default a new schedule's location
+  // Seed from the server ONCE PER RECORD, and default a new schedule's location
   // to the only one there is — a single-warehouse business should never have to
   // answer a question with one possible answer.
+  //
+  // The `useMemo` above removed one way this effect could re-run every render;
+  // the ref below removes the CONSEQUENCE, which is the part worth being sure
+  // about. Seeding was previously guarded by nothing at all, so anything that
+  // gave `existing.data` a new identity — a background refetch, a cache write
+  // from another pane, a future `select` — put a fresh object into state, which
+  // re-rendered, which could re-run this, which seeded again. React's update-depth
+  // counter is shared across the tree, so when that did run away it reported
+  // itself against whichever component set state next, in whichever pane. Two
+  // hours of this migration's verification went into a loop attributed here that
+  // turned out to be a mount-time storm; a guard that cannot loop is worth more
+  // than a dependency array that currently happens not to.
+  //
+  // Seeding once is also the correct BEHAVIOUR, independently of the loop: a
+  // refetch landing while someone is mid-edit must not overwrite what they have
+  // typed. `save` resets the ref, so a successful save re-seeds from the server.
+  const seededFor = useRef<string | null>(null);
+
   useEffect(() => {
-    if (existing.data) {
+    const server = existing.data;
+    if (server) {
+      if (seededFor.current === id) return;
+      seededFor.current = id;
       setDraft({
-        warehouseId: existing.data.warehouseId,
-        name: existing.data.name,
-        abcClass: existing.data.abcClass ?? '',
-        zoneName: existing.data.zoneName ?? '',
-        cadence: existing.data.cadence,
-        intervalDays: existing.data.intervalDays,
-        maxItemsPerRun: existing.data.maxItemsPerRun,
-        isBlind: existing.data.isBlind,
-        isActive: existing.data.isActive,
+        warehouseId: server.warehouseId,
+        name: server.name,
+        abcClass: server.abcClass ?? '',
+        zoneName: server.zoneName ?? '',
+        cadence: server.cadence,
+        intervalDays: server.intervalDays,
+        maxItemsPerRun: server.maxItemsPerRun,
+        isBlind: server.isBlind,
+        isActive: server.isActive,
       });
       setDirty(false);
       return;
     }
-    if (isNew && activeLocations.length > 0 && draft.warehouseId === '') {
-      setDraft((current) => ({ ...current, warehouseId: activeLocations[0]?.id ?? '' }));
+    if (isNew && activeLocations.length > 0) {
+      // Returning `current` unchanged when there is nothing to do lets React bail
+      // out of the re-render entirely, so this branch cannot feed itself either.
+      setDraft((current) =>
+        current.warehouseId === ''
+          ? { ...current, warehouseId: activeLocations[0]?.id ?? '' }
+          : current
+      );
     }
-  }, [existing.data, isNew, activeLocations, draft.warehouseId]);
+  }, [existing.data, id, isNew, activeLocations]);
 
   useDirtySource(dirty, 'This counting schedule has unsaved changes. Close it anyway?');
 
@@ -161,6 +199,10 @@ export function CountScheduleDetailSurface({ ctx }: { ctx: SurfaceContext }) {
       {
         onSuccess: (saved) => {
           setDirty(false);
+          // Let the refetch that follows re-seed the form from what the server
+          // actually stored — the one moment where server data SHOULD win, since
+          // there are no unsaved edits left to protect.
+          seededFor.current = null;
           toast.add({
             title: isNew ? 'Schedule set up' : 'Schedule saved',
             description: `${saved.name} — next count ${new Date(saved.nextRunAt).toLocaleDateString()}.`,

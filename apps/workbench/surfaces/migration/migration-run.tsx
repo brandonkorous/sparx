@@ -66,6 +66,7 @@ import {
   loadFile,
   problemsCsv,
   runTone,
+  sentenceList,
   useMigrationRun,
   useMigrationVendors,
   useStartMigration,
@@ -186,7 +187,7 @@ function FileReport({
             This is a {result.detected.vendorName} {result.detected.label.toLowerCase()} export
           </AlertTitle>
           <AlertDescription>
-            We can tell because it {result.detected.reasons.join(', and ')}.
+            We can tell because it {sentenceList(result.detected.reasons)}.
           </AlertDescription>
         </AlertContent>
       </Alert>
@@ -212,8 +213,15 @@ function RunProgress({ runId }: { runId: string }) {
       <Alert color={runTone(run.status)} variant="soft">
         <AlertContent>
           <AlertTitle>
+            {/* A practice run must not claim to be moving anything WHILE it runs.
+                The finished state said "nothing was saved" correctly, but for the
+                minute before that the screen read "Bringing your business over…"
+                — which is the one sentence a nervous person is watching for, and
+                it was not true. */}
             {running
-              ? 'Bringing your business over…'
+              ? run.dryRun
+                ? 'Trying it out — nothing is being saved…'
+                : 'Bringing your business over…'
               : run.status === 'failed'
                 ? 'Some of this did not land'
                 : run.dryRun
@@ -222,7 +230,9 @@ function RunProgress({ runId }: { runId: string }) {
           </AlertTitle>
           <AlertDescription>
             {running
-              ? 'You can close this and come back — it keeps going without you.'
+              ? run.dryRun
+                ? 'We are checking every row against what you already have. Nothing is being written to your business.'
+                : 'You can close this and come back — it keeps going without you.'
               : run.status === 'failed'
                 ? 'The rest did come across. Nothing below has to be done again — bringing the same file in a second time updates what is here rather than duplicating it.'
                 : run.dryRun
@@ -288,7 +298,8 @@ function RunProgress({ runId }: { runId: string }) {
               {(entity.imported + entity.updated).toLocaleString()}
             </Text>
             <Text className="text-sm">
-              of {entity.rowCount.toLocaleString()} brought over
+              of {entity.rowCount.toLocaleString()}{' '}
+              {run.dryRun ? 'would come over' : 'brought over'}
               {entity.errors > 0 ? ` · ${entity.errors.toLocaleString()} need a look` : ''}
             </Text>
           </div>

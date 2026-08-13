@@ -47,6 +47,11 @@ export interface PayRate {
   effectiveFrom: Date;
   /** Null = the rate in force today. */
   effectiveTo: Date | null;
+  /** Why this rate exists — "annual review", "promoted to lead tech". Carried
+   *  because the surface renders a Note column against every window; leaving it
+   *  off the type is how a note the API accepted, stored and displayed a column
+   *  for still came back empty on every read. */
+  note: string | null;
 }
 
 /* ── Calendar helpers ───────────────────────────────────────────────────────── */

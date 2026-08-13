@@ -104,8 +104,10 @@ function ModuleCard({
   // The module's own hue, as the registered silica colour and its bg/border
   // utility classes — the SAME switchboard tile the marketing site, pricing, and
   // signup render: a neutral card with a module-coloured border, a solid module
-  // icon chip, and a soft module badge. (`hue` is one of the 14 module colours
-  // registered with the plugin in globals.css.)
+  // icon chip, and a soft module badge. (`hue` must be one of the module colours
+  // registered with the plugin in globals.css — an unregistered one emits NO class
+  // at all and the tile silently renders grey, which is how Finance and Your team
+  // looked untyped for a while.)
   const hue = meta.hue;
 
   // The badge is the price, exactly as the pricing switchboard shows it —

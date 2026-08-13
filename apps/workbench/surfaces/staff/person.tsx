@@ -54,6 +54,7 @@ import {
   Clock,
   Coins,
   FileText,
+  Pencil,
   Plus,
   Save,
   ShieldCheck,
@@ -75,9 +76,11 @@ import {
   useCertifications,
   useClock,
   useCommissions,
+  useCreateTimeEntry,
   useDeleteCertification,
   useDeleteMember,
   useDeleteRate,
+  useDeleteTimeEntry,
   usePayRates,
   useSaveCertification,
   useSaveMember,
@@ -85,8 +88,10 @@ import {
   useStaffDocuments,
   useStaffMember,
   useTimeEntries,
+  useUpdateTimeEntry,
   type MemberDraft,
   type StaffMember,
+  type TimeEntry,
 } from './data';
 import {
   basisLabel,
@@ -96,6 +101,7 @@ import {
   formatCents,
   formatDate,
   formatMinutes,
+  formatMoment,
   rateAmountLabel,
   rateWindowLabel,
   staffState,
@@ -743,7 +749,7 @@ function DocumentsSection({
                 <div className="truncate font-medium">{doc.title}</div>
                 <Text className="text-sm">
                   {documentKindLabel(doc.kind)}
-                  {doc.signedAt ? ` · signed ${formatDate(doc.signedAt)}` : ' · not signed'}
+                  {doc.signedAt ? ` · signed ${formatMoment(doc.signedAt)}` : ' · not signed'}
                 </Text>
               </div>
             </div>
@@ -756,33 +762,236 @@ function DocumentsSection({
 
 /* ── Recent hours + commission ─────────────────────────────────────────────── */
 
-function HoursSection({ staffMemberId, ctx }: { staffMemberId: string; ctx: SurfaceContext }) {
+/** Decimal hours → whole minutes. "7.5" is seven and a half hours, because that
+ *  is how a timesheet is read aloud and how the payroll export writes it. */
+function minutesFromHours(input: string): number {
+  return Math.round(Number(input.replace(/[,\s]/g, '')) * 60);
+}
+
+function HoursSection({
+  staffMemberId,
+  sites,
+  ctx,
+}: {
+  staffMemberId: string;
+  sites: { id: string; name: string }[];
+  ctx: SurfaceContext;
+}) {
+  const toast = useToast();
+  const confirm = useConfirm();
   const from = toDateInput(new Date(Date.now() - 30 * 86_400_000));
   const to = toDateInput(new Date());
   const time = useTimeEntries({ staffMemberId, from, to });
+  const create = useCreateTimeEntry();
+  const update = useUpdateTimeEntry();
+  const remove = useDeleteTimeEntry();
   const items = time.data?.items ?? [];
+
+  // `null` = the form is closed, `'new'` = adding, an id = correcting that row.
+  const [editing, setEditing] = useState<string | null>(null);
+  const [day, setDay] = useState(toDateInput(new Date()));
+  const [hours, setHours] = useState('');
+  const [site, setSite] = useState('');
+  const [entryNote, setEntryNote] = useState('');
+
+  const minutes = minutesFromHours(hours);
+  const hoursOk = hours.trim() !== '' && Number.isFinite(minutes) && minutes > 0;
+  const saving = create.isPending || update.isPending;
+
+  const close = () => {
+    setEditing(null);
+    setDay(toDateInput(new Date()));
+    setHours('');
+    setSite('');
+    setEntryNote('');
+  };
+
+  const openAdd = () => {
+    close();
+    setEditing('new');
+  };
+
+  const openEdit = (entry: TimeEntry) => {
+    setEditing(entry.id);
+    setDay(entry.workedOn.slice(0, 10));
+    setHours((entry.minutes / 60).toFixed(2).replace(/\.00$/, ''));
+    setSite(entry.propertyId ?? '');
+    setEntryNote(entry.note ?? '');
+  };
+
+  const submit = () => {
+    if (!hoursOk || editing === null) return;
+    const body = {
+      workedOn: day,
+      minutes,
+      propertyId: site === '' ? null : site,
+      note: entryNote.trim() === '' ? null : entryNote.trim(),
+    };
+    const done = {
+      onSuccess: () => {
+        close();
+        afterPaneChange(() => {
+          toast.add({
+            title: editing === 'new' ? 'Hours recorded' : 'Hours corrected',
+            description:
+              'They are waiting to be approved. Nothing reaches your spending until you approve them on the timesheet.',
+            type: 'success',
+          });
+        });
+      },
+      onError: (error: unknown) => {
+        toast.add({
+          title: 'Could not save those hours',
+          description: staffErrorMessage(error, 'Nothing was changed.'),
+          type: 'error',
+        });
+      },
+    };
+    if (editing === 'new') {
+      create.mutate({ staffMemberId, ...body }, done);
+    } else {
+      update.mutate({ id: editing, ...body }, done);
+    }
+  };
+
+  const drop = async (entry: TimeEntry) => {
+    const ok = await confirm({
+      title: 'Delete these hours?',
+      description: `${formatMinutes(entry.minutes)} on ${formatDate(entry.workedOn)} will be removed. If the work happened but the figure is wrong, correct it instead — deleting it means nobody is paid for that time.`,
+      confirmLabel: 'Delete them',
+      cancelLabel: 'Keep them',
+      color: 'danger',
+    });
+    if (!ok) return;
+    remove.mutate(entry.id, {
+      onError: (error) => {
+        toast.add({
+          title: 'Could not delete those hours',
+          description: staffErrorMessage(error, 'Nothing was changed.'),
+          type: 'error',
+        });
+      },
+    });
+  };
 
   return (
     <FormSection
       title="The last 30 days"
       description="What they logged. Approving hours happens on the timesheet, where the cost is shown alongside."
       action={
-        <Button
-          size="sm"
-          variant="outline"
-          color="module"
-          onClick={() => {
-            ctx.open('staff.timesheets', {});
-          }}
-        >
-          Open timesheets
-        </Button>
+        <div className="flex gap-2">
+          <Button size="sm" color="module" onClick={openAdd}>
+            Add hours
+          </Button>
+          <Button
+            size="sm"
+            variant="outline"
+            color="module"
+            onClick={() => {
+              ctx.open('staff.timesheets', {});
+            }}
+          >
+            Open timesheets
+          </Button>
+        </div>
       }
     >
+      {editing !== null ? (
+        <div className="border-base-300 rounded-box flex flex-col gap-3 border p-3">
+          <div className="grid gap-3 @lg:grid-cols-3">
+            <Field>
+              <FieldLabel>Day</FieldLabel>
+              <FieldControl
+                render={
+                  <Input
+                    type="date"
+                    value={day}
+                    onChange={(event) => {
+                      setDay(event.target.value);
+                    }}
+                  />
+                }
+              />
+            </Field>
+
+            <Field>
+              <FieldLabel>Hours worked</FieldLabel>
+              <FieldControl
+                render={
+                  <Input
+                    inputMode="decimal"
+                    placeholder="7.5"
+                    value={hours}
+                    onChange={(event) => {
+                      setHours(event.target.value);
+                    }}
+                  />
+                }
+              />
+              <FieldDescription>
+                What you are paying for. 7.5 is seven and a half hours — take any unpaid break off
+                before you type it.
+              </FieldDescription>
+            </Field>
+
+            {sites.length > 1 ? (
+              <Field>
+                <FieldLabel>Which business</FieldLabel>
+                <FieldControl
+                  render={
+                    <NativeSelect
+                      value={site}
+                      onChange={(event) => {
+                        setSite(event.target.value);
+                      }}
+                    >
+                      <option value="">Their main one</option>
+                      {sites.map((option) => (
+                        <option key={option.id} value={option.id}>
+                          {option.name}
+                        </option>
+                      ))}
+                    </NativeSelect>
+                  }
+                />
+                <FieldDescription>The cost lands against this one.</FieldDescription>
+              </Field>
+            ) : null}
+          </div>
+
+          <Field>
+            <FieldLabel>Note</FieldLabel>
+            <FieldControl
+              render={
+                <Input
+                  placeholder="Forgot to clock in, callout on the Henderson job…"
+                  value={entryNote}
+                  onChange={(event) => {
+                    setEntryNote(event.target.value);
+                  }}
+                />
+              }
+            />
+          </Field>
+
+          <div className="flex gap-2">
+            <Button size="sm" color="module" disabled={!hoursOk} loading={saving} onClick={submit}>
+              {editing === 'new' ? 'Record these hours' : 'Save the correction'}
+            </Button>
+            <Button size="sm" variant="ghost" color="neutral" onClick={close}>
+              Cancel
+            </Button>
+          </div>
+        </div>
+      ) : null}
+
       {time.isPending ? (
         <Text className="text-sm">Loading…</Text>
       ) : items.length === 0 ? (
-        <Text className="text-sm">Nothing logged in the last 30 days.</Text>
+        <Text className="text-sm">
+          Nothing logged in the last 30 days. Hours arrive when they clock in and out, or you can
+          add a day yourself.
+        </Text>
       ) : (
         <>
           <div className="flex items-baseline gap-2">
@@ -798,11 +1007,17 @@ function HoursSection({ staffMemberId, ctx }: { staffMemberId: string; ctx: Surf
                 <th>Hours</th>
                 <th>State</th>
                 <th className="hidden @lg:table-cell">Note</th>
+                <th className="text-right" />
               </tr>
             </thead>
             <tbody>
               {items.slice(0, 12).map((entry) => {
                 const state = timeState(entry.status);
+                // Approved hours are settled: they have already been filed as a
+                // wage cost, so the server refuses to change them and the way
+                // back is to re-open them from the timesheet. Showing controls
+                // that 409 would be worse than showing none.
+                const settled = entry.status === 'approved';
                 return (
                   <tr key={entry.id}>
                     <td className="whitespace-nowrap">{formatDate(entry.workedOn)}</td>
@@ -813,6 +1028,34 @@ function HoursSection({ staffMemberId, ctx }: { staffMemberId: string; ctx: Surf
                       </Badge>
                     </td>
                     <td className="hidden text-sm @lg:table-cell">{entry.note ?? '—'}</td>
+                    <td className="text-right whitespace-nowrap">
+                      {settled ? null : (
+                        <>
+                          <Button
+                            size="xs"
+                            variant="ghost"
+                            color="module"
+                            aria-label={`Correct the hours on ${formatDate(entry.workedOn)}`}
+                            onClick={() => {
+                              openEdit(entry);
+                            }}
+                          >
+                            <Pencil className="size-3.5" aria-hidden />
+                          </Button>
+                          <Button
+                            size="xs"
+                            variant="ghost"
+                            color="danger"
+                            aria-label={`Delete the hours on ${formatDate(entry.workedOn)}`}
+                            onClick={() => {
+                              void drop(entry);
+                            }}
+                          >
+                            <Trash2 className="size-3.5" aria-hidden />
+                          </Button>
+                        </>
+                      )}
+                    </td>
                   </tr>
                 );
               })}
@@ -935,10 +1178,14 @@ export function PersonSurface({ ctx }: { ctx: SurfaceContext }) {
     if (!canSave) return;
     save.mutate(toDraft(form), {
       onSuccess: (result) => {
+        // Rebase BEFORE the swap, and on both paths. `target: 'replace'` changes
+        // this pane's params in place rather than remounting it, so `loaded`
+        // stays true, the load effect never re-runs, and a baseline left at
+        // EMPTY would keep the pane dirty forever — a saved person carrying an
+        // unsaved dot and a leave-guard on the way out.
+        setBaseline(form);
         if (isNew) {
           ctx.open('staff.person', { id: result.id }, { target: 'replace' });
-        } else {
-          setBaseline(form);
         }
         afterPaneChange(() => {
           toast.add({ title: isNew ? 'Added to your team' : 'Saved', type: 'success' });
@@ -1400,7 +1647,14 @@ export function PersonSurface({ ctx }: { ctx: SurfaceContext }) {
             <>
               <PaySection staffMemberId={id} canSeePay={canSeePay} />
               <CertificationsSection staffMemberId={id} />
-              <HoursSection staffMemberId={id} ctx={ctx} />
+              {/* Only the businesses THIS person works at — offering the whole
+                  tenant's list would let an hour be filed against a business
+                  they have never set foot in. */}
+              <HoursSection
+                staffMemberId={id}
+                sites={(sites.data ?? []).filter((site) => form.siteIds.includes(site.id))}
+                ctx={ctx}
+              />
               <CommissionSection staffMemberId={id} canSeePay={canSeePay} />
               <DocumentsSection staffMemberId={id} canSeePay={canSeePay} />
 

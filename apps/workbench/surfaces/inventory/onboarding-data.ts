@@ -344,11 +344,23 @@ export interface CustomField {
   updatedAt: string;
 }
 
+/** Headings — a section is a set of things, so these are plural. */
 export const CUSTOM_FIELD_ENTITY_LABELS: Record<CustomFieldEntity, string> = {
   variant: 'Items',
   level: 'Stock at a location',
   supplier: 'Suppliers',
   purchase_order: 'Purchase orders',
+};
+
+/** Sentences — "a new column on ITEM", "appears on every ITEM". Kept apart from
+ *  the headings rather than derived: dropping the plural into these produced
+ *  "It appears on every items", and no amount of trimming an "s" would have got
+ *  "stock at a location" right anyway. */
+export const CUSTOM_FIELD_ENTITY_NOUNS: Record<CustomFieldEntity, string> = {
+  variant: 'item',
+  level: 'stocked location',
+  supplier: 'supplier',
+  purchase_order: 'purchase order',
 };
 
 export const CUSTOM_FIELD_TYPE_LABELS: Record<CustomFieldType, string> = {

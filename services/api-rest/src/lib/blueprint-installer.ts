@@ -66,7 +66,25 @@ export interface InstallResult {
   assets: Record<string, string>; // manifest asset id → MediaAsset id
   categories: Record<string, string>; // handle → id
   collections: Record<string, string>; // handle → id
-  products: { handle: string; id: string }[];
+  /** The handles this install actually MINTED, of the maps above.
+   *
+   *  The maps hold everything the install USES — including rows it reconciled onto by
+   *  natural key, which the commerce slice has always done (`reuseOrRestore*`). Uninstall
+   *  read those maps and removed every id in them, so removing a design from one site
+   *  deleted the categories and collections a SIBLING site was still selling from.
+   *
+   *  ABSENT (an install row written before this shipped) means "assume minted", i.e. the
+   *  old behaviour. That is safe rather than lossy for real rows: until the theme and
+   *  content collisions were fixed, a second site's install failed in the theme slice —
+   *  which runs BEFORE commerce — so no pre-existing row can contain commerce rows
+   *  reconciled across two sites. Reuse before then only happened reinstalling onto the
+   *  SAME site, where deleting is correct. */
+  mintedCategories?: string[];
+  mintedCollections?: string[];
+  /** `reused: true` — the product already existed under this handle and the install only
+   *  wired it into this site (`linkProductRelations`). Uninstall unlinks it from the site
+   *  instead of soft-deleting a product another site still sells. */
+  products: { handle: string; id: string; reused?: boolean }[];
   theme: { id: string; name: string } | null;
   pages: {
     name: string;
@@ -77,7 +95,12 @@ export interface InstallResult {
   }[];
   emails: { name: string; id: string }[];
   sequences: { name: string; id: string }[];
-  content: { typeKey: string; slug: string | null; id: string }[];
+  /** Every entry this install USES — created or already present. `reused: true` means
+   *  the entry was already in the tenant (matched by its natural key) and this install
+   *  only linked it to the site, so uninstall must unlink rather than delete it: the
+   *  sibling site that installed the same design is still showing it. Both kinds stay
+   *  in this list because pin resolution needs to map every slug to an id. */
+  content: { typeKey: string; slug: string | null; id: string; reused?: boolean }[];
   /** Booking-backed service business (docs/79) — the id-map for the scheduling
    *  slice. Null until an install with a `scheduling` decl runs it; `services` is
    *  what the backfill's `isMaterialized` gate reads. */
@@ -691,19 +714,38 @@ export async function installBrandSlice(env: SliceEnv): Promise<void> {
   }
 }
 
-/** 4. Theme — create the shipped SiteTheme, apply it, and apply its captured look. */
+/** 4. Theme — REUSE-or-create the shipped SiteTheme, apply it, and apply its look.
+ *
+ *  RECONCILE BY NATURAL KEY, like every other slice (marketplace-catalog/CLAUDE.md:
+ *  "Install is reconcile-by-natural-key (idempotent + additive)"). This one created
+ *  blindly, and `sitebuilder_themes` is UNIQUE on `(tenant_id, name)` while the saved
+ *  theme LIBRARY is deliberately tenant-wide — so the second site to install a given
+ *  design hit the constraint and the whole install failed and rolled back.
+ *
+ *  That made "add this design to more than one site" impossible, which is exactly what
+ *  the install dialog offers. Worst for the GOLDEN `sparx` bundle: every tenant is
+ *  provisioned with it, so its theme name is always taken and it could never be added
+ *  to a second site at all.
+ *
+ *  Reusing is the correct resolution rather than a rename: the library is tenant-wide
+ *  BY DESIGN (one entry per look), and what is per-site is the APPLICATION of it —
+ *  `apply()` below writes the target site's own draft config and brand scope. */
 export async function installThemeSlice(env: SliceEnv): Promise<void> {
   const { ctx, propCtx, blueprint, result } = env;
 
-  // 4. Theme — create the shipped SiteTheme, apply it (working draft), and apply
-  //    its captured brand "look". (docs/54 D5)
-  const theme = await savedThemeService.create(ctx, {
-    name: blueprint.theme.name,
-    basePresetKey: blueprint.theme.basePresetKey,
-    presentation: blueprint.theme.presentation ?? {},
-    ...(blueprint.theme.brand ? { brand: blueprint.theme.brand } : {}),
-  });
-  result.theme = { id: theme.id, name: theme.name };
+  const existing = (await savedThemeService.list(ctx)).find((t) => t.name === blueprint.theme.name);
+  const theme =
+    existing ??
+    (await savedThemeService.create(ctx, {
+      name: blueprint.theme.name,
+      basePresetKey: blueprint.theme.basePresetKey,
+      presentation: blueprint.theme.presentation ?? {},
+      ...(blueprint.theme.brand ? { brand: blueprint.theme.brand } : {}),
+    }));
+  // Only a theme this install MINTED is recorded on the result, because uninstall
+  // deletes what it records (`savedThemeService.remove`). Removing a library entry a
+  // sibling site is still wearing would strip that site's look.
+  if (!existing) result.theme = { id: theme.id, name: theme.name };
   if (blueprint.theme.apply) {
     // apply writes the target site's draft config AND applies the theme's captured
     // brand to the right scope (primary → tenant base brand, non-primary → the
@@ -833,25 +875,45 @@ export async function installContentSlice(env: SliceEnv): Promise<void> {
       if (entry.seo?.robots) seo.robots = entry.seo.robots;
       const ogId = asset(entry.seo?.ogImageAssetId);
       if (ogId) seo.ogImage = ogId;
-      const row = await tx.contentEntry.create({
-        data: {
-          tenantId,
-          typeKey: entry.typeKey,
-          slug: entry.slug ?? null,
-          status: entry.status,
-          body: body as Prisma.InputJsonValue,
-          seoJson: seo as Prisma.InputJsonValue,
-          // `author_id` FKs to the CMS `authors` table, NOT `users`. The blueprint now
-          // models a byline (`entry.authorSlug` → an `Author` seeded in 5a); an entry
-          // that names no author, or names one the blueprint didn't ship, stays null.
-          // (recordRevision's authorId below is a plain audit field, not FK-bound, so
-          // the installing user is fine to record there.)
-          authorId: entry.authorSlug ? (authorIdBySlug.get(entry.authorSlug) ?? null) : null,
-        },
-      });
-      // Scope to the installed site so content doesn't bleed into other sites.
-      await tx.contentEntryProperty.create({
-        data: { entryId: row.id, propertyId },
+      // RECONCILE BY NATURAL KEY, like the products/categories/authors slices.
+      // `content_entries` is UNIQUE on `(tenant_id, type_key, slug)` and an entry is
+      // TENANT-wide with per-site scoping through the junction below — so creating
+      // blindly meant the second site to install a given design collided on the first
+      // site's entries and the whole install failed and rolled back.
+      //
+      // Only matched on a real slug: Postgres treats NULLs as distinct, so slugless
+      // entries never collide and each install genuinely wants its own.
+      const existingEntry = entry.slug
+        ? await tx.contentEntry.findFirst({
+            where: { tenantId, typeKey: entry.typeKey, slug: entry.slug },
+            select: { id: true },
+          })
+        : null;
+      const row =
+        existingEntry ??
+        (await tx.contentEntry.create({
+          data: {
+            tenantId,
+            typeKey: entry.typeKey,
+            slug: entry.slug ?? null,
+            status: entry.status,
+            body: body as Prisma.InputJsonValue,
+            seoJson: seo as Prisma.InputJsonValue,
+            // `author_id` FKs to the CMS `authors` table, NOT `users`. The blueprint now
+            // models a byline (`entry.authorSlug` → an `Author` seeded in 5a); an entry
+            // that names no author, or names one the blueprint didn't ship, stays null.
+            // (recordRevision's authorId below is a plain audit field, not FK-bound, so
+            // the installing user is fine to record there.)
+            authorId: entry.authorSlug ? (authorIdBySlug.get(entry.authorSlug) ?? null) : null,
+          },
+        }));
+      // Scope to the installed site so content doesn't bleed into other sites. The
+      // junction's PK is (property_id, entry_id), so re-asserting an existing link is a
+      // no-op rather than a duplicate — which is what makes reinstalling onto the SAME
+      // site idempotent too.
+      await tx.contentEntryProperty.createMany({
+        data: [{ entryId: row.id, propertyId }],
+        skipDuplicates: true,
       });
       // Link the entry's categories + tags to the terms seeded in 5a. Idempotent — the
       // link's PK is (entryId, termId), so a reinstall re-asserts rather than duplicates.
@@ -872,18 +934,29 @@ export async function installContentSlice(env: SliceEnv): Promise<void> {
           update: {},
         });
       }
-      await syncReferences(tx, tenantId, row.id, schema, body);
-      await recordRevision(tx, {
-        tenantId,
-        entryId: row.id,
-        body,
-        seoJson: seo,
-        status: entry.status,
-        kind: 'manual',
-        authorId: userId ?? null,
-        summary: 'Installed from template',
+      // Only for an entry this install actually WROTE. A reused entry's body is the
+      // tenant's own — possibly edited since the sibling site installed it — so
+      // re-syncing references against the blueprint's body would be wrong, and stamping
+      // an "Installed from template" revision would claim a change that never happened.
+      if (!existingEntry) {
+        await syncReferences(tx, tenantId, row.id, schema, body);
+        await recordRevision(tx, {
+          tenantId,
+          entryId: row.id,
+          body,
+          seoJson: seo,
+          status: entry.status,
+          kind: 'manual',
+          authorId: userId ?? null,
+          summary: 'Installed from template',
+        });
+      }
+      result.content.push({
+        typeKey: entry.typeKey,
+        slug: entry.slug ?? null,
+        id: row.id,
+        ...(existingEntry ? { reused: true } : {}),
       });
-      result.content.push({ typeKey: entry.typeKey, slug: entry.slug ?? null, id: row.id });
     });
   }
 }
@@ -922,6 +995,7 @@ export async function installCommerceSlice(env: SliceEnv): Promise<void> {
           ogImageId: asset(c.ogImageAssetId),
         });
         id = created.id;
+        (result.mintedCategories ??= []).push(c.handle);
       }
       catMap.set(c.handle, id);
       result.categories[c.handle] = id;
@@ -947,6 +1021,7 @@ export async function installCommerceSlice(env: SliceEnv): Promise<void> {
         ogImageId: asset(c.ogImageAssetId),
       });
       id = created.id;
+      (result.mintedCollections ??= []).push(c.handle);
     }
     collMap.set(c.handle, id);
     result.collections[c.handle] = id;
@@ -1033,7 +1108,7 @@ export async function installCommerceSlice(env: SliceEnv): Promise<void> {
         });
       }
       await relinkProductImages(ctx, reusedId, reuseImages);
-      result.products.push({ handle: p.handle, id: reusedId });
+      result.products.push({ handle: p.handle, id: reusedId, reused: true });
       continue;
     }
 
@@ -1520,17 +1595,48 @@ export async function deleteInstall(ctxIn: InstallContext, installId: string): P
       data: { silicaDraftTree: Prisma.DbNull, silicaPublishedTree: Prisma.DbNull },
     })
   ).catch(warn('frame clear', propertyId));
-  for (const p of r.products ?? [])
+  // COMMERCE: only what this install MINTED is removed. The commerce slice reconciles
+  // by natural key, so these maps also hold rows that already belonged to the tenant —
+  // and removing a design from one site used to soft-delete the products and delete the
+  // categories a SIBLING site was still selling from. `mintedX` absent = an install row
+  // predating that distinction; see InstallResult for why assuming "minted" is safe there.
+  const mintedCategories = r.mintedCategories;
+  const mintedCollections = r.mintedCollections;
+
+  for (const p of r.products ?? []) {
+    if (p.reused) {
+      // A product is site-SCOPED (`ProductProperty`), so the honest undo is to stop
+      // showing it here, not to withdraw it from the business.
+      await withTenant(ctx, (tx) =>
+        tx.productProperty.deleteMany({ where: { productId: p.id, propertyId } })
+      ).catch(warn('product unlink', p.id));
+      continue;
+    }
     await productService.softDelete(ctx, p.id).catch(warn('product', p.id));
-  for (const id of Object.values(r.collections ?? {}))
+  }
+  for (const [handle, id] of Object.entries(r.collections ?? {})) {
+    if (mintedCollections && !mintedCollections.includes(handle)) continue;
     await collectionService.remove(ctx, id).catch(warn('collection', id));
+  }
   // Categories leaf-first: the id-map is parent-first (insertion order), so reverse.
-  for (const id of Object.values(r.categories ?? {}).reverse())
+  for (const [handle, id] of Object.entries(r.categories ?? {}).reverse()) {
+    if (mintedCategories && !mintedCategories.includes(handle)) continue;
     await categoryService.remove(ctx, id).catch(warn('category', id));
-  for (const c of r.content ?? [])
+  }
+  // A REUSED entry belongs to the tenant, not to this install — a sibling site that
+  // installed the same design is still showing it. Unlink it from this site and leave
+  // the record alone; only entries this install minted are deleted.
+  for (const c of r.content ?? []) {
+    if (c.reused) {
+      await withTenant(ctx, (tx) =>
+        tx.contentEntryProperty.deleteMany({ where: { entryId: c.id, propertyId } })
+      ).catch(warn('content unlink', c.id));
+      continue;
+    }
     await withTenant(ctx, (tx) => tx.contentEntry.delete({ where: { id: c.id } })).catch(
       warn('content', c.id)
     );
+  }
   if (r.theme) await savedThemeService.remove(ctx, r.theme.id).catch(warn('theme', r.theme.id));
   for (const id of Object.values(r.assets ?? {}))
     await withTenant(ctx, (tx) => tx.mediaAsset.delete({ where: { id } })).catch(warn('asset', id));

@@ -29,6 +29,8 @@ export interface VendorEntity {
   module: string | null;
   /** False when the module that owns this entity is switched off for this tenant. */
   available: boolean;
+  /** Only reachable through the live connection — the vendor has no export for it. */
+  connectorOnly?: boolean;
 }
 
 export interface VendorSourceSummary {
@@ -152,6 +154,18 @@ export function useMigrationVendors() {
     // different pane — so it is refetched on focus rather than cached hard.
     staleTime: 30_000,
   });
+}
+
+/**
+ * A list of things, as a person would say them.
+ *
+ * `join(', and ')` gives "A, and B, and C", which reads as a machine listing
+ * clauses rather than a sentence. One conjunction, at the end.
+ */
+export function sentenceList(parts: string[]): string {
+  if (parts.length <= 1) return parts[0] ?? '';
+  if (parts.length === 2) return `${parts[0]} and ${parts[1]}`;
+  return `${parts.slice(0, -1).join(', ')}, and ${parts[parts.length - 1]}`;
 }
 
 export const KIND_LABEL: Record<VendorCard['kind'], string> = {

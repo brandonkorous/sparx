@@ -18,6 +18,7 @@ export function toPayRate(row: {
   burdenPercent: { toString(): string };
   effectiveFrom: Date;
   effectiveTo: Date | null;
+  note: string | null;
 }): PayRate {
   return {
     id: row.id,
@@ -27,6 +28,7 @@ export function toPayRate(row: {
     burdenPercent: Number(row.burdenPercent.toString()),
     effectiveFrom: row.effectiveFrom,
     effectiveTo: row.effectiveTo,
+    note: row.note,
   };
 }
 

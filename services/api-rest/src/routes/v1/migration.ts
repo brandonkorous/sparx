@@ -30,6 +30,7 @@ import {
   catalogue,
   connectorDescriptorForVendor,
   connectorForVendor,
+  connectorOnlyEntities,
   validateRows,
   type CanonicalEntity,
   type EntityModule,
@@ -181,21 +182,34 @@ const migrationRoutes: FastifyPluginAsync = async (app) => {
       modules.set(module, await isModuleEnabled(auth.tenantId, module));
     }
 
-    const vendors = catalogue().map((vendor) => ({
-      ...vendor,
-      entities: vendor.entities.map((entity) => {
-        const module = ENTITY_MODULE[entity];
-        return {
-          entity,
-          label: ENTITY_LABEL[entity].many,
-          module,
-          available: module === null || modules.get(module) === true,
-        };
-      }),
-      // The credential form is rendered from this rather than written twice — adding
-      // a field to a connector should not mean editing a form component as well.
-      connector: connectorDescriptorForVendor(vendor.slug) ?? null,
-    }));
+    const vendors = catalogue().map((vendor) => {
+      // Everything this vendor can give us, from EITHER route.
+      //
+      // `catalogue()` derives its entities from the vendor's FILES, so a tile
+      // built from it alone silently omits the things only the live connection
+      // reaches — Shopify's collections, pages and blog posts have no export at
+      // all, and leaving them off the card is the same broken promise this
+      // feature exists to fix, just pointed the other way. They are marked
+      // rather than merged, because "you can have this, but only by connecting"
+      // is a different answer from "download this file".
+      const connectorOnly = connectorOnlyEntities(vendor.slug);
+      return {
+        ...vendor,
+        entities: [...vendor.entities, ...connectorOnly].map((entity) => {
+          const module = ENTITY_MODULE[entity];
+          return {
+            entity,
+            label: ENTITY_LABEL[entity].many,
+            module,
+            available: module === null || modules.get(module) === true,
+            connectorOnly: connectorOnly.includes(entity),
+          };
+        }),
+        // The credential form is rendered from this rather than written twice —
+        // adding a field to a connector should not mean editing a form component.
+        connector: connectorDescriptorForVendor(vendor.slug) ?? null,
+      };
+    });
 
     return ok({ vendors });
   });

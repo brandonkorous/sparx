@@ -1,19 +1,20 @@
 # 149 — Staff management (the `staff` module)
 
-Version: 0.3 (built)
+Version: 0.4 (verified)
 Author: Brandon Korous
 Last Updated: 2026-08-13
 
-> Status: **built end to end — schema, services, API, six surfaces, marketing.** Every
-> step of §8 is done. 84 tests pass: 57 pure units plus 27 DB-backed integration tests
-> that walk approved time all the way into a `finance_expenses` row and out again as a
-> payroll hours file.
+> Status: **built and browser-verified end to end.** All six surfaces have been driven by
+> hand — a person hired, a rate recorded, hours typed, approved, costed and deleted, a
+> shift drafted and published, leave requested and approved. 95 tests pass: 57 pure units
+> plus 38 DB-backed integration tests that walk approved time all the way into a
+> `finance_expenses` row and out again as a payroll hours file.
 >
-> **Unverified in a browser.** Dev has been down for the whole build, so every surface
-> here is typecheck-, lint- and build-green but has never been clicked. The `/staff`
-> marketing page IS browser-proven in the sense that matters — `next build` prerenders
-> it and `.bg-module-staff` is emitted into the CSS bundle, which is the failure this
-> module was most likely to ship silently.
+> **Clicking it found six defects that every static check had passed** — §11 lists them.
+> Four were invisible to typecheck, lint and 84 green tests by construction: a silently
+> skipped module tile, an unregistered colour, a dropped field, and a site filter that
+> turned 7h 30m into a confident 0h. This is [[feedback_test_as_a_business_owner]]
+> earning its place again.
 >
 > Sequenced behind [148](148-finance-spend-and-profitability.md), which shipped first
 > and works without this. Staff turns 148's hand-typed "Wages" line into derived labour
@@ -360,12 +361,80 @@ registered in `catalog/staff.ts`, addressed under `/team/*`. Keys are `staff.peo
 
 ### Still to build
 
-- **Browser verification of all six surfaces.** Everything is typecheck/lint/build green
-  and none of it has been clicked ([[feedback_test_as_a_business_owner]] — a green
-  endpoint proves nothing about whether anyone can reach the screen).
 - **The nightly certification sweep.** `certificationsNeedingReminder` and `markReminded`
   are built and tested; nothing calls them yet. It wants an api-rest tick publishing
   `staff.certification.expiring` per certification, and an email template behind it.
 - **A commission surface.** The service layer and the API are done and the person pane
   READS commissions; nothing writes one from the UI, because nothing yet calculates them
   from an order or a deal. That calculation is the missing piece, not the screen.
+
+---
+
+## 11. What clicking it found
+
+Six defects, none of which typecheck, ESLint, Prettier or 84 passing tests could have
+caught. They are recorded because four of them share one shape — **a thing that is
+absent behaves exactly like a thing that is fine** — and that shape will recur.
+
+1. **The module could not be turned on, because its tile did not exist.** `MODULE_META` in
+   [surfaces/modules/data.ts](../apps/workbench/surfaces/modules/data.ts) is a hand-kept
+   list, and a slug the server offers but this list has never heard of is **skipped
+   silently** rather than shown raw. `finance` and `staff` were both in that state:
+   shipped end to end, absent from the only screen that turns a module on, with no error
+   anywhere. This is [[feedback_module_slug_stale_lists]] a third time.
+
+2. **Both hues rendered grey.** `module-finance` and `module-staff` were defined in
+   `@sparx/brand/theme.css` but never added to the `@plugin '@wizeworks/silicaui'` colour
+   list in `apps/workbench/app/globals.css`. An unregistered colour emits **no class at
+   all**, so `bg-module-staff` resolves to nothing and the element quietly falls back to
+   the chassis — the exact monochrome failure RULE #4 exists to stop, arriving by
+   omission rather than by choice. A token is necessary and not sufficient; the plugin
+   list is the second half, in each app.
+
+3. **A saved person stayed dirty forever.** Create calls
+   `ctx.open(…, { target: 'replace' })`, which swaps the pane's params **in place**
+   without remounting — so `loaded` stayed `true`, the load effect never re-ran, `baseline`
+   stayed at `EMPTY`, and a record that was on disk kept an unsaved dot and fired the
+   leave-guard on the way out. The fix rebases the baseline on success, on both paths.
+
+4. **The rate note was write-only.** `note` was in the zod schema, written to the column,
+   returned by `payRateView`, and rendered by a Note column — but `toPayRate` never copied
+   it out of the row, and `StaffPayRateRow.note` was **optional**, so the type system was
+   satisfied and every annotated rate read back as an em-dash. An optional field in a view
+   type is how a dropped field hides.
+
+5. **A rate entered as 1 Jan displayed as Dec 31.** `formatDate` in the workbench used
+   `toLocaleDateString` with no timezone on a `@db.Date`, which Postgres returns at UTC
+   midnight — so every calendar day slid backwards for anyone west of Greenwich. The
+   service layer had this exactly right and says so in `dayKey`'s comment; the UI
+   reintroduced the bug the comment warns about. Split into `formatDate` (UTC, for
+   `@db.Date`) and `formatMoment` (local, for `@db.Timestamptz`).
+
+6. **Site-scoped hours vanished.** `timesheetPeriod` and `buildPayrollExport` filtered
+   entries on `propertyId = <site>`, which excludes an hour that names **no** site — what
+   every hand-typed day and every siteless clock-in is. The member row still appeared
+   (it matches on `siteLinks`), so a real 7h 30m rendered as a confident **0h** with
+   nothing to suggest anything was missing. On the payroll file the same bug does not
+   understate a screen — it fails to pay somebody. Unattributed hours now fall to the
+   person's main business, resolved per member so a two-site person is never counted
+   twice.
+
+**One gap, not a defect: nothing could record an hour by hand.** `useCreateTimeEntry`,
+`useUpdateTimeEntry` and `useDeleteTimeEntry` were built and wired to the API, and no
+surface called any of them — so the only way an hour existed was a clock-in, and a tech
+who forgot to clock in on Tuesday had no Tuesday. The person pane's "last 30 days" section
+now adds, corrects and deletes, with the controls withdrawn once an entry is approved
+(approved hours are already a filed wage cost and the server refuses to change them).
+
+### Not ours
+
+`flushSync was called from inside a lifecycle method` fires on **every toast** in the
+workbench. The stack lands in `ToastRoot.recalculateHeight` inside a layout effect in
+`@base-ui-components/react@1.0.0-rc.0` — upstream, dev-only, and not reachable from a call
+site. [lib/confirm.ts](../apps/workbench/lib/confirm.ts) already defers our half; this is
+the other half and belongs in a Base UI upgrade, not a patch here.
+
+`GET /v1/finance/expenses` answers **422** (a `FinanceError`), so Finance → Spending shows
+its "could not load" state. Nothing in the staff module touches `packages/finance`; the
+staff → `finance_expenses` chain itself is proven by the DB-backed
+[labor.integration.test.ts](../packages/staff/test/integration/labor.integration.test.ts).

@@ -70,7 +70,12 @@ function headerSet(headers: string[]): Set<string> {
 function scoreDelimited(
   source: VendorSource,
   headers: Set<string>,
-  fileName: string
+  fileName: string,
+  /** The vendor's own spelling of its name. Read from the adapter rather than
+   *  derived from the source id, which is a lowercase slug — telling somebody
+   *  their file has "columns only shopify writes" reads like a typo of the name
+   *  of the platform they use every day. */
+  vendorName: string
 ): { confidence: number; reasons: string[] } | null {
   const missing = source.required.filter((header) => !headers.has(normalizeHeader(header)));
   if (missing.length > 0) return null;
@@ -89,9 +94,10 @@ function scoreDelimited(
     const hit = hints.filter((header) => headers.has(normalizeHeader(header)));
     confidence += 0.3 * (hit.length / hints.length);
     if (hit.length > 0)
-      reasons.push(
-        `plus ${hit.length} of ${hints.length} columns only ${source.id.split('.')[0]} writes`
-      );
+      // No leading conjunction: the surface joins these into one sentence and
+      // supplies its own. "…, and plus 4 of 4 columns only shopify writes" is
+      // what came out when both ends tried.
+      reasons.push(`${hit.length} of ${hints.length} columns only ${vendorName} writes`);
   }
 
   if (source.filePattern !== undefined && fileName !== '' && source.filePattern.test(fileName)) {
@@ -171,7 +177,7 @@ export function detect(input: DetectInput): DetectionCandidate[] {
     const present = headerSet(headers);
     for (const { vendor, source } of allSources()) {
       if (source.format !== 'csv') continue;
-      const score = scoreDelimited(source, present, fileName);
+      const score = scoreDelimited(source, present, fileName, vendor.name);
       if (score === null) continue;
       candidates.push(candidateFor(vendor, source, score));
     }

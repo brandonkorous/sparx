@@ -58,6 +58,7 @@ import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { stockErrorMessage } from './data';
 import {
   CUSTOM_FIELD_ENTITY_LABELS,
+  CUSTOM_FIELD_ENTITY_NOUNS,
   CUSTOM_FIELD_TYPE_LABELS,
   useCreateCustomField,
   useCustomFields,
@@ -88,6 +89,34 @@ const ENTITY_HELP: Record<CustomFieldEntity, string> = {
   level: 'Facts about stock at ONE place — the aisle, the shelf, who this pallet is earmarked for.',
   supplier: 'Facts about who you buy from — an account number, a certification, a rep.',
   purchase_order: 'Facts about an order — the project it is charged to, who asked for it.',
+};
+
+/** Which records carry their own columns into a LIST you can edit in bulk.
+ *  Today that is stock at a location and nothing else: the stock grid reads
+ *  `level` definitions, and so do the spreadsheet import and its template.
+ *
+ *  This is a switch, so it must not be offered where nothing would read it —
+ *  a toggle that changes nothing is worse than an absent one, because the
+ *  person turns it on, sees no column, and stops trusting the screen. Fields on
+ *  the other records are still fully real: they show on the record itself, and
+ *  they go out over the API and to a connected assistant. */
+const HAS_EDITABLE_LIST: Record<CustomFieldEntity, boolean> = {
+  variant: false,
+  level: true,
+  supplier: false,
+  purchase_order: false,
+};
+
+/** Where a field on this record actually turns up, said plainly. The sentence
+ *  is per record because the answer is: a `level` field reaches the grid and
+ *  the spreadsheet, and the others do not. */
+const ENTITY_REACH: Record<CustomFieldEntity, string> = {
+  variant: 'on every item, over the API, and to any assistant connected to your account',
+  level:
+    'in the stock grid, in your spreadsheet exports as a cf_ column that imports back, over the API, and to any assistant connected to your account',
+  supplier: 'on every supplier, over the API, and to any assistant connected to your account',
+  purchase_order:
+    'on every purchase order, over the API, and to any assistant connected to your account',
 };
 
 function NewFieldDialog({
@@ -134,9 +163,7 @@ function NewFieldDialog({
       }}
     >
       <DialogContent>
-        <DialogTitle>
-          A new column on {CUSTOM_FIELD_ENTITY_LABELS[entity].toLowerCase()}
-        </DialogTitle>
+        <DialogTitle>A new column on every {CUSTOM_FIELD_ENTITY_NOUNS[entity]}</DialogTitle>
         <DialogDescription>{ENTITY_HELP[entity]}</DialogDescription>
 
         <div className="flex flex-col gap-3 py-2">
@@ -222,22 +249,26 @@ function NewFieldDialog({
             />
           </div>
 
-          <div className="flex items-center justify-between gap-3">
-            <span className="flex flex-col">
-              <Text className="font-medium">Show it as a column in lists</Text>
-              <Text className="text-sm">
-                Off by default — twelve extra columns by surprise is nobody&rsquo;s idea of help.
-              </Text>
-            </span>
-            <Switch
-              color="module"
-              aria-label="Show it as a column in lists"
-              checked={showInList}
-              onCheckedChange={(next) => {
-                setShowInList(next === true);
-              }}
-            />
-          </div>
+          {HAS_EDITABLE_LIST[entity] ? (
+            <div className="flex items-center justify-between gap-3">
+              <span className="flex flex-col">
+                <Text className="font-medium">Show it as a column in the stock grid</Text>
+                <Text className="text-sm">
+                  Off by default — twelve extra columns by surprise is nobody&rsquo;s idea of help.
+                </Text>
+              </span>
+              <Switch
+                color="module"
+                aria-label="Show it as a column in the stock grid"
+                checked={showInList}
+                onCheckedChange={(next) => {
+                  setShowInList(next === true);
+                }}
+              />
+            </div>
+          ) : null}
+
+          <Text className="text-sm">Once you add it, it appears {ENTITY_REACH[entity]}.</Text>
         </div>
 
         <DialogFooter>
@@ -267,7 +298,7 @@ function NewFieldDialog({
                     afterCommit(() => {
                       toast.add({
                         title: `${field.label} added`,
-                        description: `It appears on every ${CUSTOM_FIELD_ENTITY_LABELS[entity].toLowerCase()} straight away, and in your exports as ${`cf_${field.key}`}.`,
+                        description: `It is stored as ${`cf_${field.key}`}, and appears ${ENTITY_REACH[entity]}.`,
                         type: 'success',
                       });
                     });
@@ -315,8 +346,9 @@ function FieldTable({ fields, entity }: { fields: CustomField[]; entity: CustomF
         <tr>
           <th>Column</th>
           <th>Kind</th>
-          <th className="hidden @lg:table-cell">In exports as</th>
-          <th className="text-center">In lists</th>
+          <th className="hidden @lg:table-cell">Stored as</th>
+          {/* Only where a list reads it — see HAS_EDITABLE_LIST. */}
+          {HAS_EDITABLE_LIST[entity] ? <th className="text-center">In the grid</th> : null}
           <th className="w-0" />
         </tr>
       </thead>
@@ -350,16 +382,18 @@ function FieldTable({ fields, entity }: { fields: CustomField[]; entity: CustomF
               ) : null}
             </td>
             <td className="hidden font-mono text-sm @lg:table-cell">cf_{field.key}</td>
-            <td className="text-center">
-              <Switch
-                color="module"
-                aria-label={`Show ${field.label} in lists`}
-                checked={field.showInList}
-                onCheckedChange={(next) => {
-                  update.mutate({ id: field.id, patch: { showInList: next === true } });
-                }}
-              />
-            </td>
+            {HAS_EDITABLE_LIST[entity] ? (
+              <td className="text-center">
+                <Switch
+                  color="module"
+                  aria-label={`Show ${field.label} in the stock grid`}
+                  checked={field.showInList}
+                  onCheckedChange={(next) => {
+                    update.mutate({ id: field.id, patch: { showInList: next === true } });
+                  }}
+                />
+              </td>
+            ) : null}
             <td className="text-right whitespace-nowrap">
               {field.isActive ? (
                 <Button
@@ -436,9 +470,10 @@ export function InventoryCustomFieldsSurface(_props: { ctx: SurfaceContext }) {
           <Alert color="info" variant="soft">
             <AlertContent>
               <AlertDescription>
-                Anything you add here appears on the record straight away, in your spreadsheet
-                exports as a <span className="font-mono">cf_</span> column that imports back, in the
-                API, and to any assistant connected to your account.
+                Anything you add here appears on the record straight away, in the API, and to any
+                assistant connected to your account. Columns on <strong>stock at a location</strong>{' '}
+                go further: they are editable in the stock grid and ride your spreadsheet exports as
+                a <span className="font-mono">cf_</span> column that imports back.
               </AlertDescription>
             </AlertContent>
           </Alert>

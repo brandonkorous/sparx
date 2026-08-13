@@ -161,6 +161,62 @@ describe('buildPayrollExport', () => {
     expect(result.rows).toHaveLength(0);
   });
 
+  it('pays for hours that name no site, against the person’s main business', async () => {
+    const member = await hire('Ines', 'EMP-0141');
+    await setRate(ctx.tenantId, member.id, {
+      basis: 'hourly',
+      amountCents: 3000,
+      effectiveFrom: day('2026-01-01'),
+    });
+    // No propertyId — a day typed in by hand, or a clock-in that named no site.
+    // It is still work somebody did, and this file is what pays them for it.
+    const row = await createTimeEntry(ctx.tenantId, {
+      staffMemberId: member.id,
+      workedOn: day('2026-03-04'),
+      minutes: 450,
+      propertyId: null,
+    });
+    await approveTimeEntries(ctx.tenantId, [row.id], null, new Date('2026-04-01T09:00:00Z'));
+
+    const scoped = await buildPayrollExport(ctx.tenantId, { ...MARCH, propertyId: ctx.propertyId });
+
+    expect(scoped.rows).toHaveLength(1);
+    expect(scoped.rows[0]?.minutes).toBe(450);
+  });
+
+  it('does not pay a second business for hours that fall to the first', async () => {
+    // Linked to BOTH sites, main one first — otherwise the second file would be
+    // empty because she is not on that roster at all, and this would pass
+    // without exercising the rule it is here to pin.
+    const member = await createMember(ctx.tenantId, {
+      firstName: 'Ines',
+      lastName: 'Okonjo',
+      externalPayrollId: 'EMP-0141',
+      siteIds: [ctx.propertyId, ctx.secondPropertyId],
+      primarySiteId: ctx.propertyId,
+    });
+    await setRate(ctx.tenantId, member.id, {
+      basis: 'hourly',
+      amountCents: 3000,
+      effectiveFrom: day('2026-01-01'),
+    });
+    const row = await createTimeEntry(ctx.tenantId, {
+      staffMemberId: member.id,
+      workedOn: day('2026-03-04'),
+      minutes: 450,
+      propertyId: null,
+    });
+    await approveTimeEntries(ctx.tenantId, [row.id], null, new Date('2026-04-01T09:00:00Z'));
+
+    // Their main business is `propertyId`, so the OTHER one must not also see
+    // these hours — counted twice, they are paid twice.
+    const other = await buildPayrollExport(ctx.tenantId, {
+      ...MARCH,
+      propertyId: ctx.secondPropertyId,
+    });
+    expect(other.rows).toHaveLength(0);
+  });
+
   it('names the file after the period it covers', async () => {
     const result = await buildPayrollExport(ctx.tenantId, MARCH);
     expect(result.filename).toBe('hours-2026-03-01-to-2026-03-31.csv');

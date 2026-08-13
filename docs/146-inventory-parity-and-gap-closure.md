@@ -1,6 +1,6 @@
 # sparx Platform — Inventory: Market Parity & Gap Closure Plan
 
-**Version:** 1.12
+**Version:** 1.13
 **Author:** Brandon Korous
 **Last Updated:** 2026-08-13
 
@@ -1380,6 +1380,52 @@ quantities and count the fast movers first. And the grid's keyboard navigation i
 gives a table of inputs (tab, shift-tab, typing over a selection) plus column paste — not a
 spreadsheet's arrow-key cell cursor, which needs a focus manager the app does not have and would be
 its own piece of work.
+
+**What driving it in a browser found (2026-08-13).** Everything above was green on 700-odd tests and
+a clean typecheck, and the first two minutes on the actual screens still turned up four defects the
+suite could not see, which is the whole argument for the walk:
+
+1. **The stock grid's item column collapsed to `6a…`, `BE…`, `CO…`.** The cell was `max-w-0` without
+   the `w-full` that makes the idiom work, so five inputs claimed their intrinsic width and the one
+   column you cannot edit a grid without reading was squeezed to nothing. Fixing that then clipped
+   `312` to `3` — a width is a suggestion a crowded table drops — so the figure columns now carry a
+   `min-w` floor. **A number that is wrong is worse than a number that is small.**
+2. **`GridCell` fused two classes.** `${'text-right tabular-nums'}${'font-medium'}` produced
+   `tabular-numsfont-medium`, so a changed cell silently lost both its alignment and its weight.
+3. **"It appears on every items straight away."** The workbench keeps its own PLURAL entity labels
+   for section headings while the schemas package has singulars, and the plural was being dropped
+   into singular sentences. Sentences now have their own nouns — derived from neither, because no
+   amount of trimming an "s" turns "Stock at a location" into a usable one.
+4. **"Show it as a column in lists" was a silent no-op on three of the four records.** Only `level`
+   definitions are read by anything — the grid, the import, the template — so a field added to Items,
+   Suppliers or Purchase orders offered a switch, took the click, and produced no column anywhere,
+   while the toast promised a `cf_` export column that also did not exist for them. The toggle is now
+   offered only where a list honours it, and each record says plainly where its fields DO turn up
+   (on the record, over the API, to a connected assistant). **A switch that changes nothing is worse
+   than an absent one: the person turns it on, sees nothing, and stops believing the screen.**
+
+Verified end to end afterwards on real tenant data (1,414 items, 2 locations): the wizard's readiness
+counts, a grid quantity edit posting a movement behind its confirm, and a custom field defined →
+appearing in the grid → edited → persisted through a server reload.
+
+**Two defects found in the walk that are NOT ours to fix here, both reported rather than patched:**
+
+- **`warning` is unreadable in every `soft` variant, platform-wide.** Silica's soft treatment paints
+  the ink from the raw registered color (`--alert-accent`, `--badge-accent`, …), which is right for
+  `info` `#147ea3` and `success` `#16865a` and wrong for `warning` `#f2b84b` — a fill color, not an
+  ink one. Measured: `rgb(242,184,75)` at 0.9 opacity on its own 12% tint, about **1.7:1**, across
+  ~181 `color="warning" variant="soft"` call sites. There is no local fix worth having: the fill and
+  the soft ink read the same token, and any amber dark enough to be ink (L ≤ 0.175) is a brown that
+  lands on `--color-module-staff` `#92400e`, a hue chosen deliberately for being the palette's only
+  unused family. So this is silicaui's rule (3) — the soft variant should derive a legible ink the
+  way `-content` is already auto-derived by measured contrast; silica even ships `contrastWarnings`
+  for exactly this. Not a call-site patch, and not a token change that collides with a module identity.
+- **A console error on every toast.** `@base-ui-components/react@1.0.0-rc.0` calls
+  `ReactDOM.flushSync` from inside a layout effect in `ToastRoot.recalculateHeight`
+  (`esm/toast/root/ToastRoot.js:158`), so React logs "flushSync was called from inside a lifecycle
+  method" whenever a toast mounts. Nothing in sparx triggers it beyond using Toast, `rc.0` is the
+  newest published version, and the remedies are a `pnpm patch` or waiting upstream — neither of
+  which should happen behind the owner's back mid-session.
 
 ### Phase 12 — Prove it ⬜
 

@@ -71,14 +71,41 @@ export async function timesheetPeriod(
     const entries = await tx.staffTimeEntry.findMany({
       where: {
         workedOn: { gte: period.from, lte: period.to },
-        ...(period.propertyId ? { propertyId: period.propertyId } : {}),
+        // An hour that NAMES no site still belongs somewhere: to the person's
+        // main business, which is what `fallbackPropertyId` below already
+        // assumes and what the person surface promises on screen ("the main one
+        // is where it goes when a shift names none"). Filtering those out here
+        // was a silent data loss of the worst shape — the member row was still
+        // listed (it matches on `siteLinks` above), so a real 7h 30m rendered as
+        // a confident 0h rather than as anything missing. Ownership of a null
+        // entry is settled per member below, so a two-site person's unattributed
+        // hours land on ONE grid rather than being counted on both.
+        ...(period.propertyId
+          ? { OR: [{ propertyId: period.propertyId }, { propertyId: null }] }
+          : {}),
       },
     });
     return { members, entries };
   });
 
+  /** The site an unattributed hour falls to — their main one, else their only one. */
+  const primaryOf = (member: (typeof members)[number]): string | null =>
+    member.siteLinks.find((l) => l.isPrimary)?.propertyId ??
+    member.siteLinks[0]?.propertyId ??
+    null;
+
+  const primaries = new Map(members.map((member) => [member.id, primaryOf(member)]));
+
   const byMember = new Map<string, typeof entries>();
   for (const entry of entries) {
+    // A null entry only counts on the grid of the person's main business.
+    if (
+      entry.propertyId === null &&
+      period.propertyId &&
+      primaries.get(entry.staffMemberId) !== period.propertyId
+    ) {
+      continue;
+    }
     const bucket = byMember.get(entry.staffMemberId) ?? [];
     bucket.push(entry);
     byMember.set(entry.staffMemberId, bucket);
@@ -89,10 +116,7 @@ export async function timesheetPeriod(
     const approved = mine.filter((e) => e.status === 'approved');
     const submitted = mine.filter((e) => e.status === 'submitted');
 
-    const primary =
-      member.siteLinks.find((l) => l.isPrimary)?.propertyId ??
-      member.siteLinks[0]?.propertyId ??
-      null;
+    const primary = primaries.get(member.id) ?? null;
 
     const laborEntries: LaborEntry[] = approved.map((e) => ({
       workedOn: e.workedOn,

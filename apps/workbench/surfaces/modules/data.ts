@@ -21,6 +21,8 @@ import type { LucideIcon } from 'lucide-react';
 import {
   Boxes,
   CalendarClock,
+  ContactRound,
+  CreditCard,
   FileText,
   Handshake,
   LayoutTemplate,
@@ -83,6 +85,13 @@ export interface ModuleMeta {
 // (@sparx/modules ALL_MODULES); a slug the server stops returning simply drops
 // off the screen, and a new one it returns without an entry here is skipped
 // rather than shown raw — see `MODULE_META_BY_SLUG`.
+//
+// That skip is the footgun: a module the server offers but this list has never
+// heard of is INVISIBLE HERE, with no error anywhere, so it can never be turned
+// on from the only screen that turns modules on. `finance` and `staff` were both
+// in exactly that state — shipped end to end, absent from this grid. When you add
+// a slug to @sparx/modules, grep an existing one across the repo; several lists
+// re-declare this vocabulary and none of them are exhaustive over the union.
 export const MODULE_META: ModuleMeta[] = [
   {
     slug: 'builder',
@@ -158,6 +167,30 @@ export const MODULE_META: ModuleMeta[] = [
     icon: ReceiptText,
     blurb: 'Send bills and quotes, and take payment against them.',
     price: 19,
+    requires: [],
+  },
+  {
+    slug: 'finance',
+    name: 'Finance',
+    hue: 'finance',
+    icon: CreditCard,
+    blurb:
+      'Track what you spend — parts, wages, rent, subscriptions — against what came in, and see which jobs actually made money.',
+    price: 29,
+    // Free alongside the Online store or Wholesale (BUNDLED_FREE), which the
+    // server reports as `source: 'bundled'` — the badge says so on its own.
+    requires: [],
+  },
+  {
+    slug: 'staff',
+    name: 'Your team',
+    hue: 'staff',
+    icon: ContactRound,
+    // Says what it is NOT, because someone reading "team" and "pay rates" will
+    // otherwise buy this expecting payroll and find out after they have paid.
+    blurb:
+      'Keep hours, pay rates, shifts, time off and licence renewals, so you know what an hour of work really costs. Not payroll — sparx hands the hours to whoever runs yours.',
+    price: 29,
     requires: [],
   },
   {

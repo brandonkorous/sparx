@@ -1,8 +1,8 @@
 # 147 — Platform migration: bringing a business off Shopify, Wix, WordPress, HubSpot & friends
 
-**Version:** 1.1
+**Version:** 1.2
 **Author:** Brandon Korous
-**Last Updated:** 2026-08-11
+**Last Updated:** 2026-08-13
 
 > **This document is the plan AND the progress ledger.** §7 is a live task list — every task
 > carries a status, and the status is updated as the work lands. "Done" is defined by that
@@ -241,16 +241,28 @@ including the live-connection flow, and the `/migrate` hub plus twenty vendor pa
 their OG cards. Lint, typecheck, tests and Prettier are clean across `@sparx/migration`,
 `import-worker`, `api-rest`, `workbench` and `web`.
 
-**Four real bugs were found by the last two phases of testing, and every one of them was
-invisible to a unit test.** They are worth recording because each is a shape that will
+**Seven real bugs were found by testing, and every one was invisible to a unit test.** They are worth recording because each is a shape that will
 recur:
 
-| Found by              | Bug                                                                                                                                                                                                                                     |
-| --------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| The end-to-end walk   | Products sent `dimensions: {lengthMm: 0, …}` when the file had no dimension columns, and commerce requires them positive — so **every product in every Shopify import failed**. A Shopify export has no dimension columns at all.       |
-| A route test          | `GET /v1/migration/runs` filtered with `options: { path: [...], not: undefined }`, which compiles and then dies at Postgres with "a JSON path cannot be set without a scalar filter". The whole past-moves surface 500'd on every call. |
-| A route test          | `validateRows` only checked required fields the row actually CARRIED — and canonical rows drop empty values, so a product with no title arrived as a missing key and sailed through to fail at the processor.                           |
-| A connector stub test | The Shopify connector put the discount code in `Code` and the display name in `Name`; Shopify's own CSV puts the code in `Name`, which the mapper reads first. Every coupon would have imported under its display name.                 |
+| Found by              | Bug                                                                                                                                                                                                                                                                                                                                                                                     |
+| --------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| The end-to-end walk   | Products sent `dimensions: {lengthMm: 0, …}` when the file had no dimension columns, and commerce requires them positive — so **every product in every Shopify import failed**. A Shopify export has no dimension columns at all.                                                                                                                                                       |
+| A route test          | `GET /v1/migration/runs` filtered with `options: { path: [...], not: undefined }`, which compiles and then dies at Postgres with "a JSON path cannot be set without a scalar filter". The whole past-moves surface 500'd on every call.                                                                                                                                                 |
+| A route test          | `validateRows` only checked required fields the row actually CARRIED — and canonical rows drop empty values, so a product with no title arrived as a missing key and sailed through to fail at the processor.                                                                                                                                                                           |
+| A connector stub test | The Shopify connector put the discount code in `Code` and the display name in `Name`; Shopify's own CSV puts the code in `Name`, which the mapper reads first. Every coupon would have imported under its display name.                                                                                                                                                                 |
+| Walking the UI        | **`import-worker` never processed a single job, ever.** `parseEvent` parsed the payload shape at the TOP level, but `publish()` wraps everything in `{type, tenantId, actorId, occurredAt, data}` — so every `import.job.created` failed its schema and was ACKED as unparseable. Silent by design: redelivering something that can never parse is pointless, so the consumer drops it. |
+| Walking the UI        | **And it could not have read the job anyway.** The job was loaded on the UNSCOPED Prisma client; `import_jobs` is ENABLE + FORCE RLS and `sparx_app` has no BYPASSRLS, so `findFirst` matched zero rows for every job. The tenant has to come off the event envelope — the row cannot be read to discover whose it is.                                                                  |
+| Walking the UI        | A redelivery APPENDED to `import_job_rows`, so a broker retry showed the tenant every problem twice and desynced the report from the job own counters.                                                                                                                                                                                                                                  |
+
+**The two worker bugs are a SHAPE, not an incident.** A worker is two halves that must agree —
+what the publisher puts on the wire and what the consumer parses off it — and nothing type-checks
+across that seam. `email-worker` parses the envelope; `import-worker` parsed the payload; both
+compiled, both passed lint, and one silently dropped every message it was ever sent. The same seam
+exists for **RLS**: a worker holds no request context, so every read of a tenant-scoped table must
+be wrapped in `withTenant` explicitly, and an unscoped read returns EMPTY rather than an error.
+Both are now pinned by `services/import-worker/src/handler.test.ts`, whose fixture is deliberately
+built as the envelope — a test asserting `parseEvent(payload)` would have passed throughout, and is
+exactly what "covered" would have looked like.
 
 **Residual, and deliberate:** `guardedFetch` resolves a hostname and refuses private
 addresses before fetching, which closes SSRF by name and by A record but not DNS rebinding

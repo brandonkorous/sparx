@@ -25,9 +25,11 @@ export interface StaffCertificationRow {
 }
 
 /** Loose enough to take BOTH a raw Prisma row (whose `burdenPercent` is a
- *  Decimal) and the already-converted `PayRate` the service hands back — the two
- *  differ only in that one carries the note, and a second view function for that
- *  is how the same rate ends up rendering two ways. */
+ *  Decimal) and the already-converted `PayRate` the service hands back. Every
+ *  field is REQUIRED on purpose: `note` was once optional here so that a service
+ *  type which had quietly dropped it still satisfied this interface, and the
+ *  column rendered an em-dash on every rate anyone had ever annotated. An
+ *  optional field in a view type hides exactly that. */
 export interface StaffPayRateRow {
   id: string;
   basis: string;
@@ -36,7 +38,7 @@ export interface StaffPayRateRow {
   burdenPercent: { toString(): string };
   effectiveFrom: Date;
   effectiveTo: Date | null;
-  note?: string | null;
+  note: string | null;
 }
 
 export interface StaffMemberRow {
@@ -80,7 +82,7 @@ export function payRateView(rate: StaffPayRateRow) {
     burdenPercent: Number(rate.burdenPercent.toString()),
     effectiveFrom: rate.effectiveFrom,
     effectiveTo: rate.effectiveTo,
-    note: rate.note ?? null,
+    note: rate.note,
   };
 }
 

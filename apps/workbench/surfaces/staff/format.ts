@@ -55,13 +55,29 @@ export function formatCostOrNothing(cents: number | null, currency = 'USD'): str
   return cents === null ? '—' : formatCents(cents, currency);
 }
 
+/**
+ * A CALENDAR DAY — a `@db.Date` column, rendered in UTC.
+ *
+ * The timezone is the whole point, and leaving it off is a real bug we shipped:
+ * Postgres hands a `@db.Date` back at UTC midnight, so formatting it in local
+ * time moves it a day backwards for everyone west of Greenwich. A rate entered
+ * as "1 Jan" then reads "Dec 31" on the screen that is supposed to explain which
+ * rate priced which shift. `dayKey` in @sparx/staff makes the same argument for
+ * the server half.
+ *
+ * Use this for effective-from/to, worked-on, earned-on and expires-on. For an
+ * actual instant (`@db.Timestamptz` — a clock-in, a signature, a leave window)
+ * use `formatMoment`, where the reader's own timezone IS the right answer.
+ */
 export function formatDate(iso: string | null | undefined): string {
   if (!iso) return '—';
-  return new Date(iso).toLocaleDateString(undefined, { dateStyle: 'medium' });
+  return new Date(iso).toLocaleDateString(undefined, { dateStyle: 'medium', timeZone: 'UTC' });
 }
 
-export function formatDayShort(iso: string): string {
-  return new Date(iso).toLocaleDateString(undefined, { weekday: 'short', day: 'numeric' });
+/** The day of an INSTANT, in the reader's timezone. See `formatDate`. */
+export function formatMoment(iso: string | null | undefined): string {
+  if (!iso) return '—';
+  return new Date(iso).toLocaleDateString(undefined, { dateStyle: 'medium' });
 }
 
 export function formatTime(iso: string | null): string {
