@@ -125,7 +125,7 @@ module "pubsub" {
     # Pub/Sub (packages/crm/src/pubsub-bridge.ts). commerce-indexer consumes
     # them via its Cloud Run PUSH subscriptions in serverless.tf; topic-only
     # here (empty list = no idle pull subscription).
-    "order.created"          = []
+    "order.created" = []
     # staff-worker: a paid order is when a commission is earned (docs/149 §10).
     "order.paid"             = ["staff-worker"]
     "order.cancelled"        = []
@@ -133,7 +133,7 @@ module "pubsub" {
     "order.fulfilled"        = []
     "order.delivered"        = []
     # staff-worker: a refund reduces the commission proportionally.
-    "order.refunded"         = ["staff-worker"]
+    "order.refunded" = ["staff-worker"]
 
     # Commerce checkout — the "customer-facing checkout completed" signal,
     # DISTINCT from the CRM-bridged "order.created" above (that one fires when

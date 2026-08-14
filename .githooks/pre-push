@@ -96,6 +96,30 @@ step "pnpm format:check"
 pnpm format:check >/dev/null || fail "prettier found unformatted files — run \`pnpm format\` and commit"
 ok "format clean"
 
+# Terraform has its OWN formatter, enforced by a SEPARATE CI job, so `fmt` drift
+# is invisible to every check above it and surfaces only after the push — in the
+# one place this hook exists to keep green. It needs neither providers nor state
+# (`fmt` is pure lexical rewriting), so it costs milliseconds and no init.
+#
+# What actually breaks is alignment, and it breaks at a distance: `fmt` aligns
+# `=` across a run of CONSECUTIVE lines, so adding a COMMENT between two aligned
+# entries splits the run and re-flows lines nobody touched. That is exactly how
+# envs/prod/main.tf drifted (2026-08-14) — two comments added above two already
+# correct entries, and the diff CI rejected was on neither of them.
+#
+# Skipped, not failed, when terraform is absent: it is not part of the JS
+# toolchain, `pnpm install` does not provide it, and a hook that blocks a push
+# over a missing binary is stricter than CI — which is how hooks get bypassed.
+# Printed either way so the skip stays a visible decision.
+step "terraform fmt -check"
+if command -v terraform >/dev/null 2>&1; then
+  (cd terraform && terraform fmt -check -recursive >/dev/null) \
+    || fail "terraform fmt found unformatted files — run \`(cd terraform && terraform fmt -recursive)\` and commit"
+  ok "terraform fmt clean"
+else
+  printf "  terraform not installed — skipped (the CI terraform job still enforces it)\n"
+fi
+
 # Bypass turbo's `^build` dep graph by running each workspace's lint/typecheck
 # script directly, against the generated artifacts on disk — which the step
 # above has now guaranteed exist. CI runs the full turbo graph as the source of
