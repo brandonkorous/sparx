@@ -223,5 +223,12 @@
       ],
       "policyHandle": "coaching-standard"
     }
+  ],
+  "locations": [
+    {
+      "handle": "premises",
+      "name": "Brightpath Life Coaching",
+      "timezone": "UTC"
+    }
   ]
 }

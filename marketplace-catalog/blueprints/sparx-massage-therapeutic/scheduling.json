@@ -361,5 +361,12 @@
       ],
       "policyHandle": "meridian-hold"
     }
+  ],
+  "locations": [
+    {
+      "handle": "premises",
+      "name": "Meridian Bodywork",
+      "timezone": "UTC"
+    }
   ]
 }

@@ -374,5 +374,12 @@
       ],
       "policyHandle": "wag-standard"
     }
+  ],
+  "locations": [
+    {
+      "handle": "premises",
+      "name": "Scrub & Wag",
+      "timezone": "UTC"
+    }
   ]
 }

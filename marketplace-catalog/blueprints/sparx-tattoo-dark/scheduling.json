@@ -227,5 +227,12 @@
       ],
       "policyHandle": "consultation-free"
     }
+  ],
+  "locations": [
+    {
+      "handle": "premises",
+      "name": "Ironwood Tattoo",
+      "timezone": "UTC"
+    }
   ]
 }

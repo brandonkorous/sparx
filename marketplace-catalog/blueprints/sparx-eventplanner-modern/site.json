@@ -22,7 +22,7 @@
                   "props": {
                     "show": "both"
                   },
-                  "id": "ee0b62d2-ea6a-44fc-8081-f8885bd8d5a7",
+                  "id": "7cef69d5-9549-47ed-94e2-dd7b0b16ea25",
                   "ord": "a0"
                 },
                 {
@@ -37,13 +37,15 @@
                       "attrs": {
                         "href": "/book"
                       },
-                      "children": ["Book"],
+                      "children": [
+                        "Book"
+                      ],
                       "slot": {
                         "name": "link1",
                         "type": "link",
                         "label": "Product"
                       },
-                      "id": "f1ecd041-34f1-47fe-9df7-39973f3814e8",
+                      "id": "05d0159a-3174-4e57-a2cc-10fc70270a5f",
                       "ord": "a0"
                     },
                     {
@@ -53,13 +55,15 @@
                       "attrs": {
                         "href": "/about"
                       },
-                      "children": ["About"],
+                      "children": [
+                        "About"
+                      ],
                       "slot": {
                         "name": "link2",
                         "type": "link",
                         "label": "Pricing"
                       },
-                      "id": "ddd4b315-6a67-4e69-8805-bcbde8dd66ea",
+                      "id": "b5adf3e2-3a67-41f2-accc-2260c25d407a",
                       "ord": "a1"
                     },
                     {
@@ -69,17 +73,19 @@
                       "attrs": {
                         "href": "/contact"
                       },
-                      "children": ["Contact"],
+                      "children": [
+                        "Contact"
+                      ],
                       "slot": {
                         "name": "link3",
                         "type": "link",
                         "label": "Docs"
                       },
-                      "id": "5aee9771-02f7-4353-93f8-ea7ee3277925",
+                      "id": "8c68a246-3cda-4d5b-9fd4-0c2e41e05742",
                       "ord": "a2"
                     }
                   ],
-                  "id": "29faecc7-0b6e-4e0d-8d5b-2b9d3bb90c89",
+                  "id": "146eff25-7007-4827-8703-323b79f172df",
                   "ord": "a1"
                 },
                 {
@@ -94,20 +100,22 @@
                       "attrs": {
                         "href": "/account/login"
                       },
-                      "children": ["Sign in"],
+                      "children": [
+                        "Sign in"
+                      ],
                       "slot": {
                         "name": "secondary",
                         "type": "link",
                         "label": "Secondary link"
                       },
-                      "id": "de183d7e-2faf-490b-a3fa-d3773cb0462c",
+                      "id": "a310c546-f5a2-4105-8d01-410f5405e1c2",
                       "ord": "a0"
                     },
                     {
                       "kind": "host",
                       "component": "site.theme-toggle",
                       "class": "inline-flex items-center",
-                      "id": "90548a07-4652-4527-8f31-c04217b097a8",
+                      "id": "a032e882-ad46-4c42-9d0f-6ecf7e32222c",
                       "ord": "a1"
                     },
                     {
@@ -123,7 +131,7 @@
                         "type": "link",
                         "label": "Primary action"
                       },
-                      "id": "120f92ca-4a79-4da5-a852-13421b38f666",
+                      "id": "515e5857-1051-4bb7-9d22-1566d09f2e13",
                       "ord": "a2"
                     },
                     {
@@ -141,20 +149,20 @@
                           "props": {
                             "name": "menu"
                           },
-                          "id": "9882a975-0607-4222-911b-b43aa5ce91fb",
+                          "id": "eb8a0390-8adf-4d74-998e-6f41a52903dd",
                           "ord": "a0"
                         }
                       ],
                       "part": "trigger",
-                      "id": "28002dc4-3870-4061-9009-5eaf79c3820c",
+                      "id": "cdf877e1-5168-4033-a925-2b601a0bb7c2",
                       "ord": "a3"
                     }
                   ],
-                  "id": "4d6f4e68-02f9-4407-b62b-f7030ada6566",
+                  "id": "1cf2b8b6-c384-450b-8dae-92926e66fe50",
                   "ord": "a2"
                 }
               ],
-              "id": "3fa7548d-79b4-4237-8eff-5199c6a11472",
+              "id": "34903713-06a4-4392-8c5f-883b826ab186",
               "ord": "a0"
             },
             {
@@ -172,13 +180,15 @@
                   "attrs": {
                     "href": "/book"
                   },
-                  "children": ["Book"],
+                  "children": [
+                    "Book"
+                  ],
                   "slot": {
                     "name": "link1",
                     "type": "link",
                     "label": "Product"
                   },
-                  "id": "4c5259b1-0a36-4b8a-b691-d5bd6ce3c8db",
+                  "id": "71d220cd-7f3c-42f8-a5e0-866af1c203e5",
                   "ord": "a0"
                 },
                 {
@@ -188,13 +198,15 @@
                   "attrs": {
                     "href": "/about"
                   },
-                  "children": ["About"],
+                  "children": [
+                    "About"
+                  ],
                   "slot": {
                     "name": "link2",
                     "type": "link",
                     "label": "Pricing"
                   },
-                  "id": "ad4911d1-31ae-4ff2-85ae-36f86b2017c5",
+                  "id": "589bd351-5f7a-4e35-8976-c60a620e735d",
                   "ord": "a1"
                 },
                 {
@@ -204,13 +216,15 @@
                   "attrs": {
                     "href": "/contact"
                   },
-                  "children": ["Contact"],
+                  "children": [
+                    "Contact"
+                  ],
                   "slot": {
                     "name": "link3",
                     "type": "link",
                     "label": "Docs"
                   },
-                  "id": "f758ea8b-75fb-46c0-a8c1-de11426c3e88",
+                  "id": "c68f8478-f544-4e61-99ba-7a10fc203a86",
                   "ord": "a2"
                 },
                 {
@@ -226,7 +240,7 @@
                     "type": "link",
                     "label": "Secondary link"
                   },
-                  "id": "7cd236ca-eb15-41a2-af36-6f63ccb41438",
+                  "id": "17808a7f-a79e-49a8-8056-4428369be440",
                   "ord": "a3"
                 },
                 {
@@ -242,19 +256,19 @@
                     "type": "link",
                     "label": "Primary action"
                   },
-                  "id": "26520241-5ff8-4fc7-8de6-726634421b66",
+                  "id": "ad801f6c-3240-44fc-85fd-d9c6e52a22ec",
                   "ord": "a4"
                 }
               ],
               "part": "panel",
-              "id": "fb22c609-2796-4bb5-9e22-832333edf0d3",
+              "id": "7e998deb-fd51-46de-9e58-6a35e6857fc0",
               "ord": "a1"
             }
           ],
           "behavior": {
             "type": "disclosure"
           },
-          "id": "d2cfaf31-389b-4b82-ad06-9d70d997e6d3",
+          "id": "3d22757c-faf8-4c86-b4bb-acf3b0c2d13c",
           "ord": "a0"
         },
         {
@@ -270,7 +284,7 @@
               "kind": "outlet"
             }
           ],
-          "id": "41dd919d-74cd-47a5-af00-4b5bb7b4af55",
+          "id": "3b45de99-0467-4a3a-918b-6aa727fd8975",
           "ord": "a1"
         },
         {
@@ -300,14 +314,16 @@
                           "props": {
                             "show": "both"
                           },
-                          "id": "3c55a0ff-406d-4c24-8249-843395dfe715",
+                          "id": "8e50c1bd-8d0f-466d-a3b6-ba7267c3ceb2",
                           "ord": "a0"
                         },
                         {
                           "kind": "element",
                           "tag": "p",
                           "class": "max-w-xs text-sm text-base-content",
-                          "children": ["Everything you publish, in one place."],
+                          "children": [
+                            "Everything you publish, in one place."
+                          ],
                           "slot": {
                             "name": "blurb",
                             "type": "text",
@@ -316,7 +332,7 @@
                           "attrs": {
                             "href": "/"
                           },
-                          "id": "0acdc9a4-cd5a-4b94-91d7-94e613d02110",
+                          "id": "9f6a27f4-a66e-4e10-bcdf-0f38f1bd3f83",
                           "ord": "a1"
                         },
                         {
@@ -324,11 +340,11 @@
                           "tag": "ul",
                           "class": "mt-2 flex items-center gap-5",
                           "children": [],
-                          "id": "aeae1a72-b8e3-4385-bb1e-df6cc9f43ab0",
+                          "id": "9ddb1bb5-59b8-4a25-80fe-4a2397f37861",
                           "ord": "a2"
                         }
                       ],
-                      "id": "a7bd279f-64b5-416d-988c-d7b232bf0ace",
+                      "id": "c0af2fec-0538-40ae-9654-4bcc2b6fe136",
                       "ord": "a0"
                     },
                     {
@@ -340,7 +356,9 @@
                           "kind": "element",
                           "tag": "p",
                           "class": "text-sm font-semibold text-base-content",
-                          "children": ["Explore"],
+                          "children": [
+                            "Explore"
+                          ],
                           "slot": {
                             "name": "col1",
                             "type": "text",
@@ -349,7 +367,7 @@
                           "attrs": {
                             "href": "/"
                           },
-                          "id": "21653681-8ad0-4644-8038-aa7a86ea3666",
+                          "id": "94278d90-3f96-4a29-9ee8-9666e931ecb6",
                           "ord": "a0"
                         },
                         {
@@ -368,17 +386,19 @@
                                   "attrs": {
                                     "href": "/book"
                                   },
-                                  "children": ["Book"],
+                                  "children": [
+                                    "Book"
+                                  ],
                                   "slot": {
                                     "name": "link1",
                                     "type": "link",
                                     "label": "Features"
                                   },
-                                  "id": "c9db9ebf-5617-4f2e-8202-5a894be037ea",
+                                  "id": "01227e62-9ede-4e94-83cd-59b66630b8f6",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "3f230941-d842-4eb1-be4c-020967dc3a22",
+                              "id": "ee3843aa-d439-4b29-9891-c6ca42c507c6",
                               "ord": "a0"
                             },
                             {
@@ -392,17 +412,19 @@
                                   "attrs": {
                                     "href": "/about"
                                   },
-                                  "children": ["About"],
+                                  "children": [
+                                    "About"
+                                  ],
                                   "slot": {
                                     "name": "link2",
                                     "type": "link",
                                     "label": "Pricing"
                                   },
-                                  "id": "522522c5-fc50-4f28-a4ca-829d2a8bd178",
+                                  "id": "2f881411-edea-4082-bce7-0b3d9c44477e",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "31bfce71-6f39-41c0-9cf1-4f048fce484a",
+                              "id": "d53990dd-6048-4d90-a725-88f0e283a0a7",
                               "ord": "a1"
                             },
                             {
@@ -416,17 +438,19 @@
                                   "attrs": {
                                     "href": "/contact"
                                   },
-                                  "children": ["Contact"],
+                                  "children": [
+                                    "Contact"
+                                  ],
                                   "slot": {
                                     "name": "link3",
                                     "type": "link",
                                     "label": "Integrations"
                                   },
-                                  "id": "f186022b-643a-4204-aeb4-9e5937ccf108",
+                                  "id": "b1d847a0-a989-4f8d-be22-d3cf906a9c2f",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "1f31c496-efc4-43cf-ae4b-4966a9772082",
+                              "id": "34bd499c-ed88-4267-a542-6f86da10cd78",
                               "ord": "a2"
                             },
                             {
@@ -440,25 +464,27 @@
                                   "attrs": {
                                     "href": "/search"
                                   },
-                                  "children": ["Search"],
+                                  "children": [
+                                    "Search"
+                                  ],
                                   "slot": {
                                     "name": "link4",
                                     "type": "link",
                                     "label": "Changelog"
                                   },
-                                  "id": "f92a2797-be3d-417a-98dd-78cd63d253ea",
+                                  "id": "49dd3a18-3b37-4971-b8b5-11e1f4a1f01b",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "47cda5b4-abe0-49ca-b79f-7d1f32a3f5df",
+                              "id": "05bec366-4bb4-42c1-bb86-4b1a11c133d9",
                               "ord": "a3"
                             }
                           ],
-                          "id": "bd55df65-3c1a-4e0d-b63e-230077ee2f58",
+                          "id": "2bee6771-304f-4070-bd7d-e7abe805fa77",
                           "ord": "a1"
                         }
                       ],
-                      "id": "78229ad1-2bf1-4c46-8b37-32fffdde3de2",
+                      "id": "51b6252e-3e6f-4e70-8320-96d387282564",
                       "ord": "a1"
                     },
                     {
@@ -471,11 +497,11 @@
                           "tag": "ul",
                           "class": "flex flex-col gap-2",
                           "children": [],
-                          "id": "f6e2e53a-c924-445b-8715-60a7c3e27ef5",
+                          "id": "c0333713-5a01-425f-8e67-9a84421ba056",
                           "ord": "a0"
                         }
                       ],
-                      "id": "5a60181e-8489-43a8-8248-cab482bcb578",
+                      "id": "43bf1b65-07c4-4daf-befb-3a2b94c2e147",
                       "ord": "a2"
                     },
                     {
@@ -499,23 +525,23 @@
                                   "props": {
                                     "heading": "Legal"
                                   },
-                                  "id": "a6e83634-88c6-4d4e-ba8f-228971d1a22f",
+                                  "id": "dd1e4ff7-eed7-40f7-bf21-f6ebb676a2bb",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "03f75f7d-b59a-474f-90de-9681ec08f844",
+                              "id": "56cf815a-b392-4735-8682-fcb8cd922c93",
                               "ord": "a0"
                             }
                           ],
-                          "id": "14b5d6b3-1254-4f81-977b-30e786b72b6c",
+                          "id": "3d788ee3-6686-4a47-b516-7f9126e3c9eb",
                           "ord": "a0"
                         }
                       ],
-                      "id": "441bd50e-dd71-4ad5-903f-3ed9916d52e9",
+                      "id": "daea6a58-85f5-475d-a598-25f230216fb4",
                       "ord": "a3"
                     }
                   ],
-                  "id": "782b3435-4592-4f2d-ae33-1bd1ec9e7641",
+                  "id": "e4beea7f-0477-408f-96f0-7684e8fbe4e9",
                   "ord": "a0"
                 },
                 {
@@ -533,16 +559,18 @@
                           "kind": "element",
                           "tag": "span",
                           "class": "font-medium",
-                          "children": ["Your site"],
+                          "children": [
+                            "Your site"
+                          ],
                           "data": {
                             "kind": "value",
                             "ref": "site.identity.name"
                           },
-                          "id": "74c92ce6-3853-47ea-819a-cf5bfd1f4ac5",
+                          "id": "a6c3457d-b454-4898-971a-f7cf7a0ad1d8",
                           "ord": "a0"
                         }
                       ],
-                      "id": "ecf4d738-c5e3-478c-aaf1-6c4c05bdfabe",
+                      "id": "a86bb8fe-8746-4625-8d33-c8e78f10fe0f",
                       "ord": "a0"
                     },
                     {
@@ -550,23 +578,23 @@
                       "tag": "ul",
                       "class": "flex flex-wrap items-center gap-x-6 gap-y-2",
                       "children": [],
-                      "id": "37903e18-3499-4742-9524-428dc9c8fc4b",
+                      "id": "d293aac8-a01f-4d81-b270-a6fc21a32fa3",
                       "ord": "a1"
                     }
                   ],
-                  "id": "d7e14e6c-935a-4945-a4a3-9c23f5629acb",
+                  "id": "78450a93-8fdf-491e-8a78-46101f201f7a",
                   "ord": "a1"
                 }
               ],
-              "id": "9b38ef6f-fb50-4836-9887-84112be1c1ec",
+              "id": "127ad66a-4877-49dc-80a9-a50f7a923152",
               "ord": "a0"
             }
           ],
-          "id": "4c6e2f3a-ba97-4f43-8ed0-0f083c01315e",
+          "id": "d856574d-a09e-4073-90a1-09f932011e32",
           "ord": "a2"
         }
       ],
-      "id": "c6c50b18-201b-48d1-9319-4086a44e5673"
+      "id": "d7aef31e-20be-4cb6-a929-d27273054ba5"
     }
   },
   "pages": [
@@ -580,7 +608,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "3e1a101f-0ea5-4949-8519-38b5e7dee0ea",
+        "id": "cd2b7d82-a392-41ae-b239-6db727a11f51",
         "children": [
           {
             "kind": "element",
@@ -596,14 +624,14 @@
                   "alt": "A packed conference stage under bold event lighting",
                   "loading": "eager"
                 },
-                "id": "077b2cc5-fc4f-4d2e-8a5e-fda35c504d52",
+                "id": "c8b88c89-a64d-4b2c-947b-c0f57cb3e3e4",
                 "ord": "a0"
               },
               {
                 "kind": "element",
                 "tag": "div",
                 "class": "absolute inset-0 bg-black/65",
-                "id": "1764f87f-d2dc-4904-90fd-7a981f9541f3",
+                "id": "bde8ce1e-d5e7-4694-b49b-a2c608db90a0",
                 "ord": "a1"
               },
               {
@@ -615,8 +643,10 @@
                     "kind": "element",
                     "tag": "h1",
                     "class": "max-w-3xl text-4xl font-bold leading-tight tracking-tight @2xl:text-5xl @3xl:text-6xl",
-                    "children": ["Events that mean business"],
-                    "id": "593e37de-90c3-4dd7-ba6a-ceae398ed977",
+                    "children": [
+                      "Events that mean business"
+                    ],
+                    "id": "636d8fa3-2689-4e18-ac34-4229f7d5fe30",
                     "ord": "a0"
                   },
                   {
@@ -626,7 +656,7 @@
                     "children": [
                       "We plan and produce corporate and social events end to end — conferences, launches, galas and activations that hit every mark, on time and on budget."
                     ],
-                    "id": "bbbe5327-ec61-4f00-886d-a4d21f8e0159",
+                    "id": "9c88ad6e-57f1-465c-83b4-6a10f6601916",
                     "ord": "a1"
                   },
                   {
@@ -641,8 +671,10 @@
                         "attrs": {
                           "href": "/book"
                         },
-                        "children": ["Book a consultation"],
-                        "id": "a365fd29-e232-435f-a34b-e6ced7d4c39a",
+                        "children": [
+                          "Book a consultation"
+                        ],
+                        "id": "72b6bead-e8e9-4728-96ff-639faaf13811",
                         "ord": "a0"
                       },
                       {
@@ -652,20 +684,22 @@
                         "attrs": {
                           "href": "/book"
                         },
-                        "children": ["See what we do"],
-                        "id": "65cdae05-0255-49ef-85e3-272b4d9e1033",
+                        "children": [
+                          "See what we do"
+                        ],
+                        "id": "32aec855-c26f-4457-b343-382f6f3c3bdd",
                         "ord": "a1"
                       }
                     ],
-                    "id": "a070017e-666c-4c13-af6b-d00b223ce57c",
+                    "id": "299edbf3-728f-4a23-b958-11b2b48b8070",
                     "ord": "a2"
                   }
                 ],
-                "id": "a19f3017-6bc1-415c-ab2c-9e15b1830043",
+                "id": "60a24760-59db-4dcf-bf64-b317f7818a98",
                 "ord": "a2"
               }
             ],
-            "id": "8dde8b62-9c85-49bf-b696-962c76325da8",
+            "id": "96f78040-1dbd-4918-97b6-8bb5ceba424c",
             "ord": "a0"
           },
           {
@@ -692,8 +726,10 @@
                             "kind": "element",
                             "tag": "h2",
                             "class": "text-xl font-semibold text-base-content",
-                            "children": ["Full production & logistics"],
-                            "id": "003d7b97-479c-4c5e-bb2b-b54750862e01",
+                            "children": [
+                              "Full production & logistics"
+                            ],
+                            "id": "9a6d8f18-634e-4084-b627-7b8ab0630387",
                             "ord": "a0"
                           },
                           {
@@ -703,11 +739,11 @@
                             "children": [
                               "Venue, staging, AV, catering, run-of-show and the hundred details in between — one team owning all of it, so nothing falls through the gaps."
                             ],
-                            "id": "cbd5d0d2-01b6-40c4-9fef-0b5db9e0e700",
+                            "id": "e816f557-3769-4bba-8774-85d320ee041f",
                             "ord": "a1"
                           }
                         ],
-                        "id": "d0ed2ba3-b18f-4e4f-b42f-580c10ae2483",
+                        "id": "e25aa4b4-ca81-4319-bad7-cb0c0c4c2ea6",
                         "ord": "a0"
                       },
                       {
@@ -719,8 +755,10 @@
                             "kind": "element",
                             "tag": "h2",
                             "class": "text-xl font-semibold text-base-content",
-                            "children": ["On-brand experiences"],
-                            "id": "7ab760a0-7058-4741-865a-7b1386ce3258",
+                            "children": [
+                              "On-brand experiences"
+                            ],
+                            "id": "26141893-3284-4179-8d74-5ff81fe727a8",
                             "ord": "a0"
                           },
                           {
@@ -730,11 +768,11 @@
                             "children": [
                               "Every touchpoint, from the invite to the after-film, designed to look and feel unmistakably like you — not a template with your logo dropped on top."
                             ],
-                            "id": "c271079b-240d-4084-a1b3-485e60b3290b",
+                            "id": "1f32babc-ff2a-4d49-8281-a40ca6af4154",
                             "ord": "a1"
                           }
                         ],
-                        "id": "97e58889-6c9f-4623-8b52-e1cccf390b3c",
+                        "id": "22ed5ffc-3e1c-411c-a46a-ee241d00933f",
                         "ord": "a1"
                       },
                       {
@@ -746,8 +784,10 @@
                             "kind": "element",
                             "tag": "h2",
                             "class": "text-xl font-semibold text-base-content",
-                            "children": ["A trusted vendor network"],
-                            "id": "3e578ebb-bf7e-45d5-93d0-42cc9b07b6e7",
+                            "children": [
+                              "A trusted vendor network"
+                            ],
+                            "id": "7bf9b0d5-1a7d-4b83-a2d8-0614a5a788de",
                             "ord": "a0"
                           },
                           {
@@ -757,11 +797,11 @@
                             "children": [
                               "Years of vetted partners — AV crews, caterers, entertainers, fabricators — booked at the right price and held to our standard, not just theirs."
                             ],
-                            "id": "f4faa027-2f69-44b7-a96d-8d77748907a5",
+                            "id": "eaf3dd98-c5f0-42be-85ee-085397528eba",
                             "ord": "a1"
                           }
                         ],
-                        "id": "cabfb7e0-9f4b-4153-b525-20ff638553d6",
+                        "id": "124f5286-fb49-423e-8e8e-44b97e8feab7",
                         "ord": "a2"
                       },
                       {
@@ -773,8 +813,10 @@
                             "kind": "element",
                             "tag": "h2",
                             "class": "text-xl font-semibold text-base-content",
-                            "children": ["On time, on budget"],
-                            "id": "7a9e220d-5845-4fb8-93bf-e806afd08408",
+                            "children": [
+                              "On time, on budget"
+                            ],
+                            "id": "3c4d9082-d54f-4c15-b962-3f0697b646a1",
                             "ord": "a0"
                           },
                           {
@@ -784,23 +826,23 @@
                             "children": [
                               "A clear plan, a live budget you can see, and a producer who sweats the timeline so the day runs to the minute and the numbers hold."
                             ],
-                            "id": "e299501a-ea0f-4da7-bf5a-e2466d8614b6",
+                            "id": "69c23de2-7050-4e80-8621-3fea94f6dcfc",
                             "ord": "a1"
                           }
                         ],
-                        "id": "205bf559-fce3-49ff-9ec7-51b25dbb08af",
+                        "id": "90c3d05d-6d4f-4d45-a6b2-a9dbaabcf1f5",
                         "ord": "a3"
                       }
                     ],
-                    "id": "c2855186-52df-4cbb-9dd2-d4a6b59a13a9",
+                    "id": "76f8b5cd-b952-486b-86fa-46741b30c0e7",
                     "ord": "a0"
                   }
                 ],
-                "id": "abc5a69d-9624-4336-bbde-bf16ed2d6854",
+                "id": "f2412876-a89a-4ad2-8600-2cf51aa6f90c",
                 "ord": "a0"
               }
             ],
-            "id": "23a2c2eb-c3e4-44fd-90f9-b54bc0b914b7",
+            "id": "ae9a75d8-14d7-4999-90df-05f376fc6ee6",
             "ord": "a1"
           },
           {
@@ -822,8 +864,10 @@
                         "kind": "element",
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
-                        "children": ["Ways we work with you"],
-                        "id": "a27544a1-169b-4e75-9816-b92d3c6ee4a8",
+                        "children": [
+                          "Ways we work with you"
+                        ],
+                        "id": "b355bbc9-d976-4ca6-8088-88cbad3c36d4",
                         "ord": "a0"
                       },
                       {
@@ -833,11 +877,11 @@
                         "children": [
                           "Every engagement starts with a consultation. Pick the one that fits, see live availability and book a time — the discovery call is free."
                         ],
-                        "id": "d9c89533-dff7-4bea-a27e-22358ddd4c51",
+                        "id": "c4e44be1-cf8a-4d93-bfb1-a674abb9ec3d",
                         "ord": "a1"
                       }
                     ],
-                    "id": "beb6d5e0-85d0-4c72-a536-28ac98647795",
+                    "id": "d85963ff-6bab-44c3-9eb7-9e2481528a0c",
                     "ord": "a0"
                   },
                   {
@@ -862,40 +906,48 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
-                                "children": ["Discovery call"],
-                                "id": "d31444cc-11a1-42f0-ba26-ed2d72ac62ab",
+                                "children": [
+                                  "Discovery call"
+                                ],
+                                "id": "bf761eff-4661-4e33-a8c6-aa61b2390b42",
                                 "ord": "a0"
                               },
                               {
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-bold text-base-content",
-                                "children": ["$0"],
-                                "id": "e22cc3a1-b2d7-4dfe-8069-06edf3537df7",
+                                "children": [
+                                  "$0"
+                                ],
+                                "id": "81f558c0-21f7-405d-b0ae-a32ebd689c9e",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "4ba602c2-1a5f-422e-8f17-92e61d98b9e8",
+                            "id": "ad7e6782-ab99-4ca0-b913-5ad02b5ba215",
                             "ord": "a0"
                           },
                           {
                             "kind": "element",
                             "tag": "p",
                             "class": "text-sm font-medium uppercase tracking-wide text-secondary",
-                            "children": ["30 min"],
-                            "id": "88a9ed51-01ca-4f41-bb6d-42181289a3b5",
+                            "children": [
+                              "30 min"
+                            ],
+                            "id": "841ee9d2-6acd-425e-8779-f16b6235e16d",
                             "ord": "a1"
                           },
                           {
                             "kind": "element",
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
-                            "children": ["A free intro call to talk through your event."],
-                            "id": "e917b96d-29e4-4b5a-88d2-e9f81e47c19a",
+                            "children": [
+                              "A free intro call to talk through your event."
+                            ],
+                            "id": "6422061d-1ca9-4e79-840e-b9da0ae9da32",
                             "ord": "a2"
                           }
                         ],
-                        "id": "1d602064-f3c9-4454-bcfe-b7baba562127",
+                        "id": "37caba65-8668-4e18-92a8-19bef7ea1a42",
                         "ord": "a0"
                       },
                       {
@@ -915,40 +967,48 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
-                                "children": ["Corporate event consultation"],
-                                "id": "d90ad774-b45b-4311-8813-0e97ba4fd8c9",
+                                "children": [
+                                  "Corporate event consultation"
+                                ],
+                                "id": "6a941136-029f-49fd-8210-f6af96136feb",
                                 "ord": "a0"
                               },
                               {
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-bold text-base-content",
-                                "children": ["$75"],
-                                "id": "389a36d4-193d-4839-b690-297253ea68be",
+                                "children": [
+                                  "$75"
+                                ],
+                                "id": "98fb5bf9-d530-44c5-a31b-882dc7f54310",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "61b02c2c-e279-41b9-80da-a94fe6e875d4",
+                            "id": "e56cca1b-36ae-43f8-96bd-9b4581a8cd06",
                             "ord": "a0"
                           },
                           {
                             "kind": "element",
                             "tag": "p",
                             "class": "text-sm font-medium uppercase tracking-wide text-secondary",
-                            "children": ["45 min"],
-                            "id": "442bee46-9249-4bc8-9ab2-5b76f72173b0",
+                            "children": [
+                              "45 min"
+                            ],
+                            "id": "62aa2ce1-071e-4d70-be85-83118d499d30",
                             "ord": "a1"
                           },
                           {
                             "kind": "element",
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
-                            "children": ["Offsites, summits and client nights."],
-                            "id": "be52ca5f-13b1-4184-9c1e-1fec3ffbe28f",
+                            "children": [
+                              "Offsites, summits and client nights."
+                            ],
+                            "id": "f3bb77aa-2222-43a7-b499-2e88459b6e9d",
                             "ord": "a2"
                           }
                         ],
-                        "id": "2fc3df37-2c73-4755-82be-d59c0da48015",
+                        "id": "f7f277aa-808c-449d-b5f9-fa4de1cbea90",
                         "ord": "a1"
                       },
                       {
@@ -968,40 +1028,48 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
-                                "children": ["Conference production consultation"],
-                                "id": "6c39900f-5565-43c6-b9d5-940ee321703a",
+                                "children": [
+                                  "Conference production consultation"
+                                ],
+                                "id": "fee9b534-fec4-40b1-a65e-79ead3755525",
                                 "ord": "a0"
                               },
                               {
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-bold text-base-content",
-                                "children": ["$125"],
-                                "id": "d4167ce4-d242-41c1-8948-6d74c19aef39",
+                                "children": [
+                                  "$125"
+                                ],
+                                "id": "7802be67-a54d-43af-90d9-ce0441d183ad",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "6cbdc89b-407d-4b9b-b911-e375157dd6b9",
+                            "id": "0245a307-1ace-4d1d-83c4-2e0f0bd651fc",
                             "ord": "a0"
                           },
                           {
                             "kind": "element",
                             "tag": "p",
                             "class": "text-sm font-medium uppercase tracking-wide text-secondary",
-                            "children": ["1 hr"],
-                            "id": "1a340e10-1058-4e90-85ef-42319a3c21ac",
+                            "children": [
+                              "1 hr"
+                            ],
+                            "id": "7a5e1bbd-cfc7-488e-a13a-c9f017431c3e",
                             "ord": "a1"
                           },
                           {
                             "kind": "element",
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
-                            "children": ["Stage, run-of-show, AV and logistics."],
-                            "id": "da57829f-5e3f-44bd-80c3-9da4f24e6844",
+                            "children": [
+                              "Stage, run-of-show, AV and logistics."
+                            ],
+                            "id": "9f38c9c8-2b5f-4ccc-baf0-ad8bb77ed773",
                             "ord": "a2"
                           }
                         ],
-                        "id": "d3749bd2-c806-4268-98bf-8bd416b7f82b",
+                        "id": "cf92babe-74b1-490e-8e70-c009d2b3d998",
                         "ord": "a2"
                       },
                       {
@@ -1021,40 +1089,48 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
-                                "children": ["Product launch consultation"],
-                                "id": "bd0590ae-7617-4a08-b184-ed0247f56536",
+                                "children": [
+                                  "Product launch consultation"
+                                ],
+                                "id": "043ca13b-401e-4c37-947b-3370e41f3407",
                                 "ord": "a0"
                               },
                               {
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-bold text-base-content",
-                                "children": ["$125"],
-                                "id": "d519040b-205d-4bf6-a9de-cb3e19f65530",
+                                "children": [
+                                  "$125"
+                                ],
+                                "id": "87a397de-5d3d-4fd8-86c1-f22d1c5586af",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "6c5806c8-d507-4ed3-98b7-bbf4117127ee",
+                            "id": "49feb89d-c121-4277-8050-ce6e93022d13",
                             "ord": "a0"
                           },
                           {
                             "kind": "element",
                             "tag": "p",
                             "class": "text-sm font-medium uppercase tracking-wide text-secondary",
-                            "children": ["1 hr"],
-                            "id": "cc91acb1-dbf9-4e3c-a58c-a7f8b658ce5e",
+                            "children": [
+                              "1 hr"
+                            ],
+                            "id": "5f23bd3b-9e2f-415c-9043-2a579fe04903",
                             "ord": "a1"
                           },
                           {
                             "kind": "element",
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
-                            "children": ["The reveal, the room and the press moment."],
-                            "id": "75abd9de-e223-4070-8340-95ae4f6f83b5",
+                            "children": [
+                              "The reveal, the room and the press moment."
+                            ],
+                            "id": "b6cb35d0-2b6b-490b-909b-27dbd53b5a04",
                             "ord": "a2"
                           }
                         ],
-                        "id": "c53f208b-c53d-4aef-8bc5-b7097307333b",
+                        "id": "e4aff680-6697-4445-86cd-fb250941e323",
                         "ord": "a3"
                       },
                       {
@@ -1074,40 +1150,48 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
-                                "children": ["Gala & fundraiser consultation"],
-                                "id": "c4e693a1-2e04-4b01-bf60-7b533fea8443",
+                                "children": [
+                                  "Gala & fundraiser consultation"
+                                ],
+                                "id": "ce3aaecf-ecb1-4cea-9ce7-d159ac8a1dbe",
                                 "ord": "a0"
                               },
                               {
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-bold text-base-content",
-                                "children": ["$125"],
-                                "id": "5b90941b-ac64-4101-8733-79e259c793d0",
+                                "children": [
+                                  "$125"
+                                ],
+                                "id": "b4523ae2-4efc-46ab-86ea-6ad769faef2e",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "40fbd583-6163-4c00-8da3-b26b14bd3c8e",
+                            "id": "5f65da4a-dcc5-44ef-be2c-7bc341827c41",
                             "ord": "a0"
                           },
                           {
                             "kind": "element",
                             "tag": "p",
                             "class": "text-sm font-medium uppercase tracking-wide text-secondary",
-                            "children": ["1 hr"],
-                            "id": "391a3459-a7ef-41c4-8fce-ff10e05fd43c",
+                            "children": [
+                              "1 hr"
+                            ],
+                            "id": "e460e998-9c1c-4359-a81c-558116f74c20",
                             "ord": "a1"
                           },
                           {
                             "kind": "element",
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
-                            "children": ["Black-tie programs that raise the room."],
-                            "id": "3664cb74-7283-4f74-aef7-786c3bb0e211",
+                            "children": [
+                              "Black-tie programs that raise the room."
+                            ],
+                            "id": "203652ab-18d6-4c30-9943-e8aa71c7fb36",
                             "ord": "a2"
                           }
                         ],
-                        "id": "c363c11b-956d-4a1e-91a8-72354a84870c",
+                        "id": "948feeb4-f372-4b77-a640-63a49e5f3aab",
                         "ord": "a4"
                       },
                       {
@@ -1127,44 +1211,52 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
-                                "children": ["Brand activation consultation"],
-                                "id": "985e1340-18af-4eb9-b2a0-e7204071c0a1",
+                                "children": [
+                                  "Brand activation consultation"
+                                ],
+                                "id": "1e8cccaf-2b39-4705-8291-911bb4c41320",
                                 "ord": "a0"
                               },
                               {
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-bold text-base-content",
-                                "children": ["$95"],
-                                "id": "c99fc3df-c162-4839-bb2d-dde294c12057",
+                                "children": [
+                                  "$95"
+                                ],
+                                "id": "f61a5752-33a7-4391-aa30-3b94670d6886",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "fb8b442a-0b23-452d-9c29-17447ec44434",
+                            "id": "4690f72b-3720-48de-a863-d8977619e638",
                             "ord": "a0"
                           },
                           {
                             "kind": "element",
                             "tag": "p",
                             "class": "text-sm font-medium uppercase tracking-wide text-secondary",
-                            "children": ["45 min"],
-                            "id": "4036f949-62f1-4973-9ade-b3ef40c412a8",
+                            "children": [
+                              "45 min"
+                            ],
+                            "id": "9468436e-6c82-4720-a521-a18a78124e96",
                             "ord": "a1"
                           },
                           {
                             "kind": "element",
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
-                            "children": ["Pop-ups and experiential that get talked about."],
-                            "id": "d0d063dd-7908-421f-b3af-09d97bd05b48",
+                            "children": [
+                              "Pop-ups and experiential that get talked about."
+                            ],
+                            "id": "7e100e55-bedb-41a9-a8b6-c436812d5000",
                             "ord": "a2"
                           }
                         ],
-                        "id": "dc12be7c-f593-4a9f-ae6e-765e59375d47",
+                        "id": "0f35c07b-13c5-4727-9d59-a5d5d8856f1d",
                         "ord": "a5"
                       }
                     ],
-                    "id": "7a4ead16-9047-4e8a-9ed8-604370b1503d",
+                    "id": "0a608fc0-7533-4cff-a521-f2da3d6ce3f6",
                     "ord": "a1"
                   },
                   {
@@ -1179,20 +1271,22 @@
                         "attrs": {
                           "href": "/book"
                         },
-                        "children": ["See everything & book"],
-                        "id": "51d1cad4-bd93-473e-abb5-55e009e6de80",
+                        "children": [
+                          "See everything & book"
+                        ],
+                        "id": "1462857b-a934-45a2-a995-c66c4428b288",
                         "ord": "a0"
                       }
                     ],
-                    "id": "8fab2ae0-0210-44b1-a1f4-7a02337a256d",
+                    "id": "77092ac9-7880-4df0-96fc-57d0edd82c98",
                     "ord": "a2"
                   }
                 ],
-                "id": "d167f5f9-fbb5-43a4-9eb4-c9319725e09e",
+                "id": "ce2ebcd9-4943-4d49-86ff-87a958ce9ace",
                 "ord": "a0"
               }
             ],
-            "id": "c900ba27-0926-466c-8e72-0d6a56546ab5",
+            "id": "fd0bcea8-d813-4226-ac6a-722e6f4e24ba",
             "ord": "a2"
           },
           {
@@ -1209,8 +1303,10 @@
                     "kind": "element",
                     "tag": "h2",
                     "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
-                    "children": ["Recent events"],
-                    "id": "f4b03fbb-02af-4d9e-9b08-781e6ccae5f1",
+                    "children": [
+                      "Recent events"
+                    ],
+                    "id": "e450ee52-329e-436d-9777-cb39dfb2b05c",
                     "ord": "a0"
                   },
                   {
@@ -1227,7 +1323,7 @@
                           "alt": "A product launch reveal moment on a bright stage",
                           "loading": "lazy"
                         },
-                        "id": "131f19ff-8cbb-4ccd-8204-9c4df54d2908",
+                        "id": "3c855fba-e7a1-42f4-82d6-348d157403fc",
                         "ord": "a0"
                       },
                       {
@@ -1239,7 +1335,7 @@
                           "alt": "A black-tie gala dinner in a grand ballroom",
                           "loading": "lazy"
                         },
-                        "id": "4287e3d9-a4d9-450f-bccb-9259e8b1aa9c",
+                        "id": "3dca8808-20d0-4cff-9cde-ccd8c806f16e",
                         "ord": "a1"
                       },
                       {
@@ -1251,19 +1347,19 @@
                           "alt": "A branded pop-up activation buzzing with guests",
                           "loading": "lazy"
                         },
-                        "id": "120e1260-8ad2-42e8-a952-2cc6974db87a",
+                        "id": "4d0272e5-e96f-47f5-816b-c09516265ef1",
                         "ord": "a2"
                       }
                     ],
-                    "id": "1d413ac4-df34-4c20-9a31-baf7855c3170",
+                    "id": "8f9e747b-dd87-4e0f-8cf1-76936a9ba05b",
                     "ord": "a1"
                   }
                 ],
-                "id": "a425071d-4586-4091-abee-83af624ad66c",
+                "id": "be5bd606-3906-4d98-a0f8-9eb61c3b5e21",
                 "ord": "a0"
               }
             ],
-            "id": "7e97280a-35a4-4df9-9707-685c7ef55e6b",
+            "id": "16e912a7-a2ac-4219-840f-7dcec17040af",
             "ord": "a3"
           },
           {
@@ -1285,7 +1381,7 @@
                       "alt": "A production team reviewing a floor plan on set",
                       "loading": "lazy"
                     },
-                    "id": "246a26a2-5666-4c9b-a498-9f1bc5e5d2ab",
+                    "id": "b4a844bd-cceb-42dd-8544-bddd7a67d40a",
                     "ord": "a0"
                   },
                   {
@@ -1297,8 +1393,10 @@
                         "kind": "element",
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
-                        "children": ["One team, from brief to load-out"],
-                        "id": "fd63c7f4-0b79-4f60-ac6d-f638431986b3",
+                        "children": [
+                          "One team, from brief to load-out"
+                        ],
+                        "id": "267e6a68-974b-4b7e-88f3-99c4e27af313",
                         "ord": "a0"
                       },
                       {
@@ -1308,7 +1406,7 @@
                         "children": [
                           "Assembly Events runs on a single principle: the people who plan your event are the people who run it. No handoffs, no lost context, no “that’s not our department.”"
                         ],
-                        "id": "862a4041-241e-436d-8474-90deccbc9d38",
+                        "id": "3b631bd1-d713-4dea-8907-9b30830b5bfb",
                         "ord": "a1"
                       },
                       {
@@ -1318,7 +1416,7 @@
                         "children": [
                           "We build the concept, lock the budget, manage every vendor and stand at the back of the room on show day making the timeline happen. You get one producer, one plan, and one number to call."
                         ],
-                        "id": "7fb4d282-b6d4-4d19-94f4-ef3cfc8467a2",
+                        "id": "859608f7-524d-4224-9d61-52a1afda43eb",
                         "ord": "a2"
                       },
                       {
@@ -1333,24 +1431,26 @@
                             "attrs": {
                               "href": "/book"
                             },
-                            "children": ["Start with a consultation"],
-                            "id": "9d3441dc-2b36-4cf7-ae5c-681eaf6d6b23",
+                            "children": [
+                              "Start with a consultation"
+                            ],
+                            "id": "4f7835c7-0aba-4db4-839a-8d82db37ae65",
                             "ord": "a0"
                           }
                         ],
-                        "id": "7306db54-5abd-4f63-b057-60bf9509ad67",
+                        "id": "6019edcd-ea92-47c8-a393-9d3bd6c0decb",
                         "ord": "a3"
                       }
                     ],
-                    "id": "19d746b3-770b-4f39-87a2-71264230df19",
+                    "id": "c82fce7e-3c9e-4290-bcb5-6faec50d903b",
                     "ord": "a1"
                   }
                 ],
-                "id": "98641e7d-07d7-4e39-a703-92006f54a791",
+                "id": "b60ff97b-6910-4b10-afd9-90188aa8d063",
                 "ord": "a0"
               }
             ],
-            "id": "b54d890e-fc19-4aa2-baaf-ee825b06378e",
+            "id": "53c63940-e2db-4327-96bb-b2ec711ea65a",
             "ord": "a4"
           },
           {
@@ -1372,8 +1472,10 @@
                         "kind": "element",
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
-                        "children": ["The producers you’ll work with"],
-                        "id": "45ecf54c-dbb0-4a4c-a248-7f927518af6b",
+                        "children": [
+                          "The producers you’ll work with"
+                        ],
+                        "id": "bfe01d87-fc50-429c-8c01-7fc9f4594abe",
                         "ord": "a0"
                       },
                       {
@@ -1383,11 +1485,11 @@
                         "children": [
                           "Book by name — the producer you meet in the consultation is the one who runs your event."
                         ],
-                        "id": "7a825d4d-b97d-4411-9e50-de84e10b74de",
+                        "id": "f0332d0b-1cbd-464b-8e15-06fa2b700461",
                         "ord": "a1"
                       }
                     ],
-                    "id": "5bea3812-7ded-4ed3-9c99-33444b7dbb7b",
+                    "id": "cc88cbaa-34be-45e9-8630-8c37e9e8b189",
                     "ord": "a0"
                   },
                   {
@@ -1409,7 +1511,7 @@
                               "alt": "Jordan Reyes, executive producer",
                               "loading": "lazy"
                             },
-                            "id": "591dc46a-fc23-412a-bba8-f71257018f7a",
+                            "id": "e0ee13e4-e734-400c-8c1a-bd86afe856b1",
                             "ord": "a0"
                           },
                           {
@@ -1421,16 +1523,20 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
-                                "children": ["Jordan Reyes"],
-                                "id": "a73bf234-bed8-4faa-bd86-a52f7e818b71",
+                                "children": [
+                                  "Jordan Reyes"
+                                ],
+                                "id": "8bf957d6-6c11-4bb4-8b1a-81b606356b3d",
                                 "ord": "a0"
                               },
                               {
                                 "kind": "element",
                                 "tag": "p",
                                 "class": "text-sm font-medium uppercase tracking-wide text-secondary",
-                                "children": ["Executive producer"],
-                                "id": "3e030a49-28f6-4f77-aa2f-b09efd48cd09",
+                                "children": [
+                                  "Executive producer"
+                                ],
+                                "id": "d6862014-da15-42ad-8574-8f14ea06bbf5",
                                 "ord": "a1"
                               },
                               {
@@ -1440,15 +1546,15 @@
                                 "children": [
                                   "Fifteen years of conferences and corporate summits. Jordan owns the run-of-show and the budget."
                                 ],
-                                "id": "a4159119-7366-4721-b755-2a8c4d1fd562",
+                                "id": "f9b503cc-eefe-42cc-a9ca-def751c8a229",
                                 "ord": "a2"
                               }
                             ],
-                            "id": "66bdde8e-46ee-4dd1-85c3-11be415f6e0e",
+                            "id": "ed8b1d2b-b100-4256-90cc-6e4bbc3e6775",
                             "ord": "a1"
                           }
                         ],
-                        "id": "de03ab9e-e5c3-4847-9ccc-67f43dfeade9",
+                        "id": "687ab750-702f-46ef-83e8-bb2f55c70e76",
                         "ord": "a0"
                       },
                       {
@@ -1465,7 +1571,7 @@
                               "alt": "Sana Okafor, experience producer",
                               "loading": "lazy"
                             },
-                            "id": "6329c001-eced-445b-acc5-acd982ac9fe2",
+                            "id": "f3c4c0ca-e5cd-48eb-bbf1-80cd403bc48e",
                             "ord": "a0"
                           },
                           {
@@ -1477,16 +1583,20 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
-                                "children": ["Sana Okafor"],
-                                "id": "cc084de5-5e45-4891-a1f8-d6386e38049a",
+                                "children": [
+                                  "Sana Okafor"
+                                ],
+                                "id": "2567a3b5-665e-4b17-9bf3-ecfd70a4d33e",
                                 "ord": "a0"
                               },
                               {
                                 "kind": "element",
                                 "tag": "p",
                                 "class": "text-sm font-medium uppercase tracking-wide text-secondary",
-                                "children": ["Experience producer"],
-                                "id": "b9e2236b-3fd4-40fc-9107-2cea70edbf45",
+                                "children": [
+                                  "Experience producer"
+                                ],
+                                "id": "1e0618ec-e28a-4659-9ce5-61a3fdbad46c",
                                 "ord": "a1"
                               },
                               {
@@ -1496,15 +1606,15 @@
                                 "children": [
                                   "Design-led social events and galas — the room, the flow and the moments people remember."
                                 ],
-                                "id": "4be106b6-3b1c-4069-bcbc-7eb7442290f1",
+                                "id": "7a5d8379-3561-40ce-b3af-cfe422c74e34",
                                 "ord": "a2"
                               }
                             ],
-                            "id": "345f5a9a-7ae9-4d89-8fb7-e41569f3b30c",
+                            "id": "a902f559-7bb5-4d5e-a9c7-138895ad4c55",
                             "ord": "a1"
                           }
                         ],
-                        "id": "5797966d-b5b0-4b7d-9a61-727d7275fa79",
+                        "id": "0edce894-ad67-4834-a765-6db37af68633",
                         "ord": "a1"
                       },
                       {
@@ -1521,7 +1631,7 @@
                               "alt": "Marcus Vale, brand activation producer",
                               "loading": "lazy"
                             },
-                            "id": "3d6f9845-b9a3-4454-afa9-d8b6a5923b3c",
+                            "id": "cccaf082-53f2-455e-a821-2cd190fba7eb",
                             "ord": "a0"
                           },
                           {
@@ -1533,16 +1643,20 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
-                                "children": ["Marcus Vale"],
-                                "id": "af0a7f9b-051d-41d4-8ad7-a2f24c9047bd",
+                                "children": [
+                                  "Marcus Vale"
+                                ],
+                                "id": "8a9dd807-412d-4a25-ab48-f92448f7c44b",
                                 "ord": "a0"
                               },
                               {
                                 "kind": "element",
                                 "tag": "p",
                                 "class": "text-sm font-medium uppercase tracking-wide text-secondary",
-                                "children": ["Brand activation producer"],
-                                "id": "b7527dcc-a85d-4655-945b-3e0db261a480",
+                                "children": [
+                                  "Brand activation producer"
+                                ],
+                                "id": "91a7becf-9d24-4b4c-a9f4-8e1d13da22d1",
                                 "ord": "a1"
                               },
                               {
@@ -1552,27 +1666,27 @@
                                 "children": [
                                   "Launches, pop-ups and experiential builds that turn a brand brief into a crowd."
                                 ],
-                                "id": "a35aaf18-3cd3-4f26-807b-41d886df70e8",
+                                "id": "e82c2cca-e59f-44d3-9c28-d9be8354730d",
                                 "ord": "a2"
                               }
                             ],
-                            "id": "122c3513-7260-49c7-9907-f30f96e841d1",
+                            "id": "c8c19272-410f-4e66-a8f6-2c349b20327d",
                             "ord": "a1"
                           }
                         ],
-                        "id": "bc76a19b-679f-4e68-b17b-cec398d97c33",
+                        "id": "7c29ff40-e729-4c1a-b724-272f2e4da1c6",
                         "ord": "a2"
                       }
                     ],
-                    "id": "8f3fadfe-14d1-440f-99ae-dfd56582e72b",
+                    "id": "7b8403bf-7277-4452-bcfe-40cd6bcbbc6f",
                     "ord": "a1"
                   }
                 ],
-                "id": "b1e1b73e-5bf3-4646-bd8e-056f59577587",
+                "id": "19dbacf4-fe0e-48c8-a87e-153fd59d51d0",
                 "ord": "a0"
               }
             ],
-            "id": "d572bdcf-3a6d-4a65-9c7f-89b220414011",
+            "id": "51b3c046-7574-4fe6-85cf-c11a5f25f014",
             "ord": "a5"
           },
           {
@@ -1592,23 +1706,25 @@
                     "children": [
                       "“Our annual summit went from a logistical scramble to the smoothest event we’ve run. 600 attendees, three stages, zero surprises — and it came in under budget.”"
                     ],
-                    "id": "1f5588b5-ea67-4962-9918-5f63cbc4a086",
+                    "id": "7dfb5d6c-2309-4340-9665-68138128c3bd",
                     "ord": "a0"
                   },
                   {
                     "kind": "element",
                     "tag": "p",
                     "class": "text-sm font-semibold uppercase tracking-wide opacity-80",
-                    "children": ["Dana Whitfield, VP Marketing, Northwind Software"],
-                    "id": "9d90a906-ed92-4036-8792-577612448479",
+                    "children": [
+                      "Dana Whitfield, VP Marketing, Northwind Software"
+                    ],
+                    "id": "5a3767e5-8f4f-4b0e-ba11-7f9b9af2a6ec",
                     "ord": "a1"
                   }
                 ],
-                "id": "e6c1a5ff-3e4e-4e8b-9e52-ce458c1c094b",
+                "id": "c1395165-f0a7-4ff0-bbeb-11833a041c19",
                 "ord": "a0"
               }
             ],
-            "id": "6b9124ba-3cd7-4069-9976-333509d117c5",
+            "id": "9854401a-238d-49cf-a4ef-cfbf9d9c5900",
             "ord": "a6"
           },
           {
@@ -1625,8 +1741,10 @@
                     "kind": "element",
                     "tag": "h2",
                     "class": "text-3xl font-bold tracking-tight @3xl:text-4xl",
-                    "children": ["Let’s build your next event"],
-                    "id": "71e637b6-dec3-4cb2-a9b1-0704eb6fb900",
+                    "children": [
+                      "Let’s build your next event"
+                    ],
+                    "id": "1a32f96f-68d7-4d8b-b9a6-9e3db7395ff1",
                     "ord": "a0"
                   },
                   {
@@ -1636,7 +1754,7 @@
                     "children": [
                       "Book a free discovery call or a deeper planning session. Pick a producer, see live times, and we’ll take it from there."
                     ],
-                    "id": "47cb3e0d-86c9-4e7d-8e3b-48a1bc17b08d",
+                    "id": "af47071f-d365-4096-8d0a-0f8b669e2921",
                     "ord": "a1"
                   },
                   {
@@ -1646,16 +1764,18 @@
                     "attrs": {
                       "href": "/book"
                     },
-                    "children": ["Book a consultation"],
-                    "id": "6335d362-5604-49ff-94f6-b8828b00e564",
+                    "children": [
+                      "Book a consultation"
+                    ],
+                    "id": "03284322-653b-482e-a809-f52f3e6c93d8",
                     "ord": "a2"
                   }
                 ],
-                "id": "12c5e663-29a2-4565-abbb-67014b0d041f",
+                "id": "329efdf9-6a7d-415f-b8fe-32b653d6d70d",
                 "ord": "a0"
               }
             ],
-            "id": "16b99edd-0b42-4538-b3c0-5bee4410a75d",
+            "id": "ba430ab6-c5a9-4410-a8c5-494d5794382c",
             "ord": "a7"
           }
         ]
@@ -1672,7 +1792,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "3506f220-1822-4f2f-b9b8-137123c338dd",
+        "id": "60b67047-8ded-4db2-bb91-3c2904ebac2d",
         "children": [
           {
             "kind": "element",
@@ -1688,14 +1808,14 @@
                   "alt": "A production team reviewing a floor plan on set",
                   "loading": "eager"
                 },
-                "id": "a035bd0f-c3b9-4a82-9d28-557e02ca4059",
+                "id": "7123953a-3ab2-4502-af8a-a9357feaa525",
                 "ord": "a0"
               },
               {
                 "kind": "element",
                 "tag": "div",
                 "class": "absolute inset-0 bg-black/65",
-                "id": "f3e0d51c-a1af-43c6-90bb-eff0553d1608",
+                "id": "78749680-5903-4533-9088-0b83e1680182",
                 "ord": "a1"
               },
               {
@@ -1707,8 +1827,10 @@
                     "kind": "element",
                     "tag": "h1",
                     "class": "max-w-3xl text-4xl font-bold leading-tight tracking-tight @2xl:text-5xl @3xl:text-6xl",
-                    "children": ["Book a consultation"],
-                    "id": "43f940ed-790b-46ef-b341-2d61e89817ce",
+                    "children": [
+                      "Book a consultation"
+                    ],
+                    "id": "23a26013-48b4-451a-bcb8-223ec3c74a8b",
                     "ord": "a0"
                   },
                   {
@@ -1718,7 +1840,7 @@
                     "children": [
                       "Choose a consultation to see what it covers and how long it runs, then pick your producer and a time that works."
                     ],
-                    "id": "7c400850-61e2-4ef2-9653-2edd8b9521eb",
+                    "id": "cace495c-9d60-40f6-86a5-11452d1b9123",
                     "ord": "a1"
                   },
                   {
@@ -1733,20 +1855,22 @@
                         "attrs": {
                           "href": "/book"
                         },
-                        "children": ["See consultations below"],
-                        "id": "ed4abf72-ebcd-45ed-a3c4-83fee71f2884",
+                        "children": [
+                          "See consultations below"
+                        ],
+                        "id": "d2e47103-9cbc-4468-b604-aec94425ac6a",
                         "ord": "a0"
                       }
                     ],
-                    "id": "3cc93798-bb67-4bfb-ac11-7e7ce1da2f8b",
+                    "id": "02c00b29-f93a-4062-a949-55096d7afcaf",
                     "ord": "a2"
                   }
                 ],
-                "id": "63c8b9ff-fd80-4f51-af7b-7fb35800bd7a",
+                "id": "f3d70723-8ca9-4182-a4bd-ce0936c73362",
                 "ord": "a2"
               }
             ],
-            "id": "1737a9fe-a47a-42d1-9832-8e80c62f2d81",
+            "id": "298c183e-cb61-467d-adb0-601f5e490a3d",
             "ord": "a0"
           },
           {
@@ -1754,7 +1878,7 @@
             "component": "scheduling.services",
             "class": "mx-auto w-full max-w-5xl px-6 py-8",
             "locked": "host",
-            "id": "bf95235f-7c3e-4164-8d24-de8852a80b38",
+            "id": "a1f652c4-5977-467a-8271-511210f19ff1",
             "ord": "a1"
           },
           {
@@ -1776,8 +1900,10 @@
                         "kind": "element",
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
-                        "children": ["Good to know"],
-                        "id": "d7948864-0a16-43de-b0dc-82402f7266f1",
+                        "children": [
+                          "Good to know"
+                        ],
+                        "id": "6b9e3373-df42-4638-a49e-6edf1dc90d32",
                         "ord": "a0"
                       },
                       {
@@ -1787,11 +1913,11 @@
                         "children": [
                           "What happens once you pick a time — and how to change it if something comes up."
                         ],
-                        "id": "41221e64-cad4-49be-9b64-8c27a5fa9c62",
+                        "id": "df8bb860-a40b-49ce-b643-567fdec9f84b",
                         "ord": "a1"
                       }
                     ],
-                    "id": "ab717d12-dff1-4fbf-b9bb-0a735e24d3a1",
+                    "id": "44c09df8-286c-44a7-a935-b9c44d58d28d",
                     "ord": "a0"
                   },
                   {
@@ -1808,8 +1934,10 @@
                             "kind": "element",
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
-                            "children": ["Standard consultation"],
-                            "id": "b0a9ebae-83a8-4e72-a2b1-026df5c26334",
+                            "children": [
+                              "Standard consultation"
+                            ],
+                            "id": "200fda41-43c2-497b-94f2-bf3694f90abc",
                             "ord": "a0"
                           },
                           {
@@ -1819,7 +1947,7 @@
                             "children": [
                               "Please give us at least 48 hours’ notice to move or cancel a consultation. We send a reminder two days ahead and again two hours before."
                             ],
-                            "id": "8e620ddb-39b0-4061-b23c-16adceefbeb6",
+                            "id": "2a76e698-b872-4efa-b42c-032f41b53300",
                             "ord": "a1"
                           },
                           {
@@ -1829,11 +1957,11 @@
                             "children": [
                               "No deposit to book. Change or cancel free up to 2 days before."
                             ],
-                            "id": "4998887a-69f2-4576-8571-dcddfc16cfb8",
+                            "id": "97676d9f-071b-430b-a497-8eaf949b0a05",
                             "ord": "a2"
                           }
                         ],
-                        "id": "307c2ead-92ac-47f0-8f74-5d0822a33aaa",
+                        "id": "3adb954c-6c56-4d4a-9a80-acc412b2067a",
                         "ord": "a0"
                       },
                       {
@@ -1845,8 +1973,10 @@
                             "kind": "element",
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
-                            "children": ["Planning-session deposit"],
-                            "id": "633a5bba-300b-4689-85aa-0781ec97a590",
+                            "children": [
+                              "Planning-session deposit"
+                            ],
+                            "id": "4611a737-f32d-4357-8730-53061fce8ad6",
                             "ord": "a0"
                           },
                           {
@@ -1856,7 +1986,7 @@
                             "children": [
                               "Deep-dive planning sessions hold a $100 deposit that comes straight off your production quote. Reschedule with 72 hours’ notice and it carries over."
                             ],
-                            "id": "f2fc7d0f-4e99-42c6-9629-7908a0ceaf95",
+                            "id": "0f648919-183b-44bd-ad6d-4d60826e8e54",
                             "ord": "a1"
                           },
                           {
@@ -1866,23 +1996,23 @@
                             "children": [
                               "A $100 deposit holds your place. Change or cancel free up to 3 days before."
                             ],
-                            "id": "72d26c4e-837a-4b3c-ad3b-e2a8c15c96e0",
+                            "id": "2df8f450-7b32-4bd5-bdd4-5657a9affed2",
                             "ord": "a2"
                           }
                         ],
-                        "id": "e3a1a557-8b4e-4cd0-ac35-b0cffdedda1d",
+                        "id": "911d9ed4-0163-47b9-aa37-d8aa2d2926b4",
                         "ord": "a1"
                       }
                     ],
-                    "id": "9b99ca80-98d0-489c-ab04-d8b1725f90ed",
+                    "id": "4efe4a2b-2f28-48b6-a806-d3602d88188e",
                     "ord": "a1"
                   }
                 ],
-                "id": "758b12ba-8683-4cfb-bcf1-2e2cf1854a98",
+                "id": "7832b1b8-18b1-4510-8cdc-6800990a3289",
                 "ord": "a0"
               }
             ],
-            "id": "e7193203-d363-4d19-a971-33a43493e9a3",
+            "id": "cc82f016-4d95-40aa-b7f5-cb9ea592851b",
             "ord": "a2"
           }
         ]
@@ -1899,7 +2029,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "e434963c-e571-46f3-ab7e-bde4eb87be91",
+        "id": "514c2181-4ad9-45a1-a984-09def6ca29a9",
         "children": [
           {
             "kind": "element",
@@ -1920,7 +2050,7 @@
                       "alt": "A packed conference stage under bold event lighting",
                       "loading": "lazy"
                     },
-                    "id": "b8b9e378-189f-4033-8808-9a4a19d082d2",
+                    "id": "00f9ee8b-bcb1-4575-90fd-d50cbfad1afd",
                     "ord": "a0"
                   },
                   {
@@ -1932,8 +2062,10 @@
                         "kind": "element",
                         "tag": "h1",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
-                        "children": ["About Assembly Events"],
-                        "id": "a0fc92c0-3939-4ff8-832e-9a16a561396a",
+                        "children": [
+                          "About Assembly Events"
+                        ],
+                        "id": "c2cceb3e-cac3-44dd-a609-7d9985154b19",
                         "ord": "a0"
                       },
                       {
@@ -1943,7 +2075,7 @@
                         "children": [
                           "We started Assembly Events because too many events are planned by one company and produced by another — and the seams always show. We do both, so they don’t."
                         ],
-                        "id": "51b4e912-44a9-45ce-ae95-2319e943c147",
+                        "id": "cd3d32e2-b360-472d-bd32-82899ee2ae08",
                         "ord": "a1"
                       },
                       {
@@ -1953,7 +2085,7 @@
                         "children": [
                           "From a 20-person leadership offsite to a 2,000-guest product launch, we bring the same thing: a sharp creative concept, ruthless logistics, and a producer who treats your budget and your reputation like their own."
                         ],
-                        "id": "0adc30a4-3018-463b-9ac3-222af3814229",
+                        "id": "883c8d3e-c084-46b1-a80a-cfcb88798bd7",
                         "ord": "a2"
                       },
                       {
@@ -1968,24 +2100,26 @@
                             "attrs": {
                               "href": "/book"
                             },
-                            "children": ["Book a consultation"],
-                            "id": "ef30fa67-b52c-416e-a28a-904569305993",
+                            "children": [
+                              "Book a consultation"
+                            ],
+                            "id": "1dbf89f8-aa7f-4eee-9f4f-4d2d4b1aad9c",
                             "ord": "a0"
                           }
                         ],
-                        "id": "f9a46599-8a01-4303-9669-f40a3971971a",
+                        "id": "cde022cc-2717-441a-8d14-0cc06e81d849",
                         "ord": "a3"
                       }
                     ],
-                    "id": "e6468a6f-bf51-4e02-95d4-2f254c6eed49",
+                    "id": "e716a9f5-02ef-48e2-8853-a2138dbdf652",
                     "ord": "a1"
                   }
                 ],
-                "id": "733ffb24-6b97-4198-86de-87b36fd226cb",
+                "id": "bb8f0fb0-bb66-488f-bf1d-98ecdd20ecde",
                 "ord": "a0"
               }
             ],
-            "id": "0226d509-aee2-4555-b270-2075bda9ebb3",
+            "id": "e47fad76-fc75-45ff-9d8e-02473a1adf48",
             "ord": "a0"
           },
           {
@@ -2002,8 +2136,10 @@
                     "kind": "element",
                     "tag": "h2",
                     "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
-                    "children": ["How we run an event"],
-                    "id": "3aaab05a-e735-4acd-be20-60c1529751aa",
+                    "children": [
+                      "How we run an event"
+                    ],
+                    "id": "da7e6e3e-1308-4731-898e-97a5bf1607a0",
                     "ord": "a0"
                   },
                   {
@@ -2020,8 +2156,10 @@
                             "kind": "element",
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
-                            "children": ["Discovery & concept"],
-                            "id": "5b57d0f0-a027-40b9-9040-5b1bad810562",
+                            "children": [
+                              "Discovery & concept"
+                            ],
+                            "id": "dee45ba0-9c72-430c-b7d4-fa376f848c0e",
                             "ord": "a0"
                           },
                           {
@@ -2031,11 +2169,11 @@
                             "children": [
                               "We start with your goals — not a package — then shape a concept, a budget and a timeline you can actually stand behind."
                             ],
-                            "id": "a406a603-5f0c-4479-8f8f-88ed1e6f495e",
+                            "id": "ecc484f8-40b5-4266-8204-8f7ecfa100f6",
                             "ord": "a1"
                           }
                         ],
-                        "id": "f1fb3745-fb3b-4858-ace6-9cd67fa83b3d",
+                        "id": "ca07b0f3-654f-4897-9166-d1041f5b860c",
                         "ord": "a0"
                       },
                       {
@@ -2047,8 +2185,10 @@
                             "kind": "element",
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
-                            "children": ["Production & vendors"],
-                            "id": "93ed494f-a268-4180-af23-c8167ec72666",
+                            "children": [
+                              "Production & vendors"
+                            ],
+                            "id": "6d2ade1a-5519-4b42-96bf-483d037847d5",
                             "ord": "a0"
                           },
                           {
@@ -2058,11 +2198,11 @@
                             "children": [
                               "We book and manage every partner, build the run-of-show, and keep a live budget so there are no surprises the week of."
                             ],
-                            "id": "4a14bb0a-7cb8-42ee-9cb0-e257e4b11071",
+                            "id": "402a7612-572d-4dbe-a80e-edabad9fda9f",
                             "ord": "a1"
                           }
                         ],
-                        "id": "2af487a1-7561-4549-868f-77c408a56d84",
+                        "id": "fac18930-1154-4a54-a998-28e57ff49cc5",
                         "ord": "a1"
                       },
                       {
@@ -2074,8 +2214,10 @@
                             "kind": "element",
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
-                            "children": ["Show day & wrap"],
-                            "id": "c39fdc2c-6bc7-4251-bc0c-cd36d54a2707",
+                            "children": [
+                              "Show day & wrap"
+                            ],
+                            "id": "e5bf7b14-e204-464a-8797-09c7922de502",
                             "ord": "a0"
                           },
                           {
@@ -2085,23 +2227,23 @@
                             "children": [
                               "A producer runs the room to the minute, handles the load-out, and delivers a wrap report — what worked, what it cost, what’s next."
                             ],
-                            "id": "f5b8c9ff-059d-412d-8544-c756fdc16152",
+                            "id": "c953411f-9909-477a-af20-19a4a0bf264e",
                             "ord": "a1"
                           }
                         ],
-                        "id": "e4f676cd-74b9-4756-8b92-8b608463e040",
+                        "id": "56334578-5223-4f98-bf93-d94009758fb8",
                         "ord": "a2"
                       }
                     ],
-                    "id": "55f1faf0-8675-4cc3-8014-6fa4ae499e7b",
+                    "id": "b6f96d8e-0651-4263-a588-bfb2c13de7e7",
                     "ord": "a1"
                   }
                 ],
-                "id": "d259581b-5a5a-4a81-9214-189d2c4ec4f3",
+                "id": "d47b0f19-dc48-4609-a83a-7259ac11b14a",
                 "ord": "a0"
               }
             ],
-            "id": "9aee58ab-744e-471b-8160-932aa1b77b28",
+            "id": "74672367-3bb3-40ee-bd97-c70a0ae313f7",
             "ord": "a1"
           }
         ]
@@ -2118,7 +2260,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "e445664a-a507-4342-b19c-ae9dbd8e9163",
+        "id": "05fd5d80-422b-40e2-aa20-1f943a8bba18",
         "children": [
           {
             "kind": "element",
@@ -2139,8 +2281,10 @@
                         "kind": "element",
                         "tag": "h1",
                         "class": "text-4xl font-bold tracking-tight text-base-content @3xl:text-5xl",
-                        "children": ["Get in touch"],
-                        "id": "1110c199-1a89-4dd9-b516-4c4c21778b0f",
+                        "children": [
+                          "Get in touch"
+                        ],
+                        "id": "187001c5-1f83-4006-8075-27c5cfbf9510",
                         "ord": "a0"
                       },
                       {
@@ -2150,11 +2294,11 @@
                         "children": [
                           "Questions before you book? Send a note and Assembly Events will get back to you — usually the same day."
                         ],
-                        "id": "aa3ab1fe-891a-45e1-9cb8-37ed75b8f4d4",
+                        "id": "f0a0b1fd-f4d0-470f-8684-00b97bf56d18",
                         "ord": "a1"
                       }
                     ],
-                    "id": "62420dba-9176-4ee0-97fd-03d80b40d203",
+                    "id": "239c6f21-7687-48e7-a6e7-965e1761968a",
                     "ord": "a0"
                   },
                   {
@@ -2166,8 +2310,10 @@
                         "kind": "element",
                         "tag": "span",
                         "class": "text-base font-medium text-base-content",
-                        "children": ["Call us"],
-                        "id": "2984f8d4-aaa5-43a5-9dc3-57b734d4a7d9",
+                        "children": [
+                          "Call us"
+                        ],
+                        "id": "080f2409-6b07-45ae-95e5-08614d91e3af",
                         "ord": "a0"
                       },
                       {
@@ -2178,12 +2324,14 @@
                           {
                             "kind": "element",
                             "tag": "span",
-                            "children": ["(555) 123-4567"],
+                            "children": [
+                              "(555) 123-4567"
+                            ],
                             "data": {
                               "kind": "value",
                               "ref": "site.identity.phone"
                             },
-                            "id": "7901bdfa-aeb9-4d4b-af40-dfd8a6ff085c",
+                            "id": "a1b34a35-443a-44c1-865c-e59178355d22",
                             "ord": "a0"
                           }
                         ],
@@ -2192,7 +2340,7 @@
                           "ref": "site.identity.phoneHref",
                           "attr": "href"
                         },
-                        "id": "6a38a2d9-cfca-48ab-83a0-55494fca3a4b",
+                        "id": "d6e753e2-e95b-49b2-afe4-d610cdb0ae17",
                         "ord": "a1"
                       }
                     ],
@@ -2200,7 +2348,7 @@
                       "kind": "visible",
                       "ref": "site.identity.phone"
                     },
-                    "id": "5b7060ec-c9bc-4889-a372-0c67da6835dc",
+                    "id": "03ef9265-85dd-497d-b123-445091dea48f",
                     "ord": "a1"
                   },
                   {
@@ -2212,8 +2360,10 @@
                         "kind": "element",
                         "tag": "span",
                         "class": "text-base font-medium text-base-content",
-                        "children": ["Email us"],
-                        "id": "38b45bde-dcf4-40d6-9095-8c6147f35336",
+                        "children": [
+                          "Email us"
+                        ],
+                        "id": "25c3d87f-85d5-46a4-83a0-de7edf4da60b",
                         "ord": "a0"
                       },
                       {
@@ -2224,12 +2374,14 @@
                           {
                             "kind": "element",
                             "tag": "span",
-                            "children": ["hello@yourbusiness.com"],
+                            "children": [
+                              "hello@yourbusiness.com"
+                            ],
                             "data": {
                               "kind": "value",
                               "ref": "site.identity.email"
                             },
-                            "id": "04aa4f78-c9b3-42ff-8b3b-d6db4ef9c7f1",
+                            "id": "8da113c8-18d1-4b03-baa0-9e3acec82145",
                             "ord": "a0"
                           }
                         ],
@@ -2238,7 +2390,7 @@
                           "ref": "site.identity.emailHref",
                           "attr": "href"
                         },
-                        "id": "74db2755-4094-4d7d-ad77-debc2bfab6a1",
+                        "id": "2314789b-f2da-4574-9c6a-7618a53e40a1",
                         "ord": "a1"
                       }
                     ],
@@ -2246,7 +2398,7 @@
                       "kind": "visible",
                       "ref": "site.identity.email"
                     },
-                    "id": "b3096d19-21d6-4027-a1c2-7dd754dfecc0",
+                    "id": "5884d677-8bf1-46c7-9b89-78bb7e9bb120",
                     "ord": "a2"
                   },
                   {
@@ -2263,8 +2415,10 @@
                             "kind": "element",
                             "tag": "span",
                             "class": "text-base font-medium text-base-content",
-                            "children": ["Your name"],
-                            "id": "0f2f2800-ad2c-48e8-8759-0af2e75a9c23",
+                            "children": [
+                              "Your name"
+                            ],
+                            "id": "911b636d-0e8a-4e9b-8249-a49b867f9117",
                             "ord": "a0"
                           },
                           {
@@ -2276,11 +2430,11 @@
                               "name": "name",
                               "required": true
                             },
-                            "id": "9f3a0635-a006-446d-b957-adf3f2bc4b51",
+                            "id": "d7fdda1e-15db-4ba6-9c82-a6788a1c3b3b",
                             "ord": "a1"
                           }
                         ],
-                        "id": "80e463e0-3be0-4628-b3a0-80f11fb2e2e8",
+                        "id": "086195f3-fc85-438d-b683-6eeaf71ab6e6",
                         "ord": "a0"
                       },
                       {
@@ -2292,8 +2446,10 @@
                             "kind": "element",
                             "tag": "span",
                             "class": "text-base font-medium text-base-content",
-                            "children": ["Email address"],
-                            "id": "94b2127d-11bc-4615-bb44-c093c16248de",
+                            "children": [
+                              "Email address"
+                            ],
+                            "id": "d9ab6c4d-b742-4b56-afb2-680cdbfab952",
                             "ord": "a0"
                           },
                           {
@@ -2305,11 +2461,11 @@
                               "name": "email",
                               "required": true
                             },
-                            "id": "34d45134-0653-47df-98ec-a949a5e81bbe",
+                            "id": "2a9eabcd-1376-4b6f-848b-540cac295bce",
                             "ord": "a1"
                           }
                         ],
-                        "id": "76b030a6-5cbe-4492-bfe3-e402990d3dbc",
+                        "id": "5067fd0f-f800-440e-8c7b-7126ad33d441",
                         "ord": "a1"
                       },
                       {
@@ -2321,8 +2477,10 @@
                             "kind": "element",
                             "tag": "span",
                             "class": "text-base font-medium text-base-content",
-                            "children": ["Phone number"],
-                            "id": "6346eeaf-661d-4686-8cdb-ac1ca8119478",
+                            "children": [
+                              "Phone number"
+                            ],
+                            "id": "cb09f745-c38c-4c48-96c1-d1108eaf3995",
                             "ord": "a0"
                           },
                           {
@@ -2333,11 +2491,11 @@
                               "type": "tel",
                               "name": "phone"
                             },
-                            "id": "b62bc4b8-19da-4e38-992a-7c08fc72cf56",
+                            "id": "f7c36f8b-c6f2-4293-94cf-4acf0572055f",
                             "ord": "a1"
                           }
                         ],
-                        "id": "2661ec20-a0bb-4789-b53d-5c51f60e6242",
+                        "id": "309cd892-8cf6-4236-8e63-44c2b248e815",
                         "ord": "a2"
                       },
                       {
@@ -2349,8 +2507,10 @@
                             "kind": "element",
                             "tag": "span",
                             "class": "text-base font-medium text-base-content",
-                            "children": ["How can we help?"],
-                            "id": "14f1bfa1-e907-4866-b7a5-b70f9e556a6a",
+                            "children": [
+                              "How can we help?"
+                            ],
+                            "id": "1d32e8c6-b674-4f99-a951-e8390d731e2d",
                             "ord": "a0"
                           },
                           {
@@ -2360,11 +2520,11 @@
                             "attrs": {
                               "name": "message"
                             },
-                            "id": "78f3a0df-8db2-4844-a36f-ccee0602fcd3",
+                            "id": "422764ee-1312-49f9-8b38-aea3e74b160d",
                             "ord": "a1"
                           }
                         ],
-                        "id": "8e17c48a-4662-467c-b717-34c318e94ca0",
+                        "id": "ae6b259c-c7f4-43b8-8cb4-16a43f04eee8",
                         "ord": "a3"
                       },
                       {
@@ -2379,12 +2539,14 @@
                             "attrs": {
                               "type": "submit"
                             },
-                            "children": ["Send my request"],
-                            "id": "eddcd788-f306-4df0-a0aa-d11af83127c7",
+                            "children": [
+                              "Send my request"
+                            ],
+                            "id": "b77c813b-6aeb-45e2-8e4c-c37c9b46cfee",
                             "ord": "a0"
                           }
                         ],
-                        "id": "26b233b4-99e6-4411-bd05-478974dc3f9e",
+                        "id": "c2bc36da-d444-4d00-9a37-210c6d71ae3f",
                         "ord": "a4"
                       }
                     ],
@@ -2395,15 +2557,15 @@
                       "kind": "action",
                       "ref": "submit"
                     },
-                    "id": "692c5854-fa83-4d27-9d13-b37776597d75",
+                    "id": "afbb3628-eac0-45f1-ab69-fd1330d730c4",
                     "ord": "a3"
                   }
                 ],
-                "id": "075c57e9-5061-4660-9381-b399b677d2fb",
+                "id": "4758c256-0313-44a2-ac5c-578af89a2622",
                 "ord": "a0"
               }
             ],
-            "id": "5ff3644b-dffd-45aa-9d71-b517d2b23603",
+            "id": "67ba663c-1d26-4ce0-8196-274bac6ab71e",
             "ord": "a0"
           },
           {
@@ -2425,8 +2587,10 @@
                         "kind": "element",
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
-                        "children": ["Visit the studio"],
-                        "id": "2540d8a9-7c08-47f4-a809-ecacc68ed670",
+                        "children": [
+                          "Visit the studio"
+                        ],
+                        "id": "4eb5c1da-a51e-4c5a-9eab-a8d0624cf730",
                         "ord": "a0"
                       },
                       {
@@ -2440,7 +2604,7 @@
                           "kind": "value",
                           "ref": "site.identity.address"
                         },
-                        "id": "62098df2-6437-47be-a762-d9a3da9d7ad3",
+                        "id": "a248d0e0-4475-4044-a933-526b67902e68",
                         "ord": "a1"
                       },
                       {
@@ -2457,20 +2621,24 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "font-medium text-base-content",
-                                "children": ["Monday – Friday"],
-                                "id": "569a46e0-d056-4906-b448-b84ee21a5d2e",
+                                "children": [
+                                  "Monday – Friday"
+                                ],
+                                "id": "d54c9bd4-e1aa-43ca-9bc6-01bf56adcac1",
                                 "ord": "a0"
                               },
                               {
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-base-content",
-                                "children": ["9:00 – 6:00"],
-                                "id": "ce54be81-04b5-4719-ac03-14517e405d80",
+                                "children": [
+                                  "9:00 – 6:00"
+                                ],
+                                "id": "03a80936-f7a3-4e83-9b17-79ab9eac5999",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "bc0ed20b-a741-49cf-89d6-f0cf300b3162",
+                            "id": "5f3a0c56-effd-4ef5-ab54-66fa9677de3f",
                             "ord": "a0"
                           },
                           {
@@ -2482,20 +2650,24 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "font-medium text-base-content",
-                                "children": ["Saturday"],
-                                "id": "e8bb1eae-a94f-4578-97d3-dcdd331f19c9",
+                                "children": [
+                                  "Saturday"
+                                ],
+                                "id": "f34e2881-eb9e-4825-b519-a9067fbabff9",
                                 "ord": "a0"
                               },
                               {
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-base-content",
-                                "children": ["By appointment"],
-                                "id": "2da27398-d4e8-4ac2-8ba0-4704d2f94606",
+                                "children": [
+                                  "By appointment"
+                                ],
+                                "id": "a436e1c0-1df9-4f42-b0a3-8b255b759596",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "309170cd-8e01-46e8-bdea-f7d71a190f03",
+                            "id": "e07942cf-5f8b-498e-b240-403249b2215d",
                             "ord": "a1"
                           },
                           {
@@ -2507,28 +2679,32 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "font-medium text-base-content",
-                                "children": ["Sunday"],
-                                "id": "fe8a2265-8a8e-489a-bc3d-66c8d6f32329",
+                                "children": [
+                                  "Sunday"
+                                ],
+                                "id": "29c85ccc-5468-43ab-b16b-c877cfb4b7f8",
                                 "ord": "a0"
                               },
                               {
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-base-content",
-                                "children": ["Closed"],
-                                "id": "aafb4c6c-cf4b-4734-931b-cf776a9a5f14",
+                                "children": [
+                                  "Closed"
+                                ],
+                                "id": "f03cf512-e2cf-4b0f-8e8f-f739091e5027",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "54c657b2-0726-4ddd-a139-62d6c3365c40",
+                            "id": "233696eb-24db-4995-ba7f-ed7f9d510261",
                             "ord": "a2"
                           }
                         ],
-                        "id": "65064154-aeb5-44f8-837b-946036e71b11",
+                        "id": "737a63a5-4b2f-4768-b944-ae7dd2f549da",
                         "ord": "a2"
                       }
                     ],
-                    "id": "1557d76a-ce54-4b7f-baf8-256cff816d3d",
+                    "id": "80c20a32-f996-42fc-a531-a7142ba746fa",
                     "ord": "a0"
                   },
                   {
@@ -2541,15 +2717,15 @@
                       "zoom": 15,
                       "ratio": "classic"
                     },
-                    "id": "e3675d0c-7af5-42c4-841f-31945da16ab3",
+                    "id": "238c57ab-faab-46fb-9162-5533b7da139d",
                     "ord": "a1"
                   }
                 ],
-                "id": "42083db3-9559-4f63-8b80-8313fa26ede3",
+                "id": "acde2a5e-ca51-4a94-a8a8-5e353f3d2b9a",
                 "ord": "a0"
               }
             ],
-            "id": "6f282e23-fe93-4f68-a804-5673268a623d",
+            "id": "318aaf39-7405-4dc0-aa91-b1a660ddc162",
             "ord": "a1"
           },
           {
@@ -2566,8 +2742,10 @@
                     "kind": "element",
                     "tag": "h2",
                     "class": "text-3xl font-bold tracking-tight @3xl:text-4xl",
-                    "children": ["Rather book than call?"],
-                    "id": "9d740fc5-db41-4094-a370-03fab4df8915",
+                    "children": [
+                      "Rather book than call?"
+                    ],
+                    "id": "81c6cce2-d87f-466a-b74b-5b48ed11294d",
                     "ord": "a0"
                   },
                   {
@@ -2577,7 +2755,7 @@
                     "children": [
                       "See live availability and reserve a consultation online — no phone tag, no waiting on a callback."
                     ],
-                    "id": "4f7ddc92-7589-452e-82eb-a55d7be82a9f",
+                    "id": "75b58792-2720-43a8-95db-99584e26893c",
                     "ord": "a1"
                   },
                   {
@@ -2587,16 +2765,18 @@
                     "attrs": {
                       "href": "/book"
                     },
-                    "children": ["Book a consultation"],
-                    "id": "156e82c2-f78c-43d3-b858-4bf8afe611c3",
+                    "children": [
+                      "Book a consultation"
+                    ],
+                    "id": "cb019111-fa61-4299-98f6-c6f248e4ff63",
                     "ord": "a2"
                   }
                 ],
-                "id": "6c52b772-af45-4454-a3ea-1eb9a65f723f",
+                "id": "cb0c52be-2d57-4204-990b-1a4cecc03f61",
                 "ord": "a0"
               }
             ],
-            "id": "8d05242a-692e-4c20-9cf7-e0a129f4ed3a",
+            "id": "f75e334f-885a-4822-857a-1b7e0cf0a1bb",
             "ord": "a2"
           }
         ]

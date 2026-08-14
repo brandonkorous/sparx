@@ -20,6 +20,7 @@ function rate(over: Partial<PayRate> & Pick<PayRate, 'id' | 'effectiveFrom'>): P
     amountCents: 2500,
     currency: 'USD',
     burdenPercent: 0,
+    commissionPercent: 0,
     effectiveTo: null,
     note: null,
     ...over,

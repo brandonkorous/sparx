@@ -230,5 +230,12 @@
       ],
       "policyHandle": "apex-standard"
     }
+  ],
+  "locations": [
+    {
+      "handle": "premises",
+      "name": "Apex Test Prep",
+      "timezone": "UTC"
+    }
   ]
 }

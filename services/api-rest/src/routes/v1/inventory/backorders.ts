@@ -20,6 +20,7 @@
 
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
+import { queryBool } from '@sparx/api-core/query';
 import { inventoryService } from '@sparx/inventory';
 import { CancelBackorderInput } from '@sparx/commerce-schemas';
 import { ok } from '@sparx/api-core/envelope';
@@ -34,8 +35,8 @@ const ListQuery = z.object({
   warehouse_id: z.string().uuid().optional(),
   customer_id: z.string().uuid().optional(),
   /** The buyer's work list: commitments nobody can put a date on. */
-  undated_only: z.coerce.boolean().optional(),
-  overdue_only: z.coerce.boolean().optional(),
+  undated_only: queryBool.optional(),
+  overdue_only: queryBool.optional(),
   take: z.coerce.number().int().min(1).max(200).optional(),
   skip: z.coerce.number().int().min(0).optional(),
 });

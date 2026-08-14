@@ -1,21 +1,28 @@
 # 148 — Finance: spend, profitability, and the accounting handoff
 
-Version: 0.4 (built)
+Version: 0.9 (run)
 Author: Brandon Korous
-Last Updated: 2026-08-12
+Last Updated: 2026-08-14
 
 > Status: **built end to end.** Schema + migration, [`@sparx/finance`](../packages/finance/)
 > (85 pure-unit tests plus a DB-backed integration suite), the whole `/v1/finance/*`
 > spend API, the finance worker, the CSV connector, **all nine workbench panes**, the
 > marketing-site entry, and — new in 0.4 — the **`/finance` landing page** itself.
-> See §10 for what each step actually shipped.
+> See §10 for what each step actually shipped, **§11 for the two production bugs
+> that made all of it inert until 2026-08-13**, and **§12 for the three more that
+> clicking the repaired path turned up**.
 >
-> One thing is still unverified and typecheck cannot see it: **the module turning on
-> in a browser.** `finance` was missing from `MODULE_SLUGS` in
+> **The activation gate is verified as of 0.6.** `finance` was missing from
+> `MODULE_SLUGS` in
 > [module-toggle.ts](../services/api-rest/src/lib/module-toggle.ts) — that gate is
 > what makes activation possible at all, and a missing slug fails as "Request
-> validation failed" rather than as a build error. The fix is in; nobody has clicked
-> the switch. Do that before this doc claims 1.0.
+> validation failed" rather than as a build error. Both `finance` and `staff` are
+> now in the list, the Modules screen renders Finance with the right hue, copy and
+> "Included with Online store", and a real toggle round-trip through
+> `PATCH /v1/tenant/modules/:slug` answers 200. One caveat on the evidence: the
+> round-trip was clicked on `email`, because on every dev tenant finance is
+> BUNDLED via Commerce or B2B and its switch is therefore locked. The standalone
+> finance toggle — a tenant with neither — has still not been clicked by a human.
 >
 > Pricing changed in 0.3: **$29/month standalone, and free with Commerce or B2B**
 > (§2). A tenant already selling through sparx has bought the revenue half of its
@@ -332,11 +339,21 @@ in the same PR as the first adapter, not in the schema PR.**
 Topic name == event type, per the platform convention:
 
 - `finance.expense.recorded` — a spend row committed, however it got there. The rollup
-  worker's invalidation trigger.
-- `finance.expense.allocated` — allocation changed; job profitability is stale.
-- `finance.recurring.due` — the generator's tick.
+  worker's invalidation trigger. **Published as of 0.7** by the expense routes on create,
+  correct and delete; a correction that moves `incurredAt` publishes for BOTH days,
+  because the one it left is stale too.
+- `finance.expense.allocated` — allocation changed; job profitability is stale. Not
+  published separately: allocations only arrive through create/patch, and the worker
+  treats the two names identically, so `recorded` already covers it.
+- `finance.recurring.due` — the generator's tick. **Published as of 0.7** by
+  `finance-recurring-due` (05:30 UTC).
+- `finance.profit.recompute` — refresh a window of the daily cache. **Published as of
+  0.7** by `finance-profit-rollup` (06:45 UTC).
 - `finance.accounting.sync.completed` — carries the run outcome; drives the notification
-  when a sync came back `partial` or `failed`.
+  when a sync came back `partial` or `failed`. **Still unpublished and unconsumed** — it
+  has an `EventType` entry and a provisioned Terraform topic and nothing else. It is
+  deliberately absent from the workbench's `TRIGGER_EVENTS` catalog for that reason: a
+  trigger that can never fire is worse than one that is missing.
 
 Add each to the `EventType` union in
 [packages/events/src/types.ts](../packages/events/src/types.ts).
@@ -419,13 +436,66 @@ Three jobs: generate due recurring expenses, recompute dirty days of
    `finance.*` events added to the catalog AND provisioned in
    `terraform/envs/prod/main.tf` — `check:events` fails otherwise, and an
    unprovisioned topic means every publish silently fails in production.
-6. ~~**Connectors**~~ — **done for CSV, registered-and-honest for the rest.** A
-   zero-dependency RFC-4180 reader/writer, seven provider export layouts, and a
-   two-phase (preview → commit) importer. Only `csv` is `available`; the OAuth and
-   desktop providers are `coming_soon` with a reason and a disabled connect
-   control, per the integrations rule that a category earns its place when
-   something dispatches it. **`accounting` is deliberately NOT yet a member of
+6. ~~**Connectors**~~ — **done for CSV, and the OAuth round trip is now complete
+   end to end apart from the vendor apps.** A zero-dependency RFC-4180
+   reader/writer, seven provider export layouts, and a two-phase (preview →
+   commit) importer. **`accounting` is deliberately NOT yet a member of
    `IntegrationCategory`** — it goes in with the first real adapter, not before.
+
+   **The connect flow, finished 2026-08-13.** The QuickBooks Online and Xero
+   adapters and their three API routes (`:id/connect` → `callback` →
+   `:id/disconnect`) landed with docs/146 Phase 10.7–10.8, but **nothing in the
+   repo called any of them** — no button, no landing route — so the round trip
+   existed and could not be started. It now runs from
+   [apps/workbench/surfaces/finance/accounting.tsx](../apps/workbench/surfaces/finance/accounting.tsx)
+   through a popup, landing on
+   [app/finance/accounting/callback](../apps/workbench/app/finance/accounting/callback/page.tsx).
+   Four things about it are load-bearing:
+   - **The row is created before the redirect** and its id rides in the signed
+     `state`. Abandoning the consent screen leaves a visible, deletable row that
+     says _Not signed in_, rather than nothing at all.
+   - **The callback forwards EVERY query parameter**, not just `code`/`state`.
+     QuickBooks puts the company file id in `realmId` there and nowhere else; drop
+     it and the connect appears to succeed and every later request 401s.
+   - **The popup opens synchronously on the click**, before either request, or the
+     browser blocks it. There is deliberately no full-page-redirect fallback — this
+     pane can hold a half-typed account-code mapping, and navigating away would
+     discard it silently — so a blocked popup is reported instead.
+   - **Sign-in state is read from `connected`, never from `status`.** `status` is
+     `'active'` from the instant the row is written, which is before the provider
+     has seen anything.
+
+   Availability is unchanged and still honest: with no `SPARX_QBO_CLIENT_ID` /
+   `SPARX_XERO_CLIENT_ID` on the deployment, both read `coming_soon`, the control
+   is disabled with the reason shown, and the export stays the answer. **No live
+   round trip has been exercised** — that needs the vendor apps registered.
+
+   **And the settings themselves were unreachable, which affected every tenant
+   today rather than only future OAuth users.** A connection row is what holds
+   the books-closed date and the category → account-code mapping — this screen's
+   own header calls the first "THE MOST IMPORTANT FIELD HERE" and the code calls
+   the second "the whole reason the export is worth anything to a bookkeeper".
+   The only control that created a row lived in the _Sending it automatically_
+   list, which deliberately excludes `csv` — **the one provider that is actually
+   available.** So nobody could ever create one, and every export went out under
+   raw sparx category names for somebody to re-file by hand at the other end.
+   Fixed with a "Set up account codes" affordance on the export panel, which is
+   where a person is standing when they care: verified by creating the row,
+   mapping two categories and saving ("2 categories mapped"). Note the shape of
+   this bug — **every individual piece was built and tested, and the path between
+   them did not exist.** It is the same failure as the missing OAuth client, one
+   screen over, found the same way: by asking what a person would actually click.
+
+   **One security bug was fixed on the way.** `GET /v1/finance/accounting`
+   serialised the raw Prisma row, so `access_token_enc` and `refresh_token_enc`
+   were sent to every `viewer` who opened the screen. The workbench's own
+   `AccountingConnection` interface listed only the safe fields, which is exactly
+   why nobody saw it — **a type on the client is a claim about the wire, not a
+   filter on it.** `toPublicConnection` in `@sparx/finance` is now the allow-list,
+   applied at the three places a connection is returned, and
+   `connections.test.ts` pins its exact key set so any new field has to be
+   reviewed rather than silently shipped.
+
 7. ~~**Marketing site**~~ — **done.** `finance` added to every place `apps/web`
    enumerates modules: the catalog + its four colour maps + the icon, the megamenu
    grouping (a typed `Record`, so it broke the build until it was given a column —
@@ -475,3 +545,210 @@ Three jobs: generate due recurring expenses, recompute dirty days of
    opens by naming.
 
 9. **Labour** — lands with [149](149-staff-management.md).
+
+---
+
+## 11. Two production bugs found by clicking Spending
+
+Both were shipped, both were invisible to typecheck, lint and 85 passing tests,
+and together they meant the whole money-out half did nothing for anybody.
+
+### The list endpoint answered 422 to every caller
+
+`listExpensesSchema` spells `limit` as `z.int()` and `unpaidOnly` as
+`z.boolean()`. That is correct for a **service** contract and wrong for a
+**query string**, where every value arrives as text: `z.int()` rejects `"50"`
+outright. The `.default(50)` is what hid it — omit the parameter and the schema
+passes, send it and the route answers 422 forever. The workbench always sends it,
+so `GET /v1/finance/expenses` had never once succeeded and Spending showed its
+"could not be reached" state for every tenant since launch.
+
+The two fields are now re-declared on the ROUTE's `ListQuery` with `queryInt` /
+`queryBool` from `@sparx/api-core/query`. Doing it there rather than in
+`schemas.ts` keeps that file's zod-only, browser-importable promise intact.
+
+**The same mistake, in its other form, was in 42 route files**:
+`z.coerce.boolean()` is `Boolean(value)`, and `Boolean('false')` is `true` — so
+`?include_archived=false` **included** archived records, platform-wide. Three
+route files had already written a comment warning about it and hand-rolled a
+local workaround; `queryBool` is that workaround, once, and all 63 call sites now
+use it.
+
+### Nothing ever seeded the expense categories
+
+`provisionFinance` seeds the category set and its own doc comment says it is
+"called by the module-activation path". **Nothing outside its tests ever called
+it.** So no tenant had a single category row, which meant:
+
+- Spending had nothing to file a cost against; and
+- the staff labour deriver — which resolves the `wages` bucket BY SLUG and
+  correctly refuses to invent one — failed `STAFF_WAGES_CATEGORY_MISSING` on
+  every run, so approved hours never became a wage cost. The entire
+  [149](149-staff-management.md) chain was inert.
+
+A dry run over the dev database found **49 tenants with finance available and
+zero categories, every one of them bundled** via Commerce or B2B.
+
+That bundling is the part worth keeping in mind. Finance is `BUNDLED_FREE`, so
+its flag is never written — but `applyModuleWrites` deliberately announces
+**derived-state** transitions, and its comment already said why: "enabling B2B
+makes `invoicing` available with no invoicing flag of its own, and its seeding
+consumer must still run." The announcement was right; the consumer was missing.
+`packages/finance-worker` now handles `module.activated` and provisions on it.
+
+Adding a subject to a shipped durable is safe — `consumers.add` upserts, so the
+cursor is not reset — and with `DeliverPolicy.All` the widened filter replays
+whatever is still inside the stream's retention window, which is a free partial
+backfill. Tenants whose activation has aged out are repaired by the ops task
+**`backfill-finance-categories`** (dry-runs by default, create-only, safe to
+re-run, and composes with `tenant` for a single account).
+
+## 12. Three more, found by clicking the thing the fix was supposed to enable
+
+Running the backfill and then following the wage cost onto the screen turned up
+three further defects. All three share the shape of the two above: **nothing
+threw, and every number rendered.**
+
+### The backfill could not see its own writes
+
+Immediately after an apply that reported `49 seeded`, the dry run reported
+`0 already seeded, 49 to seed`. The apply had worked; the report was blind.
+
+`finance_expense_categories` is `FORCE ROW LEVEL SECURITY`, and the script's
+eligibility check was a bare `prisma.financeExpenseCategory.count()`. With no
+`app.tenant_id` on the connection RLS filters every row out and the query returns
+**0 — it does not error**. So the "already seeded" branch was dead from the first
+line it was written, and every run reported a fiction. The count now runs inside
+`withTenant`. _Reading a tenant-scoped table outside a tenant context does not
+report emptiness; it reports nothing, and the two are not the same number._
+
+### `categoriesSeeded` counted rows it had touched, not rows it had created
+
+`seedCategories` upserts all 20 rows on every run and returned them all, so
+`provisionFinance` reported `categoriesSeeded: 20` whether it had provisioned a
+brand-new tenant or re-run against a complete one. A redelivered
+`module.activated` logged twenty seeded categories having created none.
+
+It now reads the existing slugs inside the same transaction and returns `created`
+alongside `categories`; `FinanceProvisionResult` carries `categoriesSeeded` (rows
+created) **and** `categoriesTotal` (rows the tenant has), because a bare `0`
+cannot be told apart from "this tenant has no categories". Worth noting the
+worker's unit test had _asserted_ the zero-on-redelivery behaviour against an
+implementation that never did it — a mocked return value is only a claim about
+the real one, and this one was false. The integration test
+`reports rows it CREATED, not rows it touched` is what actually pins it now.
+
+### The wage cost was filed into the future
+
+With categories seeded, "Re-file this period" succeeded and reported _"Your
+spending and profit figures now include this period's wages."_ Spending, on the
+same screen, showed **$0.00 — nothing recorded yet**.
+
+The deriver dated the accrual `incurredAt: periodEnd`. Approving hours on 13
+August filed a cost dated **31 August**, and every current-period range runs
+`1st → today`, so the cost the platform had just created was invisible in the
+view it had just pointed at. It is now dated the **last day actually worked** in
+the period, per site. That is always inside the period, so it buckets into the
+same month and no closed-period figure moves — it simply is not in the future.
+
+### And the day it landed on displayed as the day before
+
+Once visible, the row read **"Aug 10, 2026"** for an `incurredAt` of
+`2026-08-11`. `incurredAt` is a `Timestamptz` column that only ever carries a
+calendar DAY — `period.ts` filters it as one, and the deriver writes it straight
+from a `@db.Date` `workedOn`, so it is always UTC midnight. Handing UTC midnight
+to `toLocaleDateString` renders it in the reader's zone, which is the previous
+day for everyone west of Greenwich.
+
+`formatDay` (UTC) now sits beside `formatDate` (instants), and the six
+day-valued call sites use it: `incurredAt`, `dueAt`, `nextRunOn`, `endsOn` and
+the accounting range bounds. `job.occurredAt` and the Stripe timestamps are real
+instants and keep `formatDate`.
+
+The same confusion was in the **lateness arithmetic**, where it was worse than a
+label: `(now - dueAt) / 86_400_000` compares a UTC-midnight day against a local
+instant, so from early evening a US reader saw a bill due TODAY badged "1 day
+late" — and in `bills-to-pay` the same expression also chose the aging bucket, so
+the bill was filed under "1–30 days late" too. Both call sites now use one
+exported `daysPastDue`, which compares whole days.
+
+---
+
+## 13. Nothing was scheduled (0.7)
+
+Finance was **the only module in the platform with no cron file.** Every other one
+has an `internal/<module>-cron.ts` and a matching `k8s/cronjobs/*.yaml`; finance
+had neither, and `packages/finance-worker` had been sitting there since launch
+handling two events **nobody published**. Two whole capabilities looked finished
+and did nothing:
+
+- **Repeating costs never generated.** A tenant sets up "Rent — $2,000, every
+  month" and no expense is created, in any month, for anyone. The surface saves
+  a template that nothing reads.
+- **The profit cache was never filled.** `profitForRange` READS
+  `rollup_finance_daily_profit`; only `recomputeDay` writes it, and `useProfit`
+  does not pass `refresh`. So Profit showed zeroes until somebody pressed the
+  manual recompute, and went stale again immediately. `spend-data.ts` even says
+  "waiting for tonight's worker is not an answer" — about a worker that had no
+  scheduler.
+
+Both endpoints **publish** rather than doing the work: the handlers already
+exist and are tested, and the broker gives them retries and a dead-letter queue
+without holding a sweep over every tenant open on the API pod.
+
+### Why the tenant list is derived, not read off the flag
+
+The established scheduler pattern enumerates with
+`settings: { path: ['modules', '<slug>', 'enabled'], equals: true }`. **That would
+have found zero finance tenants.** Finance is `BUNDLED_FREE` with commerce/b2b, so
+the flag is never written for anyone who gets it bundled — measured on the dev
+database, the derived set is **49 tenants and the flag query returns 0**. A cron
+built on the flag would have run nightly, reported success, and served nobody.
+
+`lib/module-tenants.ts` derives availability the way the module gate does, and the
+category backfill now shares it.
+
+### Live, as well as nightly
+
+The rollup cron is the backstop, not the mechanism. Recording, correcting or
+deleting an expense publishes `finance.expense.recorded`, so the figure moves
+while you watch. Marking one **paid** deliberately does not — profit buckets on
+`incurredAt`, and when the money left changes nothing about which period the cost
+belongs to (§1, decision #6).
+
+### Schedules
+
+| Job                     | Time (UTC) | Why then                                                                                                   |
+| ----------------------- | ---------- | ---------------------------------------------------------------------------------------------------------- |
+| `finance-recurring-due` | 05:30      | A cost generated today must exist before the rollup meant to include it.                                   |
+| `finance-profit-rollup` | 06:45      | After commerce revenue (06:00) and invoicing collected (06:30) — profit subtracts from what those produce. |
+
+The rollup recomputes a **two-day** trailing window by default, not one: today's
+figures are still moving, and a job that only ever recomputed "today" would leave
+yesterday frozen at whatever it was when the job last ran. `?days=` widens it.
+
+### Run end to end (2026-08-14)
+
+Both endpoints had been written, reviewed and never called. They were fired
+against the local database through the real router, with the dev transport
+pointed at a sink that fed each published event straight into `finance-worker`'s
+own `handle()` — the chain the cluster runs, with nothing stubbed but the
+delivery:
+
+| Endpoint                               | Tenants         | Consumer outcome  |
+| -------------------------------------- | --------------- | ----------------- |
+| `POST /internal/finance/recurring-due` | 49 ok, 0 failed | 49 × `generated`  |
+| `POST /internal/finance/profit-rollup` | 49 ok, 0 failed | 49 × `recomputed` |
+
+**49 is the number this scheduler exists for.** The flag query the other
+schedulers use returns **0** for finance, because it is BUNDLED_FREE with
+commerce/b2b and its settings flag is therefore never written — see §13's note on
+deriving the tenant list. Both payload contracts survived the round trip: the
+cron publishes `{ through }` and `{ from, to }` as ISO strings and the worker's
+`z.coerce.date()` accepts them, which is a publisher-to-consumer seam no test on
+either side covers alone.
+
+Two zeros in that run are honest rather than broken, and both were checked:
+`generated=0` because no tenant has a repeating cost whose next run has come due,
+and `days=0` because `recomputeDay` writes a rollup row only for a day with
+activity — the sweep covered 13–14 August, which are quiet.

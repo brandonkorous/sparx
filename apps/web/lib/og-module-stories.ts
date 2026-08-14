@@ -174,6 +174,25 @@ const CARDS: Record<string, ModuleStoryCard> = {
       name: 'northline-studio',
     },
   },
+  // "Your stock" — the only honest lead word for this module, because the whole
+  // pitch is that the figure is trustworthy rather than that there is more of
+  // it. The vertical is food and drink: it is the shape where a batch has a date
+  // on it and running out is visible to a customer the same morning, and it puts
+  // the `inventory` clause in the owner's voice ("always know what's in stock")
+  // as the story's own first line rather than as a supporting one.
+  inventory: {
+    lead: 'Your stock,',
+    module: 'inventory',
+    story: {
+      tense: 'current',
+      industry: 'food',
+      audience: 'both',
+      cust: ['shop', 'pickup'],
+      lines: [['inventory'], ['wholesale']],
+      slots: {},
+      name: 'kestrel-roasters',
+    },
+  },
   // "Your hours" — the unit this module turns into money, and the one word that
   // says what it is without saying "payroll" (it is not). The vertical is the
   // last one the set had not used, and it is also the honest one: a shop with

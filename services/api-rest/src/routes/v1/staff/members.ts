@@ -19,6 +19,7 @@
 
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
+import { queryBool } from '@sparx/api-core/query';
 import { ok } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
 import {
@@ -50,7 +51,7 @@ const PathId = z.object({ id: z.string().uuid() });
 const ListQuery = z.object({
   status: staffStatusSchema.optional(),
   search: z.string().trim().max(120).optional(),
-  includeArchived: z.coerce.boolean().optional(),
+  includeArchived: queryBool.optional(),
   property: z.string().optional(),
 });
 

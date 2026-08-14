@@ -14,6 +14,7 @@
 
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
+import { queryBool } from '@sparx/api-core/query';
 import { inventoryService } from '@sparx/inventory';
 import { ok, paged } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
@@ -24,7 +25,7 @@ const PathIdVariant = z.object({ id: z.string().uuid(), variantId: z.string().uu
 
 const ListQuery = z.object({
   search: z.string().max(160).optional(),
-  include_archived: z.coerce.boolean().optional(),
+  include_archived: queryBool.optional(),
   take: z.coerce.number().int().min(1).max(250).optional(),
   skip: z.coerce.number().int().min(0).optional(),
 });

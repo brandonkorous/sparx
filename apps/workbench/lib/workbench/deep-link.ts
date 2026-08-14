@@ -62,6 +62,20 @@ export interface DeepLink {
   readonly site?: string;
   /** The path, when it matched no route. Shown back to the operator verbatim. */
   readonly unknownPath?: string;
+  /**
+   * The address this link arrived on, path + search, exactly as captured.
+   *
+   * Held because honouring a cross-business link means RELOADING, and the thing
+   * that has to survive that reload is the link — not "whatever is in the
+   * address bar when the reload fires". Those two diverged: the history bridge
+   * replaces the bar with the restored layout's focused pane a beat after boot,
+   * which is BEFORE the site list has landed and the switch can be decided. So
+   * the switch used to reload onto the arrangement's address instead of the
+   * link's, land under the other business, read that address as a link back to
+   * the one just left, and switch again — a reload loop alternating between two
+   * businesses, which the single-slot attempt guard could never see.
+   */
+  readonly href: string;
 }
 
 /** How the deep link should be honoured, once site and module gates have spoken. */
@@ -87,24 +101,36 @@ let hasCaptured = false;
  *
  * Module scope rather than a ref, because it must outlive the host component:
  * strict mode remounts it, and the desktop⇄compact swap replaces it outright.
- * Reading `window.location` again on the second pass would be wrong anyway —
- * by then the address bar may already be tracking the focused pane.
+ * Reading the address again on the second pass would be wrong anyway — by then
+ * the address bar may already be tracking the focused pane.
+ *
+ * `address` is the address THE SERVER MATCHED for this render (see
+ * app/workbench-entry.tsx), and it is the authority. `window.location` is only
+ * the fallback for a caller that has none. They agree on a cold load and differ
+ * in exactly the case that used to break: signing in navigates client-side, so
+ * the shell's first render happens while the bar still reads `/sign-in` — which
+ * was captured as a link, matched no route, and greeted every successful
+ * sign-in with "that link doesn't work". Worse, that pane then persisted into
+ * the layout and re-wrote the bar to `/link-not-found?…` on every load
+ * thereafter.
  */
-export function readDeepLink(): DeepLink | null {
+export function readDeepLink(address?: string): DeepLink | null {
   if (hasCaptured) return captured;
   // NOT captured on the server. The shell is server-rendered for the first
   // paint, so an early call happens with no `window` — marking that as "captured
   // nothing" would poison the real read a moment later and every link would be
-  // lost. The flag is only set once there is an address to read.
+  // lost. The flag is only set once there is an address to read. (Module scope is
+  // shared across requests on the server, so capturing there would leak one
+  // visitor's link into the next one's boot regardless.)
   if (typeof window === 'undefined') return null;
   hasCaptured = true;
 
   // PURE. This runs from the shell's render body, because the address has to be
   // read before the history bridge starts replacing it with the focused pane's —
-  // and a render must not have side effects. So it reads `window.location` and
-  // nothing else; the one mutation this used to do (stripping the legacy `?open=`
-  // out of the bar) is now `tidyLegacyParams()`, called from an effect.
-  const url = new URL(window.location.href);
+  // and a render must not have side effects. The one mutation this used to do
+  // (stripping the legacy `?open=` out of the bar) is now `tidyLegacyParams()`,
+  // called from an effect.
+  const url = new URL(address ?? window.location.href, window.location.origin);
   const targets: DeepLinkTarget[] = [];
   let unknownPath: string | undefined;
   let site = url.searchParams.get(SITE_PARAM) ?? undefined;
@@ -134,10 +160,17 @@ export function readDeepLink(): DeepLink | null {
     captured = null;
     return null;
   }
+  // Without `open`: the legacy parameter is a one-shot intent, and this href is
+  // replayed by a site switch. Carrying it across would re-fire the same open on
+  // the far side of the reload — harmless (controller.open focuses a match) but
+  // it would also put a spent parameter back in a bar tidyLegacyParams just
+  // cleared.
+  url.searchParams.delete('open');
   captured = {
     targets,
     ...(site === undefined ? {} : { site }),
     ...(unknownPath === undefined ? {} : { unknownPath }),
+    href: `${url.pathname}${url.search}`,
   };
   return captured;
 }
@@ -168,6 +201,25 @@ export function resetDeepLinkCapture(): void {
 
 const SWITCH_ATTEMPT_KEY = 'sparx-workbench-link-switch';
 
+/** Every site this tab has already reloaded trying to reach. */
+function readSwitchAttempts(): string[] {
+  try {
+    const raw = sessionStorage.getItem(SWITCH_ATTEMPT_KEY);
+    if (raw === null) return [];
+    const parsed: unknown = JSON.parse(raw);
+    // A single id is what the previous shape wrote — read it so a tab already
+    // open across the upgrade keeps its guard rather than losing it.
+    if (typeof parsed === 'string') return [parsed];
+    return Array.isArray(parsed) ? parsed.filter((entry) => typeof entry === 'string') : [];
+  } catch {
+    // Blocked storage, or a value that predates JSON (the bare site id). Either
+    // way there is nothing we can trust, and the caller treats an empty list as
+    // "not attempted" — which is safe only because noteSwitchAttempt refuses to
+    // switch at all when it cannot write.
+    return [];
+  }
+}
+
 /**
  * Remembers that we already reloaded once trying to reach this site.
  *
@@ -175,15 +227,23 @@ const SWITCH_ATTEMPT_KEY = 'sparx-workbench-link-switch';
  * that cookie under RLS and FAILS CLOSED to the tenant's primary site. So a link
  * naming a site the session cannot actually hold would switch, come back on the
  * primary, see the mismatch, and switch again — a reload loop with no way out
- * except closing the tab. One attempt is allowed; the second time the same site
- * is asked for, the link is reported unreachable instead.
+ * except closing the tab. One attempt per site is allowed; the second time the
+ * same site is asked for, the link is reported unreachable instead.
+ *
+ * A SET, not the last id. Remembering only the most recent attempt reads every
+ * A → B → A alternation as three first attempts and never fires, which is
+ * exactly the loop that shipped: two businesses trading the tab back and forth
+ * roughly once a second until api-rest rate-limited it. What makes a loop a loop
+ * is revisiting a state, so the guard has to remember every state visited.
  *
  * sessionStorage rather than memory, because the reload is precisely what
  * destroys memory. Per-tab, so another tab's attempt never suppresses this one's.
  */
 export function noteSwitchAttempt(siteId: string): boolean {
   try {
-    sessionStorage.setItem(SWITCH_ATTEMPT_KEY, siteId);
+    const attempts = readSwitchAttempts();
+    if (!attempts.includes(siteId)) attempts.push(siteId);
+    sessionStorage.setItem(SWITCH_ATTEMPT_KEY, JSON.stringify(attempts));
     return true;
   } catch {
     // Storage blocked, so there is nowhere to record that we tried — and the
@@ -197,22 +257,24 @@ export function noteSwitchAttempt(siteId: string): boolean {
 }
 
 export function switchAlreadyAttempted(siteId: string): boolean {
-  try {
-    return sessionStorage.getItem(SWITCH_ATTEMPT_KEY) === siteId;
-  } catch {
-    return false;
-  }
+  return readSwitchAttempts().includes(siteId);
 }
 
 /**
  * Clears the guard once we have actually landed on the site the link named.
  *
- * ONLY on a genuine success. Clearing it when the guard has just FIRED — when
- * the answer was "that site is unreachable" — disarms the one thing standing
+ * ONLY once the SITE gate has passed. Clearing it when the guard has just FIRED —
+ * when the answer was "that site is unreachable" — disarms the one thing standing
  * between a failed switch and an infinite reload loop: the next document load
  * would try the same switch again, fail the same way, clear the guard again.
  * That is not hypothetical; it shipped, and it alternated the address bar
  * between the link and the unresolved pane until the tab was closed.
+ *
+ * Passing the site gate is the whole test, though — NOT opening a pane. A link
+ * that reaches the right business and is then refused by the module gate has
+ * still proved the switch worked, so leaving the attempt on the record would
+ * strand the tab: a second link to that same business, minutes later, would be
+ * reported unreachable when nothing about it is.
  */
 export function clearSwitchAttempt(): void {
   try {

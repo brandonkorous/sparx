@@ -126,12 +126,14 @@ module "pubsub" {
     # them via its Cloud Run PUSH subscriptions in serverless.tf; topic-only
     # here (empty list = no idle pull subscription).
     "order.created"          = []
-    "order.paid"             = []
+    # staff-worker: a paid order is when a commission is earned (docs/149 §10).
+    "order.paid"             = ["staff-worker"]
     "order.cancelled"        = []
     "order.payment.recorded" = []
     "order.fulfilled"        = []
     "order.delivered"        = []
-    "order.refunded"         = []
+    # staff-worker: a refund reduces the commission proportionally.
+    "order.refunded"         = ["staff-worker"]
 
     # Commerce checkout — the "customer-facing checkout completed" signal,
     # DISTINCT from the CRM-bridged "order.created" above (that one fires when
@@ -333,6 +335,11 @@ module "pubsub" {
     "staff.certification.expiring" = []
     "staff.timeoff.requested"      = []
     "staff.timeoff.decided"        = []
+
+    # A won deal, on the PLATFORM bus. `crm.deal.stage_changed` is a CrmTopic and
+    # never reaches an in-process consumer, so staff-worker could not hear about
+    # a closed sale to commission it.
+    "crm.deal.won" = ["staff-worker"]
 
     # Module lifecycle. Topic-only here: the platform-crm-worker consumes both
     # via Cloud Run PUSH subscriptions (serverless.tf) — the first activation is

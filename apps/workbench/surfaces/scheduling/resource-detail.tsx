@@ -37,6 +37,7 @@ import { useConfirm } from '../../lib/confirm';
 import { Save, Trash2, Users } from 'lucide-react';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { FormSection } from '../../components/form-section';
+import { SiteScopeField } from '../../components/site-scope-field';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import { afterPaneChange } from '../../lib/defer';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
@@ -90,6 +91,8 @@ interface Draft {
   skills: string;
   bookableOnline: boolean;
   isActive: boolean;
+  /** The sites this resource works for. EMPTY means all of them. */
+  propertyIds: string[];
 }
 
 const BLANK: Draft = {
@@ -104,6 +107,7 @@ const BLANK: Draft = {
   skills: '',
   bookableOnline: true,
   isActive: true,
+  propertyIds: [],
 };
 
 function draftFrom(resource: SchedulingResource): Draft {
@@ -119,6 +123,9 @@ function draftFrom(resource: SchedulingResource): Draft {
     skills: resource.skillTags.join(', '),
     bookableOnline: resource.bookableOnline,
     isActive: resource.isActive,
+    // Sorted so the dirty check (a JSON compare) doesn't fire just because the
+    // server returned the same sites in a different order.
+    propertyIds: [...resource.propertyIds].sort(),
   };
 }
 
@@ -213,6 +220,7 @@ function ResourceEditor({
       skillTags: parseSkills(draft.skills),
       bookableOnline: draft.bookableOnline,
       isActive: draft.isActive,
+      propertyIds: draft.propertyIds,
     };
   };
 
@@ -517,6 +525,16 @@ function ResourceEditor({
               <FieldDescription>Separate each one with a comma.</FieldDescription>
             </Field>
           </FormSection>
+
+          <SiteScopeField
+            value={draft.propertyIds}
+            onChange={(next) => {
+              set('propertyIds', next);
+            }}
+            title="Which of your businesses this works for"
+            description="You run more than one website. Keep a person or a room to the business they actually work at, and a booking taken on the other site can never be given to them."
+            everyLabel="Available to every site"
+          />
 
           <div className="border-base-300 flex flex-col gap-4 border-t pt-4">
             <label className="flex items-start gap-3">

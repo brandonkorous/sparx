@@ -243,5 +243,12 @@
       ],
       "policyHandle": "lawn-standard"
     }
+  ],
+  "locations": [
+    {
+      "handle": "premises",
+      "name": "GreenBlade Lawn Care",
+      "timezone": "UTC"
+    }
   ]
 }

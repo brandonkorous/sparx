@@ -310,5 +310,12 @@
       ],
       "policyHandle": "session-deposit"
     }
+  ],
+  "locations": [
+    {
+      "handle": "premises",
+      "name": "Frame & Field",
+      "timezone": "UTC"
+    }
   ]
 }

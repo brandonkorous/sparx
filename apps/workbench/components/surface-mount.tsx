@@ -19,6 +19,8 @@ import { AlertTriangle } from 'lucide-react';
 import { Button } from '@wizeworks/silicaui-react';
 import { useConfirm } from '../lib/confirm';
 import { isChunkLoadError, reloadOnceForStaleBuild } from '@sparx/app-kit';
+import { productName } from '../lib/product';
+import { reportCrash } from '../lib/analytics';
 import { PaneModuleProvider } from './module-beta-notice';
 import { ModuleScope } from './module-scope';
 import { PaneWaiting } from './pane-waiting';
@@ -30,6 +32,9 @@ import { PaneIdentityProvider } from '../lib/workbench/pane-identity';
 interface PaneErrorBoundaryProps {
   children: ReactNode;
   onReset: () => void;
+  /** Which surface crashed. Carried into the crash report — "a pane threw" is
+   *  true of every one of these and tells us nothing about which to go fix. */
+  readonly surface: string;
 }
 
 export class PaneErrorBoundary extends Component<PaneErrorBoundaryProps, { error: Error | null }> {
@@ -41,6 +46,11 @@ export class PaneErrorBoundary extends Component<PaneErrorBoundaryProps, { error
 
   override componentDidCatch(error: Error, info: ErrorInfo) {
     console.error('[workbench] pane crashed', error, info.componentStack);
+    // Reported as well as logged: this boundary RECOVERS, so the crash produces
+    // no unhandled rejection and nothing autocapture would see. A pane that
+    // reliably falls over is otherwise only ever discovered by the operator
+    // living with it. See lib/analytics.ts.
+    reportCrash(error, { boundary: 'pane', surface: this.props.surface });
     // A release purged the chunk this pane's surface needed. onReset() re-mounts
     // the same dead import, so per-pane isolation has nothing left to isolate —
     // only a full reload fetches the new build. Shared cooldown with
@@ -57,7 +67,7 @@ export class PaneErrorBoundary extends Component<PaneErrorBoundaryProps, { error
         <AlertTriangle className="text-warning size-6" aria-hidden />
         <div>
           <p className="font-medium">
-            {stale ? 'A new version of sparx is ready' : 'This panel ran into a problem'}
+            {stale ? `A new version of ${productName()} is ready` : 'This panel ran into a problem'}
           </p>
           <p className="mt-1 text-sm">
             {stale
@@ -179,7 +189,7 @@ export function SurfaceMount({
             this module — the copy-link control in the toolbar. Same reasoning,
             same shape, no DOM. */}
         <PaneIdentityProvider paneId={paneId}>
-          <PaneErrorBoundary onReset={onReset}>
+          <PaneErrorBoundary onReset={onReset} surface={descriptor.surface}>
             <Suspense fallback={<PaneWaiting />}>
               <SurfaceBody paneId={paneId} />
             </Suspense>

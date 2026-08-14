@@ -69,7 +69,7 @@ const blueprintsDir = join(here, '..', '..', 'blueprints');
 /** The payload version every service bundle ships. BUMP on any content change — a
  *  marketplace artifact is IMMUTABLE per `(category, slug, version)`, so without a bump
  *  the catalog keeps serving the OLD payload. */
-const BUNDLE_VERSION = '1.2.0';
+const BUNDLE_VERSION = '1.3.0';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -394,6 +394,37 @@ function manifestJson(opts: {
 
 /** Build every part of one service bundle and write it to `blueprints/<key>/`. Returns
  *  the resolved theme so a caller can render a preview against the exact look. */
+/**
+ * Give the bundle its OWN premises, named after the business.
+ *
+ * A booking business is somewhere — and until a design could declare that, every
+ * template's chairs, rooms and staff filed against the tenant's seeded 'Main
+ * location'. Harmless on one site; wrong the moment an owner runs two businesses,
+ * because the barber's chairs and the groomer's tables then share a place and each
+ * one's diary offers the other's.
+ *
+ * Done HERE rather than in the 90 generators because that is one edit instead of
+ * ninety hand-authored blocks — the same reason the contact section lives in a
+ * shared module. A generator that declares `locations` itself is left alone.
+ *
+ * NO ADDRESS, deliberately: a template cannot know where the business is, and an
+ * invented street address reads as real. The owner fills it in on Places.
+ */
+function withPremises(spec: ServiceSiteSpec): unknown {
+  const sched = spec.scheduling as {
+    locations?: unknown[];
+    resources?: unknown[];
+    services?: unknown[];
+  };
+  if (Array.isArray(sched.locations) && sched.locations.length > 0) return spec.scheduling;
+  return {
+    ...sched,
+    // First (and only) declared location, so every resource and service that names
+    // none files here — no per-entry `locationHandle` churn across 90 bundles.
+    locations: [{ handle: 'premises', name: spec.brand.businessName, timezone: 'UTC' }],
+  };
+}
+
 export async function emitServiceBundle(
   spec: ServiceSiteSpec
 ): Promise<{ dir: string; theme: Theme }> {
@@ -434,7 +465,7 @@ export async function emitServiceBundle(
   await fs.mkdir(join(dir, 'media'), { recursive: true });
 
   await fs.writeFile(join(dir, 'site.json'), json(site));
-  await fs.writeFile(join(dir, 'scheduling.json'), json(spec.scheduling));
+  await fs.writeFile(join(dir, 'scheduling.json'), json(withPremises(spec)));
   await fs.writeFile(join(dir, 'emails.json'), json(spec.emails ?? serviceEmails(spec)));
   await fs.writeFile(join(dir, 'assets.json'), json(spec.assets));
   await fs.writeFile(

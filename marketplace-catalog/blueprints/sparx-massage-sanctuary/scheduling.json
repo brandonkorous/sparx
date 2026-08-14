@@ -395,5 +395,12 @@
       ],
       "policyHandle": "ritual-deposit"
     }
+  ],
+  "locations": [
+    {
+      "handle": "premises",
+      "name": "Stillwater",
+      "timezone": "UTC"
+    }
   ]
 }

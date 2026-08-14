@@ -17,6 +17,7 @@ resources:
   - invoicing-collected-rollup.yaml
   - dropship-orders-rollup.yaml
   - automation-runs-rollup.yaml
+  - platform-usage-rollup.yaml
   # The engine heartbeat + nightly seed reconcile. These replace the Cloud
   # Scheduler jobs that drove automation-worker on GCP; without them the worker
   # runs but nothing ever ticks.
@@ -40,3 +41,16 @@ resources:
   - inventory-report-delivery.yaml
   - channel-order-poll.yaml
   - market-settlement.yaml
+  # Finance shipped with no cron file at all, so two capabilities that looked
+  # finished did nothing: a repeating cost never generated an expense, and the
+  # profit cache the Profit surface READS was only ever written by a manual
+  # button.
+  - finance-recurring-due.yaml
+  - finance-profit-rollup.yaml
+  # Without this, an expiry date is recorded and never mentioned again — which
+  # is the opposite of what a certification tracker is for.
+  - staff-certification-reminders.yaml
+  # Without this, `getTrackingUpdate()` is implemented by four supplier adapters
+  # and called by nothing: a dropshipped order is submitted and then never asked
+  # about again, so the customer is never told their parcel moved.
+  - dropship-tracking-poll.yaml

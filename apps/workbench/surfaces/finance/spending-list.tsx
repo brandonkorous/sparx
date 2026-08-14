@@ -54,7 +54,7 @@ import {
   type Expense,
 } from './spend-data';
 import { PERIOD_OPTIONS, rangeFor, type PeriodKey } from './period';
-import { billState, formatCents, formatDate, kindColor, sourceLabel } from './format';
+import { billState, formatCents, formatDay, kindColor, sourceLabel } from './format';
 
 const PAID_FILTERS = [
   { value: 'all', label: 'All' },
@@ -239,7 +239,7 @@ function ExpenseRow({
         onOpen(event);
       }}
     >
-      <td className="text-sm whitespace-nowrap">{formatDate(item.incurredAt)}</td>
+      <td className="text-sm whitespace-nowrap">{formatDay(item.incurredAt)}</td>
       <td className="max-w-56 min-w-0">
         <div className="truncate font-medium">{item.description}</div>
         {item.vendor ? <div className="truncate text-sm">{item.vendor.name}</div> : null}

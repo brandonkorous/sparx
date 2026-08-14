@@ -211,6 +211,17 @@
  * Recompute with a contrast check before changing any value here — do not eyeball
  * it, and do not assume white: it is legible on only a handful of these.
  *
+ * That measured ink has now been lost ONCE and restored (2026-08-13). Eight pairs
+ * in the LIGHT block — commerce, cms, crm, email, dropship, inventory, seo, finance
+ * — had been reverted to `#ffffff` while their comments, and the matching pairs in
+ * the DARK block, still carried the measured dark ink. Light is the default theme,
+ * so the failing ink was the one nearly every operator actually saw: seo measured
+ * 1.92:1, inventory 2.15, cms 2.49, dropship 2.54, email 2.77, commerce 2.80, crm
+ * 2.43 — all below even the 3.0 large-text floor — and finance 3.30, below AA.
+ * The two blocks are a MATCHED PAIR for these eight: a hue whose comment says
+ * "white fails AA on this fill" and whose value is `#ffffff` is a revert, not a
+ * decision. Change one block, change the other, and re-measure both.
+ *
  * `MODULE_HEX` in marks.ts mirrors these values for satori/OG routes, which cannot
  * resolve custom properties. It is a HAND-KEPT copy — change a hue here and change
  * it there in the same edit, or social cards drift from the product.
@@ -238,13 +249,13 @@
      value simply never followed, while cms/crm/email/inventory all carry that
      same note AND a dark ink. This is orange-950, the dark tint of the module's
      own hue, exactly matching how those four resolve it: 5.58:1. */
-  --color-module-commerce-content: #ffffff; /* orange-950 — white measures 2.80:1 here */
+  --color-module-commerce-content: #431407; /* orange-950 — white measures 2.80:1 here */
   --color-module-cms: #14b8a6; /* teal */
-  --color-module-cms-content: #ffffff; /* white fails AA on this fill */
+  --color-module-cms-content: #042f2e; /* white fails AA on this fill */
   --color-module-crm: #06b6d4; /* cyan */
-  --color-module-crm-content: #ffffff; /* white fails AA on this fill */
+  --color-module-crm-content: #083344; /* white fails AA on this fill */
   --color-module-email: #0ea5e9; /* sky */
-  --color-module-email-content: #ffffff; /* white fails AA on this fill */
+  --color-module-email-content: #082f49; /* white fails AA on this fill */
   --color-module-b2b: #475569; /* slate */
   --color-module-b2b-content: #ffffff;
   /* Darkened one step from lime-600 #65a30d so WHITE ink clears AA (3.09 -> 4.99).
@@ -256,9 +267,9 @@
   --color-module-ai: #db2777; /* pink-600 */
   --color-module-ai-content: #ffffff;
   --color-module-dropship: #10b981; /* emerald */
-  --color-module-dropship-content: #ffffff; /* white fails AA on this fill */
+  --color-module-dropship-content: #022c22; /* white fails AA on this fill */
   --color-module-inventory: #f59e0b; /* amber — white ink fails AA, so dark ink */
-  --color-module-inventory-content: #ffffff;
+  --color-module-inventory-content: #422006;
   --color-module-chat: #7c3aed; /* violet-600 */
   --color-module-chat-content: #ffffff;
   --color-module-scheduling: #e11d48; /* rose-600 */
@@ -266,11 +277,11 @@
   --color-module-automations: #c026d3; /* fuchsia-600 */
   --color-module-automations-content: #ffffff;
   --color-module-seo: #eab308; /* yellow — dark on-fill ink for legibility */
-  --color-module-seo-content: #ffffff;
+  --color-module-seo-content: #422006;
   --color-module-social: #2563eb; /* blue-600 — the social-network blue, distinct from email's sky */
   --color-module-social-content: #ffffff;
   --color-module-finance: #16a34a; /* money green (green-600, deeper than success) */
-  --color-module-finance-content: #ffffff; /* white fails AA on this fill */
+  --color-module-finance-content: #052e16; /* white fails AA on this fill */
   /* Staff — a deep rust BROWN, and the choice is deliberate rather than
      decorative. The purple/violet arc already holds FOUR modules (chat violet-600,
      partner violet-700, automations fuchsia-600, ai pink-600), so a fifth there

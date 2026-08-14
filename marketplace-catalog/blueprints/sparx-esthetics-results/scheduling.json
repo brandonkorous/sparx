@@ -355,5 +355,12 @@
       ],
       "policyHandle": "advanced-deposit"
     }
+  ],
+  "locations": [
+    {
+      "handle": "premises",
+      "name": "Lumière Skin Studio",
+      "timezone": "UTC"
+    }
   ]
 }

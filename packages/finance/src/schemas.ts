@@ -173,6 +173,12 @@ export const listExpensesSchema = z.object({
   limit: z.int().min(1).max(200).default(50),
   cursor: uuid.nullish(),
 });
+// NOTE: this is the SERVICE contract — real numbers, real booleans. It is not
+// safe to hand `request.query` to directly, because every value there is a
+// string and `z.int()` rejects "50". The route that reads it off a query string
+// re-declares those two fields with `queryInt`/`queryBool` from
+// `@sparx/api-core/query`; doing it there rather than here keeps this file's
+// zod-only, browser-importable promise intact.
 export type ListExpensesInput = z.infer<typeof listExpensesSchema>;
 
 /* ── Recurring ─────────────────────────────────────────────────────────────── */

@@ -238,5 +238,12 @@
       ],
       "policyHandle": "salon-standard"
     }
+  ],
+  "locations": [
+    {
+      "handle": "premises",
+      "name": "Wildroot",
+      "timezone": "UTC"
+    }
   ]
 }

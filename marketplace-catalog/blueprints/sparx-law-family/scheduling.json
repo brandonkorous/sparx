@@ -229,5 +229,12 @@
       ],
       "policyHandle": "consult-standard"
     }
+  ],
+  "locations": [
+    {
+      "handle": "premises",
+      "name": "Hearth & Stone Law",
+      "timezone": "UTC"
+    }
   ]
 }

@@ -29,6 +29,7 @@ import { createSequence, updateSequence, deleteSequence } from '@sparx/email-seq
 import { publishService, savedThemeService } from '@sparx/sitebuilder';
 import {
   createBookingPolicy,
+  createLocation,
   createResource,
   createService,
   setAvailabilityWindows,
@@ -105,6 +106,10 @@ export interface InstallResult {
    *  slice. Null until an install with a `scheduling` decl runs it; `services` is
    *  what the backfill's `isMaterialized` gate reads. */
   scheduling: {
+    /** handle → BusinessLocation id. Absent on an install row written before a
+     *  blueprint could declare its own premises; everything filed at the tenant's
+     *  seeded 'Main location' then, which is what an empty map means. */
+    locations?: Record<string, string>;
     policies: Record<string, string>; // handle → BookingPolicy id
     resources: Record<string, string>; // handle → SchedulingResource id
     services: { handle: string; id: string }[];
@@ -288,6 +293,43 @@ async function reuseOrRestoreCategory(ctx: ReconcileCtx, handle: string): Promis
   });
 }
 
+/**
+ * Widen an ALREADY-SCOPED category/collection to also show on this site.
+ *
+ * Model B (docs/49 §3): NO junction rows means "visible on every site". So a row that
+ * currently has none is GLOBAL, and adding a link to it would NARROW it — hiding it
+ * from every sibling site that is showing it today. That is the opposite of what an
+ * install should ever do, so this is deliberately a no-op in that case: reusing a global
+ * row leaves it global.
+ *
+ * Where the row IS already scoped, adding this site is purely additive and is what makes
+ * "add this design to another site" show the catalogue on the new site too.
+ */
+async function widenScopeIfScoped(
+  ctx: ReconcileCtx,
+  propertyId: string,
+  kind: 'category' | 'collection',
+  id: string
+): Promise<void> {
+  await withTenant(ctx, async (tx) => {
+    if (kind === 'category') {
+      const links = await tx.categoryProperty.count({ where: { categoryId: id } });
+      if (links === 0) return;
+      await tx.categoryProperty.createMany({
+        data: [{ categoryId: id, propertyId }],
+        skipDuplicates: true,
+      });
+      return;
+    }
+    const links = await tx.collectionProperty.count({ where: { collectionId: id } });
+    if (links === 0) return;
+    await tx.collectionProperty.createMany({
+      data: [{ collectionId: id, propertyId }],
+      skipDuplicates: true,
+    });
+  });
+}
+
 /** Reuse a live collection by handle, else restore its tombstone, else null. */
 async function reuseOrRestoreCollection(ctx: ReconcileCtx, handle: string): Promise<string | null> {
   const tenantId = ctx.tenantId;
@@ -439,6 +481,13 @@ export async function installBlueprint(
     assets: {},
     categories: {},
     collections: {},
+    // Initialised EMPTY, never left undefined. Uninstall reads "absent" as "this row
+    // predates minted-tracking, assume minted" — so a genuinely empty list has to be an
+    // empty ARRAY. Leaving it undefined made the second site's uninstall (which mints
+    // nothing, because it reconciles onto the first site's rows) take the legacy path
+    // and delete the very rows this tracking exists to protect.
+    mintedCategories: [],
+    mintedCollections: [],
     products: [],
     theme: null,
     pages: [],
@@ -980,7 +1029,9 @@ export async function installCommerceSlice(env: SliceEnv): Promise<void> {
       const c = pending[i]!;
       if (c.parentHandle && !catMap.has(c.parentHandle)) continue; // wait for parent
       let id = await reuseOrRestoreCategory(ctx, c.handle);
-      if (!id) {
+      if (id) {
+        await widenScopeIfScoped(ctx, propertyId, 'category', id);
+      } else {
         const created = await categoryService.create(ctx, {
           name: c.name,
           handle: c.handle,
@@ -993,9 +1044,14 @@ export async function installCommerceSlice(env: SliceEnv): Promise<void> {
           seoTitle: c.seoTitle,
           seoDescription: c.seoDescription,
           ogImageId: asset(c.ogImageAssetId),
+          // Scope to the installed site, like the products below. Omitted, this
+          // defaulted to `[]` — which in Model B means "show on EVERY site", so a
+          // category installed for one business appeared in a sibling business's
+          // storefront navigation.
+          propertyIds: [propertyId],
         });
         id = created.id;
-        (result.mintedCategories ??= []).push(c.handle);
+        result.mintedCategories?.push(c.handle);
       }
       catMap.set(c.handle, id);
       result.categories[c.handle] = id;
@@ -1007,7 +1063,9 @@ export async function installCommerceSlice(env: SliceEnv): Promise<void> {
   const collMap = new Map<string, string>();
   for (const c of commerce.collections) {
     let id = await reuseOrRestoreCollection(ctx, c.handle);
-    if (!id) {
+    if (id) {
+      await widenScopeIfScoped(ctx, propertyId, 'collection', id);
+    } else {
       const created = await collectionService.create(ctx, {
         name: c.name,
         handle: c.handle,
@@ -1019,9 +1077,11 @@ export async function installCommerceSlice(env: SliceEnv): Promise<void> {
         seoTitle: c.seoTitle,
         seoDescription: c.seoDescription,
         ogImageId: asset(c.ogImageAssetId),
+        // Scope to the installed site — same reason as the categories above.
+        propertyIds: [propertyId],
       });
       id = created.id;
-      (result.mintedCollections ??= []).push(c.handle);
+      result.mintedCollections?.push(c.handle);
     }
     collMap.set(c.handle, id);
     result.collections[c.handle] = id;
@@ -1224,7 +1284,7 @@ export async function installSchedulingSlice(env: SliceEnv): Promise<void> {
   const sched = blueprint.scheduling;
   if (!sched) return;
 
-  const idmap = result.scheduling ?? { policies: {}, resources: {}, services: [] };
+  const idmap = result.scheduling ?? { locations: {}, policies: {}, resources: {}, services: [] };
   result.scheduling = idmap;
 
   // A resource/service image is a hot-linked URL on the scheduling row, not a
@@ -1237,15 +1297,93 @@ export async function installSchedulingSlice(env: SliceEnv): Promise<void> {
     return url && /^https?:\/\//i.test(url) && url.length <= 2048 ? url : undefined;
   };
 
-  // The activation-seeded 'Main location' (bootstrapSchedulingDefaults) — reused, not
-  // recreated (there's no BusinessLocation CRUD in @sparx/scheduling). Null-safe: an
-  // install that somehow precedes the seed just leaves location unset.
-  const locationId = await withTenant(ctx, (tx) =>
-    tx.businessLocation.findFirst({
-      where: { tenantId, name: 'Main location' },
-      select: { id: true },
-    })
-  ).then((l) => l?.id ?? null);
+  // ── Places ────────────────────────────────────────────────────────────────
+  // A design may bring its OWN premises (`scheduling.locations`), which is what
+  // keeps two businesses on one tenant apart: the barber design's chairs file at
+  // the barber shop, the grooming design's at the salon, each scoped to its own
+  // site. A design that declares none files everything at the tenant's seeded
+  // 'Main location', which is right for the ordinary single-premises business.
+  //
+  // Declared places are reconciled BY NAME like every other slice — a reinstall,
+  // or a second site running the same design, reuses the row instead of minting a
+  // duplicate the owner would have to clean up.
+  //
+  // `?? []` rather than trusting the schema default: `locations` is NEW, and every
+  // bundle authored before it exists genuinely has no such key. A parsed blueprint
+  // gets the default, but a captured or hand-assembled one need not have gone
+  // through Zod — and the failure mode without this is a hard crash mid-install.
+  const declaredLocations = sched.locations ?? [];
+  const locationIds = new Map<string, string>();
+  for (const l of declaredLocations) {
+    const existing = await withTenant(ctx, (tx) =>
+      tx.businessLocation.findFirst({ where: { tenantId, name: l.name }, select: { id: true } })
+    );
+    if (existing) {
+      locationIds.set(l.handle, existing.id);
+      // Reused: widen onto this site only if it is ALREADY scoped. A place with no
+      // links serves every site, and adding the first link would withdraw it from
+      // every sibling — the never-narrow rule.
+      const reusedId = existing.id;
+      await withTenant(ctx, async (tx) => {
+        const links = await tx.businessLocationProperty.count({
+          where: { locationId: reusedId },
+        });
+        if (links === 0) return;
+        await tx.businessLocationProperty.createMany({
+          data: [{ locationId: reusedId, propertyId }],
+          skipDuplicates: true,
+        });
+      });
+      continue;
+    }
+    // Minted: scoped to the site being installed, so a sibling business's diary
+    // never offers this place. NO ADDRESS — the blueprint cannot know where the
+    // business is, and an invented one reads as real (the contact-spine rule).
+    const created = await createLocation(tenantId, {
+      name: l.name,
+      timezone: l.timezone,
+      propertyIds: [propertyId],
+    });
+    locationIds.set(l.handle, created.id);
+  }
+  idmap.locations = Object.fromEntries(locationIds);
+
+  // The default place for anything that names none: the design's FIRST declared
+  // location, else the activation-seeded 'Main location'. Null-safe — an install
+  // that somehow precedes the seed just leaves location unset.
+  const seededLocationId =
+    declaredLocations.length > 0
+      ? null
+      : await withTenant(ctx, (tx) =>
+          tx.businessLocation.findFirst({
+            where: { tenantId, name: 'Main location' },
+            select: { id: true },
+          })
+        ).then((l) => l?.id ?? null);
+
+  const firstDeclared = declaredLocations[0]
+    ? (locationIds.get(declaredLocations[0].handle) ?? null)
+    : null;
+  const defaultLocationId = firstDeclared ?? seededLocationId;
+
+  /** Where a resource or service belongs. A named handle wins; the validator has
+   *  already refused an unknown one, so a miss here can only be a missing name. */
+  const locationFor = (handle?: string): string | null =>
+    handle ? (locationIds.get(handle) ?? defaultLocationId) : defaultLocationId;
+
+  // The seeded place is widened onto this site under the same never-narrow rule,
+  // so a tenant who has deliberately split their premises keeps them split.
+  if (seededLocationId) {
+    const seeded = seededLocationId;
+    await withTenant(ctx, async (tx) => {
+      const links = await tx.businessLocationProperty.count({ where: { locationId: seeded } });
+      if (links === 0) return;
+      await tx.businessLocationProperty.createMany({
+        data: [{ locationId: seeded, propertyId }],
+        skipDuplicates: true,
+      });
+    });
+  }
 
   // Policies — reconcile by name; attach seeded ones stay untouched.
   const policyIds = new Map<string, string>();
@@ -1291,8 +1429,13 @@ export async function installSchedulingSlice(env: SliceEnv): Promise<void> {
           capacityMax: r.capacityMax ?? null,
           skillTags: r.skillTags,
           bookableOnline: r.bookableOnline,
-          locationId,
+          locationId: locationFor(r.locationHandle),
           imageUrl: imageUrlFor(r.imageAssetId) ?? null,
+          // The chairs, rooms and staff a design installs belong to the business on
+          // THIS site. Left unscoped they would be allocatable by a booking taken on
+          // a sibling site — one business's barber assigned to the other's grooming
+          // appointment. Same rule as the categories and products above.
+          propertyIds: [propertyId],
         })
       );
       id = created.id;
@@ -1306,6 +1449,19 @@ export async function installSchedulingSlice(env: SliceEnv): Promise<void> {
           })),
         });
       }
+    } else {
+      // Reused by name — the tenant already has this resource. Widen it onto this site
+      // only if it is ALREADY scoped; a resource with no links works everywhere, and
+      // adding the first link would withdraw it from every other site at once.
+      const resourceId = id;
+      await withTenant(ctx, async (tx) => {
+        const links = await tx.schedulingResourceProperty.count({ where: { resourceId } });
+        if (links === 0) return;
+        await tx.schedulingResourceProperty.createMany({
+          data: [{ resourceId, propertyId }],
+          skipDuplicates: true,
+        });
+      });
     }
     idmap.resources[r.handle] = id;
   }
@@ -1333,7 +1489,7 @@ export async function installSchedulingSlice(env: SliceEnv): Promise<void> {
           assignmentStrategy: s.assignmentStrategy,
           resourceRequirements: s.resourceRequirements,
           policyId: s.policyHandle ? (policyIds.get(s.policyHandle) ?? null) : null,
-          locationId,
+          locationId: locationFor(s.locationHandle),
           minLeadMinutes: s.minLeadMinutes,
           maxAdvanceDays: s.maxAdvanceDays,
           slotIntervalMin: s.slotIntervalMin,
@@ -1615,12 +1771,25 @@ export async function deleteInstall(ctxIn: InstallContext, installId: string): P
     await productService.softDelete(ctx, p.id).catch(warn('product', p.id));
   }
   for (const [handle, id] of Object.entries(r.collections ?? {})) {
-    if (mintedCollections && !mintedCollections.includes(handle)) continue;
+    if (mintedCollections && !mintedCollections.includes(handle)) {
+      // Reused: this install may have widened it onto this site. Stop showing it here
+      // and leave the row (and every sibling site's link) alone. A no-op when the row
+      // is global — there was no link to take away.
+      await withTenant(ctx, (tx) =>
+        tx.collectionProperty.deleteMany({ where: { collectionId: id, propertyId } })
+      ).catch(warn('collection unlink', id));
+      continue;
+    }
     await collectionService.remove(ctx, id).catch(warn('collection', id));
   }
   // Categories leaf-first: the id-map is parent-first (insertion order), so reverse.
   for (const [handle, id] of Object.entries(r.categories ?? {}).reverse()) {
-    if (mintedCategories && !mintedCategories.includes(handle)) continue;
+    if (mintedCategories && !mintedCategories.includes(handle)) {
+      await withTenant(ctx, (tx) =>
+        tx.categoryProperty.deleteMany({ where: { categoryId: id, propertyId } })
+      ).catch(warn('category unlink', id));
+      continue;
+    }
     await categoryService.remove(ctx, id).catch(warn('category', id));
   }
   // A REUSED entry belongs to the tenant, not to this install — a sibling site that

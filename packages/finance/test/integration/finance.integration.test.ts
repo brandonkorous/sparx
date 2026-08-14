@@ -72,6 +72,26 @@ describe('provisioning', () => {
     expect(categories).toHaveLength(SEED_CATEGORIES.length);
   });
 
+  it('reports rows it CREATED, not rows it touched', async () => {
+    // The fixture is already provisioned, so this run creates nothing. The
+    // upsert loop still writes all 20 rows, and reporting that as "seeded 20"
+    // is how an operator reads a no-op as work — which is exactly what the
+    // backfill script printed after a successful apply.
+    const repeat = await provisionFinance(t.tenantId);
+    expect(repeat.categoriesSeeded).toBe(0);
+    expect(repeat.categoriesTotal).toBe(SEED_CATEGORIES.length);
+
+    // A tenant seeing finance for the first time reports the opposite.
+    const fresh = await createTestTenant();
+    try {
+      const first = await provisionFinance(fresh.tenantId);
+      expect(first.categoriesSeeded).toBe(SEED_CATEGORIES.length);
+      expect(first.categoriesTotal).toBe(SEED_CATEGORIES.length);
+    } finally {
+      await dropTestTenant(fresh.tenantId);
+    }
+  });
+
   it('keeps a renamed category renamed across a re-provision', async () => {
     const wages = await categoryBySlug(t.tenantId, 'wages');
     await prisma.$transaction(async (tx) => {

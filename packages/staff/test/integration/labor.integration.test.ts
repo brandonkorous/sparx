@@ -91,8 +91,38 @@ describe('deriveLaborForPeriod', () => {
     expect(expense.amountCents).toBe(36_000);
     expect(expense.source).toBe('labor');
     expect(expense.propertyId).toBe(ctx.propertyId);
-    // The period the cost BELONGS to, not when anyone was paid.
-    expect(expense.incurredAt.toISOString().slice(0, 10)).toBe('2026-03-31');
+    // The period the cost BELONGS to, not when anyone was paid — dated to the
+    // last day worked (the 3rd), not the period's last day (the 31st).
+    expect(expense.incurredAt.toISOString().slice(0, 10)).toBe('2026-03-03');
+  });
+
+  it('never dates an accrual in the future while the period is still running', async () => {
+    // The defect this pins: `incurredAt` was the period's END, so approving
+    // hours mid-month filed a cost dated the last of the month. Every
+    // "1st → today" range excluded it, which is how the timesheet could say
+    // "your spending now includes this period's wages" over a $0.00 Spending
+    // list. Same month either way, so no profit figure moves.
+    const member = await hireHourly();
+    await logAndApprove(member.id, [
+      { workedOn: '2026-03-02', minutes: 480 },
+      { workedOn: '2026-03-11', minutes: 240 },
+    ]);
+
+    const result = await deriveLaborForPeriod(ctx.tenantId, {
+      staffMemberId: member.id,
+      ...MARCH,
+    });
+
+    const expense = await withTenant({ tenantId: ctx.tenantId }, (tx) =>
+      tx.financeExpense.findFirstOrThrow({ where: { id: result.expenseIds[0] } })
+    );
+    const incurred = expense.incurredAt.toISOString().slice(0, 10);
+
+    expect(incurred).toBe('2026-03-11');
+    // Inside the period, so it still buckets into March.
+    expect(incurred >= '2026-03-01' && incurred <= '2026-03-31').toBe(true);
+    // Visible to a range that stops on the 13th — the actual user-facing test.
+    expect(incurred <= '2026-03-13').toBe(true);
   });
 
   it('is idempotent — re-running updates the row instead of doubling the month', async () => {

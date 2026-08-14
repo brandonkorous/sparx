@@ -1,0 +1,30 @@
+{
+  "plan": {
+    "id": "piggles_base_monthly",
+    "displayName": "Piggles",
+    "monthlyPriceUsd": 49,
+    "allNormalAppsIncluded": true
+  },
+  "includedCapacity": {
+    "businesses": 1,
+    "locations": 1,
+    "primarySites": 1,
+    "users": 3,
+    "contacts": 10000,
+    "storageGb": 20,
+    "emailSendsPerMonth": 7500
+  },
+  "unmeteredOrHighLimit": [
+    "products",
+    "services",
+    "bookings",
+    "invoices",
+    "pages",
+    "normal_app_enablement"
+  ],
+  "warnings": { "softPercent": 80, "highPercent": 95, "hardPercent": 100 },
+  "notes": [
+    "Numbers are starting hypotheses and must be validated against real infrastructure costs.",
+    "App enablement must not trigger a billing event."
+  ]
+}

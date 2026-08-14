@@ -39,9 +39,60 @@ export function formatMoneyCompact(amount: number, currency = 'USD'): string {
   return formatMoney(amount, currency);
 }
 
+/**
+ * An INSTANT rendered as a date — a moment that happened at a clock time, shown
+ * in the reader's zone. Correct for `createdAt`, an order's `placedAt`, a Stripe
+ * timestamp. Wrong for a calendar day: use `formatDay`.
+ */
 export function formatDate(iso: string | null | undefined): string {
   if (!iso) return '—';
   return new Date(iso).toLocaleDateString(undefined, { dateStyle: 'medium' });
+}
+
+/**
+ * A CALENDAR DAY, rendered as the day it actually is.
+ *
+ * Finance stores several day-valued fields — `incurredAt` ("the day a cost
+ * belongs to"), `dueAt`, `nextRunOn`, `endsOn`, and the period range bounds — as
+ * UTC midnight. Some sit in `@db.Date` columns; `incurredAt` is a `Timestamptz`
+ * that nevertheless only ever carries a day (`period.ts` filters it as one, and
+ * the labour deriver writes it straight from a `@db.Date` `workedOn`).
+ *
+ * Handing UTC midnight to `toLocaleDateString` renders it in the reader's zone,
+ * which is the PREVIOUS DAY for everyone west of Greenwich. A wage cost written
+ * for 2026-08-11 displayed as "Aug 10, 2026" for a US reader — the day is data,
+ * not a moment, so it must be read back in the zone it was minted in.
+ */
+export function formatDay(iso: string | null | undefined): string {
+  if (!iso) return '—';
+  return new Date(iso).toLocaleDateString(undefined, { dateStyle: 'medium', timeZone: 'UTC' });
+}
+
+/** A calendar day as a day NUMBER, so two days can be compared without a clock
+ *  dragging one of them across a midnight. Local Y/M/D for "today" (the reader's
+ *  day), UTC Y/M/D for a stored day — the same convention as `period.ts`. */
+function dayNumber(value: Date, stored: boolean): number {
+  const ms = stored
+    ? Date.UTC(value.getUTCFullYear(), value.getUTCMonth(), value.getUTCDate())
+    : Date.UTC(value.getFullYear(), value.getMonth(), value.getDate());
+  return Math.floor(ms / 86_400_000);
+}
+
+/**
+ * Whole days past a due date — negative when it is still ahead, `null` when
+ * nobody set one. Null is NOT zero: "no deadline" and "due today" are different
+ * facts, and rendering the first as the second invents a deadline.
+ *
+ * Lives here rather than in a surface because both the bill BADGE and the
+ * aging BUCKETS need it and they must never disagree. Each had its own copy of
+ * `(now - dueAt) / 86_400_000`, which counts elapsed milliseconds between a
+ * UTC-midnight day and a local instant — so from early evening onward a US
+ * reader's bill due TODAY was badged "1 day late" and filed under "1–30 days
+ * late" in the same view.
+ */
+export function daysPastDue(dueAt: string | null | undefined, now = new Date()): number | null {
+  if (!dueAt) return null;
+  return dayNumber(now, false) - dayNumber(new Date(dueAt), true);
 }
 
 export function formatDateTime(iso: string | null | undefined): string {
@@ -218,14 +269,13 @@ export function billState(
   if (paidAt) return { label: 'Paid', tone: 'success' };
   if (!dueAt) return { label: 'Unpaid', tone: 'warning' };
 
-  const due = new Date(dueAt).getTime();
-  const days = Math.floor((now.getTime() - due) / 86_400_000);
+  const days = daysPastDue(dueAt, now) ?? 0;
   if (days > 0) {
     return { label: days === 1 ? '1 day late' : `${String(days)} days late`, tone: 'error' };
   }
   if (days === 0) return { label: 'Due today', tone: 'warning' };
   if (days >= -7) return { label: `Due in ${String(-days)} days`, tone: 'warning' };
-  return { label: `Due ${formatDate(dueAt)}`, tone: 'info' };
+  return { label: `Due ${formatDay(dueAt)}`, tone: 'info' };
 }
 
 /** How often a recurring cost lands, in plain words. */

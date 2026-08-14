@@ -238,5 +238,12 @@
       ],
       "policyHandle": "therapy-no-show"
     }
+  ],
+  "locations": [
+    {
+      "handle": "premises",
+      "name": "Clearmind Therapy",
+      "timezone": "UTC"
+    }
   ]
 }

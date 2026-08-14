@@ -30,8 +30,11 @@ export type EventType =
   // an in-process platform-bus event with no publisher.
   | 'module.activated'
   | 'module.deactivated'
-  // Tenant blueprints (docs/54) — one-click marketplace template installs
-  | 'template.install'
+  // Tenant blueprints (docs/54) — one-click marketplace template installs.
+  //
+  // There is no `template.install` COMMAND event: the installer is called
+  // directly by api-rest, so a "please install" topic had no publisher and no
+  // consumer for its whole life. Only the two OUTCOMES are real.
   | 'template.installed'
   | 'template.install_failed'
   // Content
@@ -41,7 +44,10 @@ export type EventType =
   | 'content.entry.scheduled'
   | 'content.entry.unpublished'
   | 'content.entry.deleted'
-  | 'content.revision.created'
+  // No `content.revision.created`. A revision is written on every save, so the
+  // topic would be the noisiest on the bus and it never had a publisher OR a
+  // consumer. `content.entry.updated` is the same moment, at the grain anything
+  // downstream actually wants.
   | 'content_type.upserted'
   // Media
   | 'media.uploaded'
@@ -224,9 +230,12 @@ export type EventType =
   // domain-worker subscribes to poll DNS propagation and mark the domain active.
   | 'domain.purchased'
   // ─── B2B (docs/10, docs/64 Ph2-Ph3) ────────────────────────────────────
-  // Quote lifecycle notifications.
-  | 'b2b.quote.submitted'
-  | 'b2b.quote.responded'
+  // No `b2b.quote.submitted` / `b2b.quote.responded`. A quote is not a B2B
+  // entity in this schema — it is a `BillingDocument` with `kind = 'quote'`, and
+  // its lifecycle already publishes `crm.billing_document.created` /
+  // `.finalized` / `.converted`, which the automation catalog offers as "A
+  // quote, estimate or invoice is created". The b2b pair never had a publisher
+  // because there was never anything for it to publish from.
   // Invoice / credit management notifications.
   | 'b2b.invoice.created'
   | 'b2b.invoice.overdue'
@@ -245,7 +254,11 @@ export type EventType =
   | 'booking.cancelled'
   | 'booking.completed'
   | 'booking.no_show'
-  | 'booking.reminder'
+  // No `booking.reminder`. Reminders are a LEDGER, not an event: the booking
+  // lifecycle writes `scheduling_booking_notifications` rows inside its own
+  // transaction (dedupe + a dispatch audit trail), and api-rest's
+  // `startBookingNotificationLoop` tick sends the due ones. That is a better
+  // mechanism than a fire-and-forget topic, and the topic never had a publisher.
   | 'booking.waitlist_offered'
   // Calendar sync (docs/79 §8/§16): connection health + import outcomes.
   | 'calendar.connected'
@@ -271,8 +284,9 @@ export type EventType =
   // exactly what makes it dangerous — nothing looks broken while the number rots.
   | 'inventory.source.stale'
   | 'inventory.source.recovered'
-  // Stock level mutations
-  | 'inventory.levels.updated'
+  // Stock level mutations. `inventory.adjusted` above is the one that is
+  // published and consumed (commerce-indexer re-projects on it); a second
+  // `inventory.levels.updated` name for the same moment never had either.
   // ─── Universal search (docs/39) ─────────────────────────────────────
   // Generic indexing signal: any module emits this post-commit so the
   // commerce-indexer (re)projects ONE entity into the universal `entities`
@@ -404,6 +418,17 @@ export type EventType =
   // expired is a van that cannot leave the yard, and nobody finds out from a
   // spreadsheet.
   | 'staff.certification.expiring'
+  // A deal reached a `won` stage, ON THE PLATFORM BUS.
+  //
+  // `crm.deal.stage_changed` already exists and is the sanctioned stage-change
+  // signal — but it is a `CrmTopic`, and the CRM bus does not reach an
+  // in-process platform consumer (the two-bus footgun). staff-worker needs to
+  // hear about a won deal to calculate commission, so the api-rest route that
+  // moves a deal publishes this alongside the CRM one. Deliberately narrower
+  // than `stage_changed`: only `won` is a payable moment, and a consumer that
+  // had to re-derive "did this stage mean won" from a tenant-renamable stage
+  // would get it wrong the first time somebody renamed "Won" to "Signed".
+  | 'crm.deal.won'
   // Someone asked for time off, and someone answered. Two events rather than one
   // status-changed, because the approver and the requester are different people
   // and the notifications go in opposite directions.

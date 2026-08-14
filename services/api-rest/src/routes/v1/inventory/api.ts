@@ -17,6 +17,7 @@
 
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
+import { queryBool } from '@sparx/api-core/query';
 import { inventoryService } from '@sparx/inventory';
 import { ok, paged } from '@sparx/api-core/envelope';
 import { requireRole, requireScope } from '@sparx/api-core/auth';
@@ -39,7 +40,7 @@ const ListQuery = z.object({
   variant_id: z.string().uuid().optional(),
   // Only what is at or below its reorder point, measured against SELLABLE stock
   // so the filter agrees with the "Running low" badge the surfaces render.
-  low_stock_only: z.coerce.boolean().optional(),
+  low_stock_only: queryBool.optional(),
   sort_by: z.enum(['updatedAt', 'available', 'sku', 'product']).optional(),
   order: z.enum(['asc', 'desc']).optional(),
   take: z.coerce.number().int().min(1).max(200).optional(),

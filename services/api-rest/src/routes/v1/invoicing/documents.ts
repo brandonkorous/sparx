@@ -21,6 +21,7 @@
 
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
+import { queryBool } from '@sparx/api-core/query';
 import { withTenant } from '@sparx/db';
 import {
   billingDocumentConversionService,
@@ -51,7 +52,7 @@ const ListDocumentsQuery = z.object({
   customerId: z.string().uuid().optional(),
   companyId: z.string().uuid().optional(),
   status: z.string().max(20).optional(),
-  includeDeleted: z.coerce.boolean().optional(),
+  includeDeleted: queryBool.optional(),
   take: z.coerce.number().int().min(1).max(250).optional(),
   skip: z.coerce.number().int().min(0).optional(),
   // Snake_case to match every other list endpoint's sort parameter. (The

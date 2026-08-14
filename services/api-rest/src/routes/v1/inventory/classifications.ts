@@ -12,6 +12,7 @@
 
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
+import { queryBool } from '@sparx/api-core/query';
 import { inventoryService } from '@sparx/inventory';
 import { ok, paged } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
@@ -24,7 +25,7 @@ const ListQuery = z.object({
   // young catalogue that is most of them, so it has to be selectable rather than
   // only reachable by looking at everything.
   xyz_class: z.enum(['X', 'Y', 'Z', 'unknown']).optional(),
-  overridden_only: z.coerce.boolean().optional(),
+  overridden_only: queryBool.optional(),
   q: z.string().trim().max(120).optional(),
   take: z.coerce.number().int().min(1).max(250).optional(),
   skip: z.coerce.number().int().min(0).optional(),

@@ -239,5 +239,12 @@
       ],
       "policyHandle": "planning-fee"
     }
+  ],
+  "locations": [
+    {
+      "handle": "premises",
+      "name": "Wander & Co. Travel",
+      "timezone": "UTC"
+    }
   ]
 }

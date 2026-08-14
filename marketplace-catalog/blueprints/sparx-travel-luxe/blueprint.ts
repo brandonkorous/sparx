@@ -11,7 +11,7 @@ import assets from './assets.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-travel-luxe',
-  version: '1.2.0',
+  version: '1.3.0',
   name: 'sparx — Travel Advisory (Luxury)',
   summary:
     'A refined, editorial travel-advisory site — a deep navy-teal palette, a warm brass accent and an elegant serif display over ivory, with worldly destination photography carrying the page. Installs a working consultation-booking flow: a real menu of consult types (discovery call, custom itineraries, honeymoons, luxury and VIP trips), three travel advisors you book by name with their own hours, and a planning-fee deposit policy. Ships as "Wander & Co. Travel", a luxury bespoke travel studio.',

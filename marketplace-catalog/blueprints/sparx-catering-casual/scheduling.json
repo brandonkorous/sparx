@@ -239,5 +239,12 @@
       ],
       "policyHandle": "bbq-standard"
     }
+  ],
+  "locations": [
+    {
+      "handle": "premises",
+      "name": "Smoke & Barrel BBQ Catering",
+      "timezone": "UTC"
+    }
   ]
 }

@@ -22,7 +22,7 @@
                   "props": {
                     "show": "both"
                   },
-                  "id": "6295755c-631d-4821-8130-9c9e855950a5",
+                  "id": "7e106659-d7d5-49f6-a97a-06cd40553b5b",
                   "ord": "a0"
                 },
                 {
@@ -37,13 +37,15 @@
                       "attrs": {
                         "href": "/book"
                       },
-                      "children": ["Book"],
+                      "children": [
+                        "Book"
+                      ],
                       "slot": {
                         "name": "link1",
                         "type": "link",
                         "label": "Product"
                       },
-                      "id": "29db4f5f-d90d-4cbe-bb36-8bb8091b18aa",
+                      "id": "0003cf8a-1daf-49b1-ac1f-e030c7b5f71d",
                       "ord": "a0"
                     },
                     {
@@ -53,13 +55,15 @@
                       "attrs": {
                         "href": "/about"
                       },
-                      "children": ["About"],
+                      "children": [
+                        "About"
+                      ],
                       "slot": {
                         "name": "link2",
                         "type": "link",
                         "label": "Pricing"
                       },
-                      "id": "14d2e77a-db3b-45b5-9802-214082219995",
+                      "id": "6144c8d6-fb9d-4731-89c2-fa16208845d5",
                       "ord": "a1"
                     },
                     {
@@ -69,17 +73,19 @@
                       "attrs": {
                         "href": "/contact"
                       },
-                      "children": ["Contact"],
+                      "children": [
+                        "Contact"
+                      ],
                       "slot": {
                         "name": "link3",
                         "type": "link",
                         "label": "Docs"
                       },
-                      "id": "503e4030-2f01-4c96-926b-47dcd6fa2323",
+                      "id": "b7bdac80-d221-4545-a1da-f34403dd22be",
                       "ord": "a2"
                     }
                   ],
-                  "id": "fd12173e-8886-451f-900d-daa7e596c4a4",
+                  "id": "5022fa2b-02f1-495f-9a74-c61c3c67fe99",
                   "ord": "a1"
                 },
                 {
@@ -94,20 +100,22 @@
                       "attrs": {
                         "href": "/account/login"
                       },
-                      "children": ["Sign in"],
+                      "children": [
+                        "Sign in"
+                      ],
                       "slot": {
                         "name": "secondary",
                         "type": "link",
                         "label": "Secondary link"
                       },
-                      "id": "1bff6400-9965-4dfd-9c4e-a3da3cf2003d",
+                      "id": "50e21bdc-f3ea-4467-8a0c-813e6feacc76",
                       "ord": "a0"
                     },
                     {
                       "kind": "host",
                       "component": "site.theme-toggle",
                       "class": "inline-flex items-center",
-                      "id": "5d93c729-2d41-4cb1-ad26-6b1deda6729f",
+                      "id": "18eb42ae-0701-4fab-8eb2-4ade686cda43",
                       "ord": "a1"
                     },
                     {
@@ -123,7 +131,7 @@
                         "type": "link",
                         "label": "Primary action"
                       },
-                      "id": "4a1cfcd5-2e6e-46c8-bc6c-6a9ef5d042db",
+                      "id": "60d1551e-3a52-4984-9044-7a8d3278dcdd",
                       "ord": "a2"
                     },
                     {
@@ -141,20 +149,20 @@
                           "props": {
                             "name": "menu"
                           },
-                          "id": "48bdf60f-c0ce-4411-9eb6-06071efa445e",
+                          "id": "9ee66eef-c73e-4c05-95c7-c41216bb3cf8",
                           "ord": "a0"
                         }
                       ],
                       "part": "trigger",
-                      "id": "4d736bd2-6f77-40ae-acdc-1e734b1d0814",
+                      "id": "5f57b394-16d2-4567-aa0a-da2f970494a6",
                       "ord": "a3"
                     }
                   ],
-                  "id": "d08b29fa-7a22-488c-8adf-054e1c987c21",
+                  "id": "488a36de-9899-4674-988c-b99d28f56251",
                   "ord": "a2"
                 }
               ],
-              "id": "252c862b-d8c4-48cf-8e10-8a9c296e51f9",
+              "id": "fd3c3c79-a99f-4df6-b541-65b42a8b43bf",
               "ord": "a0"
             },
             {
@@ -172,13 +180,15 @@
                   "attrs": {
                     "href": "/book"
                   },
-                  "children": ["Book"],
+                  "children": [
+                    "Book"
+                  ],
                   "slot": {
                     "name": "link1",
                     "type": "link",
                     "label": "Product"
                   },
-                  "id": "ad87ed0b-c4ea-43ad-a063-8662c1598f78",
+                  "id": "adf0ba30-4b84-4583-bb5f-d21c829fa621",
                   "ord": "a0"
                 },
                 {
@@ -188,13 +198,15 @@
                   "attrs": {
                     "href": "/about"
                   },
-                  "children": ["About"],
+                  "children": [
+                    "About"
+                  ],
                   "slot": {
                     "name": "link2",
                     "type": "link",
                     "label": "Pricing"
                   },
-                  "id": "be581e77-af3b-4be1-a9ac-7e6de6bc5283",
+                  "id": "3588c615-16c9-4a56-b390-5657a2e49d20",
                   "ord": "a1"
                 },
                 {
@@ -204,13 +216,15 @@
                   "attrs": {
                     "href": "/contact"
                   },
-                  "children": ["Contact"],
+                  "children": [
+                    "Contact"
+                  ],
                   "slot": {
                     "name": "link3",
                     "type": "link",
                     "label": "Docs"
                   },
-                  "id": "9d10aaf3-629f-4d42-9670-5291476fbf07",
+                  "id": "5372b3e1-2214-4255-b0b2-91a560ad892c",
                   "ord": "a2"
                 },
                 {
@@ -226,7 +240,7 @@
                     "type": "link",
                     "label": "Secondary link"
                   },
-                  "id": "2dc8fbe1-0967-4a4a-80e6-8bbf54bae443",
+                  "id": "ce60cff9-1d84-4347-91a1-fba6e44f71b5",
                   "ord": "a3"
                 },
                 {
@@ -242,19 +256,19 @@
                     "type": "link",
                     "label": "Primary action"
                   },
-                  "id": "1f9f1dbf-c873-4a66-a7c8-accd9277d85d",
+                  "id": "25f68f5e-08d5-49cc-8b14-c6480e5e950e",
                   "ord": "a4"
                 }
               ],
               "part": "panel",
-              "id": "ef87f49e-4353-4e30-9c68-865d84ea16fa",
+              "id": "8062fe28-4f10-49ab-b6c8-a090a478c65b",
               "ord": "a1"
             }
           ],
           "behavior": {
             "type": "disclosure"
           },
-          "id": "0340446b-f4b3-4b72-88b8-630e52c3495f",
+          "id": "8bd7a82b-81b8-42bb-8a43-c9c17c545185",
           "ord": "a0"
         },
         {
@@ -270,7 +284,7 @@
               "kind": "outlet"
             }
           ],
-          "id": "f8b88ec7-19a4-4e47-9a3b-e39e5c7918ef",
+          "id": "c5daa135-5fd8-4871-83fd-b3fbf36f0f4c",
           "ord": "a1"
         },
         {
@@ -300,14 +314,16 @@
                           "props": {
                             "show": "both"
                           },
-                          "id": "72a4b6de-faff-4db3-bdd1-e49195084ef6",
+                          "id": "bae7eb8e-235b-4450-a008-00d3534bfc69",
                           "ord": "a0"
                         },
                         {
                           "kind": "element",
                           "tag": "p",
                           "class": "max-w-xs text-sm text-base-content",
-                          "children": ["Everything you publish, in one place."],
+                          "children": [
+                            "Everything you publish, in one place."
+                          ],
                           "slot": {
                             "name": "blurb",
                             "type": "text",
@@ -316,7 +332,7 @@
                           "attrs": {
                             "href": "/"
                           },
-                          "id": "53ebcb44-e3d1-4a30-8237-a7db6adba9cb",
+                          "id": "4741d7e4-2693-4f43-9d0f-beec99f40514",
                           "ord": "a1"
                         },
                         {
@@ -324,11 +340,11 @@
                           "tag": "ul",
                           "class": "mt-2 flex items-center gap-5",
                           "children": [],
-                          "id": "ba7d7961-74cd-4647-a3d8-fa4e7603c3a5",
+                          "id": "7d6d3dab-86a9-48ed-9872-1db76795e53d",
                           "ord": "a2"
                         }
                       ],
-                      "id": "87e5238c-1220-44db-82cf-60fc10d3c1b8",
+                      "id": "359c9d01-2d66-4cf3-9540-2bf1e19e56ef",
                       "ord": "a0"
                     },
                     {
@@ -340,7 +356,9 @@
                           "kind": "element",
                           "tag": "p",
                           "class": "text-sm font-semibold text-base-content",
-                          "children": ["Explore"],
+                          "children": [
+                            "Explore"
+                          ],
                           "slot": {
                             "name": "col1",
                             "type": "text",
@@ -349,7 +367,7 @@
                           "attrs": {
                             "href": "/"
                           },
-                          "id": "783f8a3d-3664-4bc6-b572-eecfd2cc8d70",
+                          "id": "ff0d8fea-099f-4859-a540-d1a925415354",
                           "ord": "a0"
                         },
                         {
@@ -368,17 +386,19 @@
                                   "attrs": {
                                     "href": "/book"
                                   },
-                                  "children": ["Book"],
+                                  "children": [
+                                    "Book"
+                                  ],
                                   "slot": {
                                     "name": "link1",
                                     "type": "link",
                                     "label": "Features"
                                   },
-                                  "id": "cecac0ae-3a1c-4f1b-ae29-e26ddb285b22",
+                                  "id": "60dd080f-fdcc-4864-bb0e-6998459ea6af",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "c0b30cdc-909a-4fab-bf8d-e2b6f68a3fed",
+                              "id": "25010950-2feb-4e13-9459-99765131f702",
                               "ord": "a0"
                             },
                             {
@@ -392,17 +412,19 @@
                                   "attrs": {
                                     "href": "/about"
                                   },
-                                  "children": ["About"],
+                                  "children": [
+                                    "About"
+                                  ],
                                   "slot": {
                                     "name": "link2",
                                     "type": "link",
                                     "label": "Pricing"
                                   },
-                                  "id": "2f61a46e-3c3c-410f-b908-9bbee6788b30",
+                                  "id": "e328d530-4110-49b9-84d9-bbc727723ff0",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "1cb81d6b-9ed1-4bd0-baab-6a4cd667d113",
+                              "id": "33d9b9ee-d084-4f83-be6b-588b1c246380",
                               "ord": "a1"
                             },
                             {
@@ -416,17 +438,19 @@
                                   "attrs": {
                                     "href": "/contact"
                                   },
-                                  "children": ["Contact"],
+                                  "children": [
+                                    "Contact"
+                                  ],
                                   "slot": {
                                     "name": "link3",
                                     "type": "link",
                                     "label": "Integrations"
                                   },
-                                  "id": "296e8292-63f4-4c1d-b95f-baceb15029f2",
+                                  "id": "ea1be859-3f66-4665-8fde-aed68fbec9b7",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "2c3c5391-b4f7-4967-b4aa-ef5641847eba",
+                              "id": "28d84722-a757-4943-b29e-41528deb8ff6",
                               "ord": "a2"
                             },
                             {
@@ -440,25 +464,27 @@
                                   "attrs": {
                                     "href": "/search"
                                   },
-                                  "children": ["Search"],
+                                  "children": [
+                                    "Search"
+                                  ],
                                   "slot": {
                                     "name": "link4",
                                     "type": "link",
                                     "label": "Changelog"
                                   },
-                                  "id": "3744d11f-9e82-40f4-bb52-c0732fb6dfd7",
+                                  "id": "678cde04-cfe1-4266-9773-926fc4afb83c",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "68f0585d-0594-4509-9c94-4d47ae643657",
+                              "id": "7fe5e2e6-824b-4ac1-be96-8b417bea9e98",
                               "ord": "a3"
                             }
                           ],
-                          "id": "45d23540-3107-49e9-9b13-ae85fd579fe5",
+                          "id": "de42638c-bbdb-4d0b-b02f-354096c2c84f",
                           "ord": "a1"
                         }
                       ],
-                      "id": "4e549f22-e396-43e6-914b-dee3b78b6b4c",
+                      "id": "2aa15edf-550e-4cb8-9650-7746abfb0f5b",
                       "ord": "a1"
                     },
                     {
@@ -471,11 +497,11 @@
                           "tag": "ul",
                           "class": "flex flex-col gap-2",
                           "children": [],
-                          "id": "c86116e1-47ef-4db2-b438-2a4f9a2fce26",
+                          "id": "14a2c4ed-36ac-4d07-80e4-977c3d66d3b9",
                           "ord": "a0"
                         }
                       ],
-                      "id": "fed36307-6ce5-449c-92cd-c175db30f8d1",
+                      "id": "9d1fe731-963f-40b0-99f6-73f7843e304f",
                       "ord": "a2"
                     },
                     {
@@ -499,23 +525,23 @@
                                   "props": {
                                     "heading": "Legal"
                                   },
-                                  "id": "3f05f3e3-239d-4726-97f3-97336cc0ea21",
+                                  "id": "65f17bc9-e815-4e8c-8f97-22b22e3e83ec",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "54e62bec-6cf4-4350-b70e-b942004c399c",
+                              "id": "5473a70a-a106-44e3-83ad-be697683eaa2",
                               "ord": "a0"
                             }
                           ],
-                          "id": "c113c921-8fa4-4881-b8df-f0d4e0922793",
+                          "id": "9fdf8edd-7d5b-4f13-b5ae-c3009c314637",
                           "ord": "a0"
                         }
                       ],
-                      "id": "17935107-b31a-4c4e-b10c-7650484e773c",
+                      "id": "4bd15f3e-25d8-4fd8-a66c-ce0fdeacb3ae",
                       "ord": "a3"
                     }
                   ],
-                  "id": "5b2c395d-7efe-4762-9348-7e401cdbdb65",
+                  "id": "4fbe1f44-67fc-424c-8f78-fbc793be9593",
                   "ord": "a0"
                 },
                 {
@@ -533,16 +559,18 @@
                           "kind": "element",
                           "tag": "span",
                           "class": "font-medium",
-                          "children": ["Your site"],
+                          "children": [
+                            "Your site"
+                          ],
                           "data": {
                             "kind": "value",
                             "ref": "site.identity.name"
                           },
-                          "id": "8d88cc62-c9d0-4053-9a63-53b68bc81eb5",
+                          "id": "dcb872cc-2133-45ae-ae45-6712490d1e62",
                           "ord": "a0"
                         }
                       ],
-                      "id": "0e3c506d-906f-44fd-99b0-4a44e1eef503",
+                      "id": "d6a854e1-f8be-4695-9a4b-becc870df431",
                       "ord": "a0"
                     },
                     {
@@ -550,23 +578,23 @@
                       "tag": "ul",
                       "class": "flex flex-wrap items-center gap-x-6 gap-y-2",
                       "children": [],
-                      "id": "f52e290f-94de-418a-92f8-4491ebe4c90c",
+                      "id": "1795f47e-d8d2-4050-aab6-b95f8e1a2168",
                       "ord": "a1"
                     }
                   ],
-                  "id": "51bec697-1912-4cbc-91fa-42129f7d80ec",
+                  "id": "365fcb01-d493-4730-b556-4ebeb2fab457",
                   "ord": "a1"
                 }
               ],
-              "id": "cf17e364-8fd4-4a59-b71c-f789119ad2e8",
+              "id": "df07e204-ec05-4bf0-a3dd-ecd6ac782fe5",
               "ord": "a0"
             }
           ],
-          "id": "32d2de5d-7efe-4d4a-8cd8-58bcb7b0284b",
+          "id": "63fbc72e-6987-49f2-899a-7b4cb5bb73dc",
           "ord": "a2"
         }
       ],
-      "id": "497e4a72-45c8-4ce5-a01a-a23bfe328b5e"
+      "id": "23ea5ad1-3ac0-4680-90b5-36a7b75209a4"
     }
   },
   "pages": [
@@ -580,7 +608,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "93aee246-aa58-4cbb-9985-af6a570c8540",
+        "id": "36fae88b-1946-4941-9cfb-44d44fe87686",
         "children": [
           {
             "kind": "element",
@@ -596,14 +624,14 @@
                   "alt": "A freshly finished asphalt-shingle roof on a suburban home under a clear sky",
                   "loading": "eager"
                 },
-                "id": "64919912-c711-474b-ba95-88e704d1aeee",
+                "id": "bb24da3d-c6e4-4157-b4f4-f59ba378bc8e",
                 "ord": "a0"
               },
               {
                 "kind": "element",
                 "tag": "div",
                 "class": "absolute inset-0 bg-black/50",
-                "id": "59edaecc-3b4f-4ef6-8ff6-e5ec700f387e",
+                "id": "f6aab6e4-80f2-46e7-b280-6bc58b95b534",
                 "ord": "a1"
               },
               {
@@ -615,8 +643,10 @@
                     "kind": "element",
                     "tag": "h1",
                     "class": "max-w-3xl text-4xl font-bold leading-tight tracking-tight @2xl:text-5xl @3xl:text-6xl",
-                    "children": ["A roof that lasts, done right"],
-                    "id": "cb2f3563-677f-48f3-bea1-39446b9e0aee",
+                    "children": [
+                      "A roof that lasts, done right"
+                    ],
+                    "id": "9153da72-6499-42c4-b40e-5e8fa85452b3",
                     "ord": "a0"
                   },
                   {
@@ -626,7 +656,7 @@
                     "children": [
                       "Licensed, insured and honest about what your roof actually needs. Book a free inspection online and we’ll show you exactly where it stands — no pressure, no sales pitch."
                     ],
-                    "id": "710c045d-4930-4c48-b957-81909200a7a1",
+                    "id": "8f2906a6-ae18-4aea-8452-029756f3fae9",
                     "ord": "a1"
                   },
                   {
@@ -641,8 +671,10 @@
                         "attrs": {
                           "href": "/book"
                         },
-                        "children": ["Book a free inspection"],
-                        "id": "ad75ce25-4269-4caf-8df5-435e160542f8",
+                        "children": [
+                          "Book a free inspection"
+                        ],
+                        "id": "75355397-627e-4a45-8c70-d412dcf2a817",
                         "ord": "a0"
                       },
                       {
@@ -652,20 +684,22 @@
                         "attrs": {
                           "href": "/book"
                         },
-                        "children": ["See our services"],
-                        "id": "9d9cbc87-8f5b-46e8-b798-f36e4b3645f8",
+                        "children": [
+                          "See our services"
+                        ],
+                        "id": "383e9d2e-e23f-4f84-8462-975727a8b413",
                         "ord": "a1"
                       }
                     ],
-                    "id": "94502117-433b-4162-8071-8f7d501cf7fb",
+                    "id": "0c1282ca-1531-43ff-90ed-ceff13f80ce2",
                     "ord": "a2"
                   }
                 ],
-                "id": "13385280-e15b-496b-a059-1ccee13a1b16",
+                "id": "e27e6d5b-3f4e-496f-8ea5-ab03fdeb2001",
                 "ord": "a2"
               }
             ],
-            "id": "55a9a39f-3698-4560-bf47-43987dc53ff4",
+            "id": "eef4c2a1-3a8b-49e0-a356-3c2f52fe2020",
             "ord": "a0"
           },
           {
@@ -692,8 +726,10 @@
                             "kind": "element",
                             "tag": "h2",
                             "class": "text-xl font-semibold text-base-content",
-                            "children": ["Licensed & insured"],
-                            "id": "6043322c-fe70-4c0b-ba84-477a1293516f",
+                            "children": [
+                              "Licensed & insured"
+                            ],
+                            "id": "dfd83ea1-cbae-48df-b535-3f2472b3bd94",
                             "ord": "a0"
                           },
                           {
@@ -703,11 +739,11 @@
                             "children": [
                               "Fully licensed, bonded and insured — our own uniformed crew on your roof, never a rotating cast of subcontractors."
                             ],
-                            "id": "9d70c8cc-6adf-49e0-8af4-21c7bdce2acb",
+                            "id": "322fb51f-dee2-459b-8ef9-7abd84f2bf94",
                             "ord": "a1"
                           }
                         ],
-                        "id": "c6fef00a-5375-4aa9-9a31-af212c378e59",
+                        "id": "29a93c31-c8ee-40a9-9224-b557afa1a1b6",
                         "ord": "a0"
                       },
                       {
@@ -719,8 +755,10 @@
                             "kind": "element",
                             "tag": "h2",
                             "class": "text-xl font-semibold text-base-content",
-                            "children": ["Workmanship & material warranty"],
-                            "id": "91cb06e4-83c1-441d-bf76-0f810fd2e91b",
+                            "children": [
+                              "Workmanship & material warranty"
+                            ],
+                            "id": "e6e446ea-639a-4d61-b788-a39ed52efc12",
                             "ord": "a0"
                           },
                           {
@@ -730,11 +768,11 @@
                             "children": [
                               "Every roof is backed in writing — the manufacturer’s material warranty plus our own workmanship guarantee on top."
                             ],
-                            "id": "f5da1270-51a7-4b58-82e2-4efcb7b00d8b",
+                            "id": "963d0ad8-d8d7-4b77-a2cf-a24db949a5a9",
                             "ord": "a1"
                           }
                         ],
-                        "id": "058a4462-a20a-4487-b6e2-346f46d7a73d",
+                        "id": "43c58ab5-1f04-4402-97fc-d95b6a5849d2",
                         "ord": "a1"
                       },
                       {
@@ -746,8 +784,10 @@
                             "kind": "element",
                             "tag": "h2",
                             "class": "text-xl font-semibold text-base-content",
-                            "children": ["Upfront, honest quotes"],
-                            "id": "fcd6cfb5-640a-4474-b80d-668db6ec3aa8",
+                            "children": [
+                              "Upfront, honest quotes"
+                            ],
+                            "id": "d6d3fc6f-8519-428d-b17c-9aa6400b6661",
                             "ord": "a0"
                           },
                           {
@@ -757,11 +797,11 @@
                             "children": [
                               "You get an itemized written price before anything starts. We tell you when a repair beats a replacement, even if it’s the smaller job."
                             ],
-                            "id": "d04d5aa8-a341-4a18-8384-e4f9f5493077",
+                            "id": "c03f3bf8-acbf-434a-8c3c-c599b6965a63",
                             "ord": "a1"
                           }
                         ],
-                        "id": "b81bfe9b-92d1-4e5d-b746-e3628d6fb527",
+                        "id": "7dccd682-fde3-4de6-a69f-a50e178aea39",
                         "ord": "a2"
                       },
                       {
@@ -773,8 +813,10 @@
                             "kind": "element",
                             "tag": "h2",
                             "class": "text-xl font-semibold text-base-content",
-                            "children": ["On-time crews"],
-                            "id": "9c99385c-4178-44ed-a364-5cab318c1acc",
+                            "children": [
+                              "On-time crews"
+                            ],
+                            "id": "059dc6d2-f521-45d1-8128-b50ef1d10ad5",
                             "ord": "a0"
                           },
                           {
@@ -784,23 +826,23 @@
                             "children": [
                               "A real arrival window and a clean, protected job site. Running behind? You hear from us first, and we haul away every scrap when we’re done."
                             ],
-                            "id": "da6f6799-9a5c-40a3-9c0c-1300e6f8f800",
+                            "id": "6a214b31-9e3d-469b-b443-718a8d67c2e7",
                             "ord": "a1"
                           }
                         ],
-                        "id": "3ed814cd-c1b0-43a3-ba8a-317b3aabeaf3",
+                        "id": "8175d595-f376-492b-973d-798256e0e50a",
                         "ord": "a3"
                       }
                     ],
-                    "id": "194d302b-9ecb-46a4-880c-ee7f2d9c00ea",
+                    "id": "f19822b1-19d7-4bff-831a-8fc6e4d5101b",
                     "ord": "a0"
                   }
                 ],
-                "id": "01a7de86-43e0-4334-86a4-55d4e6ced0a4",
+                "id": "350041fe-80e3-44c5-9313-3c563e19a6c4",
                 "ord": "a0"
               }
             ],
-            "id": "b7a4f2a5-e4be-4bdf-8bb1-6b86414cfa12",
+            "id": "a76afabf-2dbb-41b7-84b1-1ec9551ad167",
             "ord": "a1"
           },
           {
@@ -822,8 +864,10 @@
                         "kind": "element",
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
-                        "children": ["What we come out for"],
-                        "id": "7b7100a1-4590-4023-9de1-ab29b48260fc",
+                        "children": [
+                          "What we come out for"
+                        ],
+                        "id": "c4990a36-ff9b-4bc6-9105-150cb41adc48",
                         "ord": "a0"
                       },
                       {
@@ -833,11 +877,11 @@
                         "children": [
                           "The visits we book most. Pick one to see the price, how long it takes and the next open time — inspections and estimates are always free."
                         ],
-                        "id": "78812aec-228e-446f-a5d9-e7cda7a7a081",
+                        "id": "dcf13cda-b680-41da-a8f9-9a7697724ea4",
                         "ord": "a1"
                       }
                     ],
-                    "id": "8c73b56d-3db8-428f-b446-a9ffdb0e6201",
+                    "id": "78983e56-6a65-4a28-997b-e2e9f8b9a5aa",
                     "ord": "a0"
                   },
                   {
@@ -862,28 +906,34 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
-                                "children": ["Free roof inspection"],
-                                "id": "c1bb00d7-0570-4358-9d86-a78b0f7075c1",
+                                "children": [
+                                  "Free roof inspection"
+                                ],
+                                "id": "3e2f6683-b05c-4b56-ba0f-803c80a2f97e",
                                 "ord": "a0"
                               },
                               {
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-bold text-base-content",
-                                "children": ["$0"],
-                                "id": "99a606d4-8da9-4186-8958-df5441e05c5e",
+                                "children": [
+                                  "$0"
+                                ],
+                                "id": "f8473f8f-0c24-427e-85aa-f88bd5d32629",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "0ec9c7e8-f728-4229-b658-2e244a40ec28",
+                            "id": "b5c95b42-cac6-4a24-b323-8045bf1962d4",
                             "ord": "a0"
                           },
                           {
                             "kind": "element",
                             "tag": "p",
                             "class": "text-sm font-medium uppercase tracking-wide text-secondary",
-                            "children": ["45 min"],
-                            "id": "c9f74dea-9651-4f41-8337-b2a76e72db97",
+                            "children": [
+                              "45 min"
+                            ],
+                            "id": "0c03c274-91c0-40f5-8a10-ac94525e8dfd",
                             "ord": "a1"
                           },
                           {
@@ -893,11 +943,11 @@
                             "children": [
                               "A full check of every slope, valley and flashing — no charge."
                             ],
-                            "id": "ecb52c02-4448-4429-a7e6-f355108b0e3b",
+                            "id": "62ddc159-adb5-4c40-8f55-c743d332280b",
                             "ord": "a2"
                           }
                         ],
-                        "id": "1438fe2d-63ae-45eb-929f-60abd9a155e3",
+                        "id": "b1e9be01-715a-4056-a74b-84fc03abc968",
                         "ord": "a0"
                       },
                       {
@@ -917,28 +967,34 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
-                                "children": ["Roof repair visit"],
-                                "id": "ceb5e23c-ce2f-445d-b33d-03f22e4586e6",
+                                "children": [
+                                  "Roof repair visit"
+                                ],
+                                "id": "789441f6-7ca1-41dd-9fa1-9637434bc7f0",
                                 "ord": "a0"
                               },
                               {
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-bold text-base-content",
-                                "children": ["$189"],
-                                "id": "339d24d4-89b8-43b2-b539-3347af59e4bf",
+                                "children": [
+                                  "$189"
+                                ],
+                                "id": "d9d7c05d-527d-41b6-a744-58da68c9168d",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "85546488-a9a4-44f8-9df1-734e3a97b5b3",
+                            "id": "5bf31d5a-dfbb-42dd-ab5f-06056aaefdda",
                             "ord": "a0"
                           },
                           {
                             "kind": "element",
                             "tag": "p",
                             "class": "text-sm font-medium uppercase tracking-wide text-secondary",
-                            "children": ["1 hr 30 min"],
-                            "id": "a575d5da-de7c-4669-96f5-83fa26d2c595",
+                            "children": [
+                              "1 hr 30 min"
+                            ],
+                            "id": "ab8a4447-b298-48d1-a2fd-0e1e800c0cf8",
                             "ord": "a1"
                           },
                           {
@@ -948,11 +1004,11 @@
                             "children": [
                               "A leak, lifted flashing or missing shingle fixed for good."
                             ],
-                            "id": "e6ea9420-b4dd-4e27-8402-98d84473650c",
+                            "id": "83cf4c02-5304-43ba-8c27-2381baa124c3",
                             "ord": "a2"
                           }
                         ],
-                        "id": "eca03e69-f48a-43af-ab43-32d1583f5397",
+                        "id": "2a83f544-a323-41ad-a818-fa67905519a6",
                         "ord": "a1"
                       },
                       {
@@ -972,40 +1028,48 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
-                                "children": ["Replacement estimate"],
-                                "id": "03fddd61-16a8-4212-98ed-e771267807ec",
+                                "children": [
+                                  "Replacement estimate"
+                                ],
+                                "id": "e0ae8f44-397b-4dac-a5f7-01e6d728da44",
                                 "ord": "a0"
                               },
                               {
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-bold text-base-content",
-                                "children": ["$0"],
-                                "id": "65d6747b-5846-4f8c-bd25-e99da2c4c40e",
+                                "children": [
+                                  "$0"
+                                ],
+                                "id": "0b330d71-d383-42fc-8e05-28602a420a9c",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "0976214f-eb6f-40c5-a14c-a46ff249c44d",
+                            "id": "96c10479-6ecb-49b0-a0ee-599a1fa6ef8c",
                             "ord": "a0"
                           },
                           {
                             "kind": "element",
                             "tag": "p",
                             "class": "text-sm font-medium uppercase tracking-wide text-secondary",
-                            "children": ["1 hr"],
-                            "id": "e94120d6-a464-4abc-b3ee-97a3bc0a4841",
+                            "children": [
+                              "1 hr"
+                            ],
+                            "id": "18144e16-3772-4b06-af03-953f3dff8f4b",
                             "ord": "a1"
                           },
                           {
                             "kind": "element",
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
-                            "children": ["An honest, itemized written quote to re-roof your home."],
-                            "id": "444cc8fb-6dba-4700-a450-661fa4665f92",
+                            "children": [
+                              "An honest, itemized written quote to re-roof your home."
+                            ],
+                            "id": "0f5d5286-de61-48ff-8803-5d53039b605d",
                             "ord": "a2"
                           }
                         ],
-                        "id": "5d76616e-933c-451e-aff2-bdb5829fd9e3",
+                        "id": "2e0c1ee2-a96d-45f3-847c-8ba99430f535",
                         "ord": "a2"
                       },
                       {
@@ -1025,44 +1089,52 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
-                                "children": ["Gutter cleaning & repair"],
-                                "id": "0d045049-4b22-44b4-8e23-bd0b8b18ab13",
+                                "children": [
+                                  "Gutter cleaning & repair"
+                                ],
+                                "id": "134f33ce-7cda-41b1-bbb4-d089e3500efd",
                                 "ord": "a0"
                               },
                               {
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-bold text-base-content",
-                                "children": ["$149"],
-                                "id": "b4bf8344-27d1-4524-a90b-090dd8fb7d02",
+                                "children": [
+                                  "$149"
+                                ],
+                                "id": "2fc9309f-fcd1-4f2e-9b59-34399d5bdf92",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "a0abff16-aeec-4946-b626-263b71cc6fa4",
+                            "id": "e70a95ea-4001-4146-9348-e0f14ee6591b",
                             "ord": "a0"
                           },
                           {
                             "kind": "element",
                             "tag": "p",
                             "class": "text-sm font-medium uppercase tracking-wide text-secondary",
-                            "children": ["1 hr 30 min"],
-                            "id": "9b1440a1-5e18-490c-822d-3023db81cb51",
+                            "children": [
+                              "1 hr 30 min"
+                            ],
+                            "id": "a2f5aad1-9bc6-4d9e-a761-d524a32464f5",
                             "ord": "a1"
                           },
                           {
                             "kind": "element",
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
-                            "children": ["Gutters cleared, resecured and tested to run."],
-                            "id": "5b317c6a-691a-4463-80f7-784f459e1560",
+                            "children": [
+                              "Gutters cleared, resecured and tested to run."
+                            ],
+                            "id": "28610877-d518-4db1-a56f-46035475a112",
                             "ord": "a2"
                           }
                         ],
-                        "id": "36505575-3ee9-4d99-82ff-917722443f77",
+                        "id": "ec182ee0-a447-4436-a9bd-5b1bb70cc998",
                         "ord": "a3"
                       }
                     ],
-                    "id": "4a7fe08e-4d0f-423c-b294-69b477c61271",
+                    "id": "0dd45659-0288-4827-a837-ddd6d69339ec",
                     "ord": "a1"
                   },
                   {
@@ -1077,20 +1149,22 @@
                         "attrs": {
                           "href": "/book"
                         },
-                        "children": ["See everything & book"],
-                        "id": "5a177ae5-0f9e-463a-b718-4cddaf659b25",
+                        "children": [
+                          "See everything & book"
+                        ],
+                        "id": "f789c553-d557-4849-918a-49e055677bd4",
                         "ord": "a0"
                       }
                     ],
-                    "id": "5c55b23d-7ec8-4828-b44d-ffcc4553cf21",
+                    "id": "6715fab2-623c-4523-a785-3434c4590993",
                     "ord": "a2"
                   }
                 ],
-                "id": "b8e8694f-7e01-4cb7-a0a9-253395eec19a",
+                "id": "c12d0e5c-8602-446b-914c-591558c61352",
                 "ord": "a0"
               }
             ],
-            "id": "9d1607a2-ed8c-4f1d-a9a9-339d43e6c78f",
+            "id": "ac5329cd-8028-430c-b714-50a5e7f932dc",
             "ord": "a2"
           },
           {
@@ -1112,7 +1186,7 @@
                       "alt": "A roofer nailing down new shingles along a clean roof line",
                       "loading": "lazy"
                     },
-                    "id": "9ab98750-af13-4562-a1f8-fde1112a4fb2",
+                    "id": "3f4e9104-9d25-4e27-a005-5c15fcb52e56",
                     "ord": "a0"
                   },
                   {
@@ -1124,8 +1198,10 @@
                         "kind": "element",
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
-                        "children": ["Built to last, and backed to prove it"],
-                        "id": "24b79af8-a876-4e4c-9664-96b95d78fb4b",
+                        "children": [
+                          "Built to last, and backed to prove it"
+                        ],
+                        "id": "0bd1604a-1caf-43f6-ba81-1e09f8a49b83",
                         "ord": "a0"
                       },
                       {
@@ -1135,7 +1211,7 @@
                         "children": [
                           "We install the roof the right way — proper underlayment, sealed valleys, flashing done by hand — because the shortcuts you can’t see are the ones that leak in five years."
                         ],
-                        "id": "4990d0ca-97ab-4cdb-8206-921167d48832",
+                        "id": "ac20fe15-0215-47d1-b1df-34d77dd00da0",
                         "ord": "a1"
                       },
                       {
@@ -1145,7 +1221,7 @@
                         "children": [
                           "Then we stand behind it. Every replacement carries the manufacturer’s material warranty and our own workmanship guarantee in writing, so if anything isn’t right, one call brings us back."
                         ],
-                        "id": "5f1e13f2-26ae-4fe3-9e29-ba0b097360e6",
+                        "id": "d3a78512-a7b7-4785-aff5-2da8813d8672",
                         "ord": "a2"
                       },
                       {
@@ -1160,24 +1236,26 @@
                             "attrs": {
                               "href": "/book"
                             },
-                            "children": ["Book a free inspection"],
-                            "id": "c3ff918c-def3-45f5-a8cf-632791bfa204",
+                            "children": [
+                              "Book a free inspection"
+                            ],
+                            "id": "80bbf62c-d056-412c-b4a2-279990bde852",
                             "ord": "a0"
                           }
                         ],
-                        "id": "996ba093-58b9-437a-9cdb-bbbbaab93821",
+                        "id": "80e69a22-695a-4e4e-b1d9-d71bc6668c12",
                         "ord": "a3"
                       }
                     ],
-                    "id": "c8f00a6b-3aa9-411f-8108-55c96c7c0631",
+                    "id": "34c5bd67-5c61-4965-be27-5e09e9d575a5",
                     "ord": "a1"
                   }
                 ],
-                "id": "a2e25ff3-77f5-477e-9864-d2175def57ce",
+                "id": "2c14d3ba-9c06-462d-b0a1-1d10e5572b20",
                 "ord": "a0"
               }
             ],
-            "id": "a4ee8d45-fea0-41a7-89a6-c6dce9675073",
+            "id": "fb9529f8-1481-4555-8f44-e89c758626d0",
             "ord": "a3"
           },
           {
@@ -1199,8 +1277,10 @@
                         "kind": "element",
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
-                        "children": ["The crew who’ll be on your roof"],
-                        "id": "2fb84e92-17e1-45ec-b989-5c605de4438c",
+                        "children": [
+                          "The crew who’ll be on your roof"
+                        ],
+                        "id": "055c2ceb-628d-4048-ac64-f6ea6c056ed3",
                         "ord": "a0"
                       },
                       {
@@ -1210,11 +1290,11 @@
                         "children": [
                           "The same familiar faces every visit — licensed, background-checked, and glad to explain what they’re doing and why."
                         ],
-                        "id": "a42c8c76-515d-4106-800b-dcde19a017a7",
+                        "id": "db492bd0-f7e3-4f17-8c6b-04533ea841f5",
                         "ord": "a1"
                       }
                     ],
-                    "id": "5b28b803-7059-40df-8172-5a83105a9734",
+                    "id": "4bc39f78-f538-4772-8bf3-fd8b6072b2a7",
                     "ord": "a0"
                   },
                   {
@@ -1236,7 +1316,7 @@
                               "alt": "Ray Sullivan, owner and lead roofer",
                               "loading": "lazy"
                             },
-                            "id": "8190cf42-981f-4132-9350-5858d5239d62",
+                            "id": "b50791b8-64ad-476a-89bf-d7414082bc45",
                             "ord": "a0"
                           },
                           {
@@ -1248,16 +1328,20 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
-                                "children": ["Ray Sullivan"],
-                                "id": "ae7ec061-1bea-40b6-89fc-d9437a8a8bca",
+                                "children": [
+                                  "Ray Sullivan"
+                                ],
+                                "id": "cc1fbb8d-170e-40fb-8041-0b8afc083744",
                                 "ord": "a0"
                               },
                               {
                                 "kind": "element",
                                 "tag": "p",
                                 "class": "text-sm font-medium uppercase tracking-wide text-secondary",
-                                "children": ["Owner & lead roofer"],
-                                "id": "0521bbfc-133d-450a-a13c-5d4ca633515b",
+                                "children": [
+                                  "Owner & lead roofer"
+                                ],
+                                "id": "2e0e9260-f6ff-4fee-bca0-1392b13dbe2c",
                                 "ord": "a1"
                               },
                               {
@@ -1267,15 +1351,15 @@
                                 "children": [
                                   "Thirty years on roofs. Ray does the inspections, gives every quote straight, and answers the phone himself."
                                 ],
-                                "id": "9fadbb1c-a5e7-4d47-ba5d-42a995eb96e3",
+                                "id": "24feec72-12a7-46b7-9187-3c84211f8173",
                                 "ord": "a2"
                               }
                             ],
-                            "id": "7bcb8d90-fde5-438e-925e-0c660bdc710e",
+                            "id": "0deb692c-6b6b-4306-887c-5ea7ce6c8a7c",
                             "ord": "a1"
                           }
                         ],
-                        "id": "7803ca78-776a-4f8f-b85a-30c7eae3979d",
+                        "id": "a3b58e00-8aae-4d6b-938d-9a65820199bd",
                         "ord": "a0"
                       },
                       {
@@ -1292,7 +1376,7 @@
                               "alt": "Luis Ferrara, replacement and install lead",
                               "loading": "lazy"
                             },
-                            "id": "e3325139-b519-4a3b-808c-73989ad882d0",
+                            "id": "e0f1d5a1-68ac-4d4e-9312-5f6d6daf7872",
                             "ord": "a0"
                           },
                           {
@@ -1304,16 +1388,20 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
-                                "children": ["Luis Ferrara"],
-                                "id": "8bba8424-abd5-44ab-a231-969b912e64d7",
+                                "children": [
+                                  "Luis Ferrara"
+                                ],
+                                "id": "347454e7-7f88-451e-b87c-c85ea1409994",
                                 "ord": "a0"
                               },
                               {
                                 "kind": "element",
                                 "tag": "p",
                                 "class": "text-sm font-medium uppercase tracking-wide text-secondary",
-                                "children": ["Replacement & install lead"],
-                                "id": "4c8b49ec-eff3-451f-88b5-aa92362c9fed",
+                                "children": [
+                                  "Replacement & install lead"
+                                ],
+                                "id": "2d91b9d3-e44b-4757-9e97-e87c05a60307",
                                 "ord": "a1"
                               },
                               {
@@ -1323,15 +1411,15 @@
                                 "children": [
                                   "Full re-roofs and installs. Luis runs the crew and leaves a job site cleaner than he found it."
                                 ],
-                                "id": "c29f5231-2b8b-454e-9617-97d027ca2027",
+                                "id": "700619fe-2894-4a2a-abac-5bd256d45dee",
                                 "ord": "a2"
                               }
                             ],
-                            "id": "9004bf49-ec56-48a8-a379-63c7f1e239eb",
+                            "id": "026f1a7f-d38a-48bb-be11-15ec0d39ccad",
                             "ord": "a1"
                           }
                         ],
-                        "id": "a41e4a24-7cb3-4961-b0db-6cc0eb3a9a77",
+                        "id": "5ec105aa-17bb-4620-96bd-b280c0add4b5",
                         "ord": "a1"
                       },
                       {
@@ -1348,7 +1436,7 @@
                               "alt": "Dale Hutchins, gutter and maintenance tech",
                               "loading": "lazy"
                             },
-                            "id": "d34b62fe-7395-45ff-b0b0-49976edce00c",
+                            "id": "9de60dd7-6068-445b-a991-4cd536cbd75b",
                             "ord": "a0"
                           },
                           {
@@ -1360,16 +1448,20 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
-                                "children": ["Dale Hutchins"],
-                                "id": "47a41c02-570d-4774-9535-20e9aa77c8c0",
+                                "children": [
+                                  "Dale Hutchins"
+                                ],
+                                "id": "ebb3d552-5afb-4526-b904-b880e3131e8b",
                                 "ord": "a0"
                               },
                               {
                                 "kind": "element",
                                 "tag": "p",
                                 "class": "text-sm font-medium uppercase tracking-wide text-secondary",
-                                "children": ["Gutter & maintenance tech"],
-                                "id": "32f4a6c9-9181-41ce-9ac7-9d85dd40c945",
+                                "children": [
+                                  "Gutter & maintenance tech"
+                                ],
+                                "id": "26bf267a-eb65-438a-be73-1fc80c4e1543",
                                 "ord": "a1"
                               },
                               {
@@ -1379,27 +1471,27 @@
                                 "children": [
                                   "Gutters, tune-ups and the small fixes that keep a good roof going. Dale is the reason yours lasts longer."
                                 ],
-                                "id": "ef6425eb-ed67-4f0d-9264-4d0a1702bf88",
+                                "id": "225bc2b1-1c29-461d-af67-e872c108a1f6",
                                 "ord": "a2"
                               }
                             ],
-                            "id": "adb776da-5b65-45e9-a7fa-3580ff12347c",
+                            "id": "b825ba27-4477-49a9-b139-131eea8e94ed",
                             "ord": "a1"
                           }
                         ],
-                        "id": "f9f9bb22-b50c-4d64-ae07-22fb3240c78c",
+                        "id": "16f3abee-b7b9-43db-9b89-4ba366614ca0",
                         "ord": "a2"
                       }
                     ],
-                    "id": "00afb5d5-1523-49b6-83a7-d0c5fcc332c5",
+                    "id": "c1084946-894b-4e8f-afac-d0afaf7756e2",
                     "ord": "a1"
                   }
                 ],
-                "id": "f4b4ba1c-3dca-4b62-b74c-867ebd6fc141",
+                "id": "a738d8e5-bfe2-42c1-8a09-b8552c7c706e",
                 "ord": "a0"
               }
             ],
-            "id": "d3f2ccb4-af8e-4786-a501-0ee9c053d928",
+            "id": "30e00325-ae7f-441a-8e05-8d709714b116",
             "ord": "a4"
           },
           {
@@ -1419,23 +1511,25 @@
                     "children": [
                       "“Two other companies told us we needed a full replacement. Ray climbed up, took photos, and showed us it was a flashing repair — a fraction of the price. That honesty is why we’ll never call anyone else.”"
                     ],
-                    "id": "32963081-1ada-44c4-ba47-9f550243e5b1",
+                    "id": "b25c3395-3522-465f-8fe7-671010130458",
                     "ord": "a0"
                   },
                   {
                     "kind": "element",
                     "tag": "p",
                     "class": "text-sm font-semibold uppercase tracking-wide opacity-80",
-                    "children": ["The Delgados, Oakridge homeowners"],
-                    "id": "2bf8bbfa-317b-4047-8243-8c35aa25c975",
+                    "children": [
+                      "The Delgados, Oakridge homeowners"
+                    ],
+                    "id": "0fde3cdb-f704-4334-af6b-685f4cfc0dce",
                     "ord": "a1"
                   }
                 ],
-                "id": "f2cfe484-3466-4a75-bc4f-aca5caf7b882",
+                "id": "7ac0b54f-d766-440f-835c-fcb2d804b4da",
                 "ord": "a0"
               }
             ],
-            "id": "ce9e09e4-1cf1-478e-bd4f-2278a67e35aa",
+            "id": "7381a23e-128e-4955-8e89-cb4198224514",
             "ord": "a5"
           },
           {
@@ -1452,8 +1546,10 @@
                     "kind": "element",
                     "tag": "h2",
                     "class": "text-3xl font-bold tracking-tight @3xl:text-4xl",
-                    "children": ["Not sure what your roof needs? Let’s take a look."],
-                    "id": "d86675e1-3058-4560-8de3-964707d53466",
+                    "children": [
+                      "Not sure what your roof needs? Let’s take a look."
+                    ],
+                    "id": "7655c967-36bb-42ac-919a-1d04e53e9e1f",
                     "ord": "a0"
                   },
                   {
@@ -1463,7 +1559,7 @@
                     "children": [
                       "Book a free inspection online in about a minute. Pick a day, and we’ll confirm your arrival window."
                     ],
-                    "id": "9089e699-51c1-456a-a026-3460b64e3112",
+                    "id": "d62ea641-068d-41df-a7c9-4bb7ff3527f4",
                     "ord": "a1"
                   },
                   {
@@ -1473,16 +1569,18 @@
                     "attrs": {
                       "href": "/book"
                     },
-                    "children": ["Book a free inspection"],
-                    "id": "5047cae1-aefd-4d67-b02b-dab6f58f2c95",
+                    "children": [
+                      "Book a free inspection"
+                    ],
+                    "id": "9c2f5c58-f514-491f-8fab-2b8120ed96a2",
                     "ord": "a2"
                   }
                 ],
-                "id": "c7cda701-f902-4c7c-ba5f-9a06fd74df83",
+                "id": "5866f8e4-f6d6-4584-a243-ccd7817b9771",
                 "ord": "a0"
               }
             ],
-            "id": "4ce2df01-5f3e-469a-8383-53c8e6f2174f",
+            "id": "f6cedf71-b905-47c1-858e-cecea5691ca9",
             "ord": "a6"
           }
         ]
@@ -1499,7 +1597,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "cb19a025-44cb-47ee-b078-1b58f9741a25",
+        "id": "c60036f8-5790-4ae6-a66a-dea0718ceac1",
         "children": [
           {
             "kind": "element",
@@ -1515,14 +1613,14 @@
                   "alt": "A roofer nailing down new shingles along a clean roof line",
                   "loading": "eager"
                 },
-                "id": "7bfac227-c61b-4a49-a13a-bac2f0934ea7",
+                "id": "3f374632-15a5-470a-99eb-c6f0846ac858",
                 "ord": "a0"
               },
               {
                 "kind": "element",
                 "tag": "div",
                 "class": "absolute inset-0 bg-black/65",
-                "id": "48f8fe65-4f62-4780-8b66-9e21651d5e33",
+                "id": "e582993f-2c7a-4ceb-8bb5-1efe0e4a630b",
                 "ord": "a1"
               },
               {
@@ -1534,8 +1632,10 @@
                     "kind": "element",
                     "tag": "h1",
                     "class": "max-w-3xl text-4xl font-bold leading-tight tracking-tight @2xl:text-5xl @3xl:text-6xl",
-                    "children": ["Book your roof visit"],
-                    "id": "d86d5fca-7573-4c55-998e-c2f7d6b7cab3",
+                    "children": [
+                      "Book your roof visit"
+                    ],
+                    "id": "c5e9dec1-b8f9-45a1-bc48-9803340c0b9e",
                     "ord": "a0"
                   },
                   {
@@ -1545,7 +1645,7 @@
                     "children": [
                       "Choose the visit you need to see the price, how long it takes and the next open time — then pick your roofer and day. Inspections and estimates are always free."
                     ],
-                    "id": "f968a4d3-88a6-45b6-8b33-e6519e2d0d0d",
+                    "id": "cdaf121f-a6f7-4919-acc6-ce78fa45019b",
                     "ord": "a1"
                   },
                   {
@@ -1560,20 +1660,22 @@
                         "attrs": {
                           "href": "/book"
                         },
-                        "children": ["See services below"],
-                        "id": "5f7d8a75-cc48-4da8-83cb-8f3b716ae286",
+                        "children": [
+                          "See services below"
+                        ],
+                        "id": "388fb853-3f8b-4d5b-bf8a-421f60ba51d8",
                         "ord": "a0"
                       }
                     ],
-                    "id": "30840034-ce80-40a5-be39-3ea8c5412fa0",
+                    "id": "689ff735-6da6-46b3-b57b-fcac5b1af1ec",
                     "ord": "a2"
                   }
                 ],
-                "id": "94c3ddda-d585-40c1-ad3d-337fcc17de14",
+                "id": "0fb10802-aa46-4553-a134-91ab9e20ccdd",
                 "ord": "a2"
               }
             ],
-            "id": "caec76e4-16fc-4acd-bf60-19167dd83e18",
+            "id": "ebc9a028-0010-4f8b-be5e-c0ad761d431b",
             "ord": "a0"
           },
           {
@@ -1581,7 +1683,7 @@
             "component": "scheduling.services",
             "class": "mx-auto w-full max-w-5xl px-6 py-8",
             "locked": "host",
-            "id": "f03f3b11-399c-4376-910c-54809e8fb724",
+            "id": "5ef6dd6b-0938-4eec-b7a0-b4bb9ade41cb",
             "ord": "a1"
           },
           {
@@ -1603,8 +1705,10 @@
                         "kind": "element",
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
-                        "children": ["Good to know"],
-                        "id": "920ff008-b6e7-42da-93be-ebbe4f24f03f",
+                        "children": [
+                          "Good to know"
+                        ],
+                        "id": "b6f6e93c-72dd-4ad7-ad5f-53b1de5ae61c",
                         "ord": "a0"
                       },
                       {
@@ -1614,11 +1718,11 @@
                         "children": [
                           "What happens once you pick a time — and how to change it if something comes up."
                         ],
-                        "id": "8b615efa-9519-409d-9a9a-5836e7411595",
+                        "id": "b1a78486-02c0-4d46-8dbd-05ba9d27d4b9",
                         "ord": "a1"
                       }
                     ],
-                    "id": "3f868375-2c44-4c22-a088-c27a2b92ff1c",
+                    "id": "16ed59ec-bca4-4f28-8ba3-24f05d5ad660",
                     "ord": "a0"
                   },
                   {
@@ -1635,8 +1739,10 @@
                             "kind": "element",
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
-                            "children": ["Standard visit"],
-                            "id": "0ea529f3-2246-436e-b5cc-2dab2c8c3f47",
+                            "children": [
+                              "Standard visit"
+                            ],
+                            "id": "2380024a-30a8-4086-9c4c-b1ac9416ea7a",
                             "ord": "a0"
                           },
                           {
@@ -1646,7 +1752,7 @@
                             "children": [
                               "Give us at least 24 hours’ notice to move or cancel a visit. We text a reminder the day before and confirm the arrival window when the crew is on the way."
                             ],
-                            "id": "5bbb5285-4cca-4a41-8413-d50282d1bf38",
+                            "id": "55668b4c-da2b-4f0c-9e07-77ff73dbb44c",
                             "ord": "a1"
                           },
                           {
@@ -1656,23 +1762,23 @@
                             "children": [
                               "No deposit to book. Change or cancel free up to 24 hours before."
                             ],
-                            "id": "67812dfe-7ea0-42bc-a021-8dea2cfcda7d",
+                            "id": "b873a68d-a735-49cb-ad86-282540ac44b2",
                             "ord": "a2"
                           }
                         ],
-                        "id": "6cc236ca-7ac2-496c-b5d6-1a89fe42ca34",
+                        "id": "3ccd4c0b-12c7-4221-a672-28469ecc2203",
                         "ord": "a0"
                       }
                     ],
-                    "id": "e125d847-a858-4dcd-a0b6-f653eddc443c",
+                    "id": "70176dbd-6d57-4090-9d84-888d2fb09e9a",
                     "ord": "a1"
                   }
                 ],
-                "id": "96498fea-594b-4f39-a562-727eac15ddee",
+                "id": "e7661e82-a6dc-4421-8fc9-89ef46b73354",
                 "ord": "a0"
               }
             ],
-            "id": "5b92758b-35d8-4f4a-8f60-613c33a4c92f",
+            "id": "16123dec-f8eb-4264-808b-b30a85b3e22d",
             "ord": "a2"
           }
         ]
@@ -1689,7 +1795,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "3b97005a-4031-4453-b907-3c3546d01bcb",
+        "id": "8375903b-9588-4357-af71-248b940fdee7",
         "children": [
           {
             "kind": "element",
@@ -1710,7 +1816,7 @@
                       "alt": "A freshly finished asphalt-shingle roof on a suburban home under a clear sky",
                       "loading": "lazy"
                     },
-                    "id": "224368ed-c5f5-4cec-980e-72aecff88d7a",
+                    "id": "6b11ebb6-c523-4319-8db8-8d50fb629fe5",
                     "ord": "a0"
                   },
                   {
@@ -1722,8 +1828,10 @@
                         "kind": "element",
                         "tag": "h1",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
-                        "children": ["About Summit Roofing"],
-                        "id": "572d8626-ba17-40e8-aea6-bb9b4768037a",
+                        "children": [
+                          "About Summit Roofing"
+                        ],
+                        "id": "eb5d9e39-b25c-400d-a982-44541274dbb0",
                         "ord": "a0"
                       },
                       {
@@ -1733,7 +1841,7 @@
                         "children": [
                           "Summit Roofing started with one truck, one crew and a simple rule: tell homeowners the truth about their roof, do the work right, and stand behind it. Two decades later, that rule hasn’t changed."
                         ],
-                        "id": "7a121c1f-2f1c-4a62-9b0d-2ee5193f3472",
+                        "id": "1fc2532f-942b-43c3-bfab-fec3843aec48",
                         "ord": "a1"
                       },
                       {
@@ -1743,7 +1851,7 @@
                         "children": [
                           "We’re a local, family-run roofing company serving homeowners across the area. No high-pressure sales, no scare tactics, no vanishing subcontractors — just honest quotes, quality work, and a roof that’s backed in writing."
                         ],
-                        "id": "0fc3c358-b351-40d0-859d-78ba5ca0c86a",
+                        "id": "3ca64bc2-75d9-4d50-88a8-e4a86f661b14",
                         "ord": "a2"
                       },
                       {
@@ -1758,24 +1866,26 @@
                             "attrs": {
                               "href": "/book"
                             },
-                            "children": ["Book a free inspection"],
-                            "id": "2a62393b-cb78-429a-87d8-7e48882cb9c2",
+                            "children": [
+                              "Book a free inspection"
+                            ],
+                            "id": "fb4cb178-c0d3-4bf6-b29f-43d6d5bfd0a3",
                             "ord": "a0"
                           }
                         ],
-                        "id": "c11a9d0e-fce0-416d-9a66-b231b8c42541",
+                        "id": "7bd3f864-08dd-4bfb-9cd2-f1442ddaef62",
                         "ord": "a3"
                       }
                     ],
-                    "id": "2bc61156-5e89-43c5-b3cb-97d1dab4c437",
+                    "id": "f4f58c66-e56a-4cb9-b1f9-93d7a6cc2645",
                     "ord": "a1"
                   }
                 ],
-                "id": "16cca1f7-26d1-4124-acbe-09aa8cbd8474",
+                "id": "269188e0-9443-4836-98d9-48ada8186c4b",
                 "ord": "a0"
               }
             ],
-            "id": "5f8d9184-d916-475f-b9a5-9d66c86d6cda",
+            "id": "2cf281ec-24f4-4703-b8a2-15960dbe1e5c",
             "ord": "a0"
           },
           {
@@ -1792,8 +1902,10 @@
                     "kind": "element",
                     "tag": "h2",
                     "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
-                    "children": ["How we work"],
-                    "id": "fce8cc3f-2040-4d74-97b3-316309ad85dd",
+                    "children": [
+                      "How we work"
+                    ],
+                    "id": "47450b36-28b4-4d7c-9343-06b480e2cd09",
                     "ord": "a0"
                   },
                   {
@@ -1810,8 +1922,10 @@
                             "kind": "element",
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
-                            "children": ["An honest assessment first"],
-                            "id": "022b014c-4364-4764-b44d-b2bd8b46031c",
+                            "children": [
+                              "An honest assessment first"
+                            ],
+                            "id": "ae893a9c-373b-4031-9414-accb130faa27",
                             "ord": "a0"
                           },
                           {
@@ -1821,11 +1935,11 @@
                             "children": [
                               "We inspect the whole roof and show you the photos. If a repair will do, we say so — we’d rather earn the replacement when you actually need it."
                             ],
-                            "id": "d806bd25-c787-45bf-bbb9-7bbf9759ca58",
+                            "id": "c8f07127-6e22-42e8-9576-1987db68c31a",
                             "ord": "a1"
                           }
                         ],
-                        "id": "165affac-a958-4de4-a84e-9247cb720b0b",
+                        "id": "0ce35950-b49d-4735-8cc4-a1a28569cb5c",
                         "ord": "a0"
                       },
                       {
@@ -1837,8 +1951,10 @@
                             "kind": "element",
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
-                            "children": ["Clean, protected work"],
-                            "id": "c5a28224-7495-4921-83eb-aa2d1bd53869",
+                            "children": [
+                              "Clean, protected work"
+                            ],
+                            "id": "38452568-4008-4d3a-ab05-7834739a967c",
                             "ord": "a0"
                           },
                           {
@@ -1848,11 +1964,11 @@
                             "children": [
                               "Tarps over the landscaping, a magnet sweep for every nail, and the old material hauled away. We treat your home the way we’d want ours treated."
                             ],
-                            "id": "8f36e445-f044-4a6a-a261-666605fc59e1",
+                            "id": "682ed2ec-0ebf-4fbc-8b5b-8bddf6b50530",
                             "ord": "a1"
                           }
                         ],
-                        "id": "c087e2d1-a48e-4636-8bdd-32211dd0c3cd",
+                        "id": "157d98d1-bd66-4c88-8472-44e69e345e9c",
                         "ord": "a1"
                       },
                       {
@@ -1864,8 +1980,10 @@
                             "kind": "element",
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
-                            "children": ["Guaranteed and here to stay"],
-                            "id": "16cb3ddf-fbf5-4ece-a016-a12ac415195a",
+                            "children": [
+                              "Guaranteed and here to stay"
+                            ],
+                            "id": "b8835dd6-4400-420d-beb3-1fd50f734548",
                             "ord": "a0"
                           },
                           {
@@ -1875,23 +1993,23 @@
                             "children": [
                               "Manufacturer material warranties plus our own workmanship guarantee, all in writing — and we’re a local call away if anything ever needs a second look."
                             ],
-                            "id": "c6bc6a6c-d663-48fa-ad22-262e16103c97",
+                            "id": "cbf124f6-aa05-42ff-b18e-8718c7b22867",
                             "ord": "a1"
                           }
                         ],
-                        "id": "f68c6a62-da60-4b99-b2f9-1cfbcbf0f14f",
+                        "id": "38fba22e-03b7-4d0a-884b-35aae9579484",
                         "ord": "a2"
                       }
                     ],
-                    "id": "26f5f7c0-1cd0-4081-93a0-15ce7e5f933d",
+                    "id": "5ead6eaa-8cb1-4a09-b775-e4dda2f783e9",
                     "ord": "a1"
                   }
                 ],
-                "id": "2ffd490a-7363-4c2b-b9d9-79d3298630a9",
+                "id": "4aabcf97-8036-48bf-b71b-11b2d1ee5c6d",
                 "ord": "a0"
               }
             ],
-            "id": "4894a227-4962-4714-afef-9707d4db1ba1",
+            "id": "5165357e-683d-4f5f-99c8-c72a0b7d4033",
             "ord": "a1"
           }
         ]
@@ -1908,7 +2026,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "84d7a46b-6db2-468f-b2e4-29848279fb92",
+        "id": "d8f19961-d9b0-4049-bbc8-0d6e05837f88",
         "children": [
           {
             "kind": "element",
@@ -1929,8 +2047,10 @@
                         "kind": "element",
                         "tag": "h1",
                         "class": "text-4xl font-bold tracking-tight text-base-content @3xl:text-5xl",
-                        "children": ["Get in touch"],
-                        "id": "80e3f802-db1d-493d-89ac-06bc1cfa95d7",
+                        "children": [
+                          "Get in touch"
+                        ],
+                        "id": "3d5985e8-16f0-4b1c-83f6-60cd5415be28",
                         "ord": "a0"
                       },
                       {
@@ -1940,11 +2060,11 @@
                         "children": [
                           "Questions before you book? Send a note and Summit Roofing will get back to you — usually the same day."
                         ],
-                        "id": "b49acc2c-04e8-488e-8135-62a7ae4ac4a3",
+                        "id": "79a6b479-2aca-4774-8453-9cbc14a81ffa",
                         "ord": "a1"
                       }
                     ],
-                    "id": "4eb36473-ddba-4bc4-b6af-7f4452c1f5d7",
+                    "id": "d6237f1d-24b0-44bf-aa27-9600172b78be",
                     "ord": "a0"
                   },
                   {
@@ -1956,8 +2076,10 @@
                         "kind": "element",
                         "tag": "span",
                         "class": "text-base font-medium text-base-content",
-                        "children": ["Call us"],
-                        "id": "550b3936-db3c-40e0-b33b-4531f287b5d8",
+                        "children": [
+                          "Call us"
+                        ],
+                        "id": "b87801db-b7bc-48d3-b29d-9d2c506dc7a7",
                         "ord": "a0"
                       },
                       {
@@ -1968,12 +2090,14 @@
                           {
                             "kind": "element",
                             "tag": "span",
-                            "children": ["(555) 123-4567"],
+                            "children": [
+                              "(555) 123-4567"
+                            ],
                             "data": {
                               "kind": "value",
                               "ref": "site.identity.phone"
                             },
-                            "id": "da4db9bb-f5c1-43ee-b48f-38e67a251e68",
+                            "id": "a00136ff-f24a-4f50-8523-b9b2c9decf5d",
                             "ord": "a0"
                           }
                         ],
@@ -1982,7 +2106,7 @@
                           "ref": "site.identity.phoneHref",
                           "attr": "href"
                         },
-                        "id": "68311e08-f5ca-4554-a1f1-15f72ac85bc6",
+                        "id": "a8b5ed2e-9fda-4a61-b30d-6853eef525c0",
                         "ord": "a1"
                       }
                     ],
@@ -1990,7 +2114,7 @@
                       "kind": "visible",
                       "ref": "site.identity.phone"
                     },
-                    "id": "51ba7994-feae-4550-93f1-8ef041a1a887",
+                    "id": "c3eef411-3770-4321-b7ac-55062ee9e356",
                     "ord": "a1"
                   },
                   {
@@ -2002,8 +2126,10 @@
                         "kind": "element",
                         "tag": "span",
                         "class": "text-base font-medium text-base-content",
-                        "children": ["Email us"],
-                        "id": "10296f81-647e-47e2-a1fb-681eb6c529fa",
+                        "children": [
+                          "Email us"
+                        ],
+                        "id": "3bcc8a97-0573-401b-bea4-0be557878158",
                         "ord": "a0"
                       },
                       {
@@ -2014,12 +2140,14 @@
                           {
                             "kind": "element",
                             "tag": "span",
-                            "children": ["hello@yourbusiness.com"],
+                            "children": [
+                              "hello@yourbusiness.com"
+                            ],
                             "data": {
                               "kind": "value",
                               "ref": "site.identity.email"
                             },
-                            "id": "2c4a9abb-f8d9-4303-9e21-1b21dd1fa06c",
+                            "id": "5f73105a-7c6c-4375-b052-4de73bb0ec8c",
                             "ord": "a0"
                           }
                         ],
@@ -2028,7 +2156,7 @@
                           "ref": "site.identity.emailHref",
                           "attr": "href"
                         },
-                        "id": "5dc350fc-5f6f-447f-80e2-2e6ef91f07ab",
+                        "id": "77424c13-aa56-434f-8532-051c9e04f889",
                         "ord": "a1"
                       }
                     ],
@@ -2036,7 +2164,7 @@
                       "kind": "visible",
                       "ref": "site.identity.email"
                     },
-                    "id": "f60cba88-28dd-4a3a-9b01-34cb8579a55e",
+                    "id": "3917a231-968f-4b06-a421-1a1441eea94a",
                     "ord": "a2"
                   },
                   {
@@ -2053,8 +2181,10 @@
                             "kind": "element",
                             "tag": "span",
                             "class": "text-base font-medium text-base-content",
-                            "children": ["Your name"],
-                            "id": "0d22bb94-1c7d-4d4c-a261-d43e74d3a77a",
+                            "children": [
+                              "Your name"
+                            ],
+                            "id": "67400120-04ec-4cba-9346-0c8c7253dea3",
                             "ord": "a0"
                           },
                           {
@@ -2066,11 +2196,11 @@
                               "name": "name",
                               "required": true
                             },
-                            "id": "21c3c4a6-c9fd-4608-ac63-c1e41450a4f9",
+                            "id": "97cac5a8-94fb-4026-8731-95ee951d0a20",
                             "ord": "a1"
                           }
                         ],
-                        "id": "c13bf1c1-3e61-4a2f-b1cf-eee7d9660d8a",
+                        "id": "84a17252-e058-404b-8474-36694b3d02f1",
                         "ord": "a0"
                       },
                       {
@@ -2082,8 +2212,10 @@
                             "kind": "element",
                             "tag": "span",
                             "class": "text-base font-medium text-base-content",
-                            "children": ["Email address"],
-                            "id": "14bc80db-4ec4-4ad2-9620-73699d41428a",
+                            "children": [
+                              "Email address"
+                            ],
+                            "id": "6d865c59-a888-4934-82d9-c76ba0c60dd8",
                             "ord": "a0"
                           },
                           {
@@ -2095,11 +2227,11 @@
                               "name": "email",
                               "required": true
                             },
-                            "id": "78036c55-d081-40be-b7ec-9a8e4b0627ff",
+                            "id": "c5207b1d-daad-4da4-9c64-887325625d5f",
                             "ord": "a1"
                           }
                         ],
-                        "id": "408e9ffe-db57-427c-9e74-a3034c795d95",
+                        "id": "e7939d32-bcbc-4727-b9f6-4da07769c8c7",
                         "ord": "a1"
                       },
                       {
@@ -2111,8 +2243,10 @@
                             "kind": "element",
                             "tag": "span",
                             "class": "text-base font-medium text-base-content",
-                            "children": ["Phone number"],
-                            "id": "e19751ab-7849-44d5-b7eb-d0ea4e0287cd",
+                            "children": [
+                              "Phone number"
+                            ],
+                            "id": "d9fc50b7-ceed-42b7-9b04-00a11e2670f7",
                             "ord": "a0"
                           },
                           {
@@ -2123,11 +2257,11 @@
                               "type": "tel",
                               "name": "phone"
                             },
-                            "id": "50e6ceb6-5e2e-48ef-9d25-03fc55c5c40a",
+                            "id": "72629d0f-771b-46d9-957f-e0b4847a6abe",
                             "ord": "a1"
                           }
                         ],
-                        "id": "3938bd5c-058d-4495-a5b9-15dc65a979fa",
+                        "id": "a04ee065-1bbe-4351-9d54-f4f0e4bbe434",
                         "ord": "a2"
                       },
                       {
@@ -2139,8 +2273,10 @@
                             "kind": "element",
                             "tag": "span",
                             "class": "text-base font-medium text-base-content",
-                            "children": ["How can we help?"],
-                            "id": "cfae33ad-d2c8-46bb-9e60-275baa838ab3",
+                            "children": [
+                              "How can we help?"
+                            ],
+                            "id": "e489bf60-06f0-412c-ae5e-c5b3142ba6fe",
                             "ord": "a0"
                           },
                           {
@@ -2150,11 +2286,11 @@
                             "attrs": {
                               "name": "message"
                             },
-                            "id": "331b3b13-5818-46a7-aa1f-c3ae684b41ee",
+                            "id": "06d9e277-7a83-446c-b1ae-f3cb90126903",
                             "ord": "a1"
                           }
                         ],
-                        "id": "f0dc1cf5-1b15-4d73-8202-ff513a6738cf",
+                        "id": "3994fb0c-a777-45d0-9682-b2daed7495a0",
                         "ord": "a3"
                       },
                       {
@@ -2169,12 +2305,14 @@
                             "attrs": {
                               "type": "submit"
                             },
-                            "children": ["Send my request"],
-                            "id": "d4f500c1-8691-46e9-93b7-7c10d556da88",
+                            "children": [
+                              "Send my request"
+                            ],
+                            "id": "8416e5b1-6199-40d5-a944-3925a8b34c4d",
                             "ord": "a0"
                           }
                         ],
-                        "id": "36fb1dfa-970c-4b41-94e1-56c3bf8765db",
+                        "id": "9c9f1c61-8982-4fc6-bcbb-74945bb38236",
                         "ord": "a4"
                       }
                     ],
@@ -2185,15 +2323,15 @@
                       "kind": "action",
                       "ref": "submit"
                     },
-                    "id": "c23db43f-b159-40c7-9dd5-c4caffe5823f",
+                    "id": "e6ddc407-1533-4d79-aa70-006953fcd5ae",
                     "ord": "a3"
                   }
                 ],
-                "id": "033d6c33-9bde-4ddf-a4c3-0586c6e780a0",
+                "id": "3601604c-50fb-4dc1-b25f-6fc30709a3cd",
                 "ord": "a0"
               }
             ],
-            "id": "569e6916-e21d-45fe-8b6a-1051f8d4e84c",
+            "id": "6b7bebdf-a633-410e-9b69-740e885f09f8",
             "ord": "a0"
           },
           {
@@ -2215,8 +2353,10 @@
                         "kind": "element",
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
-                        "children": ["Where we work & how to reach us"],
-                        "id": "d91fd662-ad47-4cd1-8201-e4f2d9c1c8df",
+                        "children": [
+                          "Where we work & how to reach us"
+                        ],
+                        "id": "ad7ba662-5f68-4a66-adb8-514b3c69591d",
                         "ord": "a0"
                       },
                       {
@@ -2230,7 +2370,7 @@
                           "kind": "value",
                           "ref": "site.identity.address"
                         },
-                        "id": "30d8a5a9-14ea-4d1e-b09b-bdc05500a285",
+                        "id": "31c15585-31fa-4cc2-8698-39244b5eb052",
                         "ord": "a1"
                       },
                       {
@@ -2247,20 +2387,24 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "font-medium text-base-content",
-                                "children": ["Monday – Friday"],
-                                "id": "49e76064-1e3b-4ca8-a1dd-2689cf500b56",
+                                "children": [
+                                  "Monday – Friday"
+                                ],
+                                "id": "aaacb979-d7a5-48b9-9fe4-37f76bd90f4e",
                                 "ord": "a0"
                               },
                               {
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-base-content",
-                                "children": ["7:00 – 5:00"],
-                                "id": "2a32ee65-93c6-49e8-a0ac-91e1ceb309a2",
+                                "children": [
+                                  "7:00 – 5:00"
+                                ],
+                                "id": "9623afeb-bce2-408c-947b-0662dcb7c046",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "01ceb04c-e5e6-435f-b797-30e69f7258dd",
+                            "id": "b2a670ca-a010-4ed0-a38e-998f9ab12bb9",
                             "ord": "a0"
                           },
                           {
@@ -2272,20 +2416,24 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "font-medium text-base-content",
-                                "children": ["Saturday"],
-                                "id": "cdebea44-efc2-46d5-8a68-059cef6a4959",
+                                "children": [
+                                  "Saturday"
+                                ],
+                                "id": "1b7a97dc-0323-4c4b-b5ad-9d9f1a41b372",
                                 "ord": "a0"
                               },
                               {
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-base-content",
-                                "children": ["7:00 – 5:00 (estimates)"],
-                                "id": "eed6d36b-645f-485f-899f-07c655585449",
+                                "children": [
+                                  "7:00 – 5:00 (estimates)"
+                                ],
+                                "id": "0a42a786-8f31-4772-8db7-a07b670a7619",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "d7cc087b-970f-4edc-8b09-61a4a76313a1",
+                            "id": "4b107ec2-0610-4fee-9b34-433b50174b2b",
                             "ord": "a1"
                           },
                           {
@@ -2297,20 +2445,24 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "font-medium text-base-content",
-                                "children": ["Sunday"],
-                                "id": "41f3795d-ca7d-4594-b67c-6d3261211b96",
+                                "children": [
+                                  "Sunday"
+                                ],
+                                "id": "944d8006-e3d6-4c45-aa75-45ad4945065d",
                                 "ord": "a0"
                               },
                               {
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-base-content",
-                                "children": ["Closed"],
-                                "id": "8c6e7103-1396-42f6-a8b3-d209a51ee9e4",
+                                "children": [
+                                  "Closed"
+                                ],
+                                "id": "296f14db-6582-4c8f-8914-2dca00d5fe5d",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "b5797de1-23e4-4688-9b2d-69cf1b76f1bc",
+                            "id": "2a39f676-1d29-411e-8141-3537bffb2571",
                             "ord": "a2"
                           },
                           {
@@ -2322,28 +2474,32 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "font-medium text-base-content",
-                                "children": ["Storm damage"],
-                                "id": "e5f55e5c-638a-4626-b2d1-c14ef3ffb29f",
+                                "children": [
+                                  "Storm damage"
+                                ],
+                                "id": "9c4c8c1a-f865-4532-aa7f-a13b34059c6f",
                                 "ord": "a0"
                               },
                               {
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-base-content",
-                                "children": ["Call anytime"],
-                                "id": "ceab15d6-4044-4ad8-b47b-d93e0316fc3b",
+                                "children": [
+                                  "Call anytime"
+                                ],
+                                "id": "b014b6c3-bc1f-494c-b66b-2a30c1cd23f9",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "54367d6c-4a82-49bd-8e25-39157d998aed",
+                            "id": "9325541f-9110-4bc7-932b-86ccb6740026",
                             "ord": "a3"
                           }
                         ],
-                        "id": "d83de6b5-2cb0-405c-9591-3b52e9a07c87",
+                        "id": "42039e15-9e7d-4e8c-a864-80d57ca87493",
                         "ord": "a2"
                       }
                     ],
-                    "id": "40456975-2500-449d-b1e1-511ca721ddff",
+                    "id": "5856cc49-6542-46d8-840f-cc07dec99e9d",
                     "ord": "a0"
                   },
                   {
@@ -2356,15 +2512,15 @@
                       "zoom": 15,
                       "ratio": "classic"
                     },
-                    "id": "f92eeb5c-991c-4a6d-941d-9ad2ca473b78",
+                    "id": "b95cb7f0-afa1-4bc6-923d-4aad63ec87e9",
                     "ord": "a1"
                   }
                 ],
-                "id": "5a620d12-915a-4431-a20c-a8386615a1d4",
+                "id": "abf521e6-5a65-4c74-b2b7-e35d4d23ac2c",
                 "ord": "a0"
               }
             ],
-            "id": "d537d7de-623a-4fdf-bb04-910d4f0b90dc",
+            "id": "d5657e0d-aa5f-4fcd-bbdf-ad91afc8df33",
             "ord": "a1"
           },
           {
@@ -2381,8 +2537,10 @@
                     "kind": "element",
                     "tag": "h2",
                     "class": "text-3xl font-bold tracking-tight @3xl:text-4xl",
-                    "children": ["Rather book than call?"],
-                    "id": "1f7e6d6a-2153-4a50-81a2-31971a91ba0d",
+                    "children": [
+                      "Rather book than call?"
+                    ],
+                    "id": "7abaa773-118c-4692-a08a-b43b562cc1df",
                     "ord": "a0"
                   },
                   {
@@ -2392,7 +2550,7 @@
                     "children": [
                       "See the next open times and reserve your free inspection online — no phone tag, no waiting on hold."
                     ],
-                    "id": "322527e3-edea-4b31-9a83-2f7747dba19b",
+                    "id": "a8cba8ee-43ac-4a54-9dc7-fee242328cbc",
                     "ord": "a1"
                   },
                   {
@@ -2402,16 +2560,18 @@
                     "attrs": {
                       "href": "/book"
                     },
-                    "children": ["Book a free inspection"],
-                    "id": "cec50474-161e-496b-a626-99e7ec9161ff",
+                    "children": [
+                      "Book a free inspection"
+                    ],
+                    "id": "8ca3c7be-06e7-42b4-8dc6-eda7365a379b",
                     "ord": "a2"
                   }
                 ],
-                "id": "78d3cc29-a583-443f-ad15-63e494792c17",
+                "id": "abe8b7c3-72e2-422f-9e52-30639968befc",
                 "ord": "a0"
               }
             ],
-            "id": "40da6bcf-faa2-4841-85b2-bb65c9f3c0e7",
+            "id": "9ac479d8-f76e-421e-aa05-a07b3e92cdcc",
             "ord": "a2"
           }
         ]

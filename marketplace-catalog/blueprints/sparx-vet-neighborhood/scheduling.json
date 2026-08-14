@@ -393,5 +393,12 @@
       ],
       "policyHandle": "vet-standard"
     }
+  ],
+  "locations": [
+    {
+      "handle": "premises",
+      "name": "Cedar Paws Veterinary",
+      "timezone": "UTC"
+    }
   ]
 }

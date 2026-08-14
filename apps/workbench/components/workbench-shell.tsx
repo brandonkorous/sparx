@@ -27,6 +27,7 @@ import { readDeepLink, tidyLegacyParams } from '../lib/workbench/deep-link';
 import { loadNavState, saveNavState } from '../lib/workbench/persistence';
 import { Dock } from '../lib/dock/dock';
 import { useIsCompact } from '../lib/use-compact';
+import { ChromeBoundary } from './chrome-boundary';
 import { MobileShell } from './mobile-shell';
 import { Rail } from './rail';
 import { StatusBar } from './status-bar';
@@ -53,6 +54,7 @@ export function WorkbenchShell({
   userName,
   userEmail,
   initialSiteKey,
+  arrivalAddress,
 }: {
   userName: string;
   userEmail: string;
@@ -60,6 +62,9 @@ export function WorkbenchShell({
    *  so the dock mounts without waiting on the token fetch. Null on a first
    *  visit (no cookie), where boot falls back to the token + sites resolution. */
   initialSiteKey: string | null;
+  /** The address the SERVER matched for this render — the one authority on what
+   *  this page load is asking for. See app/workbench-entry.tsx. */
+  arrivalAddress: string;
 }) {
   // Minted once per window. A popout gets its own id from the popout bootstrap.
   const windowIdRef = useRef<string | null>(null);
@@ -84,10 +89,14 @@ export function WorkbenchShell({
   // render — before anything downstream can rewrite it. The history bridge
   // starts replacing the bar with the focused pane's address as soon as the
   // layout restores, so a link read any later than this is a link already
-  // overwritten. The read is PURE and idempotent, and no-ops on the server;
-  // the one thing it used to mutate (the legacy `?open=` in the bar) is tidied
-  // from the effect below instead, because a render must not rewrite history.
-  readDeepLink();
+  // overwritten. The address comes from the SERVER rather than `window.location`
+  // (see app/workbench-entry.tsx): a client-side arrival from /sign-in renders
+  // this before the bar catches up, and reading the bar there captured the
+  // sign-in page itself as the link. The read is PURE and idempotent, and no-ops
+  // on the server; the one thing it used to mutate (the legacy `?open=` in the
+  // bar) is tidied from the effect below instead, because a render must not
+  // rewrite history.
+  readDeepLink(arrivalAddress);
 
   useEffect(() => {
     tidyLegacyParams();
@@ -249,7 +258,9 @@ export function WorkbenchShell({
             onToggleTheme={toggleTheme}
             onOpenLauncher={openLauncher}
           />
-          <Launcher open={launcherOpen} onOpenChange={setLauncherOpen} />
+          <ChromeBoundary region="launcher" whatStopped="Search has stopped working." silent>
+            <Launcher open={launcherOpen} onOpenChange={setLauncherOpen} />
+          </ChromeBoundary>
           {/* Teaches the browser Back button to walk the compact shell's own
               navigation — the nav drawer and launcher close first, then focus
               steps back through the stack — instead of leaving the app. */}
@@ -288,19 +299,32 @@ export function WorkbenchShell({
             tenant query returns, so nothing here jumps. `default` matches the
             rail's own boot fallback below; on the rare no-cookie first visit the
             real key lands before anything is switchable. */}
-          <Toolbar
-            userName={userName}
-            userEmail={userEmail}
-            theme={theme}
-            siteKey={siteKey ?? 'default'}
-            onToggleTheme={toggleTheme}
-            onOpenLauncher={openLauncher}
-          />
+          {/* Every chrome region is crash-isolated from the panes and from each
+              other. The panes hold the unsaved work; nothing up here is allowed
+              to take that down. See components/chrome-boundary.tsx. */}
+          <ChromeBoundary
+            region="toolbar"
+            whatStopped="Search and your account menu have stopped working."
+          >
+            <Toolbar
+              userName={userName}
+              userEmail={userEmail}
+              theme={theme}
+              siteKey={siteKey ?? 'default'}
+              onToggleTheme={toggleTheme}
+              onOpenLauncher={openLauncher}
+            />
+          </ChromeBoundary>
 
           {/* Billing lifecycle banner (docs/17 §6) — spans the full width beneath the
               toolbar so it shows on every surface. Self-hides for a paid/exempt
               tenant; escalates trial → grace → suspended otherwise. */}
-          <BillingBanner />
+          <ChromeBoundary
+            region="billing-banner"
+            whatStopped="Notices about your plan and payments have stopped showing."
+          >
+            <BillingBanner />
+          </ChromeBoundary>
 
           <div className="relative flex min-h-0 flex-1">
             <SidebarProvider
@@ -317,16 +341,24 @@ export function WorkbenchShell({
                   are static and sit below the rail regardless; the dropdown,
                   portaled later in the DOM at the same stacking level, wins. */}
               <div data-tour="module-rail" className={`bg-base-200 relative flex rounded-r-lg p-1`}>
-                <Rail
-                  browsing={browsing}
-                  siteKey={siteKey ?? 'default'}
-                  expanded={railExpanded}
-                  onBrowse={(module) => {
-                    // Clicking the module you're already browsing closes the
-                    // panel — the same toggle every icon rail teaches.
-                    setBrowsing((current) => (current === module ? null : module));
-                  }}
-                />
+                {/* `compact`: collapsed, the rail is a 48px column with no room
+                    for a sentence, so the fallback is the icon and a tooltip. */}
+                <ChromeBoundary
+                  region="module-rail"
+                  whatStopped="The menu down the side has stopped working."
+                  compact
+                >
+                  <Rail
+                    browsing={browsing}
+                    siteKey={siteKey ?? 'default'}
+                    expanded={railExpanded}
+                    onBrowse={(module) => {
+                      // Clicking the module you're already browsing closes the
+                      // panel — the same toggle every icon rail teaches.
+                      setBrowsing((current) => (current === module ? null : module));
+                    }}
+                  />
+                </ChromeBoundary>
               </div>
             </SidebarProvider>
 
@@ -351,18 +383,23 @@ export function WorkbenchShell({
                 browsing ? 'w-64' : 'w-0'
               }`}
             >
-              <ModulePanel
-                // Holds the LAST browsed module so the panel keeps its
-                // contents while animating shut rather than blanking.
-                module={panelModule}
-                pinned={pinned}
-                onTogglePin={() => {
-                  setPinned((value) => !value);
-                }}
-                onDismiss={() => {
-                  setBrowsing(null);
-                }}
-              />
+              <ChromeBoundary
+                region="module-panel"
+                whatStopped="This section's menu has stopped working."
+              >
+                <ModulePanel
+                  // Holds the LAST browsed module so the panel keeps its
+                  // contents while animating shut rather than blanking.
+                  module={panelModule}
+                  pinned={pinned}
+                  onTogglePin={() => {
+                    setPinned((value) => !value);
+                  }}
+                  onDismiss={() => {
+                    setBrowsing(null);
+                  }}
+                />
+              </ChromeBoundary>
             </div>
 
             <main data-tour="dock" className="min-w-0 flex-1 p-1">
@@ -378,12 +415,20 @@ export function WorkbenchShell({
                 <PaneWaiting label="Loading your workspace" />
               )}
             </main>
-            <Launcher open={launcherOpen} onOpenChange={setLauncherOpen} />
+            {/* The launcher is an overlay, so a crash in it renders NOTHING
+                rather than a strip — a warning bar floating over the dock with
+                no way to dismiss it would be worse than the missing palette,
+                which ⌘K simply stops opening. */}
+            <ChromeBoundary region="launcher" whatStopped="Search has stopped working." silent>
+              <Launcher open={launcherOpen} onOpenChange={setLauncherOpen} />
+            </ChromeBoundary>
           </div>
 
           {/* The live signal strip — connection, activity, unsaved work, and the
             business pulse. Signals only; identity stays in the toolbar. */}
-          <StatusBar />
+          <ChromeBoundary region="status-bar" whatStopped="Live updates have stopped showing.">
+            <StatusBar />
+          </ChromeBoundary>
 
           {/* First-run feature walkthrough — auto-starts once after onboarding is
               finished, and replays on demand from the account menu. Desktop only;

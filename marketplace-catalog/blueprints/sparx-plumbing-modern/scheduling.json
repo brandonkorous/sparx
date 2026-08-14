@@ -254,5 +254,12 @@
       ],
       "policyHandle": "same-day-priority"
     }
+  ],
+  "locations": [
+    {
+      "handle": "premises",
+      "name": "Rivet Plumbing Co.",
+      "timezone": "UTC"
+    }
   ]
 }

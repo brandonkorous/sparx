@@ -14,6 +14,7 @@
 
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
+import { queryBool } from '@sparx/api-core/query';
 import { pipelineService } from '@sparx/crm';
 import { ok, paged } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
@@ -27,7 +28,7 @@ const StagePathIds = z.object({
 });
 const ListQuery = z.object({
   q: z.string().trim().min(1).max(200).optional(),
-  include_archived: z.coerce.boolean().optional(),
+  include_archived: queryBool.optional(),
   // Which object's processes (docs/144 §7.2). Omitted means `deal` — every
   // caller that existed before pipelines became generic meant sales, and a
   // deal-board stage picker that silently gained "Waiting on Customer" would be

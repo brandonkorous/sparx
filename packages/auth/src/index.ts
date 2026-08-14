@@ -78,6 +78,7 @@ export {
   moduleDisabledEnvelope,
   ModuleDisabledError,
   type ModuleSlug,
+  ALL_MODULES,
   BUNDLED_FREE,
   REQUIRES,
   requiredModules,

@@ -1126,7 +1126,7 @@ export class LatticeRebindError extends Error {
 function coordinateKey(option: string, value: string): string {
   // NUL as the separator so an option literally named "Size|Colour" cannot
   // collide with a two-part key.
-  return `${option.trim().toLowerCase()} ${value.trim().toLowerCase()}`;
+  return `${option.trim().toLowerCase()}\u0000${value.trim().toLowerCase()}`;
 }
 
 /**

@@ -44,6 +44,16 @@ export interface PayRate {
    * to prevent.
    */
   burdenPercent: number;
+  /**
+   * The share of a SALE earned, under `basis: 'commission'` and zero otherwise.
+   *
+   * A separate field from `amountCents` because that one is per-hour under
+   * `hourly` and per-YEAR under `salary` — there was no unit left that could
+   * mean "7.5% of what they sell", which is why `commission` was a basis the
+   * model could name and could not describe, and why nothing calculated a
+   * commission until migration 20270324000000 added the column.
+   */
+  commissionPercent: number;
   effectiveFrom: Date;
   /** Null = the rate in force today. */
   effectiveTo: Date | null;

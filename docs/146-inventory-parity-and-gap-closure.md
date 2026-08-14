@@ -1,6 +1,6 @@
 # sparx Platform — Inventory: Market Parity & Gap Closure Plan
 
-**Version:** 1.13
+**Version:** 1.17
 **Author:** Brandon Korous
 **Last Updated:** 2026-08-13
 
@@ -1250,6 +1250,18 @@ on here, and here is the export that works today" rather than offering a button 
 at the redirect. **No live OAuth round trip has been exercised** — there is no sandbox app
 for this installation yet, and that is the one part of this phase a browser cannot verify.
 
+**Follow-up, 2026-08-13: the round trip had no CLIENT.** The three routes shipped here
+(`:id/connect` → `callback` → `:id/disconnect`) were never called by anything — no button,
+no landing route, nowhere in `apps`, `services` or `packages`. The flow existed and could
+not be started, which is a subtler failure than a missing feature: every artifact said
+"built", the availability reporting was honest about the SECRETS, and the gap was the one
+thing nobody had written down. It is finished now (docs/148 §6, "The connect flow") — the
+popup, the callback landing route that forwards `realmId`, and sign-in state read from a
+stored grant rather than from `status`. Fixing it also turned up a **credential leak**:
+`GET /v1/finance/accounting` returned the raw row, so both encrypted tokens were served to
+every `viewer`. **A type on the client is a claim about the wire, not a filter on it** —
+the workbench interface listed nine safe fields while the server sent twenty.
+
 **`IntegrationCategory` deliberately did NOT gain `accounting`.** docs/148 §6 says to add
 it with the first adapter; the rule behind that instruction is that a category is added the
 day something DISPATCHES through it. These adapters are called directly by the finance and
@@ -1420,22 +1432,186 @@ appearing in the grid → edited → persisted through a server reload.
   unused family. So this is silicaui's rule (3) — the soft variant should derive a legible ink the
   way `-content` is already auto-derived by measured contrast; silica even ships `contrastWarnings`
   for exactly this. Not a call-site patch, and not a token change that collides with a module identity.
-- **A console error on every toast.** `@base-ui-components/react@1.0.0-rc.0` calls
-  `ReactDOM.flushSync` from inside a layout effect in `ToastRoot.recalculateHeight`
-  (`esm/toast/root/ToastRoot.js:158`), so React logs "flushSync was called from inside a lifecycle
-  method" whenever a toast mounts. Nothing in sparx triggers it beyond using Toast, `rc.0` is the
-  newest published version, and the remedies are a `pnpm patch` or waiting upstream — neither of
-  which should happen behind the owner's back mid-session.
+- **A console error on every toast — PATCHED 2026-08-13.**
+  `@base-ui-components/react@1.0.0-rc.0` called `ReactDOM.flushSync` from inside a layout effect in
+  `ToastRoot.recalculateHeight`, so React logged "flushSync was called from inside a lifecycle
+  method" once per toast per render. `rc.0` is still the newest published version, so this is a
+  `pnpm patch` (`patches/@base-ui-components__react@1.0.0-rc.0.patch`): the two layout-effect call
+  sites mark themselves and the flush is skipped on them, because a `setState` in a layout effect
+  is already re-rendered synchronously before paint. The ResizeObserver and MutationObserver paths
+  KEEP the flush — they run after paint, and dropping it there would let the toast stack visibly
+  jump. Guarded by `packages/ui/src/components/overlay/toast.test.tsx`, which was proved red against
+  the unpatched module before it was accepted green. Delete both when the fix lands upstream.
 
-### Phase 12 — Prove it ⬜
+### Phase 12 — Prove it ✅
 
-- [ ] **12.1** MCP tool coverage for everything added in phases 1–11 (bins, pick lists, assemblies, forecasts, scorecards, backorders, reports) **[D10]**
-- [ ] **12.2** MCP read tools that answer the operator's real questions: `explain_stock_level`, `get_stockout_risk`, `get_supplier_performance`, `get_inventory_health` **[D10]**
-- [ ] **12.3** Webhooks on every inventory event, tenant-configurable **[D11]**
-- [ ] **12.4** Inventory API documented in [docs/06](06-api-specification.md) to the same standard as commerce **[P-all]**
-- [ ] **12.5** Marketing: the inventory module page rebuilt around the §5 claim, following the six-beat story rule **[D-all]**
-- [ ] **12.6** Comparison content grounded in §1/§2 with dated, accurate figures **[D-all]**
-- [ ] **12.7** Feature catalog ([docs/89 §9](89-feature-catalog.md)) reconciled — every line in §6 marked live only when it is actually live **[P-all]**
+- [x] **12.1** MCP tool coverage for everything added in phases 1–11 (bins, pick lists, assemblies, forecasts, scorecards, backorders, reports) **[D10]**
+- [x] **12.2** MCP read tools that answer the operator's real questions: `explain_stock_level`, `get_stockout_risk`, `get_supplier_performance`, `get_inventory_health` **[D10]**
+- [x] **12.3** Webhooks on every inventory event, tenant-configurable **[D11]**
+- [x] **12.4** Inventory API documented in [docs/06](06-api-specification.md) to the same standard as commerce **[P-all]**
+- [x] **12.5** Marketing: the inventory module page rebuilt around the §5 claim, following the six-beat story rule **[D-all]**
+- [x] **12.6** Comparison content grounded in §1/§2 with dated, accurate figures **[D-all]**
+- [x] **12.7** Feature catalog ([docs/89 §9](89-feature-catalog.md)) reconciled — every line in §6 marked live only when it is actually live **[P-all]**
+
+**12.1–12.3 shipped 2026-08-13.** The audit came first, and it mattered: 125 inventory MCP tools
+already existed, so the honest question was not "build tools" but "which capability shipped a
+service, a REST route and a screen, and still has no way in from an assistant". Thirteen did — every
+one of them from phases 8, 9 and 10, which is the tail nobody circles back to.
+
+Twenty tools were added in three files: supplier scorecards, quantity price ladders, the approval
+queue, despatch notices and supplier returns (Phase 8); backorders, per-item commitments,
+consignment settlements, stock you do not own and expiring batches (Phase 9); the report catalog,
+running any report, the schedules and the GL reconciliation (Phase 10). `get_supplier_performance`
+was the one tool 12.2 names by hand that did not exist; the other three did.
+
+**All twenty are READ, and that is the finding rather than a shortcut.** Every write left in these
+areas points money at somebody else or breaks a promise to them — approving a purchase order,
+sending a return, recording a credit, agreeing a price, cancelling a backorder, re-flagging who owns
+stock, writing off a batch on the strength of a date, or committing a recurring email to somebody's
+inbox. An assistant should be able to say _your worst supplier is late on a third of its orders_
+without being able to place the next order with them. The exclusions are asserted in the test, so
+adding one later means deleting a line that says why it was absent.
+
+**The registry guard found two real problems on its first run**
+([packages/inventory/test/mcp-registry.test.ts](../packages/inventory/test/mcp-registry.test.ts)):
+
+1. **Thirteen write tools had descriptions under sixty characters**, several of them ambiguous in a
+   way that costs data: "Cancel a purchase order" against "Delete a draft purchase order" gives a
+   model nothing to choose between, and one of the two is irreversible. All thirteen were rewritten
+   to say what state is required, what happens to stock and money, and whether it can be undone.
+2. **Five write tools did not prompt.** These turned out to be right — the scanner tools stage into
+   a session that `post_scanned_receipt` commits, and that one does prompt — but the decision lived
+   nowhere. It is now stated in `scan-tools.ts` and asserted as a named exemption, so a future
+   `scan_to_write_off` cannot inherit it from its prefix.
+
+**12.3 was not missing plumbing — it was a closed door.** `publish()` in api-core already fans every
+event to matching subscriptions, and `WebhookSubscription` is already tenant-configurable with an
+HMAC secret and a retry queue. The block was an allow-list of ten content/media/redirect keys in the
+subscriptions route: all 26 inventory events were deliverable and none was subscribable. Twenty-five
+are now, grouped in the picker as Stock, Warehouse, Supply and Stock feeds, each described in the
+words a business owner would use.
+
+**The twenty-sixth is `inventory.levels.updated`, and it is deliberately absent.** It is declared in
+`@sparx/events` and published by nothing. It is also the single most tempting key on the list — the
+one an ERP integrator reaches for first — and subscribing to it would leave an endpoint silent
+forever while the box sat ticked, which reads to whoever set it up as their own server being broken.
+That is the same rule as everywhere else in this plan: **absence must never be presented as a
+measurement**, and a subscription that can never fire is exactly that.
+
+Because the three lists that decide this (the API allow-list, the picker's catalogue, the event
+registry) sit in three packages and cannot import one another,
+[scripts/check-webhook-events.mjs](../scripts/check-webhook-events.mjs) fails the build on any
+disagreement — wired into `pnpm check:webhooks`, the pre-push guard and CI, matching the three
+structural checks already there.
+
+**Verified end to end in the browser.** All four new groups render with their plain-language
+labels, and a subscription saved against three inventory events — stock running low, numbers
+stopped adding up, shelf came up short — lists as Active with those labels rather than raw keys.
+That last step is the one that matters: it proves the API's allow-list actually accepts the new
+keys, which is the exact thing that was closed before.
+
+**12.4 and 12.7 shipped 2026-08-13.**
+
+**12.4 — the number was the finding.** docs/06 documented **18** inventory endpoints; the module
+registers **337** across 38 route files. Everything documented was Phase 1; phases 2–11 added roughly
+240 endpoints and not one of them was written down. Transcribing that by hand produces a document
+that is wrong inside a week, so the reference is **generated** —
+[scripts/gen-inventory-api-reference.mjs](../scripts/gen-inventory-api-reference.mjs) reads the
+routes and emits [docs/150](150-inventory-api-reference.md), with the group headings and prose held
+in the generator (a new route file with no description is a hard error, because what a capability is
+FOR cannot be derived from code). `check-inventory-api-docs.mjs` fails the build on any drift, in
+either direction: an undocumented endpoint is an invisible feature, and a documented one that no
+longer exists sends somebody to build against a 404 and blame their own code.
+
+It lives beside docs/06 rather than inside it because 337 endpoints would have made inventory
+roughly half the platform API spec and buried every other module. docs/06 §7 keeps the
+contract-stable core, the integrity surface and a table describing all twenty groups, and points at
+the full listing.
+
+**12.7 — the catalog was stale in both directions.** docs/89 §9 still said "the full six-phase build
+is shipped" and listed nothing from phases 2–11; its MCP line named six tools when there are 145.
+Twelve capability lines were added, the module-map headline rewritten, and the MCP line corrected —
+including which writes are deliberately absent, since "we chose not to expose approving spend" is a
+different claim from "we have not built it".
+
+The worse half was downstream. docs/89 says the marketing site's `apps/web/lib/capabilities.ts` is
+derived from it, and inventory there was eight Phase-0 bullets carrying
+**`planned('Sync with your warehouse system')`** — a capability live since the first build,
+advertised to every prospect as unbuilt. Now 29 lines, all accurate. **A wrong "live" is a broken
+promise and a wrong "planned" is a lost sale**, and only one of those two failure modes gets noticed
+on its own.
+
+**12.5 and 12.6 shipped 2026-08-13.**
+
+**12.5 — the page did not exist.** The brief said "rebuilt", which assumed there was something to
+rebuild; there wasn't. Inventory was one of three billable modules with no marketing page at all
+(`ModulePageSlug` in [apps/web/lib/modules.ts](../apps/web/lib/modules.ts) named twelve slugs and
+excluded it), so the deepest module on the platform — twelve phases, 337 endpoints, 145 MCP tools —
+was represented to the public by a one-line tile in the pricing switchboard with no link on it.
+
+[/inventory](../apps/web/components/marketing/inventory-page.tsx) is now the site's thirteenth
+module page, built on the six-beat story rule with the §5 claim as its spine:
+
+| Beat           | The page                                                                                                                                                                |
+| -------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1 Promise      | One item's quantity taken apart into the five things that produced it. `120 + 240 − 312 + 9 − 6 = 51`, less 10 held, is 41 free to sell                                 |
+| 2 Recognition  | You don't distrust the number — you just walk to the shelf before promising. Then the survey: that is 85% of the market, not carelessness                               |
+| 3 False fix    | You buy a stock system. It syncs every four minutes, it is right most of the time, and on the morning the shelf says 33 it cannot say which of the two numbers is lying |
+| 4 **The turn** | On hand is not a number we keep, it is a sum we can always do again — the one section painted in the module's own hue                                                   |
+| 5 Consequences | Shows its working → checks itself overnight → walks the floor with you → tells you what to buy → answers questions                                                      |
+| 6 Resolution   | Off the spreadsheet by the end of the afternoon, and everyone can use it — closing beat 2 rather than beat 3                                                            |
+
+Three things are worth recording because they were decisions rather than defaults.
+
+**The escalation in beat 5 is load-bearing, and it is why the page is not a feature grid.** Each
+section is only possible because of the one before it: you cannot direct a picker to a shelf unless
+the system knows what is on that shelf, you cannot advise a purchase unless the demand history is
+trustworthy, and nothing should be reading any of it through an assistant until both are true. A
+menu of the same five capabilities says none of that — and Inventory, at twenty-five surfaces, is
+the module where the menu was the obvious thing to write.
+
+**One worked example runs through every device**: a coffee roastery, one item, and figures that
+reconcile across the hero, the movement ledger, the false-fix dashboard and the reorder table. A
+page whose argument is "you can add this up yourself" and whose own columns do not add up is arguing
+against itself.
+
+**The short pick is on the page on purpose.** The ledger excerpt shows a movement that goes UP
+because a picker could not find a bag — the Phase 4 rule that a unit nobody could find was never
+picked, so the sale that removed it has not happened. It costs two lines, and it is the best
+available proof that this is a real warehouse ledger rather than a mock-up.
+
+**12.6 — the honest group is the deliverable.** The comparison is two sections on the same page.
+The first is the §2.1 survey: six figures, each chosen because it maps onto a section the page then
+argues, carrying a citation, the sample size and the date it was checked — a page insisting you
+should be able to verify a number cannot then assert six of its own. The second is §1's converged
+capability bar, answered row by row.
+
+**Seventeen rows say yes and four say no, and the four are the point.** No general ledger (and never
+one); the QuickBooks/Xero connection is written but not switched on for this installation; advance
+ship notices are entered or uploaded rather than received over EDI; and there is no production
+scheduler behind the recipes and build runs. A page where every row is a yes has told a buyer
+nothing, and the fastest test of whether a product is honest about what it does is whether it will
+say what it doesn't.
+
+**No competitor is named anywhere in the shipped artifact** — the category's convergence is
+described in our own language. The single external reference is to the published survey, which is a
+citation rather than a competitive callout.
+
+**And 12.6 found a wrong "live" that 12.7 had introduced the day before.**
+`apps/web/lib/capabilities.ts` carried `live('Books that reconcile — QuickBooks & Xero')`. Both
+adapters are complete, but a direct connection needs an OAuth app registered with each vendor, and
+`SPARX_QBO_CLIENT_ID` / `SPARX_XERO_CLIENT_ID` are unset in every deploy target — so
+`accountingProviderAvailability()` returns `coming_soon` and the product deliberately offers the
+export instead. The marketing site was promising a button the app declines to show. It is now
+`live('Journals & a reconciliation that explains itself')` +
+`building('Direct sync — QuickBooks & Xero')`, and [docs/89 §9](89-feature-catalog.md) records the
+deployment condition rather than the code fact. Writing the "four things this isn't" group is what
+found it, which is the argument for having one.
+
+**Verified in the browser**: the page renders end to end, the module menu and footer both link it
+(both derive from `modules-catalog.ts`, so the single `href` wires all of them), the story OG card
+renders with the `inventory` clause in the owner's voice, and `/features` picks up the corrected
+counts. `MODULE_ORDER` carries the sitemap, `llms.txt` and `llms-full.txt` for free.
 
 ---
 

@@ -362,5 +362,12 @@
       ],
       "policyHandle": "optometry-standard"
     }
+  ],
+  "locations": [
+    {
+      "handle": "premises",
+      "name": "Clearview Eye Care",
+      "timezone": "UTC"
+    }
   ]
 }

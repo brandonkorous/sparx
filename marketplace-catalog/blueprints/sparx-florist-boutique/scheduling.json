@@ -234,5 +234,12 @@
       ],
       "policyHandle": "consult-standard"
     }
+  ],
+  "locations": [
+    {
+      "handle": "premises",
+      "name": "Wildstem Floral",
+      "timezone": "UTC"
+    }
   ]
 }

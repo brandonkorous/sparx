@@ -20,6 +20,24 @@ import { notFound } from '@sparx/api-core/errors';
 import { writeAudit } from '@sparx/api-core/audit';
 import { decryptWebhookSecret, storeWebhookSecret } from '@sparx/api-core/webhook-secret-crypto';
 
+// The events a tenant may subscribe to.
+//
+// This is an ALLOW-LIST, not the event registry: `publish()` fans every
+// EventType to matching subscriptions, so anything named here is deliverable
+// the moment it is listed, and plenty of internal events (`email.send`) must
+// never be. Adding a key here is therefore the whole of "expose this event".
+//
+// Two rules govern what may be added:
+//
+//   1. It must actually be EMITTED. An event that exists only in the type union
+//      is a subscription that stays silent forever, which reads to the person
+//      who set it up as their endpoint being broken. `inventory.levels.updated`
+//      is declared in @sparx/events and published by nothing — it is the most
+//      tempting key on the list and is deliberately absent until something
+//      emits it.
+//   2. The workbench's human catalogue must carry it too, or it is subscribable
+//      only by someone hand-writing JSON. `scripts/check-webhook-events.mjs`
+//      fails the build when the two drift.
 const EVENT_KEYS = [
   'content.entry.created',
   'content.entry.updated',
@@ -31,6 +49,36 @@ const EVENT_KEYS = [
   'media.processed',
   'redirect.added',
   'redirect.removed',
+  // ── Inventory (docs/146 Phase 12.3) ──────────────────────────────────────
+  // Stock itself.
+  'inventory.adjusted',
+  'inventory.low',
+  'inventory.depleted',
+  'inventory.count.completed',
+  'inventory.reconciliation.drift',
+  'inventory.oversell.blocked',
+  'inventory.classification.changed',
+  'inventory.lot.expiring',
+  // Work on the warehouse floor.
+  'inventory.bin.moved',
+  'inventory.pick_list.created',
+  'inventory.pick_list.completed',
+  'inventory.pick.short',
+  'inventory.package.packed',
+  'inventory.transfer.shipped',
+  'inventory.transfer.received',
+  'inventory.assembly.completed',
+  // Supply and what has been promised.
+  'inventory.purchase_order.late',
+  'inventory.backorder.created',
+  'inventory.backorder.allocated',
+  // Feeds from other systems.
+  'inventory.source.created',
+  'inventory.source.sync_started',
+  'inventory.source.sync_completed',
+  'inventory.source.error',
+  'inventory.source.stale',
+  'inventory.source.recovered',
 ] as const;
 
 const CreateBody = z.object({

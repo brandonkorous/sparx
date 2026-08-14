@@ -36,6 +36,10 @@ export interface StaffPayRateRow {
   amountCents: number;
   currency: string;
   burdenPercent: { toString(): string };
+  // REQUIRED, not optional — the same lesson `note` taught on this exact type:
+  // an optional field lets a mapper that never copies it still satisfy the
+  // interface, and the column then renders as nothing on every row.
+  commissionPercent: { toString(): string };
   effectiveFrom: Date;
   effectiveTo: Date | null;
   note: string | null;
@@ -80,6 +84,7 @@ export function payRateView(rate: StaffPayRateRow) {
     amountCents: rate.amountCents,
     currency: rate.currency,
     burdenPercent: Number(rate.burdenPercent.toString()),
+    commissionPercent: Number(rate.commissionPercent.toString()),
     effectiveFrom: rate.effectiveFrom,
     effectiveTo: rate.effectiveTo,
     note: rate.note,

@@ -8,16 +8,19 @@ import { z } from 'zod';
 import {
   CancelBookingInput,
   CreateBookingInput,
+  CreateLocation,
   CreateResourceInput,
   CreateServiceInput,
   RescheduleBookingInput,
   SetAvailabilityWindowsInput,
+  UpdateLocationInput,
   UpdateResourceInput,
   UpdateServiceInput,
 } from '@sparx/scheduling-schemas';
 
 import { setAvailabilityWindows } from '../availability-rules';
 import { cancelBooking, createBooking, rescheduleBooking } from '../booking-service';
+import { createLocation, deleteLocation, updateLocation } from '../locations';
 import { createResource, deleteResource, updateResource } from '../resources';
 import { createService, deleteService, updateService } from '../services';
 
@@ -137,6 +140,46 @@ export const deleteResourceTool: McpToolDefinition = {
     })),
 };
 
+// ── Locations (where the work happens) ──────────────────────────────────────
+// A resource and a service each point at a location, and a tenant that opens a
+// second premises has to be able to say so. `propertyIds` scopes a location to
+// particular sites — leave it empty and it serves all of them, which is right for
+// the ordinary single-premises business.
+
+export const createLocationTool: McpToolDefinition = {
+  name: 'create_scheduling_location',
+  description:
+    'Create a business LOCATION — a physical place customers are served from (shop, clinic, studio, yard). Resources and services are then filed against it. `timezone` should be the IANA zone the place is in. Leave `propertyIds` empty unless the tenant runs several websites and this place only serves some of them.',
+  scope: 'write:scheduling',
+  confirmation: true,
+  input: CreateLocation,
+  run: (ctx, input) => createLocation(ctx.tenantId, input),
+};
+
+export const updateLocationTool: McpToolDefinition = {
+  name: 'update_scheduling_location',
+  description:
+    'Update a location by `id` — name, address, timezone, map coordinates, isActive, or which sites it serves. Only the fields you pass change. `isActive:false` is the safe way to retire a place: it stops being offered while every past booking keeps its history.',
+  scope: 'write:scheduling',
+  confirmation: true,
+  input: UpdateLocationInput,
+  run: (ctx, input) => updateLocation(ctx.tenantId, input),
+};
+
+export const deleteLocationTool: McpToolDefinition = {
+  name: 'delete_scheduling_location',
+  description:
+    'Delete a location by `id`. REFUSED (LOCATION_IN_USE) while any booking references it, because deleting would strip the place off that history — use update_scheduling_location with isActive:false instead. Resources and services filed there simply become unassigned.',
+  scope: 'write:scheduling',
+  confirmation: true,
+  input: z.object({ id: z.string().uuid() }),
+  run: (ctx, input) =>
+    deleteLocation(ctx.tenantId, (input as { id: string }).id).then(() => ({
+      id: (input as { id: string }).id,
+      deleted: true,
+    })),
+};
+
 export const setResourceHoursTool: McpToolDefinition = {
   name: 'set_resource_hours',
   description:
@@ -158,4 +201,7 @@ export const writeTools = [
   updateResourceTool,
   deleteResourceTool,
   setResourceHoursTool,
+  createLocationTool,
+  updateLocationTool,
+  deleteLocationTool,
 ];

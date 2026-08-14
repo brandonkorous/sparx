@@ -2,6 +2,11 @@ packages:
   - 'apps/*'
   - 'packages/*'
   - 'services/*'
+  # Piggles — the sister brand. Its OWN apps + packages only; it consumes the
+  # shared platform (@sparx/db, @sparx/auth, @sparx/events, services/*) and
+  # contributes nothing back into it. See piggles/CLAUDE.md for the boundary.
+  - 'piggles/apps/*'
+  - 'piggles/packages/*'
 
 # Single source of truth for the @wizeworks/silicaui family versions. Consuming
 # apps reference these as "catalog:" in their package.json (e.g.

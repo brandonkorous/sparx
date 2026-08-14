@@ -14,11 +14,13 @@
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
 import { dealService } from '@sparx/crm';
+import { withTenant } from '@sparx/db';
 import { ok, paged } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
 import { requireCrmModule, toCrmContext } from '../../../lib/crm-context.js';
 import { reachableSiteIds } from '../../../lib/property.js';
 import dealAttachmentRoutes from './deal-attachments.js';
+import { publishDomainEvent } from '../../../lib/staff-events.js';
 
 const PathId = z.object({ id: z.string().uuid() });
 
@@ -107,10 +109,31 @@ const dealRoutes: FastifyPluginAsync = async (app) => {
   });
 
   app.post('/v1/crm/deals/:id/move-stage', async (request) => {
-    requireRole(request, 'editor');
+    const auth = requireRole(request, 'editor');
     await requireCrmModule(request);
     const { id } = PathId.parse(request.params);
-    const deal = await dealService.moveStage(toCrmContext(request), id, request.body);
+    const ctx = toCrmContext(request);
+    const deal = await dealService.moveStage(ctx, id, request.body);
+
+    // A WON deal is a payable moment, and the staff module needs to hear about
+    // it to calculate commission. `moveStage` already publishes
+    // `crm.deal.stage_changed`, but that is a CrmTopic: the CRM bus does not
+    // reach an in-process platform consumer, so a worker subscribing to it would
+    // never receive a message. Hence a second, narrower publish on the platform
+    // bus — only `won`, because only `won` earns anybody anything.
+    //
+    // Read the stage TYPE rather than its name: a tenant is free to rename "Won"
+    // to "Signed", and matching on the label would quietly stop paying people.
+    const stage = await withTenant({ tenantId: ctx.tenantId }, (tx) =>
+      tx.pipelineStage.findFirst({
+        where: { id: deal.stageId },
+        select: { stageType: true },
+      })
+    );
+    if (stage?.stageType === 'won') {
+      await publishDomainEvent('crm.deal.won', ctx.tenantId, auth.actorId, { dealId: deal.id });
+    }
+
     return ok(deal);
   });
 

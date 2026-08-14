@@ -57,7 +57,7 @@ import {
   useVendors,
   type RecurringExpense,
 } from './spend-data';
-import { cadenceLabel, formatCents, formatDate, kindColor } from './format';
+import { cadenceLabel, formatCents, formatDay, kindColor } from './format';
 
 const CADENCES = ['weekly', 'biweekly', 'monthly', 'quarterly', 'annual'] as const;
 
@@ -687,9 +687,9 @@ export function RecurringCostsSurface() {
                         {formatCents(template.amountCents, template.currency)} ·{' '}
                         {cadenceLabel(template.cadence).toLowerCase()}
                         {template.isActive && template.nextRunOn
-                          ? ` · next on ${formatDate(template.nextRunOn)}`
+                          ? ` · next on ${formatDay(template.nextRunOn)}`
                           : ''}
-                        {template.endsOn ? ` · ends ${formatDate(template.endsOn)}` : ''}
+                        {template.endsOn ? ` · ends ${formatDay(template.endsOn)}` : ''}
                       </Text>
                     </div>
 

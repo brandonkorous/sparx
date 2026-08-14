@@ -1,0 +1,75 @@
+# Generates the expenses a tenant's repeating costs now owe (docs/148 §12).
+#
+# Without this, the Repeating costs surface is a form that saves a template
+# nothing ever reads. A tenant sets up "Rent — $2,000, every month" and no
+# expense is ever created, in any month, for anyone. `packages/finance-worker`
+# has handled `finance.recurring.due` since the module shipped; Finance was
+# simply the only module in the platform with no cron file at all.
+#
+# Runs at 05:30 UTC, ahead of the profit rollup at 06:45 — a cost generated
+# today has to exist before the rollup that is meant to include it. Forbid
+# concurrency: generation is idempotent per (template, period), but two runs
+# racing the same template is pointless load.
+#
+# The endpoint only PUBLISHES — one event per finance tenant — so it returns
+# quickly regardless of tenant count and the real work happens on the broker,
+# with its retries and dead-letter queue.
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: finance-recurring-due
+  namespace: sparx-prod
+  labels:
+    app: finance-cron
+    job: recurring-due
+spec:
+  schedule: '30 5 * * *'
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 3
+  startingDeadlineSeconds: 300
+  jobTemplate:
+    spec:
+      backoffLimit: 2
+      ttlSecondsAfterFinished: 3600
+      template:
+        metadata:
+          labels:
+            app: finance-cron
+            job: recurring-due
+        spec:
+          serviceAccountName: sparx-app
+          restartPolicy: OnFailure
+          containers:
+            - name: curl
+              image: curlimages/curl:8.10.1
+              command: ['sh', '-c']
+              args:
+                - >
+                  curl --fail-with-body --silent --show-error
+                  --max-time 300
+                  -X POST
+                  -H "X-Sparx-Internal-Cron-Token: $SPARX_INTERNAL_CRON_TOKEN"
+                  http://api-rest.sparx-prod.svc.cluster.local:3000/internal/finance/recurring-due
+              env:
+                - name: SPARX_INTERNAL_CRON_TOKEN
+                  valueFrom:
+                    secretKeyRef:
+                      name: sparx-app-secrets
+                      key: SPARX_INTERNAL_CRON_TOKEN
+              resources:
+                requests:
+                  cpu: '25m'
+                  memory: '16Mi'
+                limits:
+                  cpu: '100m'
+                  memory: '32Mi'
+              securityContext:
+                runAsNonRoot: true
+                runAsUser: 1000
+                allowPrivilegeEscalation: false
+                capabilities:
+                  drop: ['ALL']
+                seccompProfile:
+                  type: RuntimeDefault

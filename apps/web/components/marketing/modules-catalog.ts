@@ -59,7 +59,7 @@ export interface ModuleEntry {
   /** A separately-billed module this one needs to run (REQUIRES). */
   requires?: string;
   /** Marketing landing route, when one exists. Omitted ⇒ no "Learn" link yet
-   *  (invoicing / inventory / chat pages are not built). */
+   *  (invoicing / chat pages are not built). */
   href?: string;
   /** Renders as a $0 "Free" tile: `price` is 0 and it is never charged, bundled,
    *  or required. Two kinds carry it — free PLATFORM CAPABILITIES (SEO ships with
@@ -156,6 +156,7 @@ export const MODULES: ModuleEntry[] = [
       'Track stock across locations, set reorder points, sync counts to every channel in real time.',
     price: 29,
     includedWith: ['Commerce', 'B2B'],
+    href: '/inventory',
   },
   {
     id: 'chat',

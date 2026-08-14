@@ -371,5 +371,12 @@
       ],
       "policyHandle": "studio-standard"
     }
+  ],
+  "locations": [
+    {
+      "handle": "premises",
+      "name": "Iris Optical",
+      "timezone": "UTC"
+    }
   ]
 }

@@ -11,7 +11,7 @@ import assets from './assets.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-landscaping-design',
-  version: '1.2.0',
+  version: '1.3.0',
   name: 'sparx — Landscaping (Design & Build)',
   summary:
     'A premium landscape design-and-build site — a lush cream-and-emerald palette with a warm terracotta accent and a refined serif display, led by finished-project photography. Installs a working booking flow for free consultations and estimates: a real consult menu (design, hardscape, planting, irrigation, outdoor living), three designers you book by name with their own hours, and a design-deposit policy for full engagements. Ships as "Verdant Grounds".',

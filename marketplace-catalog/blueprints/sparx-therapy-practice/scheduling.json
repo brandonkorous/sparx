@@ -366,5 +366,12 @@
       ],
       "policyHandle": "late-cancel"
     }
+  ],
+  "locations": [
+    {
+      "handle": "premises",
+      "name": "Anchor Counseling",
+      "timezone": "UTC"
+    }
   ]
 }

@@ -48,6 +48,7 @@ import { MARKET_CATEGORIES } from '@sparx/commerce-schemas';
 import { withTenant } from '@sparx/db';
 import { ok } from '@sparx/api-core/envelope';
 import { badRequest, notFound } from '@sparx/api-core/errors';
+import { queryBool } from '@sparx/api-core/query';
 
 import { assertCartToken, publicMarketContext } from '../../../lib/public-market-context.js';
 
@@ -62,10 +63,11 @@ const OrderParam = z.object({ orderId: z.string().uuid() });
 // Catalog browse query: query-string values arrive as strings, so numerics and
 // booleans are coerced. Shape mirrors MarketBrowseQuery (which `browseListings`
 // re-validates), but we normalize here so coercion happens before the service.
-const BooleanFromString = z
-  .union([z.boolean(), z.enum(['true', 'false'])])
-  .transform((v) => v === true || v === 'true');
-
+//
+// The local `BooleanFromString` this file used to declare was the first correct
+// version of that idea; it now lives in `@sparx/api-core/query` as `queryBool`,
+// so the rest of the platform stops reaching for `z.coerce.boolean()` — which is
+// `Boolean(value)`, and therefore reads `'false'` as true.
 const BrowseQuery = z.object({
   q: z.string().max(255).optional(),
   category: z.string().max(63).optional(),
@@ -73,8 +75,8 @@ const BrowseQuery = z.object({
   sort: z.enum(['relevance', 'newest', 'lowest_price', 'highest_price', 'rating']).optional(),
   minPriceCents: z.coerce.number().int().nonnegative().optional(),
   maxPriceCents: z.coerce.number().int().nonnegative().optional(),
-  inStock: BooleanFromString.optional(),
-  featured: BooleanFromString.optional(),
+  inStock: queryBool.optional(),
+  featured: queryBool.optional(),
   page: z.coerce.number().int().min(1).optional(),
   perPage: z.coerce.number().int().min(1).max(60).optional(),
 });

@@ -59,6 +59,8 @@ export interface Discount {
    *  actually experiences also depends on the schedule; see `discountState`. */
   status: string;
   usageCount: number;
+  /** The sites this offer runs on. EMPTY = all of them. */
+  propertyIds: string[];
   updatedAt: string;
 }
 
@@ -221,6 +223,8 @@ export interface DiscountInput {
   perCustomerLimit?: number;
   stacking?: DiscountStacking;
   priority?: number;
+  /** Full replacement set. Empty = every site; omitted on an update = untouched. */
+  propertyIds?: string[];
 }
 
 /**

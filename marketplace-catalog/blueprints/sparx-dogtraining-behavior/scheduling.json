@@ -239,5 +239,12 @@
       ],
       "policyHandle": "dogtraining-standard"
     }
+  ],
+  "locations": [
+    {
+      "handle": "premises",
+      "name": "K9 Method",
+      "timezone": "UTC"
+    }
   ]
 }

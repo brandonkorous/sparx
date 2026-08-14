@@ -1,0 +1,11 @@
+{
+  "extends": "../../../tsconfig.base.json",
+  "compilerOptions": {
+    // This package imports @sparx/db, whose source uses `process` and
+    // `node:async_hooks`. Type roots are per-compilation, so the dependency
+    // having @types/node does not help here — without this, every consumer
+    // typechecks the dependency's source with no node globals at all.
+    "types": ["node"]
+  },
+  "include": ["src/**/*"]
+}

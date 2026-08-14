@@ -31,7 +31,7 @@ import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { bucketTone, useReceivables, type Receivable } from './receivables-data';
-import { formatMoney, formatMoneyCompact, formatDate } from './format';
+import { formatMoney, formatMoneyCompact, formatDay } from './format';
 
 // The aging facets — same bucket keys the summary bars use, so clicking a chip
 // narrows the table to exactly that band.
@@ -95,7 +95,7 @@ function ReceivableRow({
           {late.label}
         </Badge>
       </td>
-      <td className="hidden text-sm whitespace-nowrap @lg:table-cell">{formatDate(item.dueAt)}</td>
+      <td className="hidden text-sm whitespace-nowrap @lg:table-cell">{formatDay(item.dueAt)}</td>
       <td className="text-right font-medium tabular-nums">
         {formatMoney(item.balance, item.currency)}
       </td>

@@ -25,6 +25,7 @@
 
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
+import { queryBool } from '@sparx/api-core/query';
 import { CustomerType, LeadStatus, LifecycleStage } from '@sparx/crm-schemas';
 import { customerService } from '@sparx/crm';
 import { ok, paged } from '@sparx/api-core/envelope';
@@ -55,7 +56,7 @@ const ListQuery = z.object({
   property: z.string().min(1).optional(),
   tag: z.string().max(64).optional(),
   q: z.string().max(255).optional(),
-  include_deleted: z.coerce.boolean().optional(),
+  include_deleted: queryBool.optional(),
   take: z.coerce.number().int().min(1).max(250).optional(),
   skip: z.coerce.number().int().min(0).optional(),
   sort_by: z.enum(['score', 'lastOrderAt', 'totalSpent', 'updatedAt', 'createdAt']).optional(),

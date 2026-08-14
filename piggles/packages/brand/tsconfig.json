@@ -1,0 +1,20 @@
+{
+  "extends": "../../../tsconfig.base.json",
+  "compilerOptions": {
+    // `react-jsx`, overriding the base's `preserve`.
+    //
+    // Under `preserve` TypeScript resolves JSX against the GLOBAL `JSX`
+    // namespace, which only exists in a compilation that has pulled in
+    // @types/react — in practice, one where some file writes
+    // `import * as React from 'react'`. `packages/brand` (sparx) does exactly
+    // that and typechecks; the marks here deliberately do not import React at
+    // all, because nothing in them needs it at runtime.
+    //
+    // `react-jsx` resolves JSX types from `react/jsx-runtime` instead, so the
+    // components typecheck on their own merits without a redundant import added
+    // purely to satisfy the compiler. It is also the correct setting for React
+    // 19 generally — the automatic runtime is what Next compiles these with.
+    "jsx": "react-jsx"
+  },
+  "include": ["src/**/*"]
+}

@@ -248,5 +248,12 @@
       ],
       "policyHandle": "coaching-standard"
     }
+  ],
+  "locations": [
+    {
+      "handle": "premises",
+      "name": "Ascend Coaching",
+      "timezone": "UTC"
+    }
   ]
 }

@@ -364,5 +364,12 @@
       ],
       "policyHandle": "roadready-noshow"
     }
+  ],
+  "locations": [
+    {
+      "handle": "premises",
+      "name": "RoadReady Driving School",
+      "timezone": "UTC"
+    }
   ]
 }

@@ -1,0 +1,12 @@
+{
+  "extends": "../../../tsconfig.base.json",
+  "compilerOptions": {
+    // Resolves @piggles/brand from source without requiring a build or an
+    // install to have run. The workspace link is the real resolution path in an
+    // app; this keeps `tsc -p` on this package self-contained.
+    "paths": {
+      "@piggles/brand": ["../brand/src/index.ts"]
+    }
+  },
+  "include": ["src/**/*"]
+}

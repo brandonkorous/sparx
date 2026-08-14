@@ -56,6 +56,10 @@ export const payRateSchema = z
     // Employer burden as a percentage. Capped at 200 for the same reason the
     // CHECK caps it: a typo of 2200 would triple a year of wages silently.
     burdenPercent: z.number().min(0).max(200).optional(),
+    // The share of a SALE, under `commission` only. Capped at 100 because this
+    // is a percentage OF a sale — anything above it pays out more than came in,
+    // which is a typo every time. Matches the DB CHECK.
+    commissionPercent: z.number().min(0).max(100).optional(),
     effectiveFrom: z.coerce.date(),
     effectiveTo: z.coerce.date().nullish(),
     note: z.string().max(2000).nullish(),
@@ -63,6 +67,17 @@ export const payRateSchema = z
   .refine((v) => v.basis !== 'none' || v.amountCents === 0, {
     message: 'A pay basis of "none" cannot carry an amount.',
     path: ['amountCents'],
+  })
+  // Caught here rather than left to the CHECK so the message can say what to do.
+  // Silently zeroing it would be worse: somebody would set 7.5% on an hourly
+  // rate, see it save, and wonder for a month why nobody was paid commission.
+  .refine((v) => v.basis === 'commission' || !v.commissionPercent, {
+    message: 'Only a commission pay basis can carry a commission percentage.',
+    path: ['commissionPercent'],
+  })
+  .refine((v) => v.basis !== 'commission' || (v.commissionPercent ?? 0) > 0, {
+    message: 'A commission pay basis needs a percentage above zero.',
+    path: ['commissionPercent'],
   })
   .refine((v) => !v.effectiveTo || v.effectiveTo >= v.effectiveFrom, {
     message: 'The end date cannot be before the start date.',

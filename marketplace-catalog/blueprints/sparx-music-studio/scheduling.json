@@ -369,5 +369,12 @@
       ],
       "policyHandle": "no-show"
     }
+  ],
+  "locations": [
+    {
+      "handle": "premises",
+      "name": "Amp Room",
+      "timezone": "UTC"
+    }
   ]
 }

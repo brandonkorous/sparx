@@ -234,5 +234,12 @@
       ],
       "policyHandle": "photo-standard"
     }
+  ],
+  "locations": [
+    {
+      "handle": "premises",
+      "name": "Golden Hour Studio",
+      "timezone": "UTC"
+    }
   ]
 }

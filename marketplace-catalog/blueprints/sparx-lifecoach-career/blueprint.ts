@@ -11,7 +11,7 @@ import assets from './assets.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-lifecoach-career',
-  version: '1.2.0',
+  version: '1.3.0',
   name: 'sparx — Life Coaching (Career)',
   summary:
     'A sharp, empowering career-coaching site — a deep-navy palette, a confident amber accent and a modern sans, built for ambitious professionals. Installs a working booking flow: a free discovery call plus career-strategy, executive, leadership, interview-prep and promotion sessions, three coaches you book by name with evening hours, and a no-show policy. Ships as "Ascend Coaching", a results-focused practice you can book in about a minute.',

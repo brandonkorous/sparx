@@ -329,5 +329,12 @@
       ],
       "policyHandle": "group-table"
     }
+  ],
+  "locations": [
+    {
+      "handle": "premises",
+      "name": "Kettle & Crumb",
+      "timezone": "UTC"
+    }
   ]
 }

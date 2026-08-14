@@ -236,5 +236,12 @@
       ],
       "policyHandle": "painting-standard"
     }
+  ],
+  "locations": [
+    {
+      "handle": "premises",
+      "name": "Brushworks Painting",
+      "timezone": "UTC"
+    }
   ]
 }

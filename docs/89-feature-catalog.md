@@ -1,8 +1,8 @@
 # 89 — sparx Feature Catalog
 
-**Version:** 1.2
+**Version:** 1.4
 **Author:** Brandon Korous
-**Last Updated:** 2026-07-10
+**Last Updated:** 2026-08-13
 
 The single, exhaustive inventory of **everything sparx does** — every user-facing
 capability across every module, with an honest build status. The per-module PRDs
@@ -36,20 +36,20 @@ It exists for two reasons:
 Eleven activatable modules (`packages/modules` canonical slugs) plus the
 cross-cutting platform that every module shares.
 
-| #   | Module                  | Slug         | Headline                                                                                                               | Status      |
-| --- | ----------------------- | ------------ | ---------------------------------------------------------------------------------------------------------------------- | ----------- |
-| 1   | Builder                 | `builder`    | Sites, pages, themes, email — visually authored                                                                        | ✅ Live     |
-| 2   | Commerce                | `commerce`   | Cart, checkout, orders, payments                                                                                       | ✅ Live     |
-| 3   | CMS                     | `cms`        | Words, media, structured content, SEO                                                                                  | ✅ Live     |
-| 4   | CRM                     | `crm`        | Customers, pipeline, segments, activity                                                                                | ✅ Live     |
-| 5   | Email                   | `email`      | Transactional + marketing on your own domain                                                                           | ✅ Live     |
-| 6   | B2B / Wholesale / Fleet | `b2b`        | Accounts, net terms, RFQ, fleet                                                                                        | ✅ Live     |
-| 7   | Invoicing               | `invoicing`  | Estimates → work orders → invoices, billing documents                                                                  | 🔨 In build |
-| 8   | Dropship                | `dropship`   | Supplier sync, margin math, order routing                                                                              | ✅ Live     |
-| 9   | Inventory               | `inventory`  | Multi-warehouse ledger, reservations, suppliers/POs/receiving, counts/transfers, lots, sync, reporting, MCP, B2B holds | ✅ Live     |
-| 10  | Live Chat               | `chat`       | AI-first site chat + staff inbox                                                                                       | ✅ Live     |
-| 11  | AI / MCP                | `ai`         | First-class MCP server for Claude, ChatGPT, Copilot                                                                    | ✅ Live     |
-| 12  | Scheduling              | `scheduling` | Appointments, classes, reservations, rentals — booking, deposits, reminders, calendar sync                             | ✅ Live     |
+| #   | Module                  | Slug         | Headline                                                                                                                                          | Status      |
+| --- | ----------------------- | ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------- | ----------- |
+| 1   | Builder                 | `builder`    | Sites, pages, themes, email — visually authored                                                                                                   | ✅ Live     |
+| 2   | Commerce                | `commerce`   | Cart, checkout, orders, payments                                                                                                                  | ✅ Live     |
+| 3   | CMS                     | `cms`        | Words, media, structured content, SEO                                                                                                             | ✅ Live     |
+| 4   | CRM                     | `crm`        | Customers, pipeline, segments, activity                                                                                                           | ✅ Live     |
+| 5   | Email                   | `email`      | Transactional + marketing on your own domain                                                                                                      | ✅ Live     |
+| 6   | B2B / Wholesale / Fleet | `b2b`        | Accounts, net terms, RFQ, fleet                                                                                                                   | ✅ Live     |
+| 7   | Invoicing               | `invoicing`  | Estimates → work orders → invoices, billing documents                                                                                             | 🔨 In build |
+| 8   | Dropship                | `dropship`   | Supplier sync, margin math, order routing                                                                                                         | ✅ Live     |
+| 9   | Inventory               | `inventory`  | Multi-warehouse ledger that checks itself, bins + scanning, pick/pack, true cost, assembly, planning, supplier scorecards, backorders, accounting | ✅ Live     |
+| 10  | Live Chat               | `chat`       | AI-first site chat + staff inbox                                                                                                                  | ✅ Live     |
+| 11  | AI / MCP                | `ai`         | First-class MCP server for Claude, ChatGPT, Copilot                                                                                               | ✅ Live     |
+| 12  | Scheduling              | `scheduling` | Appointments, classes, reservations, rentals — booking, deposits, reminders, calendar sync                                                        | ✅ Live     |
 
 Cross-cutting platform (§12–§23) ships regardless of which modules a tenant runs:
 search, automation, multi-site, marketplace, auth, billing, onboarding, legal,
@@ -315,7 +315,10 @@ The node-tree authoring system behind sites, pages, layouts, and email. One mode
 ## 9. Inventory
 
 A first-class, **standalone-usable** module (WMS-lite without commerce) owning the supply side; commerce /
-b2b / dropship are consumers. The full six-phase build is shipped — see [docs/100](100-inventory-build-plan.md).
+b2b / dropship are consumers. Two plans, both shipped: the original six-phase build
+([docs/100](100-inventory-build-plan.md)) and the twelve-phase market-parity closure
+([docs/146](146-inventory-parity-and-gap-closure.md), phases 1–11 complete, 12 in progress). The full HTTP
+surface — **337 endpoints** — is listed in [docs/150](150-inventory-api-reference.md).
 
 - ✅ **Multi-warehouse** — owned / 3PL / dropship / virtual with addresses + default channels.
 - ✅ **One stock model + movement ledger** — on-hand is written ONLY through `applyMovement` (concurrency-safe, idempotent, attributed); `onHand == Σ(movements)` always holds, with moving-average cost.
@@ -328,12 +331,23 @@ b2b / dropship are consumers. The full six-phase build is shipped — see [docs/
 - ✅ **External inventory sync** — ERP/WMS into the one ledger via Tier C file drop, Tier B SaaS API, Tier A on-prem bridge agent (docs/28); SKU-mapping queue, sync-health, conflict rules (UoM, safety buffer, stale-link, last-writer).
 - ✅ **Documented public API** — `GET /v1/inventory`, `PATCH /v1/inventory/:variant_id`, `POST /v1/inventory/adjustments` (JSON/CSV), `GET /v1/inventory/alerts` (scope-enforced, docs/06 §7).
 - ✅ **Reporting** — valuation + value-over-time, turnover / DIO, aging + dead-stock, reorder analysis; CSV export.
-- ✅ **MCP supply tools** — `get_low_inventory`, `get_inventory_valuation`, `suggest_reorders`, `update_inventory`, `create_purchase_order`, `receive_stock` (own `read:/write:inventory` scopes).
+- ✅ **MCP tools — 145 of them** (own `read:/write:inventory` scopes), covering every capability in this section. Includes the operator's real questions rather than only table reads: `explain_stock_level`, `get_stockout_risk`, `get_supplier_performance`, `get_inventory_health`. Money decisions pointed at another company — approving a purchase order, sending a supplier return, agreeing a price, cancelling a customer's backorder, writing off a batch — are deliberately NOT exposed.
 - ✅ **B2B inventory** — account-scoped + fitment-filtered availability, per-account min/max order qty, fleet / work-order holds.
 - ✅ **Integrity: the ledger checks itself** (docs/146 Phase 1) — a nightly pass re-derives `Σ(movements.delta)` per level against the recorded on-hand and records the result (a clean run is shown as a result, not silence); a disagreement is recorded and NEVER auto-corrected. Plus a per-level "where this number came from" explanation reachable from every stock surface, a full CSV export of the ledger, a shrinkage report, and an oversell log recording every refused or uncovered sale with the numbers the system believed at that moment.
 - ✅ **Feed freshness SLO** — a source declares how often it will report; a breach flags it, stamps when it started, and applies its chosen consequence (`warn` / withhold extra units / pause channel selling). Distinct from "the last sync failed": a feed whose last sync SUCCEEDED four days ago looks healthy everywhere else and its numbers are worthless.
 - ✅ **Per-channel oversell cushions** — override → channel default → level buffer, so a live storefront and a 15-minute marketplace push can hold back different amounts.
 - ✅ **Warehouse (`scanner`) role** — receive / count / transfer / lookup only, costs hidden, no adjustments outside a count. Unlimited users: sparx bills per module, not per seat.
+- ✅ **Bins and put-away** (docs/146 Phase 2) — shelf-level positions inside a location, with a put-away suggestion that ranks candidate shelves by how strong the evidence is and says why in plain words. A shelf-to-shelf move writes bin-ledger entries and leaves the location total alone, because nothing entered or left the building.
+- ✅ **Scan-first operations** (Phase 3) — barcodes with check-digit validation and a conflict list, case codes that add their pack size, and scan-to-receive / count / transfer / put-away. Each scan carries a caller-supplied id so a retry applies once; receiving is staged into a session and only reaches the ledger when the session is posted.
+- ✅ **Pick, pack, ship** (Phase 4) — pick lists with a guided walk ordered by the physical route, short-pick capture (the earliest honest warning that a number is wrong), and pack verification against what the order asked for.
+- ✅ **True cost** (Phase 5) — moving-average and FIFO cost layers, landed cost with freight and duty apportioned across a receipt, purchase-price variance, and a per-unit "what did this actually cost" breakdown.
+- ✅ **Units of measure, kits and assembly** (Phase 6) — buy in cases and sell in singles without two numbers that disagree; bills of materials, buildable-quantity, and assembly runs that consume components and produce the finished item.
+- ✅ **Planning intelligence** (Phase 7) — demand velocity and forecasts, stockout risk, slow movers, holding cost, ABC value classes and XYZ predictability, computed reorder points with an explanation of every input. Turning ON automatic reorder-point management is deliberately a person's decision.
+- ✅ **Supplier performance and procurement discipline** (Phase 8) — scorecards (on-time, fill rate, price variance, lead-time reliability), quantity price breaks, purchase-order approval rules and queue, advance ship notices, and supplier returns with the credits still owed.
+- ✅ **Demand-side commitments** (Phase 9) — backorders with a real queue position and promised dates, consignment and customer-owned stock excluded from what the business is worth, and expiring-batch management. Batches with no expiry date are surfaced as a finding rather than hidden.
+- ✅ **Reporting, portability and accounting** (Phase 10) — one report registry shared by the export button, the scheduler and an assistant, so the three cannot disagree; scheduled delivery; inventory journals; GL reconciliation splitting the difference into received-not-invoiced, invoiced-not-received and genuine discrepancy; QuickBooks and Xero connectors — **written, but not connectable on this installation**: a direct connection needs an OAuth app registered with each vendor and neither `SPARX_QBO_CLIENT_ID` nor `SPARX_XERO_CLIENT_ID` is set in any deploy target, so `accountingProviderAvailability()` reports `coming_soon` and the panel offers the export instead. `apps/web/lib/capabilities.ts` carries this as `building`, not `live` (corrected 2026-08-13).
+- ✅ **Onboarding — beat the spreadsheet** (Phase 11) — a five-step guided setup measured against a 30-minute target (hands-on time AND how many sittings, so a lunch break is neither counted nor silently discarded), spreadsheet import with fuzzy column mapping that reports a match it is unsure of as _unmatched_ rather than guessing, saved mappings, opening-balance counts posted as `opening` (not `recount`, which would read day one as the worst day of shrinkage), a spreadsheet-grade stock grid, and tenant-defined columns that ride the CSV as `cf_*`.
+- ✅ **Tenant-configurable webhooks on inventory events** (Phase 12) — 25 events across stock, warehouse work, supply and feed health, each described in the words a business owner would use, HMAC-signed with retry and backoff.
 
 ---
 

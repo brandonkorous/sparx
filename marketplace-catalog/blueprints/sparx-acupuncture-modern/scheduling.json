@@ -357,5 +357,12 @@
       ],
       "policyHandle": "wellness-standard"
     }
+  ],
+  "locations": [
+    {
+      "handle": "premises",
+      "name": "Meridian Wellness",
+      "timezone": "UTC"
+    }
   ]
 }

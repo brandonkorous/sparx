@@ -333,5 +333,12 @@
       ],
       "policyHandle": "pt-standard"
     }
+  ],
+  "locations": [
+    {
+      "handle": "premises",
+      "name": "Restore Physical Therapy & Wellness",
+      "timezone": "UTC"
+    }
   ]
 }

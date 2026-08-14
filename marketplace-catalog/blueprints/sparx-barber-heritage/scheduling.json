@@ -235,5 +235,12 @@
       ],
       "policyHandle": "shop-standard"
     }
+  ],
+  "locations": [
+    {
+      "handle": "premises",
+      "name": "Copper & Cole",
+      "timezone": "UTC"
+    }
   ]
 }

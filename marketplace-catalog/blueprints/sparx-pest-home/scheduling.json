@@ -244,5 +244,12 @@
       ],
       "policyHandle": "shieldguard-plan"
     }
+  ],
+  "locations": [
+    {
+      "handle": "premises",
+      "name": "ShieldGuard Pest Control",
+      "timezone": "UTC"
+    }
   ]
 }

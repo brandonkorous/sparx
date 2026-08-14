@@ -22,7 +22,7 @@
                   "props": {
                     "show": "both"
                   },
-                  "id": "0cc6195a-bb3d-4c9a-b8a2-3938e15b31fb",
+                  "id": "ccc74b04-37e4-4788-b3e1-f2c68301a45e",
                   "ord": "a0"
                 },
                 {
@@ -37,13 +37,15 @@
                       "attrs": {
                         "href": "/book"
                       },
-                      "children": ["Book"],
+                      "children": [
+                        "Book"
+                      ],
                       "slot": {
                         "name": "link1",
                         "type": "link",
                         "label": "Product"
                       },
-                      "id": "7fb382c7-6c28-45fc-b5c5-ede6ba84c862",
+                      "id": "e609ca99-baac-40e8-8939-767ffbc3f3e4",
                       "ord": "a0"
                     },
                     {
@@ -53,13 +55,15 @@
                       "attrs": {
                         "href": "/about"
                       },
-                      "children": ["About"],
+                      "children": [
+                        "About"
+                      ],
                       "slot": {
                         "name": "link2",
                         "type": "link",
                         "label": "Pricing"
                       },
-                      "id": "09b28e84-922c-4862-8089-747ee37c8e0e",
+                      "id": "775c209f-5644-48bb-bd38-e17c55e98b28",
                       "ord": "a1"
                     },
                     {
@@ -69,17 +73,19 @@
                       "attrs": {
                         "href": "/contact"
                       },
-                      "children": ["Contact"],
+                      "children": [
+                        "Contact"
+                      ],
                       "slot": {
                         "name": "link3",
                         "type": "link",
                         "label": "Docs"
                       },
-                      "id": "87c9ab4c-743e-4fde-974f-b49e4ed0f096",
+                      "id": "7d8f62e5-3b20-4164-a07a-b1cf1e755945",
                       "ord": "a2"
                     }
                   ],
-                  "id": "008a67af-c964-46a8-8b5e-74445e526229",
+                  "id": "89b6e215-da0e-46a9-8025-dcfafb8616ad",
                   "ord": "a1"
                 },
                 {
@@ -94,20 +100,22 @@
                       "attrs": {
                         "href": "/account/login"
                       },
-                      "children": ["Sign in"],
+                      "children": [
+                        "Sign in"
+                      ],
                       "slot": {
                         "name": "secondary",
                         "type": "link",
                         "label": "Secondary link"
                       },
-                      "id": "61a5f099-0db1-41f6-b1b9-604906e23c5c",
+                      "id": "d53b583b-d5fd-4e11-b048-e4385cbff2d4",
                       "ord": "a0"
                     },
                     {
                       "kind": "host",
                       "component": "site.theme-toggle",
                       "class": "inline-flex items-center",
-                      "id": "b5891472-c500-4f7e-aac9-c5881656413a",
+                      "id": "5be770fb-54a0-412b-a199-9df574cba5d9",
                       "ord": "a1"
                     },
                     {
@@ -123,7 +131,7 @@
                         "type": "link",
                         "label": "Primary action"
                       },
-                      "id": "0d1cbaa0-28ef-4147-9dce-f09b87d260df",
+                      "id": "65f23bc9-1287-4578-95c1-7ae78fbba904",
                       "ord": "a2"
                     },
                     {
@@ -141,20 +149,20 @@
                           "props": {
                             "name": "menu"
                           },
-                          "id": "63adf1f4-bb7c-40f9-9102-0f28f15a3f66",
+                          "id": "855e0d35-3455-4ad6-bf13-ae25af4ea4cb",
                           "ord": "a0"
                         }
                       ],
                       "part": "trigger",
-                      "id": "bb3ea36f-c16c-481a-8634-6a2f984ad291",
+                      "id": "3ef7567d-fc54-48a1-b9a0-2549c4046025",
                       "ord": "a3"
                     }
                   ],
-                  "id": "fe57cd42-2841-4765-9e4a-d21800bdf68d",
+                  "id": "ff4fe106-2cd6-46a3-a912-7062b65f27bb",
                   "ord": "a2"
                 }
               ],
-              "id": "14866a9e-2337-4ce0-a4f5-f1004518c316",
+              "id": "35cc5f15-3511-4ead-94d7-834a1630ba0b",
               "ord": "a0"
             },
             {
@@ -172,13 +180,15 @@
                   "attrs": {
                     "href": "/book"
                   },
-                  "children": ["Book"],
+                  "children": [
+                    "Book"
+                  ],
                   "slot": {
                     "name": "link1",
                     "type": "link",
                     "label": "Product"
                   },
-                  "id": "e657da5c-f8aa-4f6b-bdde-5379610126a4",
+                  "id": "aaaf5642-15d1-4eaa-8316-ae3ad69fcd57",
                   "ord": "a0"
                 },
                 {
@@ -188,13 +198,15 @@
                   "attrs": {
                     "href": "/about"
                   },
-                  "children": ["About"],
+                  "children": [
+                    "About"
+                  ],
                   "slot": {
                     "name": "link2",
                     "type": "link",
                     "label": "Pricing"
                   },
-                  "id": "0fa07ae0-ab4d-4f1e-b7b9-ce29eab2553a",
+                  "id": "052296b8-8d5d-4419-91aa-91a63008eb01",
                   "ord": "a1"
                 },
                 {
@@ -204,13 +216,15 @@
                   "attrs": {
                     "href": "/contact"
                   },
-                  "children": ["Contact"],
+                  "children": [
+                    "Contact"
+                  ],
                   "slot": {
                     "name": "link3",
                     "type": "link",
                     "label": "Docs"
                   },
-                  "id": "0922ce7b-44d6-4367-a903-5da2b64fc9a0",
+                  "id": "4a0e32c4-a019-47f3-b5d4-79a447c443ec",
                   "ord": "a2"
                 },
                 {
@@ -226,7 +240,7 @@
                     "type": "link",
                     "label": "Secondary link"
                   },
-                  "id": "c8754b6a-d389-46ca-9555-5fc46c8b00e2",
+                  "id": "05a4ae7c-ccdd-4c69-9502-f287f26a6c03",
                   "ord": "a3"
                 },
                 {
@@ -242,19 +256,19 @@
                     "type": "link",
                     "label": "Primary action"
                   },
-                  "id": "51b8c7ca-ea9b-40a1-bc98-1e52fa986f4d",
+                  "id": "db398dc9-dcfb-4358-beb2-b99e53f163b6",
                   "ord": "a4"
                 }
               ],
               "part": "panel",
-              "id": "75b16ccd-df4b-4764-b4f8-69034035b5e0",
+              "id": "6e54ad60-9fc2-44ad-b38e-d9eafb80c400",
               "ord": "a1"
             }
           ],
           "behavior": {
             "type": "disclosure"
           },
-          "id": "571287fc-e102-444d-a4b9-d2126546983f",
+          "id": "c6b707d8-d263-46c6-9dee-33ffc22218ed",
           "ord": "a0"
         },
         {
@@ -270,7 +284,7 @@
               "kind": "outlet"
             }
           ],
-          "id": "af6c4ae8-c50b-47d9-a7c3-05fa01901335",
+          "id": "caddb923-791e-4104-b03b-9523b574de43",
           "ord": "a1"
         },
         {
@@ -300,14 +314,16 @@
                           "props": {
                             "show": "both"
                           },
-                          "id": "e0a7c50b-9399-4cf3-b51d-d61cbc87c651",
+                          "id": "078a7787-1078-44f8-a0e6-10285d6b6142",
                           "ord": "a0"
                         },
                         {
                           "kind": "element",
                           "tag": "p",
                           "class": "max-w-xs text-sm text-base-content",
-                          "children": ["Everything you publish, in one place."],
+                          "children": [
+                            "Everything you publish, in one place."
+                          ],
                           "slot": {
                             "name": "blurb",
                             "type": "text",
@@ -316,7 +332,7 @@
                           "attrs": {
                             "href": "/"
                           },
-                          "id": "e7bedcfa-e5ff-46e8-87d7-19d56f77526d",
+                          "id": "11013bf4-a4a2-4ba3-b86a-d26522bb71ad",
                           "ord": "a1"
                         },
                         {
@@ -324,11 +340,11 @@
                           "tag": "ul",
                           "class": "mt-2 flex items-center gap-5",
                           "children": [],
-                          "id": "a46cb053-3018-43ef-bb7f-5cb9f78fe791",
+                          "id": "e7bda320-7cbb-4c1f-8eb5-7bf68578d0d9",
                           "ord": "a2"
                         }
                       ],
-                      "id": "cb82948c-39ee-4dcd-9090-a797b6d342ea",
+                      "id": "9d44c379-ac45-471e-8996-dd9011b38508",
                       "ord": "a0"
                     },
                     {
@@ -340,7 +356,9 @@
                           "kind": "element",
                           "tag": "p",
                           "class": "text-sm font-semibold text-base-content",
-                          "children": ["Explore"],
+                          "children": [
+                            "Explore"
+                          ],
                           "slot": {
                             "name": "col1",
                             "type": "text",
@@ -349,7 +367,7 @@
                           "attrs": {
                             "href": "/"
                           },
-                          "id": "30a475bd-07a3-428e-8bcc-3e7d075bf9af",
+                          "id": "b1abd7e7-dda5-4c53-a937-b875048ad224",
                           "ord": "a0"
                         },
                         {
@@ -368,17 +386,19 @@
                                   "attrs": {
                                     "href": "/book"
                                   },
-                                  "children": ["Book"],
+                                  "children": [
+                                    "Book"
+                                  ],
                                   "slot": {
                                     "name": "link1",
                                     "type": "link",
                                     "label": "Features"
                                   },
-                                  "id": "64cd7c8f-ac44-45df-9679-4f6482c67b22",
+                                  "id": "d055393f-30a3-4625-8166-b50eac33a0a2",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "26d2a952-b764-4f8c-90fe-19c10aa231ac",
+                              "id": "f819874a-ea1a-4bf1-b457-ecb5850b39be",
                               "ord": "a0"
                             },
                             {
@@ -392,17 +412,19 @@
                                   "attrs": {
                                     "href": "/about"
                                   },
-                                  "children": ["About"],
+                                  "children": [
+                                    "About"
+                                  ],
                                   "slot": {
                                     "name": "link2",
                                     "type": "link",
                                     "label": "Pricing"
                                   },
-                                  "id": "777f514b-2951-4222-9e56-b29c9d6e1830",
+                                  "id": "86c442dd-a831-414d-9452-133f0b48317e",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "b133b478-2ecb-48c5-9f29-e4c7bcf69096",
+                              "id": "6266d7c2-c7de-41ad-9a2f-9f1b977c3b5d",
                               "ord": "a1"
                             },
                             {
@@ -416,17 +438,19 @@
                                   "attrs": {
                                     "href": "/contact"
                                   },
-                                  "children": ["Contact"],
+                                  "children": [
+                                    "Contact"
+                                  ],
                                   "slot": {
                                     "name": "link3",
                                     "type": "link",
                                     "label": "Integrations"
                                   },
-                                  "id": "b2c4acbb-66e1-4184-8891-c64af9b8d7c0",
+                                  "id": "18976dd3-64f2-4517-a47c-20ae73f0f98a",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "b317e6db-2917-4403-bc6b-e2134284d4ab",
+                              "id": "a788105e-edff-469d-9bef-600b8978a84a",
                               "ord": "a2"
                             },
                             {
@@ -440,25 +464,27 @@
                                   "attrs": {
                                     "href": "/search"
                                   },
-                                  "children": ["Search"],
+                                  "children": [
+                                    "Search"
+                                  ],
                                   "slot": {
                                     "name": "link4",
                                     "type": "link",
                                     "label": "Changelog"
                                   },
-                                  "id": "eeba1f04-962d-4407-ba54-eeb571902fc7",
+                                  "id": "3c417cb0-f383-44ca-a958-a3d2bb83028d",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "91158359-056a-494f-9e1f-b0957461a54a",
+                              "id": "a1ff4ee0-6b4b-4099-ab6f-13af0dfba1cd",
                               "ord": "a3"
                             }
                           ],
-                          "id": "06ee34fe-fc47-4727-a5db-74bce7d054eb",
+                          "id": "632037e9-eaa8-4b57-9a2e-bc2a521e1457",
                           "ord": "a1"
                         }
                       ],
-                      "id": "62366311-08ec-4d4e-b53f-5c776889be2e",
+                      "id": "f58d5d75-be86-492e-972f-c279f4c20df4",
                       "ord": "a1"
                     },
                     {
@@ -471,11 +497,11 @@
                           "tag": "ul",
                           "class": "flex flex-col gap-2",
                           "children": [],
-                          "id": "8ac00d8c-7bb8-46c5-a04d-c127e8335966",
+                          "id": "3819b7fd-c5ab-4041-8fa5-550574bccd30",
                           "ord": "a0"
                         }
                       ],
-                      "id": "2e603636-56f8-4615-9f75-f22a86f4ab72",
+                      "id": "c67736e7-2ea0-4051-98e9-1b1ed69fdc33",
                       "ord": "a2"
                     },
                     {
@@ -499,23 +525,23 @@
                                   "props": {
                                     "heading": "Legal"
                                   },
-                                  "id": "a6432b8c-7049-4d17-b6e9-21f9b070f830",
+                                  "id": "48835327-78b8-4739-a251-f35f95e17369",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "6fae7824-4314-413a-8125-ffd68744dcac",
+                              "id": "4a0ffb63-e292-440b-97bc-08a6f80a1eb1",
                               "ord": "a0"
                             }
                           ],
-                          "id": "7a273f02-edad-4918-aa6a-971dbe9a49e5",
+                          "id": "3fabcf30-29ff-4a93-b7a6-10443e67509e",
                           "ord": "a0"
                         }
                       ],
-                      "id": "a83f3365-06c3-49d7-aa41-72c5cb66bfee",
+                      "id": "89d9517d-0a40-4f4b-a263-5c81ba97b40e",
                       "ord": "a3"
                     }
                   ],
-                  "id": "3ef1ab24-ebc2-4932-bade-a33bc619bc3b",
+                  "id": "00819a41-34fe-4023-92b0-b543fcd7db58",
                   "ord": "a0"
                 },
                 {
@@ -533,16 +559,18 @@
                           "kind": "element",
                           "tag": "span",
                           "class": "font-medium",
-                          "children": ["Your site"],
+                          "children": [
+                            "Your site"
+                          ],
                           "data": {
                             "kind": "value",
                             "ref": "site.identity.name"
                           },
-                          "id": "e2976dfc-81b5-4c1f-96a7-af6c0f707f43",
+                          "id": "2f90a96f-903b-4edc-87e5-667872f31424",
                           "ord": "a0"
                         }
                       ],
-                      "id": "1805548c-1776-4142-b5e6-52b409bf54b3",
+                      "id": "0a368e52-02a4-48e1-a1e1-410e336b819b",
                       "ord": "a0"
                     },
                     {
@@ -550,23 +578,23 @@
                       "tag": "ul",
                       "class": "flex flex-wrap items-center gap-x-6 gap-y-2",
                       "children": [],
-                      "id": "a762a79c-9d7f-465a-a498-be5d6ab98599",
+                      "id": "a321e7c4-187e-4d25-be5f-5917a68041e2",
                       "ord": "a1"
                     }
                   ],
-                  "id": "59cba600-d45b-4899-aa46-8b8641588df8",
+                  "id": "fd09a02b-2888-4e71-8d03-64fb0bd2bc65",
                   "ord": "a1"
                 }
               ],
-              "id": "d8676f5d-8f0c-444d-ab35-18aa0c8699f5",
+              "id": "343e730a-da45-4115-a3e8-94bd36d1b3cc",
               "ord": "a0"
             }
           ],
-          "id": "52def10b-dfb8-46a3-af2e-5821ab0318c5",
+          "id": "5ae6dc15-98c8-4383-943d-d3343f02c729",
           "ord": "a2"
         }
       ],
-      "id": "7bd5cf23-6dbd-4446-a166-a48d58a9df75"
+      "id": "4a6deee0-03a3-4dfe-8757-fa1539577232"
     }
   },
   "pages": [
@@ -580,7 +608,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "1f0c3c19-06f4-47d0-9b65-d803ccf8286d",
+        "id": "32c0b74d-8fde-49d5-9739-abf78dec1842",
         "children": [
           {
             "kind": "element",
@@ -596,14 +624,14 @@
                   "alt": "A bright, friendly optical shop with big windows and rows of glasses on warm-lit shelves",
                   "loading": "eager"
                 },
-                "id": "ba6fd79b-c8eb-48fe-ab34-2159d58d3083",
+                "id": "4b6577c1-afc2-41a1-ab65-d9252ec7d6ac",
                 "ord": "a0"
               },
               {
                 "kind": "element",
                 "tag": "div",
                 "class": "absolute inset-0 bg-black/30",
-                "id": "882fa515-29fa-4987-b5fa-1939474f5ddd",
+                "id": "24b2b2c0-067b-4601-b8dd-92b3f1b183de",
                 "ord": "a1"
               },
               {
@@ -615,8 +643,10 @@
                     "kind": "element",
                     "tag": "h1",
                     "class": "max-w-3xl text-4xl font-bold leading-tight tracking-tight @2xl:text-5xl @3xl:text-6xl",
-                    "children": ["Clear vision for the whole family"],
-                    "id": "9b5b5b49-74d9-4615-b904-78ceb4cff550",
+                    "children": [
+                      "Clear vision for the whole family"
+                    ],
+                    "id": "8b63b66a-5a46-48f7-a4f7-b958b80cd14c",
                     "ord": "a0"
                   },
                   {
@@ -626,7 +656,7 @@
                     "children": [
                       "Warm, unhurried eye care for every age — comprehensive exams, kids’ vision, contacts, dry-eye help and a wall of frames to love. New patients always welcome."
                     ],
-                    "id": "d885315e-7f84-4625-a683-c59fdecf9ed4",
+                    "id": "eba82593-f4e9-4c89-b796-aec410acaf0d",
                     "ord": "a1"
                   },
                   {
@@ -641,8 +671,10 @@
                         "attrs": {
                           "href": "/book"
                         },
-                        "children": ["Book an eye exam"],
-                        "id": "05a5e107-83bf-498e-a3cd-c9994ce499f4",
+                        "children": [
+                          "Book an eye exam"
+                        ],
+                        "id": "091ccc16-c529-41b6-a503-e10810adc4e9",
                         "ord": "a0"
                       },
                       {
@@ -652,20 +684,22 @@
                         "attrs": {
                           "href": "/book"
                         },
-                        "children": ["See appointments"],
-                        "id": "a4c1c1ec-a8d3-4579-958a-6b475e429c7b",
+                        "children": [
+                          "See appointments"
+                        ],
+                        "id": "43b00179-776c-4153-b9e2-babbbe0e5ebd",
                         "ord": "a1"
                       }
                     ],
-                    "id": "eb107c64-4bdb-4f74-b247-fc4746cde952",
+                    "id": "d45c2fdb-01d1-4045-b49d-790566433d23",
                     "ord": "a2"
                   }
                 ],
-                "id": "3bd911b4-92ce-4a1e-adf2-e40b3baa38a6",
+                "id": "885d89a8-d4c3-436e-8e70-2efc801e6ba0",
                 "ord": "a2"
               }
             ],
-            "id": "381a6171-98ef-4835-bec9-95146dd6d9aa",
+            "id": "c4051adc-dc29-4cef-843a-24cf1f87c640",
             "ord": "a0"
           },
           {
@@ -692,8 +726,10 @@
                             "kind": "element",
                             "tag": "h2",
                             "class": "text-xl font-semibold text-base-content",
-                            "children": ["Thorough, unhurried exams"],
-                            "id": "e6f02381-ef8a-4cfc-988e-559dd9ee493b",
+                            "children": [
+                              "Thorough, unhurried exams"
+                            ],
+                            "id": "02a16a85-cd1a-4e0e-9129-4a87e40b3dc2",
                             "ord": "a0"
                           },
                           {
@@ -703,11 +739,11 @@
                             "children": [
                               "We take the time to check your vision and the health of your eyes properly, explain what we see in plain language, and never rush you out the door."
                             ],
-                            "id": "c044e115-23c9-4f2a-b070-4918d5d61e6f",
+                            "id": "ead211d5-2a99-4c44-ae94-f83f7f724f22",
                             "ord": "a1"
                           }
                         ],
-                        "id": "628170d6-c121-4cc6-854e-9a761e96a117",
+                        "id": "9b619943-2803-49b7-9ddf-a74c10942693",
                         "ord": "a0"
                       },
                       {
@@ -719,8 +755,10 @@
                             "kind": "element",
                             "tag": "h2",
                             "class": "text-xl font-semibold text-base-content",
-                            "children": ["Most insurance accepted"],
-                            "id": "d93ec93a-b437-40cd-b031-199e545cd060",
+                            "children": [
+                              "Most insurance accepted"
+                            ],
+                            "id": "fcb33605-1ae3-46e2-b1d7-f4c5dba7c8ae",
                             "ord": "a0"
                           },
                           {
@@ -730,11 +768,11 @@
                             "children": [
                               "We work with most major vision and medical plans and file the claim for you, so there are no surprises. No insurance? Ask about our simple in-house plan."
                             ],
-                            "id": "f582b3c0-6100-4be7-8025-dbc9f9d0356c",
+                            "id": "fac42368-0f9a-48ff-86f0-136fb108cb54",
                             "ord": "a1"
                           }
                         ],
-                        "id": "f8a06813-a1dd-4b8d-a709-da7af43ecfe6",
+                        "id": "07850161-a482-48a6-83ad-afe4f7a504af",
                         "ord": "a1"
                       },
                       {
@@ -746,8 +784,10 @@
                             "kind": "element",
                             "tag": "h2",
                             "class": "text-xl font-semibold text-base-content",
-                            "children": ["Kids genuinely welcome"],
-                            "id": "57162e02-82d9-40ef-921e-aa2fba2ef518",
+                            "children": [
+                              "Kids genuinely welcome"
+                            ],
+                            "id": "e0aee72a-a27f-4393-bba6-17c324883d03",
                             "ord": "a0"
                           },
                           {
@@ -757,11 +797,11 @@
                             "children": [
                               "From a toddler’s first check to a teenager’s new contacts, we make eye exams playful and easy — gentle doctors, no scary words, plenty of high-fives."
                             ],
-                            "id": "060a023d-ed37-44b9-b356-d0e6489903ef",
+                            "id": "7f36b1bb-eee2-4529-b133-24e61d203d9d",
                             "ord": "a1"
                           }
                         ],
-                        "id": "35922a5e-ad9c-444d-a720-d8094e47da19",
+                        "id": "b4a49a94-d48d-4520-8753-52fdaff8a5b3",
                         "ord": "a2"
                       },
                       {
@@ -773,8 +813,10 @@
                             "kind": "element",
                             "tag": "h2",
                             "class": "text-xl font-semibold text-base-content",
-                            "children": ["A huge frame selection"],
-                            "id": "f86c50a5-fa0f-40b1-9940-6ee1da2ca922",
+                            "children": [
+                              "A huge frame selection"
+                            ],
+                            "id": "f83354a9-7cda-481e-89d8-bbd1af043bb2",
                             "ord": "a0"
                           },
                           {
@@ -784,23 +826,23 @@
                             "children": [
                               "Hundreds of frames for every face and budget, and an optician who’ll happily help you find the pair you actually want to wear every day."
                             ],
-                            "id": "4af16518-e7d4-4579-8261-29afdeefbefb",
+                            "id": "13b3bbbf-91e5-4074-83bd-31b37f6c6c36",
                             "ord": "a1"
                           }
                         ],
-                        "id": "3fddf77a-66e7-4d7e-9155-2aa61d3de73f",
+                        "id": "17015d71-b7a1-4563-b5f7-3d79efc5bf43",
                         "ord": "a3"
                       }
                     ],
-                    "id": "ed260d76-9e0a-40a5-aa7a-1bb52459abfa",
+                    "id": "e43b62ec-e9af-4b83-8d14-aa1e7f400832",
                     "ord": "a0"
                   }
                 ],
-                "id": "a6c1fdd5-0e04-417c-acce-a30b679009cd",
+                "id": "65e631a1-34a5-410a-a8aa-1ea8b6a0b84a",
                 "ord": "a0"
               }
             ],
-            "id": "df1d5f20-358c-4a13-b249-34e4d08335bd",
+            "id": "6f8f6114-cbf0-4db0-a627-cd8eb050d663",
             "ord": "a1"
           },
           {
@@ -822,8 +864,10 @@
                         "kind": "element",
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
-                        "children": ["Appointments"],
-                        "id": "20a9ee0e-6751-4d64-b859-c89199d89a80",
+                        "children": [
+                          "Appointments"
+                        ],
+                        "id": "4cf8547d-31cd-4c44-bb77-3835f10a6971",
                         "ord": "a0"
                       },
                       {
@@ -833,11 +877,11 @@
                         "children": [
                           "A few of the visits we see most. Full prices and live availability are on the booking page — and frame styling is always free."
                         ],
-                        "id": "7740f493-2cbc-41ac-ad34-fd6e49bba5d1",
+                        "id": "0cc644aa-1a41-4f40-b25e-b65cf4f8ca54",
                         "ord": "a1"
                       }
                     ],
-                    "id": "130fa1e0-338a-4929-9bdd-108e4ace302c",
+                    "id": "28c6efdf-2df9-4b9f-a362-29db3811a456",
                     "ord": "a0"
                   },
                   {
@@ -862,40 +906,48 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
-                                "children": ["Comprehensive eye exam"],
-                                "id": "7cf11ec7-223e-412e-89ae-7ba0c644e9c9",
+                                "children": [
+                                  "Comprehensive eye exam"
+                                ],
+                                "id": "cc15dd5e-a29f-4422-a9fb-d6f68449ee90",
                                 "ord": "a0"
                               },
                               {
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-bold text-base-content",
-                                "children": ["$129"],
-                                "id": "68ac079f-246f-40d8-90a5-96c292709044",
+                                "children": [
+                                  "$129"
+                                ],
+                                "id": "8fe97929-f6be-4b56-b1b8-966917211a4a",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "d91b17b0-3189-4cd3-83cf-f3fbdcc817c8",
+                            "id": "12eb7a66-143f-4581-a34b-559b65563f00",
                             "ord": "a0"
                           },
                           {
                             "kind": "element",
                             "tag": "p",
                             "class": "text-sm font-medium uppercase tracking-wide text-secondary",
-                            "children": ["40 min"],
-                            "id": "b5455426-64de-4a4e-996d-02eed7956931",
+                            "children": [
+                              "40 min"
+                            ],
+                            "id": "141254f1-e8b6-48fb-bf12-c3ab9bd7395c",
                             "ord": "a1"
                           },
                           {
                             "kind": "element",
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
-                            "children": ["A full check of your vision and eye health."],
-                            "id": "2fc6df65-0a7f-47a9-9d0e-0b1dc717520d",
+                            "children": [
+                              "A full check of your vision and eye health."
+                            ],
+                            "id": "f0e4cb0f-0538-4cc8-b744-5b374230d61f",
                             "ord": "a2"
                           }
                         ],
-                        "id": "c440e06a-5594-4127-b5b4-e191f003afcb",
+                        "id": "81018225-1bf5-4953-b53e-1613da8088cd",
                         "ord": "a0"
                       },
                       {
@@ -915,40 +967,48 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
-                                "children": ["Contact lens exam & fitting"],
-                                "id": "3b72b7e0-b8df-411f-abf4-555eeb4eabaf",
+                                "children": [
+                                  "Contact lens exam & fitting"
+                                ],
+                                "id": "813b6d6f-5f5d-4fda-b4b5-cdf1a24f5b63",
                                 "ord": "a0"
                               },
                               {
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-bold text-base-content",
-                                "children": ["$159"],
-                                "id": "78f8be51-837d-4dbf-b68a-99b156627e5a",
+                                "children": [
+                                  "$159"
+                                ],
+                                "id": "c8bc13d3-6cb2-4934-b89c-21e0084ca84e",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "41961cc9-f556-43fc-a8a6-738048383fc9",
+                            "id": "44e4f5c3-a583-4b32-89c5-6abc9f3fcc67",
                             "ord": "a0"
                           },
                           {
                             "kind": "element",
                             "tag": "p",
                             "class": "text-sm font-medium uppercase tracking-wide text-secondary",
-                            "children": ["50 min"],
-                            "id": "b116935c-743c-446a-8ecd-303814cb3bcd",
+                            "children": [
+                              "50 min"
+                            ],
+                            "id": "591cb313-b229-4f0a-a5a9-055962c6e63b",
                             "ord": "a1"
                           },
                           {
                             "kind": "element",
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
-                            "children": ["An exam plus a proper contact-lens fitting."],
-                            "id": "9353389f-34e0-4544-9246-09f80754d688",
+                            "children": [
+                              "An exam plus a proper contact-lens fitting."
+                            ],
+                            "id": "efadf8ea-01fe-4422-bcde-04db9db6d213",
                             "ord": "a2"
                           }
                         ],
-                        "id": "d34720af-9294-4bf8-ab05-a7c9a700a161",
+                        "id": "dc783be1-51f4-430c-8f9b-af3e85a1fa1f",
                         "ord": "a1"
                       },
                       {
@@ -968,40 +1028,48 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
-                                "children": ["Kids’ eye exam"],
-                                "id": "f42943c7-c363-40ec-b60f-0b225f53dee1",
+                                "children": [
+                                  "Kids’ eye exam"
+                                ],
+                                "id": "2807e63b-02d8-465c-9bbd-69408b0a3047",
                                 "ord": "a0"
                               },
                               {
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-bold text-base-content",
-                                "children": ["$99"],
-                                "id": "8dfe266f-199d-41c9-9ee9-281b8dc58aba",
+                                "children": [
+                                  "$99"
+                                ],
+                                "id": "1693c477-e113-426b-8d9a-d88ccbbc29d2",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "e900f5e4-2b0e-4ffa-bc9c-493909129030",
+                            "id": "a4e85b65-3135-45b0-be3b-8d92b3c699d2",
                             "ord": "a0"
                           },
                           {
                             "kind": "element",
                             "tag": "p",
                             "class": "text-sm font-medium uppercase tracking-wide text-secondary",
-                            "children": ["30 min"],
-                            "id": "4ce41b8e-12ef-4d86-a423-be673de094d2",
+                            "children": [
+                              "30 min"
+                            ],
+                            "id": "b619e940-b261-4675-a7e6-20a270319683",
                             "ord": "a1"
                           },
                           {
                             "kind": "element",
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
-                            "children": ["A friendly, playful check made for little ones."],
-                            "id": "6b74946c-418c-4b34-8a3b-c47137d41da0",
+                            "children": [
+                              "A friendly, playful check made for little ones."
+                            ],
+                            "id": "6b115b9f-9aa7-4d9d-8033-5b62659e5a3c",
                             "ord": "a2"
                           }
                         ],
-                        "id": "7b7d5320-2bc6-40ae-b549-0bc0629da061",
+                        "id": "b43c6b15-2bc3-4cb7-9feb-dd8cdff95763",
                         "ord": "a2"
                       },
                       {
@@ -1021,40 +1089,48 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
-                                "children": ["Dry-eye consultation"],
-                                "id": "c8565970-dbbf-463f-b70e-ffb9304da95c",
+                                "children": [
+                                  "Dry-eye consultation"
+                                ],
+                                "id": "f4f95dbe-531f-44e7-b194-a2509232fd71",
                                 "ord": "a0"
                               },
                               {
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-bold text-base-content",
-                                "children": ["$89"],
-                                "id": "8eccf51d-eef0-49f5-bba9-38a6e95de743",
+                                "children": [
+                                  "$89"
+                                ],
+                                "id": "a1f1e675-cadb-4b45-b598-7b1e8a4afe61",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "9aebefad-9f07-4acd-8e75-ac0ed65f032a",
+                            "id": "ae94f05c-b5ee-4230-980d-e912dbae2bf0",
                             "ord": "a0"
                           },
                           {
                             "kind": "element",
                             "tag": "p",
                             "class": "text-sm font-medium uppercase tracking-wide text-secondary",
-                            "children": ["30 min"],
-                            "id": "398771f3-d298-4df7-a221-f97df47885aa",
+                            "children": [
+                              "30 min"
+                            ],
+                            "id": "97a0eb2b-1d11-403c-8160-40993e253449",
                             "ord": "a1"
                           },
                           {
                             "kind": "element",
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
-                            "children": ["Find out why your eyes bother you — and fix it."],
-                            "id": "efb37c41-f92a-44d9-9f7b-1ef39a99743e",
+                            "children": [
+                              "Find out why your eyes bother you — and fix it."
+                            ],
+                            "id": "4d354046-300c-4ac3-927c-e0053ee8c36c",
                             "ord": "a2"
                           }
                         ],
-                        "id": "9220c9ad-c07d-4894-89db-00aeb36219d5",
+                        "id": "831155c7-2295-4526-8c41-e229bcd681bb",
                         "ord": "a3"
                       },
                       {
@@ -1074,40 +1150,48 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
-                                "children": ["Medical eye visit"],
-                                "id": "3f560e14-3a02-43ab-a3e8-65bde331e9f2",
+                                "children": [
+                                  "Medical eye visit"
+                                ],
+                                "id": "24dc5336-6444-471b-bd66-b0cd1d7d933d",
                                 "ord": "a0"
                               },
                               {
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-bold text-base-content",
-                                "children": ["$119"],
-                                "id": "dc10c1ae-217d-402d-bfeb-87cbb9ccbd25",
+                                "children": [
+                                  "$119"
+                                ],
+                                "id": "a30dbce2-84f6-4d20-8337-12b8fe767ff3",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "767bc23d-5a89-4ba9-b518-4ec531989e8b",
+                            "id": "9d6e5016-6a9f-4f8f-82b1-a89e4a4ad10a",
                             "ord": "a0"
                           },
                           {
                             "kind": "element",
                             "tag": "p",
                             "class": "text-sm font-medium uppercase tracking-wide text-secondary",
-                            "children": ["30 min"],
-                            "id": "dfc9f893-1855-47d1-84b7-422e614b8409",
+                            "children": [
+                              "30 min"
+                            ],
+                            "id": "62f687e3-25bd-4c62-8ba1-2fd754b2ec6b",
                             "ord": "a1"
                           },
                           {
                             "kind": "element",
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
-                            "children": ["Red, painful or blurry? Often seen the same day."],
-                            "id": "94803cb0-58b8-42ed-9ebd-ece879671d01",
+                            "children": [
+                              "Red, painful or blurry? Often seen the same day."
+                            ],
+                            "id": "a6292b5c-a58d-42ed-b957-6b30bea237c1",
                             "ord": "a2"
                           }
                         ],
-                        "id": "92232343-7cce-4636-95a5-4a2dcd39232f",
+                        "id": "f57527d5-27c5-4545-873c-d58b5e0487c5",
                         "ord": "a4"
                       },
                       {
@@ -1127,44 +1211,52 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
-                                "children": ["Frame styling session"],
-                                "id": "9efc7a9a-cc3a-4d7c-892a-583b38ca3070",
+                                "children": [
+                                  "Frame styling session"
+                                ],
+                                "id": "40d5940b-c142-463a-8ace-e26bd3874c4a",
                                 "ord": "a0"
                               },
                               {
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-bold text-base-content",
-                                "children": ["$0"],
-                                "id": "b13d6ac3-d5d1-4181-8f34-20faa90a056e",
+                                "children": [
+                                  "$0"
+                                ],
+                                "id": "39c83738-b334-47ec-bb3f-56b7e139ad5f",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "d8fbbd3f-8ec2-4b89-9866-499cada57970",
+                            "id": "e5c956ce-6195-4968-9c6f-5a449747e81a",
                             "ord": "a0"
                           },
                           {
                             "kind": "element",
                             "tag": "p",
                             "class": "text-sm font-medium uppercase tracking-wide text-secondary",
-                            "children": ["30 min"],
-                            "id": "aff074e1-fa09-450a-ae86-9adecee7f608",
+                            "children": [
+                              "30 min"
+                            ],
+                            "id": "35ba0f58-05a4-4f16-9b3c-58f437774683",
                             "ord": "a1"
                           },
                           {
                             "kind": "element",
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
-                            "children": ["Free, friendly help choosing frames you’ll love."],
-                            "id": "e7b1b785-da03-47ef-83e7-f045f6b730d8",
+                            "children": [
+                              "Free, friendly help choosing frames you’ll love."
+                            ],
+                            "id": "9760e87d-a14f-4b98-be46-e56c80480c28",
                             "ord": "a2"
                           }
                         ],
-                        "id": "74ff84e4-0aa8-4c89-bc53-5006478575a1",
+                        "id": "90f942fc-ac05-4d9f-ac28-9ec4145096be",
                         "ord": "a5"
                       }
                     ],
-                    "id": "2e402d79-2c9f-4cc1-aa3e-57bdb08dfceb",
+                    "id": "c92adc73-35c5-417e-ab06-f2380b26d8fd",
                     "ord": "a1"
                   },
                   {
@@ -1179,20 +1271,22 @@
                         "attrs": {
                           "href": "/book"
                         },
-                        "children": ["See everything & book"],
-                        "id": "72d2a0c2-0373-4b5c-80bc-277052dee2c9",
+                        "children": [
+                          "See everything & book"
+                        ],
+                        "id": "6e86c9f7-c4b9-4dc3-8897-7e9eae850e77",
                         "ord": "a0"
                       }
                     ],
-                    "id": "d6eca129-5392-4006-930b-6b71b5f33588",
+                    "id": "0e099f9d-281a-4190-84c8-9a345918aa87",
                     "ord": "a2"
                   }
                 ],
-                "id": "c25c2aa6-78e4-4623-a2de-bf79c7c70315",
+                "id": "175b8351-5225-43f5-9bd4-8f447fc0a210",
                 "ord": "a0"
               }
             ],
-            "id": "c0edc33a-a51a-4d3f-bed5-50f093d88f57",
+            "id": "0e21ebf3-e9da-4e9a-a891-a53b59f4af6e",
             "ord": "a2"
           },
           {
@@ -1214,7 +1308,7 @@
                       "alt": "A calm, welcoming eye-care exam room with a phoropter and soft daylight",
                       "loading": "lazy"
                     },
-                    "id": "dad0725b-bff4-41f2-8f27-d8038be0946a",
+                    "id": "14ab23b8-2ac8-42d6-9321-f249d2fe59ae",
                     "ord": "a0"
                   },
                   {
@@ -1226,8 +1320,10 @@
                         "kind": "element",
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
-                        "children": ["Family eye care, the warm way"],
-                        "id": "ca2e5931-1820-413e-a264-2fad821b0760",
+                        "children": [
+                          "Family eye care, the warm way"
+                        ],
+                        "id": "6dddcacd-e5e4-4898-8f17-8877f99848dc",
                         "ord": "a0"
                       },
                       {
@@ -1237,7 +1333,7 @@
                         "children": [
                           "Clearview is a neighbourhood practice built for real families — the kind of place where the whole household can be seen in one trip, where the optician remembers your kids’ names, and where nobody is ever made to feel rushed or upsold."
                         ],
-                        "id": "a284db33-62ce-4ced-8f55-c4b5d9fe3f82",
+                        "id": "418c505a-70fe-4275-a576-c2c95c29a32f",
                         "ord": "a1"
                       },
                       {
@@ -1247,7 +1343,7 @@
                         "children": [
                           "We keep things simple and honest: clear prices, gentle exams, and only the lenses and care you actually need. Come in for a check-up, a new prescription, or just to browse frames — and leave seeing better and feeling looked after."
                         ],
-                        "id": "c5bf1c88-f000-4ba7-8115-668cad5ae505",
+                        "id": "9f45ef8e-4462-4be7-abfb-c5d3d7e95d16",
                         "ord": "a2"
                       },
                       {
@@ -1262,24 +1358,26 @@
                             "attrs": {
                               "href": "/book"
                             },
-                            "children": ["Book your visit"],
-                            "id": "3a3f14d4-a57b-42df-af0d-6a79d120fc55",
+                            "children": [
+                              "Book your visit"
+                            ],
+                            "id": "59ec4698-a92d-48e7-a6d4-953e844b8bc9",
                             "ord": "a0"
                           }
                         ],
-                        "id": "2f110e48-f960-4183-b266-5d030856a0fc",
+                        "id": "f419fd5e-10e3-453f-92b4-c932484db275",
                         "ord": "a3"
                       }
                     ],
-                    "id": "fe15b804-bb73-42d8-b0e0-a0a72ecb4612",
+                    "id": "6366f535-ba9c-4a55-aeec-fb742840a1a5",
                     "ord": "a1"
                   }
                 ],
-                "id": "c3e4d31a-2835-450c-8896-34b820cedf8a",
+                "id": "85a8480b-603a-46b9-b045-7e0e0ddfa45d",
                 "ord": "a0"
               }
             ],
-            "id": "7094c477-4e3c-4a19-b3ad-5fec116e888f",
+            "id": "0fc0d81c-e37c-40ed-8903-ef5e13adf474",
             "ord": "a3"
           },
           {
@@ -1301,8 +1399,10 @@
                         "kind": "element",
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
-                        "children": ["Meet the team"],
-                        "id": "f3a8d2ce-f89a-4ff7-bed7-59c892769ce9",
+                        "children": [
+                          "Meet the team"
+                        ],
+                        "id": "21f1e0ca-10d1-47ed-b2f2-092387e24598",
                         "ord": "a0"
                       },
                       {
@@ -1312,11 +1412,11 @@
                         "children": [
                           "Book by name — you’ll see friendly, familiar faces every visit."
                         ],
-                        "id": "a1382dca-6610-47b8-a0d0-00cf91a4343e",
+                        "id": "6ed44c49-6bdc-4e50-b012-ced95264a641",
                         "ord": "a1"
                       }
                     ],
-                    "id": "e7d9d88d-8195-4c26-ad77-a778dde1f48f",
+                    "id": "47c052de-5d5f-473d-b882-e2ec4752b3fe",
                     "ord": "a0"
                   },
                   {
@@ -1338,7 +1438,7 @@
                               "alt": "Dr. Elena Reyes, optometrist, smiling warmly",
                               "loading": "lazy"
                             },
-                            "id": "75f298b2-39f4-427d-8f79-4d1e5f161fcf",
+                            "id": "ffbde204-c666-4185-838c-94022bbadab6",
                             "ord": "a0"
                           },
                           {
@@ -1350,16 +1450,20 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
-                                "children": ["Dr. Elena Reyes"],
-                                "id": "99035df1-8b89-4ace-a143-41a32a0610d1",
+                                "children": [
+                                  "Dr. Elena Reyes"
+                                ],
+                                "id": "264ab211-9771-4449-aab1-0d3cd9063925",
                                 "ord": "a0"
                               },
                               {
                                 "kind": "element",
                                 "tag": "p",
                                 "class": "text-sm font-medium uppercase tracking-wide text-secondary",
-                                "children": ["Optometrist"],
-                                "id": "cda0f75b-8965-432e-a1b0-d2a974bcd5cd",
+                                "children": [
+                                  "Optometrist"
+                                ],
+                                "id": "dc20cdc0-869c-4e51-a9ea-a58395f7f546",
                                 "ord": "a1"
                               },
                               {
@@ -1369,15 +1473,15 @@
                                 "children": [
                                   "Comprehensive exams, contacts and medical eye care — with a gentle, patient way about her. Elena founded the practice."
                                 ],
-                                "id": "cd6ae3ec-b3ad-44c9-a33d-9245edf14c03",
+                                "id": "61d3c89a-c9fa-4ec0-b85f-e5cd9d1f31a5",
                                 "ord": "a2"
                               }
                             ],
-                            "id": "5819734d-cad2-4a24-a7a3-f5c7af647384",
+                            "id": "b683184b-4d14-4362-8db4-921fca643ea9",
                             "ord": "a1"
                           }
                         ],
-                        "id": "2432c815-6368-42c3-89b5-98becda8b899",
+                        "id": "d9fa4579-6f49-4610-b034-07abc9e820fb",
                         "ord": "a0"
                       },
                       {
@@ -1394,7 +1498,7 @@
                               "alt": "Dr. Marcus Bell, optometrist, in the exam room",
                               "loading": "lazy"
                             },
-                            "id": "30d3ad2b-1246-44b0-bfdc-e9f045727764",
+                            "id": "d6ab93ec-dc74-4b68-ad48-ee3a31dcc900",
                             "ord": "a0"
                           },
                           {
@@ -1406,16 +1510,20 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
-                                "children": ["Dr. Marcus Bell"],
-                                "id": "9745d8ab-e12b-4f81-8d74-f6f9546b1c5e",
+                                "children": [
+                                  "Dr. Marcus Bell"
+                                ],
+                                "id": "1daed3dc-dac9-41a5-9625-4373350b90f3",
                                 "ord": "a0"
                               },
                               {
                                 "kind": "element",
                                 "tag": "p",
                                 "class": "text-sm font-medium uppercase tracking-wide text-secondary",
-                                "children": ["Optometrist · kids & dry-eye"],
-                                "id": "adb2ab4d-dc4c-4580-b274-3d07b6745cd8",
+                                "children": [
+                                  "Optometrist · kids & dry-eye"
+                                ],
+                                "id": "bdc8497b-ebe1-4979-9917-3634b51886b7",
                                 "ord": "a1"
                               },
                               {
@@ -1425,15 +1533,15 @@
                                 "children": [
                                   "A favourite with little ones and anyone battling dry, tired eyes — Marcus makes first visits fun and fear-free."
                                 ],
-                                "id": "fe164516-d286-40af-9c32-74591037ca7c",
+                                "id": "bd1ea591-2d09-4b82-b555-ebe31f5aba2a",
                                 "ord": "a2"
                               }
                             ],
-                            "id": "807c05dd-1c0b-4cc1-a33a-996c69ca6c52",
+                            "id": "23e4a499-11ae-4188-9929-7b86b1bf6377",
                             "ord": "a1"
                           }
                         ],
-                        "id": "776d4255-70ff-4d3a-a930-913941ffd757",
+                        "id": "df31f97c-715e-4ad0-a98c-24119cf7df48",
                         "ord": "a1"
                       },
                       {
@@ -1450,7 +1558,7 @@
                               "alt": "Nadia Okafor, licensed optician, helping choose frames",
                               "loading": "lazy"
                             },
-                            "id": "41100d94-d350-4ec8-a459-a7f270041659",
+                            "id": "8a56f854-fc11-4ab2-830f-307d5a9425ac",
                             "ord": "a0"
                           },
                           {
@@ -1462,16 +1570,20 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
-                                "children": ["Nadia Okafor"],
-                                "id": "a2e1b46b-0d27-451d-82d0-67af623c24e9",
+                                "children": [
+                                  "Nadia Okafor"
+                                ],
+                                "id": "5bf406fe-6309-40b1-b11a-53b2ab311b35",
                                 "ord": "a0"
                               },
                               {
                                 "kind": "element",
                                 "tag": "p",
                                 "class": "text-sm font-medium uppercase tracking-wide text-secondary",
-                                "children": ["Licensed optician"],
-                                "id": "8f851dad-7ae8-4a41-91f2-51bcd34b6b8d",
+                                "children": [
+                                  "Licensed optician"
+                                ],
+                                "id": "844480ad-ae76-4de3-a948-10253096d82d",
                                 "ord": "a1"
                               },
                               {
@@ -1481,27 +1593,27 @@
                                 "children": [
                                   "The eye for frames — Nadia helps you find the pair that fits your face, your lenses and your life."
                                 ],
-                                "id": "6b553188-65b4-4085-adc6-a87e3c48d34d",
+                                "id": "ad6bdc0d-37b8-410f-a670-31bba4504566",
                                 "ord": "a2"
                               }
                             ],
-                            "id": "ded792bd-ffa2-41c5-82be-4c44bfcc406c",
+                            "id": "e84b5914-b588-4958-a07c-a7d235807c31",
                             "ord": "a1"
                           }
                         ],
-                        "id": "ad52d18d-a26d-4b94-b28b-b21634881bd9",
+                        "id": "22b44ae3-7f29-4843-8528-7a27135f8a81",
                         "ord": "a2"
                       }
                     ],
-                    "id": "b92810f5-e874-400e-b8de-e4919275b21f",
+                    "id": "9228cdf1-f435-4812-9042-86d1570536bf",
                     "ord": "a1"
                   }
                 ],
-                "id": "66c9e746-4d37-46fc-8df6-30b93d644f7d",
+                "id": "d7981f5f-547e-43c7-a59b-f99d74a52723",
                 "ord": "a0"
               }
             ],
-            "id": "61afa993-367c-4449-b6ed-d98b6bbf684c",
+            "id": "b4c65285-93f7-45a7-848e-ef2d4a08c177",
             "ord": "a4"
           },
           {
@@ -1521,23 +1633,25 @@
                     "children": [
                       "“My kids actually look forward to the eye doctor now — and I finally found frames I love instead of settling. The whole team is warm, patient and never pushy. We’ve moved the whole family here.”"
                     ],
-                    "id": "e8fa6cd5-69d9-4fae-97e5-d7e00112d2c4",
+                    "id": "cd8ad609-0c59-483e-b624-6f0822e714fd",
                     "ord": "a0"
                   },
                   {
                     "kind": "element",
                     "tag": "p",
                     "class": "text-sm font-semibold uppercase tracking-wide opacity-80",
-                    "children": ["Bianca, mum of two & patient since 2022"],
-                    "id": "8a0c7c13-ffb5-4201-809c-91b530af0e71",
+                    "children": [
+                      "Bianca, mum of two & patient since 2022"
+                    ],
+                    "id": "f7552cc9-ee7d-4ed5-9123-c7d560e7fb1f",
                     "ord": "a1"
                   }
                 ],
-                "id": "79ebb312-8872-40ee-96b8-ed3ba2657a97",
+                "id": "712c0820-8818-44fe-ae48-5d89f18dda64",
                 "ord": "a0"
               }
             ],
-            "id": "10995d17-812b-4950-bbed-10eb70436579",
+            "id": "76dd462d-3e27-4f03-9af5-77230a1ce201",
             "ord": "a5"
           },
           {
@@ -1554,8 +1668,10 @@
                     "kind": "element",
                     "tag": "h2",
                     "class": "text-3xl font-bold tracking-tight @3xl:text-4xl",
-                    "children": ["New patients always welcome"],
-                    "id": "a314c660-0aad-4ecd-9f4c-1b16e1284df5",
+                    "children": [
+                      "New patients always welcome"
+                    ],
+                    "id": "a4f44fe6-dfaf-4541-8570-73faa0a3aeb5",
                     "ord": "a0"
                   },
                   {
@@ -1565,7 +1681,7 @@
                     "children": [
                       "Pick a visit, choose your doctor and see live times. It takes about a minute — and we’ll take it from there."
                     ],
-                    "id": "8431864e-2cc7-429f-9014-6041990e80b7",
+                    "id": "94c8ecb4-c8d3-4506-bd45-a0db11a804d9",
                     "ord": "a1"
                   },
                   {
@@ -1575,16 +1691,18 @@
                     "attrs": {
                       "href": "/book"
                     },
-                    "children": ["Book an eye exam"],
-                    "id": "5d41b370-379e-4d74-9747-76c0019c4c85",
+                    "children": [
+                      "Book an eye exam"
+                    ],
+                    "id": "37f73de0-8098-46e9-aee2-24b3472ac4db",
                     "ord": "a2"
                   }
                 ],
-                "id": "3b497331-6b50-44c9-9774-0a74e647ff2a",
+                "id": "3d1cbe12-1dc0-45a4-92d5-d6c12f4adf26",
                 "ord": "a0"
               }
             ],
-            "id": "fd4fb2d8-a7a2-4dc8-b451-a8ea1ad55e79",
+            "id": "6014a7d7-cb1a-4af6-bf3c-14074f4b9ddc",
             "ord": "a6"
           }
         ]
@@ -1601,7 +1719,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "04e973b6-db84-4b03-bbc7-d49b7ff830bf",
+        "id": "10d288bc-32dd-43b6-b783-1bdaef23b04f",
         "children": [
           {
             "kind": "element",
@@ -1617,14 +1735,14 @@
                   "alt": "A young child trying on new glasses and grinning",
                   "loading": "eager"
                 },
-                "id": "26d5b208-986d-46aa-9895-4f66cf6df41b",
+                "id": "5e923c89-c5f9-48c9-8035-1d216937f75b",
                 "ord": "a0"
               },
               {
                 "kind": "element",
                 "tag": "div",
                 "class": "absolute inset-0 bg-black/65",
-                "id": "65c321b0-a2b0-41a2-8fa1-7c9c066e070a",
+                "id": "516bcf97-7b3c-4b60-9eb7-ec4473838019",
                 "ord": "a1"
               },
               {
@@ -1636,8 +1754,10 @@
                     "kind": "element",
                     "tag": "h1",
                     "class": "max-w-3xl text-4xl font-bold leading-tight tracking-tight @2xl:text-5xl @3xl:text-6xl",
-                    "children": ["Book your appointment"],
-                    "id": "a7bede24-9234-4c8c-8029-2a14017c5cb8",
+                    "children": [
+                      "Book your appointment"
+                    ],
+                    "id": "e1981d29-f931-4f7c-a1c0-2f357a54ab7a",
                     "ord": "a0"
                   },
                   {
@@ -1647,7 +1767,7 @@
                     "children": [
                       "Choose a visit to see prices and live availability, then pick your optometrist and a time that suits the family."
                     ],
-                    "id": "1d8a2133-dc23-4f73-8c57-7efbe7749a31",
+                    "id": "11ae3311-1ebe-438b-8fc0-101c4e096790",
                     "ord": "a1"
                   },
                   {
@@ -1662,20 +1782,22 @@
                         "attrs": {
                           "href": "/book"
                         },
-                        "children": ["See appointments below"],
-                        "id": "fd01a8c0-45a7-48da-9e4b-96460bc45a68",
+                        "children": [
+                          "See appointments below"
+                        ],
+                        "id": "c2c2d84e-26ac-41a4-911f-e4cab34ce4fc",
                         "ord": "a0"
                       }
                     ],
-                    "id": "95c9ee92-14de-4f29-b196-3e3a97376679",
+                    "id": "d2fbc667-4ccb-4bb4-be44-d7c8699fc659",
                     "ord": "a2"
                   }
                 ],
-                "id": "378c30b6-b391-417b-8847-51e0ecbf8171",
+                "id": "3ad06be0-bd44-4ab7-a068-1f45435c5530",
                 "ord": "a2"
               }
             ],
-            "id": "f9d84a66-79b2-4c8e-9087-e4cdc8a92f0c",
+            "id": "55ff3e38-6d5e-4b2b-baa1-8f3aa3af9ee4",
             "ord": "a0"
           },
           {
@@ -1683,7 +1805,7 @@
             "component": "scheduling.services",
             "class": "mx-auto w-full max-w-5xl px-6 py-8",
             "locked": "host",
-            "id": "ac1ee638-097b-4dad-94fb-ea6d72190b68",
+            "id": "b7b87ed2-378f-4747-95bc-a09b313c4c39",
             "ord": "a1"
           },
           {
@@ -1705,8 +1827,10 @@
                         "kind": "element",
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
-                        "children": ["Good to know"],
-                        "id": "ea45d632-70a3-4812-a7e4-bcdee0572150",
+                        "children": [
+                          "Good to know"
+                        ],
+                        "id": "3100ae73-9d8d-40e2-8866-596e3f780a72",
                         "ord": "a0"
                       },
                       {
@@ -1716,11 +1840,11 @@
                         "children": [
                           "What happens once you pick a time — and how to change it if something comes up."
                         ],
-                        "id": "3f35f065-6a80-4642-813a-83efc00d05b1",
+                        "id": "e3a99180-4ba1-4e6b-8842-a196f44a9368",
                         "ord": "a1"
                       }
                     ],
-                    "id": "28ba0b15-55bc-4f0d-a051-62dd5927ad3b",
+                    "id": "e1fb90ba-eaff-482a-8fd0-72836b277744",
                     "ord": "a0"
                   },
                   {
@@ -1737,8 +1861,10 @@
                             "kind": "element",
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
-                            "children": ["Standard booking"],
-                            "id": "ad8a35b2-a2b5-4098-9672-ad9513c396ba",
+                            "children": [
+                              "Standard booking"
+                            ],
+                            "id": "9085fdb9-89e5-4e3b-bcee-140dae98acb5",
                             "ord": "a0"
                           },
                           {
@@ -1748,7 +1874,7 @@
                             "children": [
                               "Please give us at least 24 hours’ notice if you need to change or cancel — it lets us offer the time to another family. We’ll text and email a friendly reminder the day before and two hours ahead."
                             ],
-                            "id": "99cd941f-f309-4046-b6de-0a450c978afb",
+                            "id": "e3078aac-ed99-4e77-8371-a95d210c76ce",
                             "ord": "a1"
                           },
                           {
@@ -1758,11 +1884,11 @@
                             "children": [
                               "No deposit to book. Change or cancel free up to 24 hours before."
                             ],
-                            "id": "bd6beb7c-01da-43d9-b2bd-f960bd1bcf04",
+                            "id": "54edcc39-2971-45e7-8b64-de68b99e453a",
                             "ord": "a2"
                           }
                         ],
-                        "id": "c2405fc6-d35e-45ae-9ce5-fb5834fecb88",
+                        "id": "19243722-2c00-47dc-b9de-eab6167c9459",
                         "ord": "a0"
                       },
                       {
@@ -1774,8 +1900,10 @@
                             "kind": "element",
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
-                            "children": ["Reserved-chair hold"],
-                            "id": "cd026e23-ecb5-4e8c-8138-2d84af4e25fe",
+                            "children": [
+                              "Reserved-chair hold"
+                            ],
+                            "id": "00bccfec-cb4d-4307-a5ac-0bb8cf29f21c",
                             "ord": "a0"
                           },
                           {
@@ -1785,31 +1913,33 @@
                             "children": [
                               "Longer visits reserve an exam room and a doctor just for you, so we hold a card on file — nothing is charged unless the appointment is missed without 48 hours’ notice. Reschedule in time and the hold simply releases."
                             ],
-                            "id": "1e13aac5-b973-4129-8b89-c4691cf7f61b",
+                            "id": "a206a33f-edff-413d-9d9d-6a16ae968c00",
                             "ord": "a1"
                           },
                           {
                             "kind": "element",
                             "tag": "p",
                             "class": "text-base font-medium text-base-content",
-                            "children": ["Change or cancel free up to 2 days before."],
-                            "id": "71695e7d-1894-4a21-baa6-d5a1055ef1e7",
+                            "children": [
+                              "Change or cancel free up to 2 days before."
+                            ],
+                            "id": "3e807654-a31f-4f57-846e-e9ce05dade86",
                             "ord": "a2"
                           }
                         ],
-                        "id": "99d2cdee-7765-4a5d-9a7c-a660223095d7",
+                        "id": "906fd8e8-7cfd-4fe5-bea6-ff68a9c3be95",
                         "ord": "a1"
                       }
                     ],
-                    "id": "c09ac9e0-f3c4-4455-b9f7-b5dcfeb6acc8",
+                    "id": "4f6fad9e-8d15-4ef5-bc27-2c09c950b47e",
                     "ord": "a1"
                   }
                 ],
-                "id": "989f9714-3128-43d2-b030-4ad9c8e54dfe",
+                "id": "4b771be6-afca-483a-b816-5882868589ea",
                 "ord": "a0"
               }
             ],
-            "id": "a13cddc0-e746-4ce7-9d3e-39513ac2751d",
+            "id": "91bbc1a8-796d-49a1-8e71-418ec54f3235",
             "ord": "a2"
           }
         ]
@@ -1826,7 +1956,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "85e6db8b-4f72-4f15-8086-78796f33fe46",
+        "id": "2f30bd70-a71e-4f92-a04c-933c87719413",
         "children": [
           {
             "kind": "element",
@@ -1847,7 +1977,7 @@
                       "alt": "A bright, friendly optical shop with big windows and rows of glasses on warm-lit shelves",
                       "loading": "lazy"
                     },
-                    "id": "bf49b611-f464-4ad8-a866-3adc0dd66ae6",
+                    "id": "554a5f12-a582-4cc5-8864-51943c83ca92",
                     "ord": "a0"
                   },
                   {
@@ -1859,8 +1989,10 @@
                         "kind": "element",
                         "tag": "h1",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
-                        "children": ["About Clearview Eye Care"],
-                        "id": "165a830f-cf24-487d-b225-9829c89b6dff",
+                        "children": [
+                          "About Clearview Eye Care"
+                        ],
+                        "id": "086e79f3-90f2-4991-8e46-ddf092c71be0",
                         "ord": "a0"
                       },
                       {
@@ -1870,7 +2002,7 @@
                         "children": [
                           "We opened Clearview to be the kind of eye doctor we’d want for our own families — warm, honest and genuinely unhurried. Somewhere every age feels welcome, from a child’s first exam to a grandparent’s yearly check."
                         ],
-                        "id": "5ab5051e-8490-4b03-bc31-9182b4f1b517",
+                        "id": "e5508f6b-51d1-48d7-a7df-dfc7049278e7",
                         "ord": "a1"
                       },
                       {
@@ -1880,7 +2012,7 @@
                         "children": [
                           "No upselling, no lectures, no confusing jargon. Just thorough exams, clear explanations, and a friendly team that treats you like a neighbour, because you probably are one."
                         ],
-                        "id": "e5fa5ccd-7c08-4c87-9e00-7c146efea3d8",
+                        "id": "bc8abb01-fbd4-4658-9517-a6f8d6e5552f",
                         "ord": "a2"
                       },
                       {
@@ -1895,24 +2027,26 @@
                             "attrs": {
                               "href": "/book"
                             },
-                            "children": ["Book a visit"],
-                            "id": "c17ea33b-e17b-484d-9be0-ffd097153161",
+                            "children": [
+                              "Book a visit"
+                            ],
+                            "id": "7a341d35-3d72-422d-b45f-811125328c5f",
                             "ord": "a0"
                           }
                         ],
-                        "id": "09ea5d9b-e77c-4958-892a-78da5f418f66",
+                        "id": "adcfd82a-2c97-4a77-aa87-5540e4939394",
                         "ord": "a3"
                       }
                     ],
-                    "id": "5e300913-bb0c-47b3-bb63-24562a1411f2",
+                    "id": "07dcdf43-958d-42a3-9000-a1b3ade4db41",
                     "ord": "a1"
                   }
                 ],
-                "id": "e7a79d76-686f-4a81-a2ce-3d6c81a23880",
+                "id": "03054398-5095-468a-b198-829601d2d84c",
                 "ord": "a0"
               }
             ],
-            "id": "a2891e7f-ccb9-41df-b40d-0a43d9fd1eae",
+            "id": "9e1eed76-6728-4079-9f8a-f8583086ae26",
             "ord": "a0"
           },
           {
@@ -1929,8 +2063,10 @@
                     "kind": "element",
                     "tag": "h2",
                     "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
-                    "children": ["How we care for your eyes"],
-                    "id": "93191b0f-a910-458e-9a38-bd21894e4dd4",
+                    "children": [
+                      "How we care for your eyes"
+                    ],
+                    "id": "e0debb07-50f4-4edb-977f-d09bf88a6945",
                     "ord": "a0"
                   },
                   {
@@ -1947,8 +2083,10 @@
                             "kind": "element",
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
-                            "children": ["We listen first"],
-                            "id": "10c8a4d2-0aab-4db0-9fc4-643c780011c1",
+                            "children": [
+                              "We listen first"
+                            ],
+                            "id": "d232f664-2ff5-42b9-a768-7f3f7c203358",
                             "ord": "a0"
                           },
                           {
@@ -1958,11 +2096,11 @@
                             "children": [
                               "Every visit starts with a real conversation about your eyes, your day and your budget — so the plan fits your life, not a sales target."
                             ],
-                            "id": "3daf653a-bcc9-49cd-aafb-2c9036762cb2",
+                            "id": "0528ea61-4fb6-4164-9738-eb92e554673e",
                             "ord": "a1"
                           }
                         ],
-                        "id": "e0e6b1e3-805d-4cf7-98e9-bfcc0b99aaaf",
+                        "id": "93b58bf2-9785-4f35-9337-d9cc4259485c",
                         "ord": "a0"
                       },
                       {
@@ -1974,8 +2112,10 @@
                             "kind": "element",
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
-                            "children": ["Honest, clear pricing"],
-                            "id": "90a2e97f-b6bd-498d-820c-f3fe7ddc9166",
+                            "children": [
+                              "Honest, clear pricing"
+                            ],
+                            "id": "72c9c495-4444-4a52-bb55-d8376f73c74e",
                             "ord": "a0"
                           },
                           {
@@ -1985,11 +2125,11 @@
                             "children": [
                               "We’ll always tell you the cost before we start, file your insurance for you, and never push lenses or extras you don’t need."
                             ],
-                            "id": "5e58632e-1f85-4949-9206-096d5cecb4d7",
+                            "id": "a0109ab2-b575-4eac-9f5a-caf62fe2f944",
                             "ord": "a1"
                           }
                         ],
-                        "id": "caa0f45f-7a76-4c2f-9457-d50fccf8b851",
+                        "id": "5da1e194-2323-4e45-8d26-de7ea3482050",
                         "ord": "a1"
                       },
                       {
@@ -2001,8 +2141,10 @@
                             "kind": "element",
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
-                            "children": ["Gentle for every age"],
-                            "id": "53038bd4-4b49-472e-938b-552b3afe7a42",
+                            "children": [
+                              "Gentle for every age"
+                            ],
+                            "id": "a6407f84-4241-44af-a32d-95821f47c9f1",
                             "ord": "a0"
                           },
                           {
@@ -2012,23 +2154,23 @@
                             "children": [
                               "Wriggly toddlers, nervous first-timers, busy teens and everyone after — we know how to make each one comfortable and glad they came."
                             ],
-                            "id": "1e64025e-d8e5-4c8e-adad-5232af2a3c18",
+                            "id": "3f87681e-fdf9-46aa-aa92-033b029cce93",
                             "ord": "a1"
                           }
                         ],
-                        "id": "810f92b5-a9f3-4670-91e7-ef9f9757bff5",
+                        "id": "cfbde64b-f9ab-4d4b-9cd5-93538e9f05f7",
                         "ord": "a2"
                       }
                     ],
-                    "id": "6b5ff5f2-e1ea-4c0c-939f-5381e343620e",
+                    "id": "ba2ad0f7-829e-4b35-ab81-b9474da889ce",
                     "ord": "a1"
                   }
                 ],
-                "id": "96650304-0984-44fd-a7f5-6fe03d40417e",
+                "id": "a5385e84-b8c4-4646-95e5-d1b213d8f101",
                 "ord": "a0"
               }
             ],
-            "id": "e5737f9e-ea32-4ca3-a20a-0ab4bae5270f",
+            "id": "437a4df1-3041-4ba8-90a6-da24d7284633",
             "ord": "a1"
           }
         ]
@@ -2045,7 +2187,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "61b271e0-54d3-4633-ae9a-173d1710d236",
+        "id": "7a0c5f06-249a-4f5e-b8c7-86eb9dfc3688",
         "children": [
           {
             "kind": "element",
@@ -2066,8 +2208,10 @@
                         "kind": "element",
                         "tag": "h1",
                         "class": "text-4xl font-bold tracking-tight text-base-content @3xl:text-5xl",
-                        "children": ["Get in touch"],
-                        "id": "69d2a3f3-c5a9-4911-b40b-68621f16e932",
+                        "children": [
+                          "Get in touch"
+                        ],
+                        "id": "4634de20-b769-4cf8-b1b8-26658f3a4163",
                         "ord": "a0"
                       },
                       {
@@ -2077,11 +2221,11 @@
                         "children": [
                           "Questions before you book? Send a note and Clearview Eye Care will get back to you — usually the same day."
                         ],
-                        "id": "e25552d3-04e4-439f-a41e-908bdc8d7ef0",
+                        "id": "d95ec00f-333f-455a-94ec-804491a0a8e0",
                         "ord": "a1"
                       }
                     ],
-                    "id": "ff96cac5-cd66-463a-a5fb-3aff90472d05",
+                    "id": "33bd8a18-ce55-41c5-858d-e070f721e4aa",
                     "ord": "a0"
                   },
                   {
@@ -2093,8 +2237,10 @@
                         "kind": "element",
                         "tag": "span",
                         "class": "text-base font-medium text-base-content",
-                        "children": ["Call us"],
-                        "id": "54f03c49-162b-4f01-9905-20ff72f23215",
+                        "children": [
+                          "Call us"
+                        ],
+                        "id": "8e62d735-21b9-4d9c-a5ba-5220b8b8baff",
                         "ord": "a0"
                       },
                       {
@@ -2105,12 +2251,14 @@
                           {
                             "kind": "element",
                             "tag": "span",
-                            "children": ["(555) 123-4567"],
+                            "children": [
+                              "(555) 123-4567"
+                            ],
                             "data": {
                               "kind": "value",
                               "ref": "site.identity.phone"
                             },
-                            "id": "c052f94a-1f93-42d8-bf95-3aac51b170f1",
+                            "id": "8a026ee7-80d6-44c2-a5cd-14c1ef53d1b2",
                             "ord": "a0"
                           }
                         ],
@@ -2119,7 +2267,7 @@
                           "ref": "site.identity.phoneHref",
                           "attr": "href"
                         },
-                        "id": "31cd52a2-369a-486f-b465-d84c0c1ee110",
+                        "id": "3f6bde79-bf85-46b3-9637-7898b9aaefb8",
                         "ord": "a1"
                       }
                     ],
@@ -2127,7 +2275,7 @@
                       "kind": "visible",
                       "ref": "site.identity.phone"
                     },
-                    "id": "dbcbbd87-7739-49c7-aa9a-7ca5caa66783",
+                    "id": "f019d8ed-694e-4c83-bb57-fc296260f590",
                     "ord": "a1"
                   },
                   {
@@ -2139,8 +2287,10 @@
                         "kind": "element",
                         "tag": "span",
                         "class": "text-base font-medium text-base-content",
-                        "children": ["Email us"],
-                        "id": "efe374f5-a915-4974-af1c-e15dc17a8c45",
+                        "children": [
+                          "Email us"
+                        ],
+                        "id": "64e72493-9806-4f84-b5dc-bef4e12f55aa",
                         "ord": "a0"
                       },
                       {
@@ -2151,12 +2301,14 @@
                           {
                             "kind": "element",
                             "tag": "span",
-                            "children": ["hello@yourbusiness.com"],
+                            "children": [
+                              "hello@yourbusiness.com"
+                            ],
                             "data": {
                               "kind": "value",
                               "ref": "site.identity.email"
                             },
-                            "id": "581caff4-38ee-4d71-a8cd-6b173a33b010",
+                            "id": "6cfcae78-b105-43f5-8d52-e7c9bc4799fe",
                             "ord": "a0"
                           }
                         ],
@@ -2165,7 +2317,7 @@
                           "ref": "site.identity.emailHref",
                           "attr": "href"
                         },
-                        "id": "07e62f79-5711-4573-b712-ba0a1f1cebe5",
+                        "id": "de5b2870-813b-42dd-8ffd-caf55b622e90",
                         "ord": "a1"
                       }
                     ],
@@ -2173,7 +2325,7 @@
                       "kind": "visible",
                       "ref": "site.identity.email"
                     },
-                    "id": "a341ab51-c7eb-49f7-b14e-97dd2d5baebe",
+                    "id": "a5fb3a7e-2fc6-4621-bd32-eda35937613b",
                     "ord": "a2"
                   },
                   {
@@ -2190,8 +2342,10 @@
                             "kind": "element",
                             "tag": "span",
                             "class": "text-base font-medium text-base-content",
-                            "children": ["Your name"],
-                            "id": "81f1c9d0-1721-4200-bc69-562c8e395147",
+                            "children": [
+                              "Your name"
+                            ],
+                            "id": "f53bcc14-bd33-4c6c-8bb4-e5197e21ce02",
                             "ord": "a0"
                           },
                           {
@@ -2203,11 +2357,11 @@
                               "name": "name",
                               "required": true
                             },
-                            "id": "76d3e440-ca4f-49d4-b24f-f1228409da1a",
+                            "id": "8c17fb6a-3e41-42b8-9859-e81687788f74",
                             "ord": "a1"
                           }
                         ],
-                        "id": "4396cd1a-f330-49e4-abcf-adb29ea55e60",
+                        "id": "365244e6-a4b6-4633-b16b-8354c4abdb82",
                         "ord": "a0"
                       },
                       {
@@ -2219,8 +2373,10 @@
                             "kind": "element",
                             "tag": "span",
                             "class": "text-base font-medium text-base-content",
-                            "children": ["Email address"],
-                            "id": "5a7b8df1-27af-45f7-b232-d849403a1cf0",
+                            "children": [
+                              "Email address"
+                            ],
+                            "id": "728f73ba-3645-476e-8f48-b723913dbe56",
                             "ord": "a0"
                           },
                           {
@@ -2232,11 +2388,11 @@
                               "name": "email",
                               "required": true
                             },
-                            "id": "acb15900-e17d-436e-8b94-86070cacdc9d",
+                            "id": "a634e0e4-e501-4ce0-9a35-682989656de8",
                             "ord": "a1"
                           }
                         ],
-                        "id": "f89e466e-895f-4086-85a6-9c9d46f30ff4",
+                        "id": "60a6d7e4-edf4-406f-bf9a-e3e03423d371",
                         "ord": "a1"
                       },
                       {
@@ -2248,8 +2404,10 @@
                             "kind": "element",
                             "tag": "span",
                             "class": "text-base font-medium text-base-content",
-                            "children": ["Phone number"],
-                            "id": "a8b2c219-84b4-40ff-b667-1b0870da2189",
+                            "children": [
+                              "Phone number"
+                            ],
+                            "id": "f93caa4c-7ce4-460f-b53e-4cabed664d8e",
                             "ord": "a0"
                           },
                           {
@@ -2260,11 +2418,11 @@
                               "type": "tel",
                               "name": "phone"
                             },
-                            "id": "52ac060d-aab9-4fd0-8d4c-b036d4b026d0",
+                            "id": "79425baa-71e7-4d6d-b742-4470b07124d9",
                             "ord": "a1"
                           }
                         ],
-                        "id": "6780055f-757f-4312-9acd-47611e910404",
+                        "id": "0067db91-8cb1-4882-9885-389e48d6d839",
                         "ord": "a2"
                       },
                       {
@@ -2276,8 +2434,10 @@
                             "kind": "element",
                             "tag": "span",
                             "class": "text-base font-medium text-base-content",
-                            "children": ["How can we help?"],
-                            "id": "a933ed58-27e0-42d2-b910-5659e19a4c15",
+                            "children": [
+                              "How can we help?"
+                            ],
+                            "id": "b4041c7d-cec9-4cae-8317-99de7ef9b23d",
                             "ord": "a0"
                           },
                           {
@@ -2287,11 +2447,11 @@
                             "attrs": {
                               "name": "message"
                             },
-                            "id": "7dd273f8-9c1a-4306-ae7d-123b0807de82",
+                            "id": "4ffa6a84-698a-473e-b73e-8496e5e2d980",
                             "ord": "a1"
                           }
                         ],
-                        "id": "1f822633-ff59-4145-b5ad-ae0d5876032d",
+                        "id": "f8f0eab7-3fb6-4091-91d3-ae930950ef74",
                         "ord": "a3"
                       },
                       {
@@ -2306,12 +2466,14 @@
                             "attrs": {
                               "type": "submit"
                             },
-                            "children": ["Send my request"],
-                            "id": "2032e956-3218-4dc2-ae37-ba82f2d2a247",
+                            "children": [
+                              "Send my request"
+                            ],
+                            "id": "6d080fc5-a20d-4a62-be38-1e7e362316b8",
                             "ord": "a0"
                           }
                         ],
-                        "id": "1f7fc361-10ed-4596-95b3-e2228f33f437",
+                        "id": "64c766ac-db23-4e42-8a4f-a1bc42a1bcf4",
                         "ord": "a4"
                       }
                     ],
@@ -2322,15 +2484,15 @@
                       "kind": "action",
                       "ref": "submit"
                     },
-                    "id": "aa8cd9e0-c7a1-4771-8680-53e342fd354f",
+                    "id": "c3173866-d11f-48e9-9a00-21ac3baa9a8a",
                     "ord": "a3"
                   }
                 ],
-                "id": "8637f569-0703-413a-b3a7-16d0f0e160a5",
+                "id": "27410e7f-efc8-4a10-bfaf-ef690fb365b4",
                 "ord": "a0"
               }
             ],
-            "id": "8a791c6d-443c-4fff-9f99-a4caf73b4713",
+            "id": "f65a9c0f-8f04-4dce-9497-9768c7e89700",
             "ord": "a0"
           },
           {
@@ -2352,8 +2514,10 @@
                         "kind": "element",
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
-                        "children": ["Visit the practice"],
-                        "id": "c790c374-c54e-471f-93ae-e87057cb71ae",
+                        "children": [
+                          "Visit the practice"
+                        ],
+                        "id": "c6afd920-b00c-41df-9734-e8b485789f8b",
                         "ord": "a0"
                       },
                       {
@@ -2367,7 +2531,7 @@
                           "kind": "value",
                           "ref": "site.identity.address"
                         },
-                        "id": "fb4c1cad-a827-45b8-97eb-fda09d18a09e",
+                        "id": "4a980f80-c2fe-4ee1-925f-8d83761515c4",
                         "ord": "a1"
                       },
                       {
@@ -2384,20 +2548,24 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "font-medium text-base-content",
-                                "children": ["Monday – Friday"],
-                                "id": "64e00544-8645-4500-ad94-d4ae4e55dc1e",
+                                "children": [
+                                  "Monday – Friday"
+                                ],
+                                "id": "e9fb54ef-9c60-495d-9da3-e4a6c5098015",
                                 "ord": "a0"
                               },
                               {
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-base-content",
-                                "children": ["9:00 – 6:00"],
-                                "id": "0cdf5b98-154a-4ecc-acd0-0d9bb872f80d",
+                                "children": [
+                                  "9:00 – 6:00"
+                                ],
+                                "id": "ce8a5570-255a-4632-8538-eb8b4e4d85e2",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "f2e3e765-e3f2-43ba-999f-7b554af333a3",
+                            "id": "4b11d7ce-1ab1-4d7f-9445-e5f34f34ff55",
                             "ord": "a0"
                           },
                           {
@@ -2409,20 +2577,24 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "font-medium text-base-content",
-                                "children": ["Saturday"],
-                                "id": "6414df07-88b7-4955-ad4a-eade4b71a617",
+                                "children": [
+                                  "Saturday"
+                                ],
+                                "id": "aed9bdc5-f6b3-410c-9ed7-101d68cd77bd",
                                 "ord": "a0"
                               },
                               {
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-base-content",
-                                "children": ["9:00 – 3:00"],
-                                "id": "810f4709-f096-49c1-ad13-c09cc80d5048",
+                                "children": [
+                                  "9:00 – 3:00"
+                                ],
+                                "id": "2d54433f-e917-4e84-834d-886fc1b4c4b2",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "d8ddf9a2-fbd8-4bb8-a297-fc4aa6c1ad45",
+                            "id": "20b96197-d2a4-430b-a80d-2c3ffaabfac1",
                             "ord": "a1"
                           },
                           {
@@ -2434,28 +2606,32 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "font-medium text-base-content",
-                                "children": ["Sunday"],
-                                "id": "35c63695-a9b7-4422-bd86-0986d153f72a",
+                                "children": [
+                                  "Sunday"
+                                ],
+                                "id": "0ecf2964-98c5-4011-8050-b9ab43824232",
                                 "ord": "a0"
                               },
                               {
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-base-content",
-                                "children": ["Closed"],
-                                "id": "dceb0d78-6131-4d73-9195-bac31873b022",
+                                "children": [
+                                  "Closed"
+                                ],
+                                "id": "1e28b39e-74a3-448f-94ba-c10308684a35",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "9e6e37a0-5c37-48dd-a59a-55dc5219a5a4",
+                            "id": "e93a6f79-432e-400b-ac07-0321ac557789",
                             "ord": "a2"
                           }
                         ],
-                        "id": "44c4e270-304a-41e6-9221-d1d9dd674290",
+                        "id": "550ec871-f784-4d5c-8654-c4593fc737bc",
                         "ord": "a2"
                       }
                     ],
-                    "id": "a4109897-c5ea-422d-82e0-18109c78abc5",
+                    "id": "34f935af-f5ff-4cec-b4f9-8dea6371c539",
                     "ord": "a0"
                   },
                   {
@@ -2468,15 +2644,15 @@
                       "zoom": 15,
                       "ratio": "classic"
                     },
-                    "id": "57c83832-abc1-4364-ac68-07257f4c5a92",
+                    "id": "323b2fee-47b0-4349-b718-eaf3a9fd1514",
                     "ord": "a1"
                   }
                 ],
-                "id": "73c5567a-66a8-404d-9b7c-dc2bfb5fb843",
+                "id": "44cb3838-0b68-45d0-ba4c-ad12d43feccc",
                 "ord": "a0"
               }
             ],
-            "id": "5ef8fbb5-70a5-4686-bcf3-38ddde46175e",
+            "id": "cbc5337b-71ce-46e4-8f15-9eba886392b8",
             "ord": "a1"
           },
           {
@@ -2493,8 +2669,10 @@
                     "kind": "element",
                     "tag": "h2",
                     "class": "text-3xl font-bold tracking-tight @3xl:text-4xl",
-                    "children": ["Rather book than call?"],
-                    "id": "633408a9-e33b-46a4-a11f-f113768af8ff",
+                    "children": [
+                      "Rather book than call?"
+                    ],
+                    "id": "c7ccb23b-306c-41f5-bdd3-eb9892385473",
                     "ord": "a0"
                   },
                   {
@@ -2504,7 +2682,7 @@
                     "children": [
                       "See live availability and reserve your family’s appointments online — no phone tag, no hold music."
                     ],
-                    "id": "db886dd9-1c2d-455f-9117-ef230aa385e3",
+                    "id": "e9e75815-2c42-4ac7-9774-7bd2af76923f",
                     "ord": "a1"
                   },
                   {
@@ -2514,16 +2692,18 @@
                     "attrs": {
                       "href": "/book"
                     },
-                    "children": ["Book online"],
-                    "id": "cc08de6e-1afd-4534-b461-39d3c0fd9095",
+                    "children": [
+                      "Book online"
+                    ],
+                    "id": "7d3e804e-de3b-4a03-a849-a5580a17055e",
                     "ord": "a2"
                   }
                 ],
-                "id": "56c499d8-dd0a-4862-9676-7c4c9bc7029c",
+                "id": "fc18e0d6-101d-4182-aaf3-cea6dc2788be",
                 "ord": "a0"
               }
             ],
-            "id": "6e7f0c56-8cc2-4d84-ac62-5bc64bace42e",
+            "id": "dace0597-17bc-4211-b137-5555d140221d",
             "ord": "a2"
           }
         ]

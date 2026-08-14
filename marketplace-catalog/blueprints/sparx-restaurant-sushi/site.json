@@ -22,7 +22,7 @@
                   "props": {
                     "show": "both"
                   },
-                  "id": "a926a904-644e-440f-9894-4fdf614026e8",
+                  "id": "65241b0a-4e3d-495d-8cf9-74c8c8005ee5",
                   "ord": "a0"
                 },
                 {
@@ -37,13 +37,15 @@
                       "attrs": {
                         "href": "/menu"
                       },
-                      "children": ["Menu"],
+                      "children": [
+                        "Menu"
+                      ],
                       "slot": {
                         "name": "link1",
                         "type": "link",
                         "label": "Product"
                       },
-                      "id": "92e39970-ad73-4db3-9802-8395db1042bc",
+                      "id": "c054b488-4da2-4a22-8150-cffbdc59cbf3",
                       "ord": "a0"
                     },
                     {
@@ -53,13 +55,15 @@
                       "attrs": {
                         "href": "/book"
                       },
-                      "children": ["Reserve"],
+                      "children": [
+                        "Reserve"
+                      ],
                       "slot": {
                         "name": "link2",
                         "type": "link",
                         "label": "Pricing"
                       },
-                      "id": "8c986ae3-0602-49d5-bef2-659f9a9ccc55",
+                      "id": "7a167ffb-ad98-4d22-b4f0-16658aafe2a8",
                       "ord": "a1"
                     },
                     {
@@ -69,13 +73,15 @@
                       "attrs": {
                         "href": "/about"
                       },
-                      "children": ["About"],
+                      "children": [
+                        "About"
+                      ],
                       "slot": {
                         "name": "link3",
                         "type": "link",
                         "label": "Docs"
                       },
-                      "id": "e24a4f9a-f6a0-443d-bf2b-2f5ba36ff7cb",
+                      "id": "9aa4c1ca-498c-47c7-a438-06ed23ba8a71",
                       "ord": "a2"
                     },
                     {
@@ -85,17 +91,19 @@
                       "attrs": {
                         "href": "/contact"
                       },
-                      "children": ["Visit"],
+                      "children": [
+                        "Visit"
+                      ],
                       "slot": {
                         "name": "link4",
                         "type": "link",
                         "label": "Company"
                       },
-                      "id": "9b48d2a3-30af-48d2-bb8a-606d98d42d53",
+                      "id": "1347f29e-7ea0-4721-a81d-ec1de812944d",
                       "ord": "a3"
                     }
                   ],
-                  "id": "099bd7fe-117d-428a-b8a7-5c286152fda7",
+                  "id": "a9769323-69b9-485a-b4ab-f5b289b03eb5",
                   "ord": "a1"
                 },
                 {
@@ -110,20 +118,22 @@
                       "attrs": {
                         "href": "/account/login"
                       },
-                      "children": ["Sign in"],
+                      "children": [
+                        "Sign in"
+                      ],
                       "slot": {
                         "name": "secondary",
                         "type": "link",
                         "label": "Secondary link"
                       },
-                      "id": "fdf36df9-e87e-48c5-a531-61eb3db28676",
+                      "id": "4cd8c267-3282-44cf-909c-c61d7011cf60",
                       "ord": "a0"
                     },
                     {
                       "kind": "host",
                       "component": "site.theme-toggle",
                       "class": "inline-flex items-center",
-                      "id": "75064b6b-401e-4efb-96cc-681be2ba7a1f",
+                      "id": "08f17619-0e87-4c56-a863-7c1c23a327e2",
                       "ord": "a1"
                     },
                     {
@@ -139,7 +149,7 @@
                         "type": "link",
                         "label": "Primary action"
                       },
-                      "id": "6e7ac416-fe8a-4926-bb73-3a4fb006fb54",
+                      "id": "1f7ab864-9fa3-4ae7-a6ad-7e5ab05ceff4",
                       "ord": "a2"
                     },
                     {
@@ -157,20 +167,20 @@
                           "props": {
                             "name": "menu"
                           },
-                          "id": "da896009-1e05-4156-9976-26ee8f051286",
+                          "id": "a9f40fcf-052f-4fb8-b410-ea5e344d9356",
                           "ord": "a0"
                         }
                       ],
                       "part": "trigger",
-                      "id": "833f1bf8-d17b-42b8-8977-6cf789e58d70",
+                      "id": "5f2d1cb8-8329-4890-a965-3e58c2792d6e",
                       "ord": "a3"
                     }
                   ],
-                  "id": "be11deeb-30ba-45ec-b4d7-8abeac53c05c",
+                  "id": "76a2d30c-4d09-4db3-88f7-5cd89db01225",
                   "ord": "a2"
                 }
               ],
-              "id": "2078ba25-dd40-45d1-beae-9e51a3439c64",
+              "id": "0b8a7c7f-c7aa-44db-975a-27ddbab2569c",
               "ord": "a0"
             },
             {
@@ -188,13 +198,15 @@
                   "attrs": {
                     "href": "/menu"
                   },
-                  "children": ["Menu"],
+                  "children": [
+                    "Menu"
+                  ],
                   "slot": {
                     "name": "link1",
                     "type": "link",
                     "label": "Product"
                   },
-                  "id": "df8c9f48-74c5-4dbc-bfdc-bb7a1ff97d43",
+                  "id": "61d40a65-1559-4880-8814-6e28df70526a",
                   "ord": "a0"
                 },
                 {
@@ -204,13 +216,15 @@
                   "attrs": {
                     "href": "/book"
                   },
-                  "children": ["Reserve"],
+                  "children": [
+                    "Reserve"
+                  ],
                   "slot": {
                     "name": "link2",
                     "type": "link",
                     "label": "Pricing"
                   },
-                  "id": "46659a22-de1f-40c7-9f47-b92b70ee7afc",
+                  "id": "d0ec6a0a-ccf6-4532-a8c7-9da5b84d4df7",
                   "ord": "a1"
                 },
                 {
@@ -220,13 +234,15 @@
                   "attrs": {
                     "href": "/about"
                   },
-                  "children": ["About"],
+                  "children": [
+                    "About"
+                  ],
                   "slot": {
                     "name": "link3",
                     "type": "link",
                     "label": "Docs"
                   },
-                  "id": "e2b158ae-bee0-4841-a6de-1d1ea986b7c5",
+                  "id": "176f139c-e549-4301-afee-7b1df9f6f2ff",
                   "ord": "a2"
                 },
                 {
@@ -236,13 +252,15 @@
                   "attrs": {
                     "href": "/contact"
                   },
-                  "children": ["Visit"],
+                  "children": [
+                    "Visit"
+                  ],
                   "slot": {
                     "name": "link4",
                     "type": "link",
                     "label": "Company"
                   },
-                  "id": "86eacd0d-2121-4f55-8600-73704447e1dd",
+                  "id": "5bced800-c7ca-45fd-a90c-5bb98b672e95",
                   "ord": "a3"
                 },
                 {
@@ -258,7 +276,7 @@
                     "type": "link",
                     "label": "Secondary link"
                   },
-                  "id": "5b44fb16-e8b0-46e5-89fc-70249d074ac1",
+                  "id": "969fa909-67cc-48d3-8a28-d2e86282122d",
                   "ord": "a4"
                 },
                 {
@@ -274,19 +292,19 @@
                     "type": "link",
                     "label": "Primary action"
                   },
-                  "id": "87443495-17a6-4c10-94c8-2121cae87eac",
+                  "id": "6429e9cc-cb9d-4862-97ef-074f5b5073d5",
                   "ord": "a5"
                 }
               ],
               "part": "panel",
-              "id": "9a3eab28-54dd-4aef-a52b-4c0a78ee6bd9",
+              "id": "222f5bb7-c387-4c9e-8044-acce0484a404",
               "ord": "a1"
             }
           ],
           "behavior": {
             "type": "disclosure"
           },
-          "id": "41711bea-7bd4-4f72-88ec-b0793baf0c9d",
+          "id": "3186d799-617f-4c32-9e3e-4092b1fab060",
           "ord": "a0"
         },
         {
@@ -302,7 +320,7 @@
               "kind": "outlet"
             }
           ],
-          "id": "ac030884-e12c-4bec-9979-bb3ba63136e0",
+          "id": "f06fd79e-cfdd-446d-9526-887796eba9fd",
           "ord": "a1"
         },
         {
@@ -332,14 +350,16 @@
                           "props": {
                             "show": "both"
                           },
-                          "id": "b58f8952-4711-4e39-a586-0f39ae801dce",
+                          "id": "0c83c460-ca4e-45ca-8aef-bffd1de456ba",
                           "ord": "a0"
                         },
                         {
                           "kind": "element",
                           "tag": "p",
                           "class": "max-w-xs text-sm text-base-content",
-                          "children": ["Everything you publish, in one place."],
+                          "children": [
+                            "Everything you publish, in one place."
+                          ],
                           "slot": {
                             "name": "blurb",
                             "type": "text",
@@ -348,7 +368,7 @@
                           "attrs": {
                             "href": "/"
                           },
-                          "id": "44813d58-b763-406d-9880-2d911ce01248",
+                          "id": "fcaf1a51-af42-4aea-8edc-221454172563",
                           "ord": "a1"
                         },
                         {
@@ -356,11 +376,11 @@
                           "tag": "ul",
                           "class": "mt-2 flex items-center gap-5",
                           "children": [],
-                          "id": "df52ad6d-6d03-4bd6-b739-e7267612f5b0",
+                          "id": "af62b332-4545-4be5-b20f-08eca2375cb6",
                           "ord": "a2"
                         }
                       ],
-                      "id": "ed2579e1-f19e-4ed5-ab3e-074492895a0e",
+                      "id": "f30901c2-96d7-4ded-9970-1a6fbe890a59",
                       "ord": "a0"
                     },
                     {
@@ -372,7 +392,9 @@
                           "kind": "element",
                           "tag": "p",
                           "class": "text-sm font-semibold text-base-content",
-                          "children": ["Explore"],
+                          "children": [
+                            "Explore"
+                          ],
                           "slot": {
                             "name": "col1",
                             "type": "text",
@@ -381,7 +403,7 @@
                           "attrs": {
                             "href": "/"
                           },
-                          "id": "0ee5d3a2-0bcb-4a9c-86ef-379caec3bc36",
+                          "id": "5bf9d54e-4d20-4bdc-9eca-457b3d0fb31b",
                           "ord": "a0"
                         },
                         {
@@ -400,17 +422,19 @@
                                   "attrs": {
                                     "href": "/menu"
                                   },
-                                  "children": ["Menu"],
+                                  "children": [
+                                    "Menu"
+                                  ],
                                   "slot": {
                                     "name": "link1",
                                     "type": "link",
                                     "label": "Features"
                                   },
-                                  "id": "64c4ef7d-e721-491d-9248-72acef2563a7",
+                                  "id": "bcb1b5c7-3d18-4d99-8ddc-3f8282c6d7fa",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "28088b12-3879-4842-8c20-07d54dbf6e2c",
+                              "id": "8f029484-1270-481f-abcc-87273dcbac41",
                               "ord": "a0"
                             },
                             {
@@ -424,17 +448,19 @@
                                   "attrs": {
                                     "href": "/book"
                                   },
-                                  "children": ["Reserve"],
+                                  "children": [
+                                    "Reserve"
+                                  ],
                                   "slot": {
                                     "name": "link2",
                                     "type": "link",
                                     "label": "Pricing"
                                   },
-                                  "id": "a718362f-b0c2-4ec5-86b6-c72612bda2d1",
+                                  "id": "0a9baf03-2c53-4fd1-b4bd-e32bdfdda3fc",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "5b128180-8771-4f5a-a298-3b640a934ee6",
+                              "id": "5dcfe737-3ad9-4dfe-b039-f336cf868537",
                               "ord": "a1"
                             },
                             {
@@ -448,17 +474,19 @@
                                   "attrs": {
                                     "href": "/about"
                                   },
-                                  "children": ["About"],
+                                  "children": [
+                                    "About"
+                                  ],
                                   "slot": {
                                     "name": "link3",
                                     "type": "link",
                                     "label": "Integrations"
                                   },
-                                  "id": "b505e2e9-9d0e-4550-a2fd-8b501ec8a532",
+                                  "id": "d0e9e7cc-a635-4ae4-97f4-0c60ad514398",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "11298d83-f5b8-4a6d-a509-5546ef2fceff",
+                              "id": "073aad14-097f-4f6d-b14c-38c42ac21780",
                               "ord": "a2"
                             },
                             {
@@ -472,25 +500,27 @@
                                   "attrs": {
                                     "href": "/contact"
                                   },
-                                  "children": ["Visit"],
+                                  "children": [
+                                    "Visit"
+                                  ],
                                   "slot": {
                                     "name": "link4",
                                     "type": "link",
                                     "label": "Changelog"
                                   },
-                                  "id": "e16ef961-a6ed-4d2b-8b1e-32b656b303bb",
+                                  "id": "7e4f72cc-a32e-41b1-aada-ac13b05e8393",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "a7487b7d-bf7e-44d0-b003-ffd5a8e60e79",
+                              "id": "ebd75da5-6c3d-4e9b-a276-f8adf34e8be9",
                               "ord": "a3"
                             }
                           ],
-                          "id": "0246244b-c30b-4578-be7c-cf8a3e8c25f5",
+                          "id": "9ae79598-ac28-4b53-9a89-705c516ed91a",
                           "ord": "a1"
                         }
                       ],
-                      "id": "7492bbb9-bc07-49e4-ae53-f5da3720cefe",
+                      "id": "ecd63aca-2480-425a-9e04-bd0e70f7fa1f",
                       "ord": "a1"
                     },
                     {
@@ -503,11 +533,11 @@
                           "tag": "ul",
                           "class": "flex flex-col gap-2",
                           "children": [],
-                          "id": "fd6875b5-f3e8-4287-be11-56350e82037b",
+                          "id": "b052d5e1-0a93-477e-8751-03a8fc85ba51",
                           "ord": "a0"
                         }
                       ],
-                      "id": "377937ab-a210-4d6c-a8c2-dbf174663e3f",
+                      "id": "1ec8a8b0-e98f-490d-95a3-08399b750908",
                       "ord": "a2"
                     },
                     {
@@ -531,23 +561,23 @@
                                   "props": {
                                     "heading": "Legal"
                                   },
-                                  "id": "5fc6c9e3-b71e-48a9-9fc8-c73e188cd69f",
+                                  "id": "c131bb5f-1761-46c9-b6cd-f3c85a6e057c",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "edc2c4e7-9cd9-4619-acbb-9fdab3afa4ba",
+                              "id": "eecb825e-f151-4da4-82f0-bd7dbca17720",
                               "ord": "a0"
                             }
                           ],
-                          "id": "9b7a6879-3f76-41be-a4ac-72ab4451bc56",
+                          "id": "9a0957c4-a0ce-4081-b2af-38267f93f77c",
                           "ord": "a0"
                         }
                       ],
-                      "id": "23f98da8-1a14-4db7-843b-f64c10991983",
+                      "id": "7a417ef8-edba-4d94-be5b-1effa04b751b",
                       "ord": "a3"
                     }
                   ],
-                  "id": "0d3b5bbe-393b-4b0a-9a23-17f330b3d0a7",
+                  "id": "eb17413d-4333-4731-9207-e35fc0fbb60c",
                   "ord": "a0"
                 },
                 {
@@ -565,16 +595,18 @@
                           "kind": "element",
                           "tag": "span",
                           "class": "font-medium",
-                          "children": ["Your site"],
+                          "children": [
+                            "Your site"
+                          ],
                           "data": {
                             "kind": "value",
                             "ref": "site.identity.name"
                           },
-                          "id": "7e51e8a4-da07-4b77-b8cc-2104cbeae9bc",
+                          "id": "5e5ee420-670d-4eda-b8d9-445b97b6302a",
                           "ord": "a0"
                         }
                       ],
-                      "id": "57eb2ed1-c84b-4430-8b32-ac5613ef96f0",
+                      "id": "df94a62a-ddfd-46e0-8983-4a08e6598f70",
                       "ord": "a0"
                     },
                     {
@@ -582,23 +614,23 @@
                       "tag": "ul",
                       "class": "flex flex-wrap items-center gap-x-6 gap-y-2",
                       "children": [],
-                      "id": "9abee71b-8232-4f01-9055-c3d739183919",
+                      "id": "ea93c215-ffce-4cbc-a9fd-af15ad1d6f7d",
                       "ord": "a1"
                     }
                   ],
-                  "id": "f064bb14-1dbf-4086-8aed-b4c553ad2033",
+                  "id": "64c51db1-8ba3-40d9-9808-9ca79b0f91e7",
                   "ord": "a1"
                 }
               ],
-              "id": "938598c7-7fe6-46ca-bb96-c83a68dd6a13",
+              "id": "9454ac70-6f58-4f99-9cac-299f1f90672f",
               "ord": "a0"
             }
           ],
-          "id": "df845505-0b2f-4511-9f13-0a849af92eca",
+          "id": "b6149215-8bb7-410a-b338-856826f32753",
           "ord": "a2"
         }
       ],
-      "id": "c9277506-21e8-4b48-8ae7-9f26ad268f6d"
+      "id": "949f1c7d-7333-4354-bde4-c65052bf5692"
     }
   },
   "pages": [
@@ -612,7 +644,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "7a4afb52-ec81-40e0-ac07-649457d71f17",
+        "id": "0d324466-9abb-4dbc-9058-352eab43bac3",
         "children": [
           {
             "kind": "element",
@@ -628,7 +660,7 @@
                   "alt": "A hinoki-wood sushi counter under low light",
                   "loading": "lazy"
                 },
-                "id": "48486e7c-0492-4d8b-be50-567a17eb3bb4",
+                "id": "14792eb6-682b-4667-bb88-68aed7f1f403",
                 "ord": "a0"
               },
               {
@@ -645,8 +677,10 @@
                         "kind": "element",
                         "tag": "h1",
                         "class": "text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl",
-                        "children": ["Nori"],
-                        "id": "6e98ad6c-22da-467e-8097-1e66304597d6",
+                        "children": [
+                          "Nori"
+                        ],
+                        "id": "627069f4-fe2c-431f-bcf4-cd99360ddd96",
                         "ord": "a0"
                       },
                       {
@@ -656,7 +690,7 @@
                         "children": [
                           "A sushi counter. Ten seats, one chef, and the day’s best fish handed to you a piece at a time. Omakase at six and eight-thirty, Tuesday through Sunday."
                         ],
-                        "id": "4c0ed841-8229-4aea-a45e-a99074738d75",
+                        "id": "76b8f21c-b6c1-4546-96fc-b9a6fc51910f",
                         "ord": "a1"
                       },
                       {
@@ -671,8 +705,10 @@
                             "attrs": {
                               "href": "/book"
                             },
-                            "children": ["Reserve a seat"],
-                            "id": "ed98c0b8-a6fd-4144-8368-bcbc925a167c",
+                            "children": [
+                              "Reserve a seat"
+                            ],
+                            "id": "3be40f27-658c-49ad-9b60-7e5ff1cbe39c",
                             "ord": "a0"
                           },
                           {
@@ -682,24 +718,26 @@
                             "attrs": {
                               "href": "/menu"
                             },
-                            "children": ["See the menu"],
-                            "id": "db6318f3-ded0-4b64-a521-0c85ba1f9ca1",
+                            "children": [
+                              "See the menu"
+                            ],
+                            "id": "a8eda637-4da5-4c7d-bf46-712872a349b7",
                             "ord": "a1"
                           }
                         ],
-                        "id": "982f4b4a-99e9-4a4e-b9c5-ae69f0b0c27d",
+                        "id": "ae00978a-5156-4ca7-825a-7518aa869369",
                         "ord": "a2"
                       }
                     ],
-                    "id": "312e4256-ec50-4617-8ea7-d33ea7587861",
+                    "id": "96f2619b-3597-4377-a4ee-7cfa93ceb822",
                     "ord": "a0"
                   }
                 ],
-                "id": "3c246971-abe9-4efb-850f-7ffdfcae61e3",
+                "id": "cbca03ec-e11b-452e-9a4d-272c7b4f2174",
                 "ord": "a1"
               }
             ],
-            "id": "001df360-3d45-4cb0-889f-5f60e6e38ade",
+            "id": "22acc865-6641-4864-a877-ab41a48aab97",
             "ord": "a0"
           },
           {
@@ -721,8 +759,10 @@
                         "kind": "element",
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
-                        "children": ["What the day brings"],
-                        "id": "11977e77-b4e7-4b64-a859-5ad1b5929184",
+                        "children": [
+                          "What the day brings"
+                        ],
+                        "id": "2060e35a-3c61-4eb1-b664-60be91f58b29",
                         "ord": "a0"
                       },
                       {
@@ -732,11 +772,11 @@
                         "children": [
                           "There is no fixed carte. The fish arrives that morning, the chef decides the order, and the counter follows along. A sense of how an evening here goes."
                         ],
-                        "id": "b996b363-c02d-4ea2-9c5a-ca8e216406fa",
+                        "id": "9fd6aac4-3047-49e2-be25-0ac253871e84",
                         "ord": "a1"
                       }
                     ],
-                    "id": "6eeff440-56ac-48a9-a501-f805a4edde87",
+                    "id": "9f5fbe0a-b14e-4a41-9f35-7dd0afd03f08",
                     "ord": "a0"
                   },
                   {
@@ -761,15 +801,17 @@
                               "alt": "A single piece of nigiri",
                               "loading": "lazy"
                             },
-                            "id": "6846ddd6-347d-492f-933f-8382231b83f3",
+                            "id": "3be48965-8c67-4334-8953-cac47cb15303",
                             "ord": "a0"
                           },
                           {
                             "kind": "element",
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
-                            "children": ["Omakase"],
-                            "id": "b7282ccc-bd32-4f87-9076-0d9c89694b4c",
+                            "children": [
+                              "Omakase"
+                            ],
+                            "id": "a3cd9e03-6025-4cc0-b6d1-e286484f3172",
                             "ord": "a1"
                           },
                           {
@@ -779,11 +821,11 @@
                             "children": [
                               "The full counter experience — twelve to sixteen courses, paced by the chef, ending on a hand roll and tamago."
                             ],
-                            "id": "de0d86f8-090f-46ad-b9ba-258af8ff925f",
+                            "id": "02c09fae-4c89-437d-bab3-1ba72d9b2ad8",
                             "ord": "a2"
                           }
                         ],
-                        "id": "9dd87004-7e42-45b1-aca2-68a969a09850",
+                        "id": "97db1a36-b620-44cf-ba61-a0deada2e521",
                         "ord": "a0"
                       },
                       {
@@ -803,15 +845,17 @@
                               "alt": "A minimal plate of sliced sashimi",
                               "loading": "lazy"
                             },
-                            "id": "cc03c937-11d8-49c2-8c1b-0f69d69bd1a6",
+                            "id": "6844b383-ae10-4642-b409-843fbd6cb636",
                             "ord": "a0"
                           },
                           {
                             "kind": "element",
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
-                            "children": ["Sashimi & nigiri"],
-                            "id": "4ef41157-9c33-4f8f-b652-35022395c875",
+                            "children": [
+                              "Sashimi & nigiri"
+                            ],
+                            "id": "37cf8bac-d7ee-4903-95e1-5c00a2657bba",
                             "ord": "a1"
                           },
                           {
@@ -821,11 +865,11 @@
                             "children": [
                               "Prefer to order your own? A short à-la-carte list of the same fish, cut to order, by the piece or the plate."
                             ],
-                            "id": "c5330b80-75b1-480d-b9f4-fd3a81a605d0",
+                            "id": "4efaab5f-7e0f-43ec-aa39-7e1393d1e386",
                             "ord": "a2"
                           }
                         ],
-                        "id": "8fa31463-6197-432b-8d5e-3cb99afa1a92",
+                        "id": "3c4b7f34-1a3b-4f7a-9b88-729acdab0507",
                         "ord": "a1"
                       },
                       {
@@ -845,15 +889,17 @@
                               "alt": "A carafe and two cups of sake",
                               "loading": "lazy"
                             },
-                            "id": "45ce9d1c-f064-4e5f-aa08-dbe173cf4b3c",
+                            "id": "47626f72-d982-4be8-9c39-0614f841d5ce",
                             "ord": "a0"
                           },
                           {
                             "kind": "element",
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
-                            "children": ["Sake & tea"],
-                            "id": "50de30f3-89a1-48bd-a1be-5f1b70dd7a7c",
+                            "children": [
+                              "Sake & tea"
+                            ],
+                            "id": "c8c6181f-8afe-485d-8092-e195f2ee6ec6",
                             "ord": "a1"
                           },
                           {
@@ -863,15 +909,15 @@
                             "children": [
                               "A tight, considered sake list poured cold, plus roasted hojicha and genmaicha for the table."
                             ],
-                            "id": "ffc066be-d9c0-40ec-91a9-a52af2861bc9",
+                            "id": "ae71a523-e642-4cb4-9f30-0218e0735141",
                             "ord": "a2"
                           }
                         ],
-                        "id": "640b589d-59dd-459e-b7cc-3700f760f715",
+                        "id": "68cf914d-07f8-42fe-bc3a-b3f8f2682959",
                         "ord": "a2"
                       }
                     ],
-                    "id": "11fcbc41-fb2e-433c-a0b1-52421f31eaad",
+                    "id": "3d4bed03-9733-46b3-aeed-f5f4c2f0a2e7",
                     "ord": "a1"
                   },
                   {
@@ -885,27 +931,31 @@
                       {
                         "kind": "element",
                         "tag": "span",
-                        "children": ["Read the full menu"],
-                        "id": "695fdcec-f910-40db-91e6-f780c1a8afd3",
+                        "children": [
+                          "Read the full menu"
+                        ],
+                        "id": "339e5be5-0bc5-4d64-b17a-4686309185eb",
                         "ord": "a0"
                       },
                       {
                         "kind": "element",
                         "tag": "span",
-                        "children": ["→"],
-                        "id": "46ee36ec-6ef5-4510-95bf-275a709dc967",
+                        "children": [
+                          "→"
+                        ],
+                        "id": "2be5a899-609f-48f2-92cb-a515ec1e84c8",
                         "ord": "a1"
                       }
                     ],
-                    "id": "506bdebc-e6bb-45a9-9764-7a6157057eea",
+                    "id": "bb5536d5-bb8b-4eed-908a-ed7533decf46",
                     "ord": "a2"
                   }
                 ],
-                "id": "454d787d-f111-4521-9d1a-8c2fc08f7174",
+                "id": "d4160316-af57-4127-9d82-3ed1b0a3520a",
                 "ord": "a0"
               }
             ],
-            "id": "72097abb-6467-44a9-87e3-9b2261b1da5a",
+            "id": "62ebdb3a-6906-4518-a195-293d1f5d0a92",
             "ord": "a1"
           },
           {
@@ -927,7 +977,7 @@
                       "alt": "A row of counter seats set before the sushi bar",
                       "loading": "lazy"
                     },
-                    "id": "611add10-7514-43e5-bc11-2b6135707fe4",
+                    "id": "327bf6f7-2e09-47a9-a01f-3ea461267b1f",
                     "ord": "a0"
                   },
                   {
@@ -939,8 +989,10 @@
                         "kind": "element",
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
-                        "children": ["The best seat is at the counter"],
-                        "id": "bd63c4f7-0821-409f-ae20-e332b72946db",
+                        "children": [
+                          "The best seat is at the counter"
+                        ],
+                        "id": "08b5b587-0ad4-4a3f-bcc7-4090384a331c",
                         "ord": "a0"
                       },
                       {
@@ -950,7 +1002,7 @@
                         "children": [
                           "Ten seats face the bar, and every piece is handed to you the moment it’s cut. Reserve online in under a minute — you’ll see live availability for both seatings, and a card hold secures your place at the counter."
                         ],
-                        "id": "3c5548f6-045c-499d-ae4e-457738082096",
+                        "id": "ec208bea-38f6-46cc-ae58-b812f2278034",
                         "ord": "a1"
                       },
                       {
@@ -965,24 +1017,26 @@
                             "attrs": {
                               "href": "/book"
                             },
-                            "children": ["Reserve a seat"],
-                            "id": "fd6f7699-6783-4c77-b791-f891db2de8fd",
+                            "children": [
+                              "Reserve a seat"
+                            ],
+                            "id": "1e90b63b-1cfb-41d3-b739-80b7a307d263",
                             "ord": "a0"
                           }
                         ],
-                        "id": "be069691-e61f-4eba-b181-4606744cca2b",
+                        "id": "fa69a76f-476f-4bb2-8161-4952d6bde265",
                         "ord": "a2"
                       }
                     ],
-                    "id": "cfd3fc80-2c55-4538-8c39-c0f398826239",
+                    "id": "83a7a995-8a2a-4853-b145-d3fecbb48ec8",
                     "ord": "a1"
                   }
                 ],
-                "id": "d1a3d575-f816-4817-b540-efe726588f08",
+                "id": "d0f1150c-c0ea-4fd9-abf2-3d6fbef7ddc0",
                 "ord": "a0"
               }
             ],
-            "id": "e6728879-5837-440c-8516-67eb528c32e1",
+            "id": "ecce9fc4-91e1-4b9b-b7b1-bf7ae0b53823",
             "ord": "a2"
           },
           {
@@ -1004,8 +1058,10 @@
                         "kind": "element",
                         "tag": "h2",
                         "class": "text-2xl font-bold tracking-tight text-base-content @3xl:text-3xl",
-                        "children": ["Seatings"],
-                        "id": "d7d2e711-6b90-47e7-b7eb-b26628a3b094",
+                        "children": [
+                          "Seatings"
+                        ],
+                        "id": "1dfb0ff0-36ce-4938-b126-3c11e8c619a2",
                         "ord": "a0"
                       },
                       {
@@ -1022,20 +1078,24 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-base font-semibold text-base-content",
-                                "children": ["Tue – Thu"],
-                                "id": "d44034c6-6e6e-4a59-a0cb-fb828cd75126",
+                                "children": [
+                                  "Tue – Thu"
+                                ],
+                                "id": "17ca2697-86ca-41da-9149-a13282fd3061",
                                 "ord": "a0"
                               },
                               {
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-base text-secondary",
-                                "children": ["18:00 · 20:30"],
-                                "id": "2f5fa5d8-2111-48dc-be78-0720f1dc2e0a",
+                                "children": [
+                                  "18:00 · 20:30"
+                                ],
+                                "id": "fb310bff-b344-4961-94dc-b786e3b783ce",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "634be8a3-d65a-4c37-9483-f0519e214d89",
+                            "id": "553ec724-1c79-4728-b1ef-45195de9a247",
                             "ord": "a0"
                           },
                           {
@@ -1047,20 +1107,24 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-base font-semibold text-base-content",
-                                "children": ["Fri – Sat"],
-                                "id": "964dfa6f-992a-4124-9299-c5dc53b47197",
+                                "children": [
+                                  "Fri – Sat"
+                                ],
+                                "id": "5a4592bc-6375-48a9-8546-64b6fbea795f",
                                 "ord": "a0"
                               },
                               {
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-base text-secondary",
-                                "children": ["18:00 · 20:30"],
-                                "id": "73144a8b-b37f-42d7-ba7b-87c44088fbe5",
+                                "children": [
+                                  "18:00 · 20:30"
+                                ],
+                                "id": "c6090898-0b32-4119-9fb7-dc3c86d91102",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "ba70a76f-a7f1-42ba-a394-346bfa6cb608",
+                            "id": "56359b2b-d1b9-46bf-89f6-d5b98a26d591",
                             "ord": "a1"
                           },
                           {
@@ -1072,20 +1136,24 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-base font-semibold text-base-content",
-                                "children": ["Sunday"],
-                                "id": "5a0e8c65-3e8b-4232-b16c-3f06282aa8c0",
+                                "children": [
+                                  "Sunday"
+                                ],
+                                "id": "a29c6146-26a1-43fc-b298-ab4a004f8871",
                                 "ord": "a0"
                               },
                               {
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-base text-secondary",
-                                "children": ["18:00 · 20:30"],
-                                "id": "47408225-54a2-48a9-a75c-a69851008752",
+                                "children": [
+                                  "18:00 · 20:30"
+                                ],
+                                "id": "9f1c289e-8a03-4945-89a4-c15a01c772ec",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "059140fc-43c8-4412-9c14-789c99d768b2",
+                            "id": "03bc59bf-973a-4f5a-919f-96cab0c77d56",
                             "ord": "a2"
                           },
                           {
@@ -1097,28 +1165,32 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-base font-semibold text-base-content",
-                                "children": ["Monday"],
-                                "id": "44efd66a-aeae-425f-808a-87cec8e4aa9d",
+                                "children": [
+                                  "Monday"
+                                ],
+                                "id": "5dc156b4-3372-4659-b4ba-f2ead9c491c2",
                                 "ord": "a0"
                               },
                               {
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-base text-secondary",
-                                "children": ["Closed"],
-                                "id": "077113a1-b268-4370-94ad-f77dcf850be6",
+                                "children": [
+                                  "Closed"
+                                ],
+                                "id": "20b8296a-421c-4bf4-9204-e04b3c5a0645",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "51d094bd-d58a-4bcb-9f31-c6713399b241",
+                            "id": "62ae21d4-94db-41fc-bce0-81b99e5e2874",
                             "ord": "a3"
                           }
                         ],
-                        "id": "962b6a0f-6003-4e1d-803c-fb11d18fd699",
+                        "id": "35478f21-dc40-478d-9602-0d34ea7be295",
                         "ord": "a1"
                       }
                     ],
-                    "id": "8663dbd6-c0c3-4b78-80ca-9add0d0c4993",
+                    "id": "257ee221-61ce-4ddd-b509-f38b0b729187",
                     "ord": "a0"
                   },
                   {
@@ -1130,8 +1202,10 @@
                         "kind": "element",
                         "tag": "h2",
                         "class": "text-2xl font-bold tracking-tight text-base-content @3xl:text-3xl",
-                        "children": ["Find us"],
-                        "id": "25352791-a7b3-4970-afa1-dbf81042f4e4",
+                        "children": [
+                          "Find us"
+                        ],
+                        "id": "5fa1ba6e-9d21-4f55-ab57-2bbf3c0f4b36",
                         "ord": "a0"
                       },
                       {
@@ -1141,7 +1215,7 @@
                         "children": [
                           "4 Cedar Court, a quiet room off the lane behind the old fish market. Two seatings a night, by reservation. Walk-ins seated at the bar when a seat opens."
                         ],
-                        "id": "17ae07ed-5ef5-4584-8b3e-c12ef6e733cb",
+                        "id": "ea9260be-c5e5-4f43-9298-c348ee514b1d",
                         "ord": "a1"
                       },
                       {
@@ -1155,31 +1229,35 @@
                           {
                             "kind": "element",
                             "tag": "span",
-                            "children": ["Directions & contact"],
-                            "id": "f057e0fb-0379-4c77-85bc-3afacd1d4d30",
+                            "children": [
+                              "Directions & contact"
+                            ],
+                            "id": "615dd251-9059-4c30-ac6a-a44a351b7d02",
                             "ord": "a0"
                           },
                           {
                             "kind": "element",
                             "tag": "span",
-                            "children": ["→"],
-                            "id": "076c914a-c167-4264-a959-63ef1e2cb7fb",
+                            "children": [
+                              "→"
+                            ],
+                            "id": "bf1c0ccb-c819-4113-a13b-30de9a29667d",
                             "ord": "a1"
                           }
                         ],
-                        "id": "830a727e-6dcd-4b1f-bcf7-3865a853b6ff",
+                        "id": "e526eeea-5dd2-4956-8356-4b8a11a97686",
                         "ord": "a2"
                       }
                     ],
-                    "id": "faa119bd-b373-465e-afd8-2bff1ffb72ce",
+                    "id": "eb4bd40f-1fab-4019-9735-ad1a276bee4f",
                     "ord": "a1"
                   }
                 ],
-                "id": "07edd13c-502b-4e2e-b175-57c33a241c02",
+                "id": "aec17642-1127-453d-af5d-acc4737815cf",
                 "ord": "a0"
               }
             ],
-            "id": "f71653d4-5e78-4af1-8aaa-9f12377c2ab6",
+            "id": "df9ca4d1-2ad8-4550-b1a1-43a39321f57b",
             "ord": "a3"
           }
         ]
@@ -1196,7 +1274,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "831e660b-f362-400d-9dbe-0ee4b5f8e484",
+        "id": "cb3005f2-c426-4ff1-aad1-ff006294119d",
         "children": [
           {
             "kind": "element",
@@ -1212,8 +1290,10 @@
                     "kind": "element",
                     "tag": "h1",
                     "class": "text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl",
-                    "children": ["The menu"],
-                    "id": "55bf943a-ee7d-49c8-8565-d1f464e7791e",
+                    "children": [
+                      "The menu"
+                    ],
+                    "id": "0d177171-5eb4-4283-ba3d-76b4122fde72",
                     "ord": "a0"
                   },
                   {
@@ -1223,15 +1303,15 @@
                     "children": [
                       "The counter runs on omakase — the chef’s choice, in sequence. What follows is the shape of an evening and the à-la-carte pieces that fill it in. Fish changes daily; tell us about allergies and we’ll cut around them."
                     ],
-                    "id": "22411078-02f1-477e-8405-eca279a915e2",
+                    "id": "952642c6-3c1c-45ce-8a50-4baf9147d0c3",
                     "ord": "a1"
                   }
                 ],
-                "id": "39d09f0d-a0fb-41f1-8dfd-5f7e850f3a35",
+                "id": "0aba6df5-20ce-43cf-b31b-7974d18ed804",
                 "ord": "a0"
               }
             ],
-            "id": "4a703fdb-a88c-43e9-99f1-c6a1fde62606",
+            "id": "4f0029e7-8dc8-48e5-bb25-f8997958d863",
             "ord": "a0"
           },
           {
@@ -1248,8 +1328,10 @@
                     "kind": "element",
                     "tag": "h2",
                     "class": "text-3xl font-bold tracking-tight text-base-content @2xl:text-4xl",
-                    "children": ["Omakase"],
-                    "id": "574b54cf-0b4f-437e-be82-17e5d4a5c1bf",
+                    "children": [
+                      "Omakase"
+                    ],
+                    "id": "ba8a565a-dc1b-4cc9-94e9-c8ddcb2abd5d",
                     "ord": "a0"
                   },
                   {
@@ -1259,7 +1341,7 @@
                     "children": [
                       "Chef’s choice, at the counter. One card hold per seat secures your place."
                     ],
-                    "id": "96aa4155-0f77-4fe5-af87-e23a796b1420",
+                    "id": "8b5ea507-1037-4084-a163-23f47b0f2ee3",
                     "ord": "a1"
                   },
                   {
@@ -1281,20 +1363,24 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
-                                "children": ["Omakase — twelve courses"],
-                                "id": "a9f6776f-2021-4884-8de3-4c4df638af13",
+                                "children": [
+                                  "Omakase — twelve courses"
+                                ],
+                                "id": "1d228826-53fe-4b07-b7c8-52c5167c7731",
                                 "ord": "a0"
                               },
                               {
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-lg font-semibold text-primary",
-                                "children": ["145"],
-                                "id": "b1a08d2f-030d-4851-b350-3eb8a2af4af8",
+                                "children": [
+                                  "145"
+                                ],
+                                "id": "dcefdb29-82e5-4029-98bd-fa6b4411dc31",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "f7a5d048-d0b5-4703-b298-3ac23fe5da10",
+                            "id": "f541ebf2-102d-48cf-9e75-2acd9608070b",
                             "ord": "a0"
                           },
                           {
@@ -1304,11 +1390,11 @@
                             "children": [
                               "Nigiri and small bites in sequence, paced by the chef, closing on a hand roll, tamago and a cup of tea."
                             ],
-                            "id": "fa397940-c2af-4a18-ad67-a1156ee7fcd4",
+                            "id": "f07d7b21-6ea8-423c-9511-cda2f7e96f09",
                             "ord": "a1"
                           }
                         ],
-                        "id": "24acc446-92a5-4a58-81bf-1a22d3957293",
+                        "id": "32a34293-bc35-4e99-8706-300fe7ebd0b1",
                         "ord": "a0"
                       },
                       {
@@ -1325,20 +1411,24 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
-                                "children": ["Omakase — sixteen courses"],
-                                "id": "24e7ff79-be37-42ff-988f-814b885983e0",
+                                "children": [
+                                  "Omakase — sixteen courses"
+                                ],
+                                "id": "0ae544f6-1d48-4034-924c-e54674b9ab68",
                                 "ord": "a0"
                               },
                               {
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-lg font-semibold text-primary",
-                                "children": ["195"],
-                                "id": "acafef6c-c3ae-4cee-92ba-e853239b735a",
+                                "children": [
+                                  "195"
+                                ],
+                                "id": "0fb6c83c-5738-460c-84ff-121c085d718b",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "0a71e9b7-1818-4c7f-8e82-438bfd3e5dcd",
+                            "id": "450e6ca5-fb21-451b-b060-27d55cc89324",
                             "ord": "a0"
                           },
                           {
@@ -1348,11 +1438,11 @@
                             "children": [
                               "The longer counter — more of the day’s fish, an extra sashimi course, and a second-cut of whatever’s at its peak."
                             ],
-                            "id": "f95aaeb0-192f-4f58-b808-3df459806eb0",
+                            "id": "3ff93e92-568d-448e-9d5e-4901bd6ef058",
                             "ord": "a1"
                           }
                         ],
-                        "id": "8c352937-4082-4a38-8e52-daab61f74ed2",
+                        "id": "c44c5104-523c-4f1c-9a78-192e07d931ee",
                         "ord": "a1"
                       },
                       {
@@ -1369,20 +1459,24 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
-                                "children": ["Sake pairing"],
-                                "id": "016eeeb7-c561-45d7-8a1c-4b20d36e57db",
+                                "children": [
+                                  "Sake pairing"
+                                ],
+                                "id": "50a503c4-ad21-4edf-8d2e-0c3f615ded97",
                                 "ord": "a0"
                               },
                               {
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-lg font-semibold text-primary",
-                                "children": ["75"],
-                                "id": "9021ec99-cd79-4bc5-832e-5c8ca914653f",
+                                "children": [
+                                  "75"
+                                ],
+                                "id": "86f3930e-7458-44b7-b862-fe68406aa2d8",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "5caa898a-ecc3-467a-8095-9c3d98f921f6",
+                            "id": "2e48c4f7-b992-46c8-a0fb-af55314e28d6",
                             "ord": "a0"
                           },
                           {
@@ -1392,23 +1486,23 @@
                             "children": [
                               "Five small pours chosen to follow the courses, from dry and clean to rounder and rice-forward."
                             ],
-                            "id": "7278295a-a39e-4a0f-8686-d20659024ce3",
+                            "id": "d78c0c68-d1c4-43e3-a3dc-31f9bbe93a1c",
                             "ord": "a1"
                           }
                         ],
-                        "id": "067c6344-7ad7-42ab-afd8-1734678ae89f",
+                        "id": "5edc7ee8-5406-4e02-a88e-ef9b95e260b2",
                         "ord": "a2"
                       }
                     ],
-                    "id": "ea5df7ce-5ae8-4e96-a42d-bf5a281d20dc",
+                    "id": "f40080dc-19b9-40ec-b3c6-360b7b452943",
                     "ord": "a2"
                   }
                 ],
-                "id": "2cc002c9-aa51-4830-980c-ae2222613764",
+                "id": "4acb35cf-3340-46fa-8679-1066209aa7a8",
                 "ord": "a0"
               }
             ],
-            "id": "28436555-c942-458c-91a7-291caa7b133f",
+            "id": "9409f742-653f-4d0d-9006-946aecaf072f",
             "ord": "a1"
           },
           {
@@ -1425,16 +1519,20 @@
                     "kind": "element",
                     "tag": "h2",
                     "class": "text-3xl font-bold tracking-tight text-base-content @2xl:text-4xl",
-                    "children": ["Nigiri"],
-                    "id": "7270dd4b-62ef-430f-b6fd-e95f4e3b11c5",
+                    "children": [
+                      "Nigiri"
+                    ],
+                    "id": "bd03b946-778d-43d5-914b-cfc413dea7e6",
                     "ord": "a0"
                   },
                   {
                     "kind": "element",
                     "tag": "p",
                     "class": "text-base leading-relaxed text-secondary",
-                    "children": ["By the pair, cut to order. A short list of what’s in this week."],
-                    "id": "f98adce8-8ecb-4cda-a3a0-ebd16585a535",
+                    "children": [
+                      "By the pair, cut to order. A short list of what’s in this week."
+                    ],
+                    "id": "7f3cec26-1b80-4d15-bf64-8b0cda57da1e",
                     "ord": "a1"
                   },
                   {
@@ -1456,32 +1554,38 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
-                                "children": ["Akami — lean bluefin tuna"],
-                                "id": "951d8241-a195-4f96-8989-fbaffe7d9913",
+                                "children": [
+                                  "Akami — lean bluefin tuna"
+                                ],
+                                "id": "25590131-59a8-42c1-bf0c-7a462f4aea33",
                                 "ord": "a0"
                               },
                               {
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-lg font-semibold text-primary",
-                                "children": ["9"],
-                                "id": "f20587f3-87c5-4ec2-92ed-b758a13630dc",
+                                "children": [
+                                  "9"
+                                ],
+                                "id": "149b8d72-6d64-47c5-8191-af432a4a4bda",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "f49a7de2-1699-4d8f-b33e-32ffb1e5be6e",
+                            "id": "1c624411-d54b-476e-8c58-464416215123",
                             "ord": "a0"
                           },
                           {
                             "kind": "element",
                             "tag": "p",
                             "class": "text-base leading-relaxed text-secondary",
-                            "children": ["The lean loin, brushed with nikiri soy over warm rice."],
-                            "id": "5061a2b4-1a9d-4851-9fa4-0f64c82f090c",
+                            "children": [
+                              "The lean loin, brushed with nikiri soy over warm rice."
+                            ],
+                            "id": "8e479704-c667-4073-9a50-7bfd28727080",
                             "ord": "a1"
                           }
                         ],
-                        "id": "8c569cf0-478b-46de-a0fe-e0e396bcd353",
+                        "id": "09220290-6b23-467e-ba40-4642b0726648",
                         "ord": "a0"
                       },
                       {
@@ -1498,32 +1602,38 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
-                                "children": ["Chū-toro — medium fatty tuna"],
-                                "id": "d5f7a445-44cf-48d8-b2dd-becfb2b0760a",
+                                "children": [
+                                  "Chū-toro — medium fatty tuna"
+                                ],
+                                "id": "94cb82c7-800d-4428-a3b7-5d6bcb39bb1d",
                                 "ord": "a0"
                               },
                               {
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-lg font-semibold text-primary",
-                                "children": ["14"],
-                                "id": "2ac3b51e-abbc-470d-a7fe-f64065107c6b",
+                                "children": [
+                                  "14"
+                                ],
+                                "id": "1d920ea5-9a08-4e19-a33e-6af199402edf",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "e0b3b3f2-dc9b-4f3b-9539-cb9e84f074b3",
+                            "id": "4399847c-019f-4e61-9c80-aee8639ae0b8",
                             "ord": "a0"
                           },
                           {
                             "kind": "element",
                             "tag": "p",
                             "class": "text-base leading-relaxed text-secondary",
-                            "children": ["The marbled cut between lean and belly, meltingly soft."],
-                            "id": "e5cb7aef-379f-4daa-b2a2-f43ae7e8bee5",
+                            "children": [
+                              "The marbled cut between lean and belly, meltingly soft."
+                            ],
+                            "id": "96f61273-aef9-4f86-b119-a18cb2e5581c",
                             "ord": "a1"
                           }
                         ],
-                        "id": "f31f5290-95f3-4e7d-808d-394fa8d82643",
+                        "id": "8b73dd4b-b492-4c18-8bec-9501b09566a6",
                         "ord": "a1"
                       },
                       {
@@ -1540,32 +1650,38 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
-                                "children": ["Hamachi — yellowtail"],
-                                "id": "69b90a56-8772-4bf2-857c-e8755c7da675",
+                                "children": [
+                                  "Hamachi — yellowtail"
+                                ],
+                                "id": "d55d75ea-70ce-40d3-945c-16c44b0ae27a",
                                 "ord": "a0"
                               },
                               {
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-lg font-semibold text-primary",
-                                "children": ["9"],
-                                "id": "5ed596aa-8b35-4fd8-8f2f-2732b1d7e46f",
+                                "children": [
+                                  "9"
+                                ],
+                                "id": "344251df-72c4-433e-ab8e-dd196f6ae8a8",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "2ad57608-02f3-43f3-b7fb-3f14f8990a9b",
+                            "id": "8bef2106-bb10-41b5-b349-bc41da054958",
                             "ord": "a0"
                           },
                           {
                             "kind": "element",
                             "tag": "p",
                             "class": "text-base leading-relaxed text-secondary",
-                            "children": ["Clean and buttery, a touch of yuzu zest."],
-                            "id": "a0dfac33-f648-4f3b-8b3c-a1b6f6f1a4cb",
+                            "children": [
+                              "Clean and buttery, a touch of yuzu zest."
+                            ],
+                            "id": "235f0078-76ca-4bea-bbb2-a3a702fd3bef",
                             "ord": "a1"
                           }
                         ],
-                        "id": "a09c85e7-5e13-446a-89b1-2c835cd8e010",
+                        "id": "1ea09227-6030-4506-b7c3-57f259983ade",
                         "ord": "a2"
                       },
                       {
@@ -1582,20 +1698,24 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
-                                "children": ["Hotate — hokkaido scallop"],
-                                "id": "e67374ed-fea5-4e12-8c39-47ebe6a4323a",
+                                "children": [
+                                  "Hotate — hokkaido scallop"
+                                ],
+                                "id": "37695a3a-de94-451e-858f-e19c5d737f33",
                                 "ord": "a0"
                               },
                               {
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-lg font-semibold text-primary",
-                                "children": ["10"],
-                                "id": "1c682ee4-bf2e-4de2-98ff-add96f5d48fb",
+                                "children": [
+                                  "10"
+                                ],
+                                "id": "528c3409-8f0e-4a66-b9bf-43c7f0f62e80",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "6db4b8a4-b9a0-4d8a-9d68-3e5f62d78f99",
+                            "id": "45b85717-c1df-48c1-a61a-92d63d56c9c4",
                             "ord": "a0"
                           },
                           {
@@ -1605,11 +1725,11 @@
                             "children": [
                               "Raw, sweet, dressed only with salt and a squeeze of lime."
                             ],
-                            "id": "7302fea6-58e7-48dc-b0b4-b04d973948f7",
+                            "id": "0bb8681e-23b1-46ce-abf4-2f8bff01e083",
                             "ord": "a1"
                           }
                         ],
-                        "id": "f80a4466-b931-4620-9bdb-92e4ba144667",
+                        "id": "5754f86f-1a37-4305-bacc-bfe632450b3b",
                         "ord": "a3"
                       },
                       {
@@ -1626,20 +1746,24 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
-                                "children": ["Unagi — freshwater eel"],
-                                "id": "82a5ae98-6925-49d3-8ed4-26a3c999621e",
+                                "children": [
+                                  "Unagi — freshwater eel"
+                                ],
+                                "id": "eb1c20b8-d848-4fd9-8035-1528d0b00021",
                                 "ord": "a0"
                               },
                               {
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-lg font-semibold text-primary",
-                                "children": ["11"],
-                                "id": "556cebf6-8ceb-438f-af8e-4527cea66ada",
+                                "children": [
+                                  "11"
+                                ],
+                                "id": "74a6e278-4308-4dcf-b4a5-bada6fd6ff22",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "ff0fb0b7-02b2-4498-b58c-a8ca8f447f65",
+                            "id": "50563d40-f298-4a4d-8fbc-71e7ab31812e",
                             "ord": "a0"
                           },
                           {
@@ -1649,11 +1773,11 @@
                             "children": [
                               "Grilled and lacquered with a house tare, warm off the pass."
                             ],
-                            "id": "3f42ad2e-8914-4572-a4e1-e1317298238a",
+                            "id": "885070ce-ec5a-4ab3-8023-f867d9c03164",
                             "ord": "a1"
                           }
                         ],
-                        "id": "958402a2-f3eb-47da-b7d8-97695329af6a",
+                        "id": "a4c8f06d-d043-4ce8-9250-30dc72811d01",
                         "ord": "a4"
                       },
                       {
@@ -1670,44 +1794,50 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
-                                "children": ["Ikura — salmon roe"],
-                                "id": "278a3851-d59c-4089-a3c1-a28ff76695a5",
+                                "children": [
+                                  "Ikura — salmon roe"
+                                ],
+                                "id": "bc428220-8f2f-43d7-b14a-f281888deaa5",
                                 "ord": "a0"
                               },
                               {
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-lg font-semibold text-primary",
-                                "children": ["10"],
-                                "id": "7c11388c-e3f4-4189-803e-d823b393c218",
+                                "children": [
+                                  "10"
+                                ],
+                                "id": "f27e66aa-9662-4ec8-aa84-0ad1541074af",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "3f99eef5-3760-4f22-a6ec-0439b7c27472",
+                            "id": "0be5020c-4e05-4700-bc34-1dcc8baa6a82",
                             "ord": "a0"
                           },
                           {
                             "kind": "element",
                             "tag": "p",
                             "class": "text-base leading-relaxed text-secondary",
-                            "children": ["Cured in dashi and soy, gunkan-wrapped in crisp nori."],
-                            "id": "f2b18ee3-c5b5-46ff-8e4b-15fc035c918d",
+                            "children": [
+                              "Cured in dashi and soy, gunkan-wrapped in crisp nori."
+                            ],
+                            "id": "6a8e2bac-6645-4c0d-b9e1-e673c3782998",
                             "ord": "a1"
                           }
                         ],
-                        "id": "f4abf347-1bfa-4c1e-bba8-7e15eb0f398a",
+                        "id": "bc5bc6a2-532e-4219-b2de-ca2dee79033b",
                         "ord": "a5"
                       }
                     ],
-                    "id": "2a30cebe-1a98-40b3-9de5-dbbf825e2b8f",
+                    "id": "50e39e5d-a044-417e-b5b7-cca00608cb58",
                     "ord": "a2"
                   }
                 ],
-                "id": "5344899f-7563-40f3-99f8-36820bd56948",
+                "id": "05bb5172-ee3d-46cf-b9f0-05aec7784468",
                 "ord": "a0"
               }
             ],
-            "id": "a5f56c8b-c9cc-43c5-a416-fad039222931",
+            "id": "08ddc2c6-d82f-4d4a-8c4a-b35a25212ae1",
             "ord": "a2"
           },
           {
@@ -1724,8 +1854,10 @@
                     "kind": "element",
                     "tag": "h2",
                     "class": "text-3xl font-bold tracking-tight text-base-content @2xl:text-4xl",
-                    "children": ["Sashimi"],
-                    "id": "1dda5587-fab4-4ec8-94e6-062c5acc57dc",
+                    "children": [
+                      "Sashimi"
+                    ],
+                    "id": "dd8cf7cc-b169-46f1-bf42-ff35ea8632d2",
                     "ord": "a0"
                   },
                   {
@@ -1735,7 +1867,7 @@
                     "children": [
                       "No rice, just the fish. Sold by the plate — five slices to a plate."
                     ],
-                    "id": "59599b78-69ab-47b1-b0d4-d9cabff658ff",
+                    "id": "4a2f32a1-58ae-4dc4-8057-9355da5b95a0",
                     "ord": "a1"
                   },
                   {
@@ -1757,20 +1889,24 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
-                                "children": ["Tai — sea bream"],
-                                "id": "f72538e9-f0b2-4314-9135-bb672e9b77f3",
+                                "children": [
+                                  "Tai — sea bream"
+                                ],
+                                "id": "cb3c3005-d806-4f5b-ad42-5a85cffbbea5",
                                 "ord": "a0"
                               },
                               {
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-lg font-semibold text-primary",
-                                "children": ["18"],
-                                "id": "e435e58f-72a9-456d-80b7-99d614e3b484",
+                                "children": [
+                                  "18"
+                                ],
+                                "id": "852f7fac-bcf4-4e65-b45c-c1a2b74f76cf",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "35524e53-b9d1-4ec9-925d-fed99f99d7d4",
+                            "id": "2c76a6e0-9129-4836-9b66-6ee93d0fb479",
                             "ord": "a0"
                           },
                           {
@@ -1780,11 +1916,11 @@
                             "children": [
                               "Firm and delicate, cut thin, with a little sea salt and citrus."
                             ],
-                            "id": "8a585bfd-d7f2-41f5-a7ca-c93897653193",
+                            "id": "c37f6b26-107d-4526-9fc7-36aa0b3d1a56",
                             "ord": "a1"
                           }
                         ],
-                        "id": "41cce702-3a2f-4667-9f03-8ad87b2c4fb1",
+                        "id": "8c01ba9f-69e4-45a8-acfe-2cb7b3e24c4a",
                         "ord": "a0"
                       },
                       {
@@ -1801,20 +1937,24 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
-                                "children": ["Saba — cured mackerel"],
-                                "id": "35ae6320-839c-4846-b16b-4634ce3c6ca3",
+                                "children": [
+                                  "Saba — cured mackerel"
+                                ],
+                                "id": "a28cf604-28f3-4601-8a5b-e2c4c7cfd225",
                                 "ord": "a0"
                               },
                               {
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-lg font-semibold text-primary",
-                                "children": ["16"],
-                                "id": "e699ea69-ce8f-4d93-a101-f4b831a99008",
+                                "children": [
+                                  "16"
+                                ],
+                                "id": "d2875d89-83c6-43b2-b92b-9d8982d713de",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "680d4b1d-9653-446e-929a-e7c3a69ef892",
+                            "id": "1cd9094b-b870-41e0-8bba-357cc1606c6c",
                             "ord": "a0"
                           },
                           {
@@ -1824,11 +1964,11 @@
                             "children": [
                               "Lightly pressed in salt and rice vinegar, a slice of ginger alongside."
                             ],
-                            "id": "07a4ba48-4742-49fb-a7cf-0a005aa093c5",
+                            "id": "301fe43e-60e8-4b95-bcb8-329997aea93c",
                             "ord": "a1"
                           }
                         ],
-                        "id": "93ac591a-8831-4b74-8622-cb1e547aa86c",
+                        "id": "8a4c8fb6-6974-4f5c-a045-92f3776155f9",
                         "ord": "a1"
                       },
                       {
@@ -1845,20 +1985,24 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
-                                "children": ["Tako — poached octopus"],
-                                "id": "b30babc8-c67a-4e75-96dd-fe251c44a1d7",
+                                "children": [
+                                  "Tako — poached octopus"
+                                ],
+                                "id": "4de5499f-7151-47ab-8ed5-a861c46b1821",
                                 "ord": "a0"
                               },
                               {
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-lg font-semibold text-primary",
-                                "children": ["17"],
-                                "id": "c63f8cd6-10b7-46e3-b0f4-9569b705cb50",
+                                "children": [
+                                  "17"
+                                ],
+                                "id": "ae5be105-7a8c-460b-83ae-3ebb6e1aec75",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "b5f93a2d-1e45-4bcd-a11c-bc47cf58cab8",
+                            "id": "d2f3c20e-8a47-420c-b36d-935b1728eaa6",
                             "ord": "a0"
                           },
                           {
@@ -1868,11 +2012,11 @@
                             "children": [
                               "Slow-poached until tender, cut in ribbons, sesame and yuzu."
                             ],
-                            "id": "e3690cfd-d5ef-4f2a-a4c1-fb5a987616ff",
+                            "id": "d2b8a6f2-07d1-452f-88ce-2fdaf9461c42",
                             "ord": "a1"
                           }
                         ],
-                        "id": "a56c3c88-7286-4ad0-ba47-da404784b143",
+                        "id": "c03567f7-b679-489b-a4fd-fe24d031c3bc",
                         "ord": "a2"
                       },
                       {
@@ -1889,20 +2033,24 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
-                                "children": ["Chef’s sashimi plate"],
-                                "id": "07ec7436-ab65-41ef-89d5-cd379afa1d9e",
+                                "children": [
+                                  "Chef’s sashimi plate"
+                                ],
+                                "id": "d6f6a23f-9581-4dea-91e9-3632664ef023",
                                 "ord": "a0"
                               },
                               {
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-lg font-semibold text-primary",
-                                "children": ["32"],
-                                "id": "66f570bd-2827-4929-9af4-c8a7c412b535",
+                                "children": [
+                                  "32"
+                                ],
+                                "id": "e205e240-7ef1-4941-8b26-814496a5ac9f",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "2cdaed2f-9479-4c0d-b746-c850c3a1c953",
+                            "id": "11029f4f-f293-4bde-9f2d-7afbd0b72fef",
                             "ord": "a0"
                           },
                           {
@@ -1912,23 +2060,23 @@
                             "children": [
                               "A selection of the day, arranged by the chef — the fastest way to taste the range."
                             ],
-                            "id": "64f464f2-99d7-4351-a0aa-0ece811f630b",
+                            "id": "044daae9-e553-4cb4-b657-5e657b1795f8",
                             "ord": "a1"
                           }
                         ],
-                        "id": "92b8c463-3a30-4d8f-b567-da140e2982e8",
+                        "id": "6b56a9b4-a1c3-4751-a96f-78b05baeb870",
                         "ord": "a3"
                       }
                     ],
-                    "id": "bd225972-6bfc-4a2a-8fca-89b32f706f03",
+                    "id": "47219cd7-6e6b-4f74-a4b7-29452b58cb9b",
                     "ord": "a2"
                   }
                 ],
-                "id": "4e99c0fc-b83d-4272-bff4-e42af030a97c",
+                "id": "e646eff1-b6ba-46b5-a1ba-bb2591a9f57e",
                 "ord": "a0"
               }
             ],
-            "id": "9e5ba3d4-7f9b-4cb0-a837-980554ba8016",
+            "id": "ac608c1d-c501-472e-8dc9-d64e44a87ed8",
             "ord": "a3"
           },
           {
@@ -1945,16 +2093,20 @@
                     "kind": "element",
                     "tag": "h2",
                     "class": "text-3xl font-bold tracking-tight text-base-content @2xl:text-4xl",
-                    "children": ["Maki & hand rolls"],
-                    "id": "f055018f-c14a-4d3e-a10f-007359dd24a4",
+                    "children": [
+                      "Maki & hand rolls"
+                    ],
+                    "id": "3ce79146-9a72-4858-bb18-47fda0a913b3",
                     "ord": "a0"
                   },
                   {
                     "kind": "element",
                     "tag": "p",
                     "class": "text-base leading-relaxed text-secondary",
-                    "children": ["Rolled to order in crisp nori. Best eaten the moment they land."],
-                    "id": "0f88ee25-20a4-410f-bb94-b85287dd7ede",
+                    "children": [
+                      "Rolled to order in crisp nori. Best eaten the moment they land."
+                    ],
+                    "id": "b9114c7a-c0a4-48df-923b-1f06ae8e7aff",
                     "ord": "a1"
                   },
                   {
@@ -1976,20 +2128,24 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
-                                "children": ["Toro & scallion hand roll"],
-                                "id": "d85e8409-bf8a-463b-b1da-c1f73b70c5fb",
+                                "children": [
+                                  "Toro & scallion hand roll"
+                                ],
+                                "id": "f8ba0316-e752-4f46-a94a-8c0e656f00e6",
                                 "ord": "a0"
                               },
                               {
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-lg font-semibold text-primary",
-                                "children": ["13"],
-                                "id": "63081408-33b5-445d-a167-f8162fe3778c",
+                                "children": [
+                                  "13"
+                                ],
+                                "id": "9b667367-2d93-447b-901d-fd6ac5800e03",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "d2100275-e846-41e7-8aab-ffc163fd7a64",
+                            "id": "e6990e58-1c9d-420f-b32b-8bff1a744a68",
                             "ord": "a0"
                           },
                           {
@@ -1999,11 +2155,11 @@
                             "children": [
                               "Fatty tuna and negi, warm rice, nori kept crisp — eaten straight away."
                             ],
-                            "id": "4ad19183-3bf1-4f0c-a3d8-682a2b8b126c",
+                            "id": "daffcb9b-6719-4bd7-bb72-5bbe626be92d",
                             "ord": "a1"
                           }
                         ],
-                        "id": "535e7e2b-9f1a-4720-b660-b61c7ed7834f",
+                        "id": "f715e958-8f11-403c-a813-ac615ca8f5dd",
                         "ord": "a0"
                       },
                       {
@@ -2020,32 +2176,38 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
-                                "children": ["Cucumber & shiso maki"],
-                                "id": "1e5c9fdc-91f7-4d25-953f-f9ded4bc6a48",
+                                "children": [
+                                  "Cucumber & shiso maki"
+                                ],
+                                "id": "25e69f41-7abf-47c4-9856-6e6185cd6cda",
                                 "ord": "a0"
                               },
                               {
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-lg font-semibold text-primary",
-                                "children": ["8"],
-                                "id": "ea16a5be-b472-4328-a102-bb0b58938fad",
+                                "children": [
+                                  "8"
+                                ],
+                                "id": "a10498c4-f267-45f3-9358-503047d3b86c",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "48dd9bb8-eaac-4fd7-8b50-02b24c8a5323",
+                            "id": "94257cf1-a1d1-4276-b54c-be87c11779f8",
                             "ord": "a0"
                           },
                           {
                             "kind": "element",
                             "tag": "p",
                             "class": "text-base leading-relaxed text-secondary",
-                            "children": ["Cool and clean, a palate-reset between richer pieces."],
-                            "id": "1cab42e3-46f5-4039-b346-80596bbc60ca",
+                            "children": [
+                              "Cool and clean, a palate-reset between richer pieces."
+                            ],
+                            "id": "8ef46b66-2c63-48d9-9e62-e6047e00e767",
                             "ord": "a1"
                           }
                         ],
-                        "id": "30e0943a-b797-4218-9c00-020dba3a1a4d",
+                        "id": "7e3265a6-6e31-437e-aaa4-b497a5455038",
                         "ord": "a1"
                       },
                       {
@@ -2062,20 +2224,24 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
-                                "children": ["Salmon & avocado roll"],
-                                "id": "ef3a321b-b052-4da9-b78b-52b8f4d6ff78",
+                                "children": [
+                                  "Salmon & avocado roll"
+                                ],
+                                "id": "58670fa4-8bb3-46f6-a88c-f2e60f401cd5",
                                 "ord": "a0"
                               },
                               {
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-lg font-semibold text-primary",
-                                "children": ["12"],
-                                "id": "c17aa0f5-6f2d-4d3d-b7f5-b9a49553ae38",
+                                "children": [
+                                  "12"
+                                ],
+                                "id": "efa5d472-77c5-4d18-ae12-5241e59dfedd",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "28cdd28f-37ff-479c-9cbf-d1007dee9762",
+                            "id": "585ab705-451e-4435-92ec-03413f29702a",
                             "ord": "a0"
                           },
                           {
@@ -2085,11 +2251,11 @@
                             "children": [
                               "A rounder, familiar roll — salmon, avocado, a whisper of wasabi."
                             ],
-                            "id": "348a5380-9412-464b-ba59-ee1831bcc6fd",
+                            "id": "0af7ec92-12c3-48fc-8f35-0a5a0587b133",
                             "ord": "a1"
                           }
                         ],
-                        "id": "f36c5fdf-5f95-44f2-b442-017af72a5e7e",
+                        "id": "17308af7-05fb-4f46-bbd7-934845e8b613",
                         "ord": "a2"
                       },
                       {
@@ -2106,20 +2272,24 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
-                                "children": ["Negitoro hand roll"],
-                                "id": "6705c89a-cdaa-4d08-a243-56372d1fea31",
+                                "children": [
+                                  "Negitoro hand roll"
+                                ],
+                                "id": "7e0eab4d-43eb-4884-9c68-a449dac333c7",
                                 "ord": "a0"
                               },
                               {
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-lg font-semibold text-primary",
-                                "children": ["12"],
-                                "id": "dde9e6c1-8ce5-4b52-8126-279dcacb2a48",
+                                "children": [
+                                  "12"
+                                ],
+                                "id": "efde465e-49cc-411e-9b34-6c9f28c460d1",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "e34a71bf-090f-42ea-afe4-17fde2ff8d3d",
+                            "id": "d9db1a5d-f527-4b39-83ee-68f5754ed319",
                             "ord": "a0"
                           },
                           {
@@ -2129,23 +2299,23 @@
                             "children": [
                               "Minced fatty tuna and scallion, the classic close to a meal."
                             ],
-                            "id": "f9c3657f-16c5-4bc4-95bd-15fa9d9fa434",
+                            "id": "7bc62758-c203-4024-a2a7-4e9ddc1671d7",
                             "ord": "a1"
                           }
                         ],
-                        "id": "a159ba55-051d-4224-bdf5-1d606fde4eb0",
+                        "id": "8a0c59c5-bea6-4090-980f-19068d442472",
                         "ord": "a3"
                       }
                     ],
-                    "id": "882c31d9-be56-4428-86a0-a689255e8823",
+                    "id": "f9d19654-456f-4d98-bae5-18acc8f67eb9",
                     "ord": "a2"
                   }
                 ],
-                "id": "e7dc28a8-4731-49ab-ac45-623947bfce7b",
+                "id": "f29c3d5c-4541-4f05-95e5-49dab738c2ea",
                 "ord": "a0"
               }
             ],
-            "id": "6d67706c-2ccc-4ca9-a9ce-78073aafe10f",
+            "id": "2e1e20a5-52d0-49cb-9143-be4e1d9d36ca",
             "ord": "a4"
           },
           {
@@ -2162,8 +2332,10 @@
                     "kind": "element",
                     "tag": "h2",
                     "class": "text-3xl font-bold tracking-tight text-base-content @2xl:text-4xl",
-                    "children": ["Sake, beer & tea"],
-                    "id": "155cae59-2f63-446d-963c-b2f7b89c0ba2",
+                    "children": [
+                      "Sake, beer & tea"
+                    ],
+                    "id": "8d61cc40-df02-4edd-af11-dfacf57366a2",
                     "ord": "a0"
                   },
                   {
@@ -2173,7 +2345,7 @@
                     "children": [
                       "A tight list, poured with intent. Ask what’s open and we’ll steer you."
                     ],
-                    "id": "ca882769-616f-43c3-bee9-e05756490d4a",
+                    "id": "a1e3c62b-90ed-45f9-a556-fc5e5edd520e",
                     "ord": "a1"
                   },
                   {
@@ -2195,32 +2367,38 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
-                                "children": ["Junmai — by the glass"],
-                                "id": "e2acec52-a87a-4b1d-9cb5-522cd8417ca4",
+                                "children": [
+                                  "Junmai — by the glass"
+                                ],
+                                "id": "134b7b4e-d261-46e9-8071-457df1868ef5",
                                 "ord": "a0"
                               },
                               {
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-lg font-semibold text-primary",
-                                "children": ["12"],
-                                "id": "2ab04d78-a19d-400b-ab0d-53d10d7c3258",
+                                "children": [
+                                  "12"
+                                ],
+                                "id": "0150d39b-72e3-4ae5-bcfb-639536c862e1",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "d24c28b7-a23e-4038-b8da-a1388b7a07d1",
+                            "id": "bd139488-6c87-4675-bd01-61c70cabd90a",
                             "ord": "a0"
                           },
                           {
                             "kind": "element",
                             "tag": "p",
                             "class": "text-base leading-relaxed text-secondary",
-                            "children": ["Dry, clean, rice-forward. Poured cold in a small cup."],
-                            "id": "d485d065-9aaf-4868-96f8-2ad7658a1ff1",
+                            "children": [
+                              "Dry, clean, rice-forward. Poured cold in a small cup."
+                            ],
+                            "id": "7fabde2e-14be-4481-83f8-77aabe7a30b5",
                             "ord": "a1"
                           }
                         ],
-                        "id": "a8f85d1d-d3f4-4570-8aa0-fe593521cc9c",
+                        "id": "232acc7a-f7fa-48a8-b21b-216d66be848f",
                         "ord": "a0"
                       },
                       {
@@ -2237,20 +2415,24 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
-                                "children": ["Ginjo — by the carafe"],
-                                "id": "125c5eb3-a605-460d-a7e9-0a8836f2a86b",
+                                "children": [
+                                  "Ginjo — by the carafe"
+                                ],
+                                "id": "a4980a72-14f1-4c87-b09b-07e0b67ca8d6",
                                 "ord": "a0"
                               },
                               {
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-lg font-semibold text-primary",
-                                "children": ["38"],
-                                "id": "17c705e8-581e-4f1e-8791-873a53d1827e",
+                                "children": [
+                                  "38"
+                                ],
+                                "id": "f8380287-8bb9-472e-b249-fbaa017cd919",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "0508f941-87a5-4618-9193-7602cac40925",
+                            "id": "57b265fc-976b-48b5-b953-1882ede52c3c",
                             "ord": "a0"
                           },
                           {
@@ -2260,11 +2442,11 @@
                             "children": [
                               "Fragrant and delicate, for the table. Ask for the current pour."
                             ],
-                            "id": "bf8afbcc-0c4b-4239-9399-0a1d9733ccac",
+                            "id": "ed227bc1-7480-42cb-a885-815819a7e4e8",
                             "ord": "a1"
                           }
                         ],
-                        "id": "a1d9d623-8022-4f00-873d-e0f0c728eb59",
+                        "id": "35157dd6-5922-42ba-b296-df5c1a9634be",
                         "ord": "a1"
                       },
                       {
@@ -2281,32 +2463,38 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
-                                "children": ["Japanese lager"],
-                                "id": "c8a2d7a1-ebf7-4542-bc7e-9b4db83a4d9b",
+                                "children": [
+                                  "Japanese lager"
+                                ],
+                                "id": "4eea5fb0-718f-4534-93dc-21f5db8c12de",
                                 "ord": "a0"
                               },
                               {
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-lg font-semibold text-primary",
-                                "children": ["7"],
-                                "id": "53e92222-f448-4537-a808-4499ba8c56a7",
+                                "children": [
+                                  "7"
+                                ],
+                                "id": "02463ec4-eefb-4339-a0f8-b50069faf43d",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "fa5183c8-8896-4db1-ae4d-04ef11150831",
+                            "id": "03147089-5754-4e5a-ad4b-f10598b63c3a",
                             "ord": "a0"
                           },
                           {
                             "kind": "element",
                             "tag": "p",
                             "class": "text-base leading-relaxed text-secondary",
-                            "children": ["Crisp and cold, from a nearby brewer."],
-                            "id": "c537ebaa-4b02-4a0e-b1fd-2bae04eb63a0",
+                            "children": [
+                              "Crisp and cold, from a nearby brewer."
+                            ],
+                            "id": "6405374f-13e4-43c7-9df8-0c52f9eb6144",
                             "ord": "a1"
                           }
                         ],
-                        "id": "7233c3a2-4061-45d0-94c0-d664b27717f7",
+                        "id": "3911b267-fc28-49ed-8f60-1b9faf122827",
                         "ord": "a2"
                       },
                       {
@@ -2323,20 +2511,24 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
-                                "children": ["Hojicha / genmaicha"],
-                                "id": "00acb8dc-39b7-4736-ab4b-b0b5f0f6540e",
+                                "children": [
+                                  "Hojicha / genmaicha"
+                                ],
+                                "id": "651c4b9e-a0db-4bb6-bd21-e9f22115e1a7",
                                 "ord": "a0"
                               },
                               {
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-lg font-semibold text-primary",
-                                "children": ["5"],
-                                "id": "35346f9f-0720-493f-af6f-d05fd4db4370",
+                                "children": [
+                                  "5"
+                                ],
+                                "id": "9197a889-7a40-43e2-a372-0d9e514f5d57",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "86326a30-ad69-4ae3-beb9-5fa10aa71efc",
+                            "id": "745e60dc-fceb-49d8-a749-097a82c966e3",
                             "ord": "a0"
                           },
                           {
@@ -2346,23 +2538,23 @@
                             "children": [
                               "Roasted or toasted-rice green tea, refilled through the meal."
                             ],
-                            "id": "1ce99d2c-316f-438a-ab49-998cbeb4a9fd",
+                            "id": "e1a94279-c3fa-4d39-8150-a0126ecdb5b4",
                             "ord": "a1"
                           }
                         ],
-                        "id": "0329440e-e378-4029-868b-5e261c23bfb3",
+                        "id": "3d7dad28-eae5-4389-864f-e26516d57ae9",
                         "ord": "a3"
                       }
                     ],
-                    "id": "34725789-43a5-4d8f-88d3-4528e08bbc57",
+                    "id": "077500fd-946b-4473-8347-6f11b11abd8d",
                     "ord": "a2"
                   }
                 ],
-                "id": "6cf8fe8d-d6a6-4678-a276-baf4eec2de06",
+                "id": "f6c948cb-c204-4da4-9aac-7879b5494f13",
                 "ord": "a0"
               }
             ],
-            "id": "55431d38-6e83-4776-ac11-748d1d6b4075",
+            "id": "fb41b13e-a246-4ad1-8710-227939aa2e90",
             "ord": "a5"
           }
         ]
@@ -2379,7 +2571,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "ec6a9709-4051-4033-8d59-6151100d1225",
+        "id": "9c141753-81f4-4d77-b449-980f6c1eb8db",
         "children": [
           {
             "kind": "element",
@@ -2395,8 +2587,10 @@
                     "kind": "element",
                     "tag": "h1",
                     "class": "text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl",
-                    "children": ["Reserve a seat"],
-                    "id": "1f8cf291-b65b-4514-8988-96ef87dab750",
+                    "children": [
+                      "Reserve a seat"
+                    ],
+                    "id": "4629975d-7fa0-45d1-bc98-84482d55039f",
                     "ord": "a0"
                   },
                   {
@@ -2406,15 +2600,15 @@
                     "children": [
                       "Choose the omakase counter or a table, pick a seating, and you’ll see live availability for the weeks ahead. Counter seats take a card hold to secure them. For a private counter or a party of five or more, drop us a line and we’ll arrange it."
                     ],
-                    "id": "161fccb6-84f0-49ea-b213-0379f849922c",
+                    "id": "b59c014e-6a3c-4095-959b-56ab0cb4cb67",
                     "ord": "a1"
                   }
                 ],
-                "id": "96a605b1-1af6-4cb2-9aed-689817b6e6a7",
+                "id": "8a83d7cf-6dff-410e-9cb1-0ed8415ca0c7",
                 "ord": "a0"
               }
             ],
-            "id": "72b4d7f5-496e-4eb5-8e20-ab1c2a7ce4ca",
+            "id": "e908d2ee-99f5-4048-b44b-d777e2661291",
             "ord": "a0"
           },
           {
@@ -2422,7 +2616,7 @@
             "component": "scheduling.services",
             "class": "mx-auto w-full max-w-5xl px-6 py-8",
             "locked": "host",
-            "id": "dda99032-0d00-4d92-96a5-fe45c1f68a7c",
+            "id": "e0447d93-d5c4-4b37-a76c-c9c0ab5b9597",
             "ord": "a1"
           },
           {
@@ -2444,8 +2638,10 @@
                         "kind": "element",
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
-                        "children": ["Good to know"],
-                        "id": "496875c5-25dd-4195-8d1a-2087fb8f1158",
+                        "children": [
+                          "Good to know"
+                        ],
+                        "id": "e0f8f9b3-bee8-4f8f-bb08-50f2797810cc",
                         "ord": "a0"
                       },
                       {
@@ -2455,11 +2651,11 @@
                         "children": [
                           "What happens once you pick a time — and how to change it if something comes up."
                         ],
-                        "id": "5d4ac92f-5b39-4042-a511-778371b0bbba",
+                        "id": "d098234c-07e9-4242-a89a-8eaa029e0a3e",
                         "ord": "a1"
                       }
                     ],
-                    "id": "9ed8fc15-176a-41eb-acc4-4fa34a6f3a5b",
+                    "id": "8b99ef89-e501-4413-99e1-a794067a1ea0",
                     "ord": "a0"
                   },
                   {
@@ -2476,8 +2672,10 @@
                             "kind": "element",
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
-                            "children": ["Omakase counter hold"],
-                            "id": "368fd361-ff26-4f43-8236-9ff65dd1ae2d",
+                            "children": [
+                              "Omakase counter hold"
+                            ],
+                            "id": "79053704-83a8-487c-a4d3-5559bb3de54c",
                             "ord": "a0"
                           },
                           {
@@ -2487,19 +2685,21 @@
                             "children": [
                               "A counter seat places a card hold to secure it — nothing is charged unless you cancel inside 48 hours or don’t show. The chef buys for the seats booked, so the hold keeps the counter fair for everyone. We’ll remind you two days, one day, and a few hours ahead."
                             ],
-                            "id": "6f901c13-040c-49c0-9e40-dd65dfab7db3",
+                            "id": "3233826a-9097-4b66-acfb-c731dfa87896",
                             "ord": "a1"
                           },
                           {
                             "kind": "element",
                             "tag": "p",
                             "class": "text-base font-medium text-base-content",
-                            "children": ["Change or cancel free up to 2 days before."],
-                            "id": "59ea66b6-079d-4844-83d2-74c02da58b9b",
+                            "children": [
+                              "Change or cancel free up to 2 days before."
+                            ],
+                            "id": "96bfe9e4-148a-44e2-b7d3-94cf84d90ef0",
                             "ord": "a2"
                           }
                         ],
-                        "id": "2fe582f2-6388-4856-901a-3fcf8ee6ae0c",
+                        "id": "e49c238d-9dd5-46d0-b161-323a1050e5fd",
                         "ord": "a0"
                       },
                       {
@@ -2511,8 +2711,10 @@
                             "kind": "element",
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
-                            "children": ["Table reservation"],
-                            "id": "2a020bf2-00bf-47c6-a9d9-42cdb42c9502",
+                            "children": [
+                              "Table reservation"
+                            ],
+                            "id": "2d94628b-fc0c-49bb-821c-cf82a01521c8",
                             "ord": "a0"
                           },
                           {
@@ -2522,7 +2724,7 @@
                             "children": [
                               "Tables are held for 15 minutes past your seating. Plans change — just let us know by the day before and we’ll free the table for someone else. We’ll remind you the day before and a few hours ahead."
                             ],
-                            "id": "c1f74e0c-4c4a-4ed3-8aaa-ed059db0ef86",
+                            "id": "1e297bca-7cdf-4207-bf1b-a8ef9270b5bf",
                             "ord": "a1"
                           },
                           {
@@ -2532,23 +2734,23 @@
                             "children": [
                               "No deposit to book. Change or cancel free up to 24 hours before."
                             ],
-                            "id": "82676bd3-2b0d-4c8a-9d96-d27ac707a4fb",
+                            "id": "61a01509-8f01-445b-98a0-1c19359fe914",
                             "ord": "a2"
                           }
                         ],
-                        "id": "53fbc829-8bd3-4786-a29e-2b443b5a0fdc",
+                        "id": "17d9b6c5-637c-4021-993f-0b64c082fa2e",
                         "ord": "a1"
                       }
                     ],
-                    "id": "357dacac-0850-49dd-96ed-6b5814c6b946",
+                    "id": "edec614f-545f-424c-8731-61aa6f31f743",
                     "ord": "a1"
                   }
                 ],
-                "id": "6c18e1a3-a474-418d-852d-53d1ec064e20",
+                "id": "7a92d335-1033-4331-a6e1-10411ee420f9",
                 "ord": "a0"
               }
             ],
-            "id": "c0fdd578-6459-480d-a567-06cd7bd53c5e",
+            "id": "f6dd678f-819f-4ede-9e15-9d7c39a44e60",
             "ord": "a2"
           }
         ]
@@ -2565,7 +2767,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "69bc7fc4-f139-437c-88b6-5071c46666d8",
+        "id": "b1c8f5e0-986a-47b9-8ea6-e83e216ab154",
         "children": [
           {
             "kind": "element",
@@ -2581,8 +2783,10 @@
                     "kind": "element",
                     "tag": "h1",
                     "class": "text-5xl font-bold tracking-tight text-base-content @2xl:text-6xl",
-                    "children": ["About Nori"],
-                    "id": "1045f375-3801-4014-b782-331b35b71308",
+                    "children": [
+                      "About Nori"
+                    ],
+                    "id": "e1846d56-06d3-468b-9df3-e8ab99c2a543",
                     "ord": "a0"
                   },
                   {
@@ -2592,7 +2796,7 @@
                     "children": [
                       "Nori is a ten-seat sushi counter in a quiet room behind the old fish market. There is no long menu and no à-la-carte rush — you sit at the bar, the chef reads the day’s fish, and the meal comes to you a piece at a time, in the order it’s meant to be eaten."
                     ],
-                    "id": "13310de4-ba77-4458-bf01-0f950765fd8e",
+                    "id": "21f22d28-fe3e-4c81-9c62-4f8760981d1b",
                     "ord": "a1"
                   },
                   {
@@ -2602,7 +2806,7 @@
                     "children": [
                       "We buy small and buy daily, from a handful of suppliers we’ve worked with for years. The rice is seasoned by hand and served at body temperature; the wasabi is grated to order; the nori is kept dry until the moment it’s rolled. Little of that is visible on a plate — all of it is the point."
                     ],
-                    "id": "ff7b2fdc-6d5b-415f-8379-5b96ab1f5cd7",
+                    "id": "06547158-271d-40a9-a7f1-c90bd94cc9b5",
                     "ord": "a2"
                   },
                   {
@@ -2612,15 +2816,15 @@
                     "children": [
                       "The room is small on purpose, and the pace is deliberate. Book ahead — both seatings fill early at the weekend — and come a little hungry. A stool at the end of the bar is kept for walk-ins whenever one opens."
                     ],
-                    "id": "a9cf11b8-3c45-42c3-9b92-f5fd5febb813",
+                    "id": "4f984b9a-ab67-48af-b91b-186b0a8f72f6",
                     "ord": "a3"
                   }
                 ],
-                "id": "95ee82c9-5f90-4677-ab61-ff0df97933cb",
+                "id": "2b967854-7374-43d7-89eb-e6878a858660",
                 "ord": "a0"
               }
             ],
-            "id": "677d66cb-1595-4544-ab34-4cb1896b37dd",
+            "id": "8b6c498a-f70e-4bf2-8cff-a37ea22ff9f2",
             "ord": "a0"
           }
         ]
@@ -2637,7 +2841,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "b78dc8a3-6f0d-4317-8aa0-9085187bb374",
+        "id": "4521c928-af4e-437e-aa68-55931e791ae5",
         "children": [
           {
             "kind": "element",
@@ -2658,8 +2862,10 @@
                         "kind": "element",
                         "tag": "h1",
                         "class": "text-4xl font-bold tracking-tight text-base-content @3xl:text-5xl",
-                        "children": ["Get in touch"],
-                        "id": "83008b1a-483a-4192-b534-4e5fd3360bea",
+                        "children": [
+                          "Get in touch"
+                        ],
+                        "id": "23a548f9-a188-4e36-9b9d-cd9c60fb641d",
                         "ord": "a0"
                       },
                       {
@@ -2669,11 +2875,11 @@
                         "children": [
                           "Questions before you book? Send a note and Nori will get back to you — usually the same day."
                         ],
-                        "id": "ac1c7474-74d3-4242-b123-f1998df83984",
+                        "id": "73fddc5f-9c11-49ca-8f15-0480be204bed",
                         "ord": "a1"
                       }
                     ],
-                    "id": "21f8079e-6cd1-4c44-8a10-3f396a91123a",
+                    "id": "14cf5c7b-73ad-4a95-a5fe-ecf05fc92dda",
                     "ord": "a0"
                   },
                   {
@@ -2685,8 +2891,10 @@
                         "kind": "element",
                         "tag": "span",
                         "class": "text-base font-medium text-base-content",
-                        "children": ["Call us"],
-                        "id": "b22c211a-699d-436d-9887-6ebb99bc1f55",
+                        "children": [
+                          "Call us"
+                        ],
+                        "id": "7475e9ba-201d-4fe1-92d1-4806c5cb4dc0",
                         "ord": "a0"
                       },
                       {
@@ -2697,12 +2905,14 @@
                           {
                             "kind": "element",
                             "tag": "span",
-                            "children": ["(555) 123-4567"],
+                            "children": [
+                              "(555) 123-4567"
+                            ],
                             "data": {
                               "kind": "value",
                               "ref": "site.identity.phone"
                             },
-                            "id": "e9dacd45-50d6-42aa-96a9-04816af8bedc",
+                            "id": "4d600c40-dba9-4957-bffa-cab95e7dc44b",
                             "ord": "a0"
                           }
                         ],
@@ -2711,7 +2921,7 @@
                           "ref": "site.identity.phoneHref",
                           "attr": "href"
                         },
-                        "id": "ac2e6db2-1af9-4c24-9fe2-4dab7a3affa1",
+                        "id": "c5a576d1-73ea-4f70-ae53-c6a636790c94",
                         "ord": "a1"
                       }
                     ],
@@ -2719,7 +2929,7 @@
                       "kind": "visible",
                       "ref": "site.identity.phone"
                     },
-                    "id": "8625a350-f9a6-4031-bc6d-d2106c54b647",
+                    "id": "a666edf1-2eff-4f56-8082-b606f4a06638",
                     "ord": "a1"
                   },
                   {
@@ -2731,8 +2941,10 @@
                         "kind": "element",
                         "tag": "span",
                         "class": "text-base font-medium text-base-content",
-                        "children": ["Email us"],
-                        "id": "7409098e-0b66-466c-a594-cfe40ecaacfe",
+                        "children": [
+                          "Email us"
+                        ],
+                        "id": "d302515c-dc31-4f37-b2fb-ac107b01a05b",
                         "ord": "a0"
                       },
                       {
@@ -2743,12 +2955,14 @@
                           {
                             "kind": "element",
                             "tag": "span",
-                            "children": ["hello@yourbusiness.com"],
+                            "children": [
+                              "hello@yourbusiness.com"
+                            ],
                             "data": {
                               "kind": "value",
                               "ref": "site.identity.email"
                             },
-                            "id": "e1da8305-e00d-4922-8995-79d875de015e",
+                            "id": "67811cbe-ed57-4d2a-8e68-505e61d96985",
                             "ord": "a0"
                           }
                         ],
@@ -2757,7 +2971,7 @@
                           "ref": "site.identity.emailHref",
                           "attr": "href"
                         },
-                        "id": "1c1e6014-aff8-426d-800a-45b2f3986e7d",
+                        "id": "70416018-2bfe-441c-b252-48f990dd2411",
                         "ord": "a1"
                       }
                     ],
@@ -2765,7 +2979,7 @@
                       "kind": "visible",
                       "ref": "site.identity.email"
                     },
-                    "id": "a2228056-4721-48aa-85d7-42aa01d30467",
+                    "id": "03fc2ca9-6ce8-4e3c-a804-e46b57f301c5",
                     "ord": "a2"
                   },
                   {
@@ -2782,8 +2996,10 @@
                             "kind": "element",
                             "tag": "span",
                             "class": "text-base font-medium text-base-content",
-                            "children": ["Your name"],
-                            "id": "2d585414-15cf-43ca-a8b3-614f82a2bda0",
+                            "children": [
+                              "Your name"
+                            ],
+                            "id": "05200491-d810-441e-814e-f9a566484a79",
                             "ord": "a0"
                           },
                           {
@@ -2795,11 +3011,11 @@
                               "name": "name",
                               "required": true
                             },
-                            "id": "994b4386-508d-47ce-a7d5-16a49c84405a",
+                            "id": "d08bbdeb-2fdb-49bb-8d38-36942eae4451",
                             "ord": "a1"
                           }
                         ],
-                        "id": "c0859840-1bc5-46de-8f75-70817c019dac",
+                        "id": "8622d0c7-b5e2-4497-bac5-a752b41cb24f",
                         "ord": "a0"
                       },
                       {
@@ -2811,8 +3027,10 @@
                             "kind": "element",
                             "tag": "span",
                             "class": "text-base font-medium text-base-content",
-                            "children": ["Email address"],
-                            "id": "e23aa1dd-bf17-4d44-b5e5-2e43cef01bfa",
+                            "children": [
+                              "Email address"
+                            ],
+                            "id": "c0ec8dc5-c6d2-42e5-a495-1a1e50813212",
                             "ord": "a0"
                           },
                           {
@@ -2824,11 +3042,11 @@
                               "name": "email",
                               "required": true
                             },
-                            "id": "90213385-762d-464f-91c8-b5982285b288",
+                            "id": "9d55224a-30d1-43e3-ac94-98624bc6b59c",
                             "ord": "a1"
                           }
                         ],
-                        "id": "3a8d5cf1-e855-4af8-a81a-a639870fe062",
+                        "id": "5f9cff82-55a4-402c-977d-18131038868a",
                         "ord": "a1"
                       },
                       {
@@ -2840,8 +3058,10 @@
                             "kind": "element",
                             "tag": "span",
                             "class": "text-base font-medium text-base-content",
-                            "children": ["Phone number"],
-                            "id": "25461c71-9fde-4799-9c86-3a4776b72766",
+                            "children": [
+                              "Phone number"
+                            ],
+                            "id": "df248f01-c4f5-4f5e-aad3-9d8082311095",
                             "ord": "a0"
                           },
                           {
@@ -2852,11 +3072,11 @@
                               "type": "tel",
                               "name": "phone"
                             },
-                            "id": "3038ecbf-41ea-486b-b85d-09ac579abd6c",
+                            "id": "3cde958f-d4be-40c8-9915-00eaf7f1219c",
                             "ord": "a1"
                           }
                         ],
-                        "id": "81615ef1-cfc2-44f5-a2dd-286e6dbf4ed4",
+                        "id": "dbe05e16-aac6-405e-9f0e-b09698512d9b",
                         "ord": "a2"
                       },
                       {
@@ -2868,8 +3088,10 @@
                             "kind": "element",
                             "tag": "span",
                             "class": "text-base font-medium text-base-content",
-                            "children": ["How can we help?"],
-                            "id": "9be6b3a6-2108-444e-a9ab-ad9e46f4f043",
+                            "children": [
+                              "How can we help?"
+                            ],
+                            "id": "fa1c7058-f27c-4c36-b1f2-13abe2c48801",
                             "ord": "a0"
                           },
                           {
@@ -2879,11 +3101,11 @@
                             "attrs": {
                               "name": "message"
                             },
-                            "id": "bd970c07-c0fe-457f-b983-c6e5df8cd2f6",
+                            "id": "c23045ee-56f5-4015-95d1-9b7defa0d556",
                             "ord": "a1"
                           }
                         ],
-                        "id": "976f90f5-8d56-4875-ab7d-ae0a07682c7a",
+                        "id": "1c812a47-73ea-4a5e-b524-3a8064b14c49",
                         "ord": "a3"
                       },
                       {
@@ -2898,12 +3120,14 @@
                             "attrs": {
                               "type": "submit"
                             },
-                            "children": ["Send my request"],
-                            "id": "81ef6313-a4ce-4da1-bdd6-a1f87d2bc5dc",
+                            "children": [
+                              "Send my request"
+                            ],
+                            "id": "284ed76b-c51f-43a7-9067-dd9a8e5e4bc1",
                             "ord": "a0"
                           }
                         ],
-                        "id": "0d7cfd9b-337d-421c-be4d-84c1c5634674",
+                        "id": "34f58326-8d46-4557-ba7f-8dfc3a112e10",
                         "ord": "a4"
                       }
                     ],
@@ -2914,15 +3138,15 @@
                       "kind": "action",
                       "ref": "submit"
                     },
-                    "id": "f53940d3-c2c8-4169-9c48-96e6edcd3dce",
+                    "id": "3273cf7c-edd1-4de0-854a-3fec4c19303c",
                     "ord": "a3"
                   }
                 ],
-                "id": "eab852d6-872d-499d-b8bc-be5f53c50c0b",
+                "id": "838d2cee-e283-4b2e-8cfe-c9093c0a5e39",
                 "ord": "a0"
               }
             ],
-            "id": "12b25acb-2ad9-4ff7-88a3-0e1a0ce16e2c",
+            "id": "9383b0a1-1a0d-45f6-8182-9061a177fda4",
             "ord": "a0"
           },
           {
@@ -2939,8 +3163,10 @@
                     "kind": "element",
                     "tag": "h2",
                     "class": "text-5xl font-bold tracking-tight text-base-content @2xl:text-6xl",
-                    "children": ["Visit Nori"],
-                    "id": "8060fa20-dd88-411b-a051-8a5a6a6afecb",
+                    "children": [
+                      "Visit Nori"
+                    ],
+                    "id": "03d4862f-3d8b-4ce6-af37-8257ac2865af",
                     "ord": "a0"
                   },
                   {
@@ -2950,7 +3176,7 @@
                     "children": [
                       "4 Cedar Court, in the quiet room off the lane behind the old fish market. Two seatings a night, Tuesday through Sunday, at six and eight-thirty; closed Monday. The evening is by reservation — a stool at the bar is kept back for walk-ins."
                     ],
-                    "id": "dad67a85-82c6-44e3-956c-9d619934ce34",
+                    "id": "a5c548a5-7db1-42b4-bf76-c713cd9715d5",
                     "ord": "a1"
                   },
                   {
@@ -2965,8 +3191,10 @@
                         "attrs": {
                           "href": "/book"
                         },
-                        "children": ["Reserve a seat"],
-                        "id": "cfaebf90-6c71-4509-8b6b-a7ad46510bf1",
+                        "children": [
+                          "Reserve a seat"
+                        ],
+                        "id": "37da0de3-b187-4b86-919d-8b5f6c5655c7",
                         "ord": "a0"
                       },
                       {
@@ -2976,12 +3204,14 @@
                         "attrs": {
                           "href": "mailto:hello@nori.example"
                         },
-                        "children": ["Email us"],
-                        "id": "78aaeeba-a1c9-47b7-ba36-00161daadbe5",
+                        "children": [
+                          "Email us"
+                        ],
+                        "id": "1740d925-e2de-48f6-bdf5-b241d6863fa6",
                         "ord": "a1"
                       }
                     ],
-                    "id": "039b0640-b242-406c-a6b7-a0b4aa73ec89",
+                    "id": "2b719419-2f1d-42be-a592-3f7ce49be119",
                     "ord": "a2"
                   },
                   {
@@ -2991,15 +3221,15 @@
                     "children": [
                       "For a private counter, a larger party, or press, email hello@nori.example and we’ll get back to you the same day."
                     ],
-                    "id": "7ac9c652-b03c-4226-8f67-51f89d5d4b6c",
+                    "id": "d72ee27f-4fdf-4a1a-9b92-9d22ac39ac29",
                     "ord": "a3"
                   }
                 ],
-                "id": "66ce39be-ed54-4331-b83a-fcfb33426aed",
+                "id": "dc24c834-8587-4ad1-9f05-9112b1667f61",
                 "ord": "a0"
               }
             ],
-            "id": "5f0430c9-1041-4482-8a09-27cfb5336a9a",
+            "id": "80b3dea8-2d57-409a-9c85-839b3d088dc9",
             "ord": "a1"
           }
         ]

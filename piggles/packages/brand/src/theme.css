@@ -1,0 +1,557 @@
+/* ── Piggles brand theme, expressed as a silicaui theme ────────────────────────
+ *
+ * The Piggles brand as the `light` / `dark` silicaui themes. Both brands run on
+ * ONE platform and ONE database; the theme is one of the adapters that makes them
+ * different products. See piggles/CLAUDE.md for the boundary and piggles/DESIGN.md
+ * for the contract.
+ *
+ * WHY THE BARE NAMES ARE SAFE. sparx's blocks answer to `[data-theme='sparx']` AND
+ * `[data-theme='light']`, so two brands both claiming `light` would collide — if
+ * both stylesheets ever loaded into one document. They cannot: `@sparx/brand/
+ * theme.css` is imported ONLY by the four sparx apps' globals.css, never by a
+ * shared package, and a Piggles app imports only this file. Inside a Piggles app
+ * `light` IS the Piggles light brand. The one thing that would break it is a
+ * shared package taking a direct dependency on sparx's stylesheet — so don't add
+ * one, and if a surface ever has to show both brands at once, give Piggles a
+ * named island (`piggles` / `piggles-dark`) rather than reaching for the bare name.
+ *
+ * These blocks are UNLAYERED on purpose — that is what makes them outrank
+ * silicaui's own base-layer `light` / `dark` defaults. See ./layers.css.
+ *
+ * SOURCE OF TRUTH is docs/initial/docs/brand/SILICAUI_THEME.md and
+ * docs/initial/config/brand.tokens.json (the approved identity board). Values here
+ * match it exactly, with three corrections that were measured rather than
+ * preferred and are recorded back in that document:
+ *
+ *   1. The dark base ramp was inverted. The spec had base-100 as the DARKEST of
+ *      the three, which put MDI windows (base-100) visually BELOW the workspace
+ *      canvas (base-200) — the opposite of the light theme, and of silicaui's own
+ *      dark theme, where base-100 is oklch(16%) against base-300's 11%. The three
+ *      values are the spec's; the assignment is reversed so base-100 is the top
+ *      surface in both modes.
+ *   2. Dark `error` was `#F06B6B`, which measures ΔE 14.3 against the dark brand
+ *      pink `#FF7C91` — a Delete button and the brand reading as the same colour.
+ *      Now `#EF4444`: ΔE 32.2, and 4.98:1 on the spec's own error ink.
+ *   3. `neutral` and `danger` were absent from the spec entirely. Both are
+ *      required — see ./layers.css.
+ *
+ * Everything this file adds beyond the board — the dark neutral, the app-group
+ * hues — was CHOSEN BY MEASUREMENT (WCAG contrast + a ΔE76 separation screen).
+ * Re-measure before changing any of it; do not eyeball, and do not assume white. */
+
+[data-theme='light'] {
+  color-scheme: light;
+
+  /* Piggles Pink. White measures 2.44:1 on it, so the on-fill ink is the brand
+     INK — a pink button with a charcoal label is what the logo board already
+     does, not a compromise. */
+  --color-primary: #ff6f86;
+  --color-primary-content: #202631;
+
+  --color-secondary: #2d3443;
+  --color-secondary-content: #ffffff;
+
+  /* Soft supporting pink. Deliberately LOW-emphasis: it is a supporting branded
+     surface, not a second call to action. */
+  --color-accent: #ffb3c0;
+  --color-accent-content: #202631;
+
+  --color-module: var(--color-primary);
+  --color-module-content: var(--color-primary-content);
+
+  --color-success: #14804a;
+  --color-success-content: #ffffff;
+
+  --color-info: #2563eb;
+  --color-info-content: #ffffff;
+
+  --color-warning: #f3b61f;
+  --color-warning-content: #202631;
+
+  --color-error: #c93838;
+  --color-error-content: #ffffff;
+
+  /* danger — the ninth registered color, and NOT optional. The shared platform's
+     `statusTone()` returns `danger`, so without this pair every `<Badge
+     color="danger">` coming out of a shared workbench surface renders colorless. */
+  --color-danger: #c93838;
+  --color-danger-content: #ffffff;
+
+  /* neutral — the inverse utility surface (dark bands, `btn-neutral`, tooltips).
+     Absent from the spec, which would have left silicaui's default cool slate
+     showing through: an unowned, off-brand grey nobody chose.
+     A warm PLUM-grey, so it reads as a different ROLE from `secondary`'s cool
+     navy. The test here is a visible SURFACE STEP, not categorical ΔE — these two
+     are chrome that rarely abuts, unlike two hues in a nav rail. 1.38 against
+     secondary, just past sparx's 1.32 precedent for the same pair. 9.04:1 on
+     white. */
+  --color-neutral: #52454f;
+  --color-neutral-content: #ffffff;
+
+  /* Surfaces. base-100 is the TOP surface (MDI windows, cards, dialogs), base-300
+     the deepest recess. Warm, per the board — this is the quietest difference
+     from sparx's cool blue-greys and one of the most legible in person. */
+  --color-base-100: #ffffff;
+  --color-base-200: #fbf7f8;
+  --color-base-300: #f0e8ea;
+  --color-base-content: #202631;
+}
+
+[data-theme='dark'] {
+  color-scheme: dark;
+
+  --color-primary: #ff7c91;
+  --color-primary-content: #20151a;
+
+  /* Inverted role: on a dark canvas the brand ink cannot be the secondary
+     surface, so secondary becomes a light neutral. */
+  --color-secondary: #d7dbe3;
+  --color-secondary-content: #1b1f28;
+
+  --color-accent: #8f4656;
+  --color-accent-content: #fff4f6;
+
+  --color-module: var(--color-primary);
+  --color-module-content: var(--color-primary-content);
+
+  --color-success: #38b875;
+  --color-success-content: #071a10;
+
+  --color-info: #68a3ff;
+  --color-info-content: #08162c;
+
+  --color-warning: #f6c95b;
+  --color-warning-content: #241a04;
+
+  /* Correction 2 — see the header. `#F06B6B` sat ΔE 14.3 from the dark brand
+     pink; this is ΔE 32.2 and still clears AA on the spec's ink at 4.98:1. */
+  --color-error: #ef4444;
+  --color-error-content: #250909;
+
+  --color-danger: #ef4444;
+  --color-danger-content: #250909;
+
+  --color-neutral: #6b5a66;
+  --color-neutral-content: #ffffff;
+
+  /* Correction 1 — see the header. Same three values as the spec, assignment
+     reversed: base-100 is the TOP surface in dark exactly as in light, so an MDI
+     window sits ABOVE the workspace canvas rather than sinking below it. */
+  --color-base-100: #272d39;
+  --color-base-200: #1c212c;
+  --color-base-300: #151922;
+  --color-base-content: #f4f5f7;
+}
+
+/* ── The five app groups ───────────────────────────────────────────────────────
+ *
+ * sparx gives each of its ~18 modules its own hue. Piggles does NOT, and the
+ * reason is arithmetic rather than taste: an 18-hue wheel is already at the limit
+ * of what stays distinguishable, and Piggles reserves the whole rose family for
+ * the brand pink, which pushes it over. A six-family wheel with lightness steps
+ * INSIDE each family was measured first and produced 17 pairs under ΔE 18 —
+ * `cms ↔ accent` at 5.5, `ai ↔ staff` at 9.1. Lightness does not separate a rail.
+ *
+ * So Piggles colors the GROUP, not the app: five hues plus the brand, every app in
+ * a group wearing its group's hue, apps separated within a group by icon and
+ * label. Closest pair measures ΔE 18.4 and every hue clears AA. It also gives the
+ * nav a spine, which Piggles needs and sparx does not — every app ships enabled,
+ * so the rail is full on day one.
+ *
+ * `money` is lime-700 rather than a money-green: at `#15803D` it measured ΔE 7.3
+ * against `success`, which would have made the Money app and a success badge the
+ * same colour. This is ΔE 28.4 from success and 72.9 from the nearest other group.
+ *
+ * Theme-independent on purpose — a saturated hue reads on either canvas, and the
+ * tinted rendering is derived by silicaui's universal `soft` treatment at paint
+ * time, so there is no pre-baked tint token to drift.
+ *
+ * Adding a SIXTH group hue is a design decision, not a token edit: run the
+ * separation screen against every existing hue AND both brand pinks first. */
+[data-theme='light'],
+[data-theme='dark'] {
+  /* Home — the account itself, so it wears the brand. Aliased, never copied, so
+     it follows the pink into dark mode automatically. */
+  --color-group-home: var(--color-primary);
+  --color-group-home-content: var(--color-primary-content);
+
+  --color-group-web: #4f46e5; /* My Site, Content, Get Found — 6.29:1 on white */
+  --color-group-web-content: #ffffff;
+
+  --color-group-sell: #c2410c; /* Sell, Stock — 5.18:1 */
+  --color-group-sell-content: #ffffff;
+
+  --color-group-people: #0e7490; /* Customers, Messages, Bookings — 5.36:1 */
+  --color-group-people-content: #ffffff;
+
+  --color-group-money: #4d7c0f; /* Invoices, Money — 4.99:1 */
+  --color-group-money-content: #ffffff;
+
+  --color-group-run: #7e22ce; /* My Team, Automations, Partners, Connections — 6.98:1 */
+  --color-group-run-content: #ffffff;
+
+  /* ── Piggles app keys ───────────────────────────────────────────────────────
+   * The 15 apps in docs/initial/config/apps.yaml, each pointing at its group.
+   * Same value within a group ON PURPOSE — see the header. */
+  --color-app-home: var(--color-group-home);
+  --color-app-home-content: var(--color-group-home-content);
+  --color-app-site: var(--color-group-web);
+  --color-app-site-content: var(--color-group-web-content);
+  --color-app-content: var(--color-group-web);
+  --color-app-content-content: var(--color-group-web-content);
+  --color-app-get-found: var(--color-group-web);
+  --color-app-get-found-content: var(--color-group-web-content);
+  --color-app-sell: var(--color-group-sell);
+  --color-app-sell-content: var(--color-group-sell-content);
+  --color-app-stock: var(--color-group-sell);
+  --color-app-stock-content: var(--color-group-sell-content);
+  --color-app-customers: var(--color-group-people);
+  --color-app-customers-content: var(--color-group-people-content);
+  --color-app-messages: var(--color-group-people);
+  --color-app-messages-content: var(--color-group-people-content);
+  --color-app-bookings: var(--color-group-people);
+  --color-app-bookings-content: var(--color-group-people-content);
+  --color-app-invoices: var(--color-group-money);
+  --color-app-invoices-content: var(--color-group-money-content);
+  --color-app-money: var(--color-group-money);
+  --color-app-money-content: var(--color-group-money-content);
+  --color-app-team: var(--color-group-run);
+  --color-app-team-content: var(--color-group-run-content);
+  --color-app-automations: var(--color-group-run);
+  --color-app-automations-content: var(--color-group-run-content);
+  --color-app-partners: var(--color-group-run);
+  --color-app-partners-content: var(--color-group-run-content);
+  --color-app-connections: var(--color-group-run);
+  --color-app-connections-content: var(--color-group-run-content);
+
+  /* ── sparx module keys, mapped onto the same groups ─────────────────────────
+   * NOT legacy, and not optional. The workbench SURFACES are shared platform code
+   * (piggles/CLAUDE.md: shell forks, surfaces do not), and they emit
+   * `data-module="commerce"` and friends. Without these pairs every shared surface
+   * rendered inside Piggles resolves `--color-module` to nothing at all — not to a
+   * fallback hue, to blank. Keep complete against packages/brand/src/theme.css; a
+   * module added there needs a group here. */
+  --color-module-builder: var(--color-group-web);
+  --color-module-builder-content: var(--color-group-web-content);
+  --color-module-storefront: var(--color-group-web);
+  --color-module-storefront-content: var(--color-group-web-content);
+  --color-module-cms: var(--color-group-web);
+  --color-module-cms-content: var(--color-group-web-content);
+  --color-module-seo: var(--color-group-web);
+  --color-module-seo-content: var(--color-group-web-content);
+  --color-module-social: var(--color-group-web);
+  --color-module-social-content: var(--color-group-web-content);
+
+  --color-module-commerce: var(--color-group-sell);
+  --color-module-commerce-content: var(--color-group-sell-content);
+  --color-module-inventory: var(--color-group-sell);
+  --color-module-inventory-content: var(--color-group-sell-content);
+  --color-module-dropship: var(--color-group-sell);
+  --color-module-dropship-content: var(--color-group-sell-content);
+  --color-module-b2b: var(--color-group-sell);
+  --color-module-b2b-content: var(--color-group-sell-content);
+
+  --color-module-crm: var(--color-group-people);
+  --color-module-crm-content: var(--color-group-people-content);
+  --color-module-chat: var(--color-group-people);
+  --color-module-chat-content: var(--color-group-people-content);
+  --color-module-scheduling: var(--color-group-people);
+  --color-module-scheduling-content: var(--color-group-people-content);
+  --color-module-email: var(--color-group-people);
+  --color-module-email-content: var(--color-group-people-content);
+
+  --color-module-invoicing: var(--color-group-money);
+  --color-module-invoicing-content: var(--color-group-money-content);
+  --color-module-finance: var(--color-group-money);
+  --color-module-finance-content: var(--color-group-money-content);
+
+  --color-module-staff: var(--color-group-run);
+  --color-module-staff-content: var(--color-group-run-content);
+  --color-module-partner: var(--color-group-run);
+  --color-module-partner-content: var(--color-group-run-content);
+  --color-module-ai: var(--color-group-run);
+  --color-module-ai-content: var(--color-group-run-content);
+  --color-module-automations: var(--color-group-run);
+  --color-module-automations-content: var(--color-group-run-content);
+
+  --color-module-platform: var(--color-group-home);
+  --color-module-platform-content: var(--color-group-home-content);
+
+  /* ── silicaui shape + type tokens ──────────────────────────────────────────
+   * The radii are the loudest non-color difference between the two brands and
+   * come straight from the board (8 / 12 / 18 / 24, "roundness: high"). sparx runs
+   * 6px fields and 0.5rem boxes; Piggles runs 12 and 18. The mark is a squircle
+   * and the wordmark is a rounded geometric — the UI has to agree with it or the
+   * logo looks borrowed. */
+  --radius-selector: 9999px; /* Radio, Checkbox, Switch, Toggle */
+  --radius-field: 12px; /* Input, Select, Textarea, Button — board radiusMd */
+  --radius-box: 18px; /* Card, Dialog, Popover, panels — board radiusLg */
+  --border: 1px;
+
+  /* Depth 1 — silicaui's own default, and the whole of Piggles' soft elevation:
+     resting shadow + hover-lift on Card, inset highlight on solid Buttons. sparx
+     sets this to 0 because flat, sharp and cool is sparx's identity; Piggles is
+     soft and rounded, and flat-edge separation reads colder than the brand wants.
+     This is the ONLY sanctioned elevation — one token, not a hand-rolled
+     `shadow-*` anywhere in feature code. Nothing to add per component. */
+  --depth: 1;
+
+  /* ── COMFORT-FIRST DENSITY ─────────────────────────────────────────────────
+   *
+   * sparx can be a dense utility surface: its audience is a doer at a desk who
+   * wants everything on screen at once. Piggles is for somebody who did not
+   * choose to be in software today, and the feeling it has to produce is "I can
+   * breathe here" — larger controls, more room around them, nothing cramped.
+   *
+   * ── WHY THIS IS TWO TOKENS AND NOT A PROP ────────────────────────────────
+   *
+   * The obvious move is `size="xl"` on every control. It is wrong twice over.
+   * It cannot reach the ~500 SHARED workbench surfaces, which Piggles mounts
+   * and must never fork (piggles/CLAUDE.md RULE #0) — so the console would be
+   * comfortable in the chrome Piggles wrote and stock everywhere the actual work
+   * happens. And it is the call-site patch RULE #1 exists to stop: a decision
+   * repeated in a thousand places is a decision nobody can revise.
+   *
+   * silica sizes every field as `--size-field × N`, N being the size step
+   * (xs 6 · sm 8 · md 10 · lg 12 · xl 14). Move the multiplicand and the WHOLE
+   * ladder moves, in shared code and Piggles code alike, with no edit anywhere.
+   * That is the single point of change working exactly as intended.
+   *
+   *   --size-field   0.3rem  →  xs 29 · sm 38 · md 48 · lg 58 · xl 67 px
+   *
+   * ── WHY 0.3 AND NOT 0.35 ─────────────────────────────────────────────────
+   *
+   * 0.35 would put the DEFAULT control at 56px — the comfort target — with no
+   * call site stating a size at all. Tempting, and wrong: the default is what
+   * every toolbar, filter row and pane header in the shared surfaces renders,
+   * and 56px of chrome above a list is not comfort, it is a smaller list. The
+   * same lever also drives Alert, Toast, Progress and Meter, so 0.35 inflates
+   * all of those by 40% as well.
+   *
+   * 0.3 puts the ladder where both readings are true at once:
+   *
+   *   • the DEFAULT is 48px — a real step up from sparx's 40, comfortable
+   *     everywhere without anybody choosing it, including in all 500 shared
+   *     surfaces;
+   *   • `size="lg"` is 58px — inside the 56–60 comfort target — so a FORM asks
+   *     for `lg` and lands exactly on spec.
+   *
+   * That last line is the one trade this makes: Piggles' own forms carry a
+   * `size="lg"`. That is not the call-site patch RULE #1 bans — it bans
+   * patching SHARED code, and choosing a size on a form you own is what the
+   * prop is for. One decision per form, not one per control.
+   *
+   * `xl` (67px) is a marketing hero CTA and nothing else.
+   *
+   * ── SELECTORS ────────────────────────────────────────────────────────────
+   *
+   * `--size-selector` is a SEPARATE lever (silica's own words: "so a dense
+   * checkbox can sit next to a large input") and it drives Badge as well as
+   * Checkbox/Radio/Switch/Toggle — so it decides how big a status pill is in a
+   * table row, which is a different question from how big an input is. Matched
+   * to the field tier at 0.3 it gives a 29px checkbox and a 29px badge: a clear
+   * step up from sparx's 24, still recognisably a pill. If badges start reading
+   * heavy in dense lists, drop THIS one alone rather than touching fields.
+   *
+   * ── WHAT TO WATCH ────────────────────────────────────────────────────────
+   *
+   * `--size-field` also drives Alert, Toast, Progress, Meter, Toolbar, Menubar
+   * and NavigationMenu — not only inputs. If any of those reads bloated, pin
+   * that ONE family back with a rule in this file (`.alert { --size-field: …}`),
+   * never with a class at a call site. Table is NOT on this lever — its cell
+   * padding is its own — so a long list does not lose rows to this. */
+  --size-field: 0.3rem;
+  --size-selector: 0.3rem;
+
+  /* Label → control, 8px. silica ships 6, which is a dense-form default and
+     reads as the label being stuck to the input. Named by silica as
+     `--field-gap` with a var() fallback, so this override simply wins. */
+  --field-gap: 0.5rem;
+
+  /* Nunito carries the board's "very round, thick, friendly, professional"
+     direction, ships a 900 weight for display, and is SIL OFL so it self-hosts
+     without a licence negotiation. Body stays on Inter — the board asks for
+     "high-legibility sans serif" and it is already in the repo's font pipeline.
+     Confirm against the final logo file before launch: if the wordmark turns out
+     to be drawn in something else, this stack should follow it. */
+  --font-sans: 'Inter', system-ui, sans-serif;
+  --font-heading: 'Nunito', 'Inter', system-ui, sans-serif;
+  --font-mono: 'Geist Mono', 'JetBrains Mono', monospace;
+}
+
+/* ── Comfort-first, the part no token can reach ───────────────────────────────
+ *
+ * Everything above is a silica token. These two are not — silica hardcodes them
+ * — so they are overridden HERE, once, where the rest of the brand lives. The
+ * thing that must never happen instead is a `p-8` sprinkled onto card call
+ * sites: that cannot reach the shared workbench surfaces at all, and it turns
+ * one decision into a thousand.
+ *
+ * Unlayered, like the theme blocks above, so they outrank silica's base layer.
+ *
+ * CARD PADDING — 32px, from silica's 24. This is most of what "I can breathe
+ * here" actually is: the controls got bigger above, and 24px of padding around
+ * a 56px control reads as a box that is slightly too small for its contents.
+ * `.card-body` only — never `.card-clickable`, whose zero padding is structural
+ * (the body inside it carries the real padding, and giving the button padding
+ * too would double it). */
+.card-body {
+  padding: 2rem;
+  /* The gap BETWEEN things a card stacks — silica ships 8px, which is a
+   * form-control gap rather than a section gap. 16px is the "clear visual
+   * grouping" half of comfortable density: it is what stops a heading, a
+   * paragraph and a button reading as one undifferentiated block.
+   *
+   * The honest limit of this: it reaches what a CARD stacks and nothing else.
+   * The gaps between form groups and between major sections live as `gap-*`
+   * classes inside each surface's own JSX, and for the shared workbench
+   * surfaces there is no lever here short of Tailwind's `--spacing` — which
+   * also scales every width in the spacing scale, including the app panel's
+   * `w-64`. That one is deliberately NOT taken yet; look at a real screen with
+   * the changes above in place first. */
+  gap: 1rem;
+}
+
+/* ── The bridges: data-app / data-group / data-module ⇒ active hue ─────────────
+ *
+ * Repoints `--color-module` for a subtree from an ATTRIBUTE, so a component
+ * shifts the active hue by rendering `data-app="sell"` and nothing else. No
+ * inline `style`, no JS colour table.
+ *
+ * ALL THREE attributes are live and that is deliberate. `data-app` is Piggles'
+ * own vocabulary, used by the Piggles shell and nav. `data-group` colors a whole
+ * section of chrome. `data-module` is what the SHARED workbench surfaces already
+ * emit — and since sparx's bridge lives in a stylesheet a Piggles app never
+ * loads, the same hues have to answer to that name here too.
+ *
+ * Order matters: a nested attribute wins over its ancestor by normal cascade
+ * proximity, which is what makes a Sell panel inside a Customers pane wear Sell. */
+
+[data-app='home'] {
+  --color-module: var(--color-app-home);
+  --color-module-content: var(--color-app-home-content);
+}
+[data-app='site'] {
+  --color-module: var(--color-app-site);
+  --color-module-content: var(--color-app-site-content);
+}
+[data-app='content'] {
+  --color-module: var(--color-app-content);
+  --color-module-content: var(--color-app-content-content);
+}
+[data-app='get_found'],
+[data-app='get-found'] {
+  --color-module: var(--color-app-get-found);
+  --color-module-content: var(--color-app-get-found-content);
+}
+[data-app='sell'] {
+  --color-module: var(--color-app-sell);
+  --color-module-content: var(--color-app-sell-content);
+}
+[data-app='stock'] {
+  --color-module: var(--color-app-stock);
+  --color-module-content: var(--color-app-stock-content);
+}
+[data-app='customers'] {
+  --color-module: var(--color-app-customers);
+  --color-module-content: var(--color-app-customers-content);
+}
+[data-app='messages'] {
+  --color-module: var(--color-app-messages);
+  --color-module-content: var(--color-app-messages-content);
+}
+[data-app='bookings'] {
+  --color-module: var(--color-app-bookings);
+  --color-module-content: var(--color-app-bookings-content);
+}
+[data-app='invoices'] {
+  --color-module: var(--color-app-invoices);
+  --color-module-content: var(--color-app-invoices-content);
+}
+[data-app='money'] {
+  --color-module: var(--color-app-money);
+  --color-module-content: var(--color-app-money-content);
+}
+[data-app='team'] {
+  --color-module: var(--color-app-team);
+  --color-module-content: var(--color-app-team-content);
+}
+[data-app='automations'] {
+  --color-module: var(--color-app-automations);
+  --color-module-content: var(--color-app-automations-content);
+}
+[data-app='partners'] {
+  --color-module: var(--color-app-partners);
+  --color-module-content: var(--color-app-partners-content);
+}
+[data-app='connections'] {
+  --color-module: var(--color-app-connections);
+  --color-module-content: var(--color-app-connections-content);
+}
+
+/* The `data-module` half — what the shared workbench surfaces emit. */
+[data-module='builder'],
+[data-module='storefront'],
+[data-module='cms'],
+[data-module='seo'],
+[data-module='social'] {
+  --color-module: var(--color-group-web);
+  --color-module-content: var(--color-group-web-content);
+}
+[data-module='commerce'],
+[data-module='inventory'],
+[data-module='dropship'],
+[data-module='b2b'] {
+  --color-module: var(--color-group-sell);
+  --color-module-content: var(--color-group-sell-content);
+}
+[data-module='crm'],
+[data-module='chat'],
+[data-module='scheduling'],
+[data-module='email'] {
+  --color-module: var(--color-group-people);
+  --color-module-content: var(--color-group-people-content);
+}
+[data-module='invoicing'],
+[data-module='finance'] {
+  --color-module: var(--color-group-money);
+  --color-module-content: var(--color-group-money-content);
+}
+[data-module='staff'],
+[data-module='partner'],
+[data-module='ai'],
+[data-module='automations'] {
+  --color-module: var(--color-group-run);
+  --color-module-content: var(--color-group-run-content);
+}
+[data-module='platform'] {
+  --color-module: var(--color-group-home);
+  --color-module-content: var(--color-group-home-content);
+}
+
+/* Group-level, for chrome that colors a whole section of the nav rather than one
+   app — the rail's group headers, the app launcher's sections. */
+[data-group='home'] {
+  --color-module: var(--color-group-home);
+  --color-module-content: var(--color-group-home-content);
+}
+[data-group='web'] {
+  --color-module: var(--color-group-web);
+  --color-module-content: var(--color-group-web-content);
+}
+[data-group='sell'] {
+  --color-module: var(--color-group-sell);
+  --color-module-content: var(--color-group-sell-content);
+}
+[data-group='people'] {
+  --color-module: var(--color-group-people);
+  --color-module-content: var(--color-group-people-content);
+}
+[data-group='money'] {
+  --color-module: var(--color-group-money);
+  --color-module-content: var(--color-group-money-content);
+}
+[data-group='run'] {
+  --color-module: var(--color-group-run);
+  --color-module-content: var(--color-group-run-content);
+}

@@ -1,0 +1,76 @@
+# Asks each dropship supplier where the parcel actually is.
+#
+# `SupplierAdapter.getTrackingUpdate()` is implemented by all four adapters —
+# dsers, printful, printify, spocket — and was called by NOTHING. So a
+# dropshipped order was submitted to a supplier and then never asked about
+# again: status stuck on `submitted`, no tracking number, and the customer never
+# told their parcel was moving. On a dropship order the supplier's tracking is
+# the ONLY signal that exists, so this is the difference between a customer who
+# knows where their order is and one who does not.
+#
+# Every FOUR HOURS, not nightly: a parcel that ships in the morning should not
+# wait until tomorrow to say so, and not every 15 minutes either — these are
+# third-party APIs with rate limits, and the poll costs one call per open order.
+# Only `submitted` and `shipped` rows with a supplier order id are asked about.
+#
+# Events fire on a TRANSITION only, so an automation does not re-send "it has
+# shipped" on every sweep for three days.
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: dropship-tracking-poll
+  namespace: sparx-prod
+  labels:
+    app: dropship-cron
+    job: tracking-poll
+spec:
+  schedule: '0 */4 * * *'
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 3
+  startingDeadlineSeconds: 300
+  jobTemplate:
+    spec:
+      backoffLimit: 2
+      ttlSecondsAfterFinished: 3600
+      template:
+        metadata:
+          labels:
+            app: dropship-cron
+            job: tracking-poll
+        spec:
+          serviceAccountName: sparx-app
+          restartPolicy: OnFailure
+          containers:
+            - name: curl
+              image: curlimages/curl:8.10.1
+              command: ['sh', '-c']
+              args:
+                - >
+                  curl --fail-with-body --silent --show-error
+                  --max-time 300
+                  -X POST
+                  -H "X-Sparx-Internal-Cron-Token: $SPARX_INTERNAL_CRON_TOKEN"
+                  http://api-rest.sparx-prod.svc.cluster.local:3000/internal/dropship/tracking-poll
+              env:
+                - name: SPARX_INTERNAL_CRON_TOKEN
+                  valueFrom:
+                    secretKeyRef:
+                      name: sparx-app-secrets
+                      key: SPARX_INTERNAL_CRON_TOKEN
+              resources:
+                requests:
+                  cpu: '25m'
+                  memory: '16Mi'
+                limits:
+                  cpu: '100m'
+                  memory: '32Mi'
+              securityContext:
+                runAsNonRoot: true
+                runAsUser: 1000
+                allowPrivilegeEscalation: false
+                capabilities:
+                  drop: ['ALL']
+                seccompProfile:
+                  type: RuntimeDefault

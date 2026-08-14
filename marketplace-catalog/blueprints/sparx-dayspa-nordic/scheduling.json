@@ -384,5 +384,12 @@
       ],
       "policyHandle": "bathhouse-deposit"
     }
+  ],
+  "locations": [
+    {
+      "handle": "premises",
+      "name": "Kald",
+      "timezone": "UTC"
+    }
   ]
 }

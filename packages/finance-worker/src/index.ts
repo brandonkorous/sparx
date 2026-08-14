@@ -17,6 +17,19 @@ export const EVENTS = [
   'finance.expense.allocated',
   'finance.recurring.due',
   'finance.profit.recompute',
+  // Seeds the expense categories when Finance becomes available — including the
+  // bundled case, where turning on Commerce or B2B announces `finance` with no
+  // finance flag of its own. Nothing listened for this, so no tenant had the
+  // `wages` category and the staff labour deriver refused every run.
+  //
+  // ADDING a subject to a shipped durable is safe: `consumers.add` upserts, so
+  // this updates `finance-worker` in place rather than minting a new cursor.
+  // With `DeliverPolicy.All` the widened filter then replays whatever
+  // `module.activated` is still inside the stream's retention window — a free
+  // partial backfill, harmless because the seed is create-only. It does NOT
+  // reach tenants whose activation has aged out; those are the ops task
+  // `backfill-finance-categories`.
+  'module.activated',
 ];
 
 export function createSubscription(logger: Logger): WorkerSubscription {

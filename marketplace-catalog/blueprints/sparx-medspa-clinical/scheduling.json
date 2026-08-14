@@ -348,5 +348,12 @@
       ],
       "policyHandle": "treatment-deposit"
     }
+  ],
+  "locations": [
+    {
+      "handle": "premises",
+      "name": "Lumen",
+      "timezone": "UTC"
+    }
   ]
 }

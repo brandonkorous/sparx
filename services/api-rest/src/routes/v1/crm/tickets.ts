@@ -18,6 +18,7 @@
 
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
+import { queryBool } from '@sparx/api-core/query';
 import { slaPolicyService, ticketService, ticketSlaSweep } from '@sparx/crm';
 import { ok, paged } from '@sparx/api-core/envelope';
 import { requireAuth, requireRole } from '@sparx/api-core/auth';
@@ -32,10 +33,10 @@ const IdPath = z.object({ id: z.string().uuid() });
  *
  * Separate from `TicketQuery` in @sparx/crm-schemas on purpose: everything
  * arrives as a string over HTTP, so this coerces and renames, and the service
- * schema stays the single source of truth for what the FILTERS mean. Booleans
- * are `'true'` rather than coerced, because `z.coerce.boolean()` reads the
- * string `'false'` as true — which would silently invert the two filters a
- * support lead relies on most.
+ * schema stays the single source of truth for what the FILTERS mean. Booleans go
+ * through `queryBool` rather than `z.coerce.boolean()`, which is `Boolean(value)`
+ * and so reads the string `'false'` as TRUE — that would silently invert the two
+ * filters a support lead relies on most.
  */
 const TicketListQuery = z.object({
   q: z.string().max(255).optional(),
@@ -47,8 +48,8 @@ const TicketListQuery = z.object({
   customer_id: z.string().uuid().optional(),
   b2b_account_id: z.string().uuid().optional(),
   assigned_to: z.string().uuid().optional(),
-  unassigned: z.enum(['true', 'false']).optional(),
-  breached: z.enum(['true', 'false']).optional(),
+  unassigned: queryBool.optional(),
+  breached: queryBool.optional(),
   due_within_minutes: z.coerce.number().int().min(1).max(43_200).optional(),
   tags: z.string().max(500).optional(),
   sort: z
@@ -80,8 +81,10 @@ const ticketRoutes: FastifyPluginAsync = (app) => {
         ...(q.customer_id ? { customerId: q.customer_id } : {}),
         ...(q.b2b_account_id ? { companyId: q.b2b_account_id } : {}),
         ...(q.assigned_to ? { assignedToUserId: q.assigned_to } : {}),
-        ...(q.unassigned ? { unassigned: q.unassigned === 'true' } : {}),
-        ...(q.breached ? { breached: q.breached === 'true' } : {}),
+        // `!== undefined`, not truthiness: these are now real booleans, and
+        // `q.unassigned ? …` would silently drop an explicit `unassigned=false`.
+        ...(q.unassigned !== undefined ? { unassigned: q.unassigned } : {}),
+        ...(q.breached !== undefined ? { breached: q.breached } : {}),
         ...(q.due_within_minutes ? { dueWithinMinutes: q.due_within_minutes } : {}),
         ...(q.tags ? { tags: q.tags.split(',').filter(Boolean) } : {}),
         ...(q.sort ? { sort: q.sort } : {}),

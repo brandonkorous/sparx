@@ -226,5 +226,12 @@
       ],
       "policyHandle": "faderoom-standard"
     }
+  ],
+  "locations": [
+    {
+      "handle": "premises",
+      "name": "Fade Room",
+      "timezone": "UTC"
+    }
   ]
 }

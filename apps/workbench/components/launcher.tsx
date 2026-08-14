@@ -38,12 +38,23 @@ import {
   useKnownModules,
   useReachableModules,
 } from '../lib/surfaces/use-visible-nav';
+import { moduleLabel } from '../lib/surfaces/nav';
+import type { WorkbenchModule } from './module-scope';
 import { useWorkbench } from '../lib/workbench/context';
 import { useFeedback } from './feedback/provider';
 
-/** Title-cases a module key for the palette's navigation group headings. */
+/**
+ * The heading a surface sits under in the palette.
+ *
+ * This used to title-case the module KEY, which produced "Crm", "B2b" and "Seo"
+ * — the raw slug with a capital letter, in the one place the app is supposed to
+ * be findable by someone who does not know what anything is called. It now asks
+ * the same function the rail and the navigation panel ask, so all three agree
+ * and a brand that renames a module renames it everywhere at once
+ * (lib/product.ts).
+ */
 function groupLabel(module: string): string {
-  return module.charAt(0).toUpperCase() + module.slice(1);
+  return moduleLabel(module as WorkbenchModule);
 }
 
 /** The modifier held at selection decides where the pane lands. */
@@ -131,7 +142,7 @@ export function Launcher({
     // hand. Reading feedback is a listed surface and rides along above.
     const sendFeedback: Entry = {
       id: 'platform.feedback.send',
-      group: 'Platform',
+      group: moduleLabel('platform'),
       label: 'Send feedback',
       keywords: ['feedback', 'support', 'bug', 'problem', 'idea', 'suggestion', 'contact'],
       run: () => feedback.openSend({ source: 'command' }),

@@ -23,6 +23,7 @@
 
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
+import { queryBool } from '@sparx/api-core/query';
 import { crmRecordService, objectDefService } from '@sparx/crm';
 import { ok, paged } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
@@ -35,7 +36,7 @@ const RecordIdPath = z.object({ id: z.string().uuid() });
 
 const ListObjectsQuery = z.object({
   kind: z.enum(['builtin', 'custom']).optional(),
-  include_archived: z.coerce.boolean().optional(),
+  include_archived: queryBool.optional(),
 });
 
 const ListRecordsQuery = z.object({

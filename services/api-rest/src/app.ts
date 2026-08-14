@@ -51,6 +51,7 @@ import {
 import {
   BookingNotFoundError,
   InvalidBookingStateError,
+  LocationInUseError,
   NoEligibleResourceError,
   ResourceNotFoundError as SchedulingResourceNotFoundError,
   SchedulingError,
@@ -71,9 +72,12 @@ import commerceCronRoutes from './routes/internal/commerce-cron.js';
 import invoicingCronRoutes from './routes/internal/invoicing-cron.js';
 import dropshipCronRoutes from './routes/internal/dropship-cron.js';
 import automationCronRoutes from './routes/internal/automation-cron.js';
+import usageCronRoutes from './routes/internal/usage-cron.js';
 import siteAnalyticsCronRoutes from './routes/internal/site-analytics-cron.js';
 import seoCronRoutes from './routes/internal/seo-cron.js';
 import inventoryCronRoutes from './routes/internal/inventory-cron.js';
+import financeCronRoutes from './routes/internal/finance-cron.js';
+import staffCronRoutes from './routes/internal/staff-cron.js';
 import channelsCronRoutes from './routes/internal/channels-cron.js';
 import marketCronRoutes from './routes/internal/market-cron.js';
 import acquisitionReportRoutes from './routes/internal/acquisition-report.js';
@@ -699,6 +703,16 @@ function schedulingErrorMapper(
     };
     return reply.code(422).send(body);
   }
+  if (err instanceof LocationInUseError) {
+    // 409 rather than 422 for the same reason a protected finance category is
+    // (see financeErrorMapper): the request is well-formed and the fix is a
+    // DIFFERENT ACTION — switch the location off — not a corrected field.
+    const body: ErrorEnvelope = {
+      success: false,
+      error: { code: 'LOCATION_IN_USE', message: err.message, request_id: requestId },
+    };
+    return reply.code(409).send(body);
+  }
   if (err instanceof SchedulingError) {
     // A *_NOT_FOUND code (calendar connection, booking policy) is a 404; every
     // other engine error is a 422 (a well-formed request the engine can't honor).
@@ -881,9 +895,12 @@ export async function createApp(): Promise<FastifyInstance> {
   await app.register(invoicingCronRoutes);
   await app.register(dropshipCronRoutes);
   await app.register(automationCronRoutes);
+  await app.register(usageCronRoutes);
   await app.register(siteAnalyticsCronRoutes);
   await app.register(seoCronRoutes);
   await app.register(inventoryCronRoutes);
+  await app.register(financeCronRoutes);
+  await app.register(staffCronRoutes);
   await app.register(channelsCronRoutes);
   await app.register(marketCronRoutes);
   await app.register(acquisitionReportRoutes);

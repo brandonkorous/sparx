@@ -12,7 +12,15 @@ import { WorkbenchShell } from '../components/workbench-shell';
 // the entire interface into every request. And it turns out the server does not
 // need to: preserving intent across sign-in only requires the path itself.
 //
-// Which is the bug this closes. `/` used to redirect a signed-out visitor with a
+// It does, however, hand the matched address DOWN. The shell used to read
+// `window.location` for itself, which is right on a cold load and wrong the one
+// time it differs: signing in navigates client-side, so the shell's first render
+// happens while the bar still says `/sign-in`. That was captured as a link,
+// matched no route, and answered a successful sign-in with "that link doesn't
+// work" — a pane that then persisted into the layout and came back on every load
+// afterwards. The server knows the real address; passing it removes the guess.
+//
+// Which is the other bug this closes. `/` used to redirect a signed-out visitor with a
 // bare `redirect('/sign-in')`, dropping the query entirely — so the `?open=`
 // form that every backend emitter built survived a cold click only if it came
 // through one of four hand-written redirect pages. Cold is the NORMAL case for a
@@ -41,6 +49,7 @@ export async function WorkbenchEntry({ address }: { address: string }) {
       userName={displayName(session.user.name, session.user.email)}
       userEmail={session.user.email}
       initialSiteKey={initialSiteKey}
+      arrivalAddress={address}
     />
   );
 }

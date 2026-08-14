@@ -247,5 +247,12 @@
       ],
       "policyHandle": "emergency-priority"
     }
+  ],
+  "locations": [
+    {
+      "handle": "premises",
+      "name": "Copper & Main Plumbing",
+      "timezone": "UTC"
+    }
   ]
 }

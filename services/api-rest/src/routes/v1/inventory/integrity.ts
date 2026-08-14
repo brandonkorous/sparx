@@ -31,6 +31,7 @@
 
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
+import { queryBool } from '@sparx/api-core/query';
 import { inventoryService } from '@sparx/inventory';
 import { ok, paged } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
@@ -52,7 +53,7 @@ const DriftsQuery = z.object({
   run_id: z.string().uuid().optional(),
   variant_id: z.string().uuid().optional(),
   warehouse_id: z.string().uuid().optional(),
-  include_resolved: z.coerce.boolean().optional(),
+  include_resolved: queryBool.optional(),
   take: z.coerce.number().int().min(1).max(250).optional(),
   skip: z.coerce.number().int().min(0).optional(),
 });
@@ -93,7 +94,7 @@ const BuffersQuery = z.object({
 });
 
 const FreshnessQuery = z.object({
-  stale_only: z.coerce.boolean().optional(),
+  stale_only: queryBool.optional(),
 });
 
 // eslint-disable-next-line @typescript-eslint/require-await -- FastifyPluginAsync signature

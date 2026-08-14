@@ -383,5 +383,12 @@
       ],
       "policyHandle": "drop-in"
     }
+  ],
+  "locations": [
+    {
+      "handle": "premises",
+      "name": "Prana",
+      "timezone": "UTC"
+    }
   ]
 }

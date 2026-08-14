@@ -135,3 +135,85 @@ export async function setCommissionStatus(
 export async function deleteCommission(tenantId: string, id: string): Promise<void> {
   await withTenant({ tenantId }, (tx) => tx.staffCommission.delete({ where: { id } }));
 }
+
+/* ── Who sold it ───────────────────────────────────────────────────────────── */
+
+/**
+ * Credit a sale to a person.
+ *
+ * An order records no salesperson anywhere in the platform, so without this
+ * there is no answer to "whose sale was this" and an order can never earn
+ * anybody a commission. A deal has `assignedRepId` and needs no row here unless
+ * somebody OTHER than the pipeline owner should be paid — an attribution always
+ * wins over the rep.
+ *
+ * Upserted on `(tenant, sourceType, sourceId)`: re-crediting a sale MOVES it,
+ * rather than leaving two people each owed the full commission.
+ */
+export async function attributeSale(
+  tenantId: string,
+  input: {
+    staffMemberId: string;
+    sourceType: CommissionSource;
+    sourceId: string;
+    propertyId?: string | null;
+    note?: string | null;
+  },
+  tx?: TxClient
+) {
+  const run = async (client: TxClient) => {
+    const member = await client.staffMember.findFirst({ where: { id: input.staffMemberId } });
+    if (!member) throw new StaffMemberNotFoundError(input.staffMemberId);
+
+    const data = {
+      staffMemberId: input.staffMemberId,
+      propertyId: input.propertyId ?? null,
+      note: input.note ?? null,
+    };
+    return client.staffSaleAttribution.upsert({
+      where: {
+        tenantId_sourceType_sourceId: {
+          tenantId,
+          sourceType: input.sourceType,
+          sourceId: input.sourceId,
+        },
+      },
+      update: data,
+      create: { tenantId, sourceType: input.sourceType, sourceId: input.sourceId, ...data },
+    });
+  };
+  return tx ? run(tx) : withTenant({ tenantId }, run);
+}
+
+/** Who is currently credited for a sale, if anyone. */
+export async function saleAttribution(
+  tenantId: string,
+  sourceType: CommissionSource,
+  sourceId: string
+) {
+  return withTenant({ tenantId }, (tx) =>
+    tx.staffSaleAttribution.findFirst({
+      where: { sourceType, sourceId },
+      include: { staffMember: { select: { id: true, firstName: true, lastName: true } } },
+    })
+  );
+}
+
+/**
+ * Remove the credit for a sale.
+ *
+ * Deliberately does NOT delete the commission it produced. An earned commission
+ * is a record of what somebody was told they were owed, and silently erasing it
+ * because the attribution changed is how a paid row disappears from a payroll
+ * reconciliation. Void it explicitly instead — `setCommissionStatus`.
+ */
+export async function clearSaleAttribution(
+  tenantId: string,
+  sourceType: CommissionSource,
+  sourceId: string
+): Promise<number> {
+  const result = await withTenant({ tenantId }, (tx) =>
+    tx.staffSaleAttribution.deleteMany({ where: { sourceType, sourceId } })
+  );
+  return result.count;
+}

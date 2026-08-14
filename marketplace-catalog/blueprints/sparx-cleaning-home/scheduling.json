@@ -271,5 +271,12 @@
       ],
       "policyHandle": "cleaning-standard"
     }
+  ],
+  "locations": [
+    {
+      "handle": "premises",
+      "name": "Tidy Nest",
+      "timezone": "UTC"
+    }
   ]
 }

@@ -26,6 +26,32 @@ The rewritten primitives map the sparx four-axis props onto silica classes rathe
 - `_recipes/variants.ts` is now pure vocabulary — `COLOR_KEYS`, `MODULE_COLOR_KEYS`, `TREATMENT_KEYS`, the `ColorKey` type, and `pluginColor()` (a slot name → its silicaui plugin color name, i.e. `commerce` → `module-commerce`). The old `colorClass` / `treatmentVariants` / `chipTreatmentVariants` / `colorVars` are deleted.
 - **`indeterminate` is a DOM property with no HTML attribute**, so a tri-state checkbox needs a callback ref (workbench's inventory reorder list is the live example). silicaui styles `:checked` but not `:indeterminate` (still true at 0.44; a fix is coming upstream), so such a checkbox paints as UNCHECKED. One rule closes it, in **`@sparx/brand/silica-gaps.css`** — read that file's header before adding anything to it. It lives in `@sparx/brand`, not here, because **workbench imports no `@sparx/ui` CSS at all** and workbench is where it bites; a rule added to `tokens.css` would silently miss the only app that needs it.
 
+### The one patched dependency
+
+`@base-ui-components/react@1.0.0-rc.0` is **patched**
+(`patches/@base-ui-components__react@1.0.0-rc.0.patch`, wired through `pnpm.patchedDependencies` in
+the root `package.json`). It is the only patched package in the repo, and it exists for one bug:
+`ToastRoot.recalculateHeight` wraps its state update in `ReactDOM.flushSync`, and two of its call
+sites are layout effects — its own, and `ToastContent`'s. React is already inside the commit phase
+there, refuses to flush, and logs _"flushSync was called from inside a lifecycle method"_ **once per
+toast, per render**. Three toasts, three errors; a busy surface buries its real errors under them.
+
+The patch adds a depth counter to `ToastRootContext.js` (the one module both files already import,
+so nothing gains a dependency edge), marks the two layout-effect paths, and skips the flush while
+the counter is set. **The observer paths keep it** — `ResizeObserver` and `MutationObserver` fire
+asynchronously after paint, where the flush is what stops the stack visibly jumping. Skipping it in
+a layout effect changes nothing observable: React already re-renders a layout-effect `setState`
+synchronously before paint, which is the whole thing the flush was buying. Both the `esm/` and CJS
+builds are patched; they ship as separate copies and Next resolves the ESM one.
+
+**A patch is invisible until it silently stops applying** — a version bump, a lockfile
+regeneration, a merge that drops the `patchedDependencies` block.
+`src/components/overlay/toast.test.tsx` is what notices: it asserts nothing logs `flushSync` when a
+toast mounts, and it was proved red against the unpatched module before being accepted green. If it
+fails, check the patch still applies (`pnpm why @base-ui-components/react` should show a
+`_patch_hash=` segment) before touching the test. Delete the patch, the test and this section
+together when the fix lands upstream — `rc.0` was the newest published version on 2026-08-13.
+
 ### The `cn()` tailwind-merge footgun
 
 `@sparx/ui`'s `cn` uses `extendTailwindMerge` to register `soft` / `bg-soft` / `text-soft` / `border-soft` as their own class groups. Default tailwind-merge classifies them as color utilities and would **strip the preceding `bg-<color>`** from `bg-module bg-soft`, silently dropping the hue. Never swap `cn` back to a bare `twMerge`.

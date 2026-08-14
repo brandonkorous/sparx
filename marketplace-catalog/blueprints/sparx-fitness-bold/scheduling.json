@@ -369,5 +369,12 @@
       ],
       "policyHandle": "pt-hold"
     }
+  ],
+  "locations": [
+    {
+      "handle": "premises",
+      "name": "Forge",
+      "timezone": "UTC"
+    }
   ]
 }

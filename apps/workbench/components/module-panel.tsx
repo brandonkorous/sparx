@@ -40,6 +40,7 @@ import { resolveTitle, type OpenTarget, type SurfaceDefinition } from '../lib/su
 import { useWorkbench } from '../lib/workbench/context';
 import { isTourableModule } from '../lib/tour/module-tours';
 import { launchModuleTour } from '../lib/tour/module-tour-offers';
+import { productName } from '../lib/product';
 
 interface ModulePanelProps {
   module: WorkbenchModule;
@@ -269,7 +270,7 @@ export function ModulePanel({
             <Text className="px-3 py-6 text-center text-sm">
               {filter
                 ? 'Nothing here matches that.'
-                : 'Nothing here yet. This part of sparx has no screens available to you.'}
+                : `Nothing here yet. This part of ${productName()} has no screens available to you.`}
             </Text>
           ) : (
             sections.map((section) => (

@@ -242,5 +242,12 @@
       ],
       "policyHandle": "catering-standard"
     }
+  ],
+  "locations": [
+    {
+      "handle": "premises",
+      "name": "Saffron & Sage Catering",
+      "timezone": "UTC"
+    }
   ]
 }

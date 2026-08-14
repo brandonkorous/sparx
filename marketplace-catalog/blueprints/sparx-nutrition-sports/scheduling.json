@@ -233,5 +233,12 @@
       ],
       "policyHandle": "consult-standard"
     }
+  ],
+  "locations": [
+    {
+      "handle": "premises",
+      "name": "Fuel Performance Nutrition",
+      "timezone": "UTC"
+    }
   ]
 }

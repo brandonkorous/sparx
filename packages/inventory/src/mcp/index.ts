@@ -13,6 +13,9 @@ import { assemblyReadTools, assemblyWriteTools } from './assembly-tools';
 import { planningReadTools, planningWriteTools } from './planning-tools';
 import { managementWriteTools } from './write-management-tools';
 import { onboardingReadTools, onboardingWriteTools } from './onboarding-tools';
+import { supplierPerformanceReadTools } from './supplier-performance-tools';
+import { commitmentReadTools } from './commitment-tools';
+import { reportReadTools } from './report-tools';
 
 export * from './tools';
 export { managementWriteTools } from './write-management-tools';
@@ -24,6 +27,9 @@ export { costingReadTools, costingWriteTools } from './costing-tools';
 export { assemblyReadTools, assemblyWriteTools } from './assembly-tools';
 export { planningReadTools, planningWriteTools } from './planning-tools';
 export { onboardingReadTools, onboardingWriteTools } from './onboarding-tools';
+export { supplierPerformanceReadTools } from './supplier-performance-tools';
+export { commitmentReadTools } from './commitment-tools';
+export { reportReadTools } from './report-tools';
 
 /** The full Inventory tool set the MCP server publishes. */
 export const inventoryMcpTools = [
@@ -74,4 +80,22 @@ export const inventoryMcpTools = [
   // form and every export at once — both stay where somebody can see them.
   ...onboardingReadTools,
   ...onboardingWriteTools,
+  // "Who is late, what is on the truck, and what am I still owed a credit for"
+  // (docs/146 Phase 8). Entirely read: every write in this area is a money
+  // decision pointed at another company — approving spend, opening a claim,
+  // agreeing a price — and an agent should be able to tell you your worst
+  // supplier is late on a third of its orders without being able to place the
+  // next order with them.
+  ...supplierPerformanceReadTools,
+  // "What have I promised, whose stock is this, and what is about to go off"
+  // (docs/146 Phase 9). Also read-only: cancelling a backorder breaks a promise
+  // to a named customer, re-flagging ownership moves stock off the balance sheet
+  // without a unit moving, and a markdown or write-off destroys value on the
+  // strength of a date.
+  ...commitmentReadTools,
+  // "Run me the numbers, and tell me why the accounts disagree" (docs/146
+  // Phase 10). CREATING a schedule is deliberately absent — it commits a
+  // recurring send to somebody's inbox, which is outbound and permanent in a way
+  // that running a report once is not.
+  ...reportReadTools,
 ];

@@ -1,0 +1,17 @@
+{
+  "name": "@piggles/config",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Piggles product adapters — the app registry, the lexicon, and product identity.",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "dependencies": {
+    "@piggles/brand": "workspace:*",
+    "lucide-react": "^0.577.0"
+  },
+  "files": [
+    "src"
+  ]
+}

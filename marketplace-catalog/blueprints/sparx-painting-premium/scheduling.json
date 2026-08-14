@@ -239,5 +239,12 @@
       ],
       "policyHandle": "heritage-standard"
     }
+  ],
+  "locations": [
+    {
+      "handle": "premises",
+      "name": "Heritage Painters",
+      "timezone": "UTC"
+    }
   ]
 }

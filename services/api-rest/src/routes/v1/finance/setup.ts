@@ -14,6 +14,7 @@
 
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
+import { queryBool } from '@sparx/api-core/query';
 import { ok } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
 import {
@@ -39,12 +40,12 @@ import { requireFinanceModule, toFinanceContext } from '../../../lib/finance-con
 
 const PathId = z.object({ id: z.string().uuid() });
 const ArchiveBody = z.object({ archived: z.boolean().default(true) });
-const CategoryQuery = z.object({ includeArchived: z.coerce.boolean().optional() });
+const CategoryQuery = z.object({ includeArchived: queryBool.optional() });
 const VendorQuery = z.object({
-  includeArchived: z.coerce.boolean().optional(),
+  includeArchived: queryBool.optional(),
   search: z.string().trim().max(200).optional(),
   /** Spend-to-date is an extra aggregate per row, so the picker can skip it. */
-  withSpend: z.coerce.boolean().optional(),
+  withSpend: queryBool.optional(),
 });
 
 // eslint-disable-next-line @typescript-eslint/require-await -- FastifyPluginAsync type demands async; route registration is sync.

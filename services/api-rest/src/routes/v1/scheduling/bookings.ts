@@ -19,6 +19,7 @@
 
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
+import { queryBool } from '@sparx/api-core/query';
 import { ok, paged } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
 import {
@@ -71,7 +72,7 @@ const CalendarQuery = z.object({
   to: z.string().datetime(),
   resourceId: z.string().uuid().optional(),
   serviceId: z.string().uuid().optional(),
-  includeReleased: z.coerce.boolean().optional(),
+  includeReleased: queryBool.optional(),
   // Absent ⇒ the active site (the `x-sparx-property-id` header); `all` ⇒ every
   // site this member may reach. A shared `?property=` vocabulary with every other
   // scoped list read (docs/49 §3).

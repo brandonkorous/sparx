@@ -246,5 +246,12 @@
       ],
       "policyHandle": "evenair-priority"
     }
+  ],
+  "locations": [
+    {
+      "handle": "premises",
+      "name": "Evenair Heating & Cooling",
+      "timezone": "UTC"
+    }
   ]
 }

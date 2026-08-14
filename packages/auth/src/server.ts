@@ -84,8 +84,17 @@ function createAuth() {
   const googleId = process.env.GOOGLE_CLIENT_ID;
   const googleSecret = process.env.GOOGLE_CLIENT_SECRET;
 
+  // The product name this auth instance presents as. It is NOT decoration:
+  // `appName` feeds the passkey prompt ("Save a passkey for …"), which a Piggles
+  // customer must not see saying "sparx".
+  //
+  // A PARAMETER, never a brand conditional — the deployment declares who it is
+  // (piggles/CLAUDE.md RULE #0). Defaults to sparx, which is what every existing
+  // deployment means.
+  const appName = process.env.BETTER_AUTH_APP_NAME ?? 'sparx';
+
   return betterAuth({
-    appName: 'sparx',
+    appName,
     baseURL: process.env.BETTER_AUTH_URL ?? 'http://localhost:3001',
     secret: process.env.BETTER_AUTH_SECRET,
     database: prismaAdapter(authPrisma, { provider: 'postgresql' }),
@@ -487,7 +496,9 @@ function createAuth() {
       // host). The private key never leaves the authenticator; the passkeys
       // table stores only the PUBLIC key + credential id (nothing secret).
       passkey({
-        rpName: 'sparx',
+        // Shown verbatim in the OS/browser passkey dialog, so it follows the
+        // deployment's brand rather than being hardcoded.
+        rpName: appName,
         ...(process.env.PASSKEY_RP_ID ? { rpID: process.env.PASSKEY_RP_ID } : {}),
       }),
       // Authenticator-app two-step verification (docs/16 §2.4). The second

@@ -42,6 +42,7 @@
 
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
+import { queryBool } from '@sparx/api-core/query';
 import { inventoryService } from '@sparx/inventory';
 import { ok, paged } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
@@ -53,7 +54,7 @@ const VariantPath = z.object({ variantId: z.string().uuid() });
 const PreorderQuery = z.object({
   variant_id: z.string().uuid().optional(),
   status: z.enum(['scheduled', 'open', 'closed', 'cancelled']).optional(),
-  live_only: z.coerce.boolean().optional(),
+  live_only: queryBool.optional(),
   take: z.coerce.number().int().min(1).max(200).optional(),
   skip: z.coerce.number().int().min(0).optional(),
 });
@@ -78,7 +79,7 @@ const InvoiceBody = z.object({ supplierBillId: z.string().uuid().nullable().opti
 const ExpiringQuery = z.object({
   within_days: z.coerce.number().int().min(1).max(730).optional(),
   warehouse_id: z.string().uuid().optional(),
-  include_undated: z.coerce.boolean().optional(),
+  include_undated: queryBool.optional(),
 });
 
 // eslint-disable-next-line @typescript-eslint/require-await -- FastifyPluginAsync signature

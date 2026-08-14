@@ -13,6 +13,7 @@
 
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
+import { queryBool } from '@sparx/api-core/query';
 import { documentWorkflowService } from '@sparx/crm';
 import { ok, paged } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
@@ -25,7 +26,7 @@ const ListQuery = z.object({
   // `state` supersedes `include_archived`, which cannot express "archived only".
   // The old flag stays for existing callers.
   state: z.enum(['active', 'archived', 'all']).optional(),
-  include_archived: z.coerce.boolean().optional(),
+  include_archived: queryBool.optional(),
   take: z.coerce.number().int().min(1).max(250).optional(),
   skip: z.coerce.number().int().min(0).optional(),
   // Snake_case, matching every other list endpoint's sort parameter. Omitting

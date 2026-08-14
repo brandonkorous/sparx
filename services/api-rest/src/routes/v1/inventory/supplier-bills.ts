@@ -21,6 +21,7 @@
 
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
+import { queryBool } from '@sparx/api-core/query';
 import { inventoryService } from '@sparx/inventory';
 import { ok } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
@@ -34,7 +35,7 @@ const ListQuery = z.object({
   status: z
     .enum(['draft', 'awaiting_approval', 'approved', 'disputed', 'paid', 'cancelled'])
     .optional(),
-  overdue_only: z.coerce.boolean().optional(),
+  overdue_only: queryBool.optional(),
   take: z.coerce.number().int().min(1).max(250).optional(),
   skip: z.coerce.number().int().min(0).optional(),
 });

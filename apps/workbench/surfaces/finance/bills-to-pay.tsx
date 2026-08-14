@@ -36,7 +36,7 @@ import { RefreshButton } from '../../components/refresh-button';
 import { afterPaneChange } from '../../lib/defer';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { spendErrorMessage, useExpenses, useSetExpensePaid, type Expense } from './spend-data';
-import { formatCents, formatDate, kindColor } from './format';
+import { daysPastDue, formatCents, formatDay, kindColor } from './format';
 
 /** The aging bands, worst first. Mirrors the receivables buckets exactly. */
 type BucketKey = 'overdue_90' | 'overdue_60' | 'overdue_30' | 'overdue_1' | 'due_soon' | 'no_date';
@@ -55,13 +55,6 @@ const FILTERS = [
   { value: 'overdue', label: 'Late' },
   { value: 'due_soon', label: 'Coming up' },
 ] as const;
-
-/** How many days past due, or null when nobody set a due date. Null is NOT zero:
- *  "no deadline" and "due today" are different facts. */
-function daysLate(bill: Expense, now: number): number | null {
-  if (!bill.dueAt) return null;
-  return Math.floor((now - new Date(bill.dueAt).getTime()) / 86_400_000);
-}
 
 function bucketFor(late: number | null): BucketKey {
   if (late === null) return 'no_date';
@@ -133,7 +126,7 @@ function BillRow({
         ) : null}
       </td>
       <td className="hidden text-sm whitespace-nowrap @2xl:table-cell">
-        {bill.dueAt ? formatDate(bill.dueAt) : '—'}
+        {bill.dueAt ? formatDay(bill.dueAt) : '—'}
       </td>
       <td className="text-right font-medium tabular-nums">
         {formatCents(bill.amountCents, bill.currency)}
@@ -171,12 +164,16 @@ export function BillsToPaySurface({ ctx }: { ctx: SurfaceContext }) {
     limit: 200,
   });
 
-  const now = Date.now();
+  // Lateness is measured as of the FETCH, not the frame. One instant for the
+  // whole list, so two rows can never land on different days, and a stable one,
+  // so the memo below is not invalidated every render the way a bare
+  // `Date.now()` in the render body was. Zero until the first fetch lands.
+  const now = useMemo(() => new Date(dataUpdatedAt || Date.now()), [dataUpdatedAt]);
 
   const bills = useMemo(() => {
     const items = data?.items ?? [];
     return items
-      .map((bill) => ({ bill, late: daysLate(bill, now) }))
+      .map((bill) => ({ bill, late: daysPastDue(bill.dueAt, now) }))
       .sort((a, b) => {
         // Most overdue first; anything with no deadline sinks below everything
         // that has one, because it is the only group with no clock running.

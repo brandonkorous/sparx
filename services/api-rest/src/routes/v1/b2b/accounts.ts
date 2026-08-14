@@ -17,10 +17,20 @@ import { z } from 'zod';
 import { accountService } from '@sparx/b2b';
 import { ok, paged } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
+import { queryBool } from '@sparx/api-core/query';
 import { requireB2bModule, toB2bContext } from '../../../lib/b2b-context.js';
 
 const PathId = z.object({ id: z.string().uuid() });
 const PathIdOid = z.object({ id: z.string().uuid(), oid: z.string().uuid() });
+
+// `overdue` re-declared for the query string. The service schema spells it
+// `z.coerce.boolean()`, which is `Boolean(value)` — so `?overdue=false` arrives
+// as TRUE and returns the exact opposite list. Overridden here rather than in
+// @sparx/b2b so the domain package keeps its own types honest and gains no
+// dependency on the HTTP layer.
+const ListAccounts = accountService.AccountListQuery.extend({
+  overdue: queryBool.optional(),
+});
 
 const b2bAccountRoutes: FastifyPluginAsync = (app) => {
   // ─── List ─────────────────────────────────────────────────────────────────
@@ -31,7 +41,7 @@ const b2bAccountRoutes: FastifyPluginAsync = (app) => {
     const ctx = toB2bContext(request);
     const { items, total, take } = await accountService.listAccounts(
       ctx,
-      accountService.AccountListQuery.parse(request.query)
+      ListAccounts.parse(request.query)
     );
     return paged(items, { total, per_page: take });
   });

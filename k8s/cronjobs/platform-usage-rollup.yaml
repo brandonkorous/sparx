@@ -1,0 +1,81 @@
+# Snapshots what every tenant is consuming into rollup_tenant_daily_usage:
+# storage, contacts, seats, sites, locations, and the day's email sends.
+#
+# This is the evidence a usage-based price gets set from. Piggles charges for
+# scale rather than access, and usage history CANNOT BE BACKFILLED — nobody can
+# reconstruct what a tenant was storing last March. A night this job does not run
+# is a night that is gone, which is why it is scheduled early, retried, and
+# reports partial results rather than failing silently.
+#
+# Runs at 05:00 UTC — BEFORE the reporting rollups (commerce 06:00, invoicing
+# 06:30, dropship 07:00, automations 08:00). Those recompute yesterday from data
+# that is already closed and can catch up whenever they like; this one takes a
+# point-in-time reading of storage and seat counts, so the earlier in the quiet
+# window it lands, the closer it is to a clean day boundary.
+#
+# Forbid concurrency: it walks every tenant sequentially to keep database load
+# predictable, so a slow run must never have a second one starting underneath it.
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: platform-usage-rollup
+  namespace: sparx-prod
+  labels:
+    app: platform-cron
+    job: usage-rollup
+spec:
+  schedule: '0 5 * * *'
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 3
+  startingDeadlineSeconds: 300
+  jobTemplate:
+    spec:
+      # Two retries rather than none: a failed night cannot be recreated later,
+      # so a transient blip is worth another attempt inside the same window.
+      backoffLimit: 2
+      ttlSecondsAfterFinished: 3600
+      template:
+        metadata:
+          labels:
+            app: platform-cron
+            job: usage-rollup
+        spec:
+          serviceAccountName: sparx-app
+          restartPolicy: OnFailure
+          containers:
+            - name: curl
+              image: curlimages/curl:8.10.1
+              command: ['sh', '-c']
+              args:
+                # Longer than the reporting rollups' 300s: this walks EVERY
+                # tenant and takes six measurements each, where they only touch
+                # tenants owning the relevant module.
+                - >
+                  curl --fail-with-body --silent --show-error
+                  --max-time 900
+                  -X POST
+                  -H "X-Sparx-Internal-Cron-Token: $SPARX_INTERNAL_CRON_TOKEN"
+                  http://api-rest.sparx-prod.svc.cluster.local:3000/internal/platform/usage-rollup
+              env:
+                - name: SPARX_INTERNAL_CRON_TOKEN
+                  valueFrom:
+                    secretKeyRef:
+                      name: sparx-app-secrets
+                      key: SPARX_INTERNAL_CRON_TOKEN
+              resources:
+                requests:
+                  cpu: '25m'
+                  memory: '16Mi'
+                limits:
+                  cpu: '100m'
+                  memory: '32Mi'
+              securityContext:
+                runAsNonRoot: true
+                runAsUser: 1000
+                allowPrivilegeEscalation: false
+                capabilities:
+                  drop: ['ALL']
+                seccompProfile:
+                  type: RuntimeDefault

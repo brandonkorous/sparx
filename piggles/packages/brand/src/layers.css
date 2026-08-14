@@ -1,0 +1,46 @@
+/* Cascade-layer ORDER — must be the FIRST stylesheet a Piggles app loads.
+ *
+ * Layer precedence is set by the order layer names are FIRST seen. silicaui emits
+ * ALL of its output — tokens AND component rules — through Tailwind's `addBase`,
+ * so it lands in `@layer base`.
+ *
+ * Piggles' theme blocks (./theme.css) are UNLAYERED, so their `[data-theme]`
+ * tokens outrank silicaui's base-layer `light` / `dark` defaults. That matters
+ * MORE for Piggles than it does for sparx: Piggles claims the bare names `light`
+ * and `dark`, which silicaui also ships built-in, so the only thing making the
+ * Piggles values win is that they sit outside the layer system. Do not wrap
+ * theme.css in a `@layer`.
+ *
+ * Lives in its own plain-CSS file (NOT globals.css) because globals.css is the
+ * Tailwind v4 entry, and Tailwind rewrites a top-level `@layer` statement there to
+ * its own canonical order, dropping any custom one. A standalone file imported
+ * first survives. Import it before `tailwindcss` in the app entry:
+ *
+ *   @import '@piggles/brand/layers.css';
+ *   @import 'tailwindcss';
+ *   @import '@piggles/brand/theme.css';
+ *   @plugin '@wizeworks/silicaui' {
+ *     colors:
+ *       primary, secondary, accent, neutral, info, success, warning, error, danger, module,
+ *       group-home, group-web, group-sell, group-people, group-money, group-run;
+ *   }
+ *
+ * That `colors:` list REPLACES silicaui's default set, so every built-in you still
+ * want has to be re-listed — `neutral` included. Three things beyond the defaults:
+ *
+ *   • `danger` — the shared platform's `statusTone()` returns it, so omitting it
+ *     renders `.badge-danger` colorless on every shared surface.
+ *   • `module` — the ACTIVE-app bridge. `data-app` / `data-group` / `data-module`
+ *     point `--color-module` at the right hue, and registering the name is what
+ *     makes `color="module"` resolve through silica's normal colour machinery.
+ *     Without it, every app-tinted control renders unstyled — not fallback-hued,
+ *     unstyled.
+ *   • `group-*` — so a nav rail or launcher can reach a group hue directly
+ *     (`bg-group-sell`, `text-group-money`) rather than only through the active
+ *     bridge. Registering a name is what generates its utility + component
+ *     classes; a `--color-*` custom property alone generates nothing.
+ *
+ * The per-app `--color-app-*` tokens are deliberately NOT registered: they alias
+ * their group and are consumed through the bridge, so registering fifteen more
+ * names would inflate the generated CSS to no benefit. */
+@layer theme, base, components, utilities;

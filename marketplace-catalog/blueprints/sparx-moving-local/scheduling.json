@@ -244,5 +244,12 @@
       ],
       "policyHandle": "move-deposit"
     }
+  ],
+  "locations": [
+    {
+      "handle": "premises",
+      "name": "Sure Hands Moving",
+      "timezone": "UTC"
+    }
   ]
 }

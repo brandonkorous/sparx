@@ -249,5 +249,12 @@
       ],
       "policyHandle": "standard-visit"
     }
+  ],
+  "locations": [
+    {
+      "handle": "premises",
+      "name": "Ironclad Roofing & Exteriors",
+      "timezone": "UTC"
+    }
   ]
 }

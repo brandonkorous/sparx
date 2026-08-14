@@ -70,6 +70,35 @@ model Tenant {
   acquisitionLastTouch  Json?     @map("acquisition_last_touch")
   acquiredAt            DateTime? @map("acquired_at") @db.Timestamptz
 
+  // ── Which WizeWorks product this account signed up under ────────────────────
+  // sparx and Piggles are two BRANDS on one platform, one database and one tenant
+  // pool (piggles/CLAUDE.md). The brand is recorded once at signup and never
+  // changes — a business does not migrate between them.
+  //
+  // It lives HERE, on the non-RLS dispatch row, because the readers that need it
+  // most have no tenant context to resolve it from: the `email.send` worker
+  // consuming a Pub/Sub event, an edge OG route, the Stripe webhook. Hostname
+  // resolution covers the request path; this covers everything asynchronous.
+  //
+  // NOT named `brand` — that is already this model's relation to `TenantBrand`,
+  // the tenant's OWN visual identity, which is a different thing entirely. And
+  // not `product`, which would sit two hundred lines above `products Product[]`
+  // and read as a commerce product.
+  //
+  // Values: `sparx` | `piggles`. Deliberately a VarChar rather than an enum —
+  // adding a brand should not require a migration, and the set is owned by
+  // product rather than by the schema.
+  platformBrand String @default("sparx") @map("platform_brand") @db.VarChar(20)
+
+  // Internal WizeWorks accounts — staff, demo, sales, seed, support. Never
+  // metered, never warned, never capacity-blocked
+  // (piggles/docs/initial/docs/commercial/BILLING_RULES.md).
+  //
+  // An EXPLICIT flag on purpose. Inferring "internal" from an email domain, a
+  // plan value or a name pattern is how a real customer eventually gets free
+  // capacity by accident. Never settable from a tenant-facing surface.
+  isSystem Boolean @default(false) @map("is_system")
+
   // Platform core — brand identity (tenant-level source of truth, docs/30 §6)
   brand    TenantBrand?
   // The legal entity's own details — registered address, tax id, company
@@ -326,7 +355,7 @@ model Tenant {
   // Onboarding — beating the spreadsheet (docs/146 Phase 11): the guided setup
   // and its clock, the saved column mappings that make a re-import one click,
   // and the tenant's own columns on stock records
-  inventorySetupProgress InventorySetupProgress?
+  inventorySetupProgress  InventorySetupProgress?
   inventoryImportProfiles InventoryImportProfile[]
   inventoryCustomFields   InventoryCustomField[]
 
@@ -554,6 +583,10 @@ model Tenant {
   rollupDropshipDailyOrders     RollupDropshipDailyOrders[]
   rollupAutomationDailyRuns     RollupAutomationDailyRuns[]
   rollupInventoryDailyValuation RollupInventoryDailyValuation[]
+  // Platform capacity usage — what this tenant consumes, per day. The evidence a
+  // usage-based price gets set from; see the model for why the columns are not
+  // all the same kind of number.
+  rollupTenantDailyUsage        RollupTenantDailyUsage[]
 
   // First-party site analytics (docs/97 §5) — raw capture + daily rollup
   siteAnalyticsEvents SiteAnalyticsEvent[]
@@ -610,16 +643,20 @@ model Tenant {
   // rates, the time they actually worked, the roster, and the paper. Deliberately
   // NOT payroll: sparx records hours and rates and exports them; it never withholds,
   // never files, and never pays anyone.
-  staffMembers         StaffMember[]
-  staffMemberSites     StaffMemberSite[]
-  staffPayRates        StaffPayRate[]
-  staffTimeEntries     StaffTimeEntry[]
-  staffShifts          StaffShift[]
-  staffTimeOffRequests StaffTimeOffRequest[]
-  staffCertifications  StaffCertification[]
-  staffDocuments       StaffDocument[]
-  staffCommissions     StaffCommission[]
+  staffMembers          StaffMember[]
+  staffMemberSites      StaffMemberSite[]
+  staffPayRates         StaffPayRate[]
+  staffTimeEntries      StaffTimeEntry[]
+  staffShifts           StaffShift[]
+  staffTimeOffRequests  StaffTimeOffRequest[]
+  staffCertifications   StaffCertification[]
+  staffDocuments        StaffDocument[]
+  staffCommissions      StaffCommission[]
+  staffSaleAttributions StaffSaleAttribution[]
 
+  // The staff console lists and segments tenants by brand from the first day two
+  // brands exist, and every cross-brand metric groups by it.
+  @@index([platformBrand])
   @@map("tenants")
 }
 

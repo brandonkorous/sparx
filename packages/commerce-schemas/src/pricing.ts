@@ -33,6 +33,11 @@ export const CreatePriceListInput = z.object({
   validFrom: z.string().datetime().nullable().optional(),
   validTo: z.string().datetime().nullable().optional(),
   status: PriceListStatus.default('draft'),
+  // Model B per-site scoping (docs/131 §4): the sites this list prices on. EMPTY =
+  // every site. `pricingService.resolve` has always filtered on the junction — this
+  // is the write half, which never existed, so every list priced every site and a
+  // sibling business's sale set the price a customer actually paid.
+  propertyIds: z.array(Uuid).max(50).default([]),
 });
 export type CreatePriceListInput = z.infer<typeof CreatePriceListInput>;
 
@@ -44,6 +49,7 @@ export type CreatePriceListInput = z.infer<typeof CreatePriceListInput>;
 export const UpdatePriceListInput = CreatePriceListInput.partial().extend({
   priority: z.number().int().nonnegative().optional(),
   status: PriceListStatus.optional(),
+  propertyIds: z.array(Uuid).max(50).optional(),
 });
 export type UpdatePriceListInput = z.infer<typeof UpdatePriceListInput>;
 

@@ -1,0 +1,13 @@
+{
+  "name": "Piggles Implementation Pack",
+  "version": "1.0.0",
+  "generated": "2026-08-13",
+  "tagline": "Business software for people who have a business to run.",
+  "primaryDomains": ["meetpiggles.com", "getpiggles.com", "mypiggles.com"],
+  "pricingTargetUsdMonthly": 49,
+  "strategy": "Full-power MDI, human terminology, flat pricing with capacity limits.",
+  "uiFramework": "SilicaUI",
+  "themeModel": "SilicaUI semantic colors with paired -content inks",
+  "themes": ["light", "dark"],
+  "themePreferenceModes": ["system", "light", "dark"]
+}

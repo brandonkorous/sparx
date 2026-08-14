@@ -334,5 +334,12 @@
       ],
       "policyHandle": "nail-standard"
     }
+  ],
+  "locations": [
+    {
+      "handle": "premises",
+      "name": "Lacquer",
+      "timezone": "UTC"
+    }
   ]
 }

@@ -52,6 +52,8 @@ export interface PriceListRow {
   validTo: string | null;
   status: string;
   entryCount: number;
+  /** Model B: the sites this list prices on. EMPTY = every site. */
+  propertyIds: string[];
   updatedAt: string;
 }
 
@@ -86,7 +88,10 @@ export async function listPriceLists(
     const [rows, total] = await Promise.all([
       tx.priceList.findMany({
         where,
-        include: { _count: { select: { entries: true } } },
+        include: {
+          _count: { select: { entries: true } },
+          propertyLinks: { select: { propertyId: true } },
+        },
         orderBy: [{ priority: 'desc' }, { updatedAt: 'desc' }],
         take: Math.min(filter.take ?? 50, 250),
         skip: filter.skip ?? 0,
@@ -101,7 +106,10 @@ export async function getPriceList(ctx: ServiceContext, id: string): Promise<Pri
   const row = await withTenant(ctx, (tx) =>
     tx.priceList.findFirst({
       where: { id, deletedAt: null },
-      include: { _count: { select: { entries: true } } },
+      include: {
+        _count: { select: { entries: true } },
+        propertyLinks: { select: { propertyId: true } },
+      },
     })
   );
   if (!row) throw new CommerceNotFoundError('PriceList', id);
@@ -134,6 +142,15 @@ export async function createPriceList(
         status: input.status,
       },
     });
+
+    // Model B per-site scoping (docs/131 §4): no rows = prices on every site.
+    if (input.propertyIds.length > 0) {
+      await tx.priceListProperty.createMany({
+        data: input.propertyIds.map((propertyId) => ({ propertyId, priceListId: created.id })),
+        skipDuplicates: true,
+      });
+    }
+
     await writeAuditLog({
       tx,
       tenantId: ctx.tenantId,
@@ -189,6 +206,17 @@ export async function updatePriceList(
         ...(input.status !== undefined ? { status: input.status } : {}),
       },
     });
+
+    // Model B: the update sends the FULL replacement set — replace when present,
+    // leave untouched when omitted.
+    if (input.propertyIds !== undefined) {
+      await tx.priceListProperty.deleteMany({ where: { priceListId: id } });
+      if (input.propertyIds.length > 0) {
+        await tx.priceListProperty.createMany({
+          data: input.propertyIds.map((propertyId) => ({ propertyId, priceListId: id })),
+        });
+      }
+    }
 
     await writeAuditLog({
       tx,
@@ -918,7 +946,12 @@ async function ensureVariantExists(tx: TxClient, id: string): Promise<void> {
   if (!row) throw new CommerceNotFoundError('Variant', id);
 }
 
-function serializePriceList(row: PriceList & { _count: { entries: number } }): PriceListRow {
+function serializePriceList(
+  row: PriceList & {
+    _count: { entries: number };
+    propertyLinks?: { propertyId: string }[];
+  }
+): PriceListRow {
   return {
     id: row.id,
     name: row.name,
@@ -933,6 +966,7 @@ function serializePriceList(row: PriceList & { _count: { entries: number } }): P
     validTo: row.validTo?.toISOString() ?? null,
     status: row.status,
     entryCount: row._count.entries,
+    propertyIds: row.propertyLinks?.map((l) => l.propertyId) ?? [],
     updatedAt: row.updatedAt.toISOString(),
   };
 }

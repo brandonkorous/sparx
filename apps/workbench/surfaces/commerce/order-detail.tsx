@@ -36,7 +36,8 @@ import { useGeneratePickList, pickErrorMessage } from '../inventory/picking-data
 import { FormSection } from '../../components/form-section';
 import { ModuleScope } from '../../components/module-scope';
 import { deferTick } from '../../lib/defer';
-import { useSites } from '../../lib/api/shell-data';
+import { useSites, useModuleStates, useViewer } from '../../lib/api/shell-data';
+import { SoldBySection } from './sold-by-section';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import {
@@ -189,6 +190,15 @@ export function OrderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
   const cancel = useCancelOrder(id);
   const refund = useRefundOrder(id);
   const generateWalk = useGeneratePickList();
+
+  // "Who sold it" needs BOTH: the staff module on (otherwise there is no roster
+  // to credit) and pay access (every /v1/staff/sales/* route is admin-only —
+  // pay is the one place the viewer/editor ladder is deliberately wrong).
+  const viewer = useViewer();
+  const modules = useModuleStates();
+  const canSeeCommission =
+    (modules.data?.some((m) => m.slug === 'staff' && m.enabled) ?? false) &&
+    (viewer.data?.role === 'admin' || viewer.data?.role === 'owner');
 
   // Keyed on the NUMBER, not the order object. Depending on the object retitles
   // the tab on every refetch — including the one that follows a cancellation,
@@ -533,6 +543,12 @@ export function OrderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
               </div>
             </FormSection>
           </ModuleScope>
+
+          {/* Staff's functionality on a commerce screen, so it wears staff's
+              hue for the same reason the buyer block wears CRM's. Gated on the
+              module AND on pay access — every /v1/staff/sales/* route is
+              admin-only, so a viewer gets no section rather than a 403. */}
+          <SoldBySection type="order" sourceId={order.id} canSeePay={canSeeCommission} />
 
           <FormSection
             title="Where it goes"

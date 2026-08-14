@@ -238,5 +238,12 @@
       ],
       "policyHandle": "colour-deposit"
     }
+  ],
+  "locations": [
+    {
+      "handle": "premises",
+      "name": "Maison Élan",
+      "timezone": "UTC"
+    }
   ]
 }

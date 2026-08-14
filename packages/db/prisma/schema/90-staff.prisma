@@ -104,15 +104,16 @@ model StaffMember {
   updatedAt  DateTime  @updatedAt @map("updated_at") @db.Timestamptz
   archivedAt DateTime? @map("archived_at") @db.Timestamptz
 
-  tenant          Tenant                 @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  siteLinks       StaffMemberSite[]
-  payRates        StaffPayRate[]
-  timeEntries     StaffTimeEntry[]
-  shifts          StaffShift[]
-  timeOffRequests StaffTimeOffRequest[]
-  certifications  StaffCertification[]
-  documents       StaffDocument[]
-  commissions     StaffCommission[]
+  tenant           Tenant                 @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  siteLinks        StaffMemberSite[]
+  payRates         StaffPayRate[]
+  timeEntries      StaffTimeEntry[]
+  shifts           StaffShift[]
+  timeOffRequests  StaffTimeOffRequest[]
+  certifications   StaffCertification[]
+  documents        StaffDocument[]
+  commissions      StaffCommission[]
+  saleAttributions StaffSaleAttribution[]
 
   // One staff record per login, and per bookable resource. Without these, "add
   // person" run twice produces two Sarahs whose hours both derive into the ledger.
@@ -184,6 +185,21 @@ model StaffPayRate {
   // that ignores burden runs systematically 15–30% light, which is exactly the
   // "confidently wrong" failure this module exists to prevent.
   burdenPercent Decimal @default(0) @map("burden_percent") @db.Decimal(5, 2)
+
+  // The percentage of a sale earned under `basis = 'commission'`, and zero under
+  // every other basis (CHECK-constrained, the same way `amountCents` is pinned to
+  // zero under `none`).
+  //
+  // It exists because `amountCents` could not express it: that field is per-hour
+  // under `hourly` and per-YEAR under `salary`, so `commission` was a basis the
+  // rate model could name but not describe. The commission SERVICE shipped before
+  // this column did, which is why nothing calculated one — there was no rate to
+  // calculate from.
+  //
+  // Decimal(6,3), so 7.5% is `7.500` and a third of a percent is expressible.
+  // The arithmetic still goes through `commissionCents`, which converts to basis
+  // points and rounds once — never a float multiply against money.
+  commissionPercent Decimal @default(0) @map("commission_percent") @db.Decimal(6, 3)
 
   // The validity window. `effectiveTo` null = the rate in force today. The service
   // closes the previous row when a new one opens; overlapping windows for one person
@@ -370,7 +386,7 @@ model StaffCertification {
   issuer          String? @db.VarChar(200)
   referenceNumber String? @map("reference_number") @db.VarChar(120)
 
-  issuedOn DateTime? @map("issued_on") @db.Date
+  issuedOn  DateTime? @map("issued_on") @db.Date
   // Null is a real answer — a qualification that does not expire. It must NOT render
   // as "expiring today" or sort to the top of the warning list.
   expiresOn DateTime? @map("expires_on") @db.Date
@@ -441,8 +457,8 @@ model StaffCommission {
   propertyId    String? @map("property_id") @db.Uuid
 
   // order | deal. CHECK-constrained, FK-less — commerce and crm are both optional.
-  sourceType String @map("source_type") @db.VarChar(20)
-  sourceId   String @map("source_id") @db.Uuid
+  sourceType  String  @map("source_type") @db.VarChar(20)
+  sourceId    String  @map("source_id") @db.Uuid
   // What it was called when it was earned, so the row still reads after a delete.
   sourceLabel String? @map("source_label") @db.VarChar(200)
 
@@ -456,7 +472,7 @@ model StaffCommission {
   earnedOn DateTime @map("earned_on") @db.Date
 
   // pending | approved | paid | void. CHECK-constrained.
-  status String   @default("pending") @db.VarChar(20)
+  status String    @default("pending") @db.VarChar(20)
   paidAt DateTime? @map("paid_at") @db.Timestamptz
 
   note String? @db.Text
@@ -474,4 +490,52 @@ model StaffCommission {
   @@index([tenantId, status, earnedOn])
   @@index([tenantId, staffMemberId, earnedOn])
   @@map("staff_commissions")
+}
+
+// WHO SOLD IT.
+//
+// Commission needs an answer to "whose sale was this", and the platform only had
+// half of one: a `Deal` carries `assignedRepId`, and an `Order` carries NOTHING —
+// no rep, no salesperson, no attribution of any kind. So orders could never earn
+// anybody a commission, whatever the rate said.
+//
+// This lives on the STAFF side rather than as a column on `orders`, for the same
+// reason as locked decision #2: StaffMember LINKS to the records that already
+// exist, it does not absorb them. A staff-side join means turning the module off
+// leaves commerce and CRM untouched, and it gives orders and deals one shape
+// instead of two code paths.
+//
+// It also serves as an OVERRIDE for deals: when a row exists here it wins over
+// `assignedRepId`, because the rep who owns a deal in the pipeline is not always
+// the person who should be paid for closing it.
+model StaffSaleAttribution {
+  id            String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId      String  @map("tenant_id") @db.Uuid
+  staffMemberId String  @map("staff_member_id") @db.Uuid
+  propertyId    String? @map("property_id") @db.Uuid
+
+  // order | deal. CHECK-constrained and FK-less — commerce and crm are both
+  // optional modules, exactly as on StaffCommission.
+  sourceType String @map("source_type") @db.VarChar(20)
+  sourceId   String @map("source_id") @db.Uuid
+
+  note String? @db.Text
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant      Tenant      @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  staffMember StaffMember @relation(fields: [staffMemberId], references: [id], onDelete: Cascade)
+  property    Property?   @relation(fields: [propertyId], references: [id], onDelete: SetNull)
+
+  // ONE seller per sale, deliberately. Split commissions between two people are a
+  // real arrangement and a real design — they need a share per row, a rule for
+  // what happens when the shares do not total 100%, and a UI that can express
+  // both. Modelling that as "several attribution rows" by accident, with no share
+  // column, would silently pay each of them the FULL commission.
+  @@unique([tenantId, sourceType, sourceId], map: "staff_sale_attributions_tenant_source_unique")
+  // `map:` because the migration names it — without it Prisma expects its own
+  // default (`..._tenant_id_staff_member_id_idx`) and reports permanent drift.
+  @@index([tenantId, staffMemberId], map: "staff_sale_attributions_tenant_member_idx")
+  @@map("staff_sale_attributions")
 }

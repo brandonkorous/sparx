@@ -89,6 +89,29 @@ export async function deriveLaborForPeriod(
     const name = [member.firstName, member.lastName].filter(Boolean).join(' ');
     const expenseIds: string[] = [];
 
+    // The last day actually WORKED, per site — the date the accrual carries.
+    //
+    // This used to be `input.periodEnd`, which post-dates the cost whenever the
+    // period is still running: approving hours on the 13th filed a cost dated
+    // the 31st. Every "so far" range then excluded it, so the timesheet said
+    // "your spending and profit figures now include this period's wages" and
+    // Spending showed $0.00 on the same screen. Work already done must not
+    // produce a cost dated in the future.
+    //
+    // Profit is unaffected: the last worked day is always inside the period, so
+    // the cost buckets into the same month either way, and for a closed period
+    // nothing about the figure moves.
+    //
+    // `?? primary` mirrors `fallbackPropertyId` above — an entry with no site of
+    // its own belongs to the person's main business, and must land in the same
+    // bucket here as it did in the derivation.
+    const lastWorked = new Map<string, Date>();
+    for (const entry of entries) {
+      const bucket = entry.propertyId ?? primary ?? 'none';
+      const current = lastWorked.get(bucket);
+      if (!current || entry.workedOn > current) lastWorked.set(bucket, entry.workedOn);
+    }
+
     for (const site of payable) {
       const expense = await upsertDerivedExpense(
         tenantId,
@@ -102,8 +125,10 @@ export async function deriveLaborForPeriod(
           currency: 'USD',
           taxCents: 0,
           // The period the cost BELONGS to, which is what profit buckets on —
-          // never when anyone was actually paid. Finance's two-date rule.
-          incurredAt: input.periodEnd,
+          // never when anyone was actually paid. Finance's two-date rule. Dated
+          // to the last day worked rather than the period's last day, so an
+          // open period's accrual is never in the future (see `lastWorked`).
+          incurredAt: lastWorked.get(site.propertyId ?? 'none') ?? input.periodEnd,
           allocations: site.allocations.map((a) => ({
             targetType: a.targetType,
             targetId: a.targetId,

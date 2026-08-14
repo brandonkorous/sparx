@@ -264,5 +264,12 @@
       ],
       "policyHandle": "service-contract"
     }
+  ],
+  "locations": [
+    {
+      "handle": "premises",
+      "name": "ProWash Exterior Cleaning",
+      "timezone": "UTC"
+    }
   ]
 }

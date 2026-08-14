@@ -269,5 +269,12 @@
       ],
       "policyHandle": "petalpost-standard"
     }
+  ],
+  "locations": [
+    {
+      "handle": "premises",
+      "name": "Petal & Post",
+      "timezone": "UTC"
+    }
   ]
 }

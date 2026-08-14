@@ -284,5 +284,12 @@
       ],
       "policyHandle": "class-standard"
     }
+  ],
+  "locations": [
+    {
+      "handle": "premises",
+      "name": "Good Dog Academy",
+      "timezone": "UTC"
+    }
   ]
 }

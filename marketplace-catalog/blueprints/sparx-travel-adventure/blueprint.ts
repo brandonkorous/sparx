@@ -11,7 +11,7 @@ import assets from './assets.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-travel-adventure',
-  version: '1.2.0',
+  version: '1.3.0',
   name: 'sparx — Travel (Adventure)',
   summary:
     'A bold, outdoorsy travel-planning site — a deep-pine palette with a sunset-orange accent and sturdy type, built for adventure and experiential trips. Installs a working booking flow: consults from a free discovery call to trekking, safari, dive and expedition-cruise planning, three adventure specialists you book by name with their own hours, and a planning-deposit policy. Ships as "Trailhead Travel", for small-group, off-the-beaten-path adventures.',

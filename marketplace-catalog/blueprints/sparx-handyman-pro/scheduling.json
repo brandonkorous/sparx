@@ -235,5 +235,12 @@
       ],
       "policyHandle": "handyman-standard"
     }
+  ],
+  "locations": [
+    {
+      "handle": "premises",
+      "name": "Ace & Able Handyman",
+      "timezone": "UTC"
+    }
   ]
 }

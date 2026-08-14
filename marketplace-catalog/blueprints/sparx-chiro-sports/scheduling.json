@@ -328,5 +328,12 @@
       ],
       "policyHandle": "no-show"
     }
+  ],
+  "locations": [
+    {
+      "handle": "premises",
+      "name": "Kinetic Spine & Sport",
+      "timezone": "UTC"
+    }
   ]
 }

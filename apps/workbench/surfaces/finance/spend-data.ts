@@ -141,16 +141,32 @@ export interface AccountingProvider {
   exportColumns: string[];
 }
 
+/**
+ * Mirrors `PublicAccountingConnection` in `@sparx/finance` — the server's
+ * allow-list projection, not the database row. The row carries the encrypted
+ * access and refresh tokens and never crosses the wire.
+ *
+ * `connected` is the field to branch on, NOT `status`. A row is written with
+ * `status: 'active'` the moment somebody presses Connect, which is before the
+ * provider has been anywhere near it — so `status` says "this row is in use"
+ * and only `connected` says "there is a grant behind it". Reading sign-in off
+ * `status` is how a screen tells someone they are connected to QuickBooks when
+ * they abandoned the consent page ten minutes ago.
+ */
 export interface AccountingConnection {
   id: string;
   provider: string;
   propertyId: string | null;
   status: string;
   displayName: string | null;
+  externalId: string | null;
   syncCadence: string;
   syncFromDate: string | null;
   lastSyncAt: string | null;
   lastSyncStatus: string | null;
+  lastError: unknown;
+  connected: boolean;
+  tokenExpiresAt: string | null;
 }
 
 export interface ImportPreviewRow {
@@ -541,6 +557,62 @@ export function useDeleteConnection() {
   const invalidate = useInvalidateSpend();
   return useMutation({
     mutationFn: (id: string) => api.delete(`/v1/finance/accounting/${encodeURIComponent(id)}`),
+    onSuccess: invalidate,
+  });
+}
+
+/* ── The OAuth round trip ───────────────────────────────────────────────────
+ *
+ * Three calls, in this order, and the order is forced by the server: the
+ * connection ROW must exist before the redirect, because its id rides inside the
+ * signed `state` and is where the callback puts the grant. A connect abandoned
+ * at the consent screen therefore leaves a visible, deletable row rather than
+ * nothing — the difference between "I started this and stopped" and a screen
+ * that forgot it happened.
+ *
+ *   useSaveConnection()        → create/find the row              (editor)
+ *   useStartAccountingConnect  → { url } to send the browser to   (admin)
+ *   useCompleteAccountingConnect → exchange the code, store grant (admin)
+ *
+ * All three are admin-gated server-side except the row write. That is deliberate:
+ * reading the screen is `viewer`, changing the books-closed date is `editor`, and
+ * attaching a company's accounts to this tenant is `admin`.
+ */
+
+/** Ask the server where to send the browser. `redirectUri` must match the one
+ *  registered with the vendor EXACTLY and is replayed at token exchange, so it
+ *  is sent by the app that owns the origin rather than guessed on the server. */
+export function useStartAccountingConnect() {
+  return useMutation({
+    mutationFn: ({ id, redirectUri }: { id: string; redirectUri: string }) =>
+      api.post<{ url: string }>(`/v1/finance/accounting/${encodeURIComponent(id)}/connect`, {
+        redirectUri,
+      }),
+  });
+}
+
+/** Hand back what the provider returned. `params` carries everything else on the
+ *  callback query — QuickBooks puts the company file id in `realmId` there and
+ *  nowhere else, and without it every later request 401s. */
+export function useCompleteAccountingConnect() {
+  const invalidate = useInvalidateSpend();
+  return useMutation({
+    mutationFn: (input: { code: string; state: string; params?: Record<string, string> }) =>
+      api.post<AccountingConnection>('/v1/finance/accounting/callback', input),
+    onSuccess: invalidate,
+  });
+}
+
+/** Forget the grant, keep the row, the mapping table and the history — all three
+ *  are work somebody did, and reconnecting should not ask them to redo it. */
+export function useDisconnectAccounting() {
+  const invalidate = useInvalidateSpend();
+  return useMutation({
+    mutationFn: (id: string) =>
+      api.post<{ disconnected: boolean }>(
+        `/v1/finance/accounting/${encodeURIComponent(id)}/disconnect`,
+        {}
+      ),
     onSuccess: invalidate,
   });
 }

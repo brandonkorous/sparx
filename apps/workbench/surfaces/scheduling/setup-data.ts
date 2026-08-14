@@ -333,6 +333,9 @@ export interface SchedulingResource {
   bookableOnline: boolean;
   isActive: boolean;
   settings: Record<string, unknown>;
+  /** The sites this person or place works for. EMPTY = all of them, which is both
+   *  the default and what every single-site business reads. */
+  propertyIds: string[];
   createdAt: string;
   updatedAt: string;
 }
@@ -383,6 +386,8 @@ export interface ResourceInput {
   skillTags?: string[];
   bookableOnline?: boolean;
   isActive?: boolean;
+  /** Full replacement set. Empty = every site; omitted on an update = leave it alone. */
+  propertyIds?: string[];
 }
 
 function useInvalidateResources() {
@@ -424,6 +429,142 @@ export function useDeleteResource(id: string) {
     },
   });
 }
+
+/* ══════════════════════════════════════════════════════════════════════════
+   LOCATIONS — the physical places served from
+   ══════════════════════════════════════════════════════════════════════════ */
+
+export interface LocationAddress {
+  line1?: string;
+  line2?: string;
+  city?: string;
+  region?: string;
+  postalCode?: string;
+  country?: string;
+}
+
+export interface BusinessLocation {
+  id: string;
+  name: string;
+  address: LocationAddress;
+  timezone: string;
+  lat: number | null;
+  lng: number | null;
+  isActive: boolean;
+  /** The sites served from here. EMPTY = all of them. */
+  propertyIds: string[];
+  /** What is filed here — so the UI can say what switching it off affects, and
+   *  explain a refused delete before the owner tries it. */
+  counts: { resources: number; services: number; bookings: number };
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface LocationInput {
+  name?: string;
+  address?: LocationAddress;
+  timezone?: string;
+  lat?: number | null;
+  lng?: number | null;
+  isActive?: boolean;
+  /** Full replacement set. Empty = every site; omitted on an update = untouched. */
+  propertyIds?: string[];
+}
+
+export const locationKeys = {
+  all: ['scheduling', 'locations'] as const,
+  list: (activeOnly: boolean) => [...locationKeys.all, 'list', activeOnly] as const,
+  one: (id: string) => [...locationKeys.all, 'one', id] as const,
+};
+
+export function useLocations(activeOnly = false) {
+  return useQuery({
+    queryKey: locationKeys.list(activeOnly),
+    // `api.list` normalizes the bare array the endpoint returns into `{items}`,
+    // the same shape every other list hook here reads.
+    queryFn: () =>
+      api.list<BusinessLocation>(
+        '/v1/scheduling/locations',
+        activeOnly ? { activeOnly: true } : {}
+      ),
+    placeholderData: (previous) => previous,
+  });
+}
+
+export function useLocation(id: string) {
+  return useQuery({
+    queryKey: locationKeys.one(id),
+    queryFn: () => api.get<BusinessLocation>(`/v1/scheduling/locations/${id}`),
+    enabled: id !== 'new',
+    retry: (failureCount, error) =>
+      error instanceof ApiError && error.status === 404 ? false : failureCount < 2,
+  });
+}
+
+function useInvalidateLocations() {
+  const queryClient = useQueryClient();
+  return (id?: string) => {
+    void queryClient.invalidateQueries({ queryKey: locationKeys.all });
+    if (id) void queryClient.invalidateQueries({ queryKey: locationKeys.one(id) });
+    // A resource or service names its location, so their lists go stale too.
+    void queryClient.invalidateQueries({ queryKey: resourceKeys.all });
+  };
+}
+
+export function useCreateLocation() {
+  const invalidate = useInvalidateLocations();
+  return useMutation({
+    mutationFn: (input: LocationInput) =>
+      api.post<BusinessLocation>('/v1/scheduling/locations', input),
+    onSuccess: (row) => {
+      invalidate(row.id);
+    },
+  });
+}
+
+export function useUpdateLocation(id: string) {
+  const invalidate = useInvalidateLocations();
+  return useMutation({
+    mutationFn: (input: LocationInput) =>
+      api.patch<BusinessLocation>(`/v1/scheduling/locations/${id}`, input),
+    onSuccess: () => {
+      invalidate(id);
+    },
+  });
+}
+
+export function useDeleteLocation(id: string) {
+  const invalidate = useInvalidateLocations();
+  return useMutation({
+    mutationFn: () => api.delete(`/v1/scheduling/locations/${id}`),
+    onSuccess: () => {
+      invalidate();
+    },
+  });
+}
+
+/** One line of address, in reading order, for a list row. */
+export function formatAddress(address: LocationAddress): string {
+  return [address.line1, address.line2, address.city, address.region, address.postalCode]
+    .filter((part) => part && part.trim() !== '')
+    .join(', ');
+}
+
+/** A short, familiar set of zones — the same list the resource form offers, so a
+ *  place and the people working it are described the same way. */
+export const TIMEZONE_OPTIONS = [
+  'UTC',
+  'America/New_York',
+  'America/Chicago',
+  'America/Denver',
+  'America/Los_Angeles',
+  'America/Toronto',
+  'Europe/London',
+  'Europe/Paris',
+  'Europe/Berlin',
+  'Australia/Sydney',
+  'Pacific/Auckland',
+] as const;
 
 export const RESOURCE_KINDS: { value: ResourceKind; label: string; hint: string }[] = [
   {

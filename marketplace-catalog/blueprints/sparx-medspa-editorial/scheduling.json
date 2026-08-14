@@ -349,5 +349,12 @@
       ],
       "policyHandle": "treatment-deposit"
     }
+  ],
+  "locations": [
+    {
+      "handle": "premises",
+      "name": "Aésthète",
+      "timezone": "UTC"
+    }
   ]
 }

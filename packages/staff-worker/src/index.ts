@@ -6,11 +6,21 @@
 // millicores of work (services/CLAUDE.md). `DURABLE` is the JetStream cursor key
 // and is permanent once shipped — changing it replays or skips the stream.
 //
-// It subscribes to ONE event on purpose. `staff.time.approved` is the trigger
-// docs/149 names, and approval is a deliberate act precisely so a mistyped shift
-// cannot move the month's profit before anyone has looked at it. The other
-// `staff.*` events are topic-only: their notification fan-out rides the
-// publish() tee, and the certification sweep is an api-rest tick.
+// `staff.time.approved` is the labour trigger docs/149 names, and approval is a
+// deliberate act precisely so a mistyped shift cannot move the month's profit
+// before anyone has looked at it.
+//
+// The three SALE events are the commission half. `order.paid` (not placed —
+// a commission on an unpaid order is a promise), `order.refunded` to recompute
+// it downward, and `crm.deal.won`, which api-rest publishes onto the platform
+// bus because `crm.deal.stage_changed` rides the CRM bus and never reaches an
+// in-process consumer.
+//
+// The remaining `staff.*` events are topic-only: their notification fan-out
+// rides the publish() tee, and the certification sweep is an api-rest tick.
+//
+// Adding subjects to a shipped durable is safe — `consumers.add` upserts, so the
+// cursor is not reset; only renaming DURABLE does that.
 
 import type { Logger } from 'pino';
 import { createBrokerHandler, type WorkerSubscription } from '@sparx/events';
@@ -18,7 +28,7 @@ import { createBrokerHandler, type WorkerSubscription } from '@sparx/events';
 import { handle, parseEvent } from './handler.js';
 
 export const DURABLE = 'staff-worker';
-export const EVENTS = ['staff.time.approved'];
+export const EVENTS = ['staff.time.approved', 'order.paid', 'order.refunded', 'crm.deal.won'];
 
 export function createSubscription(logger: Logger): WorkerSubscription {
   return {

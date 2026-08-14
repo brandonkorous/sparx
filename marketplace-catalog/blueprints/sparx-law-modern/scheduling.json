@@ -234,5 +234,12 @@
       ],
       "policyHandle": "consult-deposit"
     }
+  ],
+  "locations": [
+    {
+      "handle": "premises",
+      "name": "Meridian Law Group",
+      "timezone": "UTC"
+    }
   ]
 }

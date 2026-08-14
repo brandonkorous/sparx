@@ -239,5 +239,12 @@
       ],
       "policyHandle": "whiteglove-standard"
     }
+  ],
+  "locations": [
+    {
+      "handle": "premises",
+      "name": "Whiteglove Movers",
+      "timezone": "UTC"
+    }
   ]
 }

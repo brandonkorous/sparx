@@ -354,5 +354,12 @@
       ],
       "policyHandle": "align-standard"
     }
+  ],
+  "locations": [
+    {
+      "handle": "premises",
+      "name": "Align Chiropractic",
+      "timezone": "UTC"
+    }
   ]
 }

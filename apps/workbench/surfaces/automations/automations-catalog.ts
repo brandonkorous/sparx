@@ -18,7 +18,16 @@
 import type { ActionType, ConditionOperator } from '@sparx/automation-schemas';
 
 /** The feature modules an automation can touch — the keys used for the module
- *  tags on a rule row. Matches the workbench module hues. */
+ *  tags on a rule row. Matches the workbench module hues.
+ *
+ *  HAND-KEPT, and deliberately NOT the platform-wide `ModuleSlug` from
+ *  `@sparx/modules`: this lists only the modules that actually contribute a
+ *  trigger or an action, so the filter row above the catalog is not padded with
+ *  headings that match nothing. The cost is that a module which GAINS a trigger
+ *  has to be added here too — `staff` and `finance` both shipped events with no
+ *  entry, which made them unlistable in `TRIGGER_EVENTS` below. If you are
+ *  adding an event to this catalog and TypeScript rejects the module name, this
+ *  union is what you are missing, not the event. */
 export type ModuleSlug =
   | 'crm'
   | 'email'
@@ -27,8 +36,14 @@ export type ModuleSlug =
   | 'cms'
   | 'invoicing'
   | 'social'
+  | 'staff'
+  | 'finance'
+  | 'dropship'
   | 'platform';
 
+// Exhaustive by construction — `Record<ModuleSlug, string>` means adding to the
+// union above without a label here is a compile error rather than a slug
+// leaking onto the screen through `moduleLabel`'s fallback.
 const MODULE_LABEL: Record<ModuleSlug, string> = {
   crm: 'Customers',
   email: 'Email',
@@ -37,6 +52,11 @@ const MODULE_LABEL: Record<ModuleSlug, string> = {
   cms: 'Content',
   invoicing: 'Invoicing',
   social: 'Social posts',
+  // The sidebar's words, not the slug's: a person looks for "Your team", never
+  // for "staff".
+  staff: 'Your team',
+  finance: 'Finance',
+  dropship: 'Dropshipping',
   platform: 'Platform',
 };
 
@@ -204,6 +224,77 @@ export const TRIGGER_EVENTS: readonly TriggerEventDef[] = [
   // other includes cold inbound mail, which a nurture rule must not treat as
   // engagement.
   { eventType: 'email.replied', label: 'Somebody replies to an email you sent', module: 'email' },
+  // ── Your team (docs/149) ──
+  //
+  // The certification one is the reason this group exists. An expiring licence
+  // is the module's whole promise — you are told BEFORE it lapses — and the
+  // nightly sweep that publishes it (`/internal/staff/certification-reminders`)
+  // deliberately does not send mail itself, because who should hear about a
+  // forklift ticket differs per business: the person, their supervisor, or a
+  // compliance mailbox. That decision belongs to a rule the owner writes, which
+  // means the trigger has to be OFFERED here — an event nobody can pick from a
+  // list is an event that may as well not be published.
+  {
+    eventType: 'staff.certification.expiring',
+    label: 'Someone’s licence or certificate is running out',
+    module: 'staff',
+  },
+  { eventType: 'staff.member.created', label: 'Somebody joins the team', module: 'staff' },
+  { eventType: 'staff.timeoff.requested', label: 'Somebody asks for time off', module: 'staff' },
+  {
+    eventType: 'staff.timeoff.decided',
+    label: 'A time-off request is approved or declined',
+    module: 'staff',
+  },
+  { eventType: 'staff.time.approved', label: 'A timesheet is approved', module: 'staff' },
+  // ── Money going out (docs/148) ──
+  {
+    eventType: 'finance.expense.recorded',
+    label: 'A cost is recorded',
+    module: 'finance',
+  },
+  {
+    eventType: 'finance.accounting.sync.completed',
+    label: 'A hand-off to your accounting system finishes',
+    module: 'finance',
+  },
+  // ── Dropshipping ──
+  //
+  // On a dropship order the supplier's tracking is the ONLY signal that exists —
+  // nobody at the business ever touches the goods — so these two are the whole
+  // of "where is my order". Both were declared with no publisher until the
+  // tracking poll shipped; `getTrackingUpdate()` was implemented by four
+  // adapters and called by nothing.
+  {
+    eventType: 'dropship.order.shipped',
+    label: 'A supplier ships a dropship order',
+    module: 'dropship',
+  },
+  {
+    eventType: 'dropship.order.delivered',
+    label: 'A dropship order is delivered',
+    module: 'dropship',
+  },
+  // ── Social ──
+  //
+  // `revoked` is somebody UNLINKING an account; `expired` (published by the
+  // health sweep) is a grant that broke. A rule that emails "reconnect your
+  // account" must fire on the second and not the first.
+  {
+    eventType: 'social.connection.added',
+    label: 'A social account is connected',
+    module: 'social',
+  },
+  {
+    eventType: 'social.connection.revoked',
+    label: 'A social account is disconnected',
+    module: 'social',
+  },
+  {
+    eventType: 'social.connection.expired',
+    label: 'A social account needs reconnecting',
+    module: 'social',
+  },
 ];
 
 /** A scheduled trigger scans a kind of record on a timer; these are the kinds it

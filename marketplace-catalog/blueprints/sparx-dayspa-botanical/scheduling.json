@@ -458,5 +458,12 @@
       ],
       "policyHandle": "spa-standard"
     }
+  ],
+  "locations": [
+    {
+      "handle": "premises",
+      "name": "Verdure",
+      "timezone": "UTC"
+    }
   ]
 }

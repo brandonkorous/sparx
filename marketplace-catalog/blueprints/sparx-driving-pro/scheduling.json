@@ -353,5 +353,12 @@
       ],
       "policyHandle": "lesson-standard"
     }
+  ],
+  "locations": [
+    {
+      "handle": "premises",
+      "name": "Apex Driving Academy",
+      "timezone": "UTC"
+    }
   ]
 }

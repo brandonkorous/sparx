@@ -13,6 +13,7 @@
 
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
+import { queryBool } from '@sparx/api-core/query';
 import { ok, paged } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
 
@@ -33,9 +34,7 @@ const ListQuery = z.object({
   // A site id, or the literal `all` for the cross-site inbox (docs/131 §3.7).
   property: z.string().min(1).max(64).optional(),
   status: z.enum(['open', 'pending', 'resolved', 'spam']).optional(),
-  // z.coerce.boolean() treats the string "false" as true — accept an explicit
-  // enum and narrow to a real boolean below.
-  mine: z.enum(['true', 'false']).optional(),
+  mine: queryBool.optional(),
   assigned_to: z.string().uuid().optional(),
   q: z.string().max(255).optional(),
   take: z.coerce.number().int().min(1).max(250).optional(),
@@ -69,7 +68,7 @@ const conversationRoutes: FastifyPluginAsync = (app) => {
       propertyId,
       propertyIds,
       status: q.status,
-      mine: q.mine === 'true',
+      mine: q.mine ?? false,
       assignedToId: q.assigned_to,
       q: q.q,
       take: q.take,

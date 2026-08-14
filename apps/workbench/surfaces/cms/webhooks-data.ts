@@ -49,7 +49,35 @@ export type WebhookEventKey =
   | 'media.uploaded'
   | 'media.processed'
   | 'redirect.added'
-  | 'redirect.removed';
+  | 'redirect.removed'
+  // Inventory (docs/146 Phase 12.3). `inventory.levels.updated` is absent on
+  // purpose: it exists in the event registry and nothing publishes it, so a
+  // subscription to it would sit silent and read as a broken endpoint.
+  | 'inventory.adjusted'
+  | 'inventory.low'
+  | 'inventory.depleted'
+  | 'inventory.count.completed'
+  | 'inventory.reconciliation.drift'
+  | 'inventory.oversell.blocked'
+  | 'inventory.classification.changed'
+  | 'inventory.lot.expiring'
+  | 'inventory.bin.moved'
+  | 'inventory.pick_list.created'
+  | 'inventory.pick_list.completed'
+  | 'inventory.pick.short'
+  | 'inventory.package.packed'
+  | 'inventory.transfer.shipped'
+  | 'inventory.transfer.received'
+  | 'inventory.assembly.completed'
+  | 'inventory.purchase_order.late'
+  | 'inventory.backorder.created'
+  | 'inventory.backorder.allocated'
+  | 'inventory.source.created'
+  | 'inventory.source.sync_started'
+  | 'inventory.source.sync_completed'
+  | 'inventory.source.error'
+  | 'inventory.source.stale'
+  | 'inventory.source.recovered';
 
 /** One subscription, exactly as api-rest serialises it (camelCase — the handler
  *  spreads the Prisma row). `signingSecret` is a redacted preview on reads and
@@ -74,7 +102,14 @@ export interface WebhookSubscription {
  * so the editor can lay them out under plain headings, and worded for a business
  * owner — "Content published", not `content.entry.published`. */
 
-export type WebhookEventGroup = 'Content' | 'Files' | 'Redirects';
+export type WebhookEventGroup =
+  | 'Content'
+  | 'Files'
+  | 'Redirects'
+  | 'Stock'
+  | 'Warehouse'
+  | 'Supply'
+  | 'Stock feeds';
 
 export interface WebhookEventDef {
   key: WebhookEventKey;
@@ -144,11 +179,193 @@ export const WEBHOOK_EVENTS: readonly WebhookEventDef[] = [
     description: 'A redirect rule is deleted.',
     group: 'Redirects',
   },
+
+  /* ── Stock ─────────────────────────────────────────────────────────────── */
+
+  {
+    key: 'inventory.adjusted',
+    label: 'Stock changed',
+    description:
+      'Any quantity moves, for any reason — a sale, a delivery, a count, a correction. The busiest of these by a wide margin; take it when another system needs to mirror your numbers, not when a person needs telling.',
+    group: 'Stock',
+  },
+  {
+    key: 'inventory.low',
+    label: 'Stock running low',
+    description: 'An item drops to the level you said counts as low, and is worth reordering.',
+    group: 'Stock',
+  },
+  {
+    key: 'inventory.depleted',
+    label: 'Stock ran out',
+    description: 'An item reaches zero at a location and can no longer be sold from it.',
+    group: 'Stock',
+  },
+  {
+    key: 'inventory.count.completed',
+    label: 'Count posted',
+    description:
+      'A stock count is applied and the figures on the shelf become the figures in the system.',
+    group: 'Stock',
+  },
+  {
+    key: 'inventory.reconciliation.drift',
+    label: 'Numbers stopped adding up',
+    description:
+      'The running total for an item no longer matches the sum of its movements. This is the alarm that says a figure somewhere cannot be trusted.',
+    group: 'Stock',
+  },
+  {
+    key: 'inventory.oversell.blocked',
+    label: 'Oversell prevented',
+    description:
+      'Someone tried to buy more than you actually had and was stopped. Worth watching — a run of these is demand you are turning away.',
+    group: 'Stock',
+  },
+  {
+    key: 'inventory.classification.changed',
+    label: 'Item importance changed',
+    description:
+      'An item moves between top value, mid value and long tail, or its demand becomes predictable enough to forecast.',
+    group: 'Stock',
+  },
+  {
+    key: 'inventory.lot.expiring',
+    label: 'Batch nearing expiry',
+    description: 'A batch crosses into the window where it needs shifting before it is unsellable.',
+    group: 'Stock',
+  },
+
+  /* ── Warehouse ─────────────────────────────────────────────────────────── */
+
+  {
+    key: 'inventory.bin.moved',
+    label: 'Stock moved shelf',
+    description:
+      'Stock is put away or moved between shelves inside one location. The location total does not change — nothing entered or left the building.',
+    group: 'Warehouse',
+  },
+  {
+    key: 'inventory.pick_list.created',
+    label: 'Picking started',
+    description: 'A picking run is raised and the work is ready for somebody on the floor.',
+    group: 'Warehouse',
+  },
+  {
+    key: 'inventory.pick_list.completed',
+    label: 'Picking finished',
+    description: 'Every line on a picking run is accounted for and the run is closed.',
+    group: 'Warehouse',
+  },
+  {
+    key: 'inventory.pick.short',
+    label: 'Shelf came up short',
+    description:
+      'A picker found fewer than the system promised. The earliest honest warning that a number is wrong, straight from the floor.',
+    group: 'Warehouse',
+  },
+  {
+    key: 'inventory.package.packed',
+    label: 'Box packed',
+    description: 'A box is sealed and verified against what the order asked for.',
+    group: 'Warehouse',
+  },
+  {
+    key: 'inventory.transfer.shipped',
+    label: 'Transfer sent',
+    description: 'Stock leaves one of your locations bound for another and is now in transit.',
+    group: 'Warehouse',
+  },
+  {
+    key: 'inventory.transfer.received',
+    label: 'Transfer arrived',
+    description: 'Stock in transit lands at the receiving location and is sellable again.',
+    group: 'Warehouse',
+  },
+  {
+    key: 'inventory.assembly.completed',
+    label: 'Build finished',
+    description:
+      'A build run is completed: the components come off the shelf and the finished item goes on.',
+    group: 'Warehouse',
+  },
+
+  /* ── Supply ────────────────────────────────────────────────────────────── */
+
+  {
+    key: 'inventory.purchase_order.late',
+    label: 'Supplier order late',
+    description: 'A purchase order passes the date the supplier promised it, and has not arrived.',
+    group: 'Supply',
+  },
+  {
+    key: 'inventory.backorder.created',
+    label: 'Item promised without stock',
+    description:
+      'Something is sold that you cannot ship yet, so a promise to a named customer now exists.',
+    group: 'Supply',
+  },
+  {
+    key: 'inventory.backorder.allocated',
+    label: 'Promise covered by new stock',
+    description:
+      'Arriving stock is assigned to somebody already waiting for it, in the order they were promised.',
+    group: 'Supply',
+  },
+
+  /* ── Stock feeds ───────────────────────────────────────────────────────── */
+
+  {
+    key: 'inventory.source.created',
+    label: 'Feed connected',
+    description: 'A new supplier or warehouse feed is set up to send you stock figures.',
+    group: 'Stock feeds',
+  },
+  {
+    key: 'inventory.source.sync_started',
+    label: 'Feed started',
+    description: 'A scheduled pull from one of your feeds begins.',
+    group: 'Stock feeds',
+  },
+  {
+    key: 'inventory.source.sync_completed',
+    label: 'Feed finished',
+    description: 'A pull finishes, with how many lines it changed.',
+    group: 'Stock feeds',
+  },
+  {
+    key: 'inventory.source.error',
+    label: 'Feed failed',
+    description:
+      'A feed could not be read. Until it is fixed, its figures are frozen at whatever they last were.',
+    group: 'Stock feeds',
+  },
+  {
+    key: 'inventory.source.stale',
+    label: 'Feed went quiet',
+    description:
+      'A feed has not reported for long enough that its figures should no longer be relied on. Silence is not the same as no change, and this is the event that says so.',
+    group: 'Stock feeds',
+  },
+  {
+    key: 'inventory.source.recovered',
+    label: 'Feed recovered',
+    description: 'A feed that was failing or quiet starts reporting again.',
+    group: 'Stock feeds',
+  },
 ] as const;
 
 const EVENT_LABELS = new Map<string, string>(WEBHOOK_EVENTS.map((e) => [e.key, e.label]));
 
-export const WEBHOOK_EVENT_GROUPS: readonly WebhookEventGroup[] = ['Content', 'Files', 'Redirects'];
+export const WEBHOOK_EVENT_GROUPS: readonly WebhookEventGroup[] = [
+  'Content',
+  'Files',
+  'Redirects',
+  'Stock',
+  'Warehouse',
+  'Supply',
+  'Stock feeds',
+];
 
 /** The plain-language name for an event key, or the raw key for one this build
  *  does not recognise (a subscription saved by a newer release). */

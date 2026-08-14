@@ -96,6 +96,26 @@ export class InvalidBookingStateError extends SchedulingError {
   }
 }
 
+export class LocationNotFoundError extends SchedulingError {
+  constructor(id: string) {
+    super('LOCATION_NOT_FOUND', `Location ${id} not found`);
+    this.name = 'LocationNotFoundError';
+  }
+}
+
+/** Deleting a location that bookings point at would strip the place off the
+ *  customer's history (the FK is SET NULL, so the rows survive but forget where
+ *  they happened). Switching it off achieves the intent without the loss. */
+export class LocationInUseError extends SchedulingError {
+  constructor(bookingCount: number) {
+    super(
+      'LOCATION_IN_USE',
+      `This location is on ${bookingCount} booking${bookingCount === 1 ? '' : 's'}. Switch it off instead of deleting it, so those bookings keep their history.`
+    );
+    this.name = 'LocationInUseError';
+  }
+}
+
 /** No candidate resource satisfies a required role on the service (bad config or
  *  an over-constrained skill filter). */
 export class NoEligibleResourceError extends SchedulingError {

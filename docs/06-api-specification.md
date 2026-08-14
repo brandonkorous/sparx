@@ -1,8 +1,8 @@
 # WizeWorks Platform — API Specification
 
-**Version:** 1.2.0  
+**Version:** 1.3.0  
 **Author:** Brandon Korous  
-**Last Updated:** 2026-08-10
+**Last Updated:** 2026-08-13
 
 ---
 
@@ -420,6 +420,45 @@ good level. Resolution is an explicit posted count.
 transfer ship/receive and stock lookup by an explicit allow-list rather than by
 the ranked role hierarchy, and cost fields are nulled in every response it
 receives. Posting a count and creating a transfer remain `editor`.
+
+#### The rest of the inventory surface
+
+The endpoints above are the contract-stable core and the integrity surface. The
+module publishes **337 endpoints in total** — roughly ten times any other domain
+in this document — because it is a standalone WMS, not a commerce sub-feature.
+Listing all of them here would make inventory half of the platform API spec and
+bury everything else, so the exhaustive, generated reference is
+**[docs/150 — Inventory API Reference](150-inventory-api-reference.md)**, and what
+follows is the map of what is in it.
+
+| Group                       | What it is for                                                                      |
+| --------------------------- | ----------------------------------------------------------------------------------- |
+| Locations                   | The places stock physically sits — sites, 3PLs, vans, virtual locations             |
+| Stock levels and the grid   | Reading and setting quantities, plus the bulk grid and its CSV round trip           |
+| The movement ledger         | Every change to every quantity, append-only; the only writer of on-hand             |
+| Counts + count schedules    | Cycle, full and opening counts through submit → approve → post, and what is due     |
+| Transfers                   | Two-phase moves, so stock is conserved while it is on a van                         |
+| Bins and put-away           | Shelf-level positions inside a location, and where a delivery should go             |
+| Barcodes + scanning         | Codes that resolve to an item; receive, count, transfer and put away by scanner     |
+| Picking and packing         | Pick lists, the guided walk, short picks, pack verification                         |
+| Lots, serials and recalls   | Batch and unit traceability, expiry, the recall lifecycle                           |
+| Units of measure            | Buying in cases and selling in singles without two numbers that disagree            |
+| Bills of materials/assembly | What a thing is made of, how many you could build, running a build                  |
+| Cost                        | Moving-average and FIFO layers, landed cost, what a delivery really cost            |
+| Suppliers + purchase orders | Who you buy from, raising and receiving orders, approvals, receipts, ASNs           |
+| Supplier performance        | On-time rate, fill rate, price variance, lead-time reliability, returns, bills      |
+| Reordering + planning       | What to buy today, stockout risk, slow movers, holding cost                         |
+| Demand + classifications    | Forecasts, commitments against stock, which items are worth attention               |
+| Backorders                  | What has been promised and cannot yet be shipped                                    |
+| Reports + accounting        | The report registry, scheduled delivery, journals, GL reconciliation                |
+| External feeds + sync       | ERP/WMS feeds into the one ledger, and whether each is still telling the truth      |
+| Getting set up              | Guided setup, spreadsheet import with column mapping, opening balances, own columns |
+
+**docs/150 is generated from the routes, not transcribed.**
+`node scripts/gen-inventory-api-reference.mjs` rebuilds it and
+`node scripts/check-inventory-api-docs.mjs` fails the build when it drifts — an
+undocumented endpoint is an invisible feature, and a documented one that no
+longer exists sends somebody to build against a 404 and blame their own code.
 
 ### CRM Pipeline
 

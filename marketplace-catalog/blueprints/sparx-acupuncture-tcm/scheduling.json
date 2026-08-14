@@ -354,5 +354,12 @@
       ],
       "policyHandle": "tcm-standard"
     }
+  ],
+  "locations": [
+    {
+      "handle": "premises",
+      "name": "Five Elements Acupuncture",
+      "timezone": "UTC"
+    }
   ]
 }

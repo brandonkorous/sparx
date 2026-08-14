@@ -1,0 +1,16 @@
+apps:
+  - {id: home, label: Home, default_enabled: true, nav_order: 10}
+  - {id: site, label: My Site, default_enabled: true, nav_order: 20}
+  - {id: sell, label: Sell, default_enabled: true, nav_order: 30}
+  - {id: stock, label: Stock, default_enabled: true, nav_order: 40}
+  - {id: customers, label: Customers, default_enabled: true, nav_order: 50}
+  - {id: messages, label: Messages, default_enabled: true, nav_order: 60}
+  - {id: bookings, label: Bookings, default_enabled: true, nav_order: 70}
+  - {id: invoices, label: Invoices, default_enabled: true, nav_order: 80}
+  - {id: money, label: Money, default_enabled: true, nav_order: 90}
+  - {id: content, label: Content, default_enabled: true, nav_order: 100}
+  - {id: get_found, label: Get Found, default_enabled: true, nav_order: 110}
+  - {id: team, label: My Team, default_enabled: true, nav_order: 120}
+  - {id: automations, label: Automations, default_enabled: false, nav_order: 130}
+  - {id: partners, label: Partners, default_enabled: false, nav_order: 140}
+  - {id: connections, label: Connections, default_enabled: false, nav_order: 150}

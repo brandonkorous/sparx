@@ -13,6 +13,7 @@
 
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
+import { queryBool } from '@sparx/api-core/query';
 import { inventoryService } from '@sparx/inventory';
 import { ok } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
@@ -21,7 +22,7 @@ import { requireInventoryModule, toInventoryContext } from '../../../lib/invento
 const PathId = z.object({ id: z.string().uuid() });
 const PathVariant = z.object({ variantId: z.string().uuid() });
 const ListQuery = z.object({
-  include_inactive: z.coerce.boolean().optional(),
+  include_inactive: queryBool.optional(),
 });
 
 // eslint-disable-next-line @typescript-eslint/require-await -- FastifyPluginAsync signature

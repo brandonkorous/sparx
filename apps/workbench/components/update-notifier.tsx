@@ -23,6 +23,7 @@ import { queryKeys, useQuery } from '@sparx/query';
 import { useToast } from '@wizeworks/silicaui-react';
 import { useConfirm } from '../lib/confirm';
 import { useWorkbench } from '../lib/workbench/context';
+import { productName } from '../lib/product';
 
 const CURRENT_VERSION = process.env.NEXT_PUBLIC_APP_VERSION ?? 'dev';
 const POLL_INTERVAL_MS = 60_000;
@@ -135,7 +136,7 @@ export function UpdateNotifier(): null {
     // update they never learn about.
     addToast({
       id: TOAST_ID,
-      title: 'A new version of sparx is available',
+      title: `A new version of ${productName()} is available`,
       description: 'Reload when you are at a good stopping point.',
       timeout: 0,
       actionProps: {

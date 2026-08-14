@@ -7,6 +7,10 @@
 //   POST   /v1/staff/commissions         → idempotent on (person, sale)
 //   POST   /v1/staff/commissions/status  → approve / pay / void, in bulk
 //   DELETE /v1/staff/commissions/:id
+//   GET    /v1/staff/sales/:type/:id/attribution   → who is credited for a sale
+//   PUT    /v1/staff/sales/:type/:id/attribution   → credit it to somebody
+//   DELETE /v1/staff/sales/:type/:id/attribution   → remove the credit
+//   POST   /v1/staff/sales/:type/:id/recalculate   → recompute its commission
 //
 // EVERY route in this file is `admin` (staff-context.ts explains why pay is the
 // one place the viewer/editor ladder is wrong). It is the whole reason these are
@@ -19,13 +23,18 @@ import { z } from 'zod';
 import { ok } from '@sparx/api-core/envelope';
 import { badRequest } from '@sparx/api-core/errors';
 import {
+  attributeSale,
+  clearSaleAttribution,
   commissionCents,
+  commissionForDeal,
+  commissionForOrder,
   deleteCommission,
   deleteRate,
   getMember,
   listCommissions,
   listRates,
   recordCommission,
+  saleAttribution,
   setCommissionStatus,
   setRate,
 } from '@sparx/staff';
@@ -34,6 +43,37 @@ import { requirePayAccess, requireStaffModule } from '../../../lib/staff-context
 import { displayName, payRateView } from './views.js';
 
 const PathId = z.object({ id: z.string().uuid() });
+
+/** A sale, addressed the way a commission row addresses one. `type` is closed
+ *  because it is the same vocabulary the DB CHECK-constrains. */
+const SaleParams = z.object({
+  type: z.enum(['order', 'deal']),
+  id: z.string().uuid(),
+});
+
+const AttributionBody = z.object({
+  staffMemberId: z.string().uuid(),
+  propertyId: z.string().uuid().nullish(),
+  note: z.string().max(2000).nullish(),
+});
+
+function attributionView(row: {
+  id: string;
+  staffMemberId: string;
+  propertyId: string | null;
+  note: string | null;
+  staffMember?: { firstName: string; lastName: string | null } | null;
+}) {
+  return {
+    id: row.id,
+    staffMemberId: row.staffMemberId,
+    staffMemberName: row.staffMember
+      ? [row.staffMember.firstName, row.staffMember.lastName].filter(Boolean).join(' ')
+      : null,
+    propertyId: row.propertyId,
+    note: row.note,
+  };
+}
 
 const CommissionQuery = z.object({
   staffMemberId: z.string().uuid().optional(),
@@ -167,6 +207,66 @@ const staffPayRoutes: FastifyPluginAsync = async (app) => {
     const { id } = PathId.parse(request.params);
     await deleteCommission(auth.tenantId, id);
     return reply.code(204).send();
+  });
+
+  // ─── Who sold it, and what that earned ──────────────────────────────────
+  //
+  // An order records no salesperson anywhere in the platform — a deal has
+  // `assignedRepId`, an order has nothing — so these are what make an order
+  // capable of earning anybody a commission at all.
+
+  app.get('/v1/staff/sales/:type/:id/attribution', async (request) => {
+    await requireStaffModule(request);
+    const auth = requirePayAccess(request);
+    const { type, id } = SaleParams.parse(request.params);
+    const row = await saleAttribution(auth.tenantId, type, id);
+    // `null` rather than a 404: "nobody is credited for this sale" is an
+    // ordinary answer about a real sale, not a missing record.
+    return ok(row ? attributionView(row) : null);
+  });
+
+  app.put('/v1/staff/sales/:type/:id/attribution', async (request) => {
+    await requireStaffModule(request);
+    const auth = requirePayAccess(request);
+    const { type, id } = SaleParams.parse(request.params);
+    const body = AttributionBody.parse(request.body);
+    const row = await attributeSale(auth.tenantId, {
+      staffMemberId: body.staffMemberId,
+      sourceType: type,
+      sourceId: id,
+      propertyId: body.propertyId ?? null,
+      note: body.note ?? null,
+    });
+
+    // Recalculate immediately. Crediting a sale and then waiting for something
+    // else to notice is how an owner concludes the feature does not work.
+    const result =
+      type === 'order'
+        ? await commissionForOrder(auth.tenantId, id)
+        : await commissionForDeal(auth.tenantId, id);
+
+    return ok({ attribution: attributionView(row), commission: result });
+  });
+
+  app.delete('/v1/staff/sales/:type/:id/attribution', async (request, reply) => {
+    await requireStaffModule(request);
+    const auth = requirePayAccess(request);
+    const { type, id } = SaleParams.parse(request.params);
+    await clearSaleAttribution(auth.tenantId, type, id);
+    // The commission it produced is deliberately left standing — see
+    // `clearSaleAttribution`. Void it explicitly if that is what is meant.
+    return reply.code(204).send();
+  });
+
+  app.post('/v1/staff/sales/:type/:id/recalculate', async (request) => {
+    await requireStaffModule(request);
+    const auth = requirePayAccess(request);
+    const { type, id } = SaleParams.parse(request.params);
+    const result =
+      type === 'order'
+        ? await commissionForOrder(auth.tenantId, id)
+        : await commissionForDeal(auth.tenantId, id);
+    return ok(result);
   });
 };
 

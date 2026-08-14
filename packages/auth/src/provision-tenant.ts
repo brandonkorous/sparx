@@ -67,6 +67,28 @@ export interface ProvisionTenantInput {
   email: string;
   /** Marketing attribution (docs/80) — written once at provisioning. */
   acquisition?: SignUpAcquisition | null;
+  /** Which PRODUCT the tenant signed up under — `sparx` or `piggles`. Both
+   *  brands run on this one platform, one database and one tenant pool, and a
+   *  tenant never changes brands.
+   *
+   *  This is a PARAMETER rather than a conditional on purpose. Nothing in this
+   *  package may branch on the value; provisioning simply records what the
+   *  caller declares, and the brand surfaces read it back. The moment a
+   *  `if (brand === …)` appears in a shared package, the two products have been
+   *  forked somewhere that is hard to see (piggles/CLAUDE.md RULE #0).
+   *
+   *  Defaults to `sparx`, which is what every pre-existing caller means. */
+  platformBrand?: string;
+  /** The zone the tenant's always-on subdomain is created under —
+   *  `<slug>.<zoneDomain>`. Piggles tenants live on `piggles.site`, sparx
+   *  tenants on `sparx.zone`.
+   *
+   *  It has to be an ARGUMENT and not just `SPARX_ZONE_DOMAIN`, because both
+   *  brands are served by the same processes: an environment variable is fixed
+   *  per deployment and cannot vary per request, so reading one here would give
+   *  every Piggles signup a `sparx.zone` address. Falls back to the env var, so
+   *  existing callers are unaffected. */
+  zoneDomain?: string;
 }
 
 /**
@@ -102,6 +124,7 @@ export async function provisionTenant(
       email: input.email,
       subscriptionStatus: 'trialing',
       trialEndsAt,
+      platformBrand: input.platformBrand ?? 'sparx',
       // Attribution (docs/80 §8.3) — written once. Denormalized channel/source/
       // campaign drive the acquisition report; the full snapshots ride along for
       // model recompute.
@@ -138,7 +161,7 @@ export async function provisionTenant(
       isPrimary: true,
     },
   });
-  const zone = process.env.SPARX_ZONE_DOMAIN ?? 'sparx.zone';
+  const zone = input.zoneDomain ?? process.env.SPARX_ZONE_DOMAIN ?? 'sparx.zone';
   await tx.domain.create({
     data: {
       tenantId: tenant.id,

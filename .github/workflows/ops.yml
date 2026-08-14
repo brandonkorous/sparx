@@ -77,6 +77,13 @@ on:
           # writes to Blob. Dry-runs by default. Safe to re-run — it skips blobs
           # that already exist.
           - migrate-media-to-blob
+          # Seeds the finance expense categories for tenants that predate the
+          # activation consumer. `provisionFinance` shipped with nothing calling
+          # it, so no tenant had a `wages` category and the staff labour deriver
+          # refused every run. finance-worker now provisions on `module.activated`;
+          # this closes the tenants whose activation already fired. Create-only,
+          # so a renamed category survives. Dry-runs by default. Safe to re-run.
+          - backfill-finance-categories
       environment:
         description: 'Where to run it'
         required: false
@@ -298,6 +305,16 @@ jobs:
               else
                 command='["node","--import","tsx","src/scripts/migrate-media-to-blob.ts"]'
               fi
+              ;;
+            backfill-finance-categories)
+              image="$REPO/api-rest:$TAG"
+              # WORKDIR is /app/services/api-rest. Unticked it lists each tenant it
+              # WOULD seed and writes nothing. `tenant` composes, so a single account
+              # can be repaired without touching the rest.
+              args='"node","--import","tsx","src/scripts/backfill-finance-categories.ts"'
+              if [ '${{ inputs.apply }}' = 'true' ]; then args="$args,\"--apply\""; fi
+              if [ -n "$TENANT" ]; then args="$args,\"--tenant=$TENANT\""; fi
+              command="[$args]"
               ;;
             *)
               echo "::error::Unknown task '$TASK'."

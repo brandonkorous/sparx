@@ -243,5 +243,12 @@
       ],
       "policyHandle": "pool-standard"
     }
+  ],
+  "locations": [
+    {
+      "handle": "premises",
+      "name": "BlueWave Pool Care",
+      "timezone": "UTC"
+    }
   ]
 }

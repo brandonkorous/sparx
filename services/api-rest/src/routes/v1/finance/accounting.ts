@@ -16,6 +16,7 @@
 
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
+import { queryBool } from '@sparx/api-core/query';
 import { ok } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
 import { badRequest } from '@sparx/api-core/errors';
@@ -28,6 +29,8 @@ import {
   commitImport,
   deleteConnection,
   listConnections,
+  listPublicConnections,
+  toPublicConnection,
   listMappings,
   listSyncRuns,
   mappingsForExport,
@@ -48,6 +51,7 @@ import {
   toFinanceContext,
 } from '../../../lib/finance-context.js';
 import { resolveListScopeIds, resolvePropertyId } from '../../../lib/property.js';
+import { publishDomainEvent } from '../../../lib/staff-events.js';
 
 const PathId = z.object({ id: z.string().uuid() });
 
@@ -103,7 +107,7 @@ const ExportQuery = z.object({
   connectionId: z.string().uuid().optional(),
   property: z.string().optional(),
   /** Stamp the exported rows so "what still needs sending" stays answerable. */
-  markSent: z.coerce.boolean().optional(),
+  markSent: queryBool.optional(),
 });
 
 const ColumnMapSchema = z.object({
@@ -131,9 +135,11 @@ const financeAccountingRoutes: FastifyPluginAsync = async (app) => {
     await requireFinanceModule(request);
     requireRole(request, 'viewer');
     const { tenantId } = toFinanceContext(request);
+    // `listPublicConnections`, never `listConnections`: the raw row carries the
+    // encrypted access and refresh tokens, and this endpoint is `viewer`.
     return ok({
       catalog: accountingCatalog(),
-      connections: await listConnections(tenantId),
+      connections: await listPublicConnections(tenantId),
     });
   });
 
@@ -146,7 +152,7 @@ const financeAccountingRoutes: FastifyPluginAsync = async (app) => {
       body.propertyId !== undefined
         ? body.propertyId
         : await resolvePropertyId(auth, headerPropertyId(request));
-    return ok(await upsertConnection(tenantId, { ...body, propertyId }));
+    return ok(toPublicConnection(await upsertConnection(tenantId, { ...body, propertyId })));
   });
 
   app.delete('/v1/finance/accounting/:id', async (request, reply) => {
@@ -226,6 +232,19 @@ const financeAccountingRoutes: FastifyPluginAsync = async (app) => {
         recordsSkipped: result.skipped.length,
         recordsFailed: 0,
         failures: result.skipped.length > 0 ? result.skipped : null,
+      });
+      // Announce the outcome. docs/148 §7 always said this event "drives the
+      // notification when a sync came back partial or failed" — and nothing had
+      // ever published it, so a hand-off to the accountant that dropped rows
+      // told nobody. `skipped` is the number that matters: 137 of 140 exported
+      // is a success everywhere except in the three rows that did not.
+      await publishDomainEvent('finance.accounting.sync.completed', tenantId, auth.actorId, {
+        connectionId: connection.id,
+        direction: 'export',
+        scope: 'expenses',
+        status: result.skipped.length > 0 ? 'partial' : 'success',
+        recordsSynced: result.rowCount,
+        recordsSkipped: result.skipped.length,
       });
     }
 
@@ -309,7 +328,10 @@ const financeAccountingRoutes: FastifyPluginAsync = async (app) => {
       expiresAt: credentials.expiresAt,
     });
     void auth;
-    return ok(stored);
+    // The projection matters most HERE: `storeCredentials` returns the row it
+    // just wrote the ciphertexts into, so returning it raw would hand the
+    // browser the grant it has this instant finished storing.
+    return ok(toPublicConnection(stored));
   });
 
   app.post('/v1/finance/accounting/:id/disconnect', async (request) => {

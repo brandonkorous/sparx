@@ -254,5 +254,12 @@
       ],
       "policyHandle": "fixlist-project"
     }
+  ],
+  "locations": [
+    {
+      "handle": "premises",
+      "name": "FixList",
+      "timezone": "UTC"
+    }
   ]
 }

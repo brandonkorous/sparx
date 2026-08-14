@@ -29,6 +29,7 @@
 
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
+import { queryBool } from '@sparx/api-core/query';
 import { inventoryService } from '@sparx/inventory';
 import { ok, paged } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
@@ -41,7 +42,7 @@ const LevelPath = z.object({
 
 const RiskQuery = z.object({
   warehouse_id: z.string().uuid().optional(),
-  at_risk_only: z.coerce.boolean().optional(),
+  at_risk_only: queryBool.optional(),
   take: z.coerce.number().int().min(1).max(500).optional(),
 });
 
@@ -53,14 +54,14 @@ const SlowMoverQuery = z.object({
 const LeadTimeQuery = z.object({
   supplier_id: z.string().uuid().optional(),
   variant_id: z.string().uuid().optional(),
-  include_variants: z.coerce.boolean().optional(),
+  include_variants: queryBool.optional(),
   take: z.coerce.number().int().min(1).max(500).optional(),
 });
 
 const PlansQuery = z.object({
   warehouse_id: z.string().uuid().optional(),
-  divergent_only: z.coerce.boolean().optional(),
-  auto_managed_only: z.coerce.boolean().optional(),
+  divergent_only: queryBool.optional(),
+  auto_managed_only: queryBool.optional(),
   take: z.coerce.number().int().min(1).max(250).optional(),
   skip: z.coerce.number().int().min(0).optional(),
 });
@@ -68,7 +69,7 @@ const PlansQuery = z.object({
 const RecomputeBody = z.object({
   warehouse_id: z.string().uuid().optional(),
   /** Off by default — see the header. */
-  generate_counts: z.coerce.boolean().optional(),
+  generate_counts: queryBool.optional(),
 });
 
 const ApplyBody = z.object({

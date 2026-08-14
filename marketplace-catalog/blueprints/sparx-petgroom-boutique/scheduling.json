@@ -337,5 +337,12 @@
       ],
       "policyHandle": "signature-deposit"
     }
+  ],
+  "locations": [
+    {
+      "handle": "premises",
+      "name": "The Groom Room",
+      "timezone": "UTC"
+    }
   ]
 }

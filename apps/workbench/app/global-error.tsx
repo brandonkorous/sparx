@@ -10,6 +10,7 @@
 
 import { useEffect } from 'react';
 import { isChunkLoadError, reloadOnceForStaleBuild } from '@sparx/app-kit';
+import { reportCrash } from '../lib/analytics';
 
 export default function GlobalError({
   error,
@@ -22,6 +23,14 @@ export default function GlobalError({
 
   useEffect(() => {
     console.error(error);
+    // Best-effort, and honestly so: PostHog is initialised by a provider IN the
+    // root layout, so when the layout is what threw there is nothing to report
+    // through and this no-ops. It still earns its place — this file is also the
+    // fallback for app/error.tsx itself throwing, and by then PostHog is up.
+    reportCrash(error, {
+      boundary: 'global',
+      ...(error.digest ? { digest: error.digest } : {}),
+    });
     // A release purged the chunk this tab was built against and it took the root
     // layout down with it — reset() re-runs the same dead build, so reload to
     // fetch the new one. Shared cooldown stops a broken build from looping.

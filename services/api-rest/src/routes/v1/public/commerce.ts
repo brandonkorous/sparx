@@ -20,6 +20,7 @@
 import type { FastifyPluginAsync } from 'fastify';
 import type { Prisma } from '@prisma/client';
 import { z } from 'zod';
+import { queryBool } from '@sparx/api-core/query';
 
 import type { FastifyRequest } from 'fastify';
 
@@ -65,7 +66,7 @@ const ProductListQuery = PagingQuery.extend({
   tag: z.string().optional(),
   fitmentMake: z.string().optional(),
   fitmentYear: z.coerce.number().int().optional(),
-  inStock: z.coerce.boolean().optional(),
+  inStock: queryBool.optional(),
   minPriceCents: z.coerce.number().int().min(0).optional(),
   maxPriceCents: z.coerce.number().int().min(0).optional(),
   // Scope the whole listing to ONE collection (flat membership) or ONE category
@@ -101,7 +102,7 @@ const SearchQuery = PagingQuery.extend({
   vendor: z.string().optional(),
   productType: z.string().optional(),
   tag: z.string().optional(),
-  inStock: z.coerce.boolean().optional(),
+  inStock: queryBool.optional(),
   minPriceCents: z.coerce.number().int().min(0).optional(),
   maxPriceCents: z.coerce.number().int().min(0).optional(),
   fitmentMakes: z.string().optional(),

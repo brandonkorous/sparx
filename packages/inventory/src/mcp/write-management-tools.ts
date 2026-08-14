@@ -59,7 +59,8 @@ const createSupplier: McpToolDefinition = {
 
 const updateSupplier: McpToolDefinition = {
   name: 'update_supplier',
-  description: 'Edit a supplier. Send only the fields to change.',
+  description:
+    'Change a supplier record — name, contact, lead time, currency, payment terms. Send only the fields that change; anything omitted is left alone rather than blanked. Does not touch prices or existing orders.',
   scope: 'write:inventory',
   confirmation: true,
   input: UpdateSupplierInput.extend({ supplierId: uuid() }),
@@ -94,7 +95,8 @@ const upsertSupplierVariant: McpToolDefinition = {
 
 const removeSupplierVariant: McpToolDefinition = {
   name: 'remove_supplier_variant',
-  description: 'Unlink a variant from a supplier.',
+  description:
+    'Stop treating this supplier as a source for this item. Removes the link and its quantity price breaks; it does NOT delete the item, the supplier, or any purchase order already raised against them. Use it when you stop buying a part from someone.',
   scope: 'write:inventory',
   confirmation: true,
   input: z.object({ supplierId: uuid(), variantId: uuid() }),
@@ -168,7 +170,8 @@ const submitPurchaseOrder: McpToolDefinition = {
 
 const cancelPurchaseOrder: McpToolDefinition = {
   name: 'cancel_purchase_order',
-  description: 'Cancel a purchase order.',
+  description:
+    'Cancel an order that has already been sent to a supplier. The order stays on the record as cancelled, so the history of what was ordered survives, and anything already received against it is untouched. This is the one to use for a real order; use delete_purchase_order only for a draft nobody ever sent.',
   scope: 'write:inventory',
   confirmation: true,
   input: z.object({ purchaseOrderId: uuid() }),
@@ -194,7 +197,8 @@ const closePurchaseOrder: McpToolDefinition = {
 
 const deletePurchaseOrder: McpToolDefinition = {
   name: 'delete_purchase_order',
-  description: 'Delete a draft purchase order.',
+  description:
+    'Delete a purchase order that was never sent, removing it entirely. Refuses anything beyond draft, because an order a supplier has seen must leave a trace — cancel that one instead. This cannot be undone.',
   scope: 'write:inventory',
   confirmation: true,
   input: z.object({ purchaseOrderId: uuid() }),
@@ -234,7 +238,8 @@ const updatePurchaseOrderLine: McpToolDefinition = {
 
 const removePurchaseOrderLine: McpToolDefinition = {
   name: 'remove_purchase_order_line',
-  description: 'Remove a line item from a draft purchase order.',
+  description:
+    'Take one item off a purchase order that has not been sent yet. Draft only: once a supplier has the order, changing what was asked for has to be a revision they can see, not a silent edit.',
   scope: 'write:inventory',
   confirmation: true,
   input: z.object({ purchaseOrderId: uuid(), lineId: uuid() }),
@@ -285,7 +290,8 @@ const updateTransferLine: McpToolDefinition = {
 
 const removeTransferLine: McpToolDefinition = {
   name: 'remove_transfer_line',
-  description: 'Remove a line from a draft inventory transfer.',
+  description:
+    'Take one item off a transfer between your own locations that has not shipped yet. Draft only — once stock is in transit the line is a record of what physically left, and removing it would lose track of goods on a van.',
   scope: 'write:inventory',
   confirmation: true,
   input: z.object({ transferId: uuid(), lineId: uuid() }),
@@ -320,7 +326,8 @@ const receiveInventoryTransfer: McpToolDefinition = {
 
 const cancelInventoryTransfer: McpToolDefinition = {
   name: 'cancel_inventory_transfer',
-  description: 'Cancel an inventory transfer.',
+  description:
+    'Call off a movement of stock between your own locations. Anything already sent is returned to the sending location rather than vanishing, so the totals still add up. The transfer stays on the record as cancelled.',
   scope: 'write:inventory',
   confirmation: true,
   input: z.object({ transferId: uuid() }),
@@ -330,7 +337,8 @@ const cancelInventoryTransfer: McpToolDefinition = {
 
 const deleteInventoryTransfer: McpToolDefinition = {
   name: 'delete_inventory_transfer',
-  description: 'Delete a draft inventory transfer.',
+  description:
+    'Delete a transfer that was never shipped, removing it entirely. Refuses anything that has left a location — stock that physically moved must leave a trace, so cancel that one instead. This cannot be undone.',
   scope: 'write:inventory',
   confirmation: true,
   input: z.object({ transferId: uuid() }),
@@ -352,7 +360,8 @@ const createInventoryCount: McpToolDefinition = {
 
 const addCountLine: McpToolDefinition = {
   name: 'add_count_line',
-  description: 'Add a variant line to an open inventory count.',
+  description:
+    'Put another item on a stock count that is still open, so somebody can record what is actually on the shelf for it. Adding a line does not change any stock figure — a count only affects stock when it is posted.',
   scope: 'write:inventory',
   confirmation: true,
   input: AddCountLineInput.extend({ countId: uuid() }),
@@ -376,7 +385,8 @@ const enterCounts: McpToolDefinition = {
 
 const removeCountLine: McpToolDefinition = {
   name: 'remove_count_line',
-  description: 'Remove a line from an open inventory count.',
+  description:
+    'Take an item off a count that is still open — the case where a line was added by mistake and nobody is going to walk to that shelf. Removing it is not the same as counting zero: a removed line makes no claim about that item at all.',
   scope: 'write:inventory',
   confirmation: true,
   input: z.object({ countId: uuid(), lineId: uuid() }),
@@ -388,7 +398,8 @@ const removeCountLine: McpToolDefinition = {
 
 const submitInventoryCount: McpToolDefinition = {
   name: 'submit_inventory_count',
-  description: 'Submit a completed count for approval.',
+  description:
+    'Hand a finished count on for review. Stock does not move yet — this closes the count to further edits and puts it in front of whoever approves it. The figures still only reach the ledger when the count is posted.',
   scope: 'write:inventory',
   confirmation: true,
   input: z.object({ countId: uuid() }),
@@ -398,7 +409,8 @@ const submitInventoryCount: McpToolDefinition = {
 
 const approveInventoryCount: McpToolDefinition = {
   name: 'approve_inventory_count',
-  description: 'Approve a submitted count (before posting).',
+  description:
+    'Sign off a submitted count as correct. Still does not move any stock: approval and posting are separate on purpose, so the person who checks the numbers and the moment the ledger changes are two different events.',
   scope: 'write:inventory',
   confirmation: true,
   input: z.object({ countId: uuid() }),
@@ -419,7 +431,8 @@ const postInventoryCount: McpToolDefinition = {
 
 const cancelInventoryCount: McpToolDefinition = {
   name: 'cancel_inventory_count',
-  description: 'Cancel an inventory count.',
+  description:
+    'Abandon a count without applying it. Every figure anybody recorded is discarded and no stock changes — use this when a count was started against the wrong location or interrupted halfway. A posted count cannot be cancelled; correct it with another count.',
   scope: 'write:inventory',
   confirmation: true,
   input: z.object({ countId: uuid() }),

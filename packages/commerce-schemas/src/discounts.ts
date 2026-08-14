@@ -63,6 +63,11 @@ export const CreateDiscountInput = z.object({
   perCustomerLimit: z.number().int().positive().default(1),
   stacking: DiscountStacking.default('none'),
   priority: z.number().int().nonnegative().default(0),
+  // Model B per-site scoping (docs/131 §4): the sites this offer runs on. EMPTY =
+  // every site. `discount-service` has always filtered eligibility on the junction —
+  // this is the write half, which never existed, so one business's promo code worked
+  // at the sibling business's checkout.
+  propertyIds: z.array(Uuid).max(50).default([]),
 });
 export type CreateDiscountInput = z.infer<typeof CreateDiscountInput>;
 
@@ -80,6 +85,7 @@ export const UpdateDiscountInput = CreateDiscountInput.partial().extend({
   perCustomerLimit: z.number().int().positive().optional(),
   stacking: DiscountStacking.optional(),
   priority: z.number().int().nonnegative().optional(),
+  propertyIds: z.array(Uuid).max(50).optional(),
 });
 export type UpdateDiscountInput = z.infer<typeof UpdateDiscountInput>;
 

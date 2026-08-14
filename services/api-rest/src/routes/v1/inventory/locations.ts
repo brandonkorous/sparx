@@ -13,6 +13,7 @@
 
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
+import { queryBool } from '@sparx/api-core/query';
 import { inventoryService } from '@sparx/inventory';
 import { ok, paged } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
@@ -25,7 +26,7 @@ const ListQuery = z.object({
   // Narrow to one kind of location. The operator Locations surface offers this
   // as a filter, so it resolves server-side rather than sieving a loaded page.
   type: z.enum(['owned', '3pl', 'dropship', 'virtual']).optional(),
-  include_archived: z.coerce.boolean().optional(),
+  include_archived: queryBool.optional(),
   take: z.coerce.number().int().min(1).max(250).optional(),
   skip: z.coerce.number().int().min(0).optional(),
 });
@@ -33,7 +34,7 @@ const ListQuery = z.object({
 const LevelsQuery = z.object({
   take: z.coerce.number().int().min(1).max(500).optional(),
   skip: z.coerce.number().int().min(0).optional(),
-  low_stock_only: z.coerce.boolean().optional(),
+  low_stock_only: queryBool.optional(),
 });
 
 // eslint-disable-next-line @typescript-eslint/require-await -- FastifyPluginAsync signature

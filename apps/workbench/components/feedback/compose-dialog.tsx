@@ -16,6 +16,7 @@ import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@wizework
 import type { FeedbackContextPayload } from '../../lib/api/feedback';
 import { FeedbackCompose } from './compose';
 import type { ComposeState } from './provider';
+import { productName } from '../../lib/product';
 
 export function FeedbackComposeDialog({
   state,
@@ -39,8 +40,8 @@ export function FeedbackComposeDialog({
       <DialogContent className="max-w-lg">
         <DialogTitle>Send feedback</DialogTitle>
         <DialogDescription>
-          Goes straight to the people building sparx — a problem, an idea, or a question. A real
-          person reads every message, and the reply lands in Your feedback.
+          Goes straight to the people building {productName()} — a problem, an idea, or a question.
+          A real person reads every message, and the reply lands in Your feedback.
         </DialogDescription>
 
         {/* Keyed on the open flag so each session of the dialog re-reads the

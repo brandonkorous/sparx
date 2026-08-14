@@ -18,6 +18,7 @@ import { useEffect, useState } from 'react';
 import { AlertTriangle } from 'lucide-react';
 import { Button } from '@wizeworks/silicaui-react';
 import { isChunkLoadError, reloadOnceForStaleBuild } from '@sparx/app-kit';
+import { reportCrash } from '../lib/analytics';
 
 export default function WorkbenchError({
   error,
@@ -35,6 +36,11 @@ export default function WorkbenchError({
 
   useEffect(() => {
     console.error('[workbench] shell tree crashed', error);
+    // The whole window is down, which is the crash that matters most and the one
+    // least likely to be reported by hand — the operator's instinct is to reload,
+    // and a reload leaves no trace. `digest` ties it to the server-side log when
+    // the throw came from a server component.
+    reportCrash(error, { boundary: 'route', ...(error.digest ? { digest: error.digest } : {}) });
     if (!stale) return;
     // Auto-reload once per cooldown (shared with ChunkReloadGuard). If the
     // cooldown blocks it — we already reloaded and the build is still broken —

@@ -50,6 +50,13 @@ export default function DocsIndexPage() {
             Typed clients for TypeScript, plus the headless Builder SDK.
           </NextCard>
           <NextCard
+            href="/docs/guides/migrating"
+            title="Import from another platform"
+            icon={<Icon d="M12 3v12M8 11l4 4 4-4M4 21h16" />}
+          >
+            Move a business onto sparx from Shopify, WooCommerce, HubSpot and seventeen others.
+          </NextCard>
+          <NextCard
             href="/docs/mcp"
             title="MCP server"
             icon={<Icon d="M4 4h16v16H4zM9 9h6v6H9z" />}

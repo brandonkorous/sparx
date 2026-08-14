@@ -30,6 +30,7 @@ import { titleFor } from '../lib/surfaces/registry';
 import { useWorkbench } from '../lib/workbench/context';
 import type { Theme } from '../lib/theme';
 import { useFeedback } from './feedback/provider';
+import { ChromeBoundary } from './chrome-boundary';
 import { useCopyLink, usePaneLink } from './copy-pane-link';
 import { MobileStack } from './mobile-stack';
 import { MobileNav } from './mobile-nav';
@@ -71,108 +72,127 @@ export function MobileShell({
 
   return (
     <div className="bg-base-200 flex h-dvh w-full flex-col overflow-hidden">
-      <header className="border-base-300 bg-base-100 flex h-14 shrink-0 items-center gap-1 border-b px-1">
-        <Button
-          color="neutral"
-          variant="ghost"
-          shape="square"
-          className="min-h-11 min-w-11"
-          aria-label="Open navigation"
-          onClick={() => {
-            onNavOpenChange(true);
-          }}
-        >
-          <Menu className="size-5" aria-hidden />
-        </Button>
+      {/* Crash-isolated from the stack below, for the same reason as desktop:
+          the panes hold the unsaved work and the header must never cost them.
+          See components/chrome-boundary.tsx. */}
+      <ChromeBoundary
+        region="toolbar"
+        whatStopped="Search and your account menu have stopped working."
+      >
+        <header className="border-base-300 bg-base-100 flex h-14 shrink-0 items-center gap-1 border-b px-1">
+          <Button
+            color="neutral"
+            variant="ghost"
+            shape="square"
+            className="min-h-11 min-w-11"
+            aria-label="Open navigation"
+            onClick={() => {
+              onNavOpenChange(true);
+            }}
+          >
+            <Menu className="size-5" aria-hidden />
+          </Button>
 
-        {/* The title is the pane you are looking at — on one column that IS
+          {/* The title is the pane you are looking at — on one column that IS
             your location, so it replaces the wordmark the desktop toolbar can
             afford to keep. The mark moves into the account menu. */}
-        {/* titleFor(), not descriptor.title — the latter is only populated once
+          {/* titleFor(), not descriptor.title — the latter is only populated once
             a surface has renamed itself, so reading it directly showed "sparx"
             for every pane that never called setTitle. */}
-        <p className="min-w-0 flex-1 truncate font-medium">{active ? titleFor(active) : 'sparx'}</p>
+          <p className="min-w-0 flex-1 truncate font-medium">
+            {active ? titleFor(active) : 'sparx'}
+          </p>
 
-        {/* Sharing what you are looking at, from a phone, where sharing is what
+          {/* Sharing what you are looking at, from a phone, where sharing is what
             a phone is FOR. It uses the system share sheet when the browser has
             one — that is the gesture people already know, and it reaches the
             chat app they were going to paste into anyway — and falls back to the
             clipboard. Absent when the pane has no address; see
             components/copy-pane-link.tsx. */}
-        <SharePaneButton paneId={active?.id ?? null} />
+          <SharePaneButton paneId={active?.id ?? null} />
 
-        <Button
-          color="neutral"
-          variant="ghost"
-          shape="square"
-          className="min-h-11 min-w-11"
-          aria-label="Search everything"
-          onClick={onOpenLauncher}
-        >
-          <Search className="size-5" aria-hidden />
-        </Button>
+          <Button
+            color="neutral"
+            variant="ghost"
+            shape="square"
+            className="min-h-11 min-w-11"
+            aria-label="Search everything"
+            onClick={onOpenLauncher}
+          >
+            <Search className="size-5" aria-hidden />
+          </Button>
 
-        <DropdownMenu>
-          <DropdownMenuTrigger>
-            <Button
-              color="neutral"
-              variant="ghost"
-              shape="circle"
-              className="min-h-11 min-w-11"
-              aria-label="Your account"
-            >
-              {initials(userName, userEmail)}
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuGroup>
-              <DropdownMenuLabel>
-                <span className="block truncate">{userName}</span>
-                <span className="block truncate text-sm">{userEmail}</span>
-              </DropdownMenuLabel>
-            </DropdownMenuGroup>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={onToggleTheme}>
-              {theme === 'dark' ? 'Switch to light' : 'Switch to dark'}
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              onClick={() => {
-                controller.open('platform.settings.general');
-              }}
-            >
-              Business details
-            </DropdownMenuItem>
-            {/* Feedback reaches the same inbox from a phone as from a desk —
+          <DropdownMenu>
+            <DropdownMenuTrigger>
+              <Button
+                color="neutral"
+                variant="ghost"
+                shape="circle"
+                className="min-h-11 min-w-11"
+                aria-label="Your account"
+              >
+                {initials(userName, userEmail)}
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuGroup>
+                <DropdownMenuLabel>
+                  <span className="block truncate">{userName}</span>
+                  <span className="block truncate text-sm">{userEmail}</span>
+                </DropdownMenuLabel>
+              </DropdownMenuGroup>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={onToggleTheme}>
+                {theme === 'dark' ? 'Switch to light' : 'Switch to dark'}
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => {
+                  controller.open('platform.settings.general');
+                }}
+              >
+                Business details
+              </DropdownMenuItem>
+              {/* Feedback reaches the same inbox from a phone as from a desk —
                 the account menu carries it here because a one-column header has
                 no room for another icon, not because it matters less. It opens
                 the same surface, which on one column is simply the top of the
                 stack. */}
-            <DropdownMenuItem
-              onClick={() => {
-                feedback.openList();
-              }}
-            >
-              Your feedback
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuGroup>
-              <DropdownMenuLabel>
-                <Wordmark className="h-4" />
-              </DropdownMenuLabel>
-            </DropdownMenuGroup>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </header>
+              <DropdownMenuItem
+                onClick={() => {
+                  feedback.openList();
+                }}
+              >
+                Your feedback
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuGroup>
+                <DropdownMenuLabel>
+                  <Wordmark className="h-4" />
+                </DropdownMenuLabel>
+              </DropdownMenuGroup>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </header>
+      </ChromeBoundary>
 
       {/* Billing lifecycle banner (docs/17 §6) — same escalation as desktop, in the
           one column beneath the header. */}
-      <BillingBanner />
+      <ChromeBoundary
+        region="billing-banner"
+        whatStopped="Notices about your plan and payments have stopped showing."
+      >
+        <BillingBanner />
+      </ChromeBoundary>
 
       {/* Same gate as the dock: the stack must not restore Site A's panes and
           then discover we are on Site B. */}
       {siteKey ? <MobileStack siteKey={siteKey} /> : <div className="flex-1" />}
 
-      <MobileNav open={navOpen} onOpenChange={onNavOpenChange} />
+      {/* Silent: the drawer is closed almost always, so a visible fallback would
+          be a permanent warning strip for a thing that is not on screen. */}
+      <ChromeBoundary region="mobile-nav" whatStopped="The menu has stopped working." silent>
+        <MobileNav open={navOpen} onOpenChange={onNavOpenChange} />
+      </ChromeBoundary>
     </div>
   );
 }

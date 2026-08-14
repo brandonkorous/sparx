@@ -18,6 +18,7 @@
 
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
+import { queryBool } from '@sparx/api-core/query';
 
 import { withTenant } from '@sparx/db';
 import { ok, paged } from '@sparx/api-core/envelope';
@@ -41,9 +42,8 @@ const ListQuery = z.object({
   skip: z.coerce.number().int().min(0).optional(),
   // `installed=true` restricts the catalog to THIS site's installs (the in-Builder
   // /builder/blueprints view), so the list + pager total reflect what's installed
-  // rather than the whole marketplace (eval Finding 8). An enum so only the literal
-  // 'true' filters — `z.coerce.boolean()` would treat 'false' as truthy.
-  installed: z.enum(['true', 'false']).optional(),
+  // rather than the whole marketplace (eval Finding 8).
+  installed: queryBool.optional(),
 });
 // Install target (docs/49 Phase 8): an explicit site to install into. Optional —
 // absent falls back to the active site (header) then primary. The body itself is
@@ -116,7 +116,7 @@ const blueprintRoutes: FastifyPluginAsync = (app) => {
     const q = ListQuery.parse(request.query);
     const take = Math.min(q.take ?? 50, 250);
     const skip = q.skip ?? 0;
-    const installedOnly = q.installed === 'true';
+    const installedOnly = q.installed === true;
     // Per-site install state (docs/49 Phase 8): a blueprint installs into a
     // specific site, so the catalog reads the ACTIVE site's install rows (the
     // switcher's header, else primary) — a secondary site shows ITS own

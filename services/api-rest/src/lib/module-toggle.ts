@@ -17,6 +17,7 @@ import type { FastifyBaseLogger } from 'fastify';
 import { prisma, type Prisma } from '@sparx/db';
 import { publish } from '@sparx/api-core/pubsub';
 import {
+  ALL_MODULES,
   invalidateModuleCache,
   requiredModules,
   blockingDependents,
@@ -27,32 +28,17 @@ import { publishPlatformEvent } from '@sparx/crm';
 import { isBillingConfigured, syncModuleItems } from '@sparx/billing';
 
 /** The closed set of module slugs, in a stable order. Shared so the tenant route
- *  and the operator route probe the same vocabulary. */
-export const MODULE_SLUGS: ModuleSlug[] = [
-  'builder',
-  'commerce',
-  'cms',
-  'crm',
-  'email',
-  'b2b',
-  'invoicing',
-  'dropship',
-  'inventory',
-  'chat',
-  'ai',
-  'scheduling',
-  'social',
-  'finance',
-  'staff',
-];
+ *  and the operator route probe the same vocabulary.
+ *
+ *  DERIVED from @sparx/modules rather than re-typed. This was a hand-written copy
+ *  of that list, and it fell behind twice: `inventory` and `finance` were both
+ *  added to the package and forgotten here, which typechecks perfectly (the array
+ *  is `ModuleSlug[]`, not exhaustive over the union) and then fails at the one
+ *  moment that matters — the activation toggle refuses the slug as "Request
+ *  validation failed", and the module can never be turned on at all. Adding a
+ *  module is now one edit. */
+export const MODULE_SLUGS: ModuleSlug[] = [...ALL_MODULES];
 export const MODULE_SLUG_SET = new Set<string>(MODULE_SLUGS);
-
-// This list is `ModuleSlug[]` but NOT exhaustive over the union, so a slug added
-// to @sparx/modules and forgotten here typechecks fine and then fails at the one
-// moment that matters: the activation toggle refuses it as "Request validation
-// failed", and the module can never be turned on at all. `inventory` and
-// `finance` have both been in exactly that state. When you add a slug, grep an
-// existing one across the repo — several other lists re-declare the vocabulary.
 
 /** Read the raw EXPLICIT module flags from `settings.modules.<slug>.enabled`.
  *  BUNDLED_FREE derivation is intentionally NOT applied here — the toggle

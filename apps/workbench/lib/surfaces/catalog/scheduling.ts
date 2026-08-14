@@ -8,6 +8,7 @@ import {
   Clock,
   Hourglass,
   Link2,
+  MapPin,
   Repeat,
   ShieldCheck,
   Users,
@@ -24,6 +25,8 @@ import { WaitlistSurface } from '../../../surfaces/scheduling/waitlist-list';
 import { ServicesListSurface } from '../../../surfaces/scheduling/services-list';
 import { ServiceDetailSurface } from '../../../surfaces/scheduling/service-detail';
 import { ResourcesListSurface } from '../../../surfaces/scheduling/resources-list';
+import { LocationsListSurface } from '../../../surfaces/scheduling/locations-list';
+import { LocationDetailSurface } from '../../../surfaces/scheduling/location-detail';
 import { ResourceDetailSurface } from '../../../surfaces/scheduling/resource-detail';
 import { AvailabilitySurface } from '../../../surfaces/scheduling/availability-settings';
 import { PoliciesListSurface } from '../../../surfaces/scheduling/policies-list';
@@ -145,6 +148,29 @@ export const SCHEDULING_SURFACES: SurfaceDefinition[] = [
     module: 'scheduling',
     icon: Users,
     component: ResourceDetailSurface,
+    listed: false,
+    besideWidth: 0.45,
+  },
+  {
+    key: 'scheduling.locations.list',
+    title: 'Places',
+    module: 'scheduling',
+    icon: MapPin,
+    section: 'Setup',
+    // After people & equipment (21): a place is where they work, so it reads as
+    // the wider container and belongs next to them rather than above them.
+    order: 21.5,
+    keywords: ['locations', 'premises', 'shop', 'clinic', 'studio', 'branch', 'address'],
+    component: LocationsListSurface,
+    createSurface: 'scheduling.locations.detail',
+    createLabel: 'Add a place',
+  },
+  {
+    key: 'scheduling.locations.detail',
+    title: (params) => (params.id === 'new' ? 'New place' : 'Place'),
+    module: 'scheduling',
+    icon: MapPin,
+    component: LocationDetailSurface,
     listed: false,
     besideWidth: 0.45,
   },

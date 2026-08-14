@@ -247,5 +247,12 @@
       ],
       "policyHandle": "emergency-callout"
     }
+  ],
+  "locations": [
+    {
+      "handle": "premises",
+      "name": "Brightwire Electric",
+      "timezone": "UTC"
+    }
   ]
 }

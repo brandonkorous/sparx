@@ -9,6 +9,7 @@
 
 import { useEffect, useState } from 'react';
 import { useQueryClient } from '@sparx/query';
+import { readWriteMeta } from '../lib/api/write-meta';
 import type { DetachedWindow } from '../lib/workbench/pane-host';
 import type { PaneDescriptor } from '../lib/surfaces/descriptor';
 import { useWorkbench } from '../lib/workbench/context';
@@ -100,7 +101,15 @@ export function useLastSaved(): string | null {
   useEffect(() => {
     const cache = queryClient.getMutationCache();
     return cache.subscribe((event) => {
-      if (event.mutation?.state.status === 'success') setAt(new Date().toISOString());
+      if (event.mutation?.state.status !== 'success') return;
+      // Only the operator's OWN writes count. The app makes its own — a visit
+      // ping on every pane opened, chief among them — and counting those made
+      // the strip announce "Saved just now" within a second of boot, before
+      // anybody had saved anything. This is the one place people look to check
+      // their work is safe, so it must never report a save that is not theirs.
+      // The flag is set on the mutation; see lib/api/write-meta.ts.
+      if (readWriteMeta(event.mutation.meta).housekeeping === true) return;
+      setAt(new Date().toISOString());
     });
   }, [queryClient]);
 

@@ -21,6 +21,9 @@
     "check:events": "node scripts/check-event-topics.mjs",
     "check:routes": "node scripts/check-surface-routes.mjs",
     "check:docker": "node scripts/check-dockerfile-deps.mjs",
+    "check:webhooks": "node scripts/check-webhook-events.mjs",
+    "check:inventory-api": "node scripts/check-inventory-api-docs.mjs",
+    "gen:inventory-api": "node scripts/gen-inventory-api-reference.mjs",
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md,css}\"",
     "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,md,css}\"",
     "db:up": "pnpm --filter @sparx/db db:up",
@@ -43,5 +46,10 @@
     "turbo": "^2.3.0",
     "typescript": "^6.0.3",
     "typescript-eslint": "^8.20.0"
+  },
+  "pnpm": {
+    "patchedDependencies": {
+      "@base-ui-components/react@1.0.0-rc.0": "patches/@base-ui-components__react@1.0.0-rc.0.patch"
+    }
   }
 }

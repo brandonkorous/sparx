@@ -41,6 +41,7 @@ import { useDirtySource } from '../../lib/workbench/dirty';
 import { afterPaneChange } from '../../lib/defer';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { FormSection } from '../../components/form-section';
+import { SiteScopeField } from '../../components/site-scope-field';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import {
   discountErrorMessage,
@@ -128,6 +129,8 @@ interface Draft {
   /** Preserved so a scope set elsewhere survives a save from here. */
   scope: Discount['scope'];
   priority: number;
+  /** The sites this offer runs on. EMPTY = all of them. */
+  propertyIds: string[];
 }
 
 const SIMPLE_KINDS = new Set(['min_subtotal_cents', 'min_item_count', 'first_order_only']);
@@ -160,6 +163,7 @@ function emptyDraft(): Draft {
     preservedConditions: [],
     scope: 'order',
     priority: 0,
+    propertyIds: [],
   };
 }
 
@@ -186,6 +190,8 @@ function toDraft(discount: Discount): Draft {
     preservedConditions: discount.conditions.filter((c) => !SIMPLE_KINDS.has(c.kind)),
     scope: discount.scope,
     priority: discount.priority,
+    // Sorted so the dirty check (a JSON compare) can't fire on ordering alone.
+    propertyIds: [...discount.propertyIds].sort(),
   };
 }
 
@@ -344,6 +350,7 @@ function DiscountEditor({
       perCustomerLimit: Number.isInteger(perCustomer) && perCustomer > 0 ? perCustomer : 1,
       stacking: draft.combine ? 'combine_with_all' : 'none',
       priority: draft.priority,
+      propertyIds: draft.propertyIds,
     };
 
     const parsed = parseDiscountInput(candidate);
@@ -831,6 +838,16 @@ function DiscountEditor({
               </FieldDescription>
             </Field>
           </FormSection>
+
+          <SiteScopeField
+            value={draft.propertyIds}
+            onChange={(next) => {
+              set('propertyIds', next);
+            }}
+            title="Which of your sites the offer runs on"
+            description="You run more than one website. Keep an offer to the business it was meant for, and the code will not work at the other one's checkout."
+            everyLabel="Run it on every site"
+          />
 
           {!isNew && discount ? (
             <div className="border-base-300 flex flex-col gap-4 border-t pt-4">

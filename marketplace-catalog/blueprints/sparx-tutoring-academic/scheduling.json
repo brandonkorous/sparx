@@ -353,5 +353,12 @@
       ],
       "policyHandle": "session-standard"
     }
+  ],
+  "locations": [
+    {
+      "handle": "premises",
+      "name": "Summit Learning",
+      "timezone": "UTC"
+    }
   ]
 }

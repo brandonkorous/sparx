@@ -57,6 +57,14 @@ export {
   getCustomerBookingStats,
 } from './booking-history';
 export {
+  type LocationRow,
+  listLocations,
+  getLocation,
+  createLocation,
+  updateLocation,
+  deleteLocation,
+} from './locations';
+export {
   type BookableResource,
   createResource,
   updateResource,
@@ -65,6 +73,8 @@ export {
   listResourcesPaged,
   listBookableResourcesForService,
   deleteResource,
+  getResourcePropertyIds,
+  getResourcePropertyIdsFor,
 } from './resources';
 export {
   createService,

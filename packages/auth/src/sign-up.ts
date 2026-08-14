@@ -31,6 +31,13 @@ export interface SignUpMerchantInput {
   /** Marketing attribution (docs/80 §6.1) — the first-party acquisition snapshot
    *  read from the attribution cookies at signup. Null when absent or unconsented. */
   acquisition?: SignUpAcquisition | null;
+  /** Which product the account is being created under. Passed straight through
+   *  to provisionTenant — see the note there on why this is a parameter and
+   *  never a conditional. Defaults to `sparx`. */
+  platformBrand?: string;
+  /** Zone for the tenant's always-on subdomain. Passed through; defaults to
+   *  `SPARX_ZONE_DOMAIN`. Piggles passes `piggles.site`. */
+  zoneDomain?: string;
 }
 
 export interface SignUpMerchantResult {
@@ -87,6 +94,8 @@ export async function signUpMerchant(input: SignUpMerchantInput): Promise<SignUp
         name: tenantName,
         email,
         acquisition: input.acquisition ?? null,
+        platformBrand: input.platformBrand,
+        zoneDomain: input.zoneDomain,
       });
 
       const user = await tx.user.create({

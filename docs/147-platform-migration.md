@@ -1,6 +1,6 @@
 # 147 — Platform migration: bringing a business off Shopify, Wix, WordPress, HubSpot & friends
 
-**Version:** 1.2
+**Version:** 1.3
 **Author:** Brandon Korous
 **Last Updated:** 2026-08-13
 
@@ -471,6 +471,21 @@ request goes out. `assertSafeUrl` in the package does the syntactic half (so the
 it too); the resolver half can only live in the service. The WordPress connector takes a site
 address from a tenant and our server fetches it — without this, an editor could read anything
 inside the cluster through the preview.
+
+### Where the how-to lives, and why there is only one of each
+
+Three surfaces describe this feature and each has ONE job. They are not copies of each other:
+
+| Surface                      | Audience                                    | Computed from                                                  |
+| ---------------------------- | ------------------------------------------- | -------------------------------------------------------------- |
+| `/migrate` + 20 vendor pages | somebody deciding whether to switch         | `registry.ts` + `connectorOnlyEntities()`                      |
+| The workbench surfaces       | somebody doing it, at the moment they do it | the same registry, over `/v1/migration/vendors`                |
+| `/docs/guides/migrating`     | somebody scripting it                       | the six endpoints, plus a table generated from `ENTITY_FIELDS` |
+
+**Do not add a fourth that repeats the how-to.** The docs guide deliberately does NOT name vendor
+files or menus — it links to `/migrate/<vendor>` instead — so exactly one place in the repo says
+"the file is called products_export.csv". A hand-written copy of that is the failure this whole
+feature exists to remove, pointed at ourselves.
 
 ### The thing not to undo
 

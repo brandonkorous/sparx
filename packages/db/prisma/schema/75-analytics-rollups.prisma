@@ -210,3 +210,74 @@ model RollupInventoryDailyValuation {
   @@id([tenantId, bucket], map: "rollup_inventory_daily_valuation_pkey")
   @@map("rollup_inventory_daily_valuation")
 }
+
+// ─── Platform capacity usage ─────────────────────────────────────────────────
+//
+// One row per (tenant, UTC day) of what a tenant is ACTUALLY USING of the
+// platform. Not a reporting convenience like the rollups above — this is the
+// evidence a usage-based price is set from.
+//
+// ── WHY THIS EXISTS, AND WHY IT COULD NOT WAIT ──────────────────────────────
+//
+// Piggles charges for SCALE rather than for access: every app is included, and
+// the bill moves with storage, email volume, contacts and seats. Before this
+// table there was no meter for any of them anywhere in the platform — nothing
+// counting, no history.
+//
+// Usage tiers priced later need history to be priced AT ALL, and history cannot
+// be backfilled: nobody can reconstruct how much storage a tenant was using last
+// March. Every day without this table was a day of pricing evidence permanently
+// lost, which is why it landed before the billing surfaces that will read it.
+//
+// It is deliberately platform-wide, not Piggles-only. sparx bills per module and
+// still needs to know what its tenants consume, and a metering table that
+// existed for one brand would be the fork this repo works hard to avoid.
+//
+// ── THE ONE THING TO GET RIGHT WHEN READING IT ──────────────────────────────
+//
+// The columns are NOT all the same kind of number, and treating them uniformly
+// is how a bill comes out wrong:
+//
+//   • STOCKS + UNITS (storage, contacts, seats, sites, locations) are
+//     POINT-IN-TIME — what was true when the snapshot ran. Summing them across
+//     days is meaningless; you want the latest, or a max/average over a window.
+//   • FLOWS (email sends) are a DAILY TOTAL — what happened during that day.
+//     Summing them across a period is exactly right; reading the latest row
+//     alone tells you about one day, not the month.
+//
+// Nullable, not zero-defaulted. A meter that has never been collected must read
+// as "not measured" rather than as "measured, and the answer was none" — a
+// defaulted 0 renders identically to a real 0 and is the difference between "no
+// storage used" and "storage was never counted". Enforcement and billing must
+// both refuse to act on a null.
+model RollupTenantDailyUsage {
+  tenantId String   @map("tenant_id") @db.Uuid
+  /// The UTC day this row describes (date only — no time component).
+  bucket   DateTime @db.Date
+
+  /// STOCK, point-in-time. Bytes across every uploaded asset.
+  storageBytes   BigInt? @map("storage_bytes")
+  /// STOCK, point-in-time. Customer/contact records.
+  contactsCount  Int?    @map("contacts_count")
+  /// UNIT, point-in-time. Active team members with a sign-in.
+  seatsCount     Int?    @map("seats_count")
+  /// UNIT, point-in-time. Web properties.
+  sitesCount     Int?    @map("sites_count")
+  /// UNIT, point-in-time. Warehouses / physical locations.
+  locationsCount Int?    @map("locations_count")
+  /// FLOW, daily total. Emails actually dispatched that day. Transactional mail
+  /// is counted here for evidence but is never capacity-gated in enforcement —
+  /// an order confirmation is the customer's customer's experience.
+  emailSends     Int?    @map("email_sends")
+
+  /// When this row was last computed. Distinct from `bucket`: a reconcile can
+  /// rewrite a closed day, and "measured at" is what tells you whether a null is
+  /// "not collected yet" or "collected, and genuinely nothing".
+  measuredAt DateTime @default(now()) @map("measured_at") @db.Timestamptz
+  updatedAt  DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@id([tenantId, bucket], map: "rollup_tenant_daily_usage_pkey")
+  @@map("rollup_tenant_daily_usage")
+}

@@ -71,10 +71,25 @@ export const SEED_CATEGORIES: readonly SeedCategory[] = [
 export const WAGES_CATEGORY_SLUG = 'wages';
 export const SOFTWARE_CATEGORY_SLUG = 'software';
 
+/** What a seed run actually did. `created` is the honest measurement — see below. */
+export interface SeedCategoriesResult {
+  /** Every seeded category as it now stands, existing rows included. */
+  categories: FinanceExpenseCategory[];
+  /** How many rows this run BROUGHT INTO EXISTENCE. Zero on a repeat run. */
+  created: number;
+}
+
 /**
  * Write the seeded set for a tenant. Idempotent on `(tenantId, slug)` — safe on
  * every module enable, which matters because a tenant can turn finance off and
  * back on and must not end up with two "Wages".
+ *
+ * Returns `created` separately from `categories` because the two are different
+ * numbers and only one of them is a measurement. The upsert loop touches all
+ * 20 rows on every run, so `categories.length` is 20 whether this call seeded a
+ * brand-new tenant or re-ran against one that was already complete — reporting
+ * it as "seeded" tells an operator that work happened when none did. The
+ * pre-read below is what lets a repeat run say zero and mean it.
  *
  * Accepts an optional open transaction so an industry starter can stamp several
  * modules' presets atomically (the ModulePreset contract in @sparx/modules).
@@ -82,11 +97,19 @@ export const SOFTWARE_CATEGORY_SLUG = 'software';
 export async function seedCategories(
   tenantId: string,
   tx?: TxClient
-): Promise<FinanceExpenseCategory[]> {
-  const run = async (client: TxClient): Promise<FinanceExpenseCategory[]> => {
-    const created: FinanceExpenseCategory[] = [];
+): Promise<SeedCategoriesResult> {
+  const run = async (client: TxClient): Promise<SeedCategoriesResult> => {
+    // Read before write, inside the same transaction, so the comparison can't
+    // race a concurrent enable.
+    const before = await client.financeExpenseCategory.findMany({
+      where: { tenantId, slug: { in: SEED_CATEGORIES.map((s) => s.slug) } },
+      select: { slug: true },
+    });
+    const existing = new Set(before.map((row) => row.slug));
+
+    const categories: FinanceExpenseCategory[] = [];
     for (const seed of SEED_CATEGORIES) {
-      created.push(
+      categories.push(
         await client.financeExpenseCategory.upsert({
           where: { tenantId_slug: { tenantId, slug: seed.slug } },
           // Only ever writes the machine-owned fields. A tenant who renamed
@@ -104,7 +127,11 @@ export async function seedCategories(
         })
       );
     }
-    return created;
+
+    return {
+      categories,
+      created: SEED_CATEGORIES.filter((seed) => !existing.has(seed.slug)).length,
+    };
   };
 
   return tx ? run(tx) : withTenant({ tenantId }, run);

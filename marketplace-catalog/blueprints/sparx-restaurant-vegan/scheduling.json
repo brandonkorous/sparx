@@ -449,5 +449,12 @@
       ],
       "policyHandle": "large-table"
     }
+  ],
+  "locations": [
+    {
+      "handle": "premises",
+      "name": "Sprout & Vine",
+      "timezone": "UTC"
+    }
   ]
 }

@@ -26,6 +26,7 @@
 
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
+import { queryBool } from '@sparx/api-core/query';
 import { inventoryService } from '@sparx/inventory';
 import { ok } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
@@ -35,7 +36,7 @@ const IdPath = z.object({ id: z.string().uuid() });
 
 const ScorecardQuery = z.object({
   supplier_id: z.string().uuid().optional(),
-  scored_only: z.coerce.boolean().optional(),
+  scored_only: queryBool.optional(),
   take: z.coerce.number().int().min(1).max(500).optional(),
   skip: z.coerce.number().int().min(0).optional(),
 });

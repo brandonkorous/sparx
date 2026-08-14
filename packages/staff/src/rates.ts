@@ -16,6 +16,7 @@ export function toPayRate(row: {
   amountCents: number;
   currency: string;
   burdenPercent: { toString(): string };
+  commissionPercent: { toString(): string };
   effectiveFrom: Date;
   effectiveTo: Date | null;
   note: string | null;
@@ -26,6 +27,7 @@ export function toPayRate(row: {
     amountCents: row.amountCents,
     currency: row.currency,
     burdenPercent: Number(row.burdenPercent.toString()),
+    commissionPercent: Number(row.commissionPercent.toString()),
     effectiveFrom: row.effectiveFrom,
     effectiveTo: row.effectiveTo,
     note: row.note,
@@ -47,6 +49,11 @@ export interface SetRateInput {
   amountCents: number;
   currency?: string;
   burdenPercent?: number;
+  /** The share of a sale earned, under `basis: 'commission'` only. Zeroed on
+   *  every other basis below, for the same reason `amountCents` is zeroed under
+   *  `none`: a rate switched off commission must not keep a live percentage that
+   *  the calculator would go on paying. The DB CHECK enforces it too. */
+  commissionPercent?: number;
   effectiveFrom: Date;
   effectiveTo?: Date | null;
   note?: string | null;
@@ -102,6 +109,7 @@ export async function setRate(
         amountCents: input.basis === 'none' ? 0 : input.amountCents,
         currency: input.currency ?? 'USD',
         burdenPercent: input.burdenPercent ?? 0,
+        commissionPercent: input.basis === 'commission' ? (input.commissionPercent ?? 0) : 0,
         effectiveFrom: input.effectiveFrom,
         effectiveTo: input.effectiveTo ?? null,
         note: input.note ?? null,

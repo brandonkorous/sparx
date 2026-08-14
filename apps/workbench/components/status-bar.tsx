@@ -139,6 +139,14 @@ function freshEnoughToShow(item: ActivityItem | undefined): ActivityItem | undef
  *  the very popup that's supposed to feel good. */
 function useActivityToasts(items: ActivityItem[], ready: boolean) {
   const toast = useToast();
+  // `toast.add` rather than `toast`: Base UI memoizes the manager on the toast
+  // LIST, so its identity churns every time ANYTHING in the app raises one,
+  // while `add` underneath it never does. Depending on the manager re-ran this
+  // effect on an unrelated toast, which cleared the pending timer below — so a
+  // sale announced itself only when nothing else happened to toast in the same
+  // beat. (The same dependency is an outright render loop in a hook that adds
+  // unconditionally; see components/update-notifier.tsx.)
+  const addToast = toast.add;
   const seen = useRef<Set<string> | null>(null);
 
   useEffect(() => {
@@ -150,12 +158,17 @@ function useActivityToasts(items: ActivityItem[], ready: boolean) {
       return;
     }
     const fresh = items.filter((item) => !seen.current?.has(item.id));
-    for (const item of fresh) seen.current.add(item.id);
     if (fresh.length === 0) return;
 
     // Deferred: Base UI's toast.add measures via flushSync, which React
     // rejects from inside a commit ("flushSync from inside a lifecycle").
+    //
+    // `seen` is marked HERE rather than above, so an event is only ever recorded
+    // as announced once it actually has been. Marking before the timer meant a
+    // cancelled run swallowed the ids permanently — the re-run found nothing
+    // fresh and the toast was gone for good.
     const timer = setTimeout(() => {
+      for (const item of fresh) seen.current?.add(item.id);
       // Cap the celebration: a burst (bulk import, catch-up after sleep)
       // becomes one summary rather than a stack of popups.
       if (fresh.length > 3) {
@@ -167,7 +180,7 @@ function useActivityToasts(items: ActivityItem[], ready: boolean) {
           (item) =>
             item.action === 'crm.order.created' || item.action === 'commerce.checkout.completed'
         ).length;
-        toast.add({
+        addToast({
           title: 'Things are happening',
           description:
             sales > 0
@@ -178,7 +191,7 @@ function useActivityToasts(items: ActivityItem[], ready: boolean) {
         return;
       }
       for (const item of fresh) {
-        toast.add({
+        addToast({
           title: item.title,
           description: item.subject ?? undefined,
           type: toastTypeForActivity(item.action),
@@ -188,7 +201,7 @@ function useActivityToasts(items: ActivityItem[], ready: boolean) {
     return () => {
       clearTimeout(timer);
     };
-  }, [items, ready, toast]);
+  }, [items, ready, addToast]);
 }
 
 export function StatusBar() {

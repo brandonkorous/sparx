@@ -1,0 +1,23 @@
+{
+  "name": "@piggles/auth-handoff",
+  "version": "0.0.0",
+  "private": true,
+  "description": "The getpiggles.com \u2192 mypiggles.com session handoff. Both halves in one place.",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "dependencies": {
+    "@piggles/config": "workspace:*",
+    "@sparx/auth": "workspace:*",
+    "@sparx/db": "workspace:*",
+    "better-auth": "^1.6.11"
+  },
+  "devDependencies": {
+    "@types/node": "^25.9.1",
+    "typescript": "^6.0.3"
+  },
+  "files": [
+    "src"
+  ]
+}

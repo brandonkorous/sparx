@@ -226,6 +226,45 @@ jobs:
       - name: Check Dockerfile dependency closure
         run: node scripts/check-dockerfile-deps.mjs
 
+  webhook-events:
+    name: Webhook event parity
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    # Three lists decide which events a tenant can subscribe to: the API's
+    # allow-list, the picker's human catalogue, and the event registry itself.
+    # Every way they can disagree is silent. The worst is the API and the picker
+    # agreeing on an event the registry never emits — the subscription saves,
+    # the box stays ticked, the endpoint is never called, and whoever set it up
+    # concludes their own server is broken. Pure Node, no install.
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+
+      - name: Check webhook event lists agree
+        run: node scripts/check-webhook-events.mjs
+
+  inventory-api-docs:
+    name: Inventory API reference
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    # The inventory module publishes ~337 endpoints — ten times any other domain
+    # — so its reference (docs/150) is GENERATED from the routes rather than
+    # transcribed. An undocumented endpoint is an invisible feature; a documented
+    # one that no longer exists sends somebody to build against a 404 and blame
+    # their own code. Pure Node, no install.
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+
+      - name: Check the inventory API reference is current
+        run: node scripts/check-inventory-api-docs.mjs
+
   migration-order:
     name: Migration ordering
     runs-on: ubuntu-latest

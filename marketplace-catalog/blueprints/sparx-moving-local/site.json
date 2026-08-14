@@ -22,7 +22,7 @@
                   "props": {
                     "show": "both"
                   },
-                  "id": "ca77ea97-28ff-42ff-92a5-8844f63d0c71",
+                  "id": "732c4d0c-805e-410c-9c2c-7d7b14492942",
                   "ord": "a0"
                 },
                 {
@@ -37,13 +37,15 @@
                       "attrs": {
                         "href": "/book"
                       },
-                      "children": ["Book"],
+                      "children": [
+                        "Book"
+                      ],
                       "slot": {
                         "name": "link1",
                         "type": "link",
                         "label": "Product"
                       },
-                      "id": "39de8a78-b058-4ab0-b740-cb69a50ad256",
+                      "id": "0d382e7a-e371-4500-ad41-c47ec0f20402",
                       "ord": "a0"
                     },
                     {
@@ -53,13 +55,15 @@
                       "attrs": {
                         "href": "/about"
                       },
-                      "children": ["About"],
+                      "children": [
+                        "About"
+                      ],
                       "slot": {
                         "name": "link2",
                         "type": "link",
                         "label": "Pricing"
                       },
-                      "id": "be49cbdd-2a8b-46b7-8ee8-b853d932f046",
+                      "id": "6d78b5c8-7170-4ce1-8831-25ae34bb2dc4",
                       "ord": "a1"
                     },
                     {
@@ -69,17 +73,19 @@
                       "attrs": {
                         "href": "/contact"
                       },
-                      "children": ["Contact"],
+                      "children": [
+                        "Contact"
+                      ],
                       "slot": {
                         "name": "link3",
                         "type": "link",
                         "label": "Docs"
                       },
-                      "id": "afbbe1d4-96aa-4f4f-972a-a6386db1c089",
+                      "id": "ae73b0b2-6b8e-4add-8114-b09274c56027",
                       "ord": "a2"
                     }
                   ],
-                  "id": "f6716c5e-74fa-4b80-9f1e-ecedb45799a9",
+                  "id": "df742b0b-0250-4300-919d-adc24cecd251",
                   "ord": "a1"
                 },
                 {
@@ -94,20 +100,22 @@
                       "attrs": {
                         "href": "/account/login"
                       },
-                      "children": ["Sign in"],
+                      "children": [
+                        "Sign in"
+                      ],
                       "slot": {
                         "name": "secondary",
                         "type": "link",
                         "label": "Secondary link"
                       },
-                      "id": "bf3ef9eb-1aa5-453c-9ce6-dc3242139483",
+                      "id": "2828055c-8994-4050-8dfc-75048e776070",
                       "ord": "a0"
                     },
                     {
                       "kind": "host",
                       "component": "site.theme-toggle",
                       "class": "inline-flex items-center",
-                      "id": "58478471-4be8-4b37-89a2-1f9995c9ccc1",
+                      "id": "231f481b-7f2c-4f15-bd1e-bb0042a59a1a",
                       "ord": "a1"
                     },
                     {
@@ -123,7 +131,7 @@
                         "type": "link",
                         "label": "Primary action"
                       },
-                      "id": "e522e3e2-6bde-4ef3-856e-2ac48e1fc431",
+                      "id": "c65cadeb-f711-49ba-ae34-0e4abfba3a73",
                       "ord": "a2"
                     },
                     {
@@ -141,20 +149,20 @@
                           "props": {
                             "name": "menu"
                           },
-                          "id": "17cf9b8e-f397-4644-ab97-89c04d62df97",
+                          "id": "196e3f11-6d59-4ec3-a27f-7521bebeba0c",
                           "ord": "a0"
                         }
                       ],
                       "part": "trigger",
-                      "id": "3a545073-f0a3-43e5-b14a-dd9fa7d51bcc",
+                      "id": "ac95ae56-ab0f-48d2-b33e-5e440a980c0b",
                       "ord": "a3"
                     }
                   ],
-                  "id": "6fb5e8a0-8ef8-4d7a-b058-d0b8775c3844",
+                  "id": "453d85ae-aa6d-4bb2-9baa-d271e44a3388",
                   "ord": "a2"
                 }
               ],
-              "id": "dbffcc7f-66cc-4785-ba4d-7539bb122fc7",
+              "id": "817736dc-1fa0-4032-8734-c7b0ba50825f",
               "ord": "a0"
             },
             {
@@ -172,13 +180,15 @@
                   "attrs": {
                     "href": "/book"
                   },
-                  "children": ["Book"],
+                  "children": [
+                    "Book"
+                  ],
                   "slot": {
                     "name": "link1",
                     "type": "link",
                     "label": "Product"
                   },
-                  "id": "39c7dd49-154d-40cd-a380-0ddd15c7a871",
+                  "id": "5b712c6d-1f9e-42b4-a8a8-7d610ce2b4ff",
                   "ord": "a0"
                 },
                 {
@@ -188,13 +198,15 @@
                   "attrs": {
                     "href": "/about"
                   },
-                  "children": ["About"],
+                  "children": [
+                    "About"
+                  ],
                   "slot": {
                     "name": "link2",
                     "type": "link",
                     "label": "Pricing"
                   },
-                  "id": "48ee241c-7c6a-419d-982b-6f20a76b5ea3",
+                  "id": "766e26ca-7257-4de4-9856-2bc28c1157e5",
                   "ord": "a1"
                 },
                 {
@@ -204,13 +216,15 @@
                   "attrs": {
                     "href": "/contact"
                   },
-                  "children": ["Contact"],
+                  "children": [
+                    "Contact"
+                  ],
                   "slot": {
                     "name": "link3",
                     "type": "link",
                     "label": "Docs"
                   },
-                  "id": "6782a52c-49ae-4ae5-8aa6-a2064f79a98e",
+                  "id": "30251a93-1141-4890-8991-e191ce521ee5",
                   "ord": "a2"
                 },
                 {
@@ -226,7 +240,7 @@
                     "type": "link",
                     "label": "Secondary link"
                   },
-                  "id": "a406b84c-3fff-46ca-a6d0-6a39ca46f7d7",
+                  "id": "5fc796a4-5db6-4f03-a321-6cd8fa3e9bed",
                   "ord": "a3"
                 },
                 {
@@ -242,19 +256,19 @@
                     "type": "link",
                     "label": "Primary action"
                   },
-                  "id": "fc3d5676-1edb-4413-a50f-8f4ff93dafee",
+                  "id": "ed23c2b7-66ac-4643-8822-f9d37703fecc",
                   "ord": "a4"
                 }
               ],
               "part": "panel",
-              "id": "b82a713b-d0b5-477b-b0c0-3c2b3b977245",
+              "id": "6337e1d6-5829-4993-8b8b-e5f8567796af",
               "ord": "a1"
             }
           ],
           "behavior": {
             "type": "disclosure"
           },
-          "id": "7ac68f34-0c00-45ef-b24d-716ad7bcf110",
+          "id": "88134007-6d0f-417e-90b2-cd8199c3d4b8",
           "ord": "a0"
         },
         {
@@ -270,7 +284,7 @@
               "kind": "outlet"
             }
           ],
-          "id": "22437078-6a12-4736-8d34-50525d865fc3",
+          "id": "c3062a65-a0e5-433b-9646-c37a2182ce35",
           "ord": "a1"
         },
         {
@@ -300,14 +314,16 @@
                           "props": {
                             "show": "both"
                           },
-                          "id": "4748344d-f1eb-432b-b0f4-13b538532568",
+                          "id": "daf74bf5-26a2-4180-b078-97ed61fe8b03",
                           "ord": "a0"
                         },
                         {
                           "kind": "element",
                           "tag": "p",
                           "class": "max-w-xs text-sm text-base-content",
-                          "children": ["Everything you publish, in one place."],
+                          "children": [
+                            "Everything you publish, in one place."
+                          ],
                           "slot": {
                             "name": "blurb",
                             "type": "text",
@@ -316,7 +332,7 @@
                           "attrs": {
                             "href": "/"
                           },
-                          "id": "b3083d55-309b-43f2-8e9f-c0b16838a8fc",
+                          "id": "e19432ef-b53e-4e3c-b19e-c49e8f65bfc4",
                           "ord": "a1"
                         },
                         {
@@ -324,11 +340,11 @@
                           "tag": "ul",
                           "class": "mt-2 flex items-center gap-5",
                           "children": [],
-                          "id": "c013d85a-c833-498e-a4aa-36b5b704cd0d",
+                          "id": "69e437d1-799e-4f18-9839-0a05756d8b49",
                           "ord": "a2"
                         }
                       ],
-                      "id": "f5b45a19-fbe0-4d06-aefa-cb9624f124b2",
+                      "id": "297d8c1e-57ba-4fb7-b3a1-2e2c4fbd6de2",
                       "ord": "a0"
                     },
                     {
@@ -340,7 +356,9 @@
                           "kind": "element",
                           "tag": "p",
                           "class": "text-sm font-semibold text-base-content",
-                          "children": ["Explore"],
+                          "children": [
+                            "Explore"
+                          ],
                           "slot": {
                             "name": "col1",
                             "type": "text",
@@ -349,7 +367,7 @@
                           "attrs": {
                             "href": "/"
                           },
-                          "id": "dbaa5402-ee87-4c7c-af6f-d579d26789c1",
+                          "id": "5166f29b-d5b3-41e0-94f1-de238d8d3d53",
                           "ord": "a0"
                         },
                         {
@@ -368,17 +386,19 @@
                                   "attrs": {
                                     "href": "/book"
                                   },
-                                  "children": ["Book"],
+                                  "children": [
+                                    "Book"
+                                  ],
                                   "slot": {
                                     "name": "link1",
                                     "type": "link",
                                     "label": "Features"
                                   },
-                                  "id": "2ac89563-f0f9-42c9-bfac-0e3c9d28d54b",
+                                  "id": "0ee224f5-6f30-40a8-8629-a2f3ef966bef",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "f49eb91c-50e1-4c23-aa54-8a7a48cecc00",
+                              "id": "55528f45-c417-43c7-93fb-3e10044dbde5",
                               "ord": "a0"
                             },
                             {
@@ -392,17 +412,19 @@
                                   "attrs": {
                                     "href": "/about"
                                   },
-                                  "children": ["About"],
+                                  "children": [
+                                    "About"
+                                  ],
                                   "slot": {
                                     "name": "link2",
                                     "type": "link",
                                     "label": "Pricing"
                                   },
-                                  "id": "d1d718f2-7334-48c6-a5c7-fe0e43da202b",
+                                  "id": "1b65ca30-0a8b-46e2-ae41-1ffc9d579527",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "b6632abd-8f94-4ee7-86db-b647067c6566",
+                              "id": "7b3777a5-b669-4070-9678-c3a06444390a",
                               "ord": "a1"
                             },
                             {
@@ -416,17 +438,19 @@
                                   "attrs": {
                                     "href": "/contact"
                                   },
-                                  "children": ["Contact"],
+                                  "children": [
+                                    "Contact"
+                                  ],
                                   "slot": {
                                     "name": "link3",
                                     "type": "link",
                                     "label": "Integrations"
                                   },
-                                  "id": "5cf3255c-9d28-4b07-8c2a-240f30f0821f",
+                                  "id": "1fa84164-14d0-47de-bf83-c53078f494af",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "df21317b-0739-4473-a8e2-0d55d327f3ad",
+                              "id": "cbf7585e-a044-4d05-9fd6-0de30de9bfe6",
                               "ord": "a2"
                             },
                             {
@@ -440,25 +464,27 @@
                                   "attrs": {
                                     "href": "/search"
                                   },
-                                  "children": ["Search"],
+                                  "children": [
+                                    "Search"
+                                  ],
                                   "slot": {
                                     "name": "link4",
                                     "type": "link",
                                     "label": "Changelog"
                                   },
-                                  "id": "dd319f6b-ebee-4542-9751-fda78505183e",
+                                  "id": "95fc8d18-becc-4e70-b9e2-b71aae714601",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "53aa81d5-89fd-4d50-8d0a-8cae4ad0a95b",
+                              "id": "12dbcffd-93f5-4a45-9544-80798bcc4943",
                               "ord": "a3"
                             }
                           ],
-                          "id": "bbfb7398-29c6-4748-aeac-1ff36d9e2740",
+                          "id": "77abc4f7-4ce4-4b65-a77f-07b1ec677ff1",
                           "ord": "a1"
                         }
                       ],
-                      "id": "a0dbec72-4c87-4345-9fd4-b7b0ef9f0f69",
+                      "id": "bcbf6051-dc6e-46a0-a7b9-d18527b905a4",
                       "ord": "a1"
                     },
                     {
@@ -471,11 +497,11 @@
                           "tag": "ul",
                           "class": "flex flex-col gap-2",
                           "children": [],
-                          "id": "39385d27-5576-4094-b2e1-0e08ae620337",
+                          "id": "88b6c428-c285-4230-97d0-756b266f8add",
                           "ord": "a0"
                         }
                       ],
-                      "id": "43f121ab-e19b-4a49-8cc3-380d6913f892",
+                      "id": "4cb4e59a-f815-427c-b139-9ea38b7dbf9c",
                       "ord": "a2"
                     },
                     {
@@ -499,23 +525,23 @@
                                   "props": {
                                     "heading": "Legal"
                                   },
-                                  "id": "2638c53e-f3b9-4798-87bc-0aeb78fe81be",
+                                  "id": "30ce0edf-0068-4e57-a34f-981a46599a38",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "f37fe40b-95ca-45a9-96ff-9cf8a8b2d41e",
+                              "id": "48a7150f-a3f1-4bf9-bd12-a75c56872371",
                               "ord": "a0"
                             }
                           ],
-                          "id": "3327a5d2-4450-4992-a216-48c720dfdb5a",
+                          "id": "49bf2daa-bc75-4bb0-a37b-6e3072964fcc",
                           "ord": "a0"
                         }
                       ],
-                      "id": "be56cd96-9f3c-4951-b89e-41c7c66855f4",
+                      "id": "e5eb0493-e7d2-4f7d-b61f-0c303eadf589",
                       "ord": "a3"
                     }
                   ],
-                  "id": "229a8859-ac2c-4da7-ab5e-ba0ffdec1806",
+                  "id": "c92c55a3-bb99-406c-9a20-48e97f8a9cb4",
                   "ord": "a0"
                 },
                 {
@@ -533,16 +559,18 @@
                           "kind": "element",
                           "tag": "span",
                           "class": "font-medium",
-                          "children": ["Your site"],
+                          "children": [
+                            "Your site"
+                          ],
                           "data": {
                             "kind": "value",
                             "ref": "site.identity.name"
                           },
-                          "id": "8f572298-8ed9-4e33-bfba-78d2650fdeed",
+                          "id": "7440df2e-9cd6-421f-bd97-c2eec34c23f1",
                           "ord": "a0"
                         }
                       ],
-                      "id": "2b321a90-ab49-4662-9a5e-c164203a2f0b",
+                      "id": "c0d1d505-2952-424e-b1d3-c30e4751040e",
                       "ord": "a0"
                     },
                     {
@@ -550,23 +578,23 @@
                       "tag": "ul",
                       "class": "flex flex-wrap items-center gap-x-6 gap-y-2",
                       "children": [],
-                      "id": "3e108df3-d123-4e5e-97b1-957f065c673d",
+                      "id": "dc9c2dd9-8593-4dbb-b254-f64c330ece90",
                       "ord": "a1"
                     }
                   ],
-                  "id": "8c67706f-ceb5-416a-8d28-25a7683be7ac",
+                  "id": "5a6294a0-28ee-42da-946b-772115f415d6",
                   "ord": "a1"
                 }
               ],
-              "id": "5eb2fbd7-8c4d-4999-9027-c3c2f1353f37",
+              "id": "0c03a43f-d858-4cca-b83c-def2a0f97ae6",
               "ord": "a0"
             }
           ],
-          "id": "c15d5d9b-30b5-49f1-905b-5cf2344446c7",
+          "id": "3cf71e94-6899-4224-a3a6-51c233840818",
           "ord": "a2"
         }
       ],
-      "id": "72181fb7-16f3-4e77-b21d-688cf562ae92"
+      "id": "5e3b21da-7fa8-4503-a5b1-ada1698b47a0"
     }
   },
   "pages": [
@@ -580,7 +608,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "896daeeb-aa0c-4658-b247-2df9cb18e139",
+        "id": "dc7bf2a2-2c7e-4675-a5da-a3c8a5142c78",
         "children": [
           {
             "kind": "element",
@@ -596,14 +624,14 @@
                   "alt": "Two uniformed movers carrying a wrapped sofa down a front walk to a loaded truck",
                   "loading": "eager"
                 },
-                "id": "9c73e3b4-8bab-4fc5-a647-fd3fc2ecb30f",
+                "id": "3ee64127-24de-4bde-9fe4-7501e009ad1b",
                 "ord": "a0"
               },
               {
                 "kind": "element",
                 "tag": "div",
                 "class": "absolute inset-0 bg-black/50",
-                "id": "8fecd7c1-20a3-4d37-9bdd-a7d93fe172f8",
+                "id": "e6290e5f-bf9e-44f3-9222-ae26c747a1a2",
                 "ord": "a1"
               },
               {
@@ -615,8 +643,10 @@
                     "kind": "element",
                     "tag": "h1",
                     "class": "max-w-3xl text-4xl font-bold leading-tight tracking-tight @2xl:text-5xl @3xl:text-6xl",
-                    "children": ["Movers who show up and take care of your stuff"],
-                    "id": "8c27a300-2732-4423-a1ff-b3f82d4d8485",
+                    "children": [
+                      "Movers who show up and take care of your stuff"
+                    ],
+                    "id": "50952b88-4e71-4c78-abba-790ee6656586",
                     "ord": "a0"
                   },
                   {
@@ -626,7 +656,7 @@
                     "children": [
                       "Local, friendly and fully insured — with flat, upfront quotes and crews that treat your things like their own. Get a free estimate online and we’ll give you a real price before moving day."
                     ],
-                    "id": "2bc0271d-c8cf-44f2-9d7c-e62b985bb1be",
+                    "id": "8b944494-124b-4dc0-84d7-9e50d7b23f4c",
                     "ord": "a1"
                   },
                   {
@@ -641,8 +671,10 @@
                         "attrs": {
                           "href": "/book"
                         },
-                        "children": ["Get a free estimate"],
-                        "id": "09417a60-f1da-46f0-b069-d46799e1f808",
+                        "children": [
+                          "Get a free estimate"
+                        ],
+                        "id": "5d6bef3b-db65-429f-9769-c8cd8a716314",
                         "ord": "a0"
                       },
                       {
@@ -652,20 +684,22 @@
                         "attrs": {
                           "href": "/book"
                         },
-                        "children": ["See what we move"],
-                        "id": "15a893e6-7e0e-4792-bda8-03e563f84995",
+                        "children": [
+                          "See what we move"
+                        ],
+                        "id": "60b8a200-77f8-4821-b124-894d117a505b",
                         "ord": "a1"
                       }
                     ],
-                    "id": "da070b1c-2868-49d7-af88-b2b558195e1c",
+                    "id": "478d94e4-8cd4-45e8-9192-b2749c2a9f41",
                     "ord": "a2"
                   }
                 ],
-                "id": "ade3b4c0-28b5-4158-89b6-c926e9d48741",
+                "id": "9d09b000-3090-4c18-8af4-11d10ed583b2",
                 "ord": "a2"
               }
             ],
-            "id": "aef5ed24-d61a-4edb-bdff-87b209621abb",
+            "id": "c39a4ce6-0f9a-4d0c-98e1-b06c856647ba",
             "ord": "a0"
           },
           {
@@ -692,8 +726,10 @@
                             "kind": "element",
                             "tag": "h2",
                             "class": "text-xl font-semibold text-base-content",
-                            "children": ["Upfront flat quotes"],
-                            "id": "f52de28a-d551-493e-89f3-b5b9da4a9d9c",
+                            "children": [
+                              "Upfront flat quotes"
+                            ],
+                            "id": "d77e56df-0311-49cf-950b-a8efac17ba65",
                             "ord": "a0"
                           },
                           {
@@ -703,11 +739,11 @@
                             "children": [
                               "You get one clear, written price before we lift a box — no hourly meter creeping up, no surprise fees added on at the curb when the truck’s already full."
                             ],
-                            "id": "8fa2bf38-dd45-422c-9dfb-28c1bea1b68b",
+                            "id": "2ddba9d2-a6f4-4fcf-b90c-5701fd04fd8f",
                             "ord": "a1"
                           }
                         ],
-                        "id": "2230e4cf-5c37-44b3-b5b7-37fbf700aa47",
+                        "id": "bcb118e8-66bc-46e9-bd36-ca8b2c48a4e0",
                         "ord": "a0"
                       },
                       {
@@ -719,8 +755,10 @@
                             "kind": "element",
                             "tag": "h2",
                             "class": "text-xl font-semibold text-base-content",
-                            "children": ["Careful, insured crews"],
-                            "id": "ff86adea-9192-4f79-b9bd-2ceeb3485e3c",
+                            "children": [
+                              "Careful, insured crews"
+                            ],
+                            "id": "86af9ea0-5c9c-436d-b613-37f6b8e17522",
                             "ord": "a0"
                           },
                           {
@@ -730,11 +768,11 @@
                             "children": [
                               "Every crew is background-checked, uniformed and fully insured. Furniture gets blanket-wrapped, floors get protected, and doorframes go home without a scratch."
                             ],
-                            "id": "bc29245d-25a9-4c47-8bf4-3a0e2bc18475",
+                            "id": "13620c10-43b6-403c-b4ef-1cbc461e4c55",
                             "ord": "a1"
                           }
                         ],
-                        "id": "d46fe23a-17d3-4b4a-a4bc-8bba855590a1",
+                        "id": "a1332251-ce15-4338-ab60-8a2db79ab83d",
                         "ord": "a1"
                       },
                       {
@@ -746,8 +784,10 @@
                             "kind": "element",
                             "tag": "h2",
                             "class": "text-xl font-semibold text-base-content",
-                            "children": ["Packing & supplies"],
-                            "id": "e7bc25fd-90c3-4d80-9459-f59ebf861a64",
+                            "children": [
+                              "Packing & supplies"
+                            ],
+                            "id": "1ecc7f87-56a3-4fe8-bc64-a30c7b71a34f",
                             "ord": "a0"
                           },
                           {
@@ -757,11 +797,11 @@
                             "children": [
                               "Boxes, tape, wrap and dish barrels — we can bring it all, or pack the whole place for you. Nothing loaded loose, nothing you have to figure out yourself."
                             ],
-                            "id": "599e7524-90f5-4262-9b51-d80dfb3ee16c",
+                            "id": "84d26701-a1d6-4c6f-8983-0a2b36919e8e",
                             "ord": "a1"
                           }
                         ],
-                        "id": "b03df50a-69d0-418d-a84f-49b413b1a5bc",
+                        "id": "ee60ee11-1c6e-4fb8-9b70-c7abce48fd3b",
                         "ord": "a2"
                       },
                       {
@@ -773,8 +813,10 @@
                             "kind": "element",
                             "tag": "h2",
                             "class": "text-xl font-semibold text-base-content",
-                            "children": ["On time, guaranteed"],
-                            "id": "5b7126fd-5859-492f-b66a-652bb0854655",
+                            "children": [
+                              "On time, guaranteed"
+                            ],
+                            "id": "d4f7145a-13ac-47e6-ac47-79b61d1a975c",
                             "ord": "a0"
                           },
                           {
@@ -784,23 +826,23 @@
                             "children": [
                               "We give you a real arrival window and text when we’re on the way. Moving day runs on your schedule, not ours — and we don’t leave until it’s done right."
                             ],
-                            "id": "4c209564-c0f1-4a8f-8eb4-4d7b461a65ac",
+                            "id": "e578d842-033c-49c0-a190-06760cefba8f",
                             "ord": "a1"
                           }
                         ],
-                        "id": "607d3361-1592-4ad2-a793-dde17a4ae804",
+                        "id": "4c830e9e-ded2-4b07-a4a5-897a3478085d",
                         "ord": "a3"
                       }
                     ],
-                    "id": "9fe40fde-e24b-4f5b-9230-c056ed2d23e8",
+                    "id": "692202e4-0bb1-4eca-9b39-f175b779a0b7",
                     "ord": "a0"
                   }
                 ],
-                "id": "3232d4bd-6a0b-45b4-a298-090b7400ae18",
+                "id": "fbc5b81f-6df6-4338-b2ee-2ada4716c81d",
                 "ord": "a0"
               }
             ],
-            "id": "226e07e2-535b-4610-bb70-1528cb783d01",
+            "id": "0986a055-57e1-4e98-8b5b-93a9f23bf67a",
             "ord": "a1"
           },
           {
@@ -822,8 +864,10 @@
                         "kind": "element",
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
-                        "children": ["What we can help you move"],
-                        "id": "b143c586-c823-4816-971d-27fb69b9204a",
+                        "children": [
+                          "What we can help you move"
+                        ],
+                        "id": "99bb76b5-6999-479d-854e-adacb722fd50",
                         "ord": "a0"
                       },
                       {
@@ -833,11 +877,11 @@
                         "children": [
                           "Every estimate is free. Pick the one that fits and see how long it takes and the next open time — then we come out and give you a flat, written price."
                         ],
-                        "id": "7ba59c30-6978-4038-8655-cb36e7d9fed0",
+                        "id": "5e4a5fbd-e4b2-49cc-aadd-ab9b03ecd5bd",
                         "ord": "a1"
                       }
                     ],
-                    "id": "37f9c8d0-0b14-49b2-a8e4-1fff0c698bde",
+                    "id": "1b662011-3d68-4dd9-8424-03599ea59d01",
                     "ord": "a0"
                   },
                   {
@@ -862,28 +906,34 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
-                                "children": ["Free estimate"],
-                                "id": "e0c1ee70-042f-4532-a4f8-11b4a6ac3168",
+                                "children": [
+                                  "Free estimate"
+                                ],
+                                "id": "54f72d89-b23f-4dae-8193-547f94a45cfa",
                                 "ord": "a0"
                               },
                               {
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-bold text-base-content",
-                                "children": ["$0"],
-                                "id": "c8402af7-7597-4de6-851b-a9475d2c17e4",
+                                "children": [
+                                  "$0"
+                                ],
+                                "id": "78b166e0-7e23-4f33-a93d-4bed4bbe2a9f",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "32e02589-11c5-42de-804b-44102cc0b8c8",
+                            "id": "3d069506-e184-4493-8943-b99f50ab31fc",
                             "ord": "a0"
                           },
                           {
                             "kind": "element",
                             "tag": "p",
                             "class": "text-sm font-medium uppercase tracking-wide text-secondary",
-                            "children": ["30 min"],
-                            "id": "e006a48c-9a2d-4216-8a44-d47367e5b503",
+                            "children": [
+                              "30 min"
+                            ],
+                            "id": "9d1046bd-bc5e-4aaa-9cbf-f26e9692bef7",
                             "ord": "a1"
                           },
                           {
@@ -893,11 +943,11 @@
                             "children": [
                               "A quick, no-obligation walkthrough and a flat written price."
                             ],
-                            "id": "6dd07085-caf7-421c-89e7-20bc9f92cfba",
+                            "id": "ef2e5b3b-12f1-4288-8cf8-4b76420b2945",
                             "ord": "a2"
                           }
                         ],
-                        "id": "76bd5d81-1300-4f5b-b804-abf3bb1f3b95",
+                        "id": "29e83d53-cf1b-469f-a42b-9cc68a47f23b",
                         "ord": "a0"
                       },
                       {
@@ -917,40 +967,48 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
-                                "children": ["In-home estimate"],
-                                "id": "532eb022-b0b8-4ba7-85dc-c09903af8de3",
+                                "children": [
+                                  "In-home estimate"
+                                ],
+                                "id": "be18f8c7-cce8-4a4c-8a80-d2bcf8a34a7c",
                                 "ord": "a0"
                               },
                               {
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-bold text-base-content",
-                                "children": ["$0"],
-                                "id": "d994047b-df62-4719-a187-fd69894e19e1",
+                                "children": [
+                                  "$0"
+                                ],
+                                "id": "1b0c67ac-e4cf-45e8-a8dc-effa25f55381",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "e0d12596-8eda-46b0-96d2-a30db0790e37",
+                            "id": "d51b093a-0e46-421b-b711-b7c3ea4e4501",
                             "ord": "a0"
                           },
                           {
                             "kind": "element",
                             "tag": "p",
                             "class": "text-sm font-medium uppercase tracking-wide text-secondary",
-                            "children": ["1 hr"],
-                            "id": "4baa1e4a-bff1-4b4d-af8f-2c637af63643",
+                            "children": [
+                              "1 hr"
+                            ],
+                            "id": "786df950-86b0-4aa7-8aab-7eb58f7d8a32",
                             "ord": "a1"
                           },
                           {
                             "kind": "element",
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
-                            "children": ["A full room-by-room look so your quote is exact."],
-                            "id": "0dcdba14-9429-4e31-9f63-325a1e2e0015",
+                            "children": [
+                              "A full room-by-room look so your quote is exact."
+                            ],
+                            "id": "ece99852-6775-4c87-a7b5-2ddc8ca0aa5e",
                             "ord": "a2"
                           }
                         ],
-                        "id": "b6829f21-dd5f-4949-9b05-dc59ba4e3d69",
+                        "id": "b701bd1d-27b8-445d-af27-15d267949366",
                         "ord": "a1"
                       },
                       {
@@ -970,40 +1028,48 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
-                                "children": ["Packing service"],
-                                "id": "e9d5d7c8-723e-4108-a127-0e1300a25088",
+                                "children": [
+                                  "Packing service"
+                                ],
+                                "id": "11790b66-7ad4-4060-8e2f-a66607e048be",
                                 "ord": "a0"
                               },
                               {
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-bold text-base-content",
-                                "children": ["$0"],
-                                "id": "aec0c832-4ac4-4501-adf6-4e8b0c428d73",
+                                "children": [
+                                  "$0"
+                                ],
+                                "id": "b49ced04-eb0c-4e4a-98a4-1d214496c486",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "5bd86286-e248-4b22-9a3d-7e415d7ec7d5",
+                            "id": "b7f584a5-f12f-41fc-bf99-94d96e282fed",
                             "ord": "a0"
                           },
                           {
                             "kind": "element",
                             "tag": "p",
                             "class": "text-sm font-medium uppercase tracking-wide text-secondary",
-                            "children": ["45 min"],
-                            "id": "cdbc986c-7f5b-40af-81c2-c7c9c33349bb",
+                            "children": [
+                              "45 min"
+                            ],
+                            "id": "1cb1b9ed-3056-453a-8522-9f556dfff689",
                             "ord": "a1"
                           },
                           {
                             "kind": "element",
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
-                            "children": ["We bring the supplies and box it all up for you."],
-                            "id": "e5d298ef-3aee-4de9-b6af-40d073bff43b",
+                            "children": [
+                              "We bring the supplies and box it all up for you."
+                            ],
+                            "id": "ade69742-979a-4c36-a87c-049f08037c19",
                             "ord": "a2"
                           }
                         ],
-                        "id": "b0466188-2464-4d0b-938d-e1dcaa01ddc6",
+                        "id": "71cad7a4-f309-40cd-a639-bd70779381b5",
                         "ord": "a2"
                       },
                       {
@@ -1023,44 +1089,52 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
-                                "children": ["Loading help"],
-                                "id": "74bc90a6-095a-432c-afee-705ea90d43a7",
+                                "children": [
+                                  "Loading help"
+                                ],
+                                "id": "3ce516f2-725e-43fa-9b20-02b12c2e62f6",
                                 "ord": "a0"
                               },
                               {
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-bold text-base-content",
-                                "children": ["$0"],
-                                "id": "0f1dd87f-d190-4374-b5d4-c6bd5724f352",
+                                "children": [
+                                  "$0"
+                                ],
+                                "id": "52640965-7ca7-4712-ab20-163b73a1ff64",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "df9b4581-5fce-4abd-acdb-7f475ef23648",
+                            "id": "670cb6d4-c2a1-417a-b228-4c92fab4311c",
                             "ord": "a0"
                           },
                           {
                             "kind": "element",
                             "tag": "p",
                             "class": "text-sm font-medium uppercase tracking-wide text-secondary",
-                            "children": ["30 min"],
-                            "id": "2924ec9b-2b93-46ee-8aeb-854a6e307cb1",
+                            "children": [
+                              "30 min"
+                            ],
+                            "id": "7504b572-f30f-4cdd-a731-6c4363b16fc0",
                             "ord": "a1"
                           },
                           {
                             "kind": "element",
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
-                            "children": ["Got the truck? Book a crew to load or unload it."],
-                            "id": "130c99cf-2c22-4132-94f7-59a1c5a79fb8",
+                            "children": [
+                              "Got the truck? Book a crew to load or unload it."
+                            ],
+                            "id": "59fff56c-f07e-4df3-a02b-1cc87c2f4401",
                             "ord": "a2"
                           }
                         ],
-                        "id": "d155f354-4809-488a-89db-83a2eec93863",
+                        "id": "ddf55bd8-b4a7-418d-88b8-add72ec35966",
                         "ord": "a3"
                       }
                     ],
-                    "id": "9606d4c6-26fa-4a69-9d29-2800de29b646",
+                    "id": "d6b1d3f6-efbb-43a0-bb58-5b7b2ad97499",
                     "ord": "a1"
                   },
                   {
@@ -1075,20 +1149,22 @@
                         "attrs": {
                           "href": "/book"
                         },
-                        "children": ["See everything & book"],
-                        "id": "a3440122-c02e-49cb-bf56-14f1129663ac",
+                        "children": [
+                          "See everything & book"
+                        ],
+                        "id": "ee265594-8dba-4831-9f0d-af609c81ae55",
                         "ord": "a0"
                       }
                     ],
-                    "id": "3e814e32-25fa-4865-acf3-0273695e47a9",
+                    "id": "b8af0fc7-d59a-4b81-b9f6-95dc760fc971",
                     "ord": "a2"
                   }
                 ],
-                "id": "4be492a3-f2ad-43ab-86bc-28a6e5b9b934",
+                "id": "ed9d3bbc-91d1-498f-8297-4f81f93b6071",
                 "ord": "a0"
               }
             ],
-            "id": "400fc7f4-e67b-4ecb-a387-0118ccaf77f3",
+            "id": "2b8cbecf-173a-4922-a3c1-8edb8796b17e",
             "ord": "a2"
           },
           {
@@ -1110,7 +1186,7 @@
                       "alt": "A mover carefully blanket-wrapping a dresser before loading it",
                       "loading": "lazy"
                     },
-                    "id": "fd8b3a49-3daf-4123-a1d7-1c0e3987729e",
+                    "id": "6a3b0d8c-b787-4a99-85f2-63107581e4e5",
                     "ord": "a0"
                   },
                   {
@@ -1122,8 +1198,10 @@
                         "kind": "element",
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
-                        "children": ["We treat your things like they’re ours"],
-                        "id": "eefd8ff3-06c6-4a5a-aa8d-f7ef87e43550",
+                        "children": [
+                          "We treat your things like they’re ours"
+                        ],
+                        "id": "b84c4179-257e-4291-90c1-69a4297dc5fd",
                         "ord": "a0"
                       },
                       {
@@ -1133,7 +1211,7 @@
                         "children": [
                           "Anyone can carry a box. What sets Sure Hands apart is what happens to the things you actually care about — the dresser from your grandmother, the TV you just paid for, the corner of the wall on the way out the door."
                         ],
-                        "id": "ffcc8ea2-3385-484f-9d6e-0883be6b16ed",
+                        "id": "fe9779f4-9c4d-47d5-bac1-fa8f6e42df27",
                         "ord": "a1"
                       },
                       {
@@ -1143,7 +1221,7 @@
                         "children": [
                           "We wrap furniture in blankets, pad the sharp edges, lay runners on your floors and shrink-wrap the drawers so nothing shifts. Careful isn’t slower with us — it’s just how the job gets done."
                         ],
-                        "id": "760f4f08-5fc8-490b-b903-5d924be5c81f",
+                        "id": "a331ab18-a3a7-4f5a-a114-2cda0e4f1d12",
                         "ord": "a2"
                       },
                       {
@@ -1158,24 +1236,26 @@
                             "attrs": {
                               "href": "/book"
                             },
-                            "children": ["Get your free estimate"],
-                            "id": "13919790-7191-4379-82b1-bbbcb1c8d529",
+                            "children": [
+                              "Get your free estimate"
+                            ],
+                            "id": "cd0bbae3-6dbd-4a3c-9222-b50b991796ec",
                             "ord": "a0"
                           }
                         ],
-                        "id": "e79fcefd-26ff-4ebd-b360-b0edd401aa50",
+                        "id": "abc57c6c-f02e-4421-986c-824fd10c6993",
                         "ord": "a3"
                       }
                     ],
-                    "id": "5dba34e7-4ede-4a92-85ea-2f56ec9464de",
+                    "id": "9f4f7a81-bcc5-4f20-8f20-a18d8596da4e",
                     "ord": "a1"
                   }
                 ],
-                "id": "86808c38-b323-4166-ba79-6f0ae770a548",
+                "id": "e2bb1b69-e576-4e42-898e-622960c06312",
                 "ord": "a0"
               }
             ],
-            "id": "97684ef0-2acc-4e59-a259-1b77f6991013",
+            "id": "6c62cf34-0df9-46f8-9dd2-a8f9210bc8f5",
             "ord": "a3"
           },
           {
@@ -1197,8 +1277,10 @@
                         "kind": "element",
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
-                        "children": ["The crew who’ll be at your door"],
-                        "id": "d570dc45-3074-40ea-9349-70e11282f894",
+                        "children": [
+                          "The crew who’ll be at your door"
+                        ],
+                        "id": "f33d105f-96f8-439c-81b9-e9f6bb9c8979",
                         "ord": "a0"
                       },
                       {
@@ -1208,11 +1290,11 @@
                         "children": [
                           "Real people, not day-labor strangers — the same friendly faces who show up, wrap it up and get you moved."
                         ],
-                        "id": "4f31f00c-534a-40fe-b953-2a2708b224bf",
+                        "id": "e2d5b356-b791-4bbf-9253-868221b8558f",
                         "ord": "a1"
                       }
                     ],
-                    "id": "c68f92b8-a25a-4ae5-bf1a-9202b733ac86",
+                    "id": "a9dc8a2a-a7a8-4a43-8154-7ee2c2a634a8",
                     "ord": "a0"
                   },
                   {
@@ -1234,7 +1316,7 @@
                               "alt": "Jordan Pierce, lead move coordinator",
                               "loading": "lazy"
                             },
-                            "id": "87637b9f-bb4f-4b8b-8e0a-b9b0e78b6b5e",
+                            "id": "252d1a63-7d14-4331-a5cb-3d47d104489c",
                             "ord": "a0"
                           },
                           {
@@ -1246,16 +1328,20 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
-                                "children": ["Jordan Pierce"],
-                                "id": "ba67845c-272c-4be9-b9b3-0a1ae58e246b",
+                                "children": [
+                                  "Jordan Pierce"
+                                ],
+                                "id": "f4058477-142b-42aa-bb84-c218e324dedb",
                                 "ord": "a0"
                               },
                               {
                                 "kind": "element",
                                 "tag": "p",
                                 "class": "text-sm font-medium uppercase tracking-wide text-secondary",
-                                "children": ["Lead move coordinator"],
-                                "id": "3abada2c-bade-4f40-9edb-8e70a93509ad",
+                                "children": [
+                                  "Lead move coordinator"
+                                ],
+                                "id": "119fbf2c-75bc-43e2-a3e5-b67e8fb483dd",
                                 "ord": "a1"
                               },
                               {
@@ -1265,15 +1351,15 @@
                                 "children": [
                                   "Jordan plans your move end to end — the crew, the truck, the timing — and answers the phone when you call."
                                 ],
-                                "id": "fd98077d-8da5-4e84-9527-2f481cd919bf",
+                                "id": "934df5ee-c89e-4f8f-b1ba-ec21b96a10d7",
                                 "ord": "a2"
                               }
                             ],
-                            "id": "b28aa67a-4d1c-4464-bfdf-a8b649a101ba",
+                            "id": "afc01df3-d469-44ff-990f-cbfd54039407",
                             "ord": "a1"
                           }
                         ],
-                        "id": "24d93721-43dc-4442-a1e6-4f8004557212",
+                        "id": "cb61d6bf-4619-478a-95ed-d644841a4f33",
                         "ord": "a0"
                       },
                       {
@@ -1290,7 +1376,7 @@
                               "alt": "Tasha Owens, crew lead and furniture pro",
                               "loading": "lazy"
                             },
-                            "id": "1fd0db4d-0fd9-4158-a510-b1be88201f0d",
+                            "id": "de07fca6-7c13-40ab-b2ef-dfbf3e121012",
                             "ord": "a0"
                           },
                           {
@@ -1302,16 +1388,20 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
-                                "children": ["Tasha Owens"],
-                                "id": "da1f0ae7-fd12-4987-ba4f-7a3a860e5116",
+                                "children": [
+                                  "Tasha Owens"
+                                ],
+                                "id": "f8428c16-7ee2-49e1-a489-29ed0bdf8f74",
                                 "ord": "a0"
                               },
                               {
                                 "kind": "element",
                                 "tag": "p",
                                 "class": "text-sm font-medium uppercase tracking-wide text-secondary",
-                                "children": ["Crew lead & furniture pro"],
-                                "id": "a0f1aaf8-84f5-40ff-a2de-457b7a28ca80",
+                                "children": [
+                                  "Crew lead & furniture pro"
+                                ],
+                                "id": "d4aaa797-9ceb-4b8d-8e0d-0e9391c7b825",
                                 "ord": "a1"
                               },
                               {
@@ -1321,15 +1411,15 @@
                                 "children": [
                                   "Tight staircases and heavy antiques are Tasha’s specialty. If it’s awkward and precious, she’s the one you want carrying it."
                                 ],
-                                "id": "03a78d2c-e50c-4cdf-bb32-654c1c2a67c8",
+                                "id": "5ee10ec0-96da-4e13-91a1-6f181d1d1861",
                                 "ord": "a2"
                               }
                             ],
-                            "id": "d1e60570-6d8f-4d61-8dd7-d35de8bf8178",
+                            "id": "ac1715f9-dd84-4051-ac83-072bd75b4b73",
                             "ord": "a1"
                           }
                         ],
-                        "id": "342b0742-84af-4397-b591-648364c662c1",
+                        "id": "43bd1ffa-7a48-4459-95b2-5adb99f87f7d",
                         "ord": "a1"
                       },
                       {
@@ -1346,7 +1436,7 @@
                               "alt": "Luis Ferreira, packing and loading lead",
                               "loading": "lazy"
                             },
-                            "id": "f5d76640-6aeb-4dc7-8b72-1c330f59108d",
+                            "id": "e11f4d05-4c1f-4e82-9c29-4e3dc9e0b84d",
                             "ord": "a0"
                           },
                           {
@@ -1358,16 +1448,20 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
-                                "children": ["Luis Ferreira"],
-                                "id": "f6eebb59-05fc-44b4-9554-a8880ebe7dc2",
+                                "children": [
+                                  "Luis Ferreira"
+                                ],
+                                "id": "0ad87317-e063-40e0-843f-67881f8b5d35",
                                 "ord": "a0"
                               },
                               {
                                 "kind": "element",
                                 "tag": "p",
                                 "class": "text-sm font-medium uppercase tracking-wide text-secondary",
-                                "children": ["Packing & loading lead"],
-                                "id": "588aa8e9-83b7-4dda-8801-582ac1e636bb",
+                                "children": [
+                                  "Packing & loading lead"
+                                ],
+                                "id": "c0d55377-8fb2-4ddd-8742-e104dae6295f",
                                 "ord": "a1"
                               },
                               {
@@ -1377,27 +1471,27 @@
                                 "children": [
                                   "Luis packs a truck like a puzzle so nothing moves in transit — and can box your whole kitchen faster than you’d believe."
                                 ],
-                                "id": "f637d255-3617-46f2-aa38-43cd0cd26a97",
+                                "id": "491a89f7-8048-4374-a710-b51a455a8e82",
                                 "ord": "a2"
                               }
                             ],
-                            "id": "9903e89b-b62d-4665-9d0d-b53f9516a1a9",
+                            "id": "0ec18141-0e9f-423f-b005-ebd88798b6d4",
                             "ord": "a1"
                           }
                         ],
-                        "id": "56275cc6-220a-4a6d-ae45-2e85575a21fb",
+                        "id": "85fe8c7d-5f04-4f2d-8b02-1e640ca6d0e1",
                         "ord": "a2"
                       }
                     ],
-                    "id": "e4ccb32a-2706-4a18-896b-458aa0a7b114",
+                    "id": "7fe34347-2b00-42ff-977b-3bad7ab5b61f",
                     "ord": "a1"
                   }
                 ],
-                "id": "2fb02fe0-b356-4073-b495-608949a961ba",
+                "id": "19d2d65e-d0e5-4be6-a9ac-e516c56c9df4",
                 "ord": "a0"
               }
             ],
-            "id": "699692ba-a91e-40a5-b868-cefddf8cc88b",
+            "id": "d0aba0e5-7814-48bf-bac0-d8be0c3babd5",
             "ord": "a4"
           },
           {
@@ -1417,23 +1511,25 @@
                     "children": [
                       "“They showed up right on time, wrapped everything, and had our two-bedroom loaded in under two hours. The final price was exactly what they quoted. Not one scratch on a single thing. We’ll never use anyone else.”"
                     ],
-                    "id": "3f1eaf36-00dd-4a3c-ba64-b062e26567fa",
+                    "id": "4032d491-cffd-45da-8825-0c1919d4270a",
                     "ord": "a0"
                   },
                   {
                     "kind": "element",
                     "tag": "p",
                     "class": "text-sm font-semibold uppercase tracking-wide opacity-80",
-                    "children": ["Marcus & Dani R., moved across town"],
-                    "id": "da9c7e91-c96f-4231-8c5b-00eb580a7ab2",
+                    "children": [
+                      "Marcus & Dani R., moved across town"
+                    ],
+                    "id": "a58caa58-5588-4280-bd3f-e12f5038498d",
                     "ord": "a1"
                   }
                 ],
-                "id": "c6233637-058d-41e4-ac19-df98342ee6fa",
+                "id": "e0cbf2b3-962f-4ae6-a43f-b67d7e4b159d",
                 "ord": "a0"
               }
             ],
-            "id": "ecda6f48-9f07-4d83-a07d-3da388b74636",
+            "id": "572849fb-2df8-4488-8d7d-c7026d103e5f",
             "ord": "a5"
           },
           {
@@ -1450,8 +1546,10 @@
                     "kind": "element",
                     "tag": "h2",
                     "class": "text-3xl font-bold tracking-tight @3xl:text-4xl",
-                    "children": ["Moving soon? Let’s get you a real price."],
-                    "id": "bdbee15b-0583-42ad-acf0-9ff8b4196444",
+                    "children": [
+                      "Moving soon? Let’s get you a real price."
+                    ],
+                    "id": "141a3116-793a-4b8a-912c-124edbb0034e",
                     "ord": "a0"
                   },
                   {
@@ -1461,7 +1559,7 @@
                     "children": [
                       "Book a free estimate online in about a minute. Pick a day, and we’ll confirm your window and come take a look — no obligation."
                     ],
-                    "id": "da498aba-ecc1-4593-b9f2-4473bfc6be14",
+                    "id": "eafe2e1b-187e-42fb-bb00-47b162ed0873",
                     "ord": "a1"
                   },
                   {
@@ -1471,16 +1569,18 @@
                     "attrs": {
                       "href": "/book"
                     },
-                    "children": ["Get a free estimate"],
-                    "id": "cf885119-6b32-4780-8e83-bd9b588f4703",
+                    "children": [
+                      "Get a free estimate"
+                    ],
+                    "id": "22e23d15-6a73-4859-9bec-3a7375936acc",
                     "ord": "a2"
                   }
                 ],
-                "id": "ff9dd27d-cf41-488f-9d15-0ca0c1d16226",
+                "id": "422ddc9b-f9d8-45e3-a021-291818d282df",
                 "ord": "a0"
               }
             ],
-            "id": "7684796b-7968-4f17-b66e-204a08fb22ee",
+            "id": "7ee6b124-195b-49a1-a3c4-6d85691cbbd3",
             "ord": "a6"
           }
         ]
@@ -1497,7 +1597,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "f138eb67-4238-4c26-af14-d703386b54c5",
+        "id": "17adbf65-f7c9-4b75-8e1f-a04d6b367283",
         "children": [
           {
             "kind": "element",
@@ -1513,14 +1613,14 @@
                   "alt": "A mover carefully blanket-wrapping a dresser before loading it",
                   "loading": "eager"
                 },
-                "id": "7cb9dd3b-70a1-4944-869c-11c604a6e02c",
+                "id": "dd78cbd2-1a5b-4c0c-ae20-e8e52293b163",
                 "ord": "a0"
               },
               {
                 "kind": "element",
                 "tag": "div",
                 "class": "absolute inset-0 bg-black/65",
-                "id": "54067fae-167f-42eb-9968-bac5dd655ffd",
+                "id": "1970c260-791d-434e-a085-339f137f19da",
                 "ord": "a1"
               },
               {
@@ -1532,8 +1632,10 @@
                     "kind": "element",
                     "tag": "h1",
                     "class": "max-w-3xl text-4xl font-bold leading-tight tracking-tight @2xl:text-5xl @3xl:text-6xl",
-                    "children": ["Book your free estimate"],
-                    "id": "056c9eea-39c7-4747-822a-64ca0b95ff2f",
+                    "children": [
+                      "Book your free estimate"
+                    ],
+                    "id": "cebffb6c-b091-4717-8f79-3b49cb5ebab0",
                     "ord": "a0"
                   },
                   {
@@ -1543,7 +1645,7 @@
                     "children": [
                       "Choose the kind of move you’re planning to see how long the visit takes and the next open time — then pick your day and we’ll come give you a flat, written price."
                     ],
-                    "id": "b9ab5346-639a-47cb-a249-377bde7953d5",
+                    "id": "20154b86-45c2-4663-adca-0655e59c246c",
                     "ord": "a1"
                   },
                   {
@@ -1558,20 +1660,22 @@
                         "attrs": {
                           "href": "/book"
                         },
-                        "children": ["See estimates below"],
-                        "id": "36045c4b-ab07-43a8-ab02-11a91d34b7ea",
+                        "children": [
+                          "See estimates below"
+                        ],
+                        "id": "0cc5baac-d839-48a5-89a7-80e32a3bd415",
                         "ord": "a0"
                       }
                     ],
-                    "id": "d01b5fec-082c-43bd-bfe2-6b2a6b67fccc",
+                    "id": "ab946c52-cd82-4b9f-aad8-4b62f9f0f963",
                     "ord": "a2"
                   }
                 ],
-                "id": "e464bfd9-7473-4f33-980b-3b2274727a11",
+                "id": "bc9c22d4-0c72-4db4-8d8d-719364489ce4",
                 "ord": "a2"
               }
             ],
-            "id": "a90e7e70-e058-4e14-96aa-7b53f2b57e3f",
+            "id": "8c6a8e72-8222-43bd-b78c-42277d9eee0a",
             "ord": "a0"
           },
           {
@@ -1579,7 +1683,7 @@
             "component": "scheduling.services",
             "class": "mx-auto w-full max-w-5xl px-6 py-8",
             "locked": "host",
-            "id": "228766cd-4c35-42fa-9672-ff99b117daef",
+            "id": "955f4543-9301-4094-9bf6-888a07060b28",
             "ord": "a1"
           },
           {
@@ -1601,8 +1705,10 @@
                         "kind": "element",
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
-                        "children": ["Good to know"],
-                        "id": "ddda4f19-3d6b-4954-a87f-eb69628a1cc7",
+                        "children": [
+                          "Good to know"
+                        ],
+                        "id": "4ccd5c98-e9fa-4852-899c-0af9c6c4d118",
                         "ord": "a0"
                       },
                       {
@@ -1612,11 +1718,11 @@
                         "children": [
                           "What happens once you pick a time — and how to change it if something comes up."
                         ],
-                        "id": "0f8f3c39-2730-41a4-ba71-bafae21102c0",
+                        "id": "b3442a1a-904e-4465-aeb7-33017ddf71b5",
                         "ord": "a1"
                       }
                     ],
-                    "id": "81e3c84c-8450-4b07-89d8-5fcce654f48c",
+                    "id": "c0fecc2c-82d7-42f5-b392-8f06b978d2d7",
                     "ord": "a0"
                   },
                   {
@@ -1633,8 +1739,10 @@
                             "kind": "element",
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
-                            "children": ["Standard estimate"],
-                            "id": "673837e9-b5b4-45e8-b90c-586209a93651",
+                            "children": [
+                              "Standard estimate"
+                            ],
+                            "id": "86961884-1445-4bbf-ae0c-5e1cfa0970d4",
                             "ord": "a0"
                           },
                           {
@@ -1644,7 +1752,7 @@
                             "children": [
                               "Give us at least 24 hours’ notice to move or cancel your estimate. We text a reminder the day before and confirm your arrival window that morning — estimates are always free and no-obligation."
                             ],
-                            "id": "4c3fba10-44e7-4877-a703-201bd0c46e45",
+                            "id": "92eaaaab-2c94-4e8e-a16b-0ec0820fbb6d",
                             "ord": "a1"
                           },
                           {
@@ -1654,11 +1762,11 @@
                             "children": [
                               "No deposit to book. Change or cancel free up to 24 hours before."
                             ],
-                            "id": "8d3a8681-d3d3-4d04-9963-035b59f47ee8",
+                            "id": "969046a4-b11b-4d27-bef8-2651967bcfd9",
                             "ord": "a2"
                           }
                         ],
-                        "id": "56819483-a4a7-40b1-bab3-f5cb5fd10093",
+                        "id": "de0cd8a2-6799-4b82-a549-b02e5558deaa",
                         "ord": "a0"
                       },
                       {
@@ -1670,8 +1778,10 @@
                             "kind": "element",
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
-                            "children": ["Move-date deposit"],
-                            "id": "f7466b9e-9abe-4f15-9feb-0ae4f1ce0da9",
+                            "children": [
+                              "Move-date deposit"
+                            ],
+                            "id": "ae18179f-0103-4fba-8c21-a9518b34cf51",
                             "ord": "a0"
                           },
                           {
@@ -1681,7 +1791,7 @@
                             "children": [
                               "A $50 deposit holds your moving day and comes straight off your final bill. Reschedule with 48 hours’ notice and it moves with you — no penalty, no lost deposit."
                             ],
-                            "id": "a74e72e6-a50f-42e0-b821-025ccc7dc31f",
+                            "id": "f87f6d89-da92-4102-9586-60a52691146d",
                             "ord": "a1"
                           },
                           {
@@ -1691,23 +1801,23 @@
                             "children": [
                               "A $50 deposit holds your place. Change or cancel free up to 2 days before."
                             ],
-                            "id": "a82bf82e-75a2-4322-b574-d12a7ad23153",
+                            "id": "d4da08ff-4d82-47f6-a792-0883fd540ae8",
                             "ord": "a2"
                           }
                         ],
-                        "id": "51ff0bc7-bf67-4eae-b767-8f0e95e797fd",
+                        "id": "d30fa89c-1695-4671-90c1-cd3bf24d4c92",
                         "ord": "a1"
                       }
                     ],
-                    "id": "c5e2585c-74f2-406b-9ad4-9a42452d58e8",
+                    "id": "ad72daa3-cca3-4d45-92a3-56fb9835787e",
                     "ord": "a1"
                   }
                 ],
-                "id": "6e586000-22b0-4550-a631-043470ec9108",
+                "id": "6b6a2bfd-c4ed-4adf-a93e-3f9e90b57727",
                 "ord": "a0"
               }
             ],
-            "id": "4430dbba-fea4-4787-bd28-7916fad31bfd",
+            "id": "54c64886-8770-4177-a521-e60e43cfd29c",
             "ord": "a2"
           }
         ]
@@ -1724,7 +1834,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "92a76dd5-3005-4be6-a5c9-5c7f30f649da",
+        "id": "97230127-1185-4165-9e9b-0bd6e680943a",
         "children": [
           {
             "kind": "element",
@@ -1745,7 +1855,7 @@
                       "alt": "Two uniformed movers carrying a wrapped sofa down a front walk to a loaded truck",
                       "loading": "lazy"
                     },
-                    "id": "20698552-c6d2-42c9-81e6-afaf9bcf299a",
+                    "id": "07e8abd3-e680-4a05-84df-a9de5d79d7c1",
                     "ord": "a0"
                   },
                   {
@@ -1757,8 +1867,10 @@
                         "kind": "element",
                         "tag": "h1",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
-                        "children": ["About Sure Hands Moving"],
-                        "id": "f1035dbf-d793-4e3d-a53d-8682333aa570",
+                        "children": [
+                          "About Sure Hands Moving"
+                        ],
+                        "id": "f07131d4-e29b-465c-a05a-e65c869660eb",
                         "ord": "a0"
                       },
                       {
@@ -1768,7 +1880,7 @@
                         "children": [
                           "We started Sure Hands because moving shouldn’t be the horror story everyone warns you about — the crew that shows up late, the price that doubles at the end, the coffee table that comes off the truck with a fresh gouge."
                         ],
-                        "id": "a02b1997-4195-4692-8197-2699727c0a33",
+                        "id": "e68ca95c-48d4-4e10-83cd-b3cb3f3dd117",
                         "ord": "a1"
                       },
                       {
@@ -1778,7 +1890,7 @@
                         "children": [
                           "We’re a local, family-run moving company serving homes and apartments across the area. Flat quotes, careful insured crews, and movers who genuinely take care of your stuff. Same friendly faces, honest prices, and a job done right the first time."
                         ],
-                        "id": "b52d014d-4f23-4345-9001-88601eb393f3",
+                        "id": "a17475af-4b7f-443d-a9cc-a72a41c7210c",
                         "ord": "a2"
                       },
                       {
@@ -1793,24 +1905,26 @@
                             "attrs": {
                               "href": "/book"
                             },
-                            "children": ["Get a free estimate"],
-                            "id": "c8397746-0322-4a6c-8cbd-8edee18be946",
+                            "children": [
+                              "Get a free estimate"
+                            ],
+                            "id": "1f2de853-da7f-4ee9-99b7-6e5c8c65442c",
                             "ord": "a0"
                           }
                         ],
-                        "id": "a498f248-b0bc-46a7-85d3-53e8e89364da",
+                        "id": "d8c069e7-f8d0-43ef-aec7-60030a754016",
                         "ord": "a3"
                       }
                     ],
-                    "id": "2e292b5e-9664-439b-b927-c6aed56950f9",
+                    "id": "439ecb6f-4147-4d8c-9d2e-874c5912b889",
                     "ord": "a1"
                   }
                 ],
-                "id": "b49bfb1f-57c2-48f4-b8e7-db26c92ccf13",
+                "id": "98034210-fa54-46ae-897f-4add626b9cf9",
                 "ord": "a0"
               }
             ],
-            "id": "b97affa0-8e38-4e82-aca0-c543ee932c79",
+            "id": "ea2fa302-cc91-4484-bdf2-1de8db32e85d",
             "ord": "a0"
           },
           {
@@ -1827,8 +1941,10 @@
                     "kind": "element",
                     "tag": "h2",
                     "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
-                    "children": ["How a move with us works"],
-                    "id": "5c2d2089-ac1e-4655-84b5-503af7cb5e62",
+                    "children": [
+                      "How a move with us works"
+                    ],
+                    "id": "8ed044de-a214-4e34-8bb7-aaa7935ce857",
                     "ord": "a0"
                   },
                   {
@@ -1845,8 +1961,10 @@
                             "kind": "element",
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
-                            "children": ["A flat price first"],
-                            "id": "d682b1b9-6780-4f42-b92b-fa6699753422",
+                            "children": [
+                              "A flat price first"
+                            ],
+                            "id": "020894b1-2e96-433f-9d60-0a372c3f04bc",
                             "ord": "a0"
                           },
                           {
@@ -1856,11 +1974,11 @@
                             "children": [
                               "We look at what you’re moving, talk through the details, and hand you one clear written quote. Nothing starts, and nothing changes, until you say yes to the number."
                             ],
-                            "id": "b51ae84f-80b3-4cb4-83b7-fdab06cf68a5",
+                            "id": "75bf782b-80d2-4421-bfef-751742d932e5",
                             "ord": "a1"
                           }
                         ],
-                        "id": "07329dba-2ec6-48bf-9a7b-2e1916081a59",
+                        "id": "77e85f26-4775-422e-b65e-a9d82100a58c",
                         "ord": "a0"
                       },
                       {
@@ -1872,8 +1990,10 @@
                             "kind": "element",
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
-                            "children": ["Wrapped, padded, protected"],
-                            "id": "04020923-bae4-4bb9-bf80-10f6eaf97d8d",
+                            "children": [
+                              "Wrapped, padded, protected"
+                            ],
+                            "id": "5580b6a6-6a5f-4e6a-a307-7de5528b056f",
                             "ord": "a0"
                           },
                           {
@@ -1883,11 +2003,11 @@
                             "children": [
                               "Furniture gets blankets, floors get runners, walls get corner guards. We move like it’s our own home, because a clean move is the whole point of hiring pros."
                             ],
-                            "id": "7cc2982d-bfd5-4c71-8f7b-ead3e66ff359",
+                            "id": "fe511067-2e96-4034-9434-69b2155bed4e",
                             "ord": "a1"
                           }
                         ],
-                        "id": "ded8d6c4-c1fc-4fd8-8ce0-fd0ad3fc45a0",
+                        "id": "36304594-6ae3-4c1e-a97a-1e16ec4d5789",
                         "ord": "a1"
                       },
                       {
@@ -1899,8 +2019,10 @@
                             "kind": "element",
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
-                            "children": ["Done right, or we make it right"],
-                            "id": "e5a2b4e5-5bd6-4fdf-9b3b-233aaf26322b",
+                            "children": [
+                              "Done right, or we make it right"
+                            ],
+                            "id": "53a6f425-faaf-4c14-9e6e-d7928f98bb6c",
                             "ord": "a0"
                           },
                           {
@@ -1910,23 +2032,23 @@
                             "children": [
                               "We’re licensed and insured, and we stand behind every move. If something isn’t right, you call us and we fix it — we’re your neighbors, not a call center."
                             ],
-                            "id": "86fecb54-4781-40c8-94c8-0c229c267936",
+                            "id": "123fb082-186c-4be2-916b-be73eedd037f",
                             "ord": "a1"
                           }
                         ],
-                        "id": "efd9248a-0b10-4141-a9e6-e340a64e0706",
+                        "id": "7abfb01e-1b92-4c42-b334-84fac66d052e",
                         "ord": "a2"
                       }
                     ],
-                    "id": "87dce73a-79cd-4ae8-a149-cf3ed335bca1",
+                    "id": "27687961-1314-4b8c-a529-f6fc40559b44",
                     "ord": "a1"
                   }
                 ],
-                "id": "debb1b3a-0379-4ffe-8c55-61ab02e44121",
+                "id": "9ee0271f-1a78-4709-b2b8-c26f43e36050",
                 "ord": "a0"
               }
             ],
-            "id": "011a2300-619e-45e9-aa6d-9dce46de6451",
+            "id": "44716dbd-d0db-4e3c-a0f1-b49b01af479b",
             "ord": "a1"
           }
         ]
@@ -1943,7 +2065,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "31233c2c-fab8-49a3-a353-740b2cea267a",
+        "id": "85e028e4-00b5-4da8-8ddf-d1d6bbf6af75",
         "children": [
           {
             "kind": "element",
@@ -1964,8 +2086,10 @@
                         "kind": "element",
                         "tag": "h1",
                         "class": "text-4xl font-bold tracking-tight text-base-content @3xl:text-5xl",
-                        "children": ["Get in touch"],
-                        "id": "afb7de0f-5fe4-4ce4-a29e-0da19b618995",
+                        "children": [
+                          "Get in touch"
+                        ],
+                        "id": "7bfc5338-5752-46d4-8d13-68320a7a64b3",
                         "ord": "a0"
                       },
                       {
@@ -1975,11 +2099,11 @@
                         "children": [
                           "Questions before you book? Send a note and Sure Hands Moving will get back to you — usually the same day."
                         ],
-                        "id": "58319424-183e-4190-8387-1fbd83aec4d6",
+                        "id": "21dc17db-f33d-4267-bf6e-45fe5b607448",
                         "ord": "a1"
                       }
                     ],
-                    "id": "0a10cc0f-54b4-496a-8b97-ad3e43544939",
+                    "id": "ca2ac516-8cb2-4278-bb8d-db5917a0f414",
                     "ord": "a0"
                   },
                   {
@@ -1991,8 +2115,10 @@
                         "kind": "element",
                         "tag": "span",
                         "class": "text-base font-medium text-base-content",
-                        "children": ["Call us"],
-                        "id": "3984ae8c-b950-4562-be9f-14ceaa4dddba",
+                        "children": [
+                          "Call us"
+                        ],
+                        "id": "70e49556-266b-4372-b4e2-941da4fb8ca8",
                         "ord": "a0"
                       },
                       {
@@ -2003,12 +2129,14 @@
                           {
                             "kind": "element",
                             "tag": "span",
-                            "children": ["(555) 123-4567"],
+                            "children": [
+                              "(555) 123-4567"
+                            ],
                             "data": {
                               "kind": "value",
                               "ref": "site.identity.phone"
                             },
-                            "id": "2ae2f4dc-2aad-4a52-abbc-de3c57477aec",
+                            "id": "9a03f49d-a416-4977-8736-8efec1c8205a",
                             "ord": "a0"
                           }
                         ],
@@ -2017,7 +2145,7 @@
                           "ref": "site.identity.phoneHref",
                           "attr": "href"
                         },
-                        "id": "5cbf3cc9-d521-47dd-b3cb-c121c9e495c7",
+                        "id": "b90489db-2847-4ad3-8b42-3726f5723a4f",
                         "ord": "a1"
                       }
                     ],
@@ -2025,7 +2153,7 @@
                       "kind": "visible",
                       "ref": "site.identity.phone"
                     },
-                    "id": "8d94da04-62e7-4d8f-b86f-610d874fc13e",
+                    "id": "754d944d-fda8-4417-b97e-583b53723276",
                     "ord": "a1"
                   },
                   {
@@ -2037,8 +2165,10 @@
                         "kind": "element",
                         "tag": "span",
                         "class": "text-base font-medium text-base-content",
-                        "children": ["Email us"],
-                        "id": "ccf282a3-82c2-4e2d-8bc7-b14743f96d23",
+                        "children": [
+                          "Email us"
+                        ],
+                        "id": "2cf0be6a-bca2-4302-8405-819042e5ac02",
                         "ord": "a0"
                       },
                       {
@@ -2049,12 +2179,14 @@
                           {
                             "kind": "element",
                             "tag": "span",
-                            "children": ["hello@yourbusiness.com"],
+                            "children": [
+                              "hello@yourbusiness.com"
+                            ],
                             "data": {
                               "kind": "value",
                               "ref": "site.identity.email"
                             },
-                            "id": "0528675b-b118-46eb-9b51-466c67c7945e",
+                            "id": "8b19217c-fce0-40f9-b46f-92ef728ee814",
                             "ord": "a0"
                           }
                         ],
@@ -2063,7 +2195,7 @@
                           "ref": "site.identity.emailHref",
                           "attr": "href"
                         },
-                        "id": "f24747dd-2805-4002-813c-3e23d0662793",
+                        "id": "c7d47cff-7bd6-4e16-8edf-287afe34b9c9",
                         "ord": "a1"
                       }
                     ],
@@ -2071,7 +2203,7 @@
                       "kind": "visible",
                       "ref": "site.identity.email"
                     },
-                    "id": "df4ce414-58e2-48fe-8d47-35d54ac6351a",
+                    "id": "67dc9034-44fc-4a2b-95f0-cbcb61737e6f",
                     "ord": "a2"
                   },
                   {
@@ -2088,8 +2220,10 @@
                             "kind": "element",
                             "tag": "span",
                             "class": "text-base font-medium text-base-content",
-                            "children": ["Your name"],
-                            "id": "67a07af3-d5d0-4c82-a8ef-f20b3eaf4c8b",
+                            "children": [
+                              "Your name"
+                            ],
+                            "id": "a759acd2-7b34-49b6-b30d-1607f521af21",
                             "ord": "a0"
                           },
                           {
@@ -2101,11 +2235,11 @@
                               "name": "name",
                               "required": true
                             },
-                            "id": "b1bbffdf-d6c1-408e-9a01-9fec06487f1e",
+                            "id": "2f23fd7e-c97e-4d6e-9592-817e55cab8ee",
                             "ord": "a1"
                           }
                         ],
-                        "id": "1188d974-116e-4f31-a170-bbc055b6b52b",
+                        "id": "3ea6b47c-0480-48a0-8013-a92337806ba9",
                         "ord": "a0"
                       },
                       {
@@ -2117,8 +2251,10 @@
                             "kind": "element",
                             "tag": "span",
                             "class": "text-base font-medium text-base-content",
-                            "children": ["Email address"],
-                            "id": "7f3782f0-83c7-415c-8f49-aca6165dd0f4",
+                            "children": [
+                              "Email address"
+                            ],
+                            "id": "5d415656-a84b-4e77-b456-89b42aba2edf",
                             "ord": "a0"
                           },
                           {
@@ -2130,11 +2266,11 @@
                               "name": "email",
                               "required": true
                             },
-                            "id": "4b8837fb-bcc6-43dc-938a-dfb093257069",
+                            "id": "982dc3dd-1980-4e08-9b85-29c3282d9f0f",
                             "ord": "a1"
                           }
                         ],
-                        "id": "b99c84d0-0620-4588-9aca-75f73e5b79ce",
+                        "id": "904bd15e-009b-49d8-983f-0c2597225603",
                         "ord": "a1"
                       },
                       {
@@ -2146,8 +2282,10 @@
                             "kind": "element",
                             "tag": "span",
                             "class": "text-base font-medium text-base-content",
-                            "children": ["Phone number"],
-                            "id": "c1e4055f-3010-42b5-9476-4e5e7ea12367",
+                            "children": [
+                              "Phone number"
+                            ],
+                            "id": "7ee0b972-2b16-4fcf-8c14-11ae4a889254",
                             "ord": "a0"
                           },
                           {
@@ -2158,11 +2296,11 @@
                               "type": "tel",
                               "name": "phone"
                             },
-                            "id": "263319fe-73dc-4e9a-b5e1-d609ef2af5e8",
+                            "id": "dd5f1d4d-aef3-4062-96dc-cc13d043b88c",
                             "ord": "a1"
                           }
                         ],
-                        "id": "958e1175-fd3c-4a70-9d7a-c49fdc45639f",
+                        "id": "e3d6d784-76de-4f07-878c-a89170f11ef8",
                         "ord": "a2"
                       },
                       {
@@ -2174,8 +2312,10 @@
                             "kind": "element",
                             "tag": "span",
                             "class": "text-base font-medium text-base-content",
-                            "children": ["How can we help?"],
-                            "id": "d8c0fd91-d166-4092-83a7-738b4bd6236e",
+                            "children": [
+                              "How can we help?"
+                            ],
+                            "id": "7419c0f6-9d54-436f-913f-249f6a9afa16",
                             "ord": "a0"
                           },
                           {
@@ -2185,11 +2325,11 @@
                             "attrs": {
                               "name": "message"
                             },
-                            "id": "5b9b010f-b52e-4a7d-b5a3-0ebc50e40349",
+                            "id": "fd0647e9-b2c8-4957-9e5b-8c49d9d75a1b",
                             "ord": "a1"
                           }
                         ],
-                        "id": "d9b1bbe6-4e47-4387-a38c-c60100864ceb",
+                        "id": "c1a1bd0f-4856-4c8d-aba9-051d6349b2bd",
                         "ord": "a3"
                       },
                       {
@@ -2204,12 +2344,14 @@
                             "attrs": {
                               "type": "submit"
                             },
-                            "children": ["Send my request"],
-                            "id": "448be3b0-bfa9-4a38-89ce-0099fe3da870",
+                            "children": [
+                              "Send my request"
+                            ],
+                            "id": "084af2f7-a3ab-4e4f-9d1c-62472fdd4e2c",
                             "ord": "a0"
                           }
                         ],
-                        "id": "6d3d0a84-09e8-4aa9-8ac8-090caeb8b49b",
+                        "id": "5a6be862-6dc4-49f0-bd1e-db13114cfceb",
                         "ord": "a4"
                       }
                     ],
@@ -2220,15 +2362,15 @@
                       "kind": "action",
                       "ref": "submit"
                     },
-                    "id": "cc5e9cb8-1845-4501-9df8-34f38aded460",
+                    "id": "1b9129b2-7504-444a-b777-61834663d83e",
                     "ord": "a3"
                   }
                 ],
-                "id": "039a07f9-2468-4b9f-8776-a5b8073bdcf0",
+                "id": "c3d6b62d-39ed-4f0d-99d0-8ab0d5222f5a",
                 "ord": "a0"
               }
             ],
-            "id": "e0dfc2a1-4675-46fd-b19b-566d0704f8bd",
+            "id": "0d53f1c1-5457-42e7-ba58-fdc56ad289ae",
             "ord": "a0"
           },
           {
@@ -2250,8 +2392,10 @@
                         "kind": "element",
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
-                        "children": ["Where we move & how to reach us"],
-                        "id": "6fcc0239-9448-453a-83c6-7dac204f0a80",
+                        "children": [
+                          "Where we move & how to reach us"
+                        ],
+                        "id": "5f98c94c-9cb5-4c09-b4f1-232754d583fb",
                         "ord": "a0"
                       },
                       {
@@ -2265,7 +2409,7 @@
                           "kind": "value",
                           "ref": "site.identity.address"
                         },
-                        "id": "1c01dd9d-1f98-4a43-a4ab-9ab77f7b2fa8",
+                        "id": "4ad2ac02-8a21-4b73-939b-a823e01de2fa",
                         "ord": "a1"
                       },
                       {
@@ -2282,20 +2426,24 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "font-medium text-base-content",
-                                "children": ["Monday – Friday"],
-                                "id": "f23488af-1803-4cdd-ac13-2081da969a1f",
+                                "children": [
+                                  "Monday – Friday"
+                                ],
+                                "id": "29cf141e-1ee6-4be3-a102-b1f1d77dff75",
                                 "ord": "a0"
                               },
                               {
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-base-content",
-                                "children": ["7:00 – 6:00"],
-                                "id": "3359bf05-a79a-441e-af7e-43f39e94bac6",
+                                "children": [
+                                  "7:00 – 6:00"
+                                ],
+                                "id": "7c151047-31b0-4a8b-bbf0-6bc4a5fc0eb2",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "3b0702a2-93be-4772-b071-17672eab378b",
+                            "id": "d86e8eeb-b220-4a7c-ae86-60467e4c76e5",
                             "ord": "a0"
                           },
                           {
@@ -2307,20 +2455,24 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "font-medium text-base-content",
-                                "children": ["Saturday"],
-                                "id": "32a020b2-509c-476d-83d6-eb73d553de50",
+                                "children": [
+                                  "Saturday"
+                                ],
+                                "id": "5df5b64c-aa92-4fd3-858b-a56ab5c91025",
                                 "ord": "a0"
                               },
                               {
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-base-content",
-                                "children": ["8:00 – 5:00"],
-                                "id": "180bd85e-5221-4d25-89b8-7923e8cbd42e",
+                                "children": [
+                                  "8:00 – 5:00"
+                                ],
+                                "id": "87329dda-d441-4523-a838-5c1477ef347b",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "6a87fc94-a8e7-479c-a62e-fb718b2d0910",
+                            "id": "3f906fb1-fae1-4132-b7ee-5cc6173a6a3c",
                             "ord": "a1"
                           },
                           {
@@ -2332,20 +2484,24 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "font-medium text-base-content",
-                                "children": ["Sunday"],
-                                "id": "efda3646-9c65-4397-8bb5-334c1c58ec44",
+                                "children": [
+                                  "Sunday"
+                                ],
+                                "id": "147db60a-9928-4424-bc43-69c7dd261398",
                                 "ord": "a0"
                               },
                               {
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-base-content",
-                                "children": ["By appointment"],
-                                "id": "5b60fc16-28b7-440c-ac7b-d60d86dcae5b",
+                                "children": [
+                                  "By appointment"
+                                ],
+                                "id": "fa9c0a61-7a83-44f6-b9b3-043f2a0e730b",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "ee5169f8-dbaf-4a15-88e8-60d8284d4f20",
+                            "id": "e19139af-27b9-4003-a82c-126e0ce9b7ab",
                             "ord": "a2"
                           },
                           {
@@ -2357,28 +2513,32 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "font-medium text-base-content",
-                                "children": ["Estimates"],
-                                "id": "f17f3ca1-e58c-418c-8f24-d35c34b81fb3",
+                                "children": [
+                                  "Estimates"
+                                ],
+                                "id": "f3385a37-5d81-45d3-a8f5-fc0ea162ade4",
                                 "ord": "a0"
                               },
                               {
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-base-content",
-                                "children": ["Always free"],
-                                "id": "375033e7-b739-47a3-8f64-0c996f08bdae",
+                                "children": [
+                                  "Always free"
+                                ],
+                                "id": "84698fb5-d390-4963-9817-781c89ae08a4",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "37989816-797d-4929-9763-a286f39ed30b",
+                            "id": "7ba84190-7783-4741-86cd-e5945e106b37",
                             "ord": "a3"
                           }
                         ],
-                        "id": "7f50b9a0-ae22-4253-bf83-72e1016bf345",
+                        "id": "d2dc7075-70d6-4b05-a2f6-30b18420f6b5",
                         "ord": "a2"
                       }
                     ],
-                    "id": "602e65f1-88aa-45e7-9719-6dc3ae8be90a",
+                    "id": "6f7b1f80-7c84-4e5c-90c8-42d6f6bdbe01",
                     "ord": "a0"
                   },
                   {
@@ -2391,15 +2551,15 @@
                       "zoom": 15,
                       "ratio": "classic"
                     },
-                    "id": "cbc82e1d-5dd9-4964-b477-34c5856ccbfc",
+                    "id": "981801a5-7377-4b24-8790-aa61957f12f7",
                     "ord": "a1"
                   }
                 ],
-                "id": "d6a579ed-4c4c-42fa-8fc5-240d1f445fd3",
+                "id": "5d1e4e05-d857-4847-ad8b-04c7d97d79b7",
                 "ord": "a0"
               }
             ],
-            "id": "6d71f2f0-6b74-485f-84d0-cbd7c222c66c",
+            "id": "b9bcfbf8-f429-4a12-ae7f-c6ab456a5f3e",
             "ord": "a1"
           },
           {
@@ -2416,8 +2576,10 @@
                     "kind": "element",
                     "tag": "h2",
                     "class": "text-3xl font-bold tracking-tight @3xl:text-4xl",
-                    "children": ["Rather book than call?"],
-                    "id": "2865b25a-9673-493f-b635-68746480c0ec",
+                    "children": [
+                      "Rather book than call?"
+                    ],
+                    "id": "27356133-0511-4b75-b87a-f09a525c6a81",
                     "ord": "a0"
                   },
                   {
@@ -2427,7 +2589,7 @@
                     "children": [
                       "See the next open times and reserve your free estimate online — no phone tag, no waiting on hold."
                     ],
-                    "id": "539d373d-8665-4e1f-9608-3a7f97829455",
+                    "id": "536f9f87-3efa-4363-8b9e-0b55174d7af2",
                     "ord": "a1"
                   },
                   {
@@ -2437,16 +2599,18 @@
                     "attrs": {
                       "href": "/book"
                     },
-                    "children": ["Get a free estimate"],
-                    "id": "0f8e8312-a422-4616-a330-77295ec86a63",
+                    "children": [
+                      "Get a free estimate"
+                    ],
+                    "id": "53f2caa5-4294-4d73-9609-567f448bc7f6",
                     "ord": "a2"
                   }
                 ],
-                "id": "e672bdef-3ac6-4d8e-8252-2a910ebe8b4a",
+                "id": "d090eafe-1318-4470-aaaa-4456e58cdc68",
                 "ord": "a0"
               }
             ],
-            "id": "66cc8d70-f402-43c5-8500-95bdf13e597c",
+            "id": "1370b224-1da1-4b89-b54a-067e387f1e7d",
             "ord": "a2"
           }
         ]

@@ -10,7 +10,13 @@
 
 import { z } from 'zod';
 import type { Logger } from 'pino';
-import { generateDueExpenses, recomputeDay, recomputeRange, utcMidnight } from '@sparx/finance';
+import {
+  generateDueExpenses,
+  provisionFinance,
+  recomputeDay,
+  recomputeRange,
+  utcMidnight,
+} from '@sparx/finance';
 
 /**
  * One event shape per thing that can make the rollup stale.
@@ -49,7 +55,35 @@ const ProfitRecomputeEvent = z.object({
   }),
 });
 
-const FinanceEvent = z.union([ExpenseTouchedEvent, RecurringDueEvent, ProfitRecomputeEvent]);
+/**
+ * Finance just became available to a tenant — seed its category set.
+ *
+ * This consumer is the one that was missing, and its absence made the whole
+ * money-out half inert: `provisionFinance` existed, was idempotent, and said in
+ * its own doc comment that it is "called by the module-activation path" — while
+ * nothing outside its tests ever called it. So NO tenant had the seeded
+ * categories, Spending had nothing to file a cost against, and the staff labour
+ * deriver refused every single run with `STAFF_WAGES_CATEGORY_MISSING` (it looks
+ * up the `wages` bucket by slug and correctly declines to invent one).
+ *
+ * It listens for `finance` specifically, and that includes the BUNDLED case:
+ * `applyModuleWrites` announces DERIVED-state transitions, so turning on
+ * Commerce or B2B — which carry Finance free — publishes `module.activated` for
+ * `finance` with no finance flag of its own. That is deliberate upstream, for
+ * exactly this reason: "its seeding consumer must still run."
+ */
+const ModuleActivatedEvent = z.object({
+  type: z.literal('module.activated'),
+  tenantId: z.string().uuid(),
+  data: z.object({ module: z.string() }),
+});
+
+const FinanceEvent = z.union([
+  ExpenseTouchedEvent,
+  RecurringDueEvent,
+  ProfitRecomputeEvent,
+  ModuleActivatedEvent,
+]);
 export type FinanceEvent = z.infer<typeof FinanceEvent>;
 
 export function parseEvent(raw: unknown): FinanceEvent | null {
@@ -58,11 +92,13 @@ export function parseEvent(raw: unknown): FinanceEvent | null {
 }
 
 export interface FinanceHandlerOutcome {
-  outcome: 'recomputed' | 'generated' | 'skipped';
+  outcome: 'recomputed' | 'generated' | 'provisioned' | 'skipped';
   tenantId: string;
   days?: number;
   generated?: number;
   templates?: number;
+  categoriesSeeded?: number;
+  categoriesTotal?: number;
 }
 
 /**
@@ -86,6 +122,18 @@ function clampRange(from: Date, to: Date): { from: Date; to: Date; clamped: bool
 
 export async function handle(event: FinanceEvent, logger: Logger): Promise<FinanceHandlerOutcome> {
   const { tenantId } = event;
+
+  if (event.type === 'module.activated') {
+    // The subscription is per-event-type, not per-module, so every module's
+    // activation arrives here. Anything that is not finance is somebody else's.
+    if (event.data.module !== 'finance') return { outcome: 'skipped', tenantId };
+    const { categoriesSeeded, categoriesTotal } = await provisionFinance(tenantId);
+    // Both numbers, because they answer different questions. A redelivery logs
+    // `seeded 0 of 20` — which reads as "already done", not as "did nothing and
+    // the tenant has nothing".
+    logger.info({ tenantId, categoriesSeeded, categoriesTotal }, 'finance categories provisioned');
+    return { outcome: 'provisioned', tenantId, categoriesSeeded, categoriesTotal };
+  }
 
   if (event.type === 'finance.recurring.due') {
     const through = event.data.through ?? new Date();

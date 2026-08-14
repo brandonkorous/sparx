@@ -1,0 +1,201 @@
+/* mypiggles.com — the Piggles console.
+ *
+ * The stylesheet for a shell that Piggles owns wrapped around surfaces it does
+ * not (piggles/CLAUDE.md RULE #0). That split is the whole shape of this file:
+ *
+ *   • The BRAND half is Piggles' — the theme import, the registered colour
+ *     roles, the heading face, the canvas.
+ *   • The SURFACE half is imported wholesale from the shared workbench's
+ *     ./surface-support.css. Those rules are the styling contract the ~500
+ *     shared surfaces are written against; re-typing them here would be a fork
+ *     by copy, and leaving them out would be a fork by omission — every field
+ *     description too small, every canvas class a no-op, every dropdown inside a
+ *     dialog painted behind it.
+ *
+ * IMPORT ORDER IS LOAD-BEARING. `layers.css` must come first (it declares the
+ * cascade-layer order, and layer precedence is set by the order names are first
+ * seen); `theme.css` must come after `tailwindcss` so the Piggles values outrank
+ * silicaui's base-layer `light` / `dark` defaults. See the header of
+ * @piggles/brand/layers.css.
+ *
+ * Piggles claims the BARE theme names. That is safe because this app never
+ * imports @sparx/brand/theme.css — only the four sparx apps do, and no shared
+ * package pulls it in. Do not add a sparx stylesheet here. */
+@import '@piggles/brand/layers.css';
+@import 'tailwindcss';
+@import '@piggles/brand/theme.css';
+
+/* Rules that close a hole in a silicaui component, and the toast surface. Both
+ * are written entirely in tokens — they name no colour of their own — so they
+ * resolve to Piggles' values here and sparx's over there. They live under
+ * @sparx/brand for historical reasons only; there is nothing sparx about them.
+ * (@sparx/brand/theme.css, which IS sparx, is deliberately not imported.) */
+@import '@sparx/brand/silica-gaps.css';
+@import '@sparx/brand/toast.css';
+
+/* Everything the shared surfaces need in order to render correctly: the site
+ * canvas safelist, the field-description correction, the [data-module] field
+ * accents, the popover stacking fix, the print rules, and the fixed-viewport
+ * shell. Read that file's header before adding to it — in particular, it holds
+ * no path-based `@source`, because a path resolved from the wrong depth
+ * generates nothing and reports nothing. Which is why the scan lines below are
+ * here, where the depth is a local fact. */
+@import '../../../../apps/workbench/app/surface-support.css';
+
+/* ── THE SHARED WORKBENCH'S OWN SOURCE ───────────────────────────────────────
+ *
+ * Tailwind emits only the classes it finds in scanned source, and it scans THIS
+ * app — which contains the shell and nothing else. Every one of the ~500 shared
+ * surfaces, and the chrome components they compose with, lives up in
+ * apps/workbench. Without these three lines the console renders every pane with
+ * no CSS at all: correct markup, correct data, no layout.
+ *
+ * Nothing about that failure is visible to typecheck, to `next build`, or to
+ * grepping the output for tokens. It is the same trap that rendered the Piggles
+ * logo at the size of the viewport, one order of magnitude larger.
+ *
+ * Three directories rather than the app root, deliberately: the root would drag
+ * in `.next` and `node_modules`, and naming the directories keeps the scan
+ * describing what it is for. */
+@source '../../../../apps/workbench/components/**/*.{ts,tsx}';
+@source '../../../../apps/workbench/lib/**/*.{ts,tsx}';
+@source '../../../../apps/workbench/surfaces/**/*.{ts,tsx}';
+
+/* @piggles/brand's mark components carry their own layout classes (`h-9 w-9`,
+ * `inline-flex`), so without this scan those classes are never generated and the
+ * marks render UNSIZED. Add a scan for any Piggles package that ships className
+ * strings. */
+@source '../../../packages/brand/src/**/*.{ts,tsx}';
+
+/* The CMS block editor's own surface styles (`.sparx-content-editor`), plus a
+ * scan so Tailwind emits the utility classes its TOOLBAR carries in TSX. The
+ * stylesheet is written on tokens this app defines, so it wears Piggles' values. */
+@import '@sparx/cms-editor/editor.css';
+@source '../../../../packages/cms-editor/src';
+
+/* The silica Email Builder chrome (`builder.email.editor`) emits utility classes
+ * as LITERAL strings from its shipped dist, so the two packages must be scanned
+ * or the editor renders unstyled. Explicit @source overrides Tailwind's default
+ * node_modules ignore. */
+@source '../node_modules/@wizeworks/silicaui-html/dist/**/*.js';
+@source '../node_modules/@wizeworks/silicaui-builder/dist/**/*.js';
+
+/* The page/site Builder CANVAS (`builder.studio`). silica renders the tenant's
+ * page tree using a layout/spacing/type vocabulary that lives as LITERAL class
+ * strings in the catalog + schema packages, not in scannable app TSX.
+ *
+ * We scan AROUND one landmine rather than excluding it: builder-schemas'
+ * `html-import.test.ts` embeds a hostile `bg-[url(x)]` fixture (it asserts the
+ * importer DROPS that class), and Turbopack's Tailwind silently ignores
+ * `@source not` — so scanning the `src` root emits `background-image: url(x)`,
+ * Turbopack tries to resolve a module called `x`, and the build fails. So:
+ * silica-catalog/src whole, and for builder-schemas only the four
+ * vocabulary-bearing sources. Keep in step with apps/workbench/app/globals.css. */
+@source '../../../../packages/silica-catalog/src';
+@source '../../../../packages/builder-schemas/src/catalog';
+@source '../../../../packages/builder-schemas/src/site-chrome.ts';
+@source '../../../../packages/builder-schemas/src/starters.ts';
+@source '../../../../packages/builder-schemas/src/box-to-class.ts';
+
+/* THE SHARED AUTHORING VOCABULARY — the same file apps/site imports, so the
+ * canvas and the published page cannot disagree about what an author may write.
+ * It is the home of the CONTAINER-QUERY set (`@2xl:grid-cols-3`), the sanctioned
+ * responsive vocabulary and the only one the device toggle can actually preview. */
+@import '../../../../packages/silica-catalog/src/builder-vocabulary.css';
+
+/* ── The registered colour roles ─────────────────────────────────────────────
+ *
+ * This list REPLACES silicaui's default set, so every built-in still wanted is
+ * re-listed — `neutral` included. Beyond the defaults:
+ *
+ *   • `danger`     — the shared platform's `statusTone()` returns it; without
+ *                    the registration `.badge-danger` renders colorless on every
+ *                    shared surface.
+ *   • `module`     — the active-app bridge. `data-app` / `data-group` /
+ *                    `data-module` repoint `--color-module`, and registering the
+ *                    NAME is what makes `color="module"` resolve through
+ *                    silica's normal colour machinery.
+ *   • `group-*`    — so the rail and launcher can reach a group hue directly
+ *                    (`bg-group-sell`) rather than only through the bridge.
+ *   • `module-*`   — the per-module hues. A token in theme.css is NOT enough: a
+ *                    hue missing from THIS list emits no class, so a shared
+ *                    surface's `bg-module-crm` resolves to nothing and the
+ *                    element renders grey with no error anywhere. The shared
+ *                    surfaces do reach for these by name, so the full sparx
+ *                    module vocabulary is registered here even though Piggles
+ *                    groups them into six hues — the names are the platform's,
+ *                    the values are Piggles'.
+ *
+ * The fifteen per-app `--color-app-*` tokens are intentionally absent: they
+ * alias their group and are consumed through the bridge. */
+@plugin '@wizeworks/silicaui' {
+  colors:
+    primary, secondary, accent, neutral, info, success, warning, error, danger, module, group-home,
+    group-web, group-sell, group-people, group-money, group-run, module-builder, module-storefront,
+    module-commerce, module-cms, module-crm, module-invoicing, module-email, module-b2b,
+    module-dropship, module-inventory, module-chat, module-scheduling, module-ai,
+    module-automations, module-seo, module-social, module-finance, module-staff, module-partner,
+    module-platform;
+}
+
+/* Bridge the non-color brand tokens into the Tailwind v4 theme. Colours are
+ * owned entirely by silicaui via the @plugin above. Radius is deliberately
+ * ABSENT: theme.css defines it semantically (--radius-box / --radius-field /
+ * --radius-selector) and silicaui already emits rounded-box / rounded-field /
+ * rounded-selector from them. Use those by ROLE, so Piggles' roundness is one
+ * edit away from re-shaping the whole console. */
+@theme {
+  --font-sans: var(--font-sans);
+  --font-heading: var(--font-heading);
+  --font-mono: var(--font-mono);
+}
+
+/* Fonts. theme.css declares the INTENT with literal family names ('Nunito',
+ * 'Inter'); next/font hashes the family, so the app re-points the two tokens at
+ * the variables next/font generates on <html>. Targets `[data-theme]` rather
+ * than `:root` deliberately — theme.css sets these inside
+ * `[data-theme='light'], [data-theme='dark']`, so matching the specificity and
+ * coming later in source order is what makes this win, on the root AND inside
+ * any nested theme island. */
+[data-theme] {
+  --font-sans: var(--font-inter), system-ui, sans-serif;
+  --font-heading: var(--font-nunito), var(--font-inter), system-ui, sans-serif;
+}
+
+/* Headings wear the display face. Piggles' roundness is carried by the type as
+ * much as by `--radius-*`; leaving headings on the body face is most of the way
+ * back to looking like sparx. */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-heading);
+}
+
+/* The loading mark's breath.
+ *
+ * Every panel in the console waits behind the Piggles snout (lib/product-adapter),
+ * so this is the one animation a person sees most — which is exactly why it is
+ * slow and small. A scale of 4% over three seconds reads as something patient;
+ * anything faster reads as something struggling.
+ *
+ * Motion only: no shadow, no opacity fade on readable text. And guarded, because
+ * a loading state that pulses forever is the single worst thing to leave running
+ * for somebody with a vestibular disorder — with motion off it simply sits still
+ * at full size, which is a complete state rather than a degraded one. */
+@media (prefers-reduced-motion: no-preference) {
+  .piggles-mark-breathe {
+    animation: piggles-mark-breathe 3s ease-in-out infinite;
+  }
+}
+@keyframes piggles-mark-breathe {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.04);
+  }
+}

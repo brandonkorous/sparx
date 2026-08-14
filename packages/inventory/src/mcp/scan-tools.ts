@@ -124,6 +124,22 @@ export const scanReadTools: AnyMcpTool[] = [
 ];
 
 // ─── Writes ────────────────────────────────────────────────────────────────────
+//
+// These are the ONLY inventory writes that do not raise a confirmation prompt,
+// and the exemption is deliberate rather than an oversight (it is asserted in
+// test/mcp-registry.test.ts, so removing it here fails a test rather than
+// quietly changing behaviour).
+//
+// A scan is one trigger pull, repeated a couple of hundred times an hour. Each
+// one either STAGES into a session that `post_scanned_receipt` commits — and
+// that tool does prompt — or moves stock shelf-to-shelf inside one location,
+// which leaves the location total untouched. Every scan also carries a
+// caller-supplied id, so a retry applies once instead of twice. Prompting per
+// scan would not make any of this safer; it would make the scanner slower than
+// a clipboard, and the stock figures would go back to being typed in at the end
+// of the day from memory.
+//
+// A future scan tool that POSTS rather than stages does not inherit this.
 
 const registerCode: McpToolDefinition = {
   name: 'register_barcode',

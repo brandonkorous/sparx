@@ -36,6 +36,10 @@ export interface PayRate {
   amountCents: number;
   currency: string;
   burdenPercent: number;
+  /** The share of a SALE, under `commission` only and zero otherwise. A separate
+   *  field because `amountCents` is per-hour or per-YEAR — there was no unit left
+   *  that could mean "7.5% of what they sell". */
+  commissionPercent: number;
   effectiveFrom: string;
   /** Null = the rate in force today. */
   effectiveTo: string | null;
@@ -434,6 +438,7 @@ export interface RateDraft {
   basis: PayBasis;
   amountCents: number;
   burdenPercent: number;
+  commissionPercent: number;
   effectiveFrom: string;
   effectiveTo: string | null;
   note: string | null;
@@ -740,4 +745,72 @@ export function isNotFound(error: unknown): boolean {
  *  "nobody has ever recorded what this person earns". */
 export function isForbidden(error: unknown): boolean {
   return error instanceof ApiError && error.status === 403;
+}
+
+/* ── Who sold it (docs/149 §10) ────────────────────────────────────────────── */
+
+export interface SaleAttribution {
+  id: string;
+  staffMemberId: string;
+  staffMemberName: string | null;
+  propertyId: string | null;
+  note: string | null;
+}
+
+/** What a recalculation did. `outcome` is the honest reason a sale earned
+ *  nothing, and the two ordinary reasons — nobody credited, or the person is not
+ *  on commission — are fixed in completely different places, so the screen has
+ *  to be able to tell them apart. */
+export interface CommissionOutcome {
+  outcome: 'recorded' | 'no-attribution' | 'no-rate' | 'not-payable' | 'unknown-sale';
+  staffMemberId?: string;
+  basisCents?: number;
+  ratePercent?: number;
+  amountCents?: number;
+}
+
+export type SaleType = 'order' | 'deal';
+
+/**
+ * Who is credited for a sale, or `null` when nobody is.
+ *
+ * `enabled` gates on the staff module AND on pay access: every
+ * `/v1/staff/sales/*` route is admin-only, so a viewer asking would get a 403
+ * they can do nothing about. The order pane passes `false` rather than showing
+ * an error where a section should be.
+ */
+export function useSaleAttribution(type: SaleType, id: string, enabled: boolean) {
+  return useQuery({
+    queryKey: [...STAFF_KEY, 'attribution', type, id],
+    queryFn: () => api.get<SaleAttribution | null>(`/v1/staff/sales/${type}/${id}/attribution`),
+    enabled,
+    retry: false,
+  });
+}
+
+export function useAttributeSale(type: SaleType, id: string) {
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: (body: { staffMemberId: string; note?: string | null }) =>
+      api.put<{ attribution: SaleAttribution; commission: CommissionOutcome }>(
+        `/v1/staff/sales/${type}/${id}/attribution`,
+        body
+      ),
+    onSuccess: () => {
+      // The commission list moves too — crediting a sale recalculates it on the
+      // spot, so a stale figure beside a fresh attribution would be the screen
+      // contradicting itself.
+      void client.invalidateQueries({ queryKey: STAFF_KEY });
+    },
+  });
+}
+
+export function useClearSaleAttribution(type: SaleType, id: string) {
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: () => api.delete<void>(`/v1/staff/sales/${type}/${id}/attribution`),
+    onSuccess: () => {
+      void client.invalidateQueries({ queryKey: STAFF_KEY });
+    },
+  });
 }

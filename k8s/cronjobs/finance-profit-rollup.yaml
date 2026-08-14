@@ -1,0 +1,78 @@
+# Refreshes the daily profit cache (docs/148 §12).
+#
+# `profitForRange` READS `rollup_finance_daily_profit`; only `recomputeDay`
+# writes it. Without this job the Profit surface renders a cache nobody fills —
+# zeroes until somebody presses the manual recompute button, and stale again the
+# moment an order is paid or a cost is recorded. The workbench's own comment
+# said "waiting for tonight's worker is not an answer" about a worker that had
+# no scheduler.
+#
+# Writes are also announced live: recording, correcting or deleting an expense
+# publishes `finance.expense.recorded`, so the figure moves immediately. This
+# job is the backstop for everything that changes WITHOUT an expense write —
+# an order paid, a refund, an inventory cost consumed — and for any event the
+# broker dropped.
+#
+# 06:45 UTC: after commerce revenue (06:00) and invoicing collected (06:30),
+# because profit subtracts from what those two produce. The endpoint recomputes
+# a two-day trailing window by default so yesterday is corrected once it has
+# fully closed; `?days=` widens it for a backfill.
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: finance-profit-rollup
+  namespace: sparx-prod
+  labels:
+    app: finance-cron
+    job: profit-rollup
+spec:
+  schedule: '45 6 * * *'
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 3
+  startingDeadlineSeconds: 300
+  jobTemplate:
+    spec:
+      backoffLimit: 2
+      ttlSecondsAfterFinished: 3600
+      template:
+        metadata:
+          labels:
+            app: finance-cron
+            job: profit-rollup
+        spec:
+          serviceAccountName: sparx-app
+          restartPolicy: OnFailure
+          containers:
+            - name: curl
+              image: curlimages/curl:8.10.1
+              command: ['sh', '-c']
+              args:
+                - >
+                  curl --fail-with-body --silent --show-error
+                  --max-time 300
+                  -X POST
+                  -H "X-Sparx-Internal-Cron-Token: $SPARX_INTERNAL_CRON_TOKEN"
+                  http://api-rest.sparx-prod.svc.cluster.local:3000/internal/finance/profit-rollup
+              env:
+                - name: SPARX_INTERNAL_CRON_TOKEN
+                  valueFrom:
+                    secretKeyRef:
+                      name: sparx-app-secrets
+                      key: SPARX_INTERNAL_CRON_TOKEN
+              resources:
+                requests:
+                  cpu: '25m'
+                  memory: '16Mi'
+                limits:
+                  cpu: '100m'
+                  memory: '32Mi'
+              securityContext:
+                runAsNonRoot: true
+                runAsUser: 1000
+                allowPrivilegeEscalation: false
+                capabilities:
+                  drop: ['ALL']
+                seccompProfile:
+                  type: RuntimeDefault

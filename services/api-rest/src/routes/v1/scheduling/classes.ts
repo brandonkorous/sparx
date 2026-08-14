@@ -10,6 +10,7 @@
 
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
+import { queryBool } from '@sparx/api-core/query';
 import type { BookingAttendee } from '@sparx/db';
 import { ok } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
@@ -30,7 +31,7 @@ const SessionsQuery = z.object({
   serviceId: z.string().uuid().optional(),
   from: z.string().datetime(),
   to: z.string().datetime(),
-  openOnly: z.coerce.boolean().optional(),
+  openOnly: queryBool.optional(),
 });
 
 function sessionView(s: ClassSessionSummary) {

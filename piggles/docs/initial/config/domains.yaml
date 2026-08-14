@@ -1,0 +1,36 @@
+product:
+  marketing:
+    apex: meetpiggles.com
+    purposes: [public_marketing, seo, pricing, docs, help]
+  acquisition:
+    apex: getpiggles.com
+    purposes: [signup, signin, onboarding, billing, invites, provisioning]
+  app:
+    apex: mypiggles.com
+    purposes: [authenticated_mdi_workbench]
+    subdomains:
+      api: api.mypiggles.com
+      mcp: mcp.mypiggles.com
+  status:
+    hostname: status.meetpiggles.com
+
+tenant_sites:
+  preferred_registrable_domain: piggles.site
+  wildcard: "*.piggles.site"
+  custom_domain_cname: customers.piggles.site
+  apex_behavior: redirect_to_meetpiggles
+
+email:
+  preferred_registrable_domain: piggles.email
+  smtp_hostname: mail.piggles.email
+
+seo_module_domains:
+  - pigglescms.com
+  - pigglescrm.com
+  - pigglesemail.com
+  - pigglesb2b.com
+  - pigglessite.com
+  - pigglesstore.com
+  - pigglesbookings.com
+  - pigglesapi.com
+  - pigglesmcp.com

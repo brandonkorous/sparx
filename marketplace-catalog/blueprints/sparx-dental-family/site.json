@@ -22,7 +22,7 @@
                   "props": {
                     "show": "both"
                   },
-                  "id": "3cf41e7d-3de3-4747-a28e-018aff2bdfc9",
+                  "id": "9caa1d2d-ad5a-4f73-9c91-6a35b7585ebf",
                   "ord": "a0"
                 },
                 {
@@ -37,13 +37,15 @@
                       "attrs": {
                         "href": "/book"
                       },
-                      "children": ["Book"],
+                      "children": [
+                        "Book"
+                      ],
                       "slot": {
                         "name": "link1",
                         "type": "link",
                         "label": "Product"
                       },
-                      "id": "de367c95-b7d1-4ac3-84bf-13735509fd09",
+                      "id": "4cd4096c-8d1f-4fc6-91c3-98d53fe9cf90",
                       "ord": "a0"
                     },
                     {
@@ -53,13 +55,15 @@
                       "attrs": {
                         "href": "/about"
                       },
-                      "children": ["About"],
+                      "children": [
+                        "About"
+                      ],
                       "slot": {
                         "name": "link2",
                         "type": "link",
                         "label": "Pricing"
                       },
-                      "id": "5273dd4a-0b13-4877-a3f8-453adc23d6d3",
+                      "id": "251e4348-b908-4c39-8165-192a67f97086",
                       "ord": "a1"
                     },
                     {
@@ -69,17 +73,19 @@
                       "attrs": {
                         "href": "/contact"
                       },
-                      "children": ["Contact"],
+                      "children": [
+                        "Contact"
+                      ],
                       "slot": {
                         "name": "link3",
                         "type": "link",
                         "label": "Docs"
                       },
-                      "id": "6358b308-7c6e-4916-bc27-8dc0c3284ce1",
+                      "id": "07c2d08a-b285-4831-87cf-bbfa3477ef24",
                       "ord": "a2"
                     }
                   ],
-                  "id": "cd2c673c-3517-415f-b67b-c719a5ee55e9",
+                  "id": "9d9bba66-91e4-46fb-bc56-65455a369cfd",
                   "ord": "a1"
                 },
                 {
@@ -94,20 +100,22 @@
                       "attrs": {
                         "href": "/account/login"
                       },
-                      "children": ["Sign in"],
+                      "children": [
+                        "Sign in"
+                      ],
                       "slot": {
                         "name": "secondary",
                         "type": "link",
                         "label": "Secondary link"
                       },
-                      "id": "51768d8a-8405-47b2-918a-9b58a23dc6cb",
+                      "id": "334d7ae2-833c-471e-a487-586bb1d5d4c8",
                       "ord": "a0"
                     },
                     {
                       "kind": "host",
                       "component": "site.theme-toggle",
                       "class": "inline-flex items-center",
-                      "id": "070d50bb-9969-47f3-ace4-5cf936d8ec90",
+                      "id": "af3c6871-5591-474e-bb0d-2dd7d05b48fe",
                       "ord": "a1"
                     },
                     {
@@ -123,7 +131,7 @@
                         "type": "link",
                         "label": "Primary action"
                       },
-                      "id": "b8499658-21c8-4e36-ade4-c895664780a3",
+                      "id": "b775c31d-6c58-4199-ac6b-547677268040",
                       "ord": "a2"
                     },
                     {
@@ -141,20 +149,20 @@
                           "props": {
                             "name": "menu"
                           },
-                          "id": "f64787a5-340b-4e81-a9b2-cfff3bdbfe6c",
+                          "id": "20036874-751e-4b30-802f-e58313275701",
                           "ord": "a0"
                         }
                       ],
                       "part": "trigger",
-                      "id": "840a4e4a-1d6d-448a-bfeb-04cd1fe899ee",
+                      "id": "135a5bc3-f46e-4669-97f6-35a1158c3ef0",
                       "ord": "a3"
                     }
                   ],
-                  "id": "7fd18e5a-4a7e-41a6-a8ac-69a20dda3823",
+                  "id": "e485a3d9-7982-450f-a49d-d3fda1d3c6c1",
                   "ord": "a2"
                 }
               ],
-              "id": "e34718dd-7c57-424b-b336-982014474fa4",
+              "id": "f6b3bf04-5e23-4a37-b90a-5d584a279e4c",
               "ord": "a0"
             },
             {
@@ -172,13 +180,15 @@
                   "attrs": {
                     "href": "/book"
                   },
-                  "children": ["Book"],
+                  "children": [
+                    "Book"
+                  ],
                   "slot": {
                     "name": "link1",
                     "type": "link",
                     "label": "Product"
                   },
-                  "id": "ca212336-e906-4693-9091-ca2b53dc0871",
+                  "id": "c8ca470d-059c-4bfd-b72d-b9bab0b124e1",
                   "ord": "a0"
                 },
                 {
@@ -188,13 +198,15 @@
                   "attrs": {
                     "href": "/about"
                   },
-                  "children": ["About"],
+                  "children": [
+                    "About"
+                  ],
                   "slot": {
                     "name": "link2",
                     "type": "link",
                     "label": "Pricing"
                   },
-                  "id": "96fd0570-ecb7-488a-a60c-6fd52c18add3",
+                  "id": "deeaf21a-dbfd-4a18-8955-a32f547ace13",
                   "ord": "a1"
                 },
                 {
@@ -204,13 +216,15 @@
                   "attrs": {
                     "href": "/contact"
                   },
-                  "children": ["Contact"],
+                  "children": [
+                    "Contact"
+                  ],
                   "slot": {
                     "name": "link3",
                     "type": "link",
                     "label": "Docs"
                   },
-                  "id": "e597c4f7-db44-471f-b3f7-0be748da1e53",
+                  "id": "378eac15-4c71-4318-a00b-4b0dc6806213",
                   "ord": "a2"
                 },
                 {
@@ -226,7 +240,7 @@
                     "type": "link",
                     "label": "Secondary link"
                   },
-                  "id": "8eb83351-6e43-41ab-b9f2-212a56b09ec6",
+                  "id": "e9102395-ffdd-4a4f-bae7-59eb778619e5",
                   "ord": "a3"
                 },
                 {
@@ -242,19 +256,19 @@
                     "type": "link",
                     "label": "Primary action"
                   },
-                  "id": "197f4fb5-834f-41db-86f7-6582b3c56155",
+                  "id": "a3f2346e-1007-4929-b5bf-61a9c6fbd3a1",
                   "ord": "a4"
                 }
               ],
               "part": "panel",
-              "id": "6ab6aa33-4ce9-41b6-9e47-633c6d43d349",
+              "id": "c85934ad-399a-4f3b-80f3-9caf2965ab77",
               "ord": "a1"
             }
           ],
           "behavior": {
             "type": "disclosure"
           },
-          "id": "6fed8f1c-5c88-4bfd-9d9c-75b679fe9808",
+          "id": "c2879425-b694-44dd-b581-85d07c219ef0",
           "ord": "a0"
         },
         {
@@ -270,7 +284,7 @@
               "kind": "outlet"
             }
           ],
-          "id": "85104bf3-438b-4596-b3f7-eb9617bd1c76",
+          "id": "0c909ff0-46b0-4bdd-bd8b-96d07a6fc546",
           "ord": "a1"
         },
         {
@@ -300,14 +314,16 @@
                           "props": {
                             "show": "both"
                           },
-                          "id": "3da7dd9a-7823-4f56-946b-fe19c27c6bba",
+                          "id": "9f023e57-ff15-45d7-8e71-3520f90548f3",
                           "ord": "a0"
                         },
                         {
                           "kind": "element",
                           "tag": "p",
                           "class": "max-w-xs text-sm text-base-content",
-                          "children": ["Everything you publish, in one place."],
+                          "children": [
+                            "Everything you publish, in one place."
+                          ],
                           "slot": {
                             "name": "blurb",
                             "type": "text",
@@ -316,7 +332,7 @@
                           "attrs": {
                             "href": "/"
                           },
-                          "id": "d33609eb-2f25-40aa-b4cf-0c53a501c4bc",
+                          "id": "ac8d916f-8632-4db6-9907-59a7cfe8bc6e",
                           "ord": "a1"
                         },
                         {
@@ -324,11 +340,11 @@
                           "tag": "ul",
                           "class": "mt-2 flex items-center gap-5",
                           "children": [],
-                          "id": "5c8cd2bd-0e72-4619-a16d-6bece18c656b",
+                          "id": "01363e71-f443-40f8-ad44-86e302bbbefb",
                           "ord": "a2"
                         }
                       ],
-                      "id": "260fd141-2888-4b00-bf6d-7dc678f6f4fa",
+                      "id": "6d87c20f-f94d-4804-975c-554b9beef415",
                       "ord": "a0"
                     },
                     {
@@ -340,7 +356,9 @@
                           "kind": "element",
                           "tag": "p",
                           "class": "text-sm font-semibold text-base-content",
-                          "children": ["Explore"],
+                          "children": [
+                            "Explore"
+                          ],
                           "slot": {
                             "name": "col1",
                             "type": "text",
@@ -349,7 +367,7 @@
                           "attrs": {
                             "href": "/"
                           },
-                          "id": "8abe282f-8261-4c83-801d-0e8a61797088",
+                          "id": "927f6349-2bc1-4d6a-8ccb-3c36116f3a71",
                           "ord": "a0"
                         },
                         {
@@ -368,17 +386,19 @@
                                   "attrs": {
                                     "href": "/book"
                                   },
-                                  "children": ["Book"],
+                                  "children": [
+                                    "Book"
+                                  ],
                                   "slot": {
                                     "name": "link1",
                                     "type": "link",
                                     "label": "Features"
                                   },
-                                  "id": "f98777e3-f6dd-42e4-8413-5292bc8b2ef4",
+                                  "id": "f2f0b05f-77dd-4474-9bcb-33628a35724a",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "4a9c2f08-54be-409d-abb7-a7f62509243e",
+                              "id": "6b6dd5bc-026d-4791-9586-0c5b4de45c2e",
                               "ord": "a0"
                             },
                             {
@@ -392,17 +412,19 @@
                                   "attrs": {
                                     "href": "/about"
                                   },
-                                  "children": ["About"],
+                                  "children": [
+                                    "About"
+                                  ],
                                   "slot": {
                                     "name": "link2",
                                     "type": "link",
                                     "label": "Pricing"
                                   },
-                                  "id": "dfe56fcb-40ca-44da-a9f0-f6c22dab2e99",
+                                  "id": "04a06474-b6bc-44c7-9931-522544f17a34",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "f60c4a52-2ec7-4532-be1c-756fef164b2b",
+                              "id": "5e9c7b7b-397f-4afc-9981-68849073a643",
                               "ord": "a1"
                             },
                             {
@@ -416,17 +438,19 @@
                                   "attrs": {
                                     "href": "/contact"
                                   },
-                                  "children": ["Contact"],
+                                  "children": [
+                                    "Contact"
+                                  ],
                                   "slot": {
                                     "name": "link3",
                                     "type": "link",
                                     "label": "Integrations"
                                   },
-                                  "id": "2c27c62c-fd90-4310-a98a-6c0dc60a60bf",
+                                  "id": "71b59493-8f98-4d97-bea9-0d6b48f427d0",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "b8ed6a63-0da4-43a6-bdda-508e2da495ff",
+                              "id": "85a7ef09-f529-4cd6-9898-96601b8a4b67",
                               "ord": "a2"
                             },
                             {
@@ -440,25 +464,27 @@
                                   "attrs": {
                                     "href": "/search"
                                   },
-                                  "children": ["Search"],
+                                  "children": [
+                                    "Search"
+                                  ],
                                   "slot": {
                                     "name": "link4",
                                     "type": "link",
                                     "label": "Changelog"
                                   },
-                                  "id": "cf61b62a-7c99-4b0d-aaaa-bdcf7871f69a",
+                                  "id": "ffc3515d-184f-4173-b2d6-92c5cbfced5c",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "e5cb4306-453d-4a19-8bf4-064bb11c5360",
+                              "id": "3f67afc4-721c-4780-aeb3-b6adcafbf709",
                               "ord": "a3"
                             }
                           ],
-                          "id": "560c4a6f-387b-4b12-aed7-4f12e60be123",
+                          "id": "0b2aae1f-365b-4bab-afdc-0debcc8bdf75",
                           "ord": "a1"
                         }
                       ],
-                      "id": "d869c02b-3ba4-43db-8d18-42822f005607",
+                      "id": "b034d3e4-9966-406a-8120-88535f5cecfb",
                       "ord": "a1"
                     },
                     {
@@ -471,11 +497,11 @@
                           "tag": "ul",
                           "class": "flex flex-col gap-2",
                           "children": [],
-                          "id": "6d98228d-2e3c-4817-9393-64db819bddf2",
+                          "id": "a90f6d30-6f5c-4371-8d24-8e4ba0c7cf7a",
                           "ord": "a0"
                         }
                       ],
-                      "id": "0d1471fa-8983-425e-8021-2ba2b1c19f4b",
+                      "id": "c6f2bb91-a62d-4cc1-b4fa-c006b6fd3edd",
                       "ord": "a2"
                     },
                     {
@@ -499,23 +525,23 @@
                                   "props": {
                                     "heading": "Legal"
                                   },
-                                  "id": "6949b749-f075-4a6c-876b-021311ab0c0c",
+                                  "id": "4667087b-5fee-42f4-8e6d-d0ff223ace03",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "631b4f1f-57c4-4f81-93a8-29a9a8aa5cf4",
+                              "id": "32e7b2be-a56d-4182-b097-6df7c2c79a21",
                               "ord": "a0"
                             }
                           ],
-                          "id": "99b0ea94-3cf7-465c-a8c0-5b4e9b32cf01",
+                          "id": "efaa5f15-af9b-410b-8aaf-15bf7424e9c6",
                           "ord": "a0"
                         }
                       ],
-                      "id": "528ff01c-291e-4efc-8d02-c1894b9807df",
+                      "id": "0c3f5760-fcb5-4db4-978b-9225b9c42806",
                       "ord": "a3"
                     }
                   ],
-                  "id": "3ecf93ca-53f7-43da-9e6c-83c3df5e7600",
+                  "id": "a0967555-ee49-4802-abb8-087856a326cc",
                   "ord": "a0"
                 },
                 {
@@ -533,16 +559,18 @@
                           "kind": "element",
                           "tag": "span",
                           "class": "font-medium",
-                          "children": ["Your site"],
+                          "children": [
+                            "Your site"
+                          ],
                           "data": {
                             "kind": "value",
                             "ref": "site.identity.name"
                           },
-                          "id": "86d49c9b-8e00-4ecb-8dd4-f11d356d8064",
+                          "id": "86797e1a-d034-40a4-9eb0-e86218d71d72",
                           "ord": "a0"
                         }
                       ],
-                      "id": "584132bb-3d86-4906-90aa-0e46bd255ddd",
+                      "id": "94d8ff60-28a7-4105-a050-b70908887a2a",
                       "ord": "a0"
                     },
                     {
@@ -550,23 +578,23 @@
                       "tag": "ul",
                       "class": "flex flex-wrap items-center gap-x-6 gap-y-2",
                       "children": [],
-                      "id": "d03aad6d-0c91-4ba3-8aec-147f962b7453",
+                      "id": "1f00d875-14c7-4ef0-ba6b-bf5e95e0f020",
                       "ord": "a1"
                     }
                   ],
-                  "id": "32ec0324-3479-44f4-bf8f-95fb16104f32",
+                  "id": "9a206249-e865-45ad-93c3-94cbc06a86d9",
                   "ord": "a1"
                 }
               ],
-              "id": "0f8d6118-8064-4dba-9024-2e2794f9c240",
+              "id": "b1c343fd-f7a5-40a7-bf4d-26ee303dae53",
               "ord": "a0"
             }
           ],
-          "id": "8dba1596-bff1-49fc-b3a7-1a79007632f0",
+          "id": "5d1e0990-cc18-4503-89cb-d80062e5ecda",
           "ord": "a2"
         }
       ],
-      "id": "7a2d63a7-803b-4aef-80af-28a2bcf2973e"
+      "id": "fd6b7ffc-e4b0-437f-a4e2-03d0e02205e9"
     }
   },
   "pages": [
@@ -580,7 +608,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "f41ea7fc-d78f-4d3d-8b2b-9756048b7d70",
+        "id": "8cf4536a-26f0-4a0d-b06f-1d0a01c97d35",
         "children": [
           {
             "kind": "element",
@@ -596,14 +624,14 @@
                   "alt": "A bright, friendly dental office with big windows and warm daylight",
                   "loading": "eager"
                 },
-                "id": "9d4246f6-09fb-43da-8134-590bf805a9a8",
+                "id": "2bf130ec-5588-4fd4-b5de-370653ffad0a",
                 "ord": "a0"
               },
               {
                 "kind": "element",
                 "tag": "div",
                 "class": "absolute inset-0 bg-black/30",
-                "id": "e6376a57-774e-4595-be94-6a69e9a507a4",
+                "id": "580eb308-954c-4122-8c0e-ef6b3d2d4f67",
                 "ord": "a1"
               },
               {
@@ -615,8 +643,10 @@
                     "kind": "element",
                     "tag": "h1",
                     "class": "max-w-3xl text-4xl font-bold leading-tight tracking-tight @2xl:text-5xl @3xl:text-6xl",
-                    "children": ["A dentist the whole family looks forward to"],
-                    "id": "955c8da3-9a28-413d-9d86-48215e45c74a",
+                    "children": [
+                      "A dentist the whole family looks forward to"
+                    ],
+                    "id": "ddcecd84-ee6a-40de-af51-66a73418825b",
                     "ord": "a0"
                   },
                   {
@@ -626,7 +656,7 @@
                     "children": [
                       "Gentle, unhurried care for every age — checkups, cleanings, kids’ dentistry and same-day help when it hurts. New patients always welcome."
                     ],
-                    "id": "c28fd96d-dc93-4240-af7e-6ae388225753",
+                    "id": "bcece4fd-f60d-4672-9f34-a8929a83b95a",
                     "ord": "a1"
                   },
                   {
@@ -641,8 +671,10 @@
                         "attrs": {
                           "href": "/book"
                         },
-                        "children": ["Book a checkup"],
-                        "id": "4539a819-15bf-4929-8f2d-2a270340aa18",
+                        "children": [
+                          "Book a checkup"
+                        ],
+                        "id": "fcf4bbd9-e61e-43fc-ac1d-a6c2606dd487",
                         "ord": "a0"
                       },
                       {
@@ -652,20 +684,22 @@
                         "attrs": {
                           "href": "/book"
                         },
-                        "children": ["See appointments"],
-                        "id": "d8d82f3b-a859-40a3-9491-f06083f7e7ae",
+                        "children": [
+                          "See appointments"
+                        ],
+                        "id": "17644d0e-b5f8-40e4-89b2-90481c722e42",
                         "ord": "a1"
                       }
                     ],
-                    "id": "fcede2d5-289e-4f7a-ab82-0e1afb7ea30f",
+                    "id": "0a4f9b2c-26cd-47d2-8062-0e902cba12c7",
                     "ord": "a2"
                   }
                 ],
-                "id": "a50e8ea4-93d8-426b-893b-1795e7ee10b8",
+                "id": "130244af-ef0a-408d-923a-686695c177cf",
                 "ord": "a2"
               }
             ],
-            "id": "c0736939-5c79-4549-bb23-6ce83ff3035c",
+            "id": "59907bc1-25a6-4333-ba0a-241e354f1580",
             "ord": "a0"
           },
           {
@@ -692,8 +726,10 @@
                             "kind": "element",
                             "tag": "h2",
                             "class": "text-xl font-semibold text-base-content",
-                            "children": ["Gentle & anxiety-friendly"],
-                            "id": "4b743315-2092-4650-baa0-b2614a7e8cd7",
+                            "children": [
+                              "Gentle & anxiety-friendly"
+                            ],
+                            "id": "b9026e96-88d6-4bfc-848c-b778e3331951",
                             "ord": "a0"
                           },
                           {
@@ -703,11 +739,11 @@
                             "children": [
                               "Nervous about the dentist? So were half of our patients once. We go slowly, explain everything, and never rush — a lot of people tell us they’ve stopped dreading it."
                             ],
-                            "id": "564efa53-85a8-4904-9432-63c6d3062763",
+                            "id": "47a96351-ff24-444f-8c87-1e49b90f1baa",
                             "ord": "a1"
                           }
                         ],
-                        "id": "2361342c-011c-4fa6-b6eb-00184ad9606a",
+                        "id": "25270fa4-399c-47ae-9ca8-bcf2dc484dcc",
                         "ord": "a0"
                       },
                       {
@@ -719,8 +755,10 @@
                             "kind": "element",
                             "tag": "h2",
                             "class": "text-xl font-semibold text-base-content",
-                            "children": ["Most insurance accepted"],
-                            "id": "9758499e-3bc4-4a06-85e2-7c1f84d7e15c",
+                            "children": [
+                              "Most insurance accepted"
+                            ],
+                            "id": "c79140a1-1eeb-4f15-8594-67245fd373bc",
                             "ord": "a0"
                           },
                           {
@@ -730,11 +768,11 @@
                             "children": [
                               "We work with most major plans and file the claim for you, so there are no surprises. No insurance? Ask about our simple in-house membership."
                             ],
-                            "id": "42e6e655-1475-4411-8969-86aa945a3e57",
+                            "id": "5ddeefc3-ed1e-4ee5-95bd-ffac92206019",
                             "ord": "a1"
                           }
                         ],
-                        "id": "6cd5a172-b860-4a12-b768-742db9462b1b",
+                        "id": "a2bf5cc2-f3ca-421e-a5f1-f406149adceb",
                         "ord": "a1"
                       },
                       {
@@ -746,8 +784,10 @@
                             "kind": "element",
                             "tag": "h2",
                             "class": "text-xl font-semibold text-base-content",
-                            "children": ["Same-day emergencies"],
-                            "id": "e9b9c2ca-a0b9-43d6-8ab3-1d24affa3bf9",
+                            "children": [
+                              "Same-day emergencies"
+                            ],
+                            "id": "91605f8f-57c8-4f56-8976-30b2191e65b8",
                             "ord": "a0"
                           },
                           {
@@ -757,11 +797,11 @@
                             "children": [
                               "A toothache can’t wait for next week. We keep time open every day, so if you’re in pain we can usually see you the same day."
                             ],
-                            "id": "c85c11bb-1b69-4710-8a46-9bfb7815114b",
+                            "id": "d954dbff-dd17-424a-878b-c3a37b3ff896",
                             "ord": "a1"
                           }
                         ],
-                        "id": "4eb56126-7f3c-4414-b7e6-1a734aafeee3",
+                        "id": "5da001ab-1402-4b8a-9b3e-54c68348cbdc",
                         "ord": "a2"
                       },
                       {
@@ -773,8 +813,10 @@
                             "kind": "element",
                             "tag": "h2",
                             "class": "text-xl font-semibold text-base-content",
-                            "children": ["Kids genuinely welcome"],
-                            "id": "443d79db-dffd-4f9a-ab67-f2c9b054222c",
+                            "children": [
+                              "Kids genuinely welcome"
+                            ],
+                            "id": "f1f6e42c-ec43-4dd7-8c02-fe775a0c62e5",
                             "ord": "a0"
                           },
                           {
@@ -784,23 +826,23 @@
                             "children": [
                               "From first tooth to teenager, we make visits fun and easy — gentle hygienists, no scary words, and plenty of high-fives on the way out."
                             ],
-                            "id": "49420269-5275-4c55-941c-702c35db25b5",
+                            "id": "02abf1d4-b6ba-4444-934b-ce972b6a5a80",
                             "ord": "a1"
                           }
                         ],
-                        "id": "de1308b8-bff3-43c6-a7f5-fec2d68ac62c",
+                        "id": "390b689a-3d85-4f93-88f6-46ba87ea6e37",
                         "ord": "a3"
                       }
                     ],
-                    "id": "73d833e7-14c8-4d29-8917-6b3369179ef9",
+                    "id": "2a211061-8a8f-4957-abec-70f0cf364ffe",
                     "ord": "a0"
                   }
                 ],
-                "id": "05139bed-1fd1-410a-8a64-013d50287b99",
+                "id": "34ffaf27-e51d-4ee4-bd15-13bf8a7fcfc8",
                 "ord": "a0"
               }
             ],
-            "id": "ef50ef53-4860-4351-a223-16bd787da078",
+            "id": "cf0d8a00-7e67-4846-ab37-7ebc028f1246",
             "ord": "a1"
           },
           {
@@ -822,8 +864,10 @@
                         "kind": "element",
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
-                        "children": ["Appointments"],
-                        "id": "54bd39c7-9328-48ea-b92d-dc657f5842a4",
+                        "children": [
+                          "Appointments"
+                        ],
+                        "id": "1d273be3-7b8a-408d-b472-ed2ee94bebb9",
                         "ord": "a0"
                       },
                       {
@@ -833,11 +877,11 @@
                         "children": [
                           "A few of the visits we see most. Full prices and live availability are on the booking page — and consults are always free."
                         ],
-                        "id": "1b54e6be-dca4-4465-81f1-88d192e02e32",
+                        "id": "7bfa6b95-4467-4ca2-85c1-3105fe4d2ded",
                         "ord": "a1"
                       }
                     ],
-                    "id": "f2db100e-4637-46d7-beca-c95578b24d81",
+                    "id": "c4afc116-4c67-4fc1-b38b-5e7bf2b6626e",
                     "ord": "a0"
                   },
                   {
@@ -862,28 +906,34 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
-                                "children": ["New patient exam"],
-                                "id": "12b80505-ab4d-4833-8686-9959e2dc3eaa",
+                                "children": [
+                                  "New patient exam"
+                                ],
+                                "id": "4c36681d-3eb1-4283-bf79-d84e4d498f53",
                                 "ord": "a0"
                               },
                               {
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-bold text-base-content",
-                                "children": ["$89"],
-                                "id": "16e97214-163a-4df5-ba07-494317d14da2",
+                                "children": [
+                                  "$89"
+                                ],
+                                "id": "229cf118-662e-4c3b-898d-faa9b4f25889",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "2e5680e6-0527-410e-8a18-b7214883c53b",
+                            "id": "f866eb51-0a58-4316-af5b-85f748919038",
                             "ord": "a0"
                           },
                           {
                             "kind": "element",
                             "tag": "p",
                             "class": "text-sm font-medium uppercase tracking-wide text-secondary",
-                            "children": ["1 hr"],
-                            "id": "e6c3b89c-cf6d-42c0-be10-e27cee5b4a03",
+                            "children": [
+                              "1 hr"
+                            ],
+                            "id": "bd97b9ba-5c3d-4c58-9d5e-cefe5ce61afb",
                             "ord": "a1"
                           },
                           {
@@ -893,11 +943,11 @@
                             "children": [
                               "A full check, gentle X-rays and a plan built around you."
                             ],
-                            "id": "1d1c5933-088a-459f-b9df-7935c3d2d400",
+                            "id": "6024abe4-589b-46dc-b277-7bd6e3ed3b82",
                             "ord": "a2"
                           }
                         ],
-                        "id": "f6d88032-38a1-4e89-98ae-2e55995fd029",
+                        "id": "6e3f4481-e8bb-49aa-b0c8-185e151d8a37",
                         "ord": "a0"
                       },
                       {
@@ -917,40 +967,48 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
-                                "children": ["Cleaning & checkup"],
-                                "id": "44950428-6f18-4c2f-b117-4160811ba220",
+                                "children": [
+                                  "Cleaning & checkup"
+                                ],
+                                "id": "dfaca28a-6447-4ba7-90cf-390e6b774fe1",
                                 "ord": "a0"
                               },
                               {
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-bold text-base-content",
-                                "children": ["$119"],
-                                "id": "5cb3fcec-b1a8-4fba-b844-40a6efd519dc",
+                                "children": [
+                                  "$119"
+                                ],
+                                "id": "b22641c0-d5f4-4b5b-9bd0-65524018c5a9",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "badca52f-0a6b-41d4-b0cb-c81ec7cc22cb",
+                            "id": "fb6e4bdc-85af-40a4-9a88-3be99e4c78bc",
                             "ord": "a0"
                           },
                           {
                             "kind": "element",
                             "tag": "p",
                             "class": "text-sm font-medium uppercase tracking-wide text-secondary",
-                            "children": ["1 hr"],
-                            "id": "a161cbd0-3f66-419f-834e-6fec45c2320b",
+                            "children": [
+                              "1 hr"
+                            ],
+                            "id": "8b7722d3-eab7-4e21-b1bf-58e6e5afea2c",
                             "ord": "a1"
                           },
                           {
                             "kind": "element",
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
-                            "children": ["Your gentle six-month clean, polish and check."],
-                            "id": "78ad5489-a86f-4a5e-ac61-2abb5d98199c",
+                            "children": [
+                              "Your gentle six-month clean, polish and check."
+                            ],
+                            "id": "342dbf7f-efe9-438f-a590-77522a629072",
                             "ord": "a2"
                           }
                         ],
-                        "id": "082084c2-63d2-465c-b91b-306f0c5c982f",
+                        "id": "31dea8cc-4a8a-4761-bdde-9ac10585a38e",
                         "ord": "a1"
                       },
                       {
@@ -970,40 +1028,48 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
-                                "children": ["Kids’ checkup"],
-                                "id": "9c67c972-cf0e-414e-b7cb-17c8672a2623",
+                                "children": [
+                                  "Kids’ checkup"
+                                ],
+                                "id": "e6178cd2-5335-44f8-b3f4-5fd1e316c9d5",
                                 "ord": "a0"
                               },
                               {
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-bold text-base-content",
-                                "children": ["$79"],
-                                "id": "caa35d9d-799c-4246-8d70-9ba3cb6d75fa",
+                                "children": [
+                                  "$79"
+                                ],
+                                "id": "24381d2e-d79d-4ee4-8408-db95ae7c55aa",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "edb45423-2005-427b-a5bc-74a97aadef8d",
+                            "id": "541ea5f6-0d3a-47e2-9771-997dc49b28c7",
                             "ord": "a0"
                           },
                           {
                             "kind": "element",
                             "tag": "p",
                             "class": "text-sm font-medium uppercase tracking-wide text-secondary",
-                            "children": ["45 min"],
-                            "id": "ad9b56f6-ee67-4a06-ad6c-b049a747190a",
+                            "children": [
+                              "45 min"
+                            ],
+                            "id": "ce4904c5-94e8-4acc-975b-93843b5adb8f",
                             "ord": "a1"
                           },
                           {
                             "kind": "element",
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
-                            "children": ["A friendly, unhurried visit made just for little ones."],
-                            "id": "3ef5cde1-1c27-4251-9280-aad3b77fc51e",
+                            "children": [
+                              "A friendly, unhurried visit made just for little ones."
+                            ],
+                            "id": "f513e215-9f5d-450b-8fd3-d2e6dd4b130d",
                             "ord": "a2"
                           }
                         ],
-                        "id": "e3a70e0b-3844-4dd5-b673-562f47b2f921",
+                        "id": "043414eb-05dc-42e8-8a5c-c9828fb9e107",
                         "ord": "a2"
                       },
                       {
@@ -1023,40 +1089,48 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
-                                "children": ["Filling"],
-                                "id": "56e6c5b7-d412-46f9-8c97-cd4303fb3903",
+                                "children": [
+                                  "Filling"
+                                ],
+                                "id": "dfe5feff-5ba1-4de9-a0b9-502a3a3e4d66",
                                 "ord": "a0"
                               },
                               {
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-bold text-base-content",
-                                "children": ["$185"],
-                                "id": "428fe12e-cd6b-40c3-9697-8e1a0869052f",
+                                "children": [
+                                  "$185"
+                                ],
+                                "id": "32e0a0aa-9c0d-4771-8765-c1f0b79292fa",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "cc4db110-1743-46b4-a8cc-d801848b370f",
+                            "id": "d85e41b3-08d8-4dc6-b2db-4d8cc847ce20",
                             "ord": "a0"
                           },
                           {
                             "kind": "element",
                             "tag": "p",
                             "class": "text-sm font-medium uppercase tracking-wide text-secondary",
-                            "children": ["1 hr"],
-                            "id": "a2648567-a44c-419a-b0ee-c6e4b1ddfef3",
+                            "children": [
+                              "1 hr"
+                            ],
+                            "id": "4924e18f-4f49-452d-9012-6879a1c35b9d",
                             "ord": "a1"
                           },
                           {
                             "kind": "element",
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
-                            "children": ["A comfortable, tooth-coloured fix for a small cavity."],
-                            "id": "f54ebafc-cd7d-4617-bd37-356cc4cf4fe7",
+                            "children": [
+                              "A comfortable, tooth-coloured fix for a small cavity."
+                            ],
+                            "id": "2539ade6-845d-435e-aabf-f317912a4fbf",
                             "ord": "a2"
                           }
                         ],
-                        "id": "59eb407f-e917-4654-867a-44bd57ed362f",
+                        "id": "2ade13b0-d299-4d22-a578-0d809a83c0bd",
                         "ord": "a3"
                       },
                       {
@@ -1076,40 +1150,48 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
-                                "children": ["Emergency visit"],
-                                "id": "39c8ad0d-134f-4ed7-8c7f-ec06e2d4b4b0",
+                                "children": [
+                                  "Emergency visit"
+                                ],
+                                "id": "7facd67b-8070-484b-88a1-cbc4f860ad74",
                                 "ord": "a0"
                               },
                               {
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-bold text-base-content",
-                                "children": ["$125"],
-                                "id": "5c044d76-6dab-4bd1-a340-f4fbc558b5c9",
+                                "children": [
+                                  "$125"
+                                ],
+                                "id": "e9a5733f-0ea8-4312-ad73-a1fc361f12be",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "34145d11-65f2-4ff2-8a2b-c2a9603dbfd0",
+                            "id": "d5425d46-a45a-4d78-af41-68d6f9c99cbc",
                             "ord": "a0"
                           },
                           {
                             "kind": "element",
                             "tag": "p",
                             "class": "text-sm font-medium uppercase tracking-wide text-secondary",
-                            "children": ["45 min"],
-                            "id": "ea3cbca1-ff6e-4d99-a2f6-785d229a6fb7",
+                            "children": [
+                              "45 min"
+                            ],
+                            "id": "8c430c97-8086-460c-9855-236b59b2454c",
                             "ord": "a1"
                           },
                           {
                             "kind": "element",
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
-                            "children": ["In pain today? Request a same-day appointment."],
-                            "id": "eb222079-2f1a-4769-8f34-cef920ba9787",
+                            "children": [
+                              "In pain today? Request a same-day appointment."
+                            ],
+                            "id": "3fb6e9e3-5891-49ec-a71d-90ce9d050897",
                             "ord": "a2"
                           }
                         ],
-                        "id": "76d6c8ea-7eb3-4914-8d7d-6087f5bff8ae",
+                        "id": "94299ee4-f31e-4aaf-a5e7-373de625cfbf",
                         "ord": "a4"
                       },
                       {
@@ -1129,44 +1211,52 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
-                                "children": ["Teeth-whitening consult"],
-                                "id": "1c7e74e1-0610-4ace-9d08-cafdcb2f7a4c",
+                                "children": [
+                                  "Teeth-whitening consult"
+                                ],
+                                "id": "ac4030a9-19ef-42c8-99ad-83236866d2c7",
                                 "ord": "a0"
                               },
                               {
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-bold text-base-content",
-                                "children": ["$0"],
-                                "id": "2fe5d13f-795b-48e5-8e8e-eee1eb04f73e",
+                                "children": [
+                                  "$0"
+                                ],
+                                "id": "f263c39c-1650-4ebb-8dd3-5619a83daef8",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "fea3f741-5114-436d-b395-0f7607bfdc7e",
+                            "id": "019c133e-cfd4-4199-8602-d83606e9911c",
                             "ord": "a0"
                           },
                           {
                             "kind": "element",
                             "tag": "p",
                             "class": "text-sm font-medium uppercase tracking-wide text-secondary",
-                            "children": ["30 min"],
-                            "id": "eac14896-3c3f-4876-8cf6-2aba88cd917e",
+                            "children": [
+                              "30 min"
+                            ],
+                            "id": "fd99fe66-7c9d-4ddd-94a5-61b391c6222f",
                             "ord": "a1"
                           },
                           {
                             "kind": "element",
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
-                            "children": ["A free, no-pressure chat about a brighter smile."],
-                            "id": "e75023b4-78e5-4ff2-989e-7244959330b2",
+                            "children": [
+                              "A free, no-pressure chat about a brighter smile."
+                            ],
+                            "id": "f0a86eeb-e4a8-498f-8843-694c79397fec",
                             "ord": "a2"
                           }
                         ],
-                        "id": "536b70a9-0a9e-4e95-8fb5-77b6c2e8a92a",
+                        "id": "128b30d3-ba54-4957-81e5-e7bcba9f6eab",
                         "ord": "a5"
                       }
                     ],
-                    "id": "b8e3d444-3aea-45c0-857c-edd7446d9186",
+                    "id": "fd3e00e0-3dfb-44e1-90d4-93c964ed3818",
                     "ord": "a1"
                   },
                   {
@@ -1181,20 +1271,22 @@
                         "attrs": {
                           "href": "/book"
                         },
-                        "children": ["See everything & book"],
-                        "id": "eaaccf06-d0da-45f4-b74d-a6de179f6bb6",
+                        "children": [
+                          "See everything & book"
+                        ],
+                        "id": "dbcac3c5-352f-4f3a-bb98-4b52ec61e935",
                         "ord": "a0"
                       }
                     ],
-                    "id": "1d5fbe88-bd02-4d0a-b56a-393319b36e32",
+                    "id": "3cbbd04c-2539-4f19-8bd2-aa7086363b46",
                     "ord": "a2"
                   }
                 ],
-                "id": "78939c94-b3b9-4e9e-af37-3450b2b3fec8",
+                "id": "99be38ae-eb9c-44ef-b85a-15fddd924b55",
                 "ord": "a0"
               }
             ],
-            "id": "5970df1c-2aaa-430a-b724-02eb05e92bd1",
+            "id": "99030854-80dc-4a86-8797-13e19cdd12a4",
             "ord": "a2"
           },
           {
@@ -1216,7 +1308,7 @@
                       "alt": "A calm, welcoming reception area with soft seating and plants",
                       "loading": "lazy"
                     },
-                    "id": "a0a81ed6-9c44-4e10-ab35-2b3f934f7baf",
+                    "id": "dbe2e99e-c0fd-466a-af08-106c56405fbc",
                     "ord": "a0"
                   },
                   {
@@ -1228,8 +1320,10 @@
                         "kind": "element",
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
-                        "children": ["Family dentistry, the warm way"],
-                        "id": "5c3ea300-d9ae-49b4-b344-62f25803806e",
+                        "children": [
+                          "Family dentistry, the warm way"
+                        ],
+                        "id": "9ce083b1-2c9a-4c02-b5f0-eeec6e1c8fb5",
                         "ord": "a0"
                       },
                       {
@@ -1239,7 +1333,7 @@
                         "children": [
                           "Maple Grove is a neighbourhood practice built for real families — the kind of place where the whole household can be seen in one visit, where the hygienist remembers your kids’ names, and where nobody is ever made to feel rushed or judged."
                         ],
-                        "id": "fcbb4143-8ef6-40bb-993a-63eae6cc0b32",
+                        "id": "a43b5a9d-f875-49f8-a674-2234d94a5bde",
                         "ord": "a1"
                       },
                       {
@@ -1249,7 +1343,7 @@
                         "children": [
                           "We keep things simple and honest: clear prices, gentle hands, and only the treatment you actually need. Come as you are — anxious, overdue, or just here for a clean — and leave feeling looked after."
                         ],
-                        "id": "bfec8766-750e-4862-b7c2-24f7d2e8f851",
+                        "id": "9cab1148-ac66-4658-a805-abb92069eb08",
                         "ord": "a2"
                       },
                       {
@@ -1264,24 +1358,26 @@
                             "attrs": {
                               "href": "/book"
                             },
-                            "children": ["Book your visit"],
-                            "id": "886ae3a5-a49e-44a6-aa20-68181b7fcb8a",
+                            "children": [
+                              "Book your visit"
+                            ],
+                            "id": "0074c360-7f62-4ea7-bcd6-9f6723f5f246",
                             "ord": "a0"
                           }
                         ],
-                        "id": "b51668ec-61a0-4f29-a4af-58881ef24b0d",
+                        "id": "c06d5809-2967-4dc8-a729-e7697be53a3d",
                         "ord": "a3"
                       }
                     ],
-                    "id": "c1e2d483-3a6a-45d4-b534-847ce4b0c1ac",
+                    "id": "fbd64b3f-a318-4d6a-bed6-33b65f8be53f",
                     "ord": "a1"
                   }
                 ],
-                "id": "b13c3ee1-848e-4d83-9287-35087b205e54",
+                "id": "135d2b19-6678-4638-8cf8-caf603ba1fb2",
                 "ord": "a0"
               }
             ],
-            "id": "cfb03f90-7e88-45b2-b34c-65b8e40f3474",
+            "id": "87668b99-174b-4d10-8606-8cd36a584f34",
             "ord": "a3"
           },
           {
@@ -1303,8 +1399,10 @@
                         "kind": "element",
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
-                        "children": ["Meet the team"],
-                        "id": "bdbb9ca2-0844-4e56-a79a-8a586d45a979",
+                        "children": [
+                          "Meet the team"
+                        ],
+                        "id": "96224e8b-789e-4add-93da-8ba1641c6b64",
                         "ord": "a0"
                       },
                       {
@@ -1314,11 +1412,11 @@
                         "children": [
                           "Book by name — you’ll see friendly, familiar faces every visit."
                         ],
-                        "id": "6acd7c22-1a30-468f-89e8-5a997b38585f",
+                        "id": "a9c0eff9-6bf2-4394-903f-0d395ce1309d",
                         "ord": "a1"
                       }
                     ],
-                    "id": "fd8f0b03-3d3b-4871-b1e0-545040c5a183",
+                    "id": "7017b24c-ec44-4c31-9746-d71bb1fc7458",
                     "ord": "a0"
                   },
                   {
@@ -1340,7 +1438,7 @@
                               "alt": "Dr. Amara Osei, family dentist, smiling",
                               "loading": "lazy"
                             },
-                            "id": "71e6d71a-ad81-4b82-badb-12948776fbd6",
+                            "id": "35898f84-2c19-48e5-b874-0e11666e30f2",
                             "ord": "a0"
                           },
                           {
@@ -1352,16 +1450,20 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
-                                "children": ["Dr. Amara Osei"],
-                                "id": "58ccecad-26c5-4ed2-8cc8-141ae85cfd01",
+                                "children": [
+                                  "Dr. Amara Osei"
+                                ],
+                                "id": "1b4790ec-4049-484a-a1e9-968279b9503b",
                                 "ord": "a0"
                               },
                               {
                                 "kind": "element",
                                 "tag": "p",
                                 "class": "text-sm font-medium uppercase tracking-wide text-secondary",
-                                "children": ["Family dentist"],
-                                "id": "698d92c3-7862-45a0-b193-dd7184374007",
+                                "children": [
+                                  "Family dentist"
+                                ],
+                                "id": "7bf08d8f-539b-4f51-bcc0-f0d617f7103e",
                                 "ord": "a1"
                               },
                               {
@@ -1371,15 +1473,15 @@
                                 "children": [
                                   "Gentle, all-ages dentistry with a soft spot for nervous patients. Amara founded the practice."
                                 ],
-                                "id": "eae02b6c-f7c2-44aa-af38-2d14fdf084af",
+                                "id": "0b53ef77-517a-466d-b6f8-cd1eea076827",
                                 "ord": "a2"
                               }
                             ],
-                            "id": "3073d519-6825-46e2-8c6f-ba1ef92e8f74",
+                            "id": "fc44ad4d-470b-4ca0-b6f3-abbc4d255f5f",
                             "ord": "a1"
                           }
                         ],
-                        "id": "b00efcdb-273e-429d-98a9-ea59e15f1cf5",
+                        "id": "a5127342-531f-4ec5-bc2f-97ea53ee3bf4",
                         "ord": "a0"
                       },
                       {
@@ -1396,7 +1498,7 @@
                               "alt": "Nora Bishop, dental hygienist",
                               "loading": "lazy"
                             },
-                            "id": "b5619805-6312-4e1e-afbc-c0bc4008ec0c",
+                            "id": "8d768718-82a1-4c79-b16f-e997e80c2dfd",
                             "ord": "a0"
                           },
                           {
@@ -1408,16 +1510,20 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
-                                "children": ["Nora Bishop"],
-                                "id": "bb7d36b5-56a7-4dcf-850f-fa00a57b8538",
+                                "children": [
+                                  "Nora Bishop"
+                                ],
+                                "id": "8f2e7511-040f-4608-80eb-75a9d3c9dd9e",
                                 "ord": "a0"
                               },
                               {
                                 "kind": "element",
                                 "tag": "p",
                                 "class": "text-sm font-medium uppercase tracking-wide text-secondary",
-                                "children": ["Dental hygienist"],
-                                "id": "e9efac25-d099-4ace-8c2c-a025f893b3b6",
+                                "children": [
+                                  "Dental hygienist"
+                                ],
+                                "id": "fab29ec3-b5f0-4d54-a9d5-d832b3378b13",
                                 "ord": "a1"
                               },
                               {
@@ -1427,15 +1533,15 @@
                                 "children": [
                                   "Thorough, easy-going cleanings and checkups — and the calmest hands in the building."
                                 ],
-                                "id": "a0b0bd83-b73e-42fd-9856-b3c261e077a3",
+                                "id": "1da2805c-d0d4-42fc-a0fe-897032a56c8c",
                                 "ord": "a2"
                               }
                             ],
-                            "id": "a207bf3d-0fd5-4699-b7aa-05747fc441ee",
+                            "id": "2986e29d-dfb6-4228-b0e7-f739e0a5959a",
                             "ord": "a1"
                           }
                         ],
-                        "id": "4ec43958-aa6f-4e9c-8316-90cc4b6522c6",
+                        "id": "f3efa914-1baf-4748-ad33-887ad81c6356",
                         "ord": "a1"
                       },
                       {
@@ -1452,7 +1558,7 @@
                               "alt": "Priya Anand, dental hygienist",
                               "loading": "lazy"
                             },
-                            "id": "f62ddc65-1754-45d7-b201-14dd45d8260d",
+                            "id": "0706560f-940f-44e3-8b48-1e27307edafe",
                             "ord": "a0"
                           },
                           {
@@ -1464,16 +1570,20 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
-                                "children": ["Priya Anand"],
-                                "id": "71685350-8a88-4e76-bbe9-1861798b4d05",
+                                "children": [
+                                  "Priya Anand"
+                                ],
+                                "id": "1a654ff2-2e63-4c64-8ba5-15e30a193a06",
                                 "ord": "a0"
                               },
                               {
                                 "kind": "element",
                                 "tag": "p",
                                 "class": "text-sm font-medium uppercase tracking-wide text-secondary",
-                                "children": ["Hygienist · kids’ specialist"],
-                                "id": "0ec18e53-5462-4386-84ef-3bc93f1c3ec1",
+                                "children": [
+                                  "Hygienist · kids’ specialist"
+                                ],
+                                "id": "80c7649d-e5ea-46b5-ac30-57d5bf07beea",
                                 "ord": "a1"
                               },
                               {
@@ -1483,27 +1593,27 @@
                                 "children": [
                                   "A favourite with the little ones — Priya makes first visits fun and fear-free."
                                 ],
-                                "id": "fe132927-2513-48e6-a461-7511d62812eb",
+                                "id": "40f89806-cefb-4398-a7bb-7972d58efecc",
                                 "ord": "a2"
                               }
                             ],
-                            "id": "2431509e-8d10-4ef0-ae8e-8625679d6e7f",
+                            "id": "355cf5ef-ebdf-46fc-b413-f22960616b4d",
                             "ord": "a1"
                           }
                         ],
-                        "id": "62ec620f-03c1-4070-8e2c-c08be78ca5e9",
+                        "id": "b217b5e5-3b67-4c8b-bddb-72f2b66ddade",
                         "ord": "a2"
                       }
                     ],
-                    "id": "e72eadaf-e68d-4628-a40c-5d778337b150",
+                    "id": "d0941f75-2ed2-4aea-a663-d67f8f7eb3c6",
                     "ord": "a1"
                   }
                 ],
-                "id": "de943585-9766-43f0-bec3-8af91b87130d",
+                "id": "73b4cdd7-fbfd-4f9e-9580-7ccb10311cf3",
                 "ord": "a0"
               }
             ],
-            "id": "4e5d68c1-95cc-4ec1-bc1e-cc04e7b3c6c6",
+            "id": "48ecf516-4eaf-4bfd-afc7-391a284feaea",
             "ord": "a4"
           },
           {
@@ -1523,23 +1633,25 @@
                     "children": [
                       "“My kids actually ask when their next dentist visit is — I never thought I’d say that. The whole team is so gentle and kind, and I finally stopped dreading my own checkups too.”"
                     ],
-                    "id": "d724fc9a-20d0-4dea-af29-9a1b0fa7d1c6",
+                    "id": "2d7c3463-7508-4832-8567-dbbc66c6da09",
                     "ord": "a0"
                   },
                   {
                     "kind": "element",
                     "tag": "p",
                     "class": "text-sm font-semibold uppercase tracking-wide opacity-80",
-                    "children": ["Bianca, mum of two & patient since 2022"],
-                    "id": "ce71821f-9035-473e-8ccf-6d4b1b90ab22",
+                    "children": [
+                      "Bianca, mum of two & patient since 2022"
+                    ],
+                    "id": "65c24612-7213-4497-99e7-12165e6364d2",
                     "ord": "a1"
                   }
                 ],
-                "id": "a81dbfe8-9d88-4e65-89a9-ba19a996180c",
+                "id": "473ba2c6-f4c1-4a4e-8b27-aabffcd0378c",
                 "ord": "a0"
               }
             ],
-            "id": "7067ecb5-921d-474d-aab0-0137bc6c2798",
+            "id": "7e47b082-82e3-4e81-9e51-91bcc7616d9a",
             "ord": "a5"
           },
           {
@@ -1556,8 +1668,10 @@
                     "kind": "element",
                     "tag": "h2",
                     "class": "text-3xl font-bold tracking-tight @3xl:text-4xl",
-                    "children": ["New patients always welcome"],
-                    "id": "90c57257-4efb-4987-9bfb-9810cad85908",
+                    "children": [
+                      "New patients always welcome"
+                    ],
+                    "id": "5e3f00be-7e93-4caa-a0eb-1d820a756bd3",
                     "ord": "a0"
                   },
                   {
@@ -1567,7 +1681,7 @@
                     "children": [
                       "Pick a visit, choose your provider and see live times. It takes about a minute — and we’ll take it from there."
                     ],
-                    "id": "72407c09-9d36-4555-84c6-058a9a491900",
+                    "id": "0468f299-0a4b-4ad6-8778-fb6ea66f8ce2",
                     "ord": "a1"
                   },
                   {
@@ -1577,16 +1691,18 @@
                     "attrs": {
                       "href": "/book"
                     },
-                    "children": ["Book a checkup"],
-                    "id": "dfea148e-1303-4778-8b7a-799fff234aac",
+                    "children": [
+                      "Book a checkup"
+                    ],
+                    "id": "21e32910-9efb-438c-aa43-be8eceb0a37e",
                     "ord": "a2"
                   }
                 ],
-                "id": "567f4794-ad2d-4f38-9992-db66b81c581a",
+                "id": "04c8936e-7eea-4651-99d6-457ed44d232f",
                 "ord": "a0"
               }
             ],
-            "id": "e564ff55-a8ce-4152-a0c4-3198cc712cac",
+            "id": "61444fb7-249e-446b-aed4-0f3b131d4cb4",
             "ord": "a6"
           }
         ]
@@ -1603,7 +1719,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "c4aa5979-818c-40cd-99f2-7f7b51939a64",
+        "id": "3a0b8443-c3cd-48f4-964d-616510049834",
         "children": [
           {
             "kind": "element",
@@ -1619,14 +1735,14 @@
                   "alt": "A young child smiling in the dental chair, relaxed and happy",
                   "loading": "eager"
                 },
-                "id": "a9409497-4f80-4e73-bd34-456086146a13",
+                "id": "eb92190b-a087-4da0-a2ed-bb67068ca323",
                 "ord": "a0"
               },
               {
                 "kind": "element",
                 "tag": "div",
                 "class": "absolute inset-0 bg-black/65",
-                "id": "3adad68c-e1f1-49f2-8cb8-26a98834f135",
+                "id": "7e1bd1ef-70c6-4a15-90cb-6bec7651da21",
                 "ord": "a1"
               },
               {
@@ -1638,8 +1754,10 @@
                     "kind": "element",
                     "tag": "h1",
                     "class": "max-w-3xl text-4xl font-bold leading-tight tracking-tight @2xl:text-5xl @3xl:text-6xl",
-                    "children": ["Book your appointment"],
-                    "id": "b0e363b7-ca11-4df1-bf9e-78d9f3a764f4",
+                    "children": [
+                      "Book your appointment"
+                    ],
+                    "id": "722e9b95-96bb-441a-b4de-952042801c12",
                     "ord": "a0"
                   },
                   {
@@ -1649,7 +1767,7 @@
                     "children": [
                       "Choose a visit to see prices and live availability, then pick your dentist or hygienist and a time that suits the family."
                     ],
-                    "id": "02b8c07d-98ef-4e53-8c69-4b0523f63e7c",
+                    "id": "c9b4a20e-4dd3-44d8-a261-721e60f8e0e6",
                     "ord": "a1"
                   },
                   {
@@ -1664,20 +1782,22 @@
                         "attrs": {
                           "href": "/book"
                         },
-                        "children": ["See appointments below"],
-                        "id": "44cac25f-a4c2-403b-8173-95f89a281fae",
+                        "children": [
+                          "See appointments below"
+                        ],
+                        "id": "8d95aa0a-26e1-4841-b685-47e81ea74625",
                         "ord": "a0"
                       }
                     ],
-                    "id": "5e7e4281-6e92-4e95-a1f9-c9fb7b6f76e2",
+                    "id": "b00a1ea5-3be6-45e1-99ea-7eb199b7ea74",
                     "ord": "a2"
                   }
                 ],
-                "id": "76faa67f-c779-4101-9aa7-b62f91c024fd",
+                "id": "1a398a0d-ed61-407d-98d8-0bdbd727f70e",
                 "ord": "a2"
               }
             ],
-            "id": "e66a5861-f42b-43d6-9c1b-c80293efdec8",
+            "id": "fcd07a2b-54f5-4f27-895f-55a286a1c19b",
             "ord": "a0"
           },
           {
@@ -1685,7 +1805,7 @@
             "component": "scheduling.services",
             "class": "mx-auto w-full max-w-5xl px-6 py-8",
             "locked": "host",
-            "id": "92568dbb-b61e-4854-aaee-d0f1f370e86e",
+            "id": "ec93c202-070f-4600-831d-5bd7844ea96c",
             "ord": "a1"
           },
           {
@@ -1707,8 +1827,10 @@
                         "kind": "element",
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
-                        "children": ["Good to know"],
-                        "id": "3fdb561e-8874-48c0-a8fc-ed1fecbcd566",
+                        "children": [
+                          "Good to know"
+                        ],
+                        "id": "108abffd-286d-45b0-a578-ec86beb6bef6",
                         "ord": "a0"
                       },
                       {
@@ -1718,11 +1840,11 @@
                         "children": [
                           "What happens once you pick a time — and how to change it if something comes up."
                         ],
-                        "id": "a12bfdae-e0b9-4991-a5e9-a3b06081b762",
+                        "id": "ea84cf3b-3bdc-4da3-8f26-6133b7d1878f",
                         "ord": "a1"
                       }
                     ],
-                    "id": "c1d17067-665e-49a3-b3d2-8e6aa93f9c97",
+                    "id": "71c456bb-369d-431a-bfb8-d87cb359c448",
                     "ord": "a0"
                   },
                   {
@@ -1739,8 +1861,10 @@
                             "kind": "element",
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
-                            "children": ["Standard booking"],
-                            "id": "cdf087e0-92ac-4b6c-8a8d-bf371baf33af",
+                            "children": [
+                              "Standard booking"
+                            ],
+                            "id": "72dc6f78-c524-4cdc-91b8-3a3a68682ef4",
                             "ord": "a0"
                           },
                           {
@@ -1750,7 +1874,7 @@
                             "children": [
                               "Please give us at least 24 hours’ notice if you need to change or cancel — it lets us offer the time to another family. We’ll text and email a friendly reminder the day before and two hours ahead."
                             ],
-                            "id": "00ef108a-7229-4b07-a9d2-db24d0ccc106",
+                            "id": "e8f5b724-5d25-4fcd-bfe8-0ffe90cb3c1c",
                             "ord": "a1"
                           },
                           {
@@ -1760,11 +1884,11 @@
                             "children": [
                               "No deposit to book. Change or cancel free up to 24 hours before."
                             ],
-                            "id": "3c3884e4-794a-459f-bd56-dfe8a19165ca",
+                            "id": "45d50b89-0bcb-4903-b40e-dbed0f676290",
                             "ord": "a2"
                           }
                         ],
-                        "id": "99aea046-504c-47f5-93dd-7315f935268d",
+                        "id": "50fdb37d-f6d9-449d-b27e-cd9105663d13",
                         "ord": "a0"
                       },
                       {
@@ -1776,8 +1900,10 @@
                             "kind": "element",
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
-                            "children": ["Reserved-chair hold"],
-                            "id": "35e88183-8996-498e-adcb-7b7c3465ee83",
+                            "children": [
+                              "Reserved-chair hold"
+                            ],
+                            "id": "a1e3eb3b-0701-4817-a705-4003f6d44b3b",
                             "ord": "a0"
                           },
                           {
@@ -1787,31 +1913,33 @@
                             "children": [
                               "Longer visits reserve a chair and a provider just for you, so we hold a card on file — nothing is charged unless the appointment is missed without 48 hours’ notice. Reschedule in time and the hold simply releases."
                             ],
-                            "id": "6a8573c4-1350-4250-9c76-f14995051cdb",
+                            "id": "6e4ec45a-f565-4dfe-8009-01303e6ad567",
                             "ord": "a1"
                           },
                           {
                             "kind": "element",
                             "tag": "p",
                             "class": "text-base font-medium text-base-content",
-                            "children": ["Change or cancel free up to 2 days before."],
-                            "id": "a2950603-8db2-45e3-ac4e-618f1db2884b",
+                            "children": [
+                              "Change or cancel free up to 2 days before."
+                            ],
+                            "id": "c6ffc575-6eb7-4a56-9e25-9000ac9ab4e6",
                             "ord": "a2"
                           }
                         ],
-                        "id": "9a78f30b-a4ad-4c03-b4b4-13333a292639",
+                        "id": "3f922fa1-3e8c-410c-95e3-7dda0b983353",
                         "ord": "a1"
                       }
                     ],
-                    "id": "13ba9c71-b18a-44a9-b975-a81aed589be6",
+                    "id": "4bb20ce0-c9ae-4471-a2fe-8dc17fcebbb0",
                     "ord": "a1"
                   }
                 ],
-                "id": "8a53694a-6376-451b-a0f6-54f90d598220",
+                "id": "07677c5b-1258-4862-9043-bc8b0e912b18",
                 "ord": "a0"
               }
             ],
-            "id": "b7c86fd7-12ba-4b90-aaa6-f079ed503f76",
+            "id": "4fd3577b-42dd-47e1-ac52-014b4e1d34c2",
             "ord": "a2"
           }
         ]
@@ -1828,7 +1956,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "9864cd0e-4e86-4265-9a61-f89f869d9114",
+        "id": "5495d27e-1e4e-4c96-9b52-9f4359b9fbfa",
         "children": [
           {
             "kind": "element",
@@ -1849,7 +1977,7 @@
                       "alt": "A bright, friendly dental office with big windows and warm daylight",
                       "loading": "lazy"
                     },
-                    "id": "acdbcd86-2212-48d3-a9f2-16ffc2b26b47",
+                    "id": "9117c820-ec66-400f-a25e-e5b5955dcf0a",
                     "ord": "a0"
                   },
                   {
@@ -1861,8 +1989,10 @@
                         "kind": "element",
                         "tag": "h1",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
-                        "children": ["About Maple Grove Dental"],
-                        "id": "19838988-6bbc-4b05-ae3d-60d19338e2a3",
+                        "children": [
+                          "About Maple Grove Dental"
+                        ],
+                        "id": "509757fb-7d85-4246-a727-9787735d8aea",
                         "ord": "a0"
                       },
                       {
@@ -1872,7 +2002,7 @@
                         "children": [
                           "We opened Maple Grove to be the kind of dentist we’d want for our own families — warm, honest and genuinely gentle. Somewhere every age feels welcome, from a toddler’s first visit to a grandparent’s regular checkup."
                         ],
-                        "id": "36feec63-b47e-45da-a4e5-a11324de9a88",
+                        "id": "6451172d-6fef-4b17-887a-8e9d7e96ba7f",
                         "ord": "a1"
                       },
                       {
@@ -1882,7 +2012,7 @@
                         "children": [
                           "No upselling, no lectures, no scary surprises. Just clear explanations, gentle care and a friendly team that treats you like a neighbour, because you probably are one."
                         ],
-                        "id": "525e9344-ca7a-4541-b467-2d4e4794c0f3",
+                        "id": "c2481f61-9db6-4c57-9e47-a770fcf2adf8",
                         "ord": "a2"
                       },
                       {
@@ -1897,24 +2027,26 @@
                             "attrs": {
                               "href": "/book"
                             },
-                            "children": ["Book a visit"],
-                            "id": "915860fc-4adb-44cd-8adc-9759844e0e6b",
+                            "children": [
+                              "Book a visit"
+                            ],
+                            "id": "27cb21ba-a570-430f-9e39-dfc17c714499",
                             "ord": "a0"
                           }
                         ],
-                        "id": "d763e7cf-a85f-4524-848d-88ed148d3ae0",
+                        "id": "14118219-47b0-4452-b0fa-7138a1e0d931",
                         "ord": "a3"
                       }
                     ],
-                    "id": "fae1ea72-36e8-4057-9d05-0f552d8caec4",
+                    "id": "0821daf7-9b4d-45b9-852b-0d2238369d07",
                     "ord": "a1"
                   }
                 ],
-                "id": "d38d9666-6527-4e34-8435-f4ce62d8c808",
+                "id": "eea68c34-a03a-49b8-b6eb-088ddb8552cb",
                 "ord": "a0"
               }
             ],
-            "id": "23ab3f35-eff0-4fc9-bd74-179b96da5ce5",
+            "id": "1c3ff834-d2d5-4187-8639-116e39720b34",
             "ord": "a0"
           },
           {
@@ -1931,8 +2063,10 @@
                     "kind": "element",
                     "tag": "h2",
                     "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
-                    "children": ["How we care for you"],
-                    "id": "80ff4265-c44f-41c6-96eb-29ce71601477",
+                    "children": [
+                      "How we care for you"
+                    ],
+                    "id": "b6f9c10f-ecea-41d8-a5c7-9bf7c471b34d",
                     "ord": "a0"
                   },
                   {
@@ -1949,8 +2083,10 @@
                             "kind": "element",
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
-                            "children": ["We listen first"],
-                            "id": "7fb3df75-48fc-4514-90c4-d0e55279eef6",
+                            "children": [
+                              "We listen first"
+                            ],
+                            "id": "7267adfc-f7c3-4cf9-848b-e5383c9092d4",
                             "ord": "a0"
                           },
                           {
@@ -1960,11 +2096,11 @@
                             "children": [
                               "Every visit starts with a real conversation about your teeth, your worries and your budget — so the plan fits your life, not a sales target."
                             ],
-                            "id": "b0d24e45-8f61-4d68-8ef2-03a2b7b9fd71",
+                            "id": "64c5ba67-cf8e-4c9f-a9ab-ff1c070b1376",
                             "ord": "a1"
                           }
                         ],
-                        "id": "166245b5-5bfd-4715-bf0c-e9d1a2c1063d",
+                        "id": "75940f50-d94a-4e08-b1db-6602ded3fc25",
                         "ord": "a0"
                       },
                       {
@@ -1976,8 +2112,10 @@
                             "kind": "element",
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
-                            "children": ["Honest, clear pricing"],
-                            "id": "627b9047-e671-4a20-a404-15d2ad979189",
+                            "children": [
+                              "Honest, clear pricing"
+                            ],
+                            "id": "e16a331f-861a-4c40-ae26-fbebd17fe58f",
                             "ord": "a0"
                           },
                           {
@@ -1987,11 +2125,11 @@
                             "children": [
                               "We’ll always tell you the cost before we start, file your insurance for you, and never push treatment you don’t need."
                             ],
-                            "id": "b96657ef-14f5-4ec6-8cf3-66d9f72b3ba9",
+                            "id": "e3ff9e92-4144-4953-ac50-cf568846216a",
                             "ord": "a1"
                           }
                         ],
-                        "id": "89fcf2ba-888f-45c8-b1a3-1ae915e510dd",
+                        "id": "619082bd-d57a-48bd-8399-c8d8658f138f",
                         "ord": "a1"
                       },
                       {
@@ -2003,8 +2141,10 @@
                             "kind": "element",
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
-                            "children": ["Gentle for every age"],
-                            "id": "7c8ed0e6-8d60-46d1-bc3a-715cd736312f",
+                            "children": [
+                              "Gentle for every age"
+                            ],
+                            "id": "c74dad19-6bb1-4390-aaa3-82330af7e894",
                             "ord": "a0"
                           },
                           {
@@ -2014,23 +2154,23 @@
                             "children": [
                               "Nervous adults, wriggly toddlers, busy teens — we know how to make each one comfortable, calm and glad they came."
                             ],
-                            "id": "e537588d-238f-44ad-bf28-0cfb9ad6f158",
+                            "id": "e4f98336-3faa-44e3-9d77-cd184ca25e64",
                             "ord": "a1"
                           }
                         ],
-                        "id": "ff32aa9f-b84b-404e-bbd6-6959b7503e87",
+                        "id": "71c0c341-80e1-4b11-96e7-78616db59684",
                         "ord": "a2"
                       }
                     ],
-                    "id": "66173d65-d845-4e9b-8d8d-5cb78a03fa74",
+                    "id": "50025f2e-c9aa-4a35-8a36-940c7129d338",
                     "ord": "a1"
                   }
                 ],
-                "id": "bd95d16b-be9b-4c07-8ac1-0fda362fc6ff",
+                "id": "8346c427-ea31-45d7-9b93-89beb34b5124",
                 "ord": "a0"
               }
             ],
-            "id": "234585b8-9e3c-4cd0-a941-6fecb8829cd4",
+            "id": "0533e28d-5b2c-46fd-97c1-2fdacfeead1a",
             "ord": "a1"
           }
         ]
@@ -2047,7 +2187,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "1d011a46-e9b3-44da-89e6-3d4bf1e5e797",
+        "id": "595b4278-0d9a-40d1-a2bb-681716361615",
         "children": [
           {
             "kind": "element",
@@ -2068,8 +2208,10 @@
                         "kind": "element",
                         "tag": "h1",
                         "class": "text-4xl font-bold tracking-tight text-base-content @3xl:text-5xl",
-                        "children": ["Get in touch"],
-                        "id": "a58dc00e-e006-44f0-80be-79534e50ecf3",
+                        "children": [
+                          "Get in touch"
+                        ],
+                        "id": "7fc598f8-4ef5-4cf3-b7e9-1ee0e58fa7b4",
                         "ord": "a0"
                       },
                       {
@@ -2079,11 +2221,11 @@
                         "children": [
                           "Questions before you book? Send a note and Maple Grove Dental will get back to you — usually the same day."
                         ],
-                        "id": "55f282ee-fb4a-405b-b340-b4e7968086d4",
+                        "id": "59df30b0-a4df-4781-8833-d0f835f6be25",
                         "ord": "a1"
                       }
                     ],
-                    "id": "479b3a6d-7fab-4e52-ba33-cc6f11b3d079",
+                    "id": "5761acc4-6081-4268-80c6-8da532d4ac05",
                     "ord": "a0"
                   },
                   {
@@ -2095,8 +2237,10 @@
                         "kind": "element",
                         "tag": "span",
                         "class": "text-base font-medium text-base-content",
-                        "children": ["Call us"],
-                        "id": "6995dc8f-73fa-4ec9-a7c1-5cd6c459f2d3",
+                        "children": [
+                          "Call us"
+                        ],
+                        "id": "3a4718d6-9c67-4f1e-86b9-77846763ef78",
                         "ord": "a0"
                       },
                       {
@@ -2107,12 +2251,14 @@
                           {
                             "kind": "element",
                             "tag": "span",
-                            "children": ["(555) 123-4567"],
+                            "children": [
+                              "(555) 123-4567"
+                            ],
                             "data": {
                               "kind": "value",
                               "ref": "site.identity.phone"
                             },
-                            "id": "911aae64-9e8b-438f-ab48-05e09bf78122",
+                            "id": "a9b47ee8-bf04-4893-979b-fbe2b9538e0c",
                             "ord": "a0"
                           }
                         ],
@@ -2121,7 +2267,7 @@
                           "ref": "site.identity.phoneHref",
                           "attr": "href"
                         },
-                        "id": "26211036-e1c0-4217-a80d-da154e166d0d",
+                        "id": "b58326a7-c14e-4154-8802-b9af683df323",
                         "ord": "a1"
                       }
                     ],
@@ -2129,7 +2275,7 @@
                       "kind": "visible",
                       "ref": "site.identity.phone"
                     },
-                    "id": "fee5653b-52c4-49ea-821a-3b19cb6dec54",
+                    "id": "c509bfa4-39ae-4ae1-b571-d0edd96e0601",
                     "ord": "a1"
                   },
                   {
@@ -2141,8 +2287,10 @@
                         "kind": "element",
                         "tag": "span",
                         "class": "text-base font-medium text-base-content",
-                        "children": ["Email us"],
-                        "id": "a4beb2d7-0a24-472e-889d-2fe766c51468",
+                        "children": [
+                          "Email us"
+                        ],
+                        "id": "4cd0726d-f5c5-4055-a7f4-af62db6e28bb",
                         "ord": "a0"
                       },
                       {
@@ -2153,12 +2301,14 @@
                           {
                             "kind": "element",
                             "tag": "span",
-                            "children": ["hello@yourbusiness.com"],
+                            "children": [
+                              "hello@yourbusiness.com"
+                            ],
                             "data": {
                               "kind": "value",
                               "ref": "site.identity.email"
                             },
-                            "id": "4d441b34-ccdd-4fa5-887e-0f71cc5e74cb",
+                            "id": "0a84145d-11e5-4d30-8af6-0a13f83e2f13",
                             "ord": "a0"
                           }
                         ],
@@ -2167,7 +2317,7 @@
                           "ref": "site.identity.emailHref",
                           "attr": "href"
                         },
-                        "id": "31de91ce-3dbf-47ae-ac4f-0b547aeeb7c5",
+                        "id": "709201dd-381e-4548-93f4-777e95679b19",
                         "ord": "a1"
                       }
                     ],
@@ -2175,7 +2325,7 @@
                       "kind": "visible",
                       "ref": "site.identity.email"
                     },
-                    "id": "61bf15b7-e456-4571-aefd-83fc0af48039",
+                    "id": "b89d8988-3cd5-4ca1-8abe-1ad27796bb21",
                     "ord": "a2"
                   },
                   {
@@ -2192,8 +2342,10 @@
                             "kind": "element",
                             "tag": "span",
                             "class": "text-base font-medium text-base-content",
-                            "children": ["Your name"],
-                            "id": "2cc90905-6331-42de-971b-c2593d30c3e0",
+                            "children": [
+                              "Your name"
+                            ],
+                            "id": "6def8048-c039-4cdc-ae4d-e161a9a1b2fe",
                             "ord": "a0"
                           },
                           {
@@ -2205,11 +2357,11 @@
                               "name": "name",
                               "required": true
                             },
-                            "id": "4011e677-cdf2-49a9-9ce3-3bb8196baa78",
+                            "id": "3f3272a4-f849-4ece-adab-652e483af0c9",
                             "ord": "a1"
                           }
                         ],
-                        "id": "5f9494f1-3746-4446-82cd-23893ce0a2e5",
+                        "id": "f613444a-eb56-43de-93c8-ff71cdb73d40",
                         "ord": "a0"
                       },
                       {
@@ -2221,8 +2373,10 @@
                             "kind": "element",
                             "tag": "span",
                             "class": "text-base font-medium text-base-content",
-                            "children": ["Email address"],
-                            "id": "82fe2e86-ba41-4d4d-9082-554cb6c4d09a",
+                            "children": [
+                              "Email address"
+                            ],
+                            "id": "0c43c9e3-d577-446a-9274-3900b49f0783",
                             "ord": "a0"
                           },
                           {
@@ -2234,11 +2388,11 @@
                               "name": "email",
                               "required": true
                             },
-                            "id": "41b07af3-be9e-4a2b-b530-7bb139f914e1",
+                            "id": "528018f8-9cec-4424-be92-577bc57faac2",
                             "ord": "a1"
                           }
                         ],
-                        "id": "294d9531-2542-467d-82b4-db5d3e8f26a2",
+                        "id": "30af3f43-4f00-4c73-83a3-1ee55c7e683e",
                         "ord": "a1"
                       },
                       {
@@ -2250,8 +2404,10 @@
                             "kind": "element",
                             "tag": "span",
                             "class": "text-base font-medium text-base-content",
-                            "children": ["Phone number"],
-                            "id": "fae49731-ff94-47e1-b864-dd2ce4c0ec95",
+                            "children": [
+                              "Phone number"
+                            ],
+                            "id": "50616124-99de-410d-8e8f-c440ebfbdb36",
                             "ord": "a0"
                           },
                           {
@@ -2262,11 +2418,11 @@
                               "type": "tel",
                               "name": "phone"
                             },
-                            "id": "5309a074-977e-43dc-8a77-cc6b4cd5cdb9",
+                            "id": "25f7a904-46c4-42e5-b485-31a760f2af80",
                             "ord": "a1"
                           }
                         ],
-                        "id": "4089c548-0616-4f81-9d20-5af28792da8a",
+                        "id": "de390648-97f6-4b85-871f-8bdc47522feb",
                         "ord": "a2"
                       },
                       {
@@ -2278,8 +2434,10 @@
                             "kind": "element",
                             "tag": "span",
                             "class": "text-base font-medium text-base-content",
-                            "children": ["How can we help?"],
-                            "id": "85fd18fd-e8b7-4c7f-8dc8-e4ece9f7bdae",
+                            "children": [
+                              "How can we help?"
+                            ],
+                            "id": "27d8d5b9-de5d-47d5-a0bf-3c6394f53b29",
                             "ord": "a0"
                           },
                           {
@@ -2289,11 +2447,11 @@
                             "attrs": {
                               "name": "message"
                             },
-                            "id": "c6f5ca48-dfc5-4c98-a80a-92218e965cf9",
+                            "id": "3c41dcee-1d49-4d4d-b20c-35af0eb08479",
                             "ord": "a1"
                           }
                         ],
-                        "id": "9d82a224-e388-44e5-a405-c02ee0b656fb",
+                        "id": "01700b97-c26d-47c3-ae25-66cbf14a3f6f",
                         "ord": "a3"
                       },
                       {
@@ -2308,12 +2466,14 @@
                             "attrs": {
                               "type": "submit"
                             },
-                            "children": ["Send my request"],
-                            "id": "167185d1-1482-4d9f-af9d-cf8028f842e0",
+                            "children": [
+                              "Send my request"
+                            ],
+                            "id": "da5460ca-5eac-4402-9de5-4cca8c4ab7d6",
                             "ord": "a0"
                           }
                         ],
-                        "id": "913b7719-21db-449c-9579-8fdb4f11c20e",
+                        "id": "2e64f6ea-1e68-4520-8baa-e9d7350a7e56",
                         "ord": "a4"
                       }
                     ],
@@ -2324,15 +2484,15 @@
                       "kind": "action",
                       "ref": "submit"
                     },
-                    "id": "15c04411-fa48-4196-9c97-ab5db0333083",
+                    "id": "396be039-f78e-44ce-b1af-96f7efb54758",
                     "ord": "a3"
                   }
                 ],
-                "id": "0d8c6efe-1782-4857-be5c-59cd45b909d6",
+                "id": "305e742e-8856-4847-86b6-cbe566dc37db",
                 "ord": "a0"
               }
             ],
-            "id": "70ee4345-0691-44c2-bd2d-05a5c92fee84",
+            "id": "f1589d80-79b9-446a-b9b1-6727f438ada5",
             "ord": "a0"
           },
           {
@@ -2354,8 +2514,10 @@
                         "kind": "element",
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
-                        "children": ["Visit the practice"],
-                        "id": "d6bf9c31-8009-4cf5-ae85-48442ef05ed1",
+                        "children": [
+                          "Visit the practice"
+                        ],
+                        "id": "b9e891df-b9ef-4306-a39b-ea90c251989a",
                         "ord": "a0"
                       },
                       {
@@ -2369,7 +2531,7 @@
                           "kind": "value",
                           "ref": "site.identity.address"
                         },
-                        "id": "39a39266-247e-40a8-8966-2a7cd6f8d4f8",
+                        "id": "69c3833d-e548-429c-8da7-1bfbcd0f8826",
                         "ord": "a1"
                       },
                       {
@@ -2386,20 +2548,24 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "font-medium text-base-content",
-                                "children": ["Monday – Thursday"],
-                                "id": "f9be520b-f2d2-4a69-9520-a83b06303702",
+                                "children": [
+                                  "Monday – Thursday"
+                                ],
+                                "id": "fe15a41a-6946-45a0-b7b4-4d7fe97f511d",
                                 "ord": "a0"
                               },
                               {
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-base-content",
-                                "children": ["8:00 – 5:00"],
-                                "id": "9a9b5ed5-92a6-4184-891e-f116ffa6d045",
+                                "children": [
+                                  "8:00 – 5:00"
+                                ],
+                                "id": "4c26457c-c63f-40fc-a166-d6c27ef4c5e6",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "9689c02a-e783-4b9e-8d07-eecfd6e70466",
+                            "id": "8f996647-f9e8-488e-b774-eb1ce3fd2321",
                             "ord": "a0"
                           },
                           {
@@ -2411,20 +2577,24 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "font-medium text-base-content",
-                                "children": ["Friday"],
-                                "id": "f9f239b4-c67d-47e8-be33-dbe77bae788f",
+                                "children": [
+                                  "Friday"
+                                ],
+                                "id": "30538f7c-e015-4685-9263-5113b11a93c6",
                                 "ord": "a0"
                               },
                               {
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-base-content",
-                                "children": ["9:00 – 5:00"],
-                                "id": "bcf075c1-fa62-48b8-94fd-41b0e0629db7",
+                                "children": [
+                                  "9:00 – 5:00"
+                                ],
+                                "id": "9bb71a5e-d5be-4209-a8d6-9c24a5763e73",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "462113af-5947-4f77-83db-96c5ee96e846",
+                            "id": "d34a22c8-2309-43fd-b93d-ef4d8ccf7a0c",
                             "ord": "a1"
                           },
                           {
@@ -2436,20 +2606,24 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "font-medium text-base-content",
-                                "children": ["Saturday"],
-                                "id": "0c71fabd-8fc8-4ba0-bde7-afcc73be4a90",
+                                "children": [
+                                  "Saturday"
+                                ],
+                                "id": "41070634-333c-440c-ac0c-fe113d31ce6f",
                                 "ord": "a0"
                               },
                               {
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-base-content",
-                                "children": ["9:00 – 2:00"],
-                                "id": "a738450e-4dd1-4443-8b59-b20c884af784",
+                                "children": [
+                                  "9:00 – 2:00"
+                                ],
+                                "id": "d8b41af8-41d2-4ee3-903e-dc030ce0bece",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "76d095b1-dfdc-422e-bddf-49e1eae7ef78",
+                            "id": "dcce0041-2bf2-4a1a-bc83-9875b1eb96e3",
                             "ord": "a2"
                           },
                           {
@@ -2461,28 +2635,32 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "font-medium text-base-content",
-                                "children": ["Sunday"],
-                                "id": "e2854e75-4c68-4b14-850e-ee0d500a56ba",
+                                "children": [
+                                  "Sunday"
+                                ],
+                                "id": "8e78f72c-4a62-48a3-b395-5f98f3947323",
                                 "ord": "a0"
                               },
                               {
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-base-content",
-                                "children": ["Closed"],
-                                "id": "8d8dd60c-ad98-4134-90ff-8659dae897f6",
+                                "children": [
+                                  "Closed"
+                                ],
+                                "id": "8d9fe993-0e20-4a3e-ad59-bde3c3e93dc9",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "9e933dad-9fbd-476b-a192-3f188edfe667",
+                            "id": "49e5398a-de96-4ce7-b940-1e4d0348b173",
                             "ord": "a3"
                           }
                         ],
-                        "id": "3ab95fc4-82ab-4ffe-9a76-222f4826bedd",
+                        "id": "3ba0cf21-2f98-4a42-b5cd-95dc5db91c5a",
                         "ord": "a2"
                       }
                     ],
-                    "id": "2ae78dd2-0215-4706-8769-a251907ee02b",
+                    "id": "e3cf68ee-05e0-44c7-80b0-384862d25363",
                     "ord": "a0"
                   },
                   {
@@ -2495,15 +2673,15 @@
                       "zoom": 15,
                       "ratio": "classic"
                     },
-                    "id": "c5c3dab7-6348-4573-8b73-402dba57a357",
+                    "id": "01b67fce-47cf-4ce7-bd37-1a2515e0231b",
                     "ord": "a1"
                   }
                 ],
-                "id": "2be0af9c-5ffb-41db-bf2e-4ba2f039248e",
+                "id": "b8c2a731-9ab0-4339-8aea-e0d100c2c87f",
                 "ord": "a0"
               }
             ],
-            "id": "dc9b817c-3d7f-47eb-a759-11b9a711d4f1",
+            "id": "d688f666-c8b1-4a68-ae8f-1067d4535529",
             "ord": "a1"
           },
           {
@@ -2520,8 +2698,10 @@
                     "kind": "element",
                     "tag": "h2",
                     "class": "text-3xl font-bold tracking-tight @3xl:text-4xl",
-                    "children": ["Rather book than call?"],
-                    "id": "1bacfe5f-a53a-435e-9883-6d3ddf1b2f13",
+                    "children": [
+                      "Rather book than call?"
+                    ],
+                    "id": "0f0393a4-7747-453e-9e05-178f2bbafedf",
                     "ord": "a0"
                   },
                   {
@@ -2531,7 +2711,7 @@
                     "children": [
                       "See live availability and reserve your family’s appointments online — no phone tag, no hold music."
                     ],
-                    "id": "13896203-4045-4ddf-8667-26d401219a28",
+                    "id": "4c685ebc-c920-4c27-b751-5f93de1b16d4",
                     "ord": "a1"
                   },
                   {
@@ -2541,16 +2721,18 @@
                     "attrs": {
                       "href": "/book"
                     },
-                    "children": ["Book online"],
-                    "id": "b6b6ce20-f6d8-49af-8e33-45ce144f2f4b",
+                    "children": [
+                      "Book online"
+                    ],
+                    "id": "9f5f5978-1c3f-46f3-8944-0e864da55740",
                     "ord": "a2"
                   }
                 ],
-                "id": "e03990bd-0b57-4b4c-90d4-15948764f6ed",
+                "id": "9bbbd541-c201-4a78-827a-fae9686275dd",
                 "ord": "a0"
               }
             ],
-            "id": "54846cd9-9cd2-4a7a-a4df-7b2c479c2651",
+            "id": "8349159a-20f8-4bc9-a9cf-ae6818b5da10",
             "ord": "a2"
           }
         ]

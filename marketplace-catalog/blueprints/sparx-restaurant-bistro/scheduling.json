@@ -389,5 +389,12 @@
       ],
       "policyHandle": "large-party"
     }
+  ],
+  "locations": [
+    {
+      "handle": "premises",
+      "name": "Larkspur",
+      "timezone": "UTC"
+    }
   ]
 }

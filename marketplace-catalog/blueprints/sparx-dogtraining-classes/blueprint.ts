@@ -11,7 +11,7 @@ import assets from './assets.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-dogtraining-classes',
-  version: '1.2.0',
+  version: '1.3.0',
   name: 'sparx — Dog Training (Classes)',
   summary:
     'A warm, playful dog-training-school site — a cheerful teal-green palette, sunny coral accent and rounded, friendly type. Installs a live class schedule with capacity: puppy kindergarten, basic and intermediate obedience and a tricks class, each a group class you enroll in online, plus 1:1 private sessions and a free evaluation. Three positive-reinforcement trainers and a training hall book as resources. Ships as "Good Dog Academy".',

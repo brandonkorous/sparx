@@ -2,6 +2,7 @@
 
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
+import { queryBool } from '@sparx/api-core/query';
 import { categoryService, collectionService } from '@sparx/commerce';
 import { ok, paged } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
@@ -34,7 +35,7 @@ const ListCollectionsQuery = z.object({
   property: z.string().min(1).optional(),
 
   type: z.enum(['manual', 'rules']).optional(),
-  include_archived: z.coerce.boolean().optional(),
+  include_archived: queryBool.optional(),
 
   // Server-side sort. The whitelist IS the set of orderable columns — an
   // off-list value is rejected here rather than silently ignored, so the client

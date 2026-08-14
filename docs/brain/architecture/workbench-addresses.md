@@ -10,6 +10,8 @@ sources:
   - packages/links/src/server.ts
   - apps/workbench/lib/workbench/deep-link.ts
   - apps/workbench/lib/workbench/address.ts
+  - apps/workbench/components/deep-link-arrival.tsx
+  - apps/workbench/app/workbench-entry.tsx
   - apps/workbench/app/[...path]/page.tsx
   - scripts/check-surface-routes.mjs
 ---
@@ -23,9 +25,13 @@ The workbench is an MDI, so an address names **one destination that opens as a p
 - **The path parameter name must equal what the surface reads from `ctx.params`** (`:memberId`, `:productId`, `:key`). The matcher passes it straight through, so a mismatch opens an empty pane silently.
 - **A query parameter the path does not name reaches the surface as a pane param.** That is how `/settings/billing?billing=success` works, and why a surface must never read `window.location` — the bar tracks the FOCUSED pane, so by the time a surface looks, the query may belong to something else.
 
-**The server never resolves an address.** The catch-all `app/[...path]/page.tsx` checks the session and hands the raw path down; the browser resolves it against the surface registry (which imports React and 234 panes, so a service could never read it). Sign-in preservation needs only the path as `callbackURL`.
+**The server never resolves an address — but it is the one that SAYS what the address is.** The catch-all `app/[...path]/page.tsx` checks the session and hands the raw path down as `arrivalAddress`; the browser resolves it against the surface registry (which imports React and 234 panes, so a service could never read it). Sign-in preservation needs only the path as `callbackURL`.
 
-**A link carries its site.** `?site=<slug>` — a link is written to be read by SOMEONE ELSE, whose workbench is on whatever business they last used, and records belong to exactly one. Arriving on a mismatch switches workspaces and reloads onto the same address; a second attempt at the same site reports it unreachable instead of looping (api-rest fails the cookie closed under RLS).
+The shell must take that address rather than read `window.location` for itself, because the two differ on a **client-side arrival**: signing in calls `router.replace('/')`, and the shell's first render happens while the bar still says `/sign-in`. Reading the bar there captured the sign-in page as a link, matched no route, and answered every successful sign-in with the unresolved-link pane — which then persisted into the layout and re-wrote the bar to `/link-not-found?…` on every load afterwards.
+
+**A link carries its site.** `?site=<slug>` — a link is written to be read by SOMEONE ELSE, whose workbench is on whatever business they last used, and records belong to exactly one. Arriving on a mismatch switches workspaces and reloads onto **the address the link arrived on** (`DeepLink.href`, captured at first render), never "reload whatever is in the bar". Those are different strings by the time the switch fires: the switch waits on the site list, and within a frame of boot the history bridge has already replaced the bar with the restored layout's focused pane. Reloading that carried the ARRANGEMENT's address into the other business, where it read as a link back to the one just left — two businesses trading the tab about once a second until api-rest rate-limited it.
+
+**The switch guard is a SET of every site tried, not the last one.** api-rest re-resolves the site cookie under RLS and fails closed, so a link naming a site the session cannot hold would switch, come back on the primary, and switch again; one attempt per site is allowed and the second reports it unreachable. Remembering only the most recent attempt reads an A → B → A alternation as three first attempts and never fires — what makes a loop a loop is revisiting a state, so the guard has to remember every state visited. It clears once the SITE gate passes (any verdict except `site-unavailable`), not only on a pane opening: a link that reached the right business and was refused by the MODULE gate has still proved the switch worked, and holding the attempt would strand the tab.
 
 **The address bar tracks the focused pane, never the arrangement.** `lib/workbench/nav-history.tsx` already pushed one history entry per logical navigation; each entry now carries that pane's address. Refresh, back/forward and copy-the-URL all work from the same mechanism, and the layout stays out of the URL entirely.
 

@@ -239,5 +239,12 @@
       ],
       "policyHandle": "planning-deposit"
     }
+  ],
+  "locations": [
+    {
+      "handle": "premises",
+      "name": "Trailhead Travel",
+      "timezone": "UTC"
+    }
   ]
 }

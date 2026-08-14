@@ -41,13 +41,47 @@ import {
   requireFinanceModule,
   toFinanceContext,
 } from '../../../lib/finance-context.js';
+import { queryBool, queryInt } from '@sparx/api-core/query';
 import { resolveListScopeIds, resolvePropertyId } from '../../../lib/property.js';
+import { publishDomainEvent } from '../../../lib/staff-events.js';
 
 const PathId = z.object({ id: z.string().uuid() });
 
-const ListQuery = listExpensesSchema
-  .omit({ propertyId: true })
-  .extend({ property: z.string().optional() });
+/**
+ * Tell the finance worker that one day's profit went stale.
+ *
+ * `packages/finance-worker` has handled `finance.expense.recorded` since the
+ * module shipped and **nothing published it**, so `rollup_finance_daily_profit`
+ * — the table `profitForRange` reads — was only ever written by the manual
+ * recompute button. Every expense recorded, corrected or deleted left the
+ * Profit surface showing a figure that predated it.
+ *
+ * Best-effort by construction (the publisher swallows transport errors), which
+ * is the right trade here: a broker hiccup must not fail the request that
+ * recorded a cost, and the nightly `profit-rollup` cron re-derives the window
+ * regardless. The event makes it immediate; the cron makes it certain.
+ */
+async function announceExpenseDay(
+  tenantId: string,
+  actorId: string | null,
+  incurredAt: Date
+): Promise<void> {
+  await publishDomainEvent('finance.expense.recorded', tenantId, actorId, {
+    incurredAt: incurredAt.toISOString(),
+  });
+}
+
+// `limit` and `unpaidOnly` are RE-DECLARED for the query string. The service
+// contract spells them as a real int and a real boolean, which is right for the
+// service and wrong here: everything in `request.query` is a string, so a bare
+// `z.int()` rejects "50" and answers 422. The `.default(50)` made that invisible
+// — omitting the parameter passed, sending it never worked — and the workbench
+// always sends it, so Spending was broken for every tenant from launch.
+const ListQuery = listExpensesSchema.omit({ propertyId: true }).extend({
+  property: z.string().optional(),
+  limit: queryInt.min(1).max(200).default(50),
+  unpaidOnly: queryBool.nullish(),
+});
 
 const PaidBody = z.object({
   paidAt: z.coerce.date().nullable(),
@@ -161,6 +195,7 @@ const financeExpenseRoutes: FastifyPluginAsync = async (app) => {
     const propertyId =
       input.propertyId ?? (await resolvePropertyId(auth, headerPropertyId(request)));
     const row = await createExpense(tenantId, { ...input, propertyId });
+    await announceExpenseDay(tenantId, auth.actorId, row.incurredAt);
     return reply.code(201).send(ok(expenseView(row)));
   });
 
@@ -174,11 +209,23 @@ const financeExpenseRoutes: FastifyPluginAsync = async (app) => {
 
   app.patch('/v1/finance/expenses/:id', async (request) => {
     await requireFinanceModule(request);
-    requireRole(request, 'editor');
+    const auth = requireRole(request, 'editor');
     const { tenantId } = toFinanceContext(request);
     const { id } = PathId.parse(request.params);
     const input = updateExpenseSchema.parse({ ...(request.body as object), id });
-    return ok(expenseView(await updateExpense(tenantId, input)));
+
+    // Read the day it was on BEFORE the edit. A correction is allowed to move
+    // `incurredAt`, and moving it makes TWO days stale — the one it left and
+    // the one it arrived on. Announcing only the new day leaves the old day's
+    // profit carrying a cost that is no longer there.
+    const before = await getExpense(tenantId, id);
+    const row = await updateExpense(tenantId, input);
+
+    await announceExpenseDay(tenantId, auth.actorId, row.incurredAt);
+    if (before.incurredAt.getTime() !== row.incurredAt.getTime()) {
+      await announceExpenseDay(tenantId, auth.actorId, before.incurredAt);
+    }
+    return ok(expenseView(row));
   });
 
   app.post('/v1/finance/expenses/:id/paid', async (request) => {
@@ -188,15 +235,22 @@ const financeExpenseRoutes: FastifyPluginAsync = async (app) => {
     const { id } = PathId.parse(request.params);
     const body = PaidBody.parse(request.body);
     await setExpensePaid(tenantId, id, body.paidAt, body.paymentMethod);
+    // No recompute, and that is the two-date rule rather than an omission:
+    // profit buckets on `incurredAt`, so when the money actually LEFT changes
+    // nothing about which period the cost belongs to (docs/148 §1, decision #6).
     return ok(expenseView(await getExpense(tenantId, id)));
   });
 
   app.delete('/v1/finance/expenses/:id', async (request, reply) => {
     await requireFinanceModule(request);
-    requireRole(request, 'editor');
+    const auth = requireRole(request, 'editor');
     const { tenantId } = toFinanceContext(request);
     const { id } = PathId.parse(request.params);
+    // Its day has to be read before the row goes, or there is nothing left to
+    // say which bucket just lost a cost.
+    const before = await getExpense(tenantId, id);
     await deleteExpense(tenantId, id);
+    await announceExpenseDay(tenantId, auth.actorId, before.incurredAt);
     return reply.code(204).send();
   });
 

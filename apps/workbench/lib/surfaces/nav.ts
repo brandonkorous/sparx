@@ -33,6 +33,7 @@ import {
   type LucideIcon,
 } from 'lucide-react';
 import { listedSurfaces, resolveTitle, type SurfaceDefinition } from './registry';
+import { productModuleLabel } from '../product';
 import type { WorkbenchModule } from '../../components/module-scope';
 
 export interface NavSection {
@@ -83,8 +84,18 @@ const MODULE_LABELS: Partial<Record<WorkbenchModule, string>> = {
   storefront: 'Storefront',
 };
 
+/**
+ * What to call a module on screen.
+ *
+ * The brand gets first refusal (see lib/product.ts). That is not decoration:
+ * this function is called from SHARED surfaces — the AI tool-policy matrix and
+ * the automation step editor both render it — so a product whose whole premise
+ * is that a shop owner has customers rather than a CRM cannot express that in
+ * its own shell alone. A brand states only what it renames; everything else
+ * falls through to the platform's label below.
+ */
 export function moduleLabel(module: WorkbenchModule): string {
-  return MODULE_LABELS[module] ?? module;
+  return productModuleLabel(module) ?? MODULE_LABELS[module] ?? module;
 }
 
 /**

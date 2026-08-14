@@ -415,8 +415,31 @@ export const SchedulingResourceDecl = z.object({
   bookableOnline: z.boolean().default(true),
   imageAssetId: ManifestId.optional(),
   windows: z.array(SchedulingWindowDecl).max(100).default([]),
+  /** A `SchedulingLocationDecl` handle — where this person or thing works.
+   *  Omitted = the blueprint's first declared location, or the tenant's seeded
+   *  'Main location' when it declares none. */
+  locationHandle: Handle.optional(),
 });
 export type SchedulingResourceDecl = z.infer<typeof SchedulingResourceDecl>;
+
+/** A PLACE the business serves from — the shop floor, the treatment room block,
+ *  the yard. Declared so a design brings its own premises instead of piling onto
+ *  whatever location the tenant already had: install a barber design on one site
+ *  and a grooming design on another, and each business gets its own place, scoped
+ *  to its own site, rather than both sharing the seeded 'Main location'.
+ *
+ *  DELIBERATELY NO ADDRESS. A blueprint cannot know where the business actually
+ *  is, and an invented street address reads as real — the same rule the contact
+ *  spine follows, where an unfilled field renders nothing rather than a plausible
+ *  lie. The owner fills the address in on the Places surface; the blueprint only
+ *  supplies the NAME and the zone, which are safe to guess and easy to correct. */
+export const SchedulingLocationDecl = z.object({
+  handle: Handle,
+  name: z.string().min(1).max(255),
+  /** IANA zone the place is in. Same default as a resource's. */
+  timezone: z.string().min(1).max(64).default('UTC'),
+});
+export type SchedulingLocationDecl = z.infer<typeof SchedulingLocationDecl>;
 
 /** A deposit / cancellation / reminder policy a service attaches to by `handle`.
  *  Omit and a service uses no policy (the activation-seeded 'Standard' still exists). */
@@ -460,6 +483,9 @@ export const SchedulingServiceDecl = z.object({
   resourceRequirements: z.array(SchedulingResourceRequirementDecl).max(20).default([]),
   /** A `SchedulingPolicyDecl` handle; omitted = no attached policy. */
   policyHandle: Handle.optional(),
+  /** A `SchedulingLocationDecl` handle — where this service is delivered.
+   *  Omitted = the blueprint's first declared location, else the seeded one. */
+  locationHandle: Handle.optional(),
   bookableOnline: z.boolean().default(true),
   requiresApproval: z.boolean().default(false),
   imageAssetId: ManifestId.optional(),
@@ -467,6 +493,10 @@ export const SchedulingServiceDecl = z.object({
 export type SchedulingServiceDecl = z.infer<typeof SchedulingServiceDecl>;
 
 export const SchedulingDecl = z.object({
+  /** The places this business serves from. Empty = the design brings no premises
+   *  of its own and everything files against the tenant's seeded 'Main location',
+   *  which is the right answer for a single-premises business. */
+  locations: z.array(SchedulingLocationDecl).max(20).default([]),
   policies: z.array(SchedulingPolicyDecl).max(20).default([]),
   resources: z.array(SchedulingResourceDecl).max(100).default([]),
   services: z.array(SchedulingServiceDecl).min(1).max(200),

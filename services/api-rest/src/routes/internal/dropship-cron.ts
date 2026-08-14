@@ -22,6 +22,8 @@ import type { FastifyPluginAsync, FastifyRequest } from 'fastify';
 import { commerceSchedulers } from '@sparx/commerce';
 
 import { env } from '../../env.js';
+import { authorizeCron, forEachTenant } from '../../lib/cron-auth.js';
+import { listDropshipTenants, pollDropshipTracking } from '../../lib/dropship-tracking.js';
 
 const CRON_TOKEN_HEADER = 'x-sparx-internal-cron-token';
 
@@ -91,6 +93,30 @@ const dropshipCronRoutes: FastifyPluginAsync = (app) => {
       return { success: true, data: summary };
     }
   );
+
+  // ─── Tracking poll ────────────────────────────────────────────────────────
+  //
+  // `SupplierAdapter.getTrackingUpdate()` is implemented by all four adapters
+  // and was called by NOTHING, so a dropshipped order was submitted and then
+  // never asked about again — no tracking number, no "it shipped", and the two
+  // declared events with no publisher. See lib/dropship-tracking.ts.
+
+  app.post('/internal/dropship/tracking-poll', async (request) => {
+    authorizeCron(request);
+    const tenants = await listDropshipTenants();
+    const summary = await forEachTenant(tenants, (tenantId) => pollDropshipTracking(tenantId));
+    const totals = summary.outcomes.reduce(
+      (acc, o) => ({
+        checked: acc.checked + (o.result?.checked ?? 0),
+        shipped: acc.shipped + (o.result?.shipped ?? 0),
+        delivered: acc.delivered + (o.result?.delivered ?? 0),
+        failed: acc.failed + (o.result?.failed ?? 0),
+      }),
+      { checked: 0, shipped: 0, delivered: 0, failed: 0 }
+    );
+    request.log.info({ ...totals, tenants: summary.tenants }, 'dropship tracking poll');
+    return { success: true, data: { ...summary, outcomes: undefined, totals } };
+  });
 
   return Promise.resolve();
 };

@@ -119,19 +119,29 @@ export function DeepLinkArrival({ siteKey }: { siteKey: string | null }) {
           });
           return;
         }
-        await switchSite(controller, siteKey ?? 'default', target, { keepAddress: true });
+        // The address the LINK arrived on, not the one in the bar. By now the
+        // history bridge has replaced the bar with the restored layout's focused
+        // pane, and reloading onto that is what turned a cross-business link into
+        // a reload loop between two businesses.
+        await switchSite(controller, siteKey ?? 'default', target, {
+          address: readDeepLink()?.href,
+        });
       })();
       return;
     }
 
     arrived.current = true;
 
-    // Clear the guard ONLY on a real arrival. Reaching here with `unresolved`
-    // means the guard just fired ("that site is unreachable") — and clearing it
-    // there re-arms the switch for the next document load, which is precisely
-    // how this became an infinite reload alternating between two addresses.
-    // A failed switch must STAY remembered.
-    if (resolved.kind === 'open') clearSwitchAttempt();
+    // Clear the guard once the SITE gate has passed — which every outcome except
+    // `site-unavailable` proves, since that is the only verdict the site gate
+    // itself returns. Reaching here with `site-unavailable` means the guard just
+    // fired, and clearing it there re-arms the switch for the next document load,
+    // which is precisely how this became an infinite reload alternating between
+    // two addresses. A failed switch must STAY remembered; a link that reached
+    // the right business and was merely refused by the module gate must not.
+    if (resolved.kind === 'open' || resolved.reason !== 'site-unavailable') {
+      clearSwitchAttempt();
+    }
 
     applyDeepLink(controller, resolved);
   }, [attached, controller, siteKey, sites, moduleStates]);

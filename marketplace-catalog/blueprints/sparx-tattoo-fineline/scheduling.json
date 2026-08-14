@@ -223,5 +223,12 @@
       ],
       "policyHandle": "session-deposit"
     }
+  ],
+  "locations": [
+    {
+      "handle": "premises",
+      "name": "Faint",
+      "timezone": "UTC"
+    }
   ]
 }

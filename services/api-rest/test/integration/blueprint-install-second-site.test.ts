@@ -197,6 +197,13 @@ describe('installing one design onto two sites', () => {
     // Commerce reconciles on install too — one catalogue, wired into both sites.
     expect(await countCommerce()).toEqual({ categories: 1, collections: 1, products: 1 });
     expect(new Set(await productLinks())).toEqual(new Set([siteA, siteB]));
+
+    // SCOPED to the sites that installed it. Categories and collections used to install
+    // with no links at all, and in Model B "no links" means "show on EVERY site" — so a
+    // category installed for one business appeared in a sibling business's storefront.
+    // Site A minted them; site B was widened onto them.
+    expect(new Set(await categoryLinks())).toEqual(new Set([siteA, siteB]));
+    expect(new Set(await collectionLinks())).toEqual(new Set([siteA, siteB]));
   });
 
   it('uninstalling the second site leaves the first site’s theme and content intact', async () => {
@@ -223,6 +230,10 @@ describe('installing one design onto two sites', () => {
     expect(await countCommerce()).toEqual({ categories: 1, collections: 1, products: 1 });
     expect(await liveProducts()).toBe(1);
     expect(await productLinks()).toEqual([siteA]);
+
+    // Unlinked from site B, still shown on site A.
+    expect(await categoryLinks()).toEqual([siteA]);
+    expect(await collectionLinks()).toEqual([siteA]);
   });
 });
 
@@ -267,6 +278,38 @@ async function productLinks(): Promise<string[]> {
       select: { propertyId: true },
     });
     return rows.map((r) => r.propertyId);
+  });
+}
+
+async function categoryLinks(): Promise<string[]> {
+  return prisma.$transaction(async (tx) => {
+    await tx.$executeRawUnsafe(`SET LOCAL app.tenant_id = '${tenantId}'`);
+    const row = await tx.productCategory.findFirst({
+      where: { tenantId, handle: 'shared-category' },
+      select: { id: true },
+    });
+    if (!row) return [];
+    const links = await tx.categoryProperty.findMany({
+      where: { categoryId: row.id },
+      select: { propertyId: true },
+    });
+    return links.map((l) => l.propertyId);
+  });
+}
+
+async function collectionLinks(): Promise<string[]> {
+  return prisma.$transaction(async (tx) => {
+    await tx.$executeRawUnsafe(`SET LOCAL app.tenant_id = '${tenantId}'`);
+    const row = await tx.productCollection.findFirst({
+      where: { tenantId, handle: 'shared-collection' },
+      select: { id: true },
+    });
+    if (!row) return [];
+    const links = await tx.collectionProperty.findMany({
+      where: { collectionId: row.id },
+      select: { propertyId: true },
+    });
+    return links.map((l) => l.propertyId);
   });
 }
 

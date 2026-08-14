@@ -1,0 +1,120 @@
+{
+  "brand": "Piggles",
+  "tagline": "Business software for people who have a business to run.",
+  "themes": {
+    "light": "light",
+    "dark": "dark",
+    "note": "Piggles claims the bare SilicaUI theme names. Safe because @sparx/brand/theme.css is imported only by the four sparx apps and never by a shared package, so a Piggles app never loads both. If a surface ever has to show both brands at once, give Piggles a named island instead of the bare name."
+  },
+  "colors": {
+    "accent": {
+      "name": "Piggles Pink",
+      "hex": "#FF6F86",
+      "note": "Approved brand direction from the selected Piggles identity board; validate final production values across digital and print. Takes DARK ink, not white — white measures 2.44:1."
+    },
+    "accentSoft": "#FFB8C3",
+    "accentPale": "#FFE9ED",
+    "ink": "#202631",
+    "inkSoft": "#4B5563",
+    "surface": "#FFFFFF",
+    "surfaceWarm": "#FBFAF7",
+    "border": "#E5E7EB"
+  },
+  "semantic": {
+    "note": "The registered SilicaUI color roles. This list REPLACES the plugin's defaults, so every built-in that is still wanted appears here. `danger` is required because the shared platform's statusTone() returns it; `neutral` is required or SilicaUI's default cool slate shows through. Full tables + rationale in docs/brand/SILICAUI_THEME.md.",
+    "roles": [
+      "primary",
+      "secondary",
+      "accent",
+      "neutral",
+      "info",
+      "success",
+      "warning",
+      "error",
+      "danger"
+    ],
+    "light": {
+      "primary": ["#FF6F86", "#202631"],
+      "secondary": ["#2D3443", "#FFFFFF"],
+      "accent": ["#FFB3C0", "#202631"],
+      "neutral": ["#52454F", "#FFFFFF"],
+      "info": ["#2563EB", "#FFFFFF"],
+      "success": ["#14804A", "#FFFFFF"],
+      "warning": ["#F3B61F", "#202631"],
+      "error": ["#C93838", "#FFFFFF"],
+      "danger": ["#C93838", "#FFFFFF"],
+      "base-100": "#FFFFFF",
+      "base-200": "#FBF7F8",
+      "base-300": "#F0E8EA",
+      "base-content": "#202631"
+    },
+    "dark": {
+      "primary": ["#FF7C91", "#20151A"],
+      "secondary": ["#D7DBE3", "#1B1F28"],
+      "accent": ["#8F4656", "#FFF4F6"],
+      "neutral": ["#6B5A66", "#FFFFFF"],
+      "info": ["#68A3FF", "#08162C"],
+      "success": ["#38B875", "#071A10"],
+      "warning": ["#F6C95B", "#241A04"],
+      "error": ["#EF4444", "#250909"],
+      "danger": ["#EF4444", "#250909"],
+      "base-100": "#272D39",
+      "base-200": "#1C212C",
+      "base-300": "#151922",
+      "base-content": "#F4F5F7"
+    },
+    "baseRampNote": "base-100 is the TOP surface (MDI windows, cards, dialogs) and the LIGHTEST of the three in BOTH themes; base-300 is the deepest recess. Raised surfaces catch more light."
+  },
+  "groups": {
+    "note": "Piggles colors the GROUP, not the app — five hues plus the brand cover all fifteen apps. Theme-independent; `home` is aliased to primary rather than copied so it follows the pink into dark. Closest pair ΔE 18.4. See docs/brand/SILICAUI_THEME.md before adding a sixth.",
+    "home": "var(--color-primary)",
+    "web": "#4F46E5",
+    "sell": "#C2410C",
+    "people": "#0E7490",
+    "money": "#4D7C0F",
+    "run": "#7E22CE",
+    "apps": {
+      "home": "home",
+      "site": "web",
+      "content": "web",
+      "get_found": "web",
+      "sell": "sell",
+      "stock": "sell",
+      "customers": "people",
+      "messages": "people",
+      "bookings": "people",
+      "invoices": "money",
+      "money": "money",
+      "team": "run",
+      "automations": "run",
+      "partners": "run",
+      "connections": "run"
+    }
+  },
+  "shape": {
+    "radiusSm": 8,
+    "radiusMd": 12,
+    "radiusLg": 18,
+    "radiusXl": 24,
+    "roundness": "high",
+    "depth": 1,
+    "depthNote": "SilicaUI's own default, and the entirety of Piggles' elevation: resting shadow + hover-lift on Card, inset highlight on solid Buttons. sparx sets this to 0. One token — never a hand-rolled shadow in feature code."
+  },
+  "typography": {
+    "displayDirection": "very round, thick, friendly, professional",
+    "bodyDirection": "high-legibility sans serif",
+    "display": "Nunito",
+    "body": "Inter",
+    "fontNote": "Nunito is SIL OFL and ships a 900 weight, so it self-hosts without a licence negotiation. Confirm against the final logo file before launch — if the wordmark is drawn in something else, this follows it.",
+    "avoid": [
+      "condensed primary display fonts",
+      "sharp corporate display fonts",
+      "childish novelty fonts"
+    ]
+  },
+  "logo": {
+    "mark": "rounded P with integrated pig snout",
+    "wordmark": "Piggles",
+    "minimumRule": "snout must remain readable at small sizes"
+  }
+}

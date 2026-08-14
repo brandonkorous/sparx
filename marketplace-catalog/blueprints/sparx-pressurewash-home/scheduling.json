@@ -243,5 +243,12 @@
       ],
       "policyHandle": "maintenance-plan"
     }
+  ],
+  "locations": [
+    {
+      "handle": "premises",
+      "name": "Blast Master Pressure Washing",
+      "timezone": "UTC"
+    }
   ]
 }

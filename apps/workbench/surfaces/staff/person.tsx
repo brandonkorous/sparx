@@ -194,6 +194,7 @@ function PaySection({ staffMemberId, canSeePay }: { staffMemberId: string; canSe
   const [basis, setBasis] = useState<'hourly' | 'salary' | 'commission' | 'none'>('hourly');
   const [amount, setAmount] = useState('');
   const [burden, setBurden] = useState('0');
+  const [commission, setCommission] = useState('');
   const [from, setFrom] = useState(toDateInput(new Date()));
   const [note, setNote] = useState('');
 
@@ -202,11 +203,20 @@ function PaySection({ staffMemberId, canSeePay }: { staffMemberId: string; canSe
   const amountCents = Math.round(Number(amount.replace(/[,\s$]/g, '')) * 100);
   const amountOk = !needsAmount || (Number.isFinite(amountCents) && amountCents > 0);
 
+  // A commission basis needs its percentage, and nothing else can carry one.
+  // Without this the basis was selectable and undescribable — which is exactly
+  // why nothing ever calculated a commission.
+  const commissionPercent = Number(commission.replace(/[,\s%]/g, ''));
+  const commissionOk =
+    basis !== 'commission' ||
+    (Number.isFinite(commissionPercent) && commissionPercent > 0 && commissionPercent <= 100);
+
   const reset = () => {
     setAdding(false);
     setBasis('hourly');
     setAmount('');
     setBurden('0');
+    setCommission('');
     setFrom(toDateInput(new Date()));
     setNote('');
   };
@@ -217,6 +227,7 @@ function PaySection({ staffMemberId, canSeePay }: { staffMemberId: string; canSe
         basis,
         amountCents: needsAmount ? amountCents : 0,
         burdenPercent: Number(burden) || 0,
+        commissionPercent: basis === 'commission' ? commissionPercent : 0,
         effectiveFrom: from,
         effectiveTo: null,
         note: note.trim() === '' ? null : note.trim(),
@@ -323,6 +334,9 @@ function PaySection({ staffMemberId, canSeePay }: { staffMemberId: string; canSe
             <div className="font-medium">{rateAmountLabel(current.basis, current.amountCents)}</div>
             <Text className="text-sm">
               {basisLabel(current.basis)} · from {formatDate(current.effectiveFrom)}
+              {current.basis === 'commission' && current.commissionPercent > 0
+                ? ` · ${String(current.commissionPercent)}% of each sale`
+                : ''}
               {current.burdenPercent > 0
                 ? ` · plus ${String(current.burdenPercent)}% employer costs`
                 : ''}
@@ -355,6 +369,28 @@ function PaySection({ staffMemberId, canSeePay }: { staffMemberId: string; canSe
                 }
               />
             </Field>
+
+            {basis === 'commission' ? (
+              <Field>
+                <FieldLabel>Share of each sale</FieldLabel>
+                <FieldControl
+                  render={
+                    <Input
+                      inputMode="decimal"
+                      placeholder="7.5"
+                      value={commission}
+                      onChange={(event) => {
+                        setCommission(event.target.value);
+                      }}
+                    />
+                  }
+                />
+                <FieldDescription>
+                  A percentage of what they sell, before tax and delivery. Worked out once the order
+                  is paid, and reduced if any of it is refunded.
+                </FieldDescription>
+              </Field>
+            ) : null}
 
             {needsAmount ? (
               <Field>
@@ -433,7 +469,7 @@ function PaySection({ staffMemberId, canSeePay }: { staffMemberId: string; canSe
             <Button
               size="sm"
               color="module"
-              disabled={!amountOk}
+              disabled={!amountOk || !commissionOk}
               loading={setRate.isPending}
               onClick={submit}
             >

@@ -48,6 +48,10 @@
     "./envelope": {
       "types": "./src/envelope.ts",
       "default": "./src/envelope.ts"
+    },
+    "./query": {
+      "types": "./src/query.ts",
+      "default": "./src/query.ts"
     }
   },
   "files": [
@@ -56,7 +60,9 @@
   "scripts": {
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
-    "clean": "rm -rf .turbo dist *.tsbuildinfo"
+    "clean": "rm -rf .turbo dist *.tsbuildinfo",
+    "test": "vitest run --passWithNoTests",
+    "test:watch": "vitest"
   },
   "dependencies": {
     "@fastify/jwt": "^9.0.4",
@@ -71,6 +77,7 @@
   },
   "devDependencies": {
     "@types/node": "^25.9.1",
-    "typescript": "^6.0.3"
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.7"
   }
 }

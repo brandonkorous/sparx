@@ -230,11 +230,24 @@ export function validateBlueprintIntegrity(bp: Blueprint): BlueprintIssue[] {
   // ── Scheduling (resources, policies, services) ──────────────────────────────
   const scheduling = bp.scheduling;
   if (scheduling) {
+    // Locations first — resources and services reference them by handle, and a
+    // dangling reference has to FAIL THE LOAD rather than fall back silently.
+    // Falling back would file the barber's chairs at whatever place happened to
+    // exist, which looks correct until someone opens the second business's diary.
+    const locationHandles = new Set<string>();
+    scheduling.locations.forEach((l, i) => {
+      if (locationHandles.has(l.handle))
+        add(`scheduling.locations[${i}]`, `Duplicate location handle "${l.handle}".`);
+      locationHandles.add(l.handle);
+    });
+
     const resourceHandles = new Set<string>();
     scheduling.resources.forEach((r, i) => {
       if (resourceHandles.has(r.handle))
         add(`scheduling.resources[${i}]`, `Duplicate resource handle "${r.handle}".`);
       resourceHandles.add(r.handle);
+      if (r.locationHandle && !locationHandles.has(r.locationHandle))
+        add(`scheduling.resources[${i}].locationHandle`, `Unknown location "${r.locationHandle}".`);
       checkAsset(`scheduling.resources[${i}].imageAssetId`, r.imageAssetId);
       r.windows.forEach((w, j) => {
         if (w.endMinute <= w.startMinute)
@@ -260,6 +273,8 @@ export function validateBlueprintIntegrity(bp: Blueprint): BlueprintIssue[] {
       checkAsset(`scheduling.services[${i}].imageAssetId`, s.imageAssetId);
       if (s.policyHandle && !policyHandles.has(s.policyHandle))
         add(`scheduling.services[${i}].policyHandle`, `Unknown policy "${s.policyHandle}".`);
+      if (s.locationHandle && !locationHandles.has(s.locationHandle))
+        add(`scheduling.services[${i}].locationHandle`, `Unknown location "${s.locationHandle}".`);
     });
   }
 

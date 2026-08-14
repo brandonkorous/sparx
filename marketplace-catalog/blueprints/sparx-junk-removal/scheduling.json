@@ -247,5 +247,12 @@
       ],
       "policyHandle": "sameday-priority"
     }
+  ],
+  "locations": [
+    {
+      "handle": "premises",
+      "name": "Haul Away Junk Removal",
+      "timezone": "UTC"
+    }
   ]
 }

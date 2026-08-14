@@ -11,6 +11,7 @@
 
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
+import { queryBool } from '@sparx/api-core/query';
 import { prisma } from '@sparx/db';
 import { ok } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
@@ -23,9 +24,9 @@ const RangeQuery = z.object({
   to: z.coerce.date(),
   property: z.string().optional(),
   /** Recompute before reading. The Profit surface sets this on manual refresh. */
-  refresh: z.coerce.boolean().optional(),
+  refresh: queryBool.optional(),
   /** Include the day-by-day series for the chart. */
-  series: z.coerce.boolean().optional(),
+  series: queryBool.optional(),
 });
 
 const RecomputeBody = z.object({ from: z.coerce.date(), to: z.coerce.date() });

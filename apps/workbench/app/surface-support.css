@@ -1,0 +1,338 @@
+/* ── Surface support: the stylesheet the workbench SURFACES depend on ────────
+ *
+ * Extracted from globals.css so that a second shell can mount the same surfaces
+ * without copying it. The workbench is now rendered by two apps — sparx's own
+ * shell (apps/workbench) and the Piggles console (piggles/apps/workbench) — and
+ * the surfaces are shared platform code that neither may fork
+ * (piggles/CLAUDE.md RULE #0). Their supporting CSS is part of that contract:
+ * a surface that renders correctly under one shell and unstyled under the other
+ * is a fork by omission.
+ *
+ * WHAT BELONGS HERE: rules and safelists a SURFACE needs, expressed entirely in
+ * tokens, so they mean the right thing under either brand's token values.
+ *
+ * WHAT DOES NOT: anything naming a brand — the `@plugin` colour list, the theme
+ * import, the heading font, the mascot keyframes. Those stay in each app's own
+ * globals.css, which is the file that knows which brand it is.
+ *
+ * ── ONE HARD CONSTRAINT: NO PATH-BASED `@source`, NO `@import` ──────────────
+ *
+ * Tailwind resolves a path in `@source` relative to the stylesheet the
+ * directive sits in — but this file is reached through an `@import` from two
+ * different depths, and a path that silently resolves to a directory which does
+ * not exist generates nothing and reports nothing. That is the "absent behaves
+ * like fine" failure: the build stays green and half the app renders unstyled.
+ *
+ * So every path-based `@source` lives in the importing app's own globals.css,
+ * where its depth is a local fact. `@source inline(…)` carries no path and is
+ * safe here, which is why the canvas safelist below is fine.
+ */
+
+/* ── Canvas vocabulary safelist ──────────────────────────────────────────────
+   The site builder renders the tenant's page tree from the DATABASE, so its
+   classes are runtime data Tailwind can never statically scan (scanning catalog
+   SOURCE only covers what an author may choose, not what they saved). Rather
+   than a custom compiled layer or `--*` tokens — one silicaui system, no
+   parallel layer — we force-generate the builder's silicaui utility vocabulary
+   with `@source inline`. This is Tailwind emitting SILICAUI'S OWN utilities at
+   build time, including every responsive variant, so a `@5xl:grid-cols-12` /
+   `@2xl:pt-32` on a DB node actually has CSS. The leading empty in `{,@sm:,…}`
+   keeps the base.
+
+   Each family declares BOTH axes for the same reason the shared vocabulary file
+   does: the container set is what new authoring uses, and the viewport set stays
+   only so documents written before the ban keep rendering.
+
+   The text ladder MIRRORS silicaui's canonical `TYPE_SCALE`
+   (`@wizeworks/silicaui/type-scale`, xs→10xl as of 0.31.0). silica exposes that
+   scale as a JS object for building a size picker or safelist in CODE — it can't
+   be consumed by a CSS `@source inline` directive, so `@source inline` stays the
+   mechanism and the keys below are kept in lock-step with TYPE_SCALE by hand. If
+   silica extends the scale again, extend the `text-{…}` set to match. */
+@source inline(
+  '{,sm:,md:,lg:,xl:,2xl:}text-{xs,sm,md,base,lg,xl,2xl,3xl,4xl,5xl,6xl,7xl,8xl,9xl,10xl}'
+);
+@source inline(
+  '{,@sm:,@md:,@2xl:,@3xl:,@5xl:}text-{xs,sm,md,base,lg,xl,2xl,3xl,4xl,5xl,6xl,7xl,8xl,9xl,10xl}'
+);
+/* silicaui typography display steps (`typography.js`): fluid clamp() hero type,
+   emitted as component classes on-demand — so runtime canvas content needs them
+   safelisted. Not responsive utilities (they scale by container query), so no
+   breakpoint prefixes. */
+@source inline('display display-1 display-2 display-3');
+@source inline(
+  '{,sm:,md:,lg:,xl:,2xl:}font-{thin,extralight,light,normal,medium,semibold,bold,extrabold,black}'
+);
+@source inline(
+  '{,@sm:,@md:,@2xl:,@3xl:,@5xl:}font-{thin,extralight,light,normal,medium,semibold,bold,extrabold,black}'
+);
+@source inline('{,sm:,md:,lg:,xl:,2xl:}leading-{none,tight,snug,normal,relaxed,loose}');
+@source inline('{,@sm:,@md:,@2xl:,@3xl:,@5xl:}leading-{none,tight,snug,normal,relaxed,loose}');
+@source inline('{,sm:,md:,lg:,xl:,2xl:}tracking-{tighter,tight,normal,wide,wider,widest}');
+@source inline('{,@sm:,@md:,@2xl:,@3xl:,@5xl:}tracking-{tighter,tight,normal,wide,wider,widest}');
+@source inline('{,sm:,md:,lg:,xl:,2xl:}text-{left,center,right,justify}');
+@source inline('{,@sm:,@md:,@2xl:,@3xl:,@5xl:}text-{left,center,right,justify}');
+@source inline(
+  '{,sm:,md:,lg:,xl:,2xl:}{block,inline-block,inline,flex,inline-flex,grid,inline-grid,hidden}'
+);
+@source inline(
+  '{,@sm:,@md:,@2xl:,@3xl:,@5xl:}{block,inline-block,inline,flex,inline-flex,grid,inline-grid,hidden}'
+);
+@source inline('{,sm:,md:,lg:,xl:,2xl:}grid-cols-{1,2,3,4,5,6,7,8,9,10,11,12}');
+@source inline('{,@sm:,@md:,@2xl:,@3xl:,@5xl:}grid-cols-{1,2,3,4,5,6,7,8,9,10,11,12}');
+@source inline('{,sm:,md:,lg:,xl:,2xl:}col-span-{1,2,3,4,5,6,7,8,9,10,11,12,full}');
+@source inline('{,@sm:,@md:,@2xl:,@3xl:,@5xl:}col-span-{1,2,3,4,5,6,7,8,9,10,11,12,full}');
+@source inline(
+  '{,sm:,md:,lg:,xl:,2xl:}flex-{row,row-reverse,col,col-reverse,wrap,nowrap,1,auto,initial,none}'
+);
+@source inline(
+  '{,@sm:,@md:,@2xl:,@3xl:,@5xl:}flex-{row,row-reverse,col,col-reverse,wrap,nowrap,1,auto,initial,none}'
+);
+@source inline('{,sm:,md:,lg:,xl:,2xl:}items-{start,end,center,baseline,stretch}');
+@source inline('{,@sm:,@md:,@2xl:,@3xl:,@5xl:}items-{start,end,center,baseline,stretch}');
+@source inline('{,sm:,md:,lg:,xl:,2xl:}justify-{start,end,center,between,around,evenly}');
+@source inline('{,@sm:,@md:,@2xl:,@3xl:,@5xl:}justify-{start,end,center,between,around,evenly}');
+@source inline('{,sm:,md:,lg:,xl:,2xl:}gap-{x-,y-,}{0,1,2,3,4,5,6,7,8,10,12,14,16,20,24,28,32}');
+@source inline(
+  '{,@sm:,@md:,@2xl:,@3xl:,@5xl:}gap-{x-,y-,}{0,1,2,3,4,5,6,7,8,10,12,14,16,20,24,28,32}'
+);
+@source inline(
+  '{,sm:,md:,lg:,xl:,2xl:}{p,px,py,pt,pr,pb,pl}-{0,1,2,3,4,5,6,7,8,10,12,14,16,20,24,28,32,36,40,44,48,56,64,72,80,96}'
+);
+@source inline(
+  '{,@sm:,@md:,@2xl:,@3xl:,@5xl:}{p,px,py,pt,pr,pb,pl}-{0,1,2,3,4,5,6,7,8,10,12,14,16,20,24,28,32,36,40,44,48,56,64,72,80,96}'
+);
+@source inline(
+  '{,sm:,md:,lg:,xl:,2xl:}{m,mx,my,mt,mr,mb,ml}-{0,1,2,3,4,5,6,8,10,12,16,20,24,auto}'
+);
+@source inline(
+  '{,@sm:,@md:,@2xl:,@3xl:,@5xl:}{m,mx,my,mt,mr,mb,ml}-{0,1,2,3,4,5,6,8,10,12,16,20,24,auto}'
+);
+@source inline('{,sm:,md:,lg:,xl:,2xl:}w-{full,auto,fit,min,max,screen,1/2,1/3,2/3,1/4,3/4}');
+@source inline(
+  '{,@sm:,@md:,@2xl:,@3xl:,@5xl:}w-{full,auto,fit,min,max,screen,1/2,1/3,2/3,1/4,3/4}'
+);
+@source inline(
+  '{,sm:,md:,lg:,xl:,2xl:}max-w-{none,xs,sm,md,lg,xl,2xl,3xl,4xl,5xl,6xl,7xl,full,prose}'
+);
+@source inline(
+  '{,@sm:,@md:,@2xl:,@3xl:,@5xl:}max-w-{none,xs,sm,md,lg,xl,2xl,3xl,4xl,5xl,6xl,7xl,full,prose}'
+);
+@source inline('{,sm:,md:,lg:,xl:,2xl:}h-{full,auto,screen,fit}');
+@source inline('{,@sm:,@md:,@2xl:,@3xl:,@5xl:}h-{full,auto,screen,fit}');
+@source inline('{,sm:,md:,lg:,xl:,2xl:}min-h-{0,full,screen}');
+@source inline('{,@sm:,@md:,@2xl:,@3xl:,@5xl:}min-h-{0,full,screen}');
+@source inline('rounded-{none,sm,md,lg,xl,2xl,3xl,full,box,field,selector}');
+@source inline('border-{0,2,4,8}');
+@source inline(
+  '{uppercase,lowercase,capitalize,normal-case,italic,not-italic,underline,line-through,no-underline,truncate}'
+);
+@source inline('object-{contain,cover,fill,none,scale-down}');
+@source inline('{,sm:,md:,lg:,xl:,2xl:}overflow-{auto,hidden,visible,scroll}');
+@source inline('{,@sm:,@md:,@2xl:,@3xl:,@5xl:}overflow-{auto,hidden,visible,scroll}');
+/* silicaui COMPONENT classes the canvas composes with (emitted on-demand by the
+   plugin, so runtime DB content needs them safelisted). navbar is a real silicaui
+   component (silicaui/src/components/navbar.js); btn/card/badge are used by the
+   chrome too but listed here so a canvas that uses them stands alone. */
+@source inline('navbar navbar-start navbar-center navbar-end');
+@source inline('btn btn-{primary,secondary,accent,neutral,ghost,link,outline,soft,sm,md,lg,xl}');
+@source inline(
+  'card card-body card-title card-actions badge badge-{primary,secondary,accent,neutral,soft,outline}'
+);
+
+/* ── The application shell is not a scrolling document ───────────────────────
+   Panes own their own scrolling; the page itself never scrolls. Both shells are
+   fixed-viewport applications, so this is a property of the workbench rather
+   than of either brand. Colour comes from tokens, so each brand paints its own
+   canvas without this file naming one. */
+html,
+body {
+  height: 100%;
+  background-color: var(--color-base-200);
+  color: var(--color-base-content);
+}
+
+body {
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+
+/* ── Field help text, corrected app-wide ─────────────────────────────────────
+ *
+ * silicaui ships .field-description at 12px / 65% opacity. That is a reasonable
+ * library default for a dense developer tool and the wrong one here: the users
+ * are non-technical business owners, and these lines are exactly the jargon-free
+ * guidance they most need to READ — what a tax rate decimal means, where the
+ * invoice gets sent. Two house rules apply and both were being broken: body text
+ * has a floor (12px is caption territory, not explanation), and hierarchy is
+ * never carried by fading readable text.
+ *
+ * So it moves to the caption step of the type scale at full ink strength.
+ * Corrected here rather than with a utility on every FieldDescription, because
+ * the fix belongs to the app's type scale, not to individual fields. */
+.field-description {
+  font-size: 0.875rem; /* 14px — the caption step, not the 12px sub-floor. */
+  line-height: 1.4;
+  opacity: 1;
+  color: var(--color-base-content);
+}
+
+/* ── An uncoloured form control follows the MODULE, not the brand ────────────
+ *
+ * Every silica field resolves its focus ring as
+ * `var(--<family>-accent, var(--color-primary))`. In sparx `--color-primary` is
+ * Ember #e04631 — the wordmark's red-orange — so a control with no `color` prop
+ * focused in what reads, at a glance, as the danger colour: the field says "you
+ * got that wrong" about content that is perfectly fine. A scan of the CRM
+ * surfaces alone found 52 of 207 controls in that state across 15 files, and the
+ * per-field fix is a prop nobody can be relied on to remember on the 53rd.
+ *
+ * So the DEFAULT is repointed once, here, for every data-entry family inside a
+ * module pane. An explicit `color=` still wins and nothing at a call site
+ * changes meaning: `.input-error` writes the same variable ON the element, and
+ * an element declaration beats an inherited one.
+ *
+ * THE `-border` COMPANIONS ARE LOAD-BEARING, not noise. A resting border reads
+ * `var(--X-border, var(--X-accent, var(--color-base-300)))` — it falls THROUGH
+ * to the accent — so repointing the accent alone would outline every text box in
+ * the app in the module hue at rest. Pinning the border back to base-300
+ * reproduces the resting appearance exactly, keeps the chassis neutral, and
+ * confines the module hue to focus, which is the one moment it carries
+ * information. Families with no border chain need only the accent.
+ *
+ * Scoped to `[data-module]` — the attribute <ModuleScope> renders, mapped to a
+ * hue in each brand's theme.css — so it reaches every pane and nothing outside
+ * one. Deliberately NOT applied to chrome: `--btn-accent`, `--tabs-accent`,
+ * `--sidebar-accent`, `--dock-accent`, `--pagination-accent`, `--avatar-accent`,
+ * `--dt-accent` and `--wordmark-accent` keep the brand primary. */
+[data-module] {
+  --input-accent: var(--color-module);
+  --input-border: var(--color-base-300);
+  --textarea-accent: var(--color-module);
+  --textarea-border: var(--color-base-300);
+  --select-accent: var(--color-module);
+  --select-border: var(--color-base-300);
+  --multi-select-accent: var(--color-module);
+  --multi-select-border: var(--color-base-300);
+  --checkbox-accent: var(--color-module);
+  --checkbox-border: var(--color-base-300);
+  --radio-accent: var(--color-module);
+  --radio-border: var(--color-base-300);
+  --pin-input-accent: var(--color-module);
+  --pin-input-border: var(--color-base-300);
+  --segment-field-accent: var(--color-module);
+  --segment-field-border: var(--color-base-300);
+  --tag-accent: var(--color-module);
+  --tag-border: var(--color-base-300);
+
+  /* No border chain — the accent is the checked fill or the track, and its
+     resting state has its own token. */
+  --switch-accent: var(--color-module);
+  --toggle-accent: var(--color-module);
+  --range-accent: var(--color-module);
+  --slider-accent: var(--color-module);
+  --calendar-accent: var(--color-module);
+  --filter-accent: var(--color-module);
+}
+
+/* ── A dropdown opened INSIDE a dialog has to render above it ────────────────
+ *
+ * silicaui 0.28 added a layering scale (--z-drawer 40 / --z-dialog 50 /
+ * --z-lightbox 60 / --z-popover 70 / --z-tooltip 80 / --z-toast 90) that puts
+ * popovers above dialogs. The VALUES are right; the mechanism still isn't.
+ * Measured on 0.28: `.select-popup` computes `z-index: 70` — on an element
+ * whose `position` is `static`, and **z-index has no effect on a static
+ * element**. Its real stacking level comes from the Base UI positioner that
+ * wraps it, which is still `z-index: auto`. So the dropdown competes at `auto`
+ * against the dialog popup's 51 and loses, exactly as it did on 0.27 at 50.
+ *
+ * Nothing at the call site can reach it: the popup portals as a SIBLING of the
+ * dialog (both into the pane — see lib/dock/window-boundary.tsx), so no
+ * descendant selector matches, no prop exposes the positioner, and styling the
+ * surface via `popupClassName` cannot work because a child can't out-stack its
+ * own parent's level.
+ *
+ * So the POSITIONER is raised here, matched by the popup it hosts, and set from
+ * silica's own token so this tracks the library's intent instead of inventing a
+ * competing number. Delete this block once a silicaui release either positions
+ * the popup surface or applies the z-index to the positioner — verify by
+ * measuring, not by reading the changelog: 0.28 documented the fix without it
+ * taking effect. */
+[role='presentation']:has(> .select-popup),
+[role='presentation']:has(> .calendar-popup),
+[role='presentation']:has(> .popover),
+[role='presentation']:has(> .menu) {
+  z-index: var(--z-popover, 70);
+}
+[role='presentation']:has(> .tooltip) {
+  z-index: var(--z-tooltip, 80);
+}
+
+/* ── Printing a sheet ────────────────────────────────────────────────────────
+
+   Paper is the one place the application shell must not go. `window.print()`
+   prints the whole document, so without these rules a sheet of shelf labels
+   comes out as a picture of the workbench — rail, tabs, status bar and all —
+   with the labels squeezed into a corner.
+
+   The counterpart is components/print-sheet.tsx, which portals a copy of the
+   sheet to <body> and stamps `data-print-sheet` on it at `beforeprint`. Read
+   that file's header for why the sheet is duplicated rather than lifted out of
+   the dock by CSS. What matters here: the printable copy is always a DIRECT
+   CHILD of <body>, which is what lets these rules stay so blunt. They touch
+   body's own children and nothing deeper, so they can never reach inside a
+   dockview group and drag a hidden pane onto the page.
+
+   Everything is guarded on `body:has([data-print-sheet])` so that printing from
+   a surface with no sheet — a list, a report — behaves exactly as it did. */
+@media print {
+  /* The shell is `h-dvh` over a body that never scrolls. Left alone that clips
+     the sheet to one screenful and the rest of the labels never reach paper. */
+  html:has([data-print-sheet]),
+  body:has([data-print-sheet]) {
+    height: auto !important;
+    overflow: visible !important;
+    background: #fff !important;
+  }
+
+  body:has([data-print-sheet]) > *:not([data-print-sheet]) {
+    display: none !important;
+  }
+
+  /* Beats the `hidden` the portal wears on screen. */
+  [data-print-sheet] {
+    display: flex !important;
+  }
+}
+
+/* Printer margins for every sheet the app produces. Labels carry their own
+   padding, so this is only keeping the cells off the unprintable edge. */
+@page {
+  margin: 8mm;
+}
+
+/* ── Feedback pulse chip ─────────────────────────────────────────────────────
+   A gentle attention "breath" so the once-a-quarter sentiment ask actually gets
+   noticed on the quiet status shelf. Motion only: a scale and a brightness
+   glint, never a shadow or a text opacity-fade. Stops on its own once the
+   popover opens (the class is dropped in React).
+
+   Here rather than in either app's globals because the chip is shared chrome:
+   defined in one shell only, the other renders a control that silently does not
+   move — which looks like a decision and is actually an omission. */
+@media (prefers-reduced-motion: no-preference) {
+  .pulse-nudge {
+    animation: pulse-nudge 2.4s ease-in-out infinite;
+  }
+}
+@keyframes pulse-nudge {
+  0%,
+  100% {
+    transform: scale(1);
+    filter: brightness(1);
+  }
+  50% {
+    transform: scale(1.05);
+    filter: brightness(1.12);
+  }
+}

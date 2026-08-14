@@ -11,7 +11,7 @@ import assets from './assets.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-therapy-modern',
-  version: '1.2.0',
+  version: '1.3.0',
   name: 'sparx — Therapy (Modern)',
   summary:
     'A clean, modern teletherapy site — a soft-indigo palette, a warm accent and a modern sans, built for accessible online mental-wellness care. Installs a working booking flow: a free matching call plus individual, stress & burnout, and professional-wellness sessions, three therapists you book by name with evening and weekend hours, and a no-show hold policy. Ships as "Clearmind Therapy", an online-first practice you can book in about a minute.',

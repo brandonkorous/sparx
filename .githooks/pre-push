@@ -88,6 +88,8 @@ step "structural checks (events, routes, dockerfiles)"
 node scripts/check-event-topics.mjs >/dev/null || fail "event/topic parity failed — run \`pnpm check:events\` to see it"
 node scripts/check-surface-routes.mjs >/dev/null || fail "surface/address parity failed — run \`pnpm check:routes\` to see it"
 node scripts/check-dockerfile-deps.mjs >/dev/null || fail "a Dockerfile is missing a workspace package it imports — run \`pnpm check:docker\` to see it"
+node scripts/check-webhook-events.mjs >/dev/null || fail "webhook event lists have drifted — run \`pnpm check:webhooks\` to see it"
+node scripts/check-inventory-api-docs.mjs >/dev/null || fail "the inventory API reference is stale — run \`pnpm gen:inventory-api\` to rebuild it"
 ok "structure clean"
 
 step "pnpm format:check"

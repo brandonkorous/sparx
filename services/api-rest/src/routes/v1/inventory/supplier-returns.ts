@@ -16,6 +16,7 @@
 
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
+import { queryBool } from '@sparx/api-core/query';
 import { inventoryService } from '@sparx/inventory';
 import { ok } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
@@ -27,7 +28,7 @@ const ListQuery = z.object({
   supplier_id: z.string().uuid().optional(),
   warehouse_id: z.string().uuid().optional(),
   status: z.enum(['draft', 'sent', 'credited', 'closed', 'cancelled']).optional(),
-  awaiting_credit_only: z.coerce.boolean().optional(),
+  awaiting_credit_only: queryBool.optional(),
   take: z.coerce.number().int().min(1).max(250).optional(),
   skip: z.coerce.number().int().min(0).optional(),
 });

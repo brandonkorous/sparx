@@ -17,6 +17,7 @@ The binding cross-cutting commitments — each **verified against code**, not ta
 - [[one-service-many-transports]] — API-first + MCP-first; REST / MCP / GraphQL are separate services over one service layer.
 - [[marketplace-self-registration]] — one shelf, many publishers; sparx self-publishes at boot and retracts by absence. Never a deploy stage.
 - [[workbench-addresses]] — a URL names a PANE, not a page; one shared address table (`@sparx/links`) for search, notifications, email and the bar.
+- [[failure-is-never-silent]] — five boundary layers + the two classes React can't catch (failed writes, `window` errors); every boundary reports; failure copy names the consequence, never the component.
 
 ## Sources of truth
 

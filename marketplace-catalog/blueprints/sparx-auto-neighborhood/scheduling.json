@@ -356,5 +356,12 @@
       ],
       "policyHandle": "drop-off"
     }
+  ],
+  "locations": [
+    {
+      "handle": "premises",
+      "name": "Sparrow & Sons Auto",
+      "timezone": "UTC"
+    }
   ]
 }

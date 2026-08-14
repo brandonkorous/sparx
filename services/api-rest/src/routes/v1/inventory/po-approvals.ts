@@ -24,6 +24,7 @@
 
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
+import { queryBool } from '@sparx/api-core/query';
 import { inventoryService } from '@sparx/inventory';
 import { ok, paged } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
@@ -32,7 +33,7 @@ import { requireInventoryModule, toInventoryContext } from '../../../lib/invento
 const IdPath = z.object({ id: z.string().uuid() });
 
 const RulesQuery = z.object({
-  include_inactive: z.coerce.boolean().optional(),
+  include_inactive: queryBool.optional(),
 });
 
 const QueueQuery = z.object({

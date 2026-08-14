@@ -321,20 +321,56 @@ export const CAPABILITY_AREAS: CapabilityArea[] = [
   {
     id: 'inventory',
     name: 'Inventory',
-    summary: 'Multi-warehouse stock, reservations, and a full audit trail.',
+    summary: 'Stock you can actually trust — counted, costed, and checked against itself.',
     color: 'module-inventory',
     fill: 'bg-module-inventory',
     content: 'text-module-inventory-content',
     module: true,
+    // Rewritten 2026-08-13 against docs/89 §9 and docs/146. The old list was
+    // eight Phase-0 bullets and carried `planned('Sync with your warehouse
+    // system')` — a capability that has been LIVE since the first build, told to
+    // every prospect as unbuilt. Status here is customer-facing: a wrong "live"
+    // is a broken promise and a wrong "planned" is a lost sale.
     capabilities: [
-      live('Many warehouses — yours or a partner’s'),
+      live('Many warehouses — yours, a partner’s, or a van'),
       live('Per-location stock levels'),
-      live('Reorder points & lead time'),
       live('Soft & hard reservations'),
-      live('Adjustments audit log'),
-      live('Low-stock alerts'),
-      live('Inventory CSV import'),
-      planned('Sync with your warehouse system'),
+      live('Every change recorded, with who and why'),
+      live('The numbers check themselves overnight'),
+      live('Explain any number — where it came from'),
+      live('Shelves & put-away suggestions'),
+      live('Barcode scanning on a phone'),
+      live('Pick lists, packing & verification'),
+      live('Counts — cycle, full, and opening'),
+      live('Transfers between your locations'),
+      live('Lots, serial numbers & recalls'),
+      live('Expiry dates & what to shift first'),
+      live('Buy in cases, sell in singles'),
+      live('Recipes & builds from components'),
+      live('True cost, freight and duty included'),
+      live('Suppliers, purchase orders & receiving'),
+      live('Supplier scorecards — who is actually late'),
+      live('Purchase-order approvals'),
+      live('What to reorder, and why'),
+      live('Forecasts & stockout risk'),
+      live('Backorders — what you have promised'),
+      live('Consignment & stock you don’t own'),
+      live('Reports, exports & scheduled sends'),
+      live('Journals & a reconciliation that explains itself'),
+      // Corrected 2026-08-13, a day after the rest of this list was rewritten:
+      // the QuickBooks Online and Xero connectors are complete, but a direct
+      // connection needs an OAuth app registered with each vendor and this
+      // installation has neither (`SPARX_QBO_CLIENT_ID` / `SPARX_XERO_CLIENT_ID`
+      // are unset in every deploy target). `accountingProviderAvailability()`
+      // reports that as `coming_soon` inside the product, so a `live` chip here
+      // was the marketing site promising a button the app deliberately does not
+      // offer — the same wrong-"live" failure this whole block was rewritten to
+      // fix, one line further down the list.
+      building('Direct sync — QuickBooks & Xero'),
+      live('Sync with your warehouse system'),
+      live('Set up in half an hour from a spreadsheet'),
+      live('Your own columns on any record'),
+      live('Ask your own AI about your stock'),
     ],
   },
   {

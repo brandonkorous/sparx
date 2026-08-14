@@ -819,5 +819,12 @@
       ],
       "policyHandle": "table-standard"
     }
+  ],
+  "locations": [
+    {
+      "handle": "premises",
+      "name": "Nori",
+      "timezone": "UTC"
+    }
   ]
 }

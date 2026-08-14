@@ -382,5 +382,12 @@
       ],
       "policyHandle": "wellness-plan"
     }
+  ],
+  "locations": [
+    {
+      "handle": "premises",
+      "name": "Fauna Veterinary",
+      "timezone": "UTC"
+    }
   ]
 }

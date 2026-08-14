@@ -18,6 +18,7 @@
 
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
+import { queryBool } from '@sparx/api-core/query';
 import { inventoryService, isLowStock } from '@sparx/inventory';
 import { withRequestTenant } from '@sparx/api-core/db';
 import { ok, paged } from '@sparx/api-core/envelope';
@@ -34,12 +35,12 @@ const WarehouseParam = z.object({ warehouseId: z.string().uuid() });
 const LevelsQuery = z.object({
   take: z.coerce.number().int().min(1).max(500).optional(),
   skip: z.coerce.number().int().min(0).optional(),
-  low_stock_only: z.coerce.boolean().optional(),
+  low_stock_only: queryBool.optional(),
 });
 
 const EnrichedLevelsQuery = z.object({
   q: z.string().trim().min(1).max(200).optional(),
-  low_stock_only: z.coerce.boolean().optional(),
+  low_stock_only: queryBool.optional(),
   take: z.coerce.number().int().min(1).max(1000).optional(),
   skip: z.coerce.number().int().min(0).optional(),
 });

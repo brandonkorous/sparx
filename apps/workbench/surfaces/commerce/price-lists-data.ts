@@ -50,6 +50,8 @@ export interface PriceListRow {
   status: PriceListStatus;
   /** How many per-version prices are on it. */
   entryCount: number;
+  /** The sites this list prices on. EMPTY = all of them. */
+  propertyIds: string[];
   updatedAt: string;
 }
 
@@ -205,6 +207,8 @@ export interface PriceListWriteInput {
   validFrom?: string | null;
   validTo?: string | null;
   status: PriceListStatus;
+  /** Full replacement set. Empty = every site; omitted on an update = untouched. */
+  propertyIds?: string[];
 }
 
 export function useCreatePriceList() {

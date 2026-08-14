@@ -22,7 +22,7 @@
                   "props": {
                     "show": "both"
                   },
-                  "id": "f40281c8-e5db-4983-939c-83341fd8068c",
+                  "id": "51ca8129-ee6b-4098-951d-85ffa64b7cee",
                   "ord": "a0"
                 },
                 {
@@ -37,13 +37,15 @@
                       "attrs": {
                         "href": "/book"
                       },
-                      "children": ["Book"],
+                      "children": [
+                        "Book"
+                      ],
                       "slot": {
                         "name": "link1",
                         "type": "link",
                         "label": "Product"
                       },
-                      "id": "2dc6352e-f360-468f-90d8-64b859654a9f",
+                      "id": "10869a7a-e186-434c-80a8-006670d089eb",
                       "ord": "a0"
                     },
                     {
@@ -53,13 +55,15 @@
                       "attrs": {
                         "href": "/about"
                       },
-                      "children": ["About"],
+                      "children": [
+                        "About"
+                      ],
                       "slot": {
                         "name": "link2",
                         "type": "link",
                         "label": "Pricing"
                       },
-                      "id": "2d711a5f-40a4-4676-a6ae-26c3a2663e09",
+                      "id": "6dabd316-e70d-468f-96c1-5c27a85e7a35",
                       "ord": "a1"
                     },
                     {
@@ -69,17 +73,19 @@
                       "attrs": {
                         "href": "/contact"
                       },
-                      "children": ["Contact"],
+                      "children": [
+                        "Contact"
+                      ],
                       "slot": {
                         "name": "link3",
                         "type": "link",
                         "label": "Docs"
                       },
-                      "id": "6b8a6b13-9e91-41b8-ae14-b7d997076d90",
+                      "id": "1cdc1482-37b6-4b8c-ad35-7a0049002d7d",
                       "ord": "a2"
                     }
                   ],
-                  "id": "d8558ada-9a84-4892-97e1-939938b1783f",
+                  "id": "95193fb9-1661-4aec-8787-cbb6d2962c5d",
                   "ord": "a1"
                 },
                 {
@@ -94,20 +100,22 @@
                       "attrs": {
                         "href": "/account/login"
                       },
-                      "children": ["Sign in"],
+                      "children": [
+                        "Sign in"
+                      ],
                       "slot": {
                         "name": "secondary",
                         "type": "link",
                         "label": "Secondary link"
                       },
-                      "id": "4b0c11dd-7836-4069-9bc6-1eb04ac07e7b",
+                      "id": "044b311e-574a-49a3-9fe6-66025df255dd",
                       "ord": "a0"
                     },
                     {
                       "kind": "host",
                       "component": "site.theme-toggle",
                       "class": "inline-flex items-center",
-                      "id": "1e841c90-f03d-435f-a9d3-594f4d703e37",
+                      "id": "d8585ce0-c30f-4770-8a5b-a24d50d3853b",
                       "ord": "a1"
                     },
                     {
@@ -123,7 +131,7 @@
                         "type": "link",
                         "label": "Primary action"
                       },
-                      "id": "ccca2a79-4cc4-4801-868f-d409142baa89",
+                      "id": "c14a14c1-05fb-4f17-bda8-04b59f092928",
                       "ord": "a2"
                     },
                     {
@@ -141,20 +149,20 @@
                           "props": {
                             "name": "menu"
                           },
-                          "id": "cb5a349c-2a3a-4b75-b4c5-8ff6fe444e11",
+                          "id": "6cb1eef4-ec0d-41c3-9f27-b1a42cb10be7",
                           "ord": "a0"
                         }
                       ],
                       "part": "trigger",
-                      "id": "e5889ba0-1921-441e-b101-a8af84cc6a15",
+                      "id": "2eb78ae5-3415-4640-8b6d-d46b25cc95c6",
                       "ord": "a3"
                     }
                   ],
-                  "id": "fff92b3d-bc9d-418a-a0a9-707a1c91e448",
+                  "id": "f11bcbb2-1226-4262-a33e-706389ee8aec",
                   "ord": "a2"
                 }
               ],
-              "id": "800d795d-17da-4cc6-92e6-b7edb3e7731b",
+              "id": "b778ef6f-6d69-4f48-99bb-7b173a176b53",
               "ord": "a0"
             },
             {
@@ -172,13 +180,15 @@
                   "attrs": {
                     "href": "/book"
                   },
-                  "children": ["Book"],
+                  "children": [
+                    "Book"
+                  ],
                   "slot": {
                     "name": "link1",
                     "type": "link",
                     "label": "Product"
                   },
-                  "id": "6b758e23-3497-45ea-9cad-b5ab09ff27cf",
+                  "id": "cbdb30fa-2579-45c7-975c-13ca3b793636",
                   "ord": "a0"
                 },
                 {
@@ -188,13 +198,15 @@
                   "attrs": {
                     "href": "/about"
                   },
-                  "children": ["About"],
+                  "children": [
+                    "About"
+                  ],
                   "slot": {
                     "name": "link2",
                     "type": "link",
                     "label": "Pricing"
                   },
-                  "id": "1f1ea1b8-6f9f-4346-8b75-e5198b317188",
+                  "id": "3f34b91a-fcb0-4c47-adf0-7f6a801a4626",
                   "ord": "a1"
                 },
                 {
@@ -204,13 +216,15 @@
                   "attrs": {
                     "href": "/contact"
                   },
-                  "children": ["Contact"],
+                  "children": [
+                    "Contact"
+                  ],
                   "slot": {
                     "name": "link3",
                     "type": "link",
                     "label": "Docs"
                   },
-                  "id": "c74e3b59-0ee7-4182-b977-e728e717679f",
+                  "id": "bd191f6d-5291-4cc8-b841-ff884262cc39",
                   "ord": "a2"
                 },
                 {
@@ -226,7 +240,7 @@
                     "type": "link",
                     "label": "Secondary link"
                   },
-                  "id": "a81feb5e-06a3-4bbe-bcab-1f953ae6edcc",
+                  "id": "87be5ef1-8385-4222-a695-329f3ca86d40",
                   "ord": "a3"
                 },
                 {
@@ -242,19 +256,19 @@
                     "type": "link",
                     "label": "Primary action"
                   },
-                  "id": "ab6bea2a-b884-40c9-ba01-ac01a025af6a",
+                  "id": "ef3f3f63-bdea-4263-bb9e-f79002dd08e7",
                   "ord": "a4"
                 }
               ],
               "part": "panel",
-              "id": "e7017f97-454d-4d94-9e66-46733d4a5008",
+              "id": "069fb3f6-e5e0-45cb-83ea-faa7e7427891",
               "ord": "a1"
             }
           ],
           "behavior": {
             "type": "disclosure"
           },
-          "id": "2d802dfd-eae7-4469-a662-c3411debfbc5",
+          "id": "a6208c0e-95e0-43cb-87c2-f237ee83094c",
           "ord": "a0"
         },
         {
@@ -270,7 +284,7 @@
               "kind": "outlet"
             }
           ],
-          "id": "5a447b75-9843-4a82-a681-6cfc1b25e7eb",
+          "id": "655d9013-5bf8-4691-bf18-82976ad152c7",
           "ord": "a1"
         },
         {
@@ -300,14 +314,16 @@
                           "props": {
                             "show": "both"
                           },
-                          "id": "65851416-fb93-4ad4-90be-0bdbe07f48f6",
+                          "id": "ae290570-66e4-4853-90c0-b8caaca1ba18",
                           "ord": "a0"
                         },
                         {
                           "kind": "element",
                           "tag": "p",
                           "class": "max-w-xs text-sm text-base-content",
-                          "children": ["Everything you publish, in one place."],
+                          "children": [
+                            "Everything you publish, in one place."
+                          ],
                           "slot": {
                             "name": "blurb",
                             "type": "text",
@@ -316,7 +332,7 @@
                           "attrs": {
                             "href": "/"
                           },
-                          "id": "a1d5cd2a-7c7c-455b-b99e-a1130715e1e8",
+                          "id": "1aa6d4c0-0f0b-455e-97d1-6daac7ef5334",
                           "ord": "a1"
                         },
                         {
@@ -324,11 +340,11 @@
                           "tag": "ul",
                           "class": "mt-2 flex items-center gap-5",
                           "children": [],
-                          "id": "13ea5c63-f670-41d6-9621-1b3201ed885a",
+                          "id": "da5e3c30-dd4d-4cbf-871f-5487fba9b6c1",
                           "ord": "a2"
                         }
                       ],
-                      "id": "3450c779-178a-4524-abc4-10bbfe986047",
+                      "id": "c32ed895-7312-4afc-89bf-de1c5ff68554",
                       "ord": "a0"
                     },
                     {
@@ -340,7 +356,9 @@
                           "kind": "element",
                           "tag": "p",
                           "class": "text-sm font-semibold text-base-content",
-                          "children": ["Explore"],
+                          "children": [
+                            "Explore"
+                          ],
                           "slot": {
                             "name": "col1",
                             "type": "text",
@@ -349,7 +367,7 @@
                           "attrs": {
                             "href": "/"
                           },
-                          "id": "09b75cd9-190e-42cc-b3a6-d7d0947a682f",
+                          "id": "22de1ca6-e00d-4900-819d-d81a5c29c013",
                           "ord": "a0"
                         },
                         {
@@ -368,17 +386,19 @@
                                   "attrs": {
                                     "href": "/book"
                                   },
-                                  "children": ["Book"],
+                                  "children": [
+                                    "Book"
+                                  ],
                                   "slot": {
                                     "name": "link1",
                                     "type": "link",
                                     "label": "Features"
                                   },
-                                  "id": "02ab6f44-7690-47a8-8792-470493c5907a",
+                                  "id": "165a44ac-a829-4323-b068-c99c403a8c70",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "e849b35c-7a5d-46c0-806a-42c07964ee3f",
+                              "id": "32c60b08-295c-4716-8684-a34ddc73e29a",
                               "ord": "a0"
                             },
                             {
@@ -392,17 +412,19 @@
                                   "attrs": {
                                     "href": "/about"
                                   },
-                                  "children": ["About"],
+                                  "children": [
+                                    "About"
+                                  ],
                                   "slot": {
                                     "name": "link2",
                                     "type": "link",
                                     "label": "Pricing"
                                   },
-                                  "id": "25dae585-5b2f-44e9-9e6f-69d07814dd7a",
+                                  "id": "b077cf07-3264-4b01-823f-2920ab9dc421",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "b7cc789a-223e-4886-a781-6a433ad6ccd0",
+                              "id": "db15b1fe-dc71-4b43-a4e4-5658ca8cf2f6",
                               "ord": "a1"
                             },
                             {
@@ -416,17 +438,19 @@
                                   "attrs": {
                                     "href": "/contact"
                                   },
-                                  "children": ["Contact"],
+                                  "children": [
+                                    "Contact"
+                                  ],
                                   "slot": {
                                     "name": "link3",
                                     "type": "link",
                                     "label": "Integrations"
                                   },
-                                  "id": "95a45542-f199-48f1-bdc7-049eeb647b6f",
+                                  "id": "fa4a583d-92be-46ce-8165-a9ea3c6b8333",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "ed119987-30d7-4b8f-a104-0d5032c98ea4",
+                              "id": "d10f922e-11ec-45f6-96c3-576bab845c39",
                               "ord": "a2"
                             },
                             {
@@ -440,25 +464,27 @@
                                   "attrs": {
                                     "href": "/search"
                                   },
-                                  "children": ["Search"],
+                                  "children": [
+                                    "Search"
+                                  ],
                                   "slot": {
                                     "name": "link4",
                                     "type": "link",
                                     "label": "Changelog"
                                   },
-                                  "id": "ddef6f9c-8181-4327-ad17-a083b6f19091",
+                                  "id": "9fdb59da-c718-4f74-b4f2-c1a0225f99a8",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "a5d421fd-3467-48d9-9fe9-12c4bcbcec18",
+                              "id": "b0d323b3-aeeb-46dc-8414-f00e1dbd782f",
                               "ord": "a3"
                             }
                           ],
-                          "id": "41c372e7-acd4-486d-aef2-c6af8d8192cd",
+                          "id": "5397a961-2e65-4b4d-8ff7-d13284f4ddea",
                           "ord": "a1"
                         }
                       ],
-                      "id": "1b61fa96-1e9d-4961-81ba-c86f47607e93",
+                      "id": "f942c990-739c-413c-8118-293559b832db",
                       "ord": "a1"
                     },
                     {
@@ -471,11 +497,11 @@
                           "tag": "ul",
                           "class": "flex flex-col gap-2",
                           "children": [],
-                          "id": "067584dc-0b33-466d-bbd0-007f5fd481ea",
+                          "id": "a5cf97e7-e7e9-41a4-b2d1-f4791d954fed",
                           "ord": "a0"
                         }
                       ],
-                      "id": "5ff5dffe-47cf-4d42-8813-8c81ec247313",
+                      "id": "b68c3af0-4c6a-4176-b859-b578482234a3",
                       "ord": "a2"
                     },
                     {
@@ -499,23 +525,23 @@
                                   "props": {
                                     "heading": "Legal"
                                   },
-                                  "id": "059ecd07-7d11-4c2e-b166-c37484e4ced7",
+                                  "id": "327a0d32-ffcc-4197-92b0-72ae7b8c8866",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "0f329514-7c3f-4e9d-8482-3b73a4a25263",
+                              "id": "bd0dddf6-0659-499f-af65-c924f13465a1",
                               "ord": "a0"
                             }
                           ],
-                          "id": "6ddc2a49-2b30-45e2-85d4-de6b8a5219e0",
+                          "id": "69d30500-1b02-4064-a4d8-806954db49ea",
                           "ord": "a0"
                         }
                       ],
-                      "id": "95883ae9-4543-4539-962a-beaac93ecc75",
+                      "id": "791681f8-9d06-4b12-95cd-538112a9f679",
                       "ord": "a3"
                     }
                   ],
-                  "id": "cf183c15-70cf-4253-9294-4f49602e87e7",
+                  "id": "06ae3c2c-2742-4022-9374-fe955410b807",
                   "ord": "a0"
                 },
                 {
@@ -533,16 +559,18 @@
                           "kind": "element",
                           "tag": "span",
                           "class": "font-medium",
-                          "children": ["Your site"],
+                          "children": [
+                            "Your site"
+                          ],
                           "data": {
                             "kind": "value",
                             "ref": "site.identity.name"
                           },
-                          "id": "8d5f7766-1d47-454b-8af6-2c8270312d41",
+                          "id": "950267e4-1a57-4dd7-a3ed-cd7aeea5fe14",
                           "ord": "a0"
                         }
                       ],
-                      "id": "e4d24967-1064-4d2c-9c4f-309c2f36b3cf",
+                      "id": "178daf1f-91ac-4891-8243-eb5286477800",
                       "ord": "a0"
                     },
                     {
@@ -550,23 +578,23 @@
                       "tag": "ul",
                       "class": "flex flex-wrap items-center gap-x-6 gap-y-2",
                       "children": [],
-                      "id": "d58e82b0-5b5a-41d2-b465-0c3ac54d5133",
+                      "id": "e38242f6-71cd-49a4-9be0-eacd0f735b62",
                       "ord": "a1"
                     }
                   ],
-                  "id": "07641c20-b6ae-4cd9-bac6-c8c04bfaf22e",
+                  "id": "20def759-22e9-4ae5-8c74-7409a18eec26",
                   "ord": "a1"
                 }
               ],
-              "id": "09e53b74-5292-4016-a687-35d6e88fbb84",
+              "id": "4a2302a8-dda8-4305-a0ec-c381ba9d48dd",
               "ord": "a0"
             }
           ],
-          "id": "a37e181c-6622-4aac-8bc3-3cc197c72a4a",
+          "id": "218263ec-7e1f-41e8-9d79-05c70e5dac22",
           "ord": "a2"
         }
       ],
-      "id": "c8bc888b-698c-4986-8893-9c547778cf54"
+      "id": "01f29b45-07a4-4004-96f2-0c6018fd9ccf"
     }
   },
   "pages": [
@@ -580,7 +608,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "97870089-be76-4c76-ba90-f87d677745d3",
+        "id": "fae01622-a316-4ce2-9d18-6dd94663cfba",
         "children": [
           {
             "kind": "element",
@@ -596,8 +624,10 @@
                     "kind": "element",
                     "tag": "h1",
                     "class": "text-5xl font-bold leading-none tracking-tight @2xl:text-6xl @3xl:text-7xl",
-                    "children": ["Turn the score you have into the one you need."],
-                    "id": "ab41ec55-7a65-49b4-8506-02eaa8e07a3d",
+                    "children": [
+                      "Turn the score you have into the one you need."
+                    ],
+                    "id": "ddff14dd-db3b-48d6-bdaf-d32674fca6c8",
                     "ord": "a0"
                   },
                   {
@@ -607,7 +637,7 @@
                     "children": [
                       "One-on-one SAT, ACT, AP and admissions coaching built around your target — a clear plan, real practice tests, and coaches who’ve moved thousands of points. Start with a free diagnostic."
                     ],
-                    "id": "a0370963-06ac-4f14-a91f-3cb942073da2",
+                    "id": "fac7da76-7057-46b8-9f6b-4b4d02429aa3",
                     "ord": "a1"
                   },
                   {
@@ -622,8 +652,10 @@
                         "attrs": {
                           "href": "/book"
                         },
-                        "children": ["Book a diagnostic"],
-                        "id": "403f9e63-14b0-4e19-a686-c44b22b2a683",
+                        "children": [
+                          "Book a diagnostic"
+                        ],
+                        "id": "8b935f61-a2ab-40ab-86cd-edebc9c762e8",
                         "ord": "a0"
                       },
                       {
@@ -633,20 +665,22 @@
                         "attrs": {
                           "href": "/book"
                         },
-                        "children": ["See prep options"],
-                        "id": "9f3b1f45-d917-444d-88fe-a56a9b4c1b8f",
+                        "children": [
+                          "See prep options"
+                        ],
+                        "id": "5f66aeba-58e8-4e49-a653-a8d7f883f858",
                         "ord": "a1"
                       }
                     ],
-                    "id": "a717f979-091e-401a-b1ba-2d37ed0d3d0b",
+                    "id": "1630d3bf-fb38-4bc7-be12-2dfbf3c8763c",
                     "ord": "a2"
                   }
                 ],
-                "id": "452aa543-239c-459c-b4f1-dc8d1587b8ef",
+                "id": "cdba5384-1702-49d3-9610-7a1c58dd51a9",
                 "ord": "a0"
               }
             ],
-            "id": "40766896-33ce-4d93-a297-939bdcdf3d74",
+            "id": "4abfca40-35fe-49b4-a4eb-b692021c200a",
             "ord": "a0"
           },
           {
@@ -673,8 +707,10 @@
                             "kind": "element",
                             "tag": "h2",
                             "class": "text-xl font-semibold text-base-content",
-                            "children": ["Proven score gains"],
-                            "id": "6c4e2bb6-dd3c-4b51-b244-f6537e36b618",
+                            "children": [
+                              "Proven score gains"
+                            ],
+                            "id": "b2e3dd54-d357-44fe-a062-ffae26cbfcfb",
                             "ord": "a0"
                           },
                           {
@@ -684,11 +720,11 @@
                             "children": [
                               "Our students average a 140-point SAT jump and a 4-point ACT lift. We coach to the score, not to a syllabus — and we track every point."
                             ],
-                            "id": "347254f5-1b01-49fd-afae-ebb2a9625707",
+                            "id": "7ff0f3a9-d870-4ec7-aca5-70b14dbb5dcf",
                             "ord": "a1"
                           }
                         ],
-                        "id": "61d80f34-bf81-4ffc-b644-e72ece6c2a8d",
+                        "id": "723517f7-317a-4d60-8f74-f0a7271d129f",
                         "ord": "a0"
                       },
                       {
@@ -700,8 +736,10 @@
                             "kind": "element",
                             "tag": "h2",
                             "class": "text-xl font-semibold text-base-content",
-                            "children": ["Expert coaches"],
-                            "id": "71a5cca9-e460-4e3c-9074-a60a542b6a30",
+                            "children": [
+                              "Expert coaches"
+                            ],
+                            "id": "29c861a7-ec76-4167-8e4f-d53ca32fba30",
                             "ord": "a0"
                           },
                           {
@@ -711,11 +749,11 @@
                             "children": [
                               "Every coach scored in the top 1% of the test they teach. You work with a specialist in your exam, not a generalist reading from a book."
                             ],
-                            "id": "d115dd89-c442-47b5-9c1d-50a029a57156",
+                            "id": "bae93357-5509-48a6-8dc5-2334ed583fb6",
                             "ord": "a1"
                           }
                         ],
-                        "id": "45bc8b83-6259-45eb-83bb-d92aae3ed1a6",
+                        "id": "d7a6dcce-4c17-4a6e-a678-c661fe044c3e",
                         "ord": "a1"
                       },
                       {
@@ -727,8 +765,10 @@
                             "kind": "element",
                             "tag": "h2",
                             "class": "text-xl font-semibold text-base-content",
-                            "children": ["Personalized study plans"],
-                            "id": "af3c2df6-28f4-44d4-b5d5-a2808c556722",
+                            "children": [
+                              "Personalized study plans"
+                            ],
+                            "id": "6da28000-acc3-44e6-82a3-78b49e14551c",
                             "ord": "a0"
                           },
                           {
@@ -738,11 +778,11 @@
                             "children": [
                               "A diagnostic finds exactly where your points are leaking, and your plan targets those first. No wasted hours on what you’ve already mastered."
                             ],
-                            "id": "7bccc6cf-cb2d-4ff1-bbec-7a66e6a53957",
+                            "id": "f3087bbb-5a14-42d8-a5b7-deaaf4f518ed",
                             "ord": "a1"
                           }
                         ],
-                        "id": "4c32f4e2-ba7b-446e-bfdd-87c793e5e85b",
+                        "id": "5201cdaa-60f8-45e1-b1a3-955c4472a037",
                         "ord": "a2"
                       },
                       {
@@ -754,8 +794,10 @@
                             "kind": "element",
                             "tag": "h2",
                             "class": "text-xl font-semibold text-base-content",
-                            "children": ["Real practice tests"],
-                            "id": "12ecda3d-c636-4f6d-9e1d-92ed22f01065",
+                            "children": [
+                              "Real practice tests"
+                            ],
+                            "id": "4a9964b6-33c8-4ae5-b7eb-58a20369fed9",
                             "ord": "a0"
                           },
                           {
@@ -765,23 +807,23 @@
                             "children": [
                               "Full-length, timed, official-format exams under real conditions — then a question-by-question review so test day feels like a rerun."
                             ],
-                            "id": "62d81985-6277-4297-8203-28327a7df2af",
+                            "id": "94c7d09b-ee02-45c2-ac27-51a469a80eca",
                             "ord": "a1"
                           }
                         ],
-                        "id": "3d8b8b48-6863-47d8-938a-9a0ffbf76db1",
+                        "id": "4e74d4de-d291-4f96-91bc-5b4cc3f44e66",
                         "ord": "a3"
                       }
                     ],
-                    "id": "447dbf63-fd44-4617-af8d-0e72036d6fa6",
+                    "id": "9c22f463-ec51-4501-9a64-1fad416ca326",
                     "ord": "a0"
                   }
                 ],
-                "id": "99b947b9-71db-439c-ac54-ea8d39709181",
+                "id": "08283715-dded-457d-88e8-91ec4d8411f2",
                 "ord": "a0"
               }
             ],
-            "id": "cf460fdc-25c7-4ca5-8156-fc0d98732f80",
+            "id": "7b574a6e-a45d-454c-b5f2-3d90fb811964",
             "ord": "a1"
           },
           {
@@ -803,8 +845,10 @@
                         "kind": "element",
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
-                        "children": ["Prep & coaching"],
-                        "id": "02db2668-fd6c-4329-9c9c-65186f99436b",
+                        "children": [
+                          "Prep & coaching"
+                        ],
+                        "id": "080d8073-c238-44be-81cf-f18211868796",
                         "ord": "a0"
                       },
                       {
@@ -814,11 +858,11 @@
                         "children": [
                           "Every path starts with a free diagnostic. Full prices and live availability are on the booking page."
                         ],
-                        "id": "de7a8cd2-17d3-4574-b81a-5a5b91def342",
+                        "id": "d49cadd5-e26d-4a6e-a3d6-fa35562359e2",
                         "ord": "a1"
                       }
                     ],
-                    "id": "d7fe0093-2aa4-4df8-b4d3-ecea6599cae3",
+                    "id": "97c8bf97-07c6-4795-9fd6-fa32607108f7",
                     "ord": "a0"
                   },
                   {
@@ -843,28 +887,34 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
-                                "children": ["Free diagnostic & strategy session"],
-                                "id": "6aea42ad-4b72-4b9b-bfe0-90109e3f4021",
+                                "children": [
+                                  "Free diagnostic & strategy session"
+                                ],
+                                "id": "ce546952-0368-4f3d-83f8-8bfce9ab06ed",
                                 "ord": "a0"
                               },
                               {
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-bold text-base-content",
-                                "children": ["$0"],
-                                "id": "48b060c6-6fd8-40e4-9652-c451c0fcf71e",
+                                "children": [
+                                  "$0"
+                                ],
+                                "id": "0df07f7f-d56d-4e7d-86d1-4dd2cc8a54bd",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "f12126cf-e2dc-4662-8b0f-d680ce039735",
+                            "id": "842cc15d-70b0-4806-993c-634ded12d87f",
                             "ord": "a0"
                           },
                           {
                             "kind": "element",
                             "tag": "p",
                             "class": "text-sm font-medium uppercase tracking-wide text-secondary",
-                            "children": ["45 min"],
-                            "id": "01112f31-a282-4699-8989-d37cfad2afe0",
+                            "children": [
+                              "45 min"
+                            ],
+                            "id": "bbcbf4a4-7080-426d-bfc1-2c6944fcbc36",
                             "ord": "a1"
                           },
                           {
@@ -874,11 +924,11 @@
                             "children": [
                               "Find your real starting score and a plan to hit your target."
                             ],
-                            "id": "cf1d7114-8975-40ba-b4e5-66cc1f635a66",
+                            "id": "49e1d7c1-3f48-49ce-b7e4-1148661ba202",
                             "ord": "a2"
                           }
                         ],
-                        "id": "427b4b96-0057-441f-854c-52d498890a6e",
+                        "id": "a3ea64ef-07f6-4b04-8b29-e07e3b49bce3",
                         "ord": "a0"
                       },
                       {
@@ -898,28 +948,34 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
-                                "children": ["SAT prep session"],
-                                "id": "b6650871-adc4-428b-9611-ccc1666154e1",
+                                "children": [
+                                  "SAT prep session"
+                                ],
+                                "id": "8d11b219-a874-4c99-a70d-ac16262a26e5",
                                 "ord": "a0"
                               },
                               {
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-bold text-base-content",
-                                "children": ["$95"],
-                                "id": "9564e824-a872-4c85-b231-c0389f680aef",
+                                "children": [
+                                  "$95"
+                                ],
+                                "id": "93c74a8b-5699-4b4f-a284-fd457655e88f",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "32ecdfd9-a4aa-467c-b77b-0416e403a1bb",
+                            "id": "c301e94e-fb6e-490d-94db-cc2be53ac5e6",
                             "ord": "a0"
                           },
                           {
                             "kind": "element",
                             "tag": "p",
                             "class": "text-sm font-medium uppercase tracking-wide text-secondary",
-                            "children": ["1 hr"],
-                            "id": "68aac46e-b93b-4393-acd7-2c1f6f23732d",
+                            "children": [
+                              "1 hr"
+                            ],
+                            "id": "3ec2446f-82e9-437b-89b2-c73aa9e37e47",
                             "ord": "a1"
                           },
                           {
@@ -929,11 +985,11 @@
                             "children": [
                               "Targeted one-on-one SAT coaching with real test tactics."
                             ],
-                            "id": "ea82e8be-0478-47a4-86d0-9f1e45e44e7c",
+                            "id": "378fa1f1-1191-4c7b-9d92-d20c60793c9a",
                             "ord": "a2"
                           }
                         ],
-                        "id": "b4e145be-6765-4491-9237-67c15a9eb634",
+                        "id": "94712a03-d636-4404-b2b8-46be134e5373",
                         "ord": "a1"
                       },
                       {
@@ -953,40 +1009,48 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
-                                "children": ["ACT prep session"],
-                                "id": "9ea58eeb-a5dc-42b8-98b3-42aa26cbb58f",
+                                "children": [
+                                  "ACT prep session"
+                                ],
+                                "id": "283c609c-4c21-44b4-b38f-90c1dde4e1d7",
                                 "ord": "a0"
                               },
                               {
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-bold text-base-content",
-                                "children": ["$95"],
-                                "id": "ec387d9a-3715-430c-935e-820d2fb893a5",
+                                "children": [
+                                  "$95"
+                                ],
+                                "id": "7480a64a-eb2b-4bb5-a0c6-e59d7bfad880",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "bf12f65a-1856-4895-90df-e2b10034ac13",
+                            "id": "62020d40-3914-4e6f-8916-7341c46275eb",
                             "ord": "a0"
                           },
                           {
                             "kind": "element",
                             "tag": "p",
                             "class": "text-sm font-medium uppercase tracking-wide text-secondary",
-                            "children": ["1 hr"],
-                            "id": "87b748b5-48dd-4ac7-986d-6eb1c930f47a",
+                            "children": [
+                              "1 hr"
+                            ],
+                            "id": "a85bf87f-87b6-456b-81e3-a4ed586bfcbd",
                             "ord": "a1"
                           },
                           {
                             "kind": "element",
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
-                            "children": ["Focused ACT coaching built around the clock."],
-                            "id": "e7f3ccf0-44a1-48d3-abc9-df7d3f6762d2",
+                            "children": [
+                              "Focused ACT coaching built around the clock."
+                            ],
+                            "id": "7b845f38-9df8-45a2-b6af-cc2bd1e43a69",
                             "ord": "a2"
                           }
                         ],
-                        "id": "8d2a3278-0a59-44c4-9438-b4efaff84dd5",
+                        "id": "25cd784f-3d08-407d-97ef-9cc61110650b",
                         "ord": "a2"
                       },
                       {
@@ -1006,44 +1070,52 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
-                                "children": ["Admissions essay session"],
-                                "id": "d28d5f57-fe1f-4b27-b63e-8a65a384fb4d",
+                                "children": [
+                                  "Admissions essay session"
+                                ],
+                                "id": "8188a639-74dd-46c5-96ed-3e590e39b139",
                                 "ord": "a0"
                               },
                               {
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-bold text-base-content",
-                                "children": ["$110"],
-                                "id": "61ce1c2f-2839-4f71-aebb-6c5ad205e178",
+                                "children": [
+                                  "$110"
+                                ],
+                                "id": "cc22549c-4b08-4d0f-9655-7be982381dd1",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "78aa0cf7-aa51-429c-85a7-529aedae639c",
+                            "id": "decf5b4b-aad3-449c-a993-081efd31b74f",
                             "ord": "a0"
                           },
                           {
                             "kind": "element",
                             "tag": "p",
                             "class": "text-sm font-medium uppercase tracking-wide text-secondary",
-                            "children": ["1 hr"],
-                            "id": "cb2d2c0b-dcb1-48c8-aa53-473f1e1932b8",
+                            "children": [
+                              "1 hr"
+                            ],
+                            "id": "3519a05b-dff4-4714-a730-5da2eea2e742",
                             "ord": "a1"
                           },
                           {
                             "kind": "element",
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
-                            "children": ["From a blank page to a draft that sounds like you."],
-                            "id": "c9f9e766-9375-4a64-91c2-59b9baa278b5",
+                            "children": [
+                              "From a blank page to a draft that sounds like you."
+                            ],
+                            "id": "befedb92-dd42-49e9-8783-c9eedbf773bd",
                             "ord": "a2"
                           }
                         ],
-                        "id": "13e43216-7f55-42ea-b05c-d4b695b97795",
+                        "id": "a62862ca-1322-4c67-8f8f-6aefb8ade461",
                         "ord": "a3"
                       }
                     ],
-                    "id": "ee82a18f-a83b-4a43-90f4-eebe840dabed",
+                    "id": "73b4c22d-0c44-42fc-9d04-b6d0c775304a",
                     "ord": "a1"
                   },
                   {
@@ -1058,20 +1130,22 @@
                         "attrs": {
                           "href": "/book"
                         },
-                        "children": ["See everything & book"],
-                        "id": "32f18525-fd71-4b52-9be7-7086a957d0c9",
+                        "children": [
+                          "See everything & book"
+                        ],
+                        "id": "87cef7e0-c916-4de4-a5a7-d0cbf6364a77",
                         "ord": "a0"
                       }
                     ],
-                    "id": "acd52da2-e4d2-4af9-a20d-441a4e371191",
+                    "id": "62b20e26-010b-4ac7-b619-fe4a523f93d5",
                     "ord": "a2"
                   }
                 ],
-                "id": "ee2927af-0a88-4885-971b-682d11cb9f8b",
+                "id": "67e108df-d217-4eef-8afe-11c7ac2fff87",
                 "ord": "a0"
               }
             ],
-            "id": "c7e62268-ce1f-48c8-8eef-c2e3907671da",
+            "id": "f248a481-b270-4932-87e6-e78fad0893f1",
             "ord": "a2"
           },
           {
@@ -1093,7 +1167,7 @@
                       "alt": "A coach and a student reviewing a scored practice test together",
                       "loading": "lazy"
                     },
-                    "id": "38191b2c-e84e-4969-a7e2-4bbe64dec8b3",
+                    "id": "791483b3-a17f-4ef9-8d5d-76fd566da6b8",
                     "ord": "a0"
                   },
                   {
@@ -1105,8 +1179,10 @@
                         "kind": "element",
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
-                        "children": ["How we move the score"],
-                        "id": "51945a1e-e4c1-407a-9fc1-6a4cd3ef5645",
+                        "children": [
+                          "How we move the score"
+                        ],
+                        "id": "6422d2f0-16ae-4ef1-b09b-0a8d9adbd119",
                         "ord": "a0"
                       },
                       {
@@ -1116,7 +1192,7 @@
                         "children": [
                           "Every point on the SAT and ACT is predictable — which is why we start with a diagnostic that maps exactly where yours are being lost. No guessing, no generic worksheets."
                         ],
-                        "id": "8b5ea76d-4c3b-4d17-bc1f-c3ff5bf2240b",
+                        "id": "709f8394-22c9-4dff-b630-79424ba6febc",
                         "ord": "a1"
                       },
                       {
@@ -1126,7 +1202,7 @@
                         "children": [
                           "From there it’s a tight loop: coach the weak spots, drill under real timing, sit a full practice test, review every miss, and repeat. The score climbs because the plan is aimed, and you can see it move week to week."
                         ],
-                        "id": "c371f20a-ca5a-4587-8003-0933b67c1b5a",
+                        "id": "c90ff2ac-4aa9-46c5-b693-4d90b0a7ba59",
                         "ord": "a2"
                       },
                       {
@@ -1141,24 +1217,26 @@
                             "attrs": {
                               "href": "/book"
                             },
-                            "children": ["Book a diagnostic"],
-                            "id": "2d7396c0-9126-48ac-bdf8-852f930c3e2d",
+                            "children": [
+                              "Book a diagnostic"
+                            ],
+                            "id": "38dcbae6-5455-414c-8edf-224c8b736024",
                             "ord": "a0"
                           }
                         ],
-                        "id": "ba99c180-cfb6-4fe7-95c4-ae9decd47139",
+                        "id": "252afdd5-5bfd-4758-8fb4-efab64cdc95a",
                         "ord": "a3"
                       }
                     ],
-                    "id": "a5211176-7123-46ea-a87c-8b83f84c326c",
+                    "id": "d5ceb32c-40b9-4a99-bef9-d64a6aae267f",
                     "ord": "a1"
                   }
                 ],
-                "id": "002619e5-72c7-402f-8e7f-2999f542941a",
+                "id": "9d3ea239-ed3c-4173-ad0b-a46531acfb2c",
                 "ord": "a0"
               }
             ],
-            "id": "e351b5ce-2cb4-4203-a36e-d2689571af2b",
+            "id": "77cd4844-615c-43b1-9287-9e816b2fe2dd",
             "ord": "a3"
           },
           {
@@ -1180,8 +1258,10 @@
                         "kind": "element",
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
-                        "children": ["Your coaches"],
-                        "id": "f5bb437e-46b9-4219-a9ad-feb22b5f7dcf",
+                        "children": [
+                          "Your coaches"
+                        ],
+                        "id": "a440e56c-6323-4460-910f-87f5c5d559cf",
                         "ord": "a0"
                       },
                       {
@@ -1191,11 +1271,11 @@
                         "children": [
                           "Book by name — you’ll work with the same coach every session, someone who knows your test cold."
                         ],
-                        "id": "677f075d-a5a7-46aa-8b58-0ba993aeba03",
+                        "id": "9b0e3c0b-e3d9-4021-a323-211ce721e7d6",
                         "ord": "a1"
                       }
                     ],
-                    "id": "a30c2459-572e-4491-b5ab-1b845305b4b6",
+                    "id": "4a7ae8ff-d21f-4d97-ade0-6ed9d34ed73f",
                     "ord": "a0"
                   },
                   {
@@ -1217,7 +1297,7 @@
                               "alt": "Jordan Ellis, SAT math coach",
                               "loading": "lazy"
                             },
-                            "id": "6f6afd3a-f5a7-49c3-a2cc-4cc62602ceee",
+                            "id": "0584826a-6e28-4655-b5fd-88309cda2f29",
                             "ord": "a0"
                           },
                           {
@@ -1229,16 +1309,20 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
-                                "children": ["Jordan Ellis"],
-                                "id": "3ae2e020-b266-4f40-8b5b-8993979137be",
+                                "children": [
+                                  "Jordan Ellis"
+                                ],
+                                "id": "fdba3cd9-36c8-4503-a862-76f395b83a2d",
                                 "ord": "a0"
                               },
                               {
                                 "kind": "element",
                                 "tag": "p",
                                 "class": "text-sm font-medium uppercase tracking-wide text-secondary",
-                                "children": ["SAT math coach"],
-                                "id": "37a3705d-7544-47b0-8090-221c0195562f",
+                                "children": [
+                                  "SAT math coach"
+                                ],
+                                "id": "ddaf81e0-fb25-4cfb-9461-8e3e809ebf8a",
                                 "ord": "a1"
                               },
                               {
@@ -1248,15 +1332,15 @@
                                 "children": [
                                   "Perfect 800 math score. Turns the “I’m just not a math person” student into a top-quartile one."
                                 ],
-                                "id": "ce9b9023-cd7a-4fa1-bf8e-d6bcc4c9e611",
+                                "id": "f4d79266-e96e-4480-bf30-cdee665b211d",
                                 "ord": "a2"
                               }
                             ],
-                            "id": "7d2cb0f1-ccef-4c9b-b442-3390382193ba",
+                            "id": "bac52f67-4b09-4a48-8bcd-338367d0d844",
                             "ord": "a1"
                           }
                         ],
-                        "id": "46155be7-0ba1-4778-8096-1f2cc7f1263c",
+                        "id": "7c0a80d3-0eb1-4e2e-ac5a-8114f38af449",
                         "ord": "a0"
                       },
                       {
@@ -1273,7 +1357,7 @@
                               "alt": "Priya Nair, ACT English coach",
                               "loading": "lazy"
                             },
-                            "id": "5251affd-2d6e-46b5-8af7-2d4974f5ed01",
+                            "id": "079a9de4-f108-4747-854d-1656da64ef1e",
                             "ord": "a0"
                           },
                           {
@@ -1285,16 +1369,20 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
-                                "children": ["Priya Nair"],
-                                "id": "30550340-cb97-4276-b3ed-223da71511ef",
+                                "children": [
+                                  "Priya Nair"
+                                ],
+                                "id": "19ce3b90-bc79-4632-a0d0-c020a950d2f4",
                                 "ord": "a0"
                               },
                               {
                                 "kind": "element",
                                 "tag": "p",
                                 "class": "text-sm font-medium uppercase tracking-wide text-secondary",
-                                "children": ["ACT English & reading coach"],
-                                "id": "a552f4e0-390d-475c-bbed-5e90c513edb6",
+                                "children": [
+                                  "ACT English & reading coach"
+                                ],
+                                "id": "313f0d8b-05ca-47e8-8eac-30a2a0bf9523",
                                 "ord": "a1"
                               },
                               {
@@ -1304,15 +1392,15 @@
                                 "children": [
                                   "Reading speed and grammar precision. Her students stop running out of time."
                                 ],
-                                "id": "d6febbac-d1e2-4f4b-b88a-46bf18ab5076",
+                                "id": "2d19d97c-00ab-4c9f-b0d2-cd03ccf06f6e",
                                 "ord": "a2"
                               }
                             ],
-                            "id": "621b9ab6-959f-4437-8c90-bb6399414d70",
+                            "id": "db170048-39b5-4414-84f4-3f6ace56bac7",
                             "ord": "a1"
                           }
                         ],
-                        "id": "7760e3d0-094c-48bb-9694-4858164ceb0c",
+                        "id": "5bb5c269-dcbd-478e-bdaa-8c334b87c4cb",
                         "ord": "a1"
                       },
                       {
@@ -1329,7 +1417,7 @@
                               "alt": "Marcus Bright, admissions & essays coach",
                               "loading": "lazy"
                             },
-                            "id": "56c339fc-af89-436d-85a0-eaebf9a55559",
+                            "id": "5115911f-0fff-456b-b411-5a3e31842b0f",
                             "ord": "a0"
                           },
                           {
@@ -1341,16 +1429,20 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
-                                "children": ["Marcus Bright"],
-                                "id": "1c85a648-7c3d-4c3f-b7df-42ce769fd905",
+                                "children": [
+                                  "Marcus Bright"
+                                ],
+                                "id": "3552a054-af0a-483d-ac1b-8d54297324a6",
                                 "ord": "a0"
                               },
                               {
                                 "kind": "element",
                                 "tag": "p",
                                 "class": "text-sm font-medium uppercase tracking-wide text-secondary",
-                                "children": ["Admissions & essays coach"],
-                                "id": "23ed83a5-2e13-4404-a92c-a3f4a68ed880",
+                                "children": [
+                                  "Admissions & essays coach"
+                                ],
+                                "id": "b1f69cac-d23a-4738-a08c-4733d3727bcb",
                                 "ord": "a1"
                               },
                               {
@@ -1360,27 +1452,27 @@
                                 "children": [
                                   "Former admissions reader. Helps students write the essay only they could write."
                                 ],
-                                "id": "7d9c682e-e375-43f5-9aa5-758c7124fad2",
+                                "id": "003fe6ae-d0a5-4413-a737-9b11eeaa800b",
                                 "ord": "a2"
                               }
                             ],
-                            "id": "5e3be3a9-1f59-477a-ba48-94ef556ccf2a",
+                            "id": "75784f16-734f-4ab1-ba86-39661ce7bee0",
                             "ord": "a1"
                           }
                         ],
-                        "id": "59cd2fd8-44ad-444b-a78f-f611b551367a",
+                        "id": "5aaf60e6-0fcd-48fd-8f5c-32d4724c2dbd",
                         "ord": "a2"
                       }
                     ],
-                    "id": "ce5eee23-54ee-4140-8d4d-e234c4b315a2",
+                    "id": "fa54c78e-f93d-4501-90b4-d9456dfaec49",
                     "ord": "a1"
                   }
                 ],
-                "id": "fd9405e1-fef2-4117-86a5-a79eca3b22fd",
+                "id": "2155285c-2250-4ca7-ac09-76cf47b5efd4",
                 "ord": "a0"
               }
             ],
-            "id": "7e8ba8a1-6c89-4cee-9484-ccee22f29b50",
+            "id": "13bfe6fc-503b-47a8-bda8-27e8c19f6a05",
             "ord": "a4"
           },
           {
@@ -1400,23 +1492,25 @@
                     "children": [
                       "“I went from a 1180 to a 1420 in three months. Apex found the exact questions I kept missing and drilled them until they were automatic. I got into my first-choice school.”"
                     ],
-                    "id": "e768fc44-b3a1-456d-bd96-c21aae665ab9",
+                    "id": "88881b31-a740-4bbe-86bb-663943c32099",
                     "ord": "a0"
                   },
                   {
                     "kind": "element",
                     "tag": "p",
                     "class": "text-sm font-semibold uppercase tracking-wide opacity-80",
-                    "children": ["Maya T., admitted early to her top choice"],
-                    "id": "676c1431-8662-4209-9c89-142aeb39ee32",
+                    "children": [
+                      "Maya T., admitted early to her top choice"
+                    ],
+                    "id": "31fcba61-b24d-4e11-88ea-ea5c332d7d24",
                     "ord": "a1"
                   }
                 ],
-                "id": "c278f9fd-a879-4a4c-b283-ecb358cfbb39",
+                "id": "af0976b9-b034-4506-90e5-2a0b84cb8e54",
                 "ord": "a0"
               }
             ],
-            "id": "96edddfc-1ab1-4f56-a0ac-855f8250b344",
+            "id": "c02925d6-1367-449c-96af-f666998bd3ef",
             "ord": "a5"
           },
           {
@@ -1433,8 +1527,10 @@
                     "kind": "element",
                     "tag": "h2",
                     "class": "text-3xl font-bold tracking-tight @3xl:text-4xl",
-                    "children": ["Your target score is closer than it looks"],
-                    "id": "b14ac214-c5fd-4701-8594-bcc3b804dcfd",
+                    "children": [
+                      "Your target score is closer than it looks"
+                    ],
+                    "id": "4f0583a5-a562-44c9-96ff-a8e21d20c71e",
                     "ord": "a0"
                   },
                   {
@@ -1444,7 +1540,7 @@
                     "children": [
                       "Start with a free diagnostic and strategy session. Pick a coach, choose a time, and see exactly where your points are hiding."
                     ],
-                    "id": "a5c7a43f-4efe-4b19-aa10-d6e39d0c7499",
+                    "id": "6c031f1f-f7c7-4b81-9c57-89bcd83bc66b",
                     "ord": "a1"
                   },
                   {
@@ -1454,16 +1550,18 @@
                     "attrs": {
                       "href": "/book"
                     },
-                    "children": ["Book a diagnostic"],
-                    "id": "3b0ed4f0-10b4-49d8-abb2-1e7667c4641f",
+                    "children": [
+                      "Book a diagnostic"
+                    ],
+                    "id": "2c35e0bb-c248-4ed8-9e30-4138136362a5",
                     "ord": "a2"
                   }
                 ],
-                "id": "e9e96b6c-26de-4690-9032-ebb3c039ef1f",
+                "id": "4258c711-e071-4062-ae16-49b95294f13c",
                 "ord": "a0"
               }
             ],
-            "id": "37081c4d-1305-4eaa-8a43-32f308008cea",
+            "id": "f6613158-dbc7-41f0-8682-cf4605dd8be3",
             "ord": "a6"
           }
         ]
@@ -1480,7 +1578,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "4bad21e8-7620-4688-8588-d644c3a8f5ab",
+        "id": "2c8b7041-9a70-400f-8831-8fe1a7476ad8",
         "children": [
           {
             "kind": "element",
@@ -1496,8 +1594,10 @@
                     "kind": "element",
                     "tag": "h1",
                     "class": "text-5xl font-bold leading-none tracking-tight @2xl:text-6xl @3xl:text-7xl",
-                    "children": ["Book your session"],
-                    "id": "38702df3-b9b2-4b93-99b1-b40c9a12226e",
+                    "children": [
+                      "Book your session"
+                    ],
+                    "id": "56760490-2140-47cb-8051-3a1d1f4ac770",
                     "ord": "a0"
                   },
                   {
@@ -1507,7 +1607,7 @@
                     "children": [
                       "Start with a free diagnostic, or book a prep, AP, essay or strategy session below. Choose your coach and see live availability."
                     ],
-                    "id": "d27eed52-e022-4300-9ab6-65e852a6bf3f",
+                    "id": "0d7e2df0-c275-4062-9d94-631b10dfa858",
                     "ord": "a1"
                   },
                   {
@@ -1522,20 +1622,22 @@
                         "attrs": {
                           "href": "/book"
                         },
-                        "children": ["See options below"],
-                        "id": "2123057a-57b8-4795-8fc8-816f3d8a94a1",
+                        "children": [
+                          "See options below"
+                        ],
+                        "id": "94381431-0bc2-4904-bb8d-b4bfd708b04f",
                         "ord": "a0"
                       }
                     ],
-                    "id": "9ae2ba89-2037-482f-b9a6-d3b19c52629e",
+                    "id": "fa38b137-0f9b-429b-a415-40c71efb393e",
                     "ord": "a2"
                   }
                 ],
-                "id": "a4089e9f-4d8a-462a-ba65-374a0a88d98e",
+                "id": "c2deca39-6bb3-4bfb-8764-013fafe8bad8",
                 "ord": "a0"
               }
             ],
-            "id": "d44b9f5e-7973-4401-8215-f59d4727ca1c",
+            "id": "6c9b6677-1a97-44a6-a055-924670c33e4b",
             "ord": "a0"
           },
           {
@@ -1543,7 +1645,7 @@
             "component": "scheduling.services",
             "class": "mx-auto w-full max-w-5xl px-6 py-8",
             "locked": "host",
-            "id": "2de45e6e-375d-4a86-bca8-75f583f615a2",
+            "id": "d546d211-9e42-45c1-8e75-e1c571cb0064",
             "ord": "a1"
           },
           {
@@ -1565,8 +1667,10 @@
                         "kind": "element",
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
-                        "children": ["Good to know"],
-                        "id": "f9c1e4e5-abe2-44d9-bfd9-9dbc31c7f704",
+                        "children": [
+                          "Good to know"
+                        ],
+                        "id": "1930a304-82de-4c2d-8991-761bee308e3d",
                         "ord": "a0"
                       },
                       {
@@ -1576,11 +1680,11 @@
                         "children": [
                           "What happens once you pick a time — and how to change it if something comes up."
                         ],
-                        "id": "3e0f05ee-77ea-45a5-9d86-2708991a4416",
+                        "id": "cf9de257-5b8f-4aba-bed8-d29de35acec5",
                         "ord": "a1"
                       }
                     ],
-                    "id": "800ed339-f725-4ce4-b484-5c85d8786b5b",
+                    "id": "3d836d08-bf46-4a8c-88c5-c33b8063be2c",
                     "ord": "a0"
                   },
                   {
@@ -1597,8 +1701,10 @@
                             "kind": "element",
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
-                            "children": ["Standard booking"],
-                            "id": "049f63ef-93f0-45db-b086-8d061eb3f564",
+                            "children": [
+                              "Standard booking"
+                            ],
+                            "id": "2d2bd53a-bf93-452a-9628-b38d1a6d3a40",
                             "ord": "a0"
                           },
                           {
@@ -1608,7 +1714,7 @@
                             "children": [
                               "Please give us at least 24 hours’ notice to reschedule or cancel a session. We send a reminder the day before and two hours ahead so nothing slips."
                             ],
-                            "id": "4c74d78a-9306-4afe-a3e4-d016bda63f3c",
+                            "id": "631323d5-242b-48d3-b5ed-b5736fc32996",
                             "ord": "a1"
                           },
                           {
@@ -1618,23 +1724,23 @@
                             "children": [
                               "No deposit to book. Change or cancel free up to 24 hours before."
                             ],
-                            "id": "6793c5e6-55b8-4323-a16b-9209c23626c3",
+                            "id": "d51a1b33-790c-4422-bae2-bc5ef646d3b3",
                             "ord": "a2"
                           }
                         ],
-                        "id": "52d8adc4-a70f-4514-a15b-a0f97119e238",
+                        "id": "378207fa-dc5c-45ee-9194-0837286e5082",
                         "ord": "a0"
                       }
                     ],
-                    "id": "79c4f1dd-22a5-4070-87b8-d0830107987c",
+                    "id": "fecdf87f-81e3-4992-8c8b-30df48f94c4a",
                     "ord": "a1"
                   }
                 ],
-                "id": "b5866f81-dbf6-4fb6-9cb6-36daa51cc6f9",
+                "id": "ce2eaf65-66d8-43f5-857b-22b707c8faec",
                 "ord": "a0"
               }
             ],
-            "id": "01bb36a7-897b-4dd5-804c-6895dcc6f114",
+            "id": "b0e2eb85-5a0e-446e-98c9-24174cd6a40a",
             "ord": "a2"
           }
         ]
@@ -1651,7 +1757,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "b8447584-72eb-4479-b6ce-a401a01aa9ae",
+        "id": "96afd5b9-f750-48ba-84fb-6b81b3660b31",
         "children": [
           {
             "kind": "element",
@@ -1672,7 +1778,7 @@
                       "alt": "A focused one-on-one coaching session at a study table",
                       "loading": "lazy"
                     },
-                    "id": "7d6ea296-2456-41da-b991-465e5535a218",
+                    "id": "20094be7-0521-469a-b686-273b5e1d9fb0",
                     "ord": "a0"
                   },
                   {
@@ -1684,8 +1790,10 @@
                         "kind": "element",
                         "tag": "h1",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
-                        "children": ["About Apex Test Prep"],
-                        "id": "0bc4c675-421c-44da-8366-81683b747712",
+                        "children": [
+                          "About Apex Test Prep"
+                        ],
+                        "id": "6763240b-a707-4308-97a4-864e6e617c76",
                         "ord": "a0"
                       },
                       {
@@ -1695,7 +1803,7 @@
                         "children": [
                           "We started Apex because test prep had become a box of tricks sold by the hour, disconnected from the one thing that matters: the score on the page. We do the opposite — every session is aimed at points, and every point is tracked."
                         ],
-                        "id": "ce6d453b-f068-4492-9247-c65a80fc57af",
+                        "id": "bff3fa6c-748f-421e-83f2-e37b2b4c46ab",
                         "ord": "a1"
                       },
                       {
@@ -1705,7 +1813,7 @@
                         "children": [
                           "Our coaches all scored in the top 1% of the exam they teach, and they coach one student at a time. No lecture halls, no filler, no “just do more problems.” A plan built for your target, run by someone who’s already been there."
                         ],
-                        "id": "f2567186-d225-479a-8ed5-473e93b9ce35",
+                        "id": "078b9a92-1e46-4c69-bb39-ef118a9d91ca",
                         "ord": "a2"
                       },
                       {
@@ -1720,24 +1828,26 @@
                             "attrs": {
                               "href": "/book"
                             },
-                            "children": ["Book a diagnostic"],
-                            "id": "c19e2ae0-5dfb-4592-9862-e87ddb43b83a",
+                            "children": [
+                              "Book a diagnostic"
+                            ],
+                            "id": "12e116ee-26bc-491e-b440-41ba327f0359",
                             "ord": "a0"
                           }
                         ],
-                        "id": "75f5ddb3-a85d-4cf1-a73d-be4bed74ebd8",
+                        "id": "300060ef-a17b-4903-bd46-fc16f3e8980c",
                         "ord": "a3"
                       }
                     ],
-                    "id": "0251d26c-63c7-4740-a5be-7a193b50f5d7",
+                    "id": "a5f48f2d-0187-4dc8-935d-66f69f580f64",
                     "ord": "a1"
                   }
                 ],
-                "id": "c1ff2900-ac72-4b90-b545-0ac434e3b621",
+                "id": "7b591e54-5a52-4a47-bf4a-c9f3c713720e",
                 "ord": "a0"
               }
             ],
-            "id": "50b363bd-e2ff-42fb-9b42-2682bd7a1c55",
+            "id": "89a0d76d-e8ed-40df-b047-ddfd2b3dcf7b",
             "ord": "a0"
           },
           {
@@ -1754,8 +1864,10 @@
                     "kind": "element",
                     "tag": "h2",
                     "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
-                    "children": ["How we work"],
-                    "id": "e4c49e09-4972-470d-b767-c06f5e7f406b",
+                    "children": [
+                      "How we work"
+                    ],
+                    "id": "a103fb31-a4c1-48ca-8c04-f5273d0f9444",
                     "ord": "a0"
                   },
                   {
@@ -1772,8 +1884,10 @@
                             "kind": "element",
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
-                            "children": ["Diagnostic first"],
-                            "id": "91edbd84-eafa-4c85-9e94-ad785576daee",
+                            "children": [
+                              "Diagnostic first"
+                            ],
+                            "id": "11c684ad-d084-4114-94e0-e337325e3261",
                             "ord": "a0"
                           },
                           {
@@ -1783,11 +1897,11 @@
                             "children": [
                               "Every student starts with a real diagnostic. We don’t sell hours until we know exactly which points are worth chasing."
                             ],
-                            "id": "03b31913-450f-4187-b04b-a6b8dfac749f",
+                            "id": "319ec939-9846-42d2-ae88-3a00838867c1",
                             "ord": "a1"
                           }
                         ],
-                        "id": "87129d60-6667-4dd4-b0c0-13ae279f4278",
+                        "id": "011de113-9280-4b5e-817c-808d34d7c9b0",
                         "ord": "a0"
                       },
                       {
@@ -1799,8 +1913,10 @@
                             "kind": "element",
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
-                            "children": ["Coach to the score"],
-                            "id": "37b33eae-cdb8-49ce-9e7a-768db4be742b",
+                            "children": [
+                              "Coach to the score"
+                            ],
+                            "id": "f88c5dbf-c639-482f-a096-8c715b610787",
                             "ord": "a0"
                           },
                           {
@@ -1810,11 +1926,11 @@
                             "children": [
                               "Sessions target the sections costing you the most, under real timing, with tactics that hold up on test day."
                             ],
-                            "id": "adbb119a-48f8-4a61-8ae3-8caa0b51f9c4",
+                            "id": "4df1248c-aa1e-4654-97fc-d0ce5e3ac631",
                             "ord": "a1"
                           }
                         ],
-                        "id": "68c52092-4dab-4e51-a2e7-996163b8d214",
+                        "id": "393b90d5-bfe3-4fad-a08e-651d467acd54",
                         "ord": "a1"
                       },
                       {
@@ -1826,8 +1942,10 @@
                             "kind": "element",
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
-                            "children": ["You can see it move"],
-                            "id": "12b416a2-bba5-4ac6-a3b6-600be472b4c7",
+                            "children": [
+                              "You can see it move"
+                            ],
+                            "id": "bb83aa0e-eab8-46cb-b94f-08683945ee8f",
                             "ord": "a0"
                           },
                           {
@@ -1837,23 +1955,23 @@
                             "children": [
                               "We track every practice-test score, so progress is a number you watch climb — not a feeling or a promise."
                             ],
-                            "id": "8985e84f-a53c-4097-8ed2-12fb76af10bd",
+                            "id": "9377ad72-21ec-499f-8c41-45e134c93bdc",
                             "ord": "a1"
                           }
                         ],
-                        "id": "6df2c6fe-c687-4e40-8160-69d1ad4a8a78",
+                        "id": "42a969cb-d2b5-43cb-bf68-0e556eca19bf",
                         "ord": "a2"
                       }
                     ],
-                    "id": "9603f71f-6399-4975-86e1-9dbc0fad1cdf",
+                    "id": "3bd8cc19-b111-4663-9249-a916ee0a2a89",
                     "ord": "a1"
                   }
                 ],
-                "id": "22838504-e41d-4476-a81a-46ffd2a4f889",
+                "id": "bb4a0d16-6431-4b2f-af7f-c4125eb4ed15",
                 "ord": "a0"
               }
             ],
-            "id": "fae60f88-74e2-4a2e-86d6-002fd5c33584",
+            "id": "cccf5490-8e08-4876-bd85-da10afce45d8",
             "ord": "a1"
           }
         ]
@@ -1870,7 +1988,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "644da2cf-2a70-4192-b7d0-8de680253d98",
+        "id": "45bb6753-7e89-4edb-98da-5797ab904558",
         "children": [
           {
             "kind": "element",
@@ -1891,8 +2009,10 @@
                         "kind": "element",
                         "tag": "h1",
                         "class": "text-4xl font-bold tracking-tight text-base-content @3xl:text-5xl",
-                        "children": ["Get in touch"],
-                        "id": "023b7f79-bafc-4ec8-8466-f623ff99ac72",
+                        "children": [
+                          "Get in touch"
+                        ],
+                        "id": "1d83aea3-9eac-4523-b4eb-c0855d8141b5",
                         "ord": "a0"
                       },
                       {
@@ -1902,11 +2022,11 @@
                         "children": [
                           "Questions before you book? Send a note and Apex Test Prep will get back to you — usually the same day."
                         ],
-                        "id": "82c6a391-71c6-4e87-b534-caf2e0c8ca08",
+                        "id": "35dba9ce-8d75-401b-8a89-2571268ccaf7",
                         "ord": "a1"
                       }
                     ],
-                    "id": "a64010c2-87ed-4652-88e4-2eb0b8daee99",
+                    "id": "b74f7ad3-8744-4f3b-9c60-e5ddd7e03719",
                     "ord": "a0"
                   },
                   {
@@ -1918,8 +2038,10 @@
                         "kind": "element",
                         "tag": "span",
                         "class": "text-base font-medium text-base-content",
-                        "children": ["Call us"],
-                        "id": "24071664-6ffa-4695-bfbf-abcbfc485f26",
+                        "children": [
+                          "Call us"
+                        ],
+                        "id": "ab1c88fc-8b71-4940-a148-00ebe5247bd1",
                         "ord": "a0"
                       },
                       {
@@ -1930,12 +2052,14 @@
                           {
                             "kind": "element",
                             "tag": "span",
-                            "children": ["(555) 123-4567"],
+                            "children": [
+                              "(555) 123-4567"
+                            ],
                             "data": {
                               "kind": "value",
                               "ref": "site.identity.phone"
                             },
-                            "id": "b5ce6a30-41a8-47f7-a98c-291a852118e1",
+                            "id": "30e443fe-e232-44ef-a9ae-7523c9903f61",
                             "ord": "a0"
                           }
                         ],
@@ -1944,7 +2068,7 @@
                           "ref": "site.identity.phoneHref",
                           "attr": "href"
                         },
-                        "id": "63501cac-5ef1-4b09-9651-dd1408d68ba8",
+                        "id": "7885d37e-679e-49b5-b42f-cddafb169b34",
                         "ord": "a1"
                       }
                     ],
@@ -1952,7 +2076,7 @@
                       "kind": "visible",
                       "ref": "site.identity.phone"
                     },
-                    "id": "f532dbc3-ce43-4670-80cc-404a2544adc4",
+                    "id": "c476626e-f659-4aef-8da1-42466e4114de",
                     "ord": "a1"
                   },
                   {
@@ -1964,8 +2088,10 @@
                         "kind": "element",
                         "tag": "span",
                         "class": "text-base font-medium text-base-content",
-                        "children": ["Email us"],
-                        "id": "25930e8e-a2fc-4729-97e2-74a62b317239",
+                        "children": [
+                          "Email us"
+                        ],
+                        "id": "f767bb87-00f3-404a-901d-e9fc50330df4",
                         "ord": "a0"
                       },
                       {
@@ -1976,12 +2102,14 @@
                           {
                             "kind": "element",
                             "tag": "span",
-                            "children": ["hello@yourbusiness.com"],
+                            "children": [
+                              "hello@yourbusiness.com"
+                            ],
                             "data": {
                               "kind": "value",
                               "ref": "site.identity.email"
                             },
-                            "id": "0ac84361-fefb-4326-9780-696327e1a21e",
+                            "id": "3bafd19f-2522-4da9-a55f-1be4dbd8a92c",
                             "ord": "a0"
                           }
                         ],
@@ -1990,7 +2118,7 @@
                           "ref": "site.identity.emailHref",
                           "attr": "href"
                         },
-                        "id": "91c426e8-820f-4032-8b86-023e1caf0250",
+                        "id": "bad288de-bf0c-48a2-8516-ea17542b8913",
                         "ord": "a1"
                       }
                     ],
@@ -1998,7 +2126,7 @@
                       "kind": "visible",
                       "ref": "site.identity.email"
                     },
-                    "id": "683cf4fe-5749-423d-ab38-d8c8d67245fc",
+                    "id": "23a40bc8-6231-4e45-be6c-cf0a63690f20",
                     "ord": "a2"
                   },
                   {
@@ -2015,8 +2143,10 @@
                             "kind": "element",
                             "tag": "span",
                             "class": "text-base font-medium text-base-content",
-                            "children": ["Your name"],
-                            "id": "14ed7cac-9d78-4bba-83ea-353c66b71516",
+                            "children": [
+                              "Your name"
+                            ],
+                            "id": "223c386c-3fcf-4d2b-aade-dfa9abc2fb93",
                             "ord": "a0"
                           },
                           {
@@ -2028,11 +2158,11 @@
                               "name": "name",
                               "required": true
                             },
-                            "id": "958de479-462f-433d-b3b1-4a78c9a0fe59",
+                            "id": "150c53bd-61f0-4ef0-969b-147eda5e319e",
                             "ord": "a1"
                           }
                         ],
-                        "id": "fb8f9d5b-8e2b-415f-a24a-7c0d0cfc63c8",
+                        "id": "be594f5d-a51a-420c-a63e-7d1e24eb8a89",
                         "ord": "a0"
                       },
                       {
@@ -2044,8 +2174,10 @@
                             "kind": "element",
                             "tag": "span",
                             "class": "text-base font-medium text-base-content",
-                            "children": ["Email address"],
-                            "id": "7f63ee1e-9e37-4394-b3a7-c03b93d23e11",
+                            "children": [
+                              "Email address"
+                            ],
+                            "id": "5f6f5c90-5f08-432c-9400-4885d34daa60",
                             "ord": "a0"
                           },
                           {
@@ -2057,11 +2189,11 @@
                               "name": "email",
                               "required": true
                             },
-                            "id": "36b6e380-6717-4ebb-b208-54966efa7475",
+                            "id": "51f586be-bfe3-460d-a4d6-b0ad2e82929f",
                             "ord": "a1"
                           }
                         ],
-                        "id": "d7cab994-cca0-4f59-9277-efa890db3319",
+                        "id": "b226d10c-9236-4199-b6f4-8f52352c4eac",
                         "ord": "a1"
                       },
                       {
@@ -2073,8 +2205,10 @@
                             "kind": "element",
                             "tag": "span",
                             "class": "text-base font-medium text-base-content",
-                            "children": ["Phone number"],
-                            "id": "71f216f6-a9db-49e1-a308-6f2ee0c76cdc",
+                            "children": [
+                              "Phone number"
+                            ],
+                            "id": "830407c6-327e-46c6-89ff-4b1abb544357",
                             "ord": "a0"
                           },
                           {
@@ -2085,11 +2219,11 @@
                               "type": "tel",
                               "name": "phone"
                             },
-                            "id": "90591552-2eda-4916-8bc8-55fc68d8eff0",
+                            "id": "80898450-2db1-48a4-b799-00fc83007695",
                             "ord": "a1"
                           }
                         ],
-                        "id": "5edda00a-b32f-4899-8754-598ecc92644a",
+                        "id": "e99a3490-b950-4701-af0d-60768c1955a3",
                         "ord": "a2"
                       },
                       {
@@ -2101,8 +2235,10 @@
                             "kind": "element",
                             "tag": "span",
                             "class": "text-base font-medium text-base-content",
-                            "children": ["How can we help?"],
-                            "id": "60d0b51a-dcea-455b-8613-78e7f1196193",
+                            "children": [
+                              "How can we help?"
+                            ],
+                            "id": "2f2ac723-cdc6-40b0-b752-c2d2fb9dac2f",
                             "ord": "a0"
                           },
                           {
@@ -2112,11 +2248,11 @@
                             "attrs": {
                               "name": "message"
                             },
-                            "id": "635603c7-f52a-4052-b513-f8a5ec81baf5",
+                            "id": "bf621f2b-3e81-41f9-b299-2aeefc579b04",
                             "ord": "a1"
                           }
                         ],
-                        "id": "0aca9203-c54b-4f41-90a7-170951b8c577",
+                        "id": "57cdef58-b5b7-44cb-bfb1-8fbdca049c22",
                         "ord": "a3"
                       },
                       {
@@ -2131,12 +2267,14 @@
                             "attrs": {
                               "type": "submit"
                             },
-                            "children": ["Send my request"],
-                            "id": "7a8e810f-7ecf-4c7d-b33c-f54eadc0e951",
+                            "children": [
+                              "Send my request"
+                            ],
+                            "id": "8ce3159f-9156-48d3-b75b-abfd4109d689",
                             "ord": "a0"
                           }
                         ],
-                        "id": "98517d48-2da7-42c0-879d-91ef9f3d1e33",
+                        "id": "d5578b5b-3ec7-4aaa-bc1d-a14d3ed7bd2d",
                         "ord": "a4"
                       }
                     ],
@@ -2147,15 +2285,15 @@
                       "kind": "action",
                       "ref": "submit"
                     },
-                    "id": "934bab49-6a40-4040-b525-df2a26cfbcfa",
+                    "id": "7ad52938-219b-43e3-a765-57dd59a597ee",
                     "ord": "a3"
                   }
                 ],
-                "id": "a1dd459b-594b-4f78-8ee6-20a05b03b32e",
+                "id": "1da61027-d8e9-43ed-a13f-69905c385f98",
                 "ord": "a0"
               }
             ],
-            "id": "cdbbbaa4-01c5-4c32-9f48-d0af8e091f2f",
+            "id": "6e243848-f3e3-4553-85ed-ae4d5cb77a68",
             "ord": "a0"
           },
           {
@@ -2177,8 +2315,10 @@
                         "kind": "element",
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
-                        "children": ["Visit the studio"],
-                        "id": "147e1483-9a1c-4604-8d89-3a6c7311f326",
+                        "children": [
+                          "Visit the studio"
+                        ],
+                        "id": "885c9170-e3b2-4caf-a21b-6d48d811047b",
                         "ord": "a0"
                       },
                       {
@@ -2192,7 +2332,7 @@
                           "kind": "value",
                           "ref": "site.identity.address"
                         },
-                        "id": "b09f00bb-055b-4b86-a1a5-958f28013d03",
+                        "id": "045c79aa-5972-443f-9e50-88b7cf977931",
                         "ord": "a1"
                       },
                       {
@@ -2209,20 +2349,24 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "font-medium text-base-content",
-                                "children": ["Monday – Thursday"],
-                                "id": "a3f106d1-769b-4dff-86ae-f6f672bdae6d",
+                                "children": [
+                                  "Monday – Thursday"
+                                ],
+                                "id": "aafdba61-2985-4e2d-b2e5-d23820aadb12",
                                 "ord": "a0"
                               },
                               {
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-base-content",
-                                "children": ["3:00 – 9:00"],
-                                "id": "1b2d43d5-fe40-40c0-aa36-a5a9f3e07edb",
+                                "children": [
+                                  "3:00 – 9:00"
+                                ],
+                                "id": "454048bf-c570-4fb9-b723-447272287271",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "a2752203-3def-4610-9af1-e6dbc631c28e",
+                            "id": "b042e182-cf46-443d-946f-f5b6be4e3ca6",
                             "ord": "a0"
                           },
                           {
@@ -2234,20 +2378,24 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "font-medium text-base-content",
-                                "children": ["Friday"],
-                                "id": "a7248aa3-0a61-416e-86ec-2282a163b07a",
+                                "children": [
+                                  "Friday"
+                                ],
+                                "id": "c16d862b-702e-4ea9-b5df-0dccfe7e6971",
                                 "ord": "a0"
                               },
                               {
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-base-content",
-                                "children": ["4:00 – 9:00"],
-                                "id": "ff8c1d10-60a0-4ed7-9a8c-2dbbb3c02750",
+                                "children": [
+                                  "4:00 – 9:00"
+                                ],
+                                "id": "a2325952-3c55-47be-ad2a-98857ce86572",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "72444133-1fef-4b5f-b26d-f4672429a812",
+                            "id": "46c502db-0aa2-4c5c-a494-9aa881cfd6b0",
                             "ord": "a1"
                           },
                           {
@@ -2259,20 +2407,24 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "font-medium text-base-content",
-                                "children": ["Saturday"],
-                                "id": "9e139177-eaee-4359-b878-a724a50edc49",
+                                "children": [
+                                  "Saturday"
+                                ],
+                                "id": "4f7cea4d-c4a4-4e77-8b9f-babe1bfe8f2a",
                                 "ord": "a0"
                               },
                               {
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-base-content",
-                                "children": ["9:00 – 4:00"],
-                                "id": "d93c065f-15a7-4e76-b1c8-f14ed168a9f4",
+                                "children": [
+                                  "9:00 – 4:00"
+                                ],
+                                "id": "150a3fa1-5be3-4fc2-b980-c06ebcc82b49",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "954cd181-6650-426f-a8c1-e0690697aa91",
+                            "id": "9e0f246d-49c0-492b-8745-eed11cda9373",
                             "ord": "a2"
                           },
                           {
@@ -2284,28 +2436,32 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "font-medium text-base-content",
-                                "children": ["Sunday"],
-                                "id": "a7f730b8-e871-4333-96c8-abbe3fcd1614",
+                                "children": [
+                                  "Sunday"
+                                ],
+                                "id": "2822f3bd-73dc-4a82-9102-1ec7f0e30d5f",
                                 "ord": "a0"
                               },
                               {
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-base-content",
-                                "children": ["10:00 – 4:00"],
-                                "id": "d94c6dc1-e310-4dda-98b0-2faeed742f5c",
+                                "children": [
+                                  "10:00 – 4:00"
+                                ],
+                                "id": "24579d33-35b0-4cd4-a63a-089d957919f5",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "f65142dc-37c8-4842-8ccb-6949c06ae995",
+                            "id": "8405f98b-384c-40b4-a212-2caf01a59ff9",
                             "ord": "a3"
                           }
                         ],
-                        "id": "c575c470-f823-4291-bcd0-92204bc554ff",
+                        "id": "d2b22473-8f95-465a-a8a6-680d8122826d",
                         "ord": "a2"
                       }
                     ],
-                    "id": "c60bac38-6804-4207-b1e5-60a00058dbd1",
+                    "id": "acc207a0-63f7-4a18-9e11-246554714d2e",
                     "ord": "a0"
                   },
                   {
@@ -2318,15 +2474,15 @@
                       "zoom": 15,
                       "ratio": "classic"
                     },
-                    "id": "a65212db-a9ee-4add-80d3-d7143faeffdc",
+                    "id": "ed17d945-930e-41b5-8222-dd9a713a374f",
                     "ord": "a1"
                   }
                 ],
-                "id": "9862274e-0041-4aa9-b2c5-39a8ad273be4",
+                "id": "8b27b6fc-67c6-438d-9de3-47106dcc6934",
                 "ord": "a0"
               }
             ],
-            "id": "eb2132a6-a36c-4c73-8789-500308a61183",
+            "id": "930d0676-b37d-4699-b190-2f9a592d0600",
             "ord": "a1"
           },
           {
@@ -2343,8 +2499,10 @@
                     "kind": "element",
                     "tag": "h2",
                     "class": "text-3xl font-bold tracking-tight @3xl:text-4xl",
-                    "children": ["Rather book than call?"],
-                    "id": "d5581119-0286-4827-a96c-1d3f0406f42b",
+                    "children": [
+                      "Rather book than call?"
+                    ],
+                    "id": "a7a976ae-7476-4def-b48d-b2c9894abf8a",
                     "ord": "a0"
                   },
                   {
@@ -2354,7 +2512,7 @@
                     "children": [
                       "See live availability and reserve your free diagnostic online — no phone tag."
                     ],
-                    "id": "2ffd28bb-af86-412f-b56d-519fa77135ae",
+                    "id": "abf8a487-d560-407f-8ef6-78215cbbdf53",
                     "ord": "a1"
                   },
                   {
@@ -2364,16 +2522,18 @@
                     "attrs": {
                       "href": "/book"
                     },
-                    "children": ["Book a diagnostic"],
-                    "id": "2b28de01-af14-4652-bc1f-2a12c17bc141",
+                    "children": [
+                      "Book a diagnostic"
+                    ],
+                    "id": "9430ccbc-14e2-4207-a5d9-27c02218ab30",
                     "ord": "a2"
                   }
                 ],
-                "id": "48e126a7-0400-4f7e-a4e6-bbc41895e192",
+                "id": "009927b2-3ef1-4d94-abbc-915c02c904a2",
                 "ord": "a0"
               }
             ],
-            "id": "234be72b-942e-4d1e-8533-1acd524ea736",
+            "id": "38a033e2-8e60-4f8b-b782-ad18b4814878",
             "ord": "a2"
           }
         ]

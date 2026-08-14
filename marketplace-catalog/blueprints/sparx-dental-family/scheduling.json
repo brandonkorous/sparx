@@ -390,5 +390,12 @@
       ],
       "policyHandle": "dental-standard"
     }
+  ],
+  "locations": [
+    {
+      "handle": "premises",
+      "name": "Maple Grove Dental",
+      "timezone": "UTC"
+    }
   ]
 }

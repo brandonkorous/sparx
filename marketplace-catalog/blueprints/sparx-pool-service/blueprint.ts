@@ -11,7 +11,7 @@ import assets from './assets.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-pool-service',
-  version: '1.2.0',
+  version: '1.3.0',
   name: 'sparx — Pool Service',
   summary:
     'A bright, fresh pool-cleaning & maintenance site — a vivid aqua palette on a crisp near-white ground, built around recurring weekly service and online booking. Installs a working flow: a free-quote booking, weekly cleaning plus openings, closings, filter service and green-to-clean rescue, and three techs you book as dispatchable resources with their own hours. Ships as "BlueWave Pool Care" — a sparkling pool, handled every week.',

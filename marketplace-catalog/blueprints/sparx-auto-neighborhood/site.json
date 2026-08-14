@@ -22,7 +22,7 @@
                   "props": {
                     "show": "both"
                   },
-                  "id": "9b1cf35c-8521-4166-a4ef-85c7a80a75cb",
+                  "id": "aaac05a2-6d37-465d-935d-1f4287c13c25",
                   "ord": "a0"
                 },
                 {
@@ -37,13 +37,15 @@
                       "attrs": {
                         "href": "/book"
                       },
-                      "children": ["Book"],
+                      "children": [
+                        "Book"
+                      ],
                       "slot": {
                         "name": "link1",
                         "type": "link",
                         "label": "Product"
                       },
-                      "id": "c2eb60b0-02a3-4763-b497-e629fe550c29",
+                      "id": "cf542097-12d1-4594-b7ab-c1e51c31ac7a",
                       "ord": "a0"
                     },
                     {
@@ -53,13 +55,15 @@
                       "attrs": {
                         "href": "/about"
                       },
-                      "children": ["About"],
+                      "children": [
+                        "About"
+                      ],
                       "slot": {
                         "name": "link2",
                         "type": "link",
                         "label": "Pricing"
                       },
-                      "id": "6585f355-c5d2-4ebc-b0a8-f1650afe1e5e",
+                      "id": "4ff1c152-6afa-4b69-9c99-074c2ac946ac",
                       "ord": "a1"
                     },
                     {
@@ -69,17 +73,19 @@
                       "attrs": {
                         "href": "/contact"
                       },
-                      "children": ["Contact"],
+                      "children": [
+                        "Contact"
+                      ],
                       "slot": {
                         "name": "link3",
                         "type": "link",
                         "label": "Docs"
                       },
-                      "id": "b9d9918a-14b0-41c0-b0c5-47bc5618b204",
+                      "id": "88e8445c-e99a-4928-b0b2-41ee2d8d0c7c",
                       "ord": "a2"
                     }
                   ],
-                  "id": "0c85bdb9-452e-491b-95fc-a626e7e7a766",
+                  "id": "6333961c-7c06-45fb-b775-e9bbda157ce8",
                   "ord": "a1"
                 },
                 {
@@ -94,20 +100,22 @@
                       "attrs": {
                         "href": "/account/login"
                       },
-                      "children": ["Sign in"],
+                      "children": [
+                        "Sign in"
+                      ],
                       "slot": {
                         "name": "secondary",
                         "type": "link",
                         "label": "Secondary link"
                       },
-                      "id": "3e63d8b4-d77f-4729-9e8e-dccf4f9195fd",
+                      "id": "df3f6f42-791b-42db-b3ba-750fa61b6583",
                       "ord": "a0"
                     },
                     {
                       "kind": "host",
                       "component": "site.theme-toggle",
                       "class": "inline-flex items-center",
-                      "id": "9c5505eb-9f05-4e14-8460-da247650d8e5",
+                      "id": "4967ac11-b9f2-4044-aaab-7caa50813120",
                       "ord": "a1"
                     },
                     {
@@ -123,7 +131,7 @@
                         "type": "link",
                         "label": "Primary action"
                       },
-                      "id": "7b376b12-7a53-4fb8-8e86-89e54ea60f4c",
+                      "id": "36074b28-7aed-4df9-bad3-c733e26b4a8d",
                       "ord": "a2"
                     },
                     {
@@ -141,20 +149,20 @@
                           "props": {
                             "name": "menu"
                           },
-                          "id": "3ee6dcc8-0ff7-4824-8fb8-49892484471a",
+                          "id": "7c9036d4-cfe9-4513-90c6-c3b3592d8504",
                           "ord": "a0"
                         }
                       ],
                       "part": "trigger",
-                      "id": "83a1ad9e-b339-47f3-ae43-c90778408206",
+                      "id": "fef298e7-627b-48e7-a272-57f58f70276a",
                       "ord": "a3"
                     }
                   ],
-                  "id": "fa432445-636e-47ff-8ec9-d0d1f53f39e6",
+                  "id": "10bc08ad-6c31-43ad-a002-3c80fba408d7",
                   "ord": "a2"
                 }
               ],
-              "id": "54caf9bd-7367-4bdf-aa2b-add6b3dcd8b5",
+              "id": "42ab2244-ee1b-4e6f-b43e-b62f16fac23f",
               "ord": "a0"
             },
             {
@@ -172,13 +180,15 @@
                   "attrs": {
                     "href": "/book"
                   },
-                  "children": ["Book"],
+                  "children": [
+                    "Book"
+                  ],
                   "slot": {
                     "name": "link1",
                     "type": "link",
                     "label": "Product"
                   },
-                  "id": "41151648-5310-4952-a0b0-103c232edae9",
+                  "id": "916d3175-247f-45a2-8b45-9f568ca40b5e",
                   "ord": "a0"
                 },
                 {
@@ -188,13 +198,15 @@
                   "attrs": {
                     "href": "/about"
                   },
-                  "children": ["About"],
+                  "children": [
+                    "About"
+                  ],
                   "slot": {
                     "name": "link2",
                     "type": "link",
                     "label": "Pricing"
                   },
-                  "id": "742b0181-6978-4322-bc52-f035b86c7df6",
+                  "id": "6725d12b-c8ba-4f71-b9ba-d3fcded327e3",
                   "ord": "a1"
                 },
                 {
@@ -204,13 +216,15 @@
                   "attrs": {
                     "href": "/contact"
                   },
-                  "children": ["Contact"],
+                  "children": [
+                    "Contact"
+                  ],
                   "slot": {
                     "name": "link3",
                     "type": "link",
                     "label": "Docs"
                   },
-                  "id": "cd6ae643-51c4-4a81-88fc-d3dc3258eb8f",
+                  "id": "b215e848-9b63-4046-a8fc-ebfe7448498f",
                   "ord": "a2"
                 },
                 {
@@ -226,7 +240,7 @@
                     "type": "link",
                     "label": "Secondary link"
                   },
-                  "id": "cab8b5a3-64c9-4968-83bc-fb7203c8e417",
+                  "id": "b36adb43-ddac-4958-b355-1e58621df0a9",
                   "ord": "a3"
                 },
                 {
@@ -242,19 +256,19 @@
                     "type": "link",
                     "label": "Primary action"
                   },
-                  "id": "299cb0cb-aa24-41ab-8dce-9cde5e57a608",
+                  "id": "b5592283-ae7a-4372-9fde-5820d791d9fd",
                   "ord": "a4"
                 }
               ],
               "part": "panel",
-              "id": "f9f43461-eb3c-4f96-ad06-df7580a43da4",
+              "id": "5dc0aab1-a4a6-49c7-8cd4-0a3c9f00c282",
               "ord": "a1"
             }
           ],
           "behavior": {
             "type": "disclosure"
           },
-          "id": "84646a33-804d-476a-8d9e-be9647273538",
+          "id": "b30dc189-63b2-4e8c-a093-17aa4ffe23ad",
           "ord": "a0"
         },
         {
@@ -270,7 +284,7 @@
               "kind": "outlet"
             }
           ],
-          "id": "00aa3b1d-3ec7-4787-a607-328e2ae57672",
+          "id": "32284e16-7fcd-4d8e-8220-cc3e288e57c2",
           "ord": "a1"
         },
         {
@@ -300,14 +314,16 @@
                           "props": {
                             "show": "both"
                           },
-                          "id": "3a18d8ff-f802-4bcb-b8f9-50561fb799ab",
+                          "id": "25f96544-b10e-470e-a76f-976c81579ad9",
                           "ord": "a0"
                         },
                         {
                           "kind": "element",
                           "tag": "p",
                           "class": "max-w-xs text-sm text-base-content",
-                          "children": ["Everything you publish, in one place."],
+                          "children": [
+                            "Everything you publish, in one place."
+                          ],
                           "slot": {
                             "name": "blurb",
                             "type": "text",
@@ -316,7 +332,7 @@
                           "attrs": {
                             "href": "/"
                           },
-                          "id": "0d121459-f682-4a13-8f67-551feaa5d6c9",
+                          "id": "7916bc5d-7d02-4314-a2f1-eeefc9dd8985",
                           "ord": "a1"
                         },
                         {
@@ -324,11 +340,11 @@
                           "tag": "ul",
                           "class": "mt-2 flex items-center gap-5",
                           "children": [],
-                          "id": "00761c63-c339-469a-8601-7f4b0a317f54",
+                          "id": "5fc3c564-a338-4c83-9367-02df9b190d93",
                           "ord": "a2"
                         }
                       ],
-                      "id": "87885904-a176-40b5-9a81-ea1a51d13a2f",
+                      "id": "8ab9466a-9aea-4191-ac32-754d7e7c58e1",
                       "ord": "a0"
                     },
                     {
@@ -340,7 +356,9 @@
                           "kind": "element",
                           "tag": "p",
                           "class": "text-sm font-semibold text-base-content",
-                          "children": ["Explore"],
+                          "children": [
+                            "Explore"
+                          ],
                           "slot": {
                             "name": "col1",
                             "type": "text",
@@ -349,7 +367,7 @@
                           "attrs": {
                             "href": "/"
                           },
-                          "id": "4bd63065-7a34-40e5-a861-f41a529c2715",
+                          "id": "3f775f99-f7ff-4086-b6fc-07b4311e157c",
                           "ord": "a0"
                         },
                         {
@@ -368,17 +386,19 @@
                                   "attrs": {
                                     "href": "/book"
                                   },
-                                  "children": ["Book"],
+                                  "children": [
+                                    "Book"
+                                  ],
                                   "slot": {
                                     "name": "link1",
                                     "type": "link",
                                     "label": "Features"
                                   },
-                                  "id": "9d88668b-2889-43cb-bf0d-42807ff18604",
+                                  "id": "37ac649e-0732-4ccd-89ea-04730997c939",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "b9d9e8d1-8bc2-4831-a9c3-eb64709fecbb",
+                              "id": "5b9fa574-c1cd-428f-8b37-f4bec86fe247",
                               "ord": "a0"
                             },
                             {
@@ -392,17 +412,19 @@
                                   "attrs": {
                                     "href": "/about"
                                   },
-                                  "children": ["About"],
+                                  "children": [
+                                    "About"
+                                  ],
                                   "slot": {
                                     "name": "link2",
                                     "type": "link",
                                     "label": "Pricing"
                                   },
-                                  "id": "280d3b68-15ad-43fd-9d93-734df7a7bb8c",
+                                  "id": "cecbbaad-8d10-4aa5-b8a5-d0d0826ffb33",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "b3ef784a-7aca-4a9c-b3d8-5009ec7388d7",
+                              "id": "61579fbb-86f7-45d3-b64d-100e4b6fe9a8",
                               "ord": "a1"
                             },
                             {
@@ -416,17 +438,19 @@
                                   "attrs": {
                                     "href": "/contact"
                                   },
-                                  "children": ["Contact"],
+                                  "children": [
+                                    "Contact"
+                                  ],
                                   "slot": {
                                     "name": "link3",
                                     "type": "link",
                                     "label": "Integrations"
                                   },
-                                  "id": "b5c5b067-239e-441c-bc20-8675e766dc95",
+                                  "id": "98411023-6cec-40eb-a8ce-1b09aa42df6a",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "e6f6373a-f620-4ea2-ba35-31360fc0ce71",
+                              "id": "eb0dad26-b5c1-4c1d-af02-35037ecc1e57",
                               "ord": "a2"
                             },
                             {
@@ -440,25 +464,27 @@
                                   "attrs": {
                                     "href": "/search"
                                   },
-                                  "children": ["Search"],
+                                  "children": [
+                                    "Search"
+                                  ],
                                   "slot": {
                                     "name": "link4",
                                     "type": "link",
                                     "label": "Changelog"
                                   },
-                                  "id": "ba93922f-0055-4007-bbce-fa2ba07d5cd2",
+                                  "id": "060adb5a-8d73-4d63-bd81-b229463b5672",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "d7dc8e82-66a7-4117-a04b-5d4658f23bfa",
+                              "id": "60c1f968-123d-4b50-b74e-b16b6281878a",
                               "ord": "a3"
                             }
                           ],
-                          "id": "0d01a338-03b6-4207-8c04-bf0d3f24521c",
+                          "id": "7c576e11-9be5-49d1-8822-bb14581074e5",
                           "ord": "a1"
                         }
                       ],
-                      "id": "faf172fb-006e-45c2-a9c1-f4b7c19ac8cd",
+                      "id": "97bd7f40-a292-4b13-bcb3-bf1588ef435d",
                       "ord": "a1"
                     },
                     {
@@ -471,11 +497,11 @@
                           "tag": "ul",
                           "class": "flex flex-col gap-2",
                           "children": [],
-                          "id": "c4d1d633-aede-4f7f-80a9-7c48aad092bb",
+                          "id": "009a3cfd-6b95-479b-8df7-aa2acf53ae66",
                           "ord": "a0"
                         }
                       ],
-                      "id": "4cd371d5-d37a-4232-9ece-cd62c95e0c49",
+                      "id": "b548fe51-a4d4-4730-84ac-7130367fb174",
                       "ord": "a2"
                     },
                     {
@@ -499,23 +525,23 @@
                                   "props": {
                                     "heading": "Legal"
                                   },
-                                  "id": "451dd925-09e3-43b3-aade-bc2bfca03746",
+                                  "id": "398846d5-a522-400b-adfb-b25a16bf3e61",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "11ccc416-52ed-4e0c-9d2b-574f2197a664",
+                              "id": "fbf7ab9b-dad5-4d63-a3a2-8326d0c162d9",
                               "ord": "a0"
                             }
                           ],
-                          "id": "76c67f33-a9a6-4141-b184-7f392d6d106a",
+                          "id": "f48e9756-61a0-4fbc-a971-3ae59c661851",
                           "ord": "a0"
                         }
                       ],
-                      "id": "9840fbd1-a28d-4084-a302-38edd47bec90",
+                      "id": "74db8bd8-8028-4b16-88ed-6971fda10932",
                       "ord": "a3"
                     }
                   ],
-                  "id": "0d3b6e39-74e3-421c-90d0-064f03c27741",
+                  "id": "b5acb64e-a5c2-46ce-a482-4a8a7018ccf7",
                   "ord": "a0"
                 },
                 {
@@ -533,16 +559,18 @@
                           "kind": "element",
                           "tag": "span",
                           "class": "font-medium",
-                          "children": ["Your site"],
+                          "children": [
+                            "Your site"
+                          ],
                           "data": {
                             "kind": "value",
                             "ref": "site.identity.name"
                           },
-                          "id": "f3ce4f55-a13f-4bfe-bb2c-00b9409fd36f",
+                          "id": "ec9db791-ea14-4d10-aaaf-bf6263ebcb2a",
                           "ord": "a0"
                         }
                       ],
-                      "id": "b08e2a0c-4696-4c4a-bdba-d3a78318fc6b",
+                      "id": "e2b975f8-c54a-4250-8bc9-87f21610eb66",
                       "ord": "a0"
                     },
                     {
@@ -550,23 +578,23 @@
                       "tag": "ul",
                       "class": "flex flex-wrap items-center gap-x-6 gap-y-2",
                       "children": [],
-                      "id": "70b981e1-5c54-475c-8b7a-370ab0d68e61",
+                      "id": "ce409d50-efd4-47f1-9297-0a442f7f7ddd",
                       "ord": "a1"
                     }
                   ],
-                  "id": "16e64d01-9475-4d3f-b000-7cb1f3f1a721",
+                  "id": "5f6ea7ee-b78e-4b06-9d53-86081ce3e993",
                   "ord": "a1"
                 }
               ],
-              "id": "67fa4ce1-2a49-418b-83e9-eb4d28a65904",
+              "id": "adedccf3-f8aa-4d19-b252-ae67f08609aa",
               "ord": "a0"
             }
           ],
-          "id": "af2518fd-93d4-4f86-85fe-3bffb42cbf1b",
+          "id": "8a9e3ff2-abbd-48b1-afe7-3af8fa0eac81",
           "ord": "a2"
         }
       ],
-      "id": "b9b636d7-77d5-4c13-b61b-9b8c5a9d7e21"
+      "id": "4a1f6d7c-42f2-414a-ad17-ae1169b53c1e"
     }
   },
   "pages": [
@@ -580,7 +608,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "c2bc8d62-7ec0-4aa5-b3cb-815c0b6f1385",
+        "id": "79b6c7b7-804a-42e8-a3f3-38246bc91d04",
         "children": [
           {
             "kind": "element",
@@ -596,14 +624,14 @@
                   "alt": "A car up on a lift in a clean, well-lit neighborhood repair shop",
                   "loading": "eager"
                 },
-                "id": "392f7b40-3043-4769-8bf1-e0da963a98b6",
+                "id": "eedd8fd0-61f4-48e5-a841-8e54bf3d3dac",
                 "ord": "a0"
               },
               {
                 "kind": "element",
                 "tag": "div",
                 "class": "absolute inset-0 bg-black/50",
-                "id": "dd72eb76-6a13-45e8-a0e1-ecb9dd514040",
+                "id": "84dcadcc-1bf3-4214-9245-568daa169eba",
                 "ord": "a1"
               },
               {
@@ -615,8 +643,10 @@
                     "kind": "element",
                     "tag": "h1",
                     "class": "max-w-3xl text-4xl font-bold leading-tight tracking-tight @2xl:text-5xl @3xl:text-6xl",
-                    "children": ["The honest shop your neighbors already use"],
-                    "id": "05136e39-792c-4529-b028-806914b3fa21",
+                    "children": [
+                      "The honest shop your neighbors already use"
+                    ],
+                    "id": "9613127b-c485-4a26-81fc-14f157d267fe",
                     "ord": "a0"
                   },
                   {
@@ -626,7 +656,7 @@
                     "children": [
                       "Family-run since 1994. We fix what needs fixing, tell you what doesn’t, and stand behind every job. Book a visit in about a minute."
                     ],
-                    "id": "d49031d8-5b7a-421c-b2ee-c6371f61f031",
+                    "id": "e6570d65-a43a-4881-bddb-b03603b91889",
                     "ord": "a1"
                   },
                   {
@@ -641,8 +671,10 @@
                         "attrs": {
                           "href": "/book"
                         },
-                        "children": ["Book a service"],
-                        "id": "d27d52a8-047b-460a-9e1c-90ee2f7bff78",
+                        "children": [
+                          "Book a service"
+                        ],
+                        "id": "d8580c76-f6a8-4a31-991c-7eb1549cabc7",
                         "ord": "a0"
                       },
                       {
@@ -652,20 +684,22 @@
                         "attrs": {
                           "href": "/book"
                         },
-                        "children": ["Get a free estimate"],
-                        "id": "7abb316b-a288-4422-aec2-f665626eb6a0",
+                        "children": [
+                          "Get a free estimate"
+                        ],
+                        "id": "7c5f4111-6ca3-4132-beda-28f8bd169dd3",
                         "ord": "a1"
                       }
                     ],
-                    "id": "fa525f51-33fb-4be3-b3d2-6b5a4a334eb4",
+                    "id": "08f0c31c-c02d-4497-9ddf-91f0c8b77a22",
                     "ord": "a2"
                   }
                 ],
-                "id": "06ddaaf1-ba9b-4c5d-818e-bf512459c6d1",
+                "id": "5d4cee1a-2815-4c22-96f4-26edd5da5ee5",
                 "ord": "a2"
               }
             ],
-            "id": "432a1c93-8955-4bdd-9cd4-43a4405d92a2",
+            "id": "4efdc594-29dc-4418-892c-a2d27454ff5e",
             "ord": "a0"
           },
           {
@@ -692,8 +726,10 @@
                             "kind": "element",
                             "tag": "h2",
                             "class": "text-xl font-semibold text-base-content",
-                            "children": ["Honest estimates, up front"],
-                            "id": "e008d182-4a1f-4134-aad0-3270683d2511",
+                            "children": [
+                              "Honest estimates, up front"
+                            ],
+                            "id": "5054945a-6fd9-4a43-8e31-a46002b43223",
                             "ord": "a0"
                           },
                           {
@@ -703,11 +739,11 @@
                             "children": [
                               "We call with a plain-English quote before we start, and you approve the work. No surprise line items when you pick up the car."
                             ],
-                            "id": "b3be56fc-fbec-4c2f-b10a-01bb39a153c3",
+                            "id": "8d2130bc-c76b-4e2e-9b4a-5b435ec15a07",
                             "ord": "a1"
                           }
                         ],
-                        "id": "70f04fae-924d-4c99-8c0a-7f179007fb46",
+                        "id": "bfa6df90-ed2a-4ace-8d70-891944acfd8c",
                         "ord": "a0"
                       },
                       {
@@ -719,8 +755,10 @@
                             "kind": "element",
                             "tag": "h2",
                             "class": "text-xl font-semibold text-base-content",
-                            "children": ["ASE-certified technicians"],
-                            "id": "6b3fd708-8f9d-4a83-baf4-90812c8746df",
+                            "children": [
+                              "ASE-certified technicians"
+                            ],
+                            "id": "055a581a-7f89-4440-983d-4bae533affef",
                             "ord": "a0"
                           },
                           {
@@ -730,11 +768,11 @@
                             "children": [
                               "The people under your hood are trained and certified — not a rotating crew of whoever’s cheapest this week."
                             ],
-                            "id": "ba4296a0-1717-4223-8d23-6364e8f6fd1b",
+                            "id": "27e60fad-61a7-4962-ba4b-d764a6271c42",
                             "ord": "a1"
                           }
                         ],
-                        "id": "08abf8f2-841a-433e-b476-1b65a3055d37",
+                        "id": "74929099-47be-4f44-8036-66362d838b4b",
                         "ord": "a1"
                       },
                       {
@@ -746,8 +784,10 @@
                             "kind": "element",
                             "tag": "h2",
                             "class": "text-xl font-semibold text-base-content",
-                            "children": ["Warranty on every job"],
-                            "id": "e9282214-4f44-4474-a3ae-b65d60192500",
+                            "children": [
+                              "Warranty on every job"
+                            ],
+                            "id": "0d222459-b198-4c2b-a547-be9b94e65275",
                             "ord": "a0"
                           },
                           {
@@ -757,11 +797,11 @@
                             "children": [
                               "Parts and labor are covered for 24 months / 24,000 miles. If something we fixed isn’t right, we make it right."
                             ],
-                            "id": "44ade1aa-3ad6-4626-8fd8-91f0320d16a4",
+                            "id": "2bf6532b-5068-48bf-bef8-dd94e66e8f51",
                             "ord": "a1"
                           }
                         ],
-                        "id": "5f152701-c061-4173-926b-056c4e907a57",
+                        "id": "4382ab44-d4ad-4888-bb00-00503ac49f34",
                         "ord": "a2"
                       },
                       {
@@ -773,8 +813,10 @@
                             "kind": "element",
                             "tag": "h2",
                             "class": "text-xl font-semibold text-base-content",
-                            "children": ["We explain it in plain English"],
-                            "id": "8db45075-710c-4ec6-9f23-58efbe0d75ff",
+                            "children": [
+                              "We explain it in plain English"
+                            ],
+                            "id": "5b03306f-5bdc-4776-ae4b-07cb2419ec02",
                             "ord": "a0"
                           },
                           {
@@ -784,23 +826,23 @@
                             "children": [
                               "No jargon, no scare tactics. We’ll show you what’s worn, what can wait, and what actually matters for safety."
                             ],
-                            "id": "ca53d6d7-7d2b-408e-8f8f-bb26a0fe2451",
+                            "id": "d450cbd6-1e28-46bf-a60d-197a8df65860",
                             "ord": "a1"
                           }
                         ],
-                        "id": "f328d3ae-1f5b-48a7-ba10-cb3a4b9107cf",
+                        "id": "6ac77cb5-3d51-4646-8d1b-6a67d9eab22b",
                         "ord": "a3"
                       }
                     ],
-                    "id": "1aa027a3-df15-4e0a-b3bb-9b39b3e4d81b",
+                    "id": "2e98c952-3429-4707-a92e-b5c085bb6f8a",
                     "ord": "a0"
                   }
                 ],
-                "id": "95cc146e-f8de-45ea-b52a-0817b1ec97a1",
+                "id": "6671996e-244c-432d-bf9b-8f751feed229",
                 "ord": "a0"
               }
             ],
-            "id": "d479b7eb-590c-4bec-aec7-79e43cbc0908",
+            "id": "c459b668-7a5e-44fb-bb68-2e75bdcd3af7",
             "ord": "a1"
           },
           {
@@ -822,8 +864,10 @@
                         "kind": "element",
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
-                        "children": ["What we do"],
-                        "id": "3724700a-5709-4168-9a80-dbc558b80309",
+                        "children": [
+                          "What we do"
+                        ],
+                        "id": "8b691184-d5c7-4b75-9967-8eea1542d855",
                         "ord": "a0"
                       },
                       {
@@ -833,11 +877,11 @@
                         "children": [
                           "The everyday work that keeps a car running well. Book any of these online — live times and prices are on the booking page."
                         ],
-                        "id": "006aed50-91ea-45d5-96b8-93b239687c2e",
+                        "id": "21d2625e-a081-4668-848b-02385b6317d4",
                         "ord": "a1"
                       }
                     ],
-                    "id": "4d1b6c43-144e-4d4e-93a2-453ea9197477",
+                    "id": "2cc7800f-4a2b-40f0-86bc-35f1db6d0056",
                     "ord": "a0"
                   },
                   {
@@ -862,40 +906,48 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
-                                "children": ["Free estimate"],
-                                "id": "1b6b5d6c-2b50-432a-bd8e-71d36847eef9",
+                                "children": [
+                                  "Free estimate"
+                                ],
+                                "id": "14c4cedf-f369-4355-8f6b-ccd9a7e4763d",
                                 "ord": "a0"
                               },
                               {
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-bold text-base-content",
-                                "children": ["$0"],
-                                "id": "c8fddb8f-c4ad-461a-a6cc-e3ebe57d8f04",
+                                "children": [
+                                  "$0"
+                                ],
+                                "id": "25afc4f0-14e7-4d4a-aab1-772b38ef60b6",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "cf2c69dc-f226-4960-a630-05314fa679ef",
+                            "id": "8191c5e8-09bf-47ce-91b3-1fbb18547e44",
                             "ord": "a0"
                           },
                           {
                             "kind": "element",
                             "tag": "p",
                             "class": "text-sm font-medium uppercase tracking-wide text-secondary",
-                            "children": ["30 min"],
-                            "id": "e7b2dd27-228e-4504-983b-9b121a7074aa",
+                            "children": [
+                              "30 min"
+                            ],
+                            "id": "808c8798-b5ed-441f-95b1-3453a0cbd91a",
                             "ord": "a1"
                           },
                           {
                             "kind": "element",
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
-                            "children": ["We look it over and tell you what it needs — no charge."],
-                            "id": "87282243-c5a9-4d8d-a4fd-f01da18befb1",
+                            "children": [
+                              "We look it over and tell you what it needs — no charge."
+                            ],
+                            "id": "24661a6f-52bf-4927-8b6e-faf32a056234",
                             "ord": "a2"
                           }
                         ],
-                        "id": "80ca167c-f83a-4fed-9507-a8e3562e5735",
+                        "id": "70505532-35b8-4ae6-99ae-918b02e99248",
                         "ord": "a0"
                       },
                       {
@@ -915,40 +967,48 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
-                                "children": ["Oil & filter change"],
-                                "id": "75e5d6fc-2adf-4467-8659-3757d7e98bee",
+                                "children": [
+                                  "Oil & filter change"
+                                ],
+                                "id": "a12f8c03-111a-4164-998a-5eedcf656802",
                                 "ord": "a0"
                               },
                               {
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-bold text-base-content",
-                                "children": ["$45"],
-                                "id": "45475072-3eec-4123-a940-7c2b71169ca7",
+                                "children": [
+                                  "$45"
+                                ],
+                                "id": "052bb385-898a-4d44-bcc5-f8613037189b",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "b64b733a-00b6-4703-a799-aa74fd561802",
+                            "id": "b75e4b43-b36f-43a0-ba7e-808d9b7f82ed",
                             "ord": "a0"
                           },
                           {
                             "kind": "element",
                             "tag": "p",
                             "class": "text-sm font-medium uppercase tracking-wide text-secondary",
-                            "children": ["30 min"],
-                            "id": "e6961d00-36f5-411c-ac34-42ee2e52debb",
+                            "children": [
+                              "30 min"
+                            ],
+                            "id": "30c54638-5822-4488-b890-25228649dbd1",
                             "ord": "a1"
                           },
                           {
                             "kind": "element",
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
-                            "children": ["Full-synthetic oil, new filter, quick safety once-over."],
-                            "id": "1af9bcab-266e-46bc-85c7-5cf3ac953c48",
+                            "children": [
+                              "Full-synthetic oil, new filter, quick safety once-over."
+                            ],
+                            "id": "71d316d7-be12-4a78-9bd7-c60872bf61d9",
                             "ord": "a2"
                           }
                         ],
-                        "id": "e2e7c67c-1e8f-4d51-aff7-1340f42be0a0",
+                        "id": "fb6d487e-1798-481a-bc23-ab72dffa86b4",
                         "ord": "a1"
                       },
                       {
@@ -968,40 +1028,48 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
-                                "children": ["Brake service"],
-                                "id": "6281c604-e76f-42ab-8e59-527847398b64",
+                                "children": [
+                                  "Brake service"
+                                ],
+                                "id": "3963f2f0-917a-4a5d-898b-e880b8fce66a",
                                 "ord": "a0"
                               },
                               {
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-bold text-base-content",
-                                "children": ["$280"],
-                                "id": "92c8c0b8-e850-4a3c-a4a3-382110d9ab48",
+                                "children": [
+                                  "$280"
+                                ],
+                                "id": "1309b8d3-016b-40a7-92ef-1ba9dcfeb7a4",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "efee575f-9663-470a-afe1-c5878f9340d2",
+                            "id": "2df1000e-8858-4b4b-96b7-480bf58203f1",
                             "ord": "a0"
                           },
                           {
                             "kind": "element",
                             "tag": "p",
                             "class": "text-sm font-medium uppercase tracking-wide text-secondary",
-                            "children": ["2 hr"],
-                            "id": "012a3436-cb11-43a5-aaa1-1d5c1a71f91f",
+                            "children": [
+                              "2 hr"
+                            ],
+                            "id": "4d600d45-03a7-4de2-8912-a94bd54c7e22",
                             "ord": "a1"
                           },
                           {
                             "kind": "element",
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
-                            "children": ["Pads, rotors and a full inspection — warrantied."],
-                            "id": "639c2b54-ce26-4f79-afc7-bdd95ce5f746",
+                            "children": [
+                              "Pads, rotors and a full inspection — warrantied."
+                            ],
+                            "id": "8420788a-cf11-47ca-b01b-d31c35b433d8",
                             "ord": "a2"
                           }
                         ],
-                        "id": "677710c9-9e9d-4ae1-ba41-1fb724d57dda",
+                        "id": "29b0099b-8584-4446-a81c-4566386be9c6",
                         "ord": "a2"
                       },
                       {
@@ -1021,40 +1089,48 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
-                                "children": ["Check-engine light"],
-                                "id": "d02ad61d-3378-47da-916a-b59a99848cec",
+                                "children": [
+                                  "Check-engine light"
+                                ],
+                                "id": "6ad09309-9399-4f83-a98d-0559d20fcc22",
                                 "ord": "a0"
                               },
                               {
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-bold text-base-content",
-                                "children": ["$120"],
-                                "id": "e999a9b6-2b85-4eaf-a582-9667d95dcf75",
+                                "children": [
+                                  "$120"
+                                ],
+                                "id": "db425e02-e6da-4793-9051-a317dbe07c63",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "fc5be5f3-9218-4fb9-9ee1-72e5c6774723",
+                            "id": "5a5f667b-769f-4c1c-81e4-5f1c61016895",
                             "ord": "a0"
                           },
                           {
                             "kind": "element",
                             "tag": "p",
                             "class": "text-sm font-medium uppercase tracking-wide text-secondary",
-                            "children": ["1 hr"],
-                            "id": "9a951cfe-15c3-49d0-8a70-6330d02c75d9",
+                            "children": [
+                              "1 hr"
+                            ],
+                            "id": "2b90c9a1-560b-4a8b-b9b7-93c75932c3f2",
                             "ord": "a1"
                           },
                           {
                             "kind": "element",
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
-                            "children": ["We pull the codes and explain what they mean."],
-                            "id": "83f432cf-9b03-44eb-89bb-7db3e26edbaa",
+                            "children": [
+                              "We pull the codes and explain what they mean."
+                            ],
+                            "id": "c2e72976-7d76-4650-92a8-32d3ed6056f5",
                             "ord": "a2"
                           }
                         ],
-                        "id": "de63e83e-9d8c-4145-9fce-c6994c378dbb",
+                        "id": "35592157-f186-4088-979e-7cc2c18bb62d",
                         "ord": "a3"
                       },
                       {
@@ -1074,40 +1150,48 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
-                                "children": ["Diagnostic inspection"],
-                                "id": "7e656e47-2e6e-4b57-8420-8150fb46acb4",
+                                "children": [
+                                  "Diagnostic inspection"
+                                ],
+                                "id": "1f8bcf93-2237-41b1-a145-6234152c8328",
                                 "ord": "a0"
                               },
                               {
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-bold text-base-content",
-                                "children": ["$90"],
-                                "id": "1832c507-d136-47f6-bfc6-49a4ca8ba9c5",
+                                "children": [
+                                  "$90"
+                                ],
+                                "id": "d5677869-dc5a-4633-aa01-5fd643649161",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "776c57c8-8fc5-48c3-b627-f9dc0bf4e0f0",
+                            "id": "a63b652d-83e0-4de1-9c7e-ba842628261d",
                             "ord": "a0"
                           },
                           {
                             "kind": "element",
                             "tag": "p",
                             "class": "text-sm font-medium uppercase tracking-wide text-secondary",
-                            "children": ["1 hr"],
-                            "id": "588a213c-132d-4a35-8f50-6f15257b6355",
+                            "children": [
+                              "1 hr"
+                            ],
+                            "id": "d6bf3ccd-d907-42cb-be50-96913e0c1317",
                             "ord": "a1"
                           },
                           {
                             "kind": "element",
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
-                            "children": ["Track down the real cause before you buy parts."],
-                            "id": "814a1ac0-748d-4c75-a979-78926dc0e30a",
+                            "children": [
+                              "Track down the real cause before you buy parts."
+                            ],
+                            "id": "e6038946-846f-4222-8bd6-f8991d256c65",
                             "ord": "a2"
                           }
                         ],
-                        "id": "ba5c867f-9005-4460-aae5-2df3f79649ac",
+                        "id": "d2118c97-67c8-499f-a01f-7c7ef7610fe9",
                         "ord": "a4"
                       },
                       {
@@ -1127,44 +1211,52 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
-                                "children": ["Safety inspection"],
-                                "id": "c4085d6b-2cfe-452e-870a-5a5f84260f81",
+                                "children": [
+                                  "Safety inspection"
+                                ],
+                                "id": "e8d2a0b0-2940-4756-8ce2-3660e039d2a2",
                                 "ord": "a0"
                               },
                               {
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-bold text-base-content",
-                                "children": ["$30"],
-                                "id": "0b502e52-443f-4c78-909c-705e8ba2902c",
+                                "children": [
+                                  "$30"
+                                ],
+                                "id": "955eb0ac-061a-4697-9171-a161f7915173",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "3dbe6ca2-baa7-48dc-b1a1-838e30651cd0",
+                            "id": "c6825cf1-5915-4e26-9f68-235542fdfc06",
                             "ord": "a0"
                           },
                           {
                             "kind": "element",
                             "tag": "p",
                             "class": "text-sm font-medium uppercase tracking-wide text-secondary",
-                            "children": ["45 min"],
-                            "id": "fbd78dda-edbb-481f-bc26-ef502ab3558a",
+                            "children": [
+                              "45 min"
+                            ],
+                            "id": "d4578a85-c677-4a25-a9cd-d6803cc9f4e7",
                             "ord": "a1"
                           },
                           {
                             "kind": "element",
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
-                            "children": ["The state check, done right the first time."],
-                            "id": "0a9da140-ca06-498c-ba65-cd40463fe9f9",
+                            "children": [
+                              "The state check, done right the first time."
+                            ],
+                            "id": "b5b3b431-a1a3-4e85-a4e8-46e89e4b5b7e",
                             "ord": "a2"
                           }
                         ],
-                        "id": "cc874539-d16a-4906-86c5-f4882d86ea83",
+                        "id": "cc92f06b-b2b6-4ce6-b214-7b3d4f65ff81",
                         "ord": "a5"
                       }
                     ],
-                    "id": "9d340264-8acc-4f6d-a663-268b8cc4ab1b",
+                    "id": "ca8d0e66-e549-423a-8814-8934f4d21235",
                     "ord": "a1"
                   },
                   {
@@ -1179,20 +1271,22 @@
                         "attrs": {
                           "href": "/book"
                         },
-                        "children": ["See everything & book"],
-                        "id": "e06d5eeb-1863-41c7-b197-60417e872e19",
+                        "children": [
+                          "See everything & book"
+                        ],
+                        "id": "965cb40e-d46a-4ff3-88cb-1dcd3c96e3ac",
                         "ord": "a0"
                       }
                     ],
-                    "id": "9f7a409f-6a98-4ee1-9297-666b9b045ed9",
+                    "id": "18daee91-c999-495b-95c7-3db3a76f473c",
                     "ord": "a2"
                   }
                 ],
-                "id": "804b24cf-f127-4444-bca1-421ffe6c2bb0",
+                "id": "66f330e7-068c-48ca-b55d-b571d1208305",
                 "ord": "a0"
               }
             ],
-            "id": "9f9a70a9-c19d-4149-a770-d783269c4347",
+            "id": "f247ed82-a1f1-44e4-9992-1154bdf6a5e1",
             "ord": "a2"
           },
           {
@@ -1214,7 +1308,7 @@
                       "alt": "Open garage bay doors with the shop team working inside",
                       "loading": "lazy"
                     },
-                    "id": "d83d72d2-a2c1-4e3b-b198-392c26aa094c",
+                    "id": "6b81b4cd-8f74-40f2-851a-2352fe76b728",
                     "ord": "a0"
                   },
                   {
@@ -1226,8 +1320,10 @@
                         "kind": "element",
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
-                        "children": ["Thirty years on the same corner"],
-                        "id": "fd48deed-16d2-45d8-94be-3b3b213e5a1d",
+                        "children": [
+                          "Thirty years on the same corner"
+                        ],
+                        "id": "3b45af1e-06b8-449c-9f99-71279ec02eaf",
                         "ord": "a0"
                       },
                       {
@@ -1237,7 +1333,7 @@
                         "children": [
                           "Ray Sparrow opened these bay doors in 1994, and his boy Danny grew up sweeping the floors before he started turning wrenches himself. Most of our customers have been coming for a decade or more — and they send their kids."
                         ],
-                        "id": "3f95b4b9-1587-4bd1-857e-e7ef83565c8b",
+                        "id": "525df287-d28c-46dc-b755-2366a034f6c8",
                         "ord": "a1"
                       },
                       {
@@ -1247,7 +1343,7 @@
                         "children": [
                           "We’re not the biggest shop in town, and we don’t try to be. We just do good work for a fair price and tell you the truth, so you never have to wonder whether you really needed it."
                         ],
-                        "id": "2b8ec1b3-a5b3-44a9-9056-7982cff209c7",
+                        "id": "24c50bf6-ff9d-4424-a5ed-09cceb35acb1",
                         "ord": "a2"
                       },
                       {
@@ -1262,24 +1358,26 @@
                             "attrs": {
                               "href": "/book"
                             },
-                            "children": ["Book your visit"],
-                            "id": "7099dba8-175a-4473-95c1-80a54c49c48f",
+                            "children": [
+                              "Book your visit"
+                            ],
+                            "id": "4ead3ac2-9fde-4a91-947b-d6df75fd9aa9",
                             "ord": "a0"
                           }
                         ],
-                        "id": "02f114f5-7869-40bd-aecc-74618bd41fce",
+                        "id": "1a655935-81fc-4feb-9a69-b10e9dd38a5f",
                         "ord": "a3"
                       }
                     ],
-                    "id": "1b88107e-19de-45a2-82c4-00146bbf434d",
+                    "id": "65e56bee-c614-4add-b9b3-934cd5801b6d",
                     "ord": "a1"
                   }
                 ],
-                "id": "c3b7bb7f-adb2-478b-bf1a-d60cc9854d98",
+                "id": "ad19b43e-26ea-47c5-af90-f2d0669ec327",
                 "ord": "a0"
               }
             ],
-            "id": "f6e76b9e-1bdf-4fd3-be04-1c58ef15a850",
+            "id": "4b8fff21-35c8-4a85-8dde-6a4567ce4460",
             "ord": "a3"
           },
           {
@@ -1301,8 +1399,10 @@
                         "kind": "element",
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
-                        "children": ["The people working on your car"],
-                        "id": "00d19c6d-5c3a-47df-86bc-38d044127c5a",
+                        "children": [
+                          "The people working on your car"
+                        ],
+                        "id": "41abcbc4-e8eb-4d85-ab9a-87ed5dec7f1e",
                         "ord": "a0"
                       },
                       {
@@ -1312,11 +1412,11 @@
                         "children": [
                           "Real names, real faces. Book with whoever you like — they all trained in this shop."
                         ],
-                        "id": "d4e13aee-42a9-45ca-bfee-9e72ea52d67b",
+                        "id": "108110f8-dac3-4be7-bda0-5b2119b806b0",
                         "ord": "a1"
                       }
                     ],
-                    "id": "7fb72664-5d28-4baa-a083-8b21c99801ff",
+                    "id": "1c81d6c5-edf7-4893-abee-e3ec0544fcd7",
                     "ord": "a0"
                   },
                   {
@@ -1338,7 +1438,7 @@
                               "alt": "Ray Sparrow, owner and master technician",
                               "loading": "lazy"
                             },
-                            "id": "9f3ecc46-a291-4407-be1b-550b1ab83376",
+                            "id": "5d73aed7-f280-4693-8177-c16f648e9998",
                             "ord": "a0"
                           },
                           {
@@ -1350,16 +1450,20 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
-                                "children": ["Ray Sparrow"],
-                                "id": "1fb8a1f8-1784-4aa9-a458-737afb39b461",
+                                "children": [
+                                  "Ray Sparrow"
+                                ],
+                                "id": "0be1ded6-6379-47a9-9a1f-2bbea526d048",
                                 "ord": "a0"
                               },
                               {
                                 "kind": "element",
                                 "tag": "p",
                                 "class": "text-sm font-medium uppercase tracking-wide text-secondary",
-                                "children": ["Owner · Master technician"],
-                                "id": "bb231c68-fb84-4465-9a0d-a5fa501f35e5",
+                                "children": [
+                                  "Owner · Master technician"
+                                ],
+                                "id": "a8e8856b-f02e-4f91-8526-eac4e52ea8a9",
                                 "ord": "a1"
                               },
                               {
@@ -1369,15 +1473,15 @@
                                 "children": [
                                   "Started the shop in 1994. Engines, diagnostics, and the one who’ll tell you straight if a repair isn’t worth it."
                                 ],
-                                "id": "55581c0b-faea-42c7-b1da-d30c9482d5fb",
+                                "id": "44eadbda-6b61-4a39-b70a-efd810b47aaf",
                                 "ord": "a2"
                               }
                             ],
-                            "id": "7ad237bd-f939-498e-b22e-480bfd2d5e84",
+                            "id": "4ee2dddb-739b-47fa-a144-be0bf52b81ba",
                             "ord": "a1"
                           }
                         ],
-                        "id": "b78bc480-446a-4ace-bd6f-e11cf5b9f839",
+                        "id": "c92d6f28-6351-4224-9076-812fee7dc8f4",
                         "ord": "a0"
                       },
                       {
@@ -1394,7 +1498,7 @@
                               "alt": "Danny Sparrow, service technician",
                               "loading": "lazy"
                             },
-                            "id": "05a24b0a-dccd-44d4-bf6e-fb5db00d30e1",
+                            "id": "e9e2ce08-d68d-4f18-b188-199153357961",
                             "ord": "a0"
                           },
                           {
@@ -1406,16 +1510,20 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
-                                "children": ["Danny Sparrow"],
-                                "id": "1474bd26-aa2f-4e96-85b4-3a3a80690ab2",
+                                "children": [
+                                  "Danny Sparrow"
+                                ],
+                                "id": "d29016e3-78c0-452e-bdca-aa3639286877",
                                 "ord": "a0"
                               },
                               {
                                 "kind": "element",
                                 "tag": "p",
                                 "class": "text-sm font-medium uppercase tracking-wide text-secondary",
-                                "children": ["Service technician"],
-                                "id": "16e5e64a-a72d-4f68-b736-940a9350c60d",
+                                "children": [
+                                  "Service technician"
+                                ],
+                                "id": "489b11aa-0931-467f-b395-d100674fcc96",
                                 "ord": "a1"
                               },
                               {
@@ -1425,15 +1533,15 @@
                                 "children": [
                                   "Grew up in the shop. Oil, tires, inspections and keeping your maintenance on track before things break."
                                 ],
-                                "id": "7048b54c-1831-4469-94af-2dca17200679",
+                                "id": "4dd6a115-24e2-4f06-8bd8-8243c85e4047",
                                 "ord": "a2"
                               }
                             ],
-                            "id": "5d575229-d4b8-46d3-b230-07082bc41ac8",
+                            "id": "9f3589a4-5926-4820-96c6-f825f645b094",
                             "ord": "a1"
                           }
                         ],
-                        "id": "81db9163-2782-418f-9c5f-6fb504548c27",
+                        "id": "2a48a3c3-1a8f-4a3e-a133-5b82887629c2",
                         "ord": "a1"
                       },
                       {
@@ -1450,7 +1558,7 @@
                               "alt": "Miguel Reyes, brake and suspension tech",
                               "loading": "lazy"
                             },
-                            "id": "138e8f60-5c90-448e-a1bf-ff838d5c78ea",
+                            "id": "33005c62-2636-4b2b-9960-46fffe1bb5de",
                             "ord": "a0"
                           },
                           {
@@ -1462,16 +1570,20 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
-                                "children": ["Miguel Reyes"],
-                                "id": "6f6512b7-88c2-4db5-9fca-5fe9469fff63",
+                                "children": [
+                                  "Miguel Reyes"
+                                ],
+                                "id": "155f53a0-e49a-4a2c-828b-e097f3e403fa",
                                 "ord": "a0"
                               },
                               {
                                 "kind": "element",
                                 "tag": "p",
                                 "class": "text-sm font-medium uppercase tracking-wide text-secondary",
-                                "children": ["Brake & suspension tech"],
-                                "id": "d5a18e6b-0b1a-49bb-ac0a-568a02508710",
+                                "children": [
+                                  "Brake & suspension tech"
+                                ],
+                                "id": "934f5743-fc66-4b74-baec-23fc0b926e7e",
                                 "ord": "a1"
                               },
                               {
@@ -1481,27 +1593,27 @@
                                 "children": [
                                   "Fifteen years on brakes, steering and suspension. If it clunks, pulls or squeals, Miguel finds it."
                                 ],
-                                "id": "ff230de3-5ef6-4c36-896c-b37929c7d34d",
+                                "id": "32899e9c-0f92-466c-9c8e-17df7160f130",
                                 "ord": "a2"
                               }
                             ],
-                            "id": "d57236c1-62d7-4ca1-a432-9ac898398e5b",
+                            "id": "1a8f4969-3d32-475f-ae4d-adfe6b903530",
                             "ord": "a1"
                           }
                         ],
-                        "id": "7b26c91f-8eb5-4510-a79f-41bd93ad5d45",
+                        "id": "e3c329df-7cc7-4454-814c-2410de4672a0",
                         "ord": "a2"
                       }
                     ],
-                    "id": "cbfcc0a8-1262-4885-966a-e8d55c7742ff",
+                    "id": "2f17df4c-7e80-469b-a57f-97dce2a512af",
                     "ord": "a1"
                   }
                 ],
-                "id": "4cc4b2f0-96d3-4e0c-b5c3-78bdfa52b6fd",
+                "id": "a16c4e22-6625-48a3-ac01-823d101d8898",
                 "ord": "a0"
               }
             ],
-            "id": "908fae3a-b596-4bcf-ae1c-e3348c0f1584",
+            "id": "543f22ba-e841-4e13-abf5-a09c36a424a0",
             "ord": "a4"
           },
           {
@@ -1521,23 +1633,25 @@
                     "children": [
                       "“Another shop quoted me $1,800 for “everything.” Ray looked at it, fixed the one thing that was actually wrong for $240, and told me the rest could wait. That’s why I’ll never go anywhere else.”"
                     ],
-                    "id": "8f749d4f-3b68-40c5-bb17-cacfbb10993a",
+                    "id": "ea38e0c1-b7ae-496e-9ca9-8f5115424549",
                     "ord": "a0"
                   },
                   {
                     "kind": "element",
                     "tag": "p",
                     "class": "text-sm font-semibold uppercase tracking-wide opacity-80",
-                    "children": ["Dana W., customer since 2016"],
-                    "id": "32dd6364-ca83-4d9b-b097-f3b2961fd710",
+                    "children": [
+                      "Dana W., customer since 2016"
+                    ],
+                    "id": "783e6aa4-5e97-46fe-953d-8fe55a5cf532",
                     "ord": "a1"
                   }
                 ],
-                "id": "6cd9985d-dfca-44ed-816e-ae0f7adff502",
+                "id": "b59282cc-a282-41bb-8291-b8f243896e52",
                 "ord": "a0"
               }
             ],
-            "id": "d62c51c8-6656-4966-aeb7-140bcd124b7f",
+            "id": "b9e5305d-2ce7-4b3e-9dcd-65de84c720d7",
             "ord": "a5"
           },
           {
@@ -1554,8 +1668,10 @@
                     "kind": "element",
                     "tag": "h2",
                     "class": "text-3xl font-bold tracking-tight @3xl:text-4xl",
-                    "children": ["Need something looked at?"],
-                    "id": "b7a8ba63-1684-4675-bae4-5896aa9410e9",
+                    "children": [
+                      "Need something looked at?"
+                    ],
+                    "id": "36aa34cb-51dc-4d89-a134-b9b350847364",
                     "ord": "a0"
                   },
                   {
@@ -1565,7 +1681,7 @@
                     "children": [
                       "Pick a service or grab a free estimate, choose a time that works, and we’ll have a bay ready. It takes about a minute."
                     ],
-                    "id": "c4f3a346-0847-4a15-b422-e1960925cd87",
+                    "id": "01f08212-8293-4ccc-b99b-21ee0ef1e86a",
                     "ord": "a1"
                   },
                   {
@@ -1575,16 +1691,18 @@
                     "attrs": {
                       "href": "/book"
                     },
-                    "children": ["Book a service"],
-                    "id": "23914131-d5fe-42f5-a2c9-37b9fc9301dc",
+                    "children": [
+                      "Book a service"
+                    ],
+                    "id": "8d458f36-61eb-4eba-9192-28a7dd1b0447",
                     "ord": "a2"
                   }
                 ],
-                "id": "84dfb5a5-2e81-4f5c-a7e5-81624387dc4e",
+                "id": "7b155e16-2bf0-466d-b030-00511fff0337",
                 "ord": "a0"
               }
             ],
-            "id": "eade8f06-19b2-448d-a803-fa0b0207351c",
+            "id": "48a46793-eb04-41d6-8f54-062f4d7efd9a",
             "ord": "a6"
           }
         ]
@@ -1601,7 +1719,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "07e8ebec-35b2-4591-b5db-e6f4583a2746",
+        "id": "3b712a2f-63a1-4749-bb55-e01f7c50fd86",
         "children": [
           {
             "kind": "element",
@@ -1617,14 +1735,14 @@
                   "alt": "Open garage bay doors with the shop team working inside",
                   "loading": "eager"
                 },
-                "id": "68f7bba6-99f3-4ac6-a97a-8c8ad6918505",
+                "id": "f0013341-1a9e-41f4-867a-7a10538966a3",
                 "ord": "a0"
               },
               {
                 "kind": "element",
                 "tag": "div",
                 "class": "absolute inset-0 bg-black/65",
-                "id": "18ca1c3d-e314-4e84-882a-5f4465210b36",
+                "id": "e99f459b-1aed-4f6b-a878-14431ba6f209",
                 "ord": "a1"
               },
               {
@@ -1636,8 +1754,10 @@
                     "kind": "element",
                     "tag": "h1",
                     "class": "max-w-3xl text-4xl font-bold leading-tight tracking-tight @2xl:text-5xl @3xl:text-6xl",
-                    "children": ["Book a visit"],
-                    "id": "fd160474-cd6e-465e-947e-379c47ff6a7a",
+                    "children": [
+                      "Book a visit"
+                    ],
+                    "id": "c5bc0c8b-4f6d-4640-989d-78b314af26db",
                     "ord": "a0"
                   },
                   {
@@ -1647,7 +1767,7 @@
                     "children": [
                       "Choose what you need — a service, a diagnostic, or a free estimate — to see live availability, then pick your time and tech."
                     ],
-                    "id": "b3afaff7-a089-4224-bb79-522fd6468b28",
+                    "id": "4edbf653-89b1-4732-8970-68ac5312c8d7",
                     "ord": "a1"
                   },
                   {
@@ -1662,20 +1782,22 @@
                         "attrs": {
                           "href": "/book"
                         },
-                        "children": ["See services below"],
-                        "id": "30aa2113-2f01-4679-acc7-40bedfd7f9b8",
+                        "children": [
+                          "See services below"
+                        ],
+                        "id": "42ed3e98-3f89-4749-9416-d09bde33156a",
                         "ord": "a0"
                       }
                     ],
-                    "id": "d91b5d67-db30-4e40-bcd1-c15a922796ba",
+                    "id": "624f6a84-d12c-44e4-8c0b-f31a30cee638",
                     "ord": "a2"
                   }
                 ],
-                "id": "138cd65d-aacd-4470-b0f6-040139f30751",
+                "id": "ce94520c-dfc9-4a59-9b89-a9c4c06e9972",
                 "ord": "a2"
               }
             ],
-            "id": "2fcca1e6-0ed1-4599-a8b0-88676a0655bc",
+            "id": "44fc36a5-6587-4db9-9397-fc1acda3e15d",
             "ord": "a0"
           },
           {
@@ -1683,7 +1805,7 @@
             "component": "scheduling.services",
             "class": "mx-auto w-full max-w-5xl px-6 py-8",
             "locked": "host",
-            "id": "29e9f3d8-b70b-4a03-8dbf-5eaa3720a7e8",
+            "id": "3c61e3ac-5bb3-4add-82b6-eb8eec197898",
             "ord": "a1"
           },
           {
@@ -1705,8 +1827,10 @@
                         "kind": "element",
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
-                        "children": ["Good to know"],
-                        "id": "86fa552d-402d-4d61-a35d-3fd7cfe4bec9",
+                        "children": [
+                          "Good to know"
+                        ],
+                        "id": "e69d7a94-d236-4564-bbb9-e886330c171b",
                         "ord": "a0"
                       },
                       {
@@ -1716,11 +1840,11 @@
                         "children": [
                           "What happens once you pick a time — and how to change it if something comes up."
                         ],
-                        "id": "7fd4a060-2040-4c39-b73b-08b2de0f5646",
+                        "id": "3429816c-ac70-43a5-8ae9-5226571e0fb9",
                         "ord": "a1"
                       }
                     ],
-                    "id": "c7135e6b-e33f-4337-bd67-08a91a6493ea",
+                    "id": "0119d9c0-52d6-4f9e-8939-fd2431551421",
                     "ord": "a0"
                   },
                   {
@@ -1737,8 +1861,10 @@
                             "kind": "element",
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
-                            "children": ["Standard visit"],
-                            "id": "baeba765-fdd0-450c-b720-275b2c47f626",
+                            "children": [
+                              "Standard visit"
+                            ],
+                            "id": "6b10f8c2-4a45-430f-9ac7-ee8d6552618a",
                             "ord": "a0"
                           },
                           {
@@ -1748,7 +1874,7 @@
                             "children": [
                               "Give us a day’s notice to move or cancel and there’s no charge. We’ll text a reminder the day before and two hours ahead so nothing sneaks up on you."
                             ],
-                            "id": "8bd63f4b-9525-4df6-968f-95651f2d98d3",
+                            "id": "c758f50e-1603-4727-8432-b99762d38034",
                             "ord": "a1"
                           },
                           {
@@ -1758,11 +1884,11 @@
                             "children": [
                               "No deposit to book. Change or cancel free up to 24 hours before."
                             ],
-                            "id": "21f69d5c-1500-4274-b3a0-11ee3e4910f7",
+                            "id": "b568d452-3e20-4075-a932-c2005dfec8f2",
                             "ord": "a2"
                           }
                         ],
-                        "id": "680bcb76-d266-4915-a519-799eb80420f0",
+                        "id": "735af60f-15af-4699-81fd-e7889859e9cd",
                         "ord": "a0"
                       },
                       {
@@ -1774,8 +1900,10 @@
                             "kind": "element",
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
-                            "children": ["Drop-off job"],
-                            "id": "80514420-dc8a-481f-b6b3-190b929fc6f8",
+                            "children": [
+                              "Drop-off job"
+                            ],
+                            "id": "5cc99cc5-ecaa-4488-80f3-122d8300c407",
                             "ord": "a0"
                           },
                           {
@@ -1785,7 +1913,7 @@
                             "children": [
                               "For bigger jobs, drop the car and keys the evening before or first thing that morning. We’ll call with a plain-English estimate before we touch a thing, and you approve the work."
                             ],
-                            "id": "39de0220-6d82-410c-b9e6-4a58cce261e7",
+                            "id": "57011500-f8e7-49d2-b47f-93fa1aae906b",
                             "ord": "a1"
                           },
                           {
@@ -1795,23 +1923,23 @@
                             "children": [
                               "No deposit to book. Change or cancel free up to 24 hours before."
                             ],
-                            "id": "7f8ea547-3611-4bb5-85bf-45f096614757",
+                            "id": "04846101-2ff9-4bcd-b2f9-5b18c1816e9c",
                             "ord": "a2"
                           }
                         ],
-                        "id": "dea8a2c7-8fae-4220-9e4c-e9ff725d34f0",
+                        "id": "c7a8488f-5526-4db5-b1c2-23235ec85c0f",
                         "ord": "a1"
                       }
                     ],
-                    "id": "3bda5154-a085-4008-aaa4-31c36fe88207",
+                    "id": "6e31db04-bc39-4610-9ee1-c4cbce57b6fb",
                     "ord": "a1"
                   }
                 ],
-                "id": "7ba86bca-c360-421f-8936-d314ed41cadf",
+                "id": "fc34c4b9-f4fc-4f91-b057-1be671f6ff23",
                 "ord": "a0"
               }
             ],
-            "id": "4efd3866-8955-4a18-a06b-5c51243a3b63",
+            "id": "71e44c8b-0ed9-4f0f-85b1-d51bc6d7cca9",
             "ord": "a2"
           }
         ]
@@ -1828,7 +1956,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "3cf16b11-2345-458a-b49d-1f8fb2cf2fef",
+        "id": "cf4f5567-4d27-4183-a1cf-e45d59715708",
         "children": [
           {
             "kind": "element",
@@ -1849,7 +1977,7 @@
                       "alt": "A car up on a lift in a clean, well-lit neighborhood repair shop",
                       "loading": "lazy"
                     },
-                    "id": "6721532a-c15d-4a02-9ca3-586d64cda8b8",
+                    "id": "14dc12ca-1578-4b4f-a09a-f3fd93d62022",
                     "ord": "a0"
                   },
                   {
@@ -1861,8 +1989,10 @@
                         "kind": "element",
                         "tag": "h1",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
-                        "children": ["About Sparrow & Sons Auto"],
-                        "id": "448e8bf4-c2e8-4584-abbc-8857b225812f",
+                        "children": [
+                          "About Sparrow & Sons Auto"
+                        ],
+                        "id": "978b90bf-7805-40e3-a9ac-66e905f66f9a",
                         "ord": "a0"
                       },
                       {
@@ -1872,7 +2002,7 @@
                         "children": [
                           "We’re a family shop, plain and simple. Ray started it in 1994 with two bays and a promise: treat every car like it belongs to a neighbor, because most of the time it does."
                         ],
-                        "id": "72f1de58-0a85-4188-b952-acb076eb2d2c",
+                        "id": "09a903fa-0de4-4162-8094-1454881b6b23",
                         "ord": "a1"
                       },
                       {
@@ -1882,7 +2012,7 @@
                         "children": [
                           "That promise still runs the place. We don’t sell you work you don’t need, we don’t hide behind jargon, and we don’t hand your car to someone who’s learning on the job. You get certified techs, honest estimates, and a warranty that means what it says."
                         ],
-                        "id": "96cc1884-94e8-4d0e-aeab-18048c1460dc",
+                        "id": "9af01f4b-2d0c-471b-92e6-844efb0ef680",
                         "ord": "a2"
                       },
                       {
@@ -1897,24 +2027,26 @@
                             "attrs": {
                               "href": "/book"
                             },
-                            "children": ["Book a visit"],
-                            "id": "bf067020-0ef6-4ed3-83d8-d3183b29731a",
+                            "children": [
+                              "Book a visit"
+                            ],
+                            "id": "3347af3f-f923-4b5b-877b-ad95f996f8cd",
                             "ord": "a0"
                           }
                         ],
-                        "id": "363db18b-1725-49f1-a0e9-4cb60e8cfa67",
+                        "id": "08c3425a-557d-4e2a-afed-0708b3750404",
                         "ord": "a3"
                       }
                     ],
-                    "id": "2585d411-dccf-4c17-8f4d-544387e91a15",
+                    "id": "3c722ffb-bfab-48d3-b06e-4d2775c45262",
                     "ord": "a1"
                   }
                 ],
-                "id": "5556c698-d223-4eaa-9100-b44ce4994529",
+                "id": "48d048c8-d6cd-47ad-9074-5688dbf4cf94",
                 "ord": "a0"
               }
             ],
-            "id": "4b6ddfdc-133d-4b6e-a400-4d2ff9d75b5d",
+            "id": "54966e10-40e9-4da2-a9db-8c51d94e7b14",
             "ord": "a0"
           },
           {
@@ -1931,8 +2063,10 @@
                     "kind": "element",
                     "tag": "h2",
                     "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
-                    "children": ["How we work"],
-                    "id": "bd6881b2-457d-4f5b-b824-97f2749b8efd",
+                    "children": [
+                      "How we work"
+                    ],
+                    "id": "f9906e4a-e3f9-424d-893a-47357bda5a72",
                     "ord": "a0"
                   },
                   {
@@ -1949,8 +2083,10 @@
                             "kind": "element",
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
-                            "children": ["We look before we quote"],
-                            "id": "1e445409-520c-4b57-a306-92998b624fd7",
+                            "children": [
+                              "We look before we quote"
+                            ],
+                            "id": "158ec5d6-1639-48b7-8c26-ded28da31d2b",
                             "ord": "a0"
                           },
                           {
@@ -1960,11 +2096,11 @@
                             "children": [
                               "Every job starts with an actual inspection. You get a plain-English estimate and approve the work before we start."
                             ],
-                            "id": "9a420d74-91b9-4237-adbc-50de6c7de1aa",
+                            "id": "43cffa0c-4e22-4b21-af56-5dfd6309c6ae",
                             "ord": "a1"
                           }
                         ],
-                        "id": "5b64f815-9263-471c-94bc-754e50745c68",
+                        "id": "93687eba-1c15-4ea6-aa58-db932ab047c8",
                         "ord": "a0"
                       },
                       {
@@ -1976,8 +2112,10 @@
                             "kind": "element",
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
-                            "children": ["Only what it needs"],
-                            "id": "30d818b3-b112-48df-8ec0-f71d40ba597c",
+                            "children": [
+                              "Only what it needs"
+                            ],
+                            "id": "0c9ed163-31d1-4817-a5e4-d15f1615c354",
                             "ord": "a0"
                           },
                           {
@@ -1987,11 +2125,11 @@
                             "children": [
                               "If something can wait, we’ll tell you. If it’s a safety issue, we’ll tell you that too. Either way, it’s your call."
                             ],
-                            "id": "e7287cf8-5d3b-4d0d-9c92-e0414813c011",
+                            "id": "7be035f1-7c7d-4b56-ace5-12505a29440d",
                             "ord": "a1"
                           }
                         ],
-                        "id": "c0643a5c-d10a-4fe2-b8e5-95d387154e4d",
+                        "id": "83051e80-2bd9-4700-84f6-462916d73fb0",
                         "ord": "a1"
                       },
                       {
@@ -2003,8 +2141,10 @@
                             "kind": "element",
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
-                            "children": ["Backed for 24 months"],
-                            "id": "09da864b-d0b8-42d5-902c-fcd0d1517f47",
+                            "children": [
+                              "Backed for 24 months"
+                            ],
+                            "id": "f1475b96-c7c5-4596-af7f-a2a80f5c986d",
                             "ord": "a0"
                           },
                           {
@@ -2014,23 +2154,23 @@
                             "children": [
                               "Parts and labor are covered for 24 months or 24,000 miles. Come back if it’s not right and we’ll take care of it."
                             ],
-                            "id": "327a3e26-f6f8-4a3c-8f9f-dd9d5125418e",
+                            "id": "51890679-33b2-4cf4-9d78-273dd3f4575b",
                             "ord": "a1"
                           }
                         ],
-                        "id": "461e6806-0dde-4347-9d29-f3f42e166501",
+                        "id": "67ff4e9d-917c-41d4-ba9b-3bbd60d03ce0",
                         "ord": "a2"
                       }
                     ],
-                    "id": "6258cdc2-9fb5-434e-b8f4-b8fa8e5362a1",
+                    "id": "c6a74f42-d9b0-4693-bb3b-78ccc7630432",
                     "ord": "a1"
                   }
                 ],
-                "id": "b3b71fce-d671-4bf9-b7b9-e29f266c5f41",
+                "id": "283db4b6-2f0c-4827-b079-75efa9aafcd0",
                 "ord": "a0"
               }
             ],
-            "id": "bb0a15fd-145f-41d5-8282-5edc244e39fc",
+            "id": "bd03c8d3-42d1-4e2f-ab40-c32f3af5daff",
             "ord": "a1"
           }
         ]
@@ -2047,7 +2187,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "1c6f90d6-dbad-435f-9c32-1bb139915776",
+        "id": "d7cd4e40-43bc-41ce-8f7a-494563ce581c",
         "children": [
           {
             "kind": "element",
@@ -2068,8 +2208,10 @@
                         "kind": "element",
                         "tag": "h1",
                         "class": "text-4xl font-bold tracking-tight text-base-content @3xl:text-5xl",
-                        "children": ["Get in touch"],
-                        "id": "adff0815-acb3-4401-94fb-af85c08496f4",
+                        "children": [
+                          "Get in touch"
+                        ],
+                        "id": "182f65a8-4a6b-4361-b62e-72188fd220ec",
                         "ord": "a0"
                       },
                       {
@@ -2079,11 +2221,11 @@
                         "children": [
                           "Questions before you book? Send a note and Sparrow & Sons Auto will get back to you — usually the same day."
                         ],
-                        "id": "796b0a56-fa4a-4668-ac35-222a57096e4d",
+                        "id": "ea834d9e-a99e-4126-9d88-de4518d7d477",
                         "ord": "a1"
                       }
                     ],
-                    "id": "a3fbd814-5721-4289-bac6-314192c8b903",
+                    "id": "84e31eab-9005-4345-81b4-9a9995dc52e1",
                     "ord": "a0"
                   },
                   {
@@ -2095,8 +2237,10 @@
                         "kind": "element",
                         "tag": "span",
                         "class": "text-base font-medium text-base-content",
-                        "children": ["Call us"],
-                        "id": "560603af-6b64-4924-9407-ed18748c1110",
+                        "children": [
+                          "Call us"
+                        ],
+                        "id": "c6c4b27f-5f67-418c-b4ed-44d5ae80c90f",
                         "ord": "a0"
                       },
                       {
@@ -2107,12 +2251,14 @@
                           {
                             "kind": "element",
                             "tag": "span",
-                            "children": ["(555) 123-4567"],
+                            "children": [
+                              "(555) 123-4567"
+                            ],
                             "data": {
                               "kind": "value",
                               "ref": "site.identity.phone"
                             },
-                            "id": "785934ff-36d8-4602-a100-bc3742d08b5b",
+                            "id": "6a3fac99-47e2-42de-b979-397b2b4edc7b",
                             "ord": "a0"
                           }
                         ],
@@ -2121,7 +2267,7 @@
                           "ref": "site.identity.phoneHref",
                           "attr": "href"
                         },
-                        "id": "dc4e5cdb-7c80-4ba9-824f-ad6f0b859353",
+                        "id": "69c3d001-ebd8-452c-823b-cb64929a4820",
                         "ord": "a1"
                       }
                     ],
@@ -2129,7 +2275,7 @@
                       "kind": "visible",
                       "ref": "site.identity.phone"
                     },
-                    "id": "8c6cfd2d-3dc3-4814-b027-b3d806dabd32",
+                    "id": "0fa62d88-5081-44b9-8fa4-fc95389f12a6",
                     "ord": "a1"
                   },
                   {
@@ -2141,8 +2287,10 @@
                         "kind": "element",
                         "tag": "span",
                         "class": "text-base font-medium text-base-content",
-                        "children": ["Email us"],
-                        "id": "fcfce486-357d-446b-ad8a-e41b207324e3",
+                        "children": [
+                          "Email us"
+                        ],
+                        "id": "33cae4a4-9eb2-43de-a780-a4b8657c13ff",
                         "ord": "a0"
                       },
                       {
@@ -2153,12 +2301,14 @@
                           {
                             "kind": "element",
                             "tag": "span",
-                            "children": ["hello@yourbusiness.com"],
+                            "children": [
+                              "hello@yourbusiness.com"
+                            ],
                             "data": {
                               "kind": "value",
                               "ref": "site.identity.email"
                             },
-                            "id": "18a5a967-7226-48c7-adfe-937f0d9a9762",
+                            "id": "96c2d678-1a84-4b74-95e1-e4a32e308cc5",
                             "ord": "a0"
                           }
                         ],
@@ -2167,7 +2317,7 @@
                           "ref": "site.identity.emailHref",
                           "attr": "href"
                         },
-                        "id": "4e27f581-ba5e-4a07-9bf7-1efc19598ea8",
+                        "id": "8b625f29-f835-4301-818c-870abbb001f2",
                         "ord": "a1"
                       }
                     ],
@@ -2175,7 +2325,7 @@
                       "kind": "visible",
                       "ref": "site.identity.email"
                     },
-                    "id": "a2c89749-b6b2-4922-8ccb-4792d0fa91bc",
+                    "id": "afba67fd-a6a0-475e-8122-84123f44790e",
                     "ord": "a2"
                   },
                   {
@@ -2192,8 +2342,10 @@
                             "kind": "element",
                             "tag": "span",
                             "class": "text-base font-medium text-base-content",
-                            "children": ["Your name"],
-                            "id": "34774944-7751-47bf-bebd-4d81172395d8",
+                            "children": [
+                              "Your name"
+                            ],
+                            "id": "1738666b-29d8-4439-8266-930a0cd61c52",
                             "ord": "a0"
                           },
                           {
@@ -2205,11 +2357,11 @@
                               "name": "name",
                               "required": true
                             },
-                            "id": "d9dce3aa-e1b3-4dbd-a956-e59e63f1f1c9",
+                            "id": "50b11381-6bb5-439e-a6b8-8f06f4165d67",
                             "ord": "a1"
                           }
                         ],
-                        "id": "88808dc1-70a0-4724-97ca-a9de01a5c9ab",
+                        "id": "f2b653bc-12a5-4db1-9d71-1117a7db4ba6",
                         "ord": "a0"
                       },
                       {
@@ -2221,8 +2373,10 @@
                             "kind": "element",
                             "tag": "span",
                             "class": "text-base font-medium text-base-content",
-                            "children": ["Email address"],
-                            "id": "26fca6a2-00cf-4735-a269-16ce6d02aa17",
+                            "children": [
+                              "Email address"
+                            ],
+                            "id": "4b7ed5e4-9e74-4845-a12f-f2a2bf7439ed",
                             "ord": "a0"
                           },
                           {
@@ -2234,11 +2388,11 @@
                               "name": "email",
                               "required": true
                             },
-                            "id": "8b74129f-8d34-4e4e-bd0d-cb3fb58a215c",
+                            "id": "68b18e19-fc5f-41fa-ad84-c5f55fc8242f",
                             "ord": "a1"
                           }
                         ],
-                        "id": "8cd17ada-a887-4388-b22f-ccdcc1a11cfe",
+                        "id": "06703aef-78fc-4757-bbed-63c5bbc7db91",
                         "ord": "a1"
                       },
                       {
@@ -2250,8 +2404,10 @@
                             "kind": "element",
                             "tag": "span",
                             "class": "text-base font-medium text-base-content",
-                            "children": ["Phone number"],
-                            "id": "64487571-c25d-41f5-86d4-eb5d7e4c235d",
+                            "children": [
+                              "Phone number"
+                            ],
+                            "id": "343274c9-84ab-4c82-bc48-8ae0d4e8a510",
                             "ord": "a0"
                           },
                           {
@@ -2262,11 +2418,11 @@
                               "type": "tel",
                               "name": "phone"
                             },
-                            "id": "39b98e4b-694a-4f3d-8e49-560c208b15ed",
+                            "id": "ff424dd0-11b5-4f26-bd54-9b3a1c55a047",
                             "ord": "a1"
                           }
                         ],
-                        "id": "3c15ac6f-8a8b-46f4-8aeb-5c383028f0b6",
+                        "id": "c31ae135-660a-495f-b674-af2713017554",
                         "ord": "a2"
                       },
                       {
@@ -2278,8 +2434,10 @@
                             "kind": "element",
                             "tag": "span",
                             "class": "text-base font-medium text-base-content",
-                            "children": ["How can we help?"],
-                            "id": "0dd0828e-24aa-48e8-81a7-d180f7d4db3b",
+                            "children": [
+                              "How can we help?"
+                            ],
+                            "id": "ae965773-742d-43a2-853f-468038373eae",
                             "ord": "a0"
                           },
                           {
@@ -2289,11 +2447,11 @@
                             "attrs": {
                               "name": "message"
                             },
-                            "id": "0162aa76-7ad0-4e36-9cbe-6527dee38cde",
+                            "id": "83f5b042-319b-453d-bd50-1ecb6bddad76",
                             "ord": "a1"
                           }
                         ],
-                        "id": "333efe65-adc7-4c9f-9021-a2489e5bc4da",
+                        "id": "329d6337-6c91-46e7-a8ce-12bf7ca038ba",
                         "ord": "a3"
                       },
                       {
@@ -2308,12 +2466,14 @@
                             "attrs": {
                               "type": "submit"
                             },
-                            "children": ["Send my request"],
-                            "id": "3b485d74-5c33-4270-8e7c-afd08fd04a83",
+                            "children": [
+                              "Send my request"
+                            ],
+                            "id": "e2dd1ba4-1bc6-47bc-8c3e-bebbdce47a2c",
                             "ord": "a0"
                           }
                         ],
-                        "id": "ff2014d7-f64e-40be-bd7f-f7ce8856f9e1",
+                        "id": "201fda15-3e26-43da-a3b3-df8cc6a65ccd",
                         "ord": "a4"
                       }
                     ],
@@ -2324,15 +2484,15 @@
                       "kind": "action",
                       "ref": "submit"
                     },
-                    "id": "af1d5e6d-3deb-4df6-b1d4-3f871c20d567",
+                    "id": "a148a6bd-ccb8-4a3c-89f4-68ecea4b1ecf",
                     "ord": "a3"
                   }
                 ],
-                "id": "a1466b2e-bb3f-4f96-8f92-af22bc34e833",
+                "id": "8722baac-e021-4535-bee7-e4835bd4e4bd",
                 "ord": "a0"
               }
             ],
-            "id": "926cbd8b-3a78-479d-9b0b-a91a0dd920fe",
+            "id": "fe09c612-d9d3-4d5c-a4d1-227888d0227f",
             "ord": "a0"
           },
           {
@@ -2354,8 +2514,10 @@
                         "kind": "element",
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
-                        "children": ["Find the shop"],
-                        "id": "b0b366b8-8c64-4efc-9767-6e35d97adb13",
+                        "children": [
+                          "Find the shop"
+                        ],
+                        "id": "ff987848-58ee-4d84-b874-69e1a09a1389",
                         "ord": "a0"
                       },
                       {
@@ -2369,7 +2531,7 @@
                           "kind": "value",
                           "ref": "site.identity.address"
                         },
-                        "id": "4292eb3f-26d7-43d5-b482-98381e19780a",
+                        "id": "098ea8fe-f8e1-4368-a67f-83c23d9411f5",
                         "ord": "a1"
                       },
                       {
@@ -2386,20 +2548,24 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "font-medium text-base-content",
-                                "children": ["Monday – Friday"],
-                                "id": "9b9f67ef-550b-48e5-9729-8047102c6823",
+                                "children": [
+                                  "Monday – Friday"
+                                ],
+                                "id": "3a13b832-c1cf-4e3e-9828-d1aeb27b3dac",
                                 "ord": "a0"
                               },
                               {
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-base-content",
-                                "children": ["8:00 – 6:00"],
-                                "id": "30240088-7ed4-4744-9bc5-e57861f87da2",
+                                "children": [
+                                  "8:00 – 6:00"
+                                ],
+                                "id": "0274bcd0-36f6-4456-9db8-1cdcb00b881b",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "504df96b-e61b-4a2b-a50f-1618fda14a6c",
+                            "id": "7d04ebed-eca5-47ca-81fe-1832fadd8bb8",
                             "ord": "a0"
                           },
                           {
@@ -2411,20 +2577,24 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "font-medium text-base-content",
-                                "children": ["Saturday"],
-                                "id": "043d9b6e-fb5c-48d4-b301-2c94b93b77aa",
+                                "children": [
+                                  "Saturday"
+                                ],
+                                "id": "5e068c5a-c749-42af-a925-280229eb62e4",
                                 "ord": "a0"
                               },
                               {
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-base-content",
-                                "children": ["8:00 – 2:00"],
-                                "id": "4ede2156-c395-408b-a580-dd4d16d33ac6",
+                                "children": [
+                                  "8:00 – 2:00"
+                                ],
+                                "id": "5fea08b5-6286-4878-b7e6-5e97a7f739ca",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "05b934c2-0178-4ade-9e62-09164dcdfae1",
+                            "id": "bcc70707-24ca-496a-8008-5e76782cb291",
                             "ord": "a1"
                           },
                           {
@@ -2436,28 +2606,32 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "font-medium text-base-content",
-                                "children": ["Sunday"],
-                                "id": "7971ff6f-5d0f-425b-94c4-966e7c76ef73",
+                                "children": [
+                                  "Sunday"
+                                ],
+                                "id": "9fd36a48-e4e6-4e73-ab15-6d5290be1c84",
                                 "ord": "a0"
                               },
                               {
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-base-content",
-                                "children": ["Closed"],
-                                "id": "ea23907c-03a3-43b9-9b63-0663564b6ee4",
+                                "children": [
+                                  "Closed"
+                                ],
+                                "id": "a4b4b955-ae69-43b1-b04d-c573393532d5",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "0dbbedf9-4c02-4fad-93d3-8b2d102e1d5b",
+                            "id": "e1db04d1-928d-4864-b292-58f92b4e5dd6",
                             "ord": "a2"
                           }
                         ],
-                        "id": "2a5fe611-822a-4495-be02-3b8a23d8e65a",
+                        "id": "98aa1d41-9e07-4c8a-a0f9-aa84980bb82b",
                         "ord": "a2"
                       }
                     ],
-                    "id": "dbc2a58c-4953-4a7a-bd40-1ce23c3d9487",
+                    "id": "ea3cfc97-66f9-4286-bae2-55a228f13bfc",
                     "ord": "a0"
                   },
                   {
@@ -2470,15 +2644,15 @@
                       "zoom": 15,
                       "ratio": "classic"
                     },
-                    "id": "7542e002-f7fb-4291-a2d1-d60d57d7490d",
+                    "id": "dcfaa1a7-10aa-4334-b6f7-a86ad3b10642",
                     "ord": "a1"
                   }
                 ],
-                "id": "a2f90b0a-260c-446d-bd8f-a21fa506fe67",
+                "id": "dd39bb4e-ef62-48bb-8080-6ff9887f419f",
                 "ord": "a0"
               }
             ],
-            "id": "747a5c73-639b-46a7-bfce-616cf4ae3f46",
+            "id": "7ba64ee1-e2cc-4b51-a0ff-69e676c2de91",
             "ord": "a1"
           },
           {
@@ -2495,8 +2669,10 @@
                     "kind": "element",
                     "tag": "h2",
                     "class": "text-3xl font-bold tracking-tight @3xl:text-4xl",
-                    "children": ["Rather book than call?"],
-                    "id": "f7909b93-a66f-42b3-a841-76fd902a4eb1",
+                    "children": [
+                      "Rather book than call?"
+                    ],
+                    "id": "24d4bc96-608d-4cc1-87f3-68f535c75910",
                     "ord": "a0"
                   },
                   {
@@ -2506,7 +2682,7 @@
                     "children": [
                       "Grab a time online and we’ll have a bay ready when you pull in — no phone tag, no waiting on hold."
                     ],
-                    "id": "57346cbc-de56-4765-99bc-a5eb37ca260f",
+                    "id": "ddbb7468-3361-4bf4-a62d-05db93f1bae7",
                     "ord": "a1"
                   },
                   {
@@ -2516,16 +2692,18 @@
                     "attrs": {
                       "href": "/book"
                     },
-                    "children": ["Book a service"],
-                    "id": "5cbb8d06-7559-4cfc-b6f6-aebff2deb27f",
+                    "children": [
+                      "Book a service"
+                    ],
+                    "id": "0ef04f2c-e868-48d5-8b05-c54c2356c8b5",
                     "ord": "a2"
                   }
                 ],
-                "id": "0f7ae1e6-4e75-40d8-960a-7d235046441a",
+                "id": "c0ba0d8a-373d-4107-a931-53575fc139a8",
                 "ord": "a0"
               }
             ],
-            "id": "7697983b-a550-498f-ba4a-55311b17b60a",
+            "id": "a0b802de-8d47-4172-9cd8-97ba14fb4dda",
             "ord": "a2"
           }
         ]

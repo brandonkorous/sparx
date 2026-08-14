@@ -1,0 +1,75 @@
+# Warns about licences and certificates before they lapse (docs/149 §10).
+#
+# Without this, the Certifications surface records an expiry date and then never
+# mentions it again — which inverts the module's whole promise. The service
+# functions (`certificationsNeedingReminder`, `markReminded`) shipped built and
+# tested with no caller anywhere in the repo.
+#
+# The endpoint publishes `staff.certification.expiring` per certification and
+# stamps `lastRemindedAt` only for what it published. It does NOT send mail: who
+# should hear about a forklift ticket differs per business, so the reminder is
+# an automation trigger the owner points wherever it belongs.
+#
+# 07:15 UTC — a morning warning, after the finance rollups are done with the
+# database. Each certification carries its own reminder lead, and the sweep
+# filters on each row's own `lastRemindedAt`, so running daily sends roughly
+# once per lead window rather than once per day.
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: staff-certification-reminders
+  namespace: sparx-prod
+  labels:
+    app: staff-cron
+    job: certification-reminders
+spec:
+  schedule: '15 7 * * *'
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 3
+  startingDeadlineSeconds: 300
+  jobTemplate:
+    spec:
+      backoffLimit: 2
+      ttlSecondsAfterFinished: 3600
+      template:
+        metadata:
+          labels:
+            app: staff-cron
+            job: certification-reminders
+        spec:
+          serviceAccountName: sparx-app
+          restartPolicy: OnFailure
+          containers:
+            - name: curl
+              image: curlimages/curl:8.10.1
+              command: ['sh', '-c']
+              args:
+                - >
+                  curl --fail-with-body --silent --show-error
+                  --max-time 300
+                  -X POST
+                  -H "X-Sparx-Internal-Cron-Token: $SPARX_INTERNAL_CRON_TOKEN"
+                  http://api-rest.sparx-prod.svc.cluster.local:3000/internal/staff/certification-reminders
+              env:
+                - name: SPARX_INTERNAL_CRON_TOKEN
+                  valueFrom:
+                    secretKeyRef:
+                      name: sparx-app-secrets
+                      key: SPARX_INTERNAL_CRON_TOKEN
+              resources:
+                requests:
+                  cpu: '25m'
+                  memory: '16Mi'
+                limits:
+                  cpu: '100m'
+                  memory: '32Mi'
+              securityContext:
+                runAsNonRoot: true
+                runAsUser: 1000
+                allowPrivilegeEscalation: false
+                capabilities:
+                  drop: ['ALL']
+                seccompProfile:
+                  type: RuntimeDefault

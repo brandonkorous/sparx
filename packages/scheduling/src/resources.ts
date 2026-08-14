@@ -31,6 +31,12 @@ export async function createResource(
         bookableOnline: input.bookableOnline,
         isActive: input.isActive,
         settings: (input.settings ?? {}) as Prisma.InputJsonValue,
+        // Model B site scope. An EMPTY list writes no rows, which is what makes the
+        // resource work every site — the same "no rows = everywhere" default products,
+        // categories and collections use.
+        ...(input.propertyIds.length > 0
+          ? { siteLinks: { create: input.propertyIds.map((propertyId) => ({ propertyId })) } }
+          : {}),
       },
     })
   );
@@ -40,10 +46,23 @@ export async function updateResource(
   tenantId: string,
   input: UpdateResourceInput
 ): Promise<SchedulingResource> {
-  const { id, settings, ...rest } = input;
+  // `propertyIds` is a junction, not a column — it must never reach `data`, and an
+  // OMITTED one means "leave the scope alone" rather than "clear it".
+  const { id, settings, propertyIds, ...rest } = input;
   return withTenant({ tenantId }, async (tx) => {
     const existing = await tx.schedulingResource.findFirst({ where: { id, deletedAt: null } });
     if (!existing) throw new ResourceNotFoundError(id);
+    if (propertyIds !== undefined) {
+      // Replace-all: the caller sends the full set it wants, so a site removed from
+      // the list is unlinked. Delete-then-create inside the same tenant transaction.
+      await tx.schedulingResourceProperty.deleteMany({ where: { resourceId: id } });
+      if (propertyIds.length > 0) {
+        await tx.schedulingResourceProperty.createMany({
+          data: propertyIds.map((propertyId) => ({ resourceId: id, propertyId })),
+          skipDuplicates: true,
+        });
+      }
+    }
     return tx.schedulingResource.update({
       where: { id },
       data: {
@@ -51,6 +70,41 @@ export async function updateResource(
         ...(settings !== undefined ? { settings: settings as Prisma.InputJsonValue } : {}),
       },
     });
+  });
+}
+
+/** The sites a resource is scoped to — empty means it works every site. Read
+ *  separately from the row itself so `SchedulingResource` stays the plain model the
+ *  rest of the package passes around. */
+export async function getResourcePropertyIds(tenantId: string, id: string): Promise<string[]> {
+  return withTenant({ tenantId }, async (tx) => {
+    const links = await tx.schedulingResourceProperty.findMany({
+      where: { resourceId: id },
+      select: { propertyId: true },
+    });
+    return links.map((l) => l.propertyId);
+  });
+}
+
+/** Site scope for MANY resources at once — one query for a list response, rather
+ *  than one per row. Resources with no links are absent from the map (= everywhere). */
+export async function getResourcePropertyIdsFor(
+  tenantId: string,
+  ids: string[]
+): Promise<Map<string, string[]>> {
+  if (ids.length === 0) return new Map();
+  return withTenant({ tenantId }, async (tx) => {
+    const links = await tx.schedulingResourceProperty.findMany({
+      where: { resourceId: { in: ids } },
+      select: { resourceId: true, propertyId: true },
+    });
+    const byResource = new Map<string, string[]>();
+    for (const l of links) {
+      const list = byResource.get(l.resourceId) ?? [];
+      list.push(l.propertyId);
+      byResource.set(l.resourceId, list);
+    }
+    return byResource;
   });
 }
 

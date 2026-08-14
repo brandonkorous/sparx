@@ -7,6 +7,7 @@
 // type-safe across every transport.
 
 export * from './common';
+export * from './locations';
 export * from './resources';
 export * from './services';
 export * from './availability';

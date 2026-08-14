@@ -56,6 +56,8 @@ export interface DiscountRow {
   priority: number;
   status: string;
   usageCount: number;
+  /** Model B: the sites this offer runs on. EMPTY = every site. */
+  propertyIds: string[];
   updatedAt: string;
 }
 
@@ -110,6 +112,7 @@ export async function listDiscounts(
       tx.discount.findMany({
         where,
         orderBy,
+        include: { siteLinks: { select: { propertyId: true } } },
         take: Math.min(filter.take ?? 50, 250),
         skip: filter.skip ?? 0,
       }),
@@ -121,7 +124,10 @@ export async function listDiscounts(
 
 export async function getDiscount(ctx: ServiceContext, id: string): Promise<DiscountRow> {
   const row = await withTenant(ctx, (tx) =>
-    tx.discount.findFirst({ where: { id, deletedAt: null } })
+    tx.discount.findFirst({
+      where: { id, deletedAt: null },
+      include: { siteLinks: { select: { propertyId: true } } },
+    })
   );
   if (!row) throw new CommerceNotFoundError('Discount', id);
   return serializeDiscount(row);
@@ -166,6 +172,15 @@ export async function createDiscount(
         status: 'draft',
       },
     });
+
+    // Model B per-site scoping (docs/131 §4): no rows = the offer runs on every site.
+    if (input.propertyIds.length > 0) {
+      await tx.discountProperty.createMany({
+        data: input.propertyIds.map((propertyId) => ({ propertyId, discountId: created.id })),
+        skipDuplicates: true,
+      });
+    }
+
     await writeAuditLog({
       tx,
       tenantId: ctx.tenantId,
@@ -239,6 +254,17 @@ export async function updateDiscount(
         ...(input.priority !== undefined ? { priority: input.priority } : {}),
       },
     });
+
+    // Model B: the update sends the FULL replacement set — replace when present,
+    // leave untouched when omitted.
+    if (input.propertyIds !== undefined) {
+      await tx.discountProperty.deleteMany({ where: { discountId: id } });
+      if (input.propertyIds.length > 0) {
+        await tx.discountProperty.createMany({
+          data: input.propertyIds.map((propertyId) => ({ propertyId, discountId: id })),
+        });
+      }
+    }
 
     await writeAuditLog({
       tx,
@@ -1051,7 +1077,7 @@ function generateGiftCardCode(): string {
   ].join('-');
 }
 
-function serializeDiscount(row: Discount): DiscountRow {
+function serializeDiscount(row: Discount & { siteLinks?: { propertyId: string }[] }): DiscountRow {
   return {
     id: row.id,
     code: row.code,
@@ -1073,6 +1099,7 @@ function serializeDiscount(row: Discount): DiscountRow {
     priority: row.priority,
     status: row.status,
     usageCount: row.usageCount,
+    propertyIds: row.siteLinks?.map((l) => l.propertyId) ?? [],
     updatedAt: row.updatedAt.toISOString(),
   };
 }

@@ -325,5 +325,12 @@
       ],
       "policyHandle": "nail-standard"
     }
+  ],
+  "locations": [
+    {
+      "handle": "premises",
+      "name": "Gilded",
+      "timezone": "UTC"
+    }
   ]
 }

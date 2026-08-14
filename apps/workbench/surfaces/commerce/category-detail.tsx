@@ -23,7 +23,6 @@ import {
   AlertTitle,
   Badge,
   Button,
-  Checkbox,
   Field,
   FieldControl,
   FieldDescription,
@@ -40,13 +39,12 @@ import {
 } from '@wizeworks/silicaui-react';
 import { useConfirm } from '../../lib/confirm';
 import { Trash2 } from 'lucide-react';
-import { useActiveSiteId } from '../../lib/api/shell-data';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import { afterPaneChange } from '../../lib/defer';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { FormSection } from '../../components/form-section';
+import { SiteScopeField } from '../../components/site-scope-field';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
-import { useSites } from '../sites/data';
 import { MediaField } from './media-field';
 import {
   categoryErrorMessage,
@@ -188,9 +186,6 @@ function CategoryEditor({
   const isNew = id === 'new';
   const toast = useToast();
   const confirm = useConfirm();
-
-  const { data: sites } = useSites();
-  const { data: activeSite } = useActiveSiteId();
 
   const create = useCreateCategory();
   const update = useUpdateCategory(id);
@@ -367,8 +362,6 @@ function CategoryEditor({
       },
     });
   };
-
-  const multiSite = (sites ?? []).length > 1;
 
   return (
     <div className={PANE_SHELL}>
@@ -555,58 +548,14 @@ function CategoryEditor({
             />
           </FormSection>
 
-          {multiSite ? (
-            <FormSection
-              title="Which of your sites show it"
-              description="You run more than one website, so a category can appear on all of them or just some."
-            >
-              <Field>
-                <FieldLabel>Show it on every site</FieldLabel>
-                <FieldControl
-                  render={
-                    <Switch
-                      color="module"
-                      checked={draft.propertyIds.length === 0}
-                      onCheckedChange={(next: boolean) => {
-                        set(
-                          'propertyIds',
-                          next
-                            ? []
-                            : activeSite?.propertyId
-                              ? [activeSite.propertyId]
-                              : [(sites ?? [])[0]?.id ?? '']
-                        );
-                      }}
-                    />
-                  }
-                />
-                <FieldDescription>
-                  Turn this off to choose the sites it appears on.
-                </FieldDescription>
-              </Field>
-
-              {draft.propertyIds.length === 0 ? null : (
-                <div className="flex flex-col gap-2">
-                  {(sites ?? []).map((site) => (
-                    <label key={site.id} className="flex items-center gap-2">
-                      <Checkbox
-                        color="module"
-                        checked={draft.propertyIds.includes(site.id)}
-                        aria-label={site.name}
-                        onChange={(event) => {
-                          const next = event.target.checked
-                            ? [...draft.propertyIds, site.id]
-                            : draft.propertyIds.filter((value) => value !== site.id);
-                          set('propertyIds', next.length === 0 ? draft.propertyIds : next);
-                        }}
-                      />
-                      <Text as="span">{site.name}</Text>
-                    </label>
-                  ))}
-                </div>
-              )}
-            </FormSection>
-          ) : null}
+          <SiteScopeField
+            value={draft.propertyIds}
+            onChange={(next) => {
+              set('propertyIds', next);
+            }}
+            title="Which of your sites show it"
+            description="You run more than one website, so a category can appear on all of them or just some."
+          />
 
           <FormSection
             title="How it looks in search results"

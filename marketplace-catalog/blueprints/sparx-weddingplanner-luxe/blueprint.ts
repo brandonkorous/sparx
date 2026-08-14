@@ -11,7 +11,7 @@ import assets from './assets.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-weddingplanner-luxe',
-  version: '1.2.0',
+  version: '1.3.0',
   name: 'sparx — Wedding Planner (Luxe)',
   summary:
     'An elegant, romantic wedding-studio site — a soft-ivory palette, a dusty-rose primary and a champagne-gold accent, with editorial wedding photography carrying the page. Installs online booking for planning consultations, planners you book by name as bookable resources, and a booking-deposit policy. Ships as "Ever After Events", a luxury full-service wedding planner.',

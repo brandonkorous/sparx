@@ -238,5 +238,12 @@
       ],
       "policyHandle": "recurring-plan"
     }
+  ],
+  "locations": [
+    {
+      "handle": "premises",
+      "name": "GreenShield Pest Solutions",
+      "timezone": "UTC"
+    }
   ]
 }

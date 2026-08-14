@@ -321,7 +321,7 @@ export async function materializeWithinTx(
     const rows: Prisma.SiteSectionCreateManyInput[] = [];
     for (const s of sections) {
       const { targetId, key, name } = resolveTargetKey(s);
-      const mapKey = `${targetId} ${key}`;
+      const mapKey = `${targetId}\u0000${key}`;
       let pageLayoutId = layoutIdByKey.get(mapKey);
       if (!pageLayoutId) {
         const layout = await getOrCreatePageLayout(tx, tenantId, targetId, key, name);

@@ -113,6 +113,7 @@ export {
 } from './accounting/import';
 export {
   type AccountingProviderDescriptor,
+  type PublicAccountingConnection,
   type UpsertConnectionInput,
   type MappingInput,
   type RecordRunInput,
@@ -121,6 +122,10 @@ export {
   accountingCatalog,
   assertProviderAvailable,
   listConnections,
+  // Prefer these two in anything that reaches a browser — `listConnections`
+  // returns the row, tokens and all. See the note on `PublicAccountingConnection`.
+  listPublicConnections,
+  toPublicConnection,
   upsertConnection,
   deleteConnection,
   setMappings,

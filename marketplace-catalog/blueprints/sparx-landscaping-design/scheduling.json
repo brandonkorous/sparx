@@ -239,5 +239,12 @@
       ],
       "policyHandle": "design-deposit"
     }
+  ],
+  "locations": [
+    {
+      "handle": "premises",
+      "name": "Verdant Grounds",
+      "timezone": "UTC"
+    }
   ]
 }

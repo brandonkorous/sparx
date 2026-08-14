@@ -1,8 +1,8 @@
 # sparx Platform — Dropship Integration PRD
 
-**Version:** 2.3.1
+**Version:** 2.5
 **Author:** Brandon Korous
-**Last Updated:** 2026-07-22
+**Last Updated:** 2026-08-14
 
 > **Reconciled 2026-07-22 (docs-vs-built audit):** the operator UI now lives in the workbench
 > (`apps/workbench/surfaces/dropship/`), not the deleted `apps/dashboard`; the §2 table row was
@@ -273,3 +273,68 @@ Do not block the deferred work: when POD authoring lands, it is additive.
   notifications.
 - **AutoDS by request.** If a tenant wants AutoDS, it needs a business deal + post-approval
   schemas; build the adapter then and add it to `VENDOR_CATALOG` (it would be a `manual`/gated card).
+
+---
+
+## 15. Tracking poll (2026-08-13)
+
+`SupplierAdapter.getTrackingUpdate()` was declared on the interface and
+implemented by **all four** adapters — dsers, printful, printify, spocket — and
+**called by nothing in the repo**. So a dropshipped order was submitted to a
+supplier and then never asked about again: `dropship_orders` kept
+`status: 'submitted'` with a null tracking number forever, and the two declared
+events `dropship.order.shipped` / `dropship.order.delivered` had no publisher.
+
+That is the worst place in the platform for that gap to sit. On a dropship order
+the merchant never touches the goods, so the supplier's tracking is the **only**
+signal that exists — with nothing polling it, nobody found out anything after
+checkout.
+
+`POST /internal/dropship/tracking-poll`
+([dropship-cron.ts](../services/api-rest/src/routes/internal/dropship-cron.ts),
+logic in [lib/dropship-tracking.ts](../services/api-rest/src/lib/dropship-tracking.ts))
+runs **every four hours** from
+[dropship-tracking-poll.yaml](../k8s/cronjobs/dropship-tracking-poll.yaml).
+Nightly would make a parcel that shipped this morning wait until tomorrow to say
+so; every fifteen minutes would burn a third-party API call per open order
+against a rate limit.
+
+Four decisions worth keeping:
+
+- **Only `submitted` and `shipped` rows with a supplier order id are polled.**
+  `delivered` is finished, `pending` has not been sent, and `failed` needs a
+  human rather than another API call.
+- **Events fire on a TRANSITION only.** Re-publishing "shipped" on every sweep
+  for three days would make the event useless as a trigger — a customer would
+  get the same email eight times a day.
+- **Every adapter call is individually guarded.** A throw is recorded on that row
+  and the poll continues, because otherwise the first unreachable supplier
+  freezes tracking for every other order in the account.
+- **`exception` does NOT become `failed`.** A customs hold is not a failed
+  submission, and `failed` in this column means "the supplier never accepted this
+  order" — a state a human is expected to act on.
+
+Both events are now offered in the workbench's automation trigger catalog, which
+required adding `dropship` to the **local** `ModuleSlug` union in
+`automations-catalog.ts`. An event a tenant cannot pick from a list is as inert
+as one nobody publishes.
+
+### 15.1 Run and proven (2026-08-14)
+
+The endpoint was invoked for the first time against the local database — five
+dropship tenants, all five OK — and it polled **nothing**, because the only two
+`dropship_orders` rows in the entire database are `failed`, which §15 excludes on
+purpose. That answer is correct and it is also worth nothing: **a sweep that
+checks zero orders looks identical whether the filter is right or wrong**, which
+is the same shape as the bug this file documents.
+
+So `pollDropshipTracking` now takes its adapter as an argument — the convention
+`reconcileSupplierPublishes` already followed — and
+[dropship-tracking.test.ts](../services/api-rest/test/integration/dropship-tracking.test.ts)
+pins the seven behaviours against real Postgres with a fake supplier: only
+in-flight rows with a supplier order id are asked about; a shipment is recorded
+and announced **once**, with a second identical sweep publishing nothing;
+`in_transit` counts as shipped; delivery stamps `deliveredAt` and clears a stale
+transport error; a label that arrives before the shipment saves the tracking
+number and stays quiet; `exception` leaves the row alone; and one unreachable
+supplier records its error without costing the next order its update.

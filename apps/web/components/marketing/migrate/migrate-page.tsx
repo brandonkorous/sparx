@@ -9,6 +9,7 @@ import { Band } from '../band';
 import { Display, Text } from '../primitives';
 import { Faq } from '../faq';
 import { SALES_HREF, signupHref } from '../cta';
+import { ReportGlimpse } from './report-glimpse';
 import type { MigrateStory } from './stories';
 
 /**
@@ -136,36 +137,50 @@ export function MigratePage({ story }: { story: MigrateStory }) {
 
       {/* 1 · The promise */}
       <Band tone="dark" flush>
-        <div className="mx-auto flex max-w-4xl flex-col items-start gap-6 py-20 @3xl:py-28">
-          <Link href="/migrate" className="text-base underline underline-offset-4">
-            ← Every platform we move you from
-          </Link>
-          <Display as="h1" size={64}>
-            {story.headline}
-          </Display>
-          <Text size={20} className="max-w-2xl">
-            {story.lede}
-          </Text>
-          <div className="flex flex-wrap items-center gap-3 pt-2">
-            <a
-              href={signupHref(`migrate-${story.slug}-hero`)}
-              className={buttonClasses({ size: 'lg', color: 'primary', variant: 'solid' })}
-            >
-              Start moving &rarr;
-            </a>
-            {/* Colorless outline — a named color inside the dark island paints its
-                raw accent onto the label. See vertical-hero.tsx. */}
-            <Link href="/pricing" className={buttonClasses({ size: 'lg', variant: 'outline' })}>
-              What it costs
+        {/* Two columns, like every other hero on this site: the argument on the
+            left and the product moment on the right. A single centred column was
+            what this had, and beside /crm or /commerce it read as an unfinished
+            page — the reader's eye had nothing to land on and no evidence that
+            the thing being promised exists. */}
+        <div className="mx-auto flex max-w-6xl flex-col items-center gap-[clamp(40px,6vw,72px)] lg:flex-row lg:items-center">
+          <div className="flex min-w-0 flex-1 flex-col items-start gap-6">
+            <Link href="/migrate" className="text-base underline underline-offset-4">
+              ← Every platform we move you from
             </Link>
+            <Display as="h1" size={64}>
+              {story.headline}
+            </Display>
+            <Text size={20} className="max-w-2xl">
+              {story.lede}
+            </Text>
+            <div className="flex flex-wrap items-center gap-3 pt-2">
+              <a
+                href={signupHref(`migrate-${story.slug}-hero`)}
+                className={buttonClasses({ size: 'lg', color: 'primary', variant: 'solid' })}
+              >
+                Start moving &rarr;
+              </a>
+              {/* Colorless outline — a named color inside the dark island paints its
+                  raw accent onto the label. See vertical-hero.tsx. */}
+              <Link href="/pricing" className={buttonClasses({ size: 'lg', variant: 'outline' })}>
+                What it costs
+              </Link>
+            </div>
+            <Text size={16}>{story.effort}</Text>
           </div>
-          <Text size={16}>{story.effort}</Text>
+          <div className="flex w-full justify-center lg:w-auto lg:justify-end">
+            <ReportGlimpse
+              vendorName={story.name}
+              fileName={files[0]?.file ?? 'export.csv'}
+              label={files[0]?.label ?? 'Records'}
+            />
+          </div>
         </div>
       </Band>
 
       {/* 2 · Recognition — a numbered rail, because these escalate */}
       <Band>
-        <div className="mx-auto flex max-w-4xl flex-col gap-10 py-20">
+        <div className="mx-auto flex max-w-4xl flex-col gap-10">
           <Display size={44}>{story.painTitle}</Display>
           <div className="flex flex-col gap-8">
             {story.pains.map((pain, index) => (
@@ -187,7 +202,7 @@ export function MigratePage({ story }: { story: MigrateStory }) {
 
       {/* 3 · Exactly what comes across — computed, never written by hand */}
       <Band tone="surface">
-        <div className="mx-auto flex max-w-4xl flex-col gap-8 py-20">
+        <div className="mx-auto flex max-w-4xl flex-col gap-8">
           <div className="flex flex-col gap-3">
             <Display size={44}>What comes across</Display>
             <Text size={18}>
@@ -214,7 +229,7 @@ export function MigratePage({ story }: { story: MigrateStory }) {
             {files.map((file) => (
               <div
                 key={file.id}
-                className="border-base-content/10 grid gap-2 border-b p-5 last:border-b-0 @2xl:grid-cols-[1fr_1.6fr]"
+                className="border-base-content/10 grid gap-2 border-b p-5 last:border-b-0 md:grid-cols-[1fr_1.6fr]"
               >
                 <Text size={18} weight={600}>
                   {file.label}
@@ -247,7 +262,7 @@ export function MigratePage({ story }: { story: MigrateStory }) {
 
       {/* 4 · The turn — one wide statement, the only band that is all argument */}
       <Band tone="primary">
-        <div className="mx-auto flex max-w-3xl flex-col gap-6 py-24 text-center">
+        <div className="mx-auto flex max-w-3xl flex-col gap-6 text-center">
           <Display size={48}>{story.turnTitle}</Display>
           <Text size={20}>{story.turnBody}</Text>
         </div>
@@ -255,7 +270,7 @@ export function MigratePage({ story }: { story: MigrateStory }) {
 
       {/* 5 · Consequences — what changes about the week */}
       <Band>
-        <div className="mx-auto flex max-w-4xl flex-col gap-8 py-20">
+        <div className="mx-auto flex max-w-4xl flex-col gap-8">
           <Display size={40}>What that changes</Display>
           <ul className="flex flex-col gap-5">
             {story.consequences.map((line) => (
@@ -273,7 +288,7 @@ export function MigratePage({ story }: { story: MigrateStory }) {
 
       {/* 6 · Honesty — said before they find out */}
       <Band tone="neutral">
-        <div className="mx-auto flex max-w-4xl flex-col gap-6 py-20">
+        <div className="mx-auto flex max-w-4xl flex-col gap-6">
           <Display size={36}>What does not come across</Display>
           <Text size={18}>
             Every migration leaves something behind. Here is ours, so it is not a surprise halfway
@@ -294,7 +309,7 @@ export function MigratePage({ story }: { story: MigrateStory }) {
 
       {/* 8 · Resolution */}
       <Band tone="dark">
-        <div className="mx-auto flex max-w-3xl flex-col items-center gap-6 py-24 text-center">
+        <div className="mx-auto flex max-w-3xl flex-col items-center gap-6 text-center">
           <Display size={48}>Bring it over</Display>
           <Text size={20}>
             Export the file {story.name} already makes for you, drop it in, and look at what would

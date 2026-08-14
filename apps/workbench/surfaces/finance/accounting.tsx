@@ -23,7 +23,7 @@
 // accountant has already closed — the single thing that would make a bookkeeper
 // stop trusting the feed.
 
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   Alert,
   AlertContent,
@@ -45,7 +45,7 @@ import {
   Textarea,
   useToast,
 } from '@wizeworks/silicaui-react';
-import { Check, Download, Link2, Plug, Save, Trash2, Upload } from 'lucide-react';
+import { Check, Download, Link2, LogIn, LogOut, Plug, Save, Trash2, Upload } from 'lucide-react';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import { FormSection } from '../../components/form-section';
@@ -56,19 +56,22 @@ import {
   spendErrorMessage,
   useAccounting,
   useCommitImport,
+  useCompleteAccountingConnect,
   useDeleteConnection,
+  useDisconnectAccounting,
   useExpenseCategories,
   useImportPreview,
   useMappings,
   useSaveConnection,
   useSaveMappings,
+  useStartAccountingConnect,
   useSyncRuns,
   type AccountingConnection,
   type AccountingProvider,
   type ImportPreview,
 } from './spend-data';
 import { PERIOD_OPTIONS, rangeFor, type PeriodKey } from './period';
-import { formatCents, formatDate, formatDateTime, kindColor } from './format';
+import { formatCents, formatDateTime, formatDay, kindColor } from './format';
 
 /* ── Export ─────────────────────────────────────────────────────────────────*/
 
@@ -80,6 +83,7 @@ function ExportPanel({
   connections: AccountingConnection[];
 }) {
   const toast = useToast();
+  const addRow = useSaveConnection();
   const [period, setPeriod] = useState<PeriodKey>('last_month');
   const [provider, setProvider] = useState('csv');
   const [connectionId, setConnectionId] = useState('');
@@ -89,6 +93,53 @@ function ExportPanel({
   const range = useMemo(() => rangeFor(period), [period]);
   const descriptor = catalog.find((entry) => entry.provider === provider);
   const usable = catalog.filter((entry) => entry.availability === 'available');
+  const existing = connections.find((connection) => connection.provider === provider);
+
+  /**
+   * Set up account codes for the layout being exported.
+   *
+   * THIS EXISTS BECAUSE THE SETTINGS WERE UNREACHABLE. A connection row is what
+   * holds the books-closed date and the category → account-code mapping, and the
+   * only control that created one lived in the "Sending it automatically" list —
+   * which deliberately excludes `csv`, the one provider that is actually
+   * available. So the two things this screen's own header calls the most
+   * important field here and "the whole reason the export is worth anything to a
+   * bookkeeper" could not be reached by anybody, and every tenant exported raw
+   * category names forever.
+   *
+   * It belongs on the EXPORT panel rather than in that list because the list is
+   * about automatic sending and this is not automatic — it is the settings for
+   * the file you are about to download, offered where somebody is standing when
+   * they care about them. Only providers in `usable` can be chosen above, and
+   * `upsertConnection` refuses anything not available, so this cannot offer a
+   * setup that would throw.
+   */
+  const setUpCodes = () => {
+    if (!descriptor) return;
+    addRow.mutate(
+      { provider, displayName: descriptor.name, syncCadence: 'manual' },
+      {
+        onSuccess: (created) => {
+          setConnectionId(created.id);
+          afterPaneChange(() => {
+            toast.add({
+              title: `Account codes for ${descriptor.name}`,
+              description:
+                'Set your books-closed date and map each category to their account code below.',
+              type: 'success',
+            });
+          });
+        },
+        onError: (error) => {
+          toast.add({
+            title: 'Could not set that up',
+            description: spendErrorMessage(error, 'Nothing was changed.'),
+            type: 'error',
+          });
+        },
+      }
+    );
+  };
 
   const run = async () => {
     setBusy(true);
@@ -149,7 +200,7 @@ function ExportPanel({
             }
           />
           <FieldDescription>
-            {formatDate(range.from)} to {formatDate(range.to)}
+            {formatDay(range.from)} to {formatDay(range.to)}
           </FieldDescription>
         </Field>
 
@@ -201,6 +252,35 @@ function ExportPanel({
           </Field>
         ) : null}
       </div>
+
+      {/* The offer only appears when this layout has no settings yet. Once it
+          does, the card below IS the affordance and a second entry point would
+          just be a way to create a duplicate. */}
+      {descriptor && !existing ? (
+        <div className="border-base-300 flex flex-wrap items-center justify-between gap-3 rounded-lg border p-3">
+          <div className="flex min-w-0 flex-col">
+            <Text className="text-sm font-medium">
+              Tell sparx your accountant&apos;s account codes
+            </Text>
+            <Text className="text-sm">
+              Right now every cost goes out under your own category name, and somebody re-files it
+              at the other end. Map each one once and it arrives ready to post — and set the date
+              your books are closed through, so a re-send can never re-post a period they have
+              already finished.
+            </Text>
+          </div>
+          <Button
+            size="sm"
+            variant="outline"
+            color="neutral"
+            loading={addRow.isPending}
+            onClick={setUpCodes}
+          >
+            <Save className="size-4" aria-hidden />
+            Set up account codes
+          </Button>
+        </div>
+      ) : null}
 
       {descriptor ? (
         <div className="border-base-300 flex flex-col gap-2 rounded-lg border p-3">
@@ -541,7 +621,7 @@ function ImportPanel({ categories }: { categories: { id: string; name: string }[
                           {row.error}
                         </Badge>
                       ) : (
-                        formatDate(row.incurredAt)
+                        formatDay(row.incurredAt)
                       )}
                     </td>
                     <td className="max-w-56 truncate">{row.description}</td>
@@ -563,6 +643,171 @@ function ImportPanel({ categories }: { categories: { id: string; name: string }[
       ) : null}
     </FormSection>
   );
+}
+
+/* ── The OAuth round trip ───────────────────────────────────────────────────*/
+
+/** The shape `app/finance/accounting/callback` posts back through `window.opener`. */
+interface CallbackMessage {
+  source: 'sparx-accounting';
+  code?: string;
+  state?: string;
+  error?: string;
+  params?: Record<string, string>;
+}
+
+function isCallbackMessage(value: unknown): value is CallbackMessage {
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    (value as { source?: unknown }).source === 'sparx-accounting'
+  );
+}
+
+/**
+ * Signing in to QuickBooks Online or Xero, end to end.
+ *
+ * Three server calls in a fixed order, because the connection ROW has to exist
+ * before the redirect: its id rides inside the signed `state` and is where the
+ * callback writes the grant. Abandoning the consent screen therefore leaves a
+ * visible, deletable row that says "not signed in" rather than nothing at all.
+ *
+ * THE POPUP IS OPENED SYNCHRONOUSLY, before either request. A window opened
+ * later — in a promise callback — is an unsolicited pop-up as far as the browser
+ * is concerned, and gets blocked. So it opens blank on the click and is pointed
+ * at the provider once the URL comes back, which is the same thing the social
+ * connections pane does for the same reason.
+ *
+ * There is no `window.location.href` fallback for a blocked popup here, unlike
+ * social: this pane can hold a half-typed account-code mapping, and navigating
+ * the whole workbench away to a consent screen would discard it silently. A
+ * blocked popup is reported instead.
+ */
+function useAccountingConnect() {
+  const toast = useToast();
+  const saveConnection = useSaveConnection();
+  const startConnect = useStartAccountingConnect();
+  const completeConnect = useCompleteAccountingConnect();
+
+  const [pendingProvider, setPendingProvider] = useState<string | null>(null);
+  const [failure, setFailure] = useState<string | null>(null);
+
+  const complete = useCallback(
+    (message: CallbackMessage) => {
+      if (!message.code || !message.state) return;
+      completeConnect.mutate(
+        {
+          code: message.code,
+          state: message.state,
+          ...(message.params && Object.keys(message.params).length > 0
+            ? { params: message.params }
+            : {}),
+        },
+        {
+          onSuccess: (connection) => {
+            setPendingProvider(null);
+            afterPaneChange(() => {
+              toast.add({
+                title: `${connection.displayName ?? connection.provider} connected`,
+                description:
+                  'Set your books-closed date and map your categories so the first send lands in the right accounts.',
+                type: 'success',
+              });
+            });
+          },
+          onError: (error) => {
+            setPendingProvider(null);
+            setFailure(
+              spendErrorMessage(
+                error,
+                'Could not finish connecting. Nothing was changed, and you can try again.'
+              )
+            );
+          },
+        }
+      );
+    },
+    [completeConnect, toast]
+  );
+
+  // The listener is registered once and reads the latest `complete` through a
+  // ref — re-subscribing on every render would drop a message that arrived
+  // between teardown and re-add, which is exactly when the popup posts.
+  const completeRef = useRef(complete);
+  completeRef.current = complete;
+
+  useEffect(() => {
+    function onMessage(event: MessageEvent) {
+      if (event.origin !== window.location.origin) return;
+      if (!isCallbackMessage(event.data)) return;
+      if (event.data.error) {
+        setPendingProvider(null);
+        setFailure(
+          event.data.error === 'access_denied'
+            ? 'You cancelled the sign-in, so nothing was connected.'
+            : `Your accounting provider reported a problem: ${event.data.error}`
+        );
+        return;
+      }
+      completeRef.current(event.data);
+    }
+    window.addEventListener('message', onMessage);
+    return () => {
+      window.removeEventListener('message', onMessage);
+    };
+  }, []);
+
+  /** Start (or resume) a sign-in. Pass an existing row's id to finish one that
+   *  was abandoned, rather than writing a second row for the same provider. */
+  const begin = useCallback(
+    (input: { provider: string; displayName: string; connectionId?: string }) => {
+      setFailure(null);
+      setPendingProvider(input.provider);
+
+      const popup = window.open('', 'sparx-accounting-connect', 'width=620,height=760');
+      if (!popup) {
+        setPendingProvider(null);
+        setFailure(
+          'Your browser blocked the sign-in window. Allow pop-ups for this site and try again.'
+        );
+        return;
+      }
+
+      void (async () => {
+        try {
+          const id =
+            input.connectionId ??
+            (
+              await saveConnection.mutateAsync({
+                provider: input.provider,
+                displayName: input.displayName,
+                syncCadence: 'manual',
+              })
+            ).id;
+          const { url } = await startConnect.mutateAsync({
+            id,
+            redirectUri: `${window.location.origin}/finance/accounting/callback`,
+          });
+          popup.location.href = url;
+        } catch (error) {
+          popup.close();
+          setPendingProvider(null);
+          setFailure(spendErrorMessage(error, 'Could not start the sign-in. Nothing was changed.'));
+        }
+      })();
+    },
+    [saveConnection, startConnect]
+  );
+
+  return {
+    begin,
+    pendingProvider,
+    failure,
+    dismissFailure: () => {
+      setFailure(null);
+    },
+    isFinishing: completeConnect.isPending,
+  };
 }
 
 /* ── Connections ────────────────────────────────────────────────────────────*/
@@ -718,11 +963,24 @@ function MappingTable({ connectionId }: { connectionId: string }) {
   );
 }
 
-function ConnectionCard({ connection }: { connection: AccountingConnection }) {
+function ConnectionCard({
+  connection,
+  isOauth,
+  signingIn,
+  onSignIn,
+}: {
+  connection: AccountingConnection;
+  /** Whether this provider signs in at all. A spreadsheet layout does not — its
+   *  row exists only to hold the books-closed date and the account mapping. */
+  isOauth: boolean;
+  signingIn: boolean;
+  onSignIn: () => void;
+}) {
   const toast = useToast();
   const confirm = useConfirm();
   const save = useSaveConnection();
-  const disconnect = useDeleteConnection();
+  const remove = useDeleteConnection();
+  const signOut = useDisconnectAccounting();
   const runs = useSyncRuns(connection.id);
 
   const [closedOn, setClosedOn] = useState(
@@ -754,25 +1012,62 @@ function ConnectionCard({ connection }: { connection: AccountingConnection }) {
     );
   };
 
-  const onDisconnect = async () => {
+  const name = connection.displayName ?? connection.provider;
+
+  // Signing OUT forgets the grant and keeps everything else. Removing deletes
+  // the row, and with it the account mapping and the books-closed date — which
+  // is why they are two different actions with two different confirmations
+  // rather than one button whose blast radius depends on hidden state.
+  const onSignOut = async () => {
     const ok = await confirm({
-      title: `Disconnect ${connection.displayName ?? connection.provider}?`,
+      title: `Sign out of ${name}?`,
       description:
-        'Exports stop using its account codes and books-closed date. Nothing already sent is recalled, and none of your spending is deleted.',
-      confirmLabel: 'Disconnect',
-      cancelLabel: 'Keep it',
+        'sparx forgets the sign-in and stops sending anything automatically. Your account codes, your books-closed date and everything already sent all stay exactly as they are — sign in again any time and nothing needs redoing.',
+      confirmLabel: 'Sign out',
+      cancelLabel: 'Stay signed in',
       color: 'danger',
     });
     if (!ok) return;
-    disconnect.mutate(connection.id, {
+    signOut.mutate(connection.id, {
       onSuccess: () => {
         afterPaneChange(() => {
-          toast.add({ title: 'Disconnected', type: 'success' });
+          toast.add({
+            title: `Signed out of ${name}`,
+            description: 'Your account codes and books-closed date are still here.',
+            type: 'success',
+          });
         });
       },
       onError: (error) => {
         toast.add({
-          title: 'Could not disconnect',
+          title: 'Could not sign out',
+          description: spendErrorMessage(error, 'Nothing was changed.'),
+          type: 'error',
+        });
+      },
+    });
+  };
+
+  const onRemove = async () => {
+    const ok = await confirm({
+      title: `Remove ${name}?`,
+      description: connection.connected
+        ? 'This signs sparx out AND deletes the account codes you mapped and your books-closed date. Nothing already sent is recalled and none of your spending is deleted, but the setup work is gone and would have to be done again.'
+        : 'This deletes the account codes you mapped and your books-closed date. Nothing already sent is recalled and none of your spending is deleted, but the setup work is gone and would have to be done again.',
+      confirmLabel: 'Remove it',
+      cancelLabel: 'Keep it',
+      color: 'danger',
+    });
+    if (!ok) return;
+    remove.mutate(connection.id, {
+      onSuccess: () => {
+        afterPaneChange(() => {
+          toast.add({ title: `Removed ${name}`, type: 'success' });
+        });
+      },
+      onError: (error) => {
+        toast.add({
+          title: 'Could not remove that',
           description: spendErrorMessage(error, 'Nothing was changed.'),
           type: 'error',
         });
@@ -785,33 +1080,70 @@ function ConnectionCard({ connection }: { connection: AccountingConnection }) {
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="flex min-w-0 flex-col gap-1">
           <div className="flex flex-wrap items-center gap-2">
-            <Text className="font-medium">{connection.displayName ?? connection.provider}</Text>
-            <Badge
-              color={connection.status === 'connected' ? 'success' : 'warning'}
-              variant="soft"
-              size="sm"
-            >
-              {connection.status === 'connected' ? 'Connected' : connection.status}
-            </Badge>
+            <Text className="font-medium">{name}</Text>
+            {/* Sign-in state is read from `connected`, never from `status` —
+                `status` is 'active' from the instant the row is written, which
+                is before the provider has seen anything. A spreadsheet layout
+                has no sign-in at all, so it says what it actually is instead of
+                wearing a warning badge forever. */}
+            {!isOauth ? (
+              <Badge color="module" variant="soft" size="sm">
+                Export layout
+              </Badge>
+            ) : connection.connected ? (
+              <Badge color="success" variant="soft" size="sm">
+                Signed in
+              </Badge>
+            ) : (
+              <Badge color="warning" size="sm">
+                Not signed in
+              </Badge>
+            )}
           </div>
           <Text className="text-sm">
-            {connection.lastSyncAt
-              ? `Last sent ${formatDateTime(connection.lastSyncAt)}`
-              : 'Nothing sent through this yet'}
+            {isOauth && !connection.connected
+              ? 'Set up, but sparx cannot send anything until you sign in.'
+              : connection.lastSyncAt
+                ? `Last sent ${formatDateTime(connection.lastSyncAt)}`
+                : 'Nothing sent through this yet'}
           </Text>
         </div>
-        <Button
-          size="sm"
-          variant="ghost"
-          color="danger"
-          shape="square"
-          aria-label="Disconnect"
-          onClick={() => {
-            void onDisconnect();
-          }}
-        >
-          <Trash2 className="size-4" aria-hidden />
-        </Button>
+        <div className="flex shrink-0 items-center gap-2">
+          {isOauth ? (
+            connection.connected ? (
+              <Button
+                size="sm"
+                variant="outline"
+                color="neutral"
+                loading={signOut.isPending}
+                onClick={() => {
+                  void onSignOut();
+                }}
+              >
+                <LogOut className="size-4" aria-hidden />
+                Sign out
+              </Button>
+            ) : (
+              <Button size="sm" color="module" loading={signingIn} onClick={onSignIn}>
+                <LogIn className="size-4" aria-hidden />
+                Sign in
+              </Button>
+            )
+          ) : null}
+          <Button
+            size="sm"
+            variant="ghost"
+            color="danger"
+            shape="square"
+            aria-label={`Remove ${name}`}
+            loading={remove.isPending}
+            onClick={() => {
+              void onRemove();
+            }}
+          >
+            <Trash2 className="size-4" aria-hidden />
+          </Button>
+        </div>
       </div>
 
       <Field>
@@ -892,21 +1224,28 @@ export function AccountingSurface() {
   const toast = useToast();
   const { data, isPending, isError, isFetching, dataUpdatedAt, refetch } = useAccounting();
   const categories = useExpenseCategories();
-  const connect = useSaveConnection();
+  const addRow = useSaveConnection();
+  const oauth = useAccountingConnect();
 
   const catalog = data?.catalog ?? [];
   const connections = data?.connections ?? [];
-  const connectedProviders = new Set(connections.map((connection) => connection.provider));
+  const rowByProvider = new Map(connections.map((connection) => [connection.provider, connection]));
+  const isOauthProvider = (provider: string) =>
+    catalog.find((entry) => entry.provider === provider)?.connect === 'oauth';
 
-  const addConnection = (provider: AccountingProvider) => {
-    connect.mutate(
+  /** A spreadsheet layout has no sign-in. Its row exists purely to hold the
+   *  books-closed date and the category → account-code mapping, both of which
+   *  the export reads — so setting one up is a single write and nothing else. */
+  const setUpFileLayout = (provider: AccountingProvider) => {
+    addRow.mutate(
       { provider: provider.provider, displayName: provider.name, syncCadence: 'manual' },
       {
         onSuccess: () => {
           afterPaneChange(() => {
             toast.add({
               title: `${provider.name} set up`,
-              description: 'Set your books-closed date so nothing already filed gets sent again.',
+              description:
+                'Set your books-closed date and map your categories so the export lands in the right accounts.',
               type: 'success',
             });
           });
@@ -986,13 +1325,43 @@ export function AccountingSurface() {
 
             <ImportPanel categories={categories.data ?? []} />
 
+            {/* A failed sign-in is reported HERE rather than as a toast: the
+                popup may have closed minutes ago, and "you cancelled" needs to
+                stay on screen next to the button that starts it again. */}
+            {oauth.failure ? (
+              <Alert color="danger" variant="soft">
+                <AlertContent>
+                  <AlertTitle>Could not connect</AlertTitle>
+                  <AlertDescription>{oauth.failure}</AlertDescription>
+                </AlertContent>
+                <Button size="sm" color="danger" variant="soft" onClick={oauth.dismissFailure}>
+                  Dismiss
+                </Button>
+              </Alert>
+            ) : null}
+
             {connections.length > 0 ? (
               <div className="flex flex-col gap-3">
                 <Heading level={2} className="px-1 text-lg font-semibold">
                   Set up
                 </Heading>
                 {connections.map((connection) => (
-                  <ConnectionCard key={connection.id} connection={connection} />
+                  <ConnectionCard
+                    key={connection.id}
+                    connection={connection}
+                    isOauth={isOauthProvider(connection.provider)}
+                    signingIn={
+                      oauth.pendingProvider === connection.provider ||
+                      (oauth.isFinishing && oauth.pendingProvider !== null)
+                    }
+                    onSignIn={() => {
+                      oauth.begin({
+                        provider: connection.provider,
+                        displayName: connection.displayName ?? connection.provider,
+                        connectionId: connection.id,
+                      });
+                    }}
+                  />
                 ))}
               </div>
             ) : null}
@@ -1006,6 +1375,25 @@ export function AccountingSurface() {
                   .filter((entry) => entry.connect === 'oauth' || entry.provider !== 'csv')
                   .map((entry) => {
                     const ready = entry.availability === 'available';
+                    const row = rowByProvider.get(entry.provider);
+                    const isOauth = entry.connect === 'oauth';
+                    const signedIn = row?.connected ?? false;
+                    const busy = oauth.pendingProvider === entry.provider;
+
+                    // Four states, and each one gets its own words. "Connect" on
+                    // a row that already exists but was never signed in used to
+                    // be disabled, which left the only way forward looking like
+                    // a dead end.
+                    const label = !isOauth
+                      ? row
+                        ? 'Set up'
+                        : 'Set up'
+                      : signedIn
+                        ? 'Signed in'
+                        : row
+                          ? 'Finish signing in'
+                          : 'Connect';
+
                     return (
                       <li
                         key={entry.provider}
@@ -1017,9 +1405,13 @@ export function AccountingSurface() {
                             <Badge color={ready ? 'success' : 'neutral'} variant="soft" size="sm">
                               {ready ? 'Ready' : 'Not yet'}
                             </Badge>
-                            {connectedProviders.has(entry.provider) ? (
+                            {signedIn ? (
                               <Badge color="module" variant="soft" size="sm">
-                                Set up
+                                Signed in
+                              </Badge>
+                            ) : row ? (
+                              <Badge color="warning" size="sm">
+                                Not signed in
                               </Badge>
                             ) : null}
                           </div>
@@ -1029,16 +1421,28 @@ export function AccountingSurface() {
                         </div>
                         <Button
                           size="sm"
-                          variant="outline"
-                          color="neutral"
-                          disabled={!ready || connectedProviders.has(entry.provider)}
-                          loading={connect.isPending}
+                          variant={signedIn ? 'outline' : 'solid'}
+                          color={signedIn ? 'neutral' : 'module'}
+                          disabled={!ready || signedIn || (!isOauth && row !== undefined)}
+                          loading={isOauth ? busy : addRow.isPending}
                           onClick={() => {
-                            addConnection(entry);
+                            if (isOauth) {
+                              oauth.begin({
+                                provider: entry.provider,
+                                displayName: entry.name,
+                                ...(row ? { connectionId: row.id } : {}),
+                              });
+                            } else {
+                              setUpFileLayout(entry);
+                            }
                           }}
                         >
-                          <Link2 className="size-4" aria-hidden />
-                          Connect
+                          {signedIn ? (
+                            <Check className="size-4" aria-hidden />
+                          ) : (
+                            <Link2 className="size-4" aria-hidden />
+                          )}
+                          {label}
                         </Button>
                       </li>
                     );

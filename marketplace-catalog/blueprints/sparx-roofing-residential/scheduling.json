@@ -239,5 +239,12 @@
       ],
       "policyHandle": "roofing-standard"
     }
+  ],
+  "locations": [
+    {
+      "handle": "premises",
+      "name": "Summit Roofing",
+      "timezone": "UTC"
+    }
   ]
 }

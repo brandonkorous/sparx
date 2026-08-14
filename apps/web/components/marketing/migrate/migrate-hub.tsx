@@ -4,7 +4,7 @@ import { Badge } from '@wizeworks/silicaui-react';
 // the client entry's copy is a client reference: calling it during prerender
 // fails at `stringify` with "attempted to call buttonClasses() from the server".
 import { buttonClasses } from '@wizeworks/silicaui-react/server';
-import { ENTITY_LABEL, catalogueByKind } from '@sparx/migration';
+import { ENTITY_LABEL, catalogueByKind, connectorOnlyEntities } from '@sparx/migration';
 import { Band } from '../band';
 import { Display, Text } from '../primitives';
 import { Faq } from '../faq';
@@ -76,7 +76,7 @@ export function MigrateHub() {
   return (
     <>
       <Band tone="dark" flush>
-        <div className="mx-auto flex max-w-4xl flex-col items-start gap-6 py-20 @3xl:py-28">
+        <div className="mx-auto flex max-w-3xl flex-col items-center gap-6 text-center">
           <Display as="h1" size={64}>
             The week you are dreading is an afternoon
           </Display>
@@ -104,7 +104,7 @@ export function MigrateHub() {
       </Band>
 
       <Band>
-        <div className="mx-auto flex max-w-4xl flex-col gap-10 py-20">
+        <div className="mx-auto flex max-w-4xl flex-col gap-10">
           <div className="flex flex-col gap-3">
             <Display size={44}>
               Switching is only frightening because of what you cannot see
@@ -135,7 +135,7 @@ export function MigrateHub() {
       </Band>
 
       <Band tone="primary">
-        <div className="mx-auto flex max-w-3xl flex-col gap-6 py-24 text-center">
+        <div className="mx-auto flex max-w-3xl flex-col gap-6 text-center">
           <Display size={48}>Most importers take the catalogue and leave the business</Display>
           <Text size={20}>
             Products are the easy half. What actually costs you a month is everything else — the
@@ -147,7 +147,7 @@ export function MigrateHub() {
       </Band>
 
       <Band tone="surface" id="platforms">
-        <div className="mx-auto flex max-w-5xl flex-col gap-12 py-20">
+        <div className="mx-auto flex max-w-5xl flex-col gap-12">
           <div className="flex flex-col gap-3">
             <Display size={44}>Where are you moving from?</Display>
             <Text size={18}>
@@ -161,9 +161,22 @@ export function MigrateHub() {
               <Display size={28} as="h3">
                 {group.label}
               </Display>
-              <div className="grid gap-4 @2xl:grid-cols-2">
+              <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
                 {group.vendors.map((vendor) => {
                   const story = getStory(vendor.slug);
+                  // Entities the vendor has NO export for. Computed from the same
+                  // registry as everything else, so this card cannot claim one the
+                  // connector does not read — and cannot quietly omit one either,
+                  // which is what it did: the WooCommerce card listed no order
+                  // history at all, and Shopify's left off collections and the blog.
+                  const liveOnly = connectorOnlyEntities(vendor.slug);
+                  // Appended, because catalogue() derives its list from FILES — the
+                  // live-only ones are absent from it by construction.
+                  // No cap. The longest card is eight chips, and "+2 more" was
+                  // hiding exactly the two that make this vendor interesting — a
+                  // truncation that drops the differentiator is worse than a card
+                  // one row taller.
+                  const all = [...vendor.entities, ...liveOnly];
                   return (
                     <Link
                       key={vendor.slug}
@@ -182,16 +195,19 @@ export function MigrateHub() {
                       </div>
                       {story !== undefined ? <Text size={16}>{story.headline}</Text> : null}
                       <div className="flex flex-wrap gap-1.5">
-                        {vendor.entities.slice(0, 6).map((entity) => (
-                          <Badge key={entity} color="neutral" variant="outline" size="sm">
+                        {all.map((entity) => (
+                          // Primary, not neutral, for anything that needs the live
+                          // connection: it is the one distinction on this card that
+                          // changes what the reader has to DO, and grey says nothing.
+                          <Badge
+                            key={entity}
+                            color={liveOnly.includes(entity) ? 'primary' : 'neutral'}
+                            variant={liveOnly.includes(entity) ? 'soft' : 'outline'}
+                            size="sm"
+                          >
                             {ENTITY_LABEL[entity].many}
                           </Badge>
                         ))}
-                        {vendor.entities.length > 6 ? (
-                          <Badge color="neutral" variant="outline" size="sm">
-                            +{vendor.entities.length - 6} more
-                          </Badge>
-                        ) : null}
                       </div>
                     </Link>
                   );
@@ -216,7 +232,7 @@ export function MigrateHub() {
       <Faq id="migrate-faq" heading="The questions everybody asks" items={faqItems} />
 
       <Band tone="dark">
-        <div className="mx-auto flex max-w-3xl flex-col items-center gap-6 py-24 text-center">
+        <div className="mx-auto flex max-w-3xl flex-col items-center gap-6 text-center">
           <Display size={48}>Find out in ten minutes, not in a month</Display>
           <Text size={20}>
             Export the file, drop it in, and read what would happen. If it is not right, nothing has

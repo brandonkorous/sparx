@@ -78,6 +78,39 @@ interface TenantFacts {
   acquisitionCampaign: string | null;
   /** Module slugs currently switched on for this tenant. */
   modules: string[];
+  /** Which PRODUCT this tenant signed up under — `sparx` or `piggles`.
+   *
+   *  Without it the two brands are indistinguishable on the signups board, and
+   *  "how is Piggles doing" becomes unanswerable at exactly the moment it is the
+   *  only question worth asking — the whole reason for running a second brand is
+   *  to compare them. */
+  platformBrand: string;
+  /** The STORY — what the owner said their business is, in their own words,
+   *  composed during in-console onboarding and persisted at
+   *  `tenants.settings.onboarding.story`.
+   *
+   *  This is the richest thing the platform knows about a new tenant: industry,
+   *  who they sell to, and a sentence they wrote themselves. It has been
+   *  collected since onboarding shipped and was NOT reaching this mirror, which
+   *  is why the signups board could show when tenants arrived but never what
+   *  kind of business arrived. Retention does not look the same across a bakery,
+   *  a consultancy and a wholesaler, and these are the fields that tell them
+   *  apart. */
+  story: {
+    industry: string | null;
+    audience: string | null;
+    /** The composed sentence. Truncated — the board wants a label, and the full
+     *  text lives on the tenant where it was written. */
+    text: string | null;
+    /** Modules the story implies. Distinct from `modules`, which is what is
+     *  actually switched on — the gap between the two is a signal in itself. */
+    impliedModules: string[];
+    composedAt: string | null;
+  };
+  /** Piggles' day-one rail preference, from ITS onboarding. Piggles asks a
+   *  different, shorter question than sparx's story composer, so it lands in its
+   *  own namespaced key rather than pretending to be the same answer. */
+  railGroups: string[];
 }
 
 /** Read everything the mirror needs straight from the tenant's own rows.
@@ -100,6 +133,7 @@ async function loadTenantFacts(tenantId: string): Promise<TenantFacts | null> {
       acquisitionChannel: true,
       acquisitionSource: true,
       acquisitionCampaign: true,
+      platformBrand: true,
       settings: true,
     },
   });
@@ -135,7 +169,44 @@ async function loadTenantFacts(tenantId: string): Promise<TenantFacts | null> {
     acquisitionSource: tenant.acquisitionSource,
     acquisitionCampaign: tenant.acquisitionCampaign,
     modules: enabledModules(tenant.settings),
+    platformBrand: tenant.platformBrand,
+    story: readStory(tenant.settings),
+    railGroups: readRailGroups(tenant.settings),
   };
+}
+
+/** The story, read from `tenants.settings.onboarding.story` — the shape the
+ *  workbench's onboarding composer writes (`PersistedStory`).
+ *
+ *  Read DEFENSIVELY at every level rather than trusted. It is a JSON blob with
+ *  no constraint behind it, written by an app that will change, and a mirror
+ *  that throws on one malformed story stops recording signups entirely — a far
+ *  worse failure than a missing segment on one deal. Every field independently
+ *  degrades to null rather than taking the rest with it. */
+function readStory(settings: unknown): TenantFacts['story'] {
+  const story = (settings as { onboarding?: { story?: unknown } } | null)?.onboarding?.story;
+  const s = story && typeof story === 'object' ? (story as Record<string, unknown>) : {};
+
+  const text = typeof s.text === 'string' && s.text.trim() ? s.text.trim() : null;
+
+  return {
+    industry: typeof s.industry === 'string' && s.industry ? s.industry : null,
+    audience: typeof s.audience === 'string' && s.audience ? s.audience : null,
+    // Capped: a CRM metadata blob is not the place for an essay, and the full
+    // text is still on the tenant row where the composer wrote it.
+    text: text ? text.slice(0, 400) : null,
+    impliedModules: Array.isArray(s.modules)
+      ? s.modules.filter((m): m is string => typeof m === 'string').slice(0, 32)
+      : [],
+    composedAt: typeof s.composedAt === 'string' ? s.composedAt : null,
+  };
+}
+
+/** Piggles' day-one rail preference, namespaced under its own key. */
+function readRailGroups(settings: unknown): string[] {
+  const groups = (settings as { piggles?: { railGroups?: unknown } } | null)?.piggles?.railGroups;
+  if (!Array.isArray(groups)) return [];
+  return groups.filter((g): g is string => typeof g === 'string').slice(0, 12);
 }
 
 /** Module slugs with `enabled: true` in `tenants.settings.modules`. */
@@ -211,6 +282,7 @@ async function ensureMirror(
       acquisitionChannel: facts.acquisitionChannel,
       acquisitionSource: facts.acquisitionSource,
       acquisitionCampaign: facts.acquisitionCampaign,
+      platformBrand: facts.platformBrand,
     },
   });
 
@@ -322,6 +394,12 @@ export function toTag(prefix: string, value: string): string | null {
 
 function contactTags(facts: TenantFacts): string[] {
   const tags = [SIGNUP_TAG];
+  // The brand is a TAG rather than only metadata because tags are what the board
+  // filters and segments on. Growth per product is the first question anyone
+  // asks of a two-brand platform, and a value buried in a JSON column cannot
+  // answer it without someone writing a query.
+  const brand = toTag('brand', facts.platformBrand);
+  if (brand) tags.push(brand);
   const channel = facts.acquisitionChannel ? toTag('channel', facts.acquisitionChannel) : null;
   if (channel) tags.push(channel);
   return tags;
@@ -344,6 +422,16 @@ function dealMetadata(facts: TenantFacts): Record<string, unknown> {
     acquisitionChannel: facts.acquisitionChannel,
     acquisitionSource: facts.acquisitionSource,
     acquisitionCampaign: facts.acquisitionCampaign,
+    platformBrand: facts.platformBrand,
+    // The story is what makes this board segmentable by KIND of business rather
+    // than only by arrival date. Flattened onto the deal metadata so a filter
+    // does not have to reach through a nested object.
+    storyIndustry: facts.story.industry,
+    storyAudience: facts.story.audience,
+    storyText: facts.story.text,
+    storyImpliedModules: facts.story.impliedModules,
+    storyComposedAt: facts.story.composedAt,
+    railGroups: facts.railGroups,
   };
 }
 

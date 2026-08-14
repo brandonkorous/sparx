@@ -239,5 +239,12 @@
       ],
       "policyHandle": "voltline-priority"
     }
+  ],
+  "locations": [
+    {
+      "handle": "premises",
+      "name": "Voltline Electric",
+      "timezone": "UTC"
+    }
   ]
 }

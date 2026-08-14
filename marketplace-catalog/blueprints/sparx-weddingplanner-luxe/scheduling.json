@@ -239,5 +239,12 @@
       ],
       "policyHandle": "consult-standard"
     }
+  ],
+  "locations": [
+    {
+      "handle": "premises",
+      "name": "Ever After Events",
+      "timezone": "UTC"
+    }
   ]
 }

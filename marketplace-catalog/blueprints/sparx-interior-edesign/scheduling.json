@@ -225,5 +225,12 @@
       ],
       "policyHandle": "roomco-standard"
     }
+  ],
+  "locations": [
+    {
+      "handle": "premises",
+      "name": "Room & Co.",
+      "timezone": "UTC"
+    }
   ]
 }

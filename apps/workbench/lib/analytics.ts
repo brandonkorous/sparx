@@ -1,8 +1,9 @@
 'use client';
 
 // Workbench-native PostHog helpers. The provider (components/posthog-provider)
-// owns init + autocapture wiring; this module owns the one imperative call the
-// app makes by hand — stamping acquisition attribution onto the person at signup.
+// owns init + autocapture wiring; this module owns the two imperative calls the
+// app makes by hand — stamping acquisition attribution onto the person at
+// signup, and reporting a crash an error boundary swallowed.
 //
 // Everything here no-ops safely when PostHog never initialised (local dev, or a
 // build shipped without NEXT_PUBLIC_POSTHOG_KEY), so callers never have to guard.
@@ -40,4 +41,23 @@ export function identifyFirstTouch(userId: string): void {
         }
       : {}
   );
+}
+
+/**
+ * Report a crash an error boundary caught, with enough context to find it.
+ *
+ * Every boundary in this app RECOVERS — a pane falls back to "this panel ran
+ * into a problem", a chrome region degrades to a strip, the route boundary
+ * offers Try again. That is right for the operator and terrible for us: a
+ * recovered crash produces no unhandled rejection, no window `error` event, and
+ * nothing in PostHog's autocapture. The better the recovery, the more invisible
+ * the bug, so the boundary that swallows an error is the one that has to speak.
+ *
+ * `context` names WHICH boundary and what it was showing — a pane's surface key,
+ * a chrome region's label. Without it every report reads "the workbench threw",
+ * which is true of all of them and useful about none.
+ */
+export function reportCrash(error: unknown, context: Record<string, string>): void {
+  if (!posthog.__loaded) return;
+  posthog.captureException(error instanceof Error ? error : new Error(String(error)), context);
 }

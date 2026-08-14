@@ -11,7 +11,7 @@ import assets from './assets.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-hvac-efficiency',
-  version: '1.2.0',
+  version: '1.3.0',
   name: 'sparx — HVAC (Efficiency)',
   summary:
     'A data-forward HVAC site for energy-efficiency pros — a cool evergreen-and-slate palette with a bright teal signal accent, built around online booking. Homeowners book an energy assessment, a free install estimate or a tune-up in about a minute; three technicians carry their own skills and hours. Leads with lower bills, heat-pump expertise and rebate help. Ships as "Northline Climate", a high-efficiency heating-and-cooling company.',

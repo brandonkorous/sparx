@@ -229,5 +229,12 @@
       ],
       "policyHandle": "engagement-deposit"
     }
+  ],
+  "locations": [
+    {
+      "handle": "premises",
+      "name": "Northpoint CPA",
+      "timezone": "UTC"
+    }
   ]
 }

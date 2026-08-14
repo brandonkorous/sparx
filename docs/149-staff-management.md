@@ -1,8 +1,8 @@
 # 149 — Staff management (the `staff` module)
 
-Version: 0.4 (verified)
+Version: 0.7 (verified)
 Author: Brandon Korous
-Last Updated: 2026-08-13
+Last Updated: 2026-08-14
 
 > Status: **built and browser-verified end to end.** All six surfaces have been driven by
 > hand — a person hired, a rate recorded, hours typed, approved, costed and deleted, a
@@ -19,6 +19,18 @@ Last Updated: 2026-08-13
 > Sequenced behind [148](148-finance-spend-and-profitability.md), which shipped first
 > and works without this. Staff turns 148's hand-typed "Wages" line into derived labour
 > cost and unlocks true job profitability.
+>
+> **0.7: the commission migration is applied and the chain is proven end to end** — 24
+> tests, 13 pure and 11 DB-backed. Neither of the two new controls has been CLICKED
+> though, and §11 is a list of six defects that only clicking found.
+>
+> **0.5 closed the certification sweep** and **0.6 the commission calculation** (§10) —
+> both had shipped as tested service code with no caller, so an expiry date was recorded
+> and never mentioned again, and no sale ever earned anyone anything. Commission needed
+> two schema additions before any of it could work: a percentage on the pay rate, and
+> somewhere to record who sold an order, which migration `20270324000000` added. (That
+> sentence read "not yet applied" until 0.7; it is applied, and this line is left here
+> as the correction rather than deleted.)
 
 ---
 
@@ -359,14 +371,116 @@ registered in `catalog/staff.ts`, addressed under `/team/*`. Keys are `staff.peo
     a different class of bug from a wrong figure on a screen, and the reason six of the
     27 integration tests are about this file.
 
-### Still to build
+### ~~The nightly certification sweep~~ — done (2026-08-13)
 
-- **The nightly certification sweep.** `certificationsNeedingReminder` and `markReminded`
-  are built and tested; nothing calls them yet. It wants an api-rest tick publishing
-  `staff.certification.expiring` per certification, and an email template behind it.
-- **A commission surface.** The service layer and the API are done and the person pane
-  READS commissions; nothing writes one from the UI, because nothing yet calculates them
-  from an order or a deal. That calculation is the missing piece, not the screen.
+`certificationsNeedingReminder` and `markReminded` shipped built and tested with **no
+caller anywhere in the repo**, so the one thing the Certifications surface promises —
+that you hear about a licence BEFORE it lapses — never happened.
+
+`POST /internal/staff/certification-reminders`
+([staff-cron.ts](../services/api-rest/src/routes/internal/staff-cron.ts)) now runs at
+07:15 UTC from [staff-certification-reminders.yaml](../k8s/cronjobs/staff-certification-reminders.yaml).
+Per tenant it reads what is due, publishes `staff.certification.expiring` per
+certification, and stamps `lastRemindedAt` **after** the publishes and only for what was
+published — so a broker failure retries tomorrow instead of marking a reminder as sent
+that nobody got.
+
+**It deliberately does NOT send email, which is a change from what this section used to
+ask for.** The platform already has a shape for this: `emitOverdueTaskReminders` in
+`@sparx/crm` publishes an event "so the email automation engine can fire a templated
+reminder". The reason to follow it rather than hard-code a template is that _who_ should
+hear about a forklift ticket differs per business — the person, their supervisor, a
+compliance mailbox, or a task on a board rather than mail at all — and sparx should not
+pick.
+
+The honest cost of that choice is that an event with no automation behind it does
+nothing, which is the exact bug shape this whole release is about. So the trigger is also
+registered in the workbench's `TRIGGER_EVENTS` catalog, alongside the other four staff
+events and `finance.expense.recorded`. That required adding `staff` and `finance` to the
+**local** `ModuleSlug` union in `automations-catalog.ts` — a hand-kept list, separate
+from `@sparx/modules`, that neither module had ever been added to. **An event a tenant
+cannot pick from a list may as well not be published.**
+
+**Invoked for the first time (2026-08-14).** A cron endpoint that has never been called
+is the same category of thing as a handler nothing publishes to, so all four new
+endpoints were fired against the local database through the real router — token refused
+when absent, refused when wrong, accepted when right. The certification sweep found
+**one** staff tenant (`staff` is not bundled, so the settings flag is the whole truth
+here) and nothing due, which is the correct answer for a database with no certification
+inside its lead window.
+
+### ~~Commission calculation~~ — built (2026-08-13), pending one migration
+
+The ledger, the API and the person pane had all shipped and **nothing calculated a
+commission**. The reason was schema, twice over, which is why no amount of service code
+would have closed it:
+
+- **`staff_pay_rates` had no percentage.** `basis` already accepted `'commission'`, but
+  `amount_cents` is per-hour under `hourly` and per-YEAR under `salary` — so `commission`
+  was a basis the rate model could name and could not describe.
+  `commission_percent Decimal(6,3)` is that number, CHECK-constrained to zero on every
+  other basis and to ≤100 (a commission above the sale itself is a typo every time).
+- **An order recorded no salesperson. None.** A `Deal` carries `assignedRepId`; an
+  `Order` carries nothing, so an order could never earn anybody anything whatever the
+  rate said. `staff_sale_attributions` is who sold it — staff-side rather than a column
+  on `orders`, per locked decision #2, so turning the module off leaves commerce
+  untouched. It doubles as an override for deals, because the rep who owns a deal is not
+  always the person who should be paid for closing it.
+
+**The rules it encodes.** Earned when **paid**, not placed — a commission on an unpaid
+order is a promise, and paying out of a promise funds staff from cash the business has
+not received. The basis is **subtotal less discount**: not tax (the state's money passing
+through), not shipping (the carrier's), not surcharges (the processor's). A refund
+reduces it **proportionally against the order total**, because a refund of the shipping
+charge is still money returned — and it recomputes rather than reverses, so the upsert
+moves the row instead of leaving a correcting row beside it. A recalculation never
+touches `status`: it cannot resurrect a voided commission or push a paid one back to
+pending.
+
+**Wiring.** `staff-worker` gained `order.paid`, `order.refunded` and `crm.deal.won`.
+That last one is new on the platform bus, and deliberately narrower than the existing
+`crm.deal.stage_changed`: that event is a `CrmTopic`, and **the CRM bus never reaches an
+in-process platform consumer** — a worker subscribing to it would receive nothing. The
+api-rest move-stage route publishes `crm.deal.won` alongside it, reading the stage's
+`stageType` rather than its name so a tenant renaming "Won" to "Signed" does not quietly
+stop paying people.
+
+`PUT /v1/staff/sales/:type/:id/attribution` credits a sale and recalculates immediately —
+crediting a sale and then waiting for something else to notice is how an owner concludes
+the feature does not work. Removing an attribution deliberately leaves the commission it
+produced standing; void it explicitly instead, because silently erasing a paid row is how
+it disappears from a payroll reconciliation.
+
+**Applied and verified (0.7).** Migration `20270324000000_staff_commission_rate` is in,
+the client is regenerated, and `prisma migrate diff` shows no column or index difference
+on either object. **24 tests** cover it: 13 pure arithmetic plus 11 DB-backed, which pin
+the rules above rather than restating them — 7.5% of a $400 order carrying $40 of tax and
+shipping pays **$30.00** and not $33.00; unpaid earns nothing; a half refund halves it; a
+full refund pays zero and still leaves ONE row; a redelivered `order.paid` does not pay
+twice; a **voided** commission is not resurrected by a recalculation.
+
+**Finishing the column was not finishing the feature.** Adding `commission_percent` left
+four places that never carried it, and each would have failed silently:
+
+- `PayRate` / `setRate` had no such field, so **there was no way to set a commission rate
+  at all** — the migration alone would have shipped a column nothing could write.
+- The API schema did not accept it. It now also REFUSES it on a non-commission basis with
+  a message, rather than zeroing it quietly: silently dropping it is how somebody sets
+  7.5% on an hourly rate, watches it save, and wonders for a month why nobody was paid.
+- `StaffPayRateRow` did not emit it — the identical shape to the `note` defect in §11 on
+  this very type. Added as **required**, which is the lesson that defect taught.
+- The person pane had no input. It now shows a "Share of each sale" field only for a
+  commission basis, and the current-rate line reads `· 7.5% of each sale`.
+
+**Still out, deliberately:**
+
+- **Split commissions.** The unique on `(tenant, source_type, source_id)` is one seller
+  per sale on purpose: modelling a split as "several rows" with no share column would pay
+  each named person the FULL commission. Doing it properly needs a share per row, a rule
+  for shares that do not total 100%, and a UI that can express both.
+- **Nobody has clicked either new control.** The commission chain is proven by DB-backed
+  tests, not by a person driving the screen — and §11 is a list of six defects that only
+  clicking found. Treat both as unverified until someone does.
 
 ---
 

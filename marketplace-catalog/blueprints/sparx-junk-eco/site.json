@@ -22,7 +22,7 @@
                   "props": {
                     "show": "both"
                   },
-                  "id": "d78e1283-3ab8-4f32-9a7c-6920393d2065",
+                  "id": "c5ec8f6e-9c11-49d3-8c0b-2f4425b076ae",
                   "ord": "a0"
                 },
                 {
@@ -37,13 +37,15 @@
                       "attrs": {
                         "href": "/book"
                       },
-                      "children": ["Book"],
+                      "children": [
+                        "Book"
+                      ],
                       "slot": {
                         "name": "link1",
                         "type": "link",
                         "label": "Product"
                       },
-                      "id": "68b08a67-98ed-4d7f-bd13-9537f0d7e61f",
+                      "id": "db038e87-9076-42cd-bc12-88502ac50838",
                       "ord": "a0"
                     },
                     {
@@ -53,13 +55,15 @@
                       "attrs": {
                         "href": "/about"
                       },
-                      "children": ["About"],
+                      "children": [
+                        "About"
+                      ],
                       "slot": {
                         "name": "link2",
                         "type": "link",
                         "label": "Pricing"
                       },
-                      "id": "925d3bd2-e3ca-4759-9ba8-f6a124ba1667",
+                      "id": "de974980-ccea-487a-84ac-6dff71d439eb",
                       "ord": "a1"
                     },
                     {
@@ -69,17 +73,19 @@
                       "attrs": {
                         "href": "/contact"
                       },
-                      "children": ["Contact"],
+                      "children": [
+                        "Contact"
+                      ],
                       "slot": {
                         "name": "link3",
                         "type": "link",
                         "label": "Docs"
                       },
-                      "id": "1c4622a4-bbc6-45ae-82f9-67d83bb4e2fa",
+                      "id": "b996a7d9-2864-4e1a-9047-a7d5721d4914",
                       "ord": "a2"
                     }
                   ],
-                  "id": "e4ced78e-63bd-4f5d-8f82-83cb03c46170",
+                  "id": "78b752fa-ca99-4430-bbf7-f51d9df68906",
                   "ord": "a1"
                 },
                 {
@@ -94,20 +100,22 @@
                       "attrs": {
                         "href": "/account/login"
                       },
-                      "children": ["Sign in"],
+                      "children": [
+                        "Sign in"
+                      ],
                       "slot": {
                         "name": "secondary",
                         "type": "link",
                         "label": "Secondary link"
                       },
-                      "id": "506bbdd7-fa53-4ef7-a6d4-22b52a0a980d",
+                      "id": "4583357a-0f25-4148-b891-0c239e38f2a5",
                       "ord": "a0"
                     },
                     {
                       "kind": "host",
                       "component": "site.theme-toggle",
                       "class": "inline-flex items-center",
-                      "id": "5ccbddcd-480e-48ec-bc56-04241b9ab6a7",
+                      "id": "da05a5ee-8280-4869-baa4-1cf622235315",
                       "ord": "a1"
                     },
                     {
@@ -123,7 +131,7 @@
                         "type": "link",
                         "label": "Primary action"
                       },
-                      "id": "25e91ffe-32bf-4641-809e-64d9875e2845",
+                      "id": "ff791f6d-f7ee-4774-b91f-c5e8ef43687c",
                       "ord": "a2"
                     },
                     {
@@ -141,20 +149,20 @@
                           "props": {
                             "name": "menu"
                           },
-                          "id": "2469cefd-a5cf-4eb0-bc06-edd1c5671bf6",
+                          "id": "4cd62903-c315-4c0e-acde-0ccf774b62e6",
                           "ord": "a0"
                         }
                       ],
                       "part": "trigger",
-                      "id": "15b0bfff-e2bc-4b2a-8e8d-6db5311b57c0",
+                      "id": "6078d35e-40ab-4ab4-8ca2-10e7b8ab0cbb",
                       "ord": "a3"
                     }
                   ],
-                  "id": "7ddd6269-1296-4aec-8c5c-59f85389b619",
+                  "id": "a6bb57f8-1bd2-402f-a7e4-7bc4cc1b0ee4",
                   "ord": "a2"
                 }
               ],
-              "id": "b14e789e-2a17-4bb7-ad36-f423fa556bea",
+              "id": "c93e55f6-918d-4070-8c83-b9fbe5d14bde",
               "ord": "a0"
             },
             {
@@ -172,13 +180,15 @@
                   "attrs": {
                     "href": "/book"
                   },
-                  "children": ["Book"],
+                  "children": [
+                    "Book"
+                  ],
                   "slot": {
                     "name": "link1",
                     "type": "link",
                     "label": "Product"
                   },
-                  "id": "c1249178-909d-40d5-a749-d9eb347590dd",
+                  "id": "a1879d0f-b4c8-4b88-8300-b0c5da01ca79",
                   "ord": "a0"
                 },
                 {
@@ -188,13 +198,15 @@
                   "attrs": {
                     "href": "/about"
                   },
-                  "children": ["About"],
+                  "children": [
+                    "About"
+                  ],
                   "slot": {
                     "name": "link2",
                     "type": "link",
                     "label": "Pricing"
                   },
-                  "id": "cb18b32b-6751-4224-96e3-67b8b515b9f9",
+                  "id": "9f40f66b-41c0-4649-915f-f5610eed0fb6",
                   "ord": "a1"
                 },
                 {
@@ -204,13 +216,15 @@
                   "attrs": {
                     "href": "/contact"
                   },
-                  "children": ["Contact"],
+                  "children": [
+                    "Contact"
+                  ],
                   "slot": {
                     "name": "link3",
                     "type": "link",
                     "label": "Docs"
                   },
-                  "id": "fff55ceb-7b6d-4d32-871f-ae0b24bb51a2",
+                  "id": "9bddb360-58c0-42e7-b4c2-1383a8f0400f",
                   "ord": "a2"
                 },
                 {
@@ -226,7 +240,7 @@
                     "type": "link",
                     "label": "Secondary link"
                   },
-                  "id": "90f6b596-ab96-4f7e-b3b5-966c18505082",
+                  "id": "3fc11ce7-daa6-41c8-b280-b2be2ec3a42d",
                   "ord": "a3"
                 },
                 {
@@ -242,19 +256,19 @@
                     "type": "link",
                     "label": "Primary action"
                   },
-                  "id": "51e1eb6c-1674-4220-9a38-1050f11fd606",
+                  "id": "94efd5b7-334d-4ff1-81c9-fa60039a82d5",
                   "ord": "a4"
                 }
               ],
               "part": "panel",
-              "id": "78cd6b9d-21c0-48c3-b430-33d63a1f86e4",
+              "id": "03ef38f0-566d-491a-8d4d-a7142e69945b",
               "ord": "a1"
             }
           ],
           "behavior": {
             "type": "disclosure"
           },
-          "id": "5d0adddb-43d8-435f-a741-3a6d78a9598b",
+          "id": "8c300671-98bb-49f4-a3cb-4f3101641c68",
           "ord": "a0"
         },
         {
@@ -270,7 +284,7 @@
               "kind": "outlet"
             }
           ],
-          "id": "7ef975be-bdf8-4067-ac41-ffca84cef8c7",
+          "id": "69f8a6e4-8a46-4697-b320-140946bcaea0",
           "ord": "a1"
         },
         {
@@ -300,14 +314,16 @@
                           "props": {
                             "show": "both"
                           },
-                          "id": "23d1a8b3-4f93-46f6-9d34-6e57ea50651f",
+                          "id": "1b7396e9-d7ea-4e73-b768-969c1597f378",
                           "ord": "a0"
                         },
                         {
                           "kind": "element",
                           "tag": "p",
                           "class": "max-w-xs text-sm text-base-content",
-                          "children": ["Everything you publish, in one place."],
+                          "children": [
+                            "Everything you publish, in one place."
+                          ],
                           "slot": {
                             "name": "blurb",
                             "type": "text",
@@ -316,7 +332,7 @@
                           "attrs": {
                             "href": "/"
                           },
-                          "id": "a7d7c146-a51e-4a7e-a87e-533bc663557b",
+                          "id": "ae304df3-7e1f-49a1-931a-aa5aceb6719a",
                           "ord": "a1"
                         },
                         {
@@ -324,11 +340,11 @@
                           "tag": "ul",
                           "class": "mt-2 flex items-center gap-5",
                           "children": [],
-                          "id": "2e6e44ca-160c-4436-9ce0-1065811f3e5d",
+                          "id": "9824845b-30d3-4680-b797-ed24bdada14d",
                           "ord": "a2"
                         }
                       ],
-                      "id": "f5d2355f-b8f3-4343-9f4e-35c94d8d49ae",
+                      "id": "4abf6f5b-c2fb-4240-ada6-8af7c7b6ff6c",
                       "ord": "a0"
                     },
                     {
@@ -340,7 +356,9 @@
                           "kind": "element",
                           "tag": "p",
                           "class": "text-sm font-semibold text-base-content",
-                          "children": ["Explore"],
+                          "children": [
+                            "Explore"
+                          ],
                           "slot": {
                             "name": "col1",
                             "type": "text",
@@ -349,7 +367,7 @@
                           "attrs": {
                             "href": "/"
                           },
-                          "id": "0db1dd48-1a42-4681-8fff-de95bde398f1",
+                          "id": "82e86b9b-8b24-4e73-8d0d-c659d4cf1b6a",
                           "ord": "a0"
                         },
                         {
@@ -368,17 +386,19 @@
                                   "attrs": {
                                     "href": "/book"
                                   },
-                                  "children": ["Book"],
+                                  "children": [
+                                    "Book"
+                                  ],
                                   "slot": {
                                     "name": "link1",
                                     "type": "link",
                                     "label": "Features"
                                   },
-                                  "id": "6fb743da-f17a-48ac-b924-e5abcf86a897",
+                                  "id": "b72c72e8-c861-4fbd-98d8-5257c5cc59ac",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "b8abe006-31bf-421c-bb75-fd10b685a103",
+                              "id": "8f790e4f-ee22-48d0-ad29-0d285a8c4525",
                               "ord": "a0"
                             },
                             {
@@ -392,17 +412,19 @@
                                   "attrs": {
                                     "href": "/about"
                                   },
-                                  "children": ["About"],
+                                  "children": [
+                                    "About"
+                                  ],
                                   "slot": {
                                     "name": "link2",
                                     "type": "link",
                                     "label": "Pricing"
                                   },
-                                  "id": "9e6a020f-3e80-4a56-854e-ef52b0180068",
+                                  "id": "95e3a980-e227-419b-ab50-751e91511425",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "b0d341bd-ba10-4e8f-abe0-38382c6e83bd",
+                              "id": "e6dc68d5-04e0-44ea-9b56-669534627009",
                               "ord": "a1"
                             },
                             {
@@ -416,17 +438,19 @@
                                   "attrs": {
                                     "href": "/contact"
                                   },
-                                  "children": ["Contact"],
+                                  "children": [
+                                    "Contact"
+                                  ],
                                   "slot": {
                                     "name": "link3",
                                     "type": "link",
                                     "label": "Integrations"
                                   },
-                                  "id": "01e526ee-7421-4404-80cc-45d2a7acd688",
+                                  "id": "31c9fd06-89b1-4b87-a3a9-91a65e4c5819",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "5a7dee00-8542-4395-bed7-677cc73a301b",
+                              "id": "dc22de47-8683-4b5a-b75c-b38f11ebb462",
                               "ord": "a2"
                             },
                             {
@@ -440,25 +464,27 @@
                                   "attrs": {
                                     "href": "/search"
                                   },
-                                  "children": ["Search"],
+                                  "children": [
+                                    "Search"
+                                  ],
                                   "slot": {
                                     "name": "link4",
                                     "type": "link",
                                     "label": "Changelog"
                                   },
-                                  "id": "174d4863-4fa7-4951-be29-641fb6380468",
+                                  "id": "53df1b8d-36e8-45c3-85c8-8d7ffa8cee1d",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "296afd91-3c73-47c6-b29c-72a88bf7d9a2",
+                              "id": "c1c9759d-890f-415a-bd2e-c37fe749061f",
                               "ord": "a3"
                             }
                           ],
-                          "id": "c1faeacc-8150-4c49-827d-9c59646f30eb",
+                          "id": "b9271046-229e-4983-9477-303631ce3957",
                           "ord": "a1"
                         }
                       ],
-                      "id": "9b599b2a-4bc3-4245-89b9-3cc59197c185",
+                      "id": "8a5efe36-6de8-4ddd-aada-f1497812ddee",
                       "ord": "a1"
                     },
                     {
@@ -471,11 +497,11 @@
                           "tag": "ul",
                           "class": "flex flex-col gap-2",
                           "children": [],
-                          "id": "2cb65088-9334-4b16-a261-753523a1b80d",
+                          "id": "e115976c-a4dc-4334-81ff-722998fb29b8",
                           "ord": "a0"
                         }
                       ],
-                      "id": "93ef8f24-d840-4055-992e-c1e23f92a513",
+                      "id": "385b9820-469c-4d52-a391-18df56fda7d8",
                       "ord": "a2"
                     },
                     {
@@ -499,23 +525,23 @@
                                   "props": {
                                     "heading": "Legal"
                                   },
-                                  "id": "e6d42d23-985d-4952-9749-ec08af54c935",
+                                  "id": "30bd02c8-587c-458b-89aa-5c639eaf50a9",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "a2ea918e-b64a-4800-ae22-28ee95ff22d3",
+                              "id": "9d8d3211-cdad-4def-b4b1-dae44f3e91c5",
                               "ord": "a0"
                             }
                           ],
-                          "id": "e5ce8824-0846-42aa-9847-3aae62c2cda0",
+                          "id": "50cec9f8-473f-48fa-881c-7b86f5f10a80",
                           "ord": "a0"
                         }
                       ],
-                      "id": "670488da-3a5b-43a6-991c-0f3d0455fdf6",
+                      "id": "0e10aa8a-ad77-4f8c-b56f-6a85ea1ccd09",
                       "ord": "a3"
                     }
                   ],
-                  "id": "a952556d-afff-4f1a-96ac-a822e47d49d0",
+                  "id": "606e2b70-f14f-45b5-9d42-e47ff070b45f",
                   "ord": "a0"
                 },
                 {
@@ -533,16 +559,18 @@
                           "kind": "element",
                           "tag": "span",
                           "class": "font-medium",
-                          "children": ["Your site"],
+                          "children": [
+                            "Your site"
+                          ],
                           "data": {
                             "kind": "value",
                             "ref": "site.identity.name"
                           },
-                          "id": "8bdb9703-c4c0-48e2-8723-a49c26bd6c43",
+                          "id": "b28df760-0715-418f-817d-6fc6fe75ed10",
                           "ord": "a0"
                         }
                       ],
-                      "id": "a5e046aa-5286-4591-869e-dc3c124ac701",
+                      "id": "706ad6ae-273c-4888-8314-532ef9a6f846",
                       "ord": "a0"
                     },
                     {
@@ -550,23 +578,23 @@
                       "tag": "ul",
                       "class": "flex flex-wrap items-center gap-x-6 gap-y-2",
                       "children": [],
-                      "id": "32e9aef3-dcdc-4faa-b401-3c42bc2e6b3d",
+                      "id": "3498157a-9274-4368-853c-c450f23bf5b5",
                       "ord": "a1"
                     }
                   ],
-                  "id": "74fcbac5-1e29-4a85-a698-9e04b3d5a955",
+                  "id": "c4f60484-d490-4bb2-8922-b4ee04b3ac97",
                   "ord": "a1"
                 }
               ],
-              "id": "7f61ab62-d4a7-445c-8a8e-2cebe31f10f6",
+              "id": "377dc7a5-dadf-4952-9897-0e9dab8f5328",
               "ord": "a0"
             }
           ],
-          "id": "49d8cf6e-5b5c-43dc-971c-cce7fe668872",
+          "id": "61e44527-d6aa-4062-b76a-f0855e47a7a3",
           "ord": "a2"
         }
       ],
-      "id": "9d4d491d-e386-468f-aaba-35f85a0d1777"
+      "id": "d66e923d-4a82-4ea6-95bc-2944a7085aba"
     }
   },
   "pages": [
@@ -580,7 +608,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "90dc7ff3-25e0-411c-89a1-9f503d522e97",
+        "id": "41c76790-4207-46a7-9b71-dcbc5fe96faa",
         "children": [
           {
             "kind": "element",
@@ -596,14 +624,14 @@
                   "alt": "A cleared, sunlit room with neatly stacked donation boxes ready for pickup",
                   "loading": "eager"
                 },
-                "id": "4856d9e4-d324-4a6a-90c1-6c8f3b95a6eb",
+                "id": "743b406d-48e8-4c5d-8ae3-dbded70ec1b0",
                 "ord": "a0"
               },
               {
                 "kind": "element",
                 "tag": "div",
                 "class": "absolute inset-0 bg-black/50",
-                "id": "c1b226e3-1819-4ffb-835d-7b8721d965bc",
+                "id": "e49a0ac9-82c0-43aa-ac3b-6fd6e5930632",
                 "ord": "a1"
               },
               {
@@ -615,8 +643,10 @@
                     "kind": "element",
                     "tag": "h1",
                     "class": "max-w-3xl text-4xl font-bold leading-tight tracking-tight @2xl:text-5xl @3xl:text-6xl",
-                    "children": ["Haul it away. Keep it out of the landfill."],
-                    "id": "ba71baa1-6ba5-474e-b213-a7fa1a7faeeb",
+                    "children": [
+                      "Haul it away. Keep it out of the landfill."
+                    ],
+                    "id": "8f57f007-c111-4af8-903d-d4c66e3c73d2",
                     "ord": "a0"
                   },
                   {
@@ -626,7 +656,7 @@
                     "children": [
                       "Donation-first junk removal for homes and small businesses — we sort, donate, recycle and responsibly dispose, so most of what leaves your place never sees a dump."
                     ],
-                    "id": "8d2c4f1d-cbb3-48bd-ab5b-b6b76073ec5b",
+                    "id": "3022d385-2716-4b64-8f30-2e1e4e1d8de7",
                     "ord": "a1"
                   },
                   {
@@ -641,8 +671,10 @@
                         "attrs": {
                           "href": "/book"
                         },
-                        "children": ["Book a pickup"],
-                        "id": "3d191a5f-97f0-4e7b-b8ac-f90806677466",
+                        "children": [
+                          "Book a pickup"
+                        ],
+                        "id": "c82a5fc9-3a0a-4d45-8306-bb041de2a68b",
                         "ord": "a0"
                       },
                       {
@@ -652,20 +684,22 @@
                         "attrs": {
                           "href": "/book"
                         },
-                        "children": ["Get a free quote"],
-                        "id": "8bb7de9d-fb17-4b8c-81b9-accacc461608",
+                        "children": [
+                          "Get a free quote"
+                        ],
+                        "id": "f644117b-ee95-411a-91c9-a0cf8dfaa559",
                         "ord": "a1"
                       }
                     ],
-                    "id": "4d817e25-e81d-4b94-8de5-6ae043ab0973",
+                    "id": "a48b84fb-4307-42d1-9c72-16dd71f64a97",
                     "ord": "a2"
                   }
                 ],
-                "id": "8194106a-b74c-4066-953f-b966428f7af9",
+                "id": "e228b704-936c-48a0-941d-4bb6c052c751",
                 "ord": "a2"
               }
             ],
-            "id": "a31a081b-9bc0-461a-91ba-af5670c9eb98",
+            "id": "2bc82a70-9bde-453f-941a-a3659aecb471",
             "ord": "a0"
           },
           {
@@ -692,8 +726,10 @@
                             "kind": "element",
                             "tag": "h2",
                             "class": "text-xl font-semibold text-base-content",
-                            "children": ["Donation-first, always"],
-                            "id": "e9131736-8b74-4ea5-b890-edf0b65aab0a",
+                            "children": [
+                              "Donation-first, always"
+                            ],
+                            "id": "55033b75-d50a-45b2-bf63-78da5ab121f0",
                             "ord": "a0"
                           },
                           {
@@ -703,11 +739,11 @@
                             "children": [
                               "Anything still usable goes to local charities and shelters before it’s ever called trash — and you get the donation receipt for it."
                             ],
-                            "id": "72ab0c40-99fc-4e1d-99f7-c767f013ef4e",
+                            "id": "08a5187c-9978-4e85-89d9-24b84916ce48",
                             "ord": "a1"
                           }
                         ],
-                        "id": "b2705981-13d0-4b85-89a7-9e998dbc90b0",
+                        "id": "07062710-7b88-4feb-94ff-8f0952a3c5d9",
                         "ord": "a0"
                       },
                       {
@@ -719,8 +755,10 @@
                             "kind": "element",
                             "tag": "h2",
                             "class": "text-xl font-semibold text-base-content",
-                            "children": ["We recycle & divert"],
-                            "id": "8baf43b0-b9ca-44eb-867c-de5fae8b9c99",
+                            "children": [
+                              "We recycle & divert"
+                            ],
+                            "id": "271a63df-029c-40cd-944e-e886998f7be4",
                             "ord": "a0"
                           },
                           {
@@ -730,11 +768,11 @@
                             "children": [
                               "Metal, wood, cardboard and appliances are sorted and sent to the right recycler. Most of every load stays out of the landfill."
                             ],
-                            "id": "3b9557d7-0e3d-45dc-a4c2-e76c91238986",
+                            "id": "83ca604b-dd0f-419d-9c07-4bb773db127d",
                             "ord": "a1"
                           }
                         ],
-                        "id": "8e13f12b-28e6-47d5-9e65-f9571b861e8f",
+                        "id": "cc8ccc69-ec76-44cd-9f51-5021effcbfc9",
                         "ord": "a1"
                       },
                       {
@@ -746,8 +784,10 @@
                             "kind": "element",
                             "tag": "h2",
                             "class": "text-xl font-semibold text-base-content",
-                            "children": ["Responsible e-waste"],
-                            "id": "9dc55670-6849-4c2b-9d85-a422b27c4d97",
+                            "children": [
+                              "Responsible e-waste"
+                            ],
+                            "id": "ab34b50d-e8d3-4d50-a5a8-d081e58d6655",
                             "ord": "a0"
                           },
                           {
@@ -757,11 +797,11 @@
                             "children": [
                               "Old electronics and batteries go to certified processors — never dumped, never shipped offshore, data-bearing drives noted first."
                             ],
-                            "id": "2db95161-46dc-4f76-aa4a-bb11f1530aed",
+                            "id": "c17ed0e5-7d56-41f9-afe7-b31bd70ab339",
                             "ord": "a1"
                           }
                         ],
-                        "id": "502b1caa-136c-4a37-bdd7-7c0013c7c843",
+                        "id": "89757997-6092-4dc6-b4ea-0a5aaa0dee8a",
                         "ord": "a2"
                       },
                       {
@@ -773,8 +813,10 @@
                             "kind": "element",
                             "tag": "h2",
                             "class": "text-xl font-semibold text-base-content",
-                            "children": ["Transparent pricing"],
-                            "id": "da3ce928-8683-4a09-8889-040d95c62035",
+                            "children": [
+                              "Transparent pricing"
+                            ],
+                            "id": "db8b56d9-b579-4437-82e8-f7bfcb322023",
                             "ord": "a0"
                           },
                           {
@@ -784,23 +826,23 @@
                             "children": [
                               "A flat, upfront price after a free quote — by the load, not by the surprise. You know the number before anything moves."
                             ],
-                            "id": "892ca7f9-105e-458c-ab43-94f15e792316",
+                            "id": "43d09fa2-7886-413c-8526-3dfeb1c61723",
                             "ord": "a1"
                           }
                         ],
-                        "id": "bbcfdd14-83f6-4343-92ac-ddba61841f9e",
+                        "id": "c473db38-c879-47c8-b1b6-3eb5161dfb94",
                         "ord": "a3"
                       }
                     ],
-                    "id": "7e4b6674-e63e-40a9-9d87-52c3b185379d",
+                    "id": "7d420b38-9155-47b2-a9bd-1b82d62cc5e3",
                     "ord": "a0"
                   }
                 ],
-                "id": "004cd2e0-d4a5-413e-9673-cbdb8f81c802",
+                "id": "ae801c2a-0940-41ca-9e5e-b35483bfa9ab",
                 "ord": "a0"
               }
             ],
-            "id": "a8a338ec-10e3-49f3-873d-10aab1f8d085",
+            "id": "1848e83d-7387-4228-9b47-455512dc4a41",
             "ord": "a1"
           },
           {
@@ -822,8 +864,10 @@
                         "kind": "element",
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
-                        "children": ["Ways we haul"],
-                        "id": "b8840b4d-629f-4248-8ffa-80be354f19c0",
+                        "children": [
+                          "Ways we haul"
+                        ],
+                        "id": "5178b8e5-52dd-4417-8ae8-ddb1ab35ba0d",
                         "ord": "a0"
                       },
                       {
@@ -833,11 +877,11 @@
                         "children": [
                           "A few of the pickups we do most. Every one starts with a free quote and follows the same donate-first, recycle-next promise. Full prices and live availability are on the booking page."
                         ],
-                        "id": "7c622782-2741-461f-91a8-3626051b51d9",
+                        "id": "928cba44-3030-40cb-8144-e57cb6c3c09b",
                         "ord": "a1"
                       }
                     ],
-                    "id": "c08c3849-1abf-4a0c-a49f-44169ee5d8d8",
+                    "id": "79cbc82f-f99d-4006-9fd9-cda370cf4fcc",
                     "ord": "a0"
                   },
                   {
@@ -862,40 +906,48 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
-                                "children": ["Donation pickup"],
-                                "id": "abe70320-bd35-4a42-a7ea-660cc728c0e4",
+                                "children": [
+                                  "Donation pickup"
+                                ],
+                                "id": "62554585-6bd8-45b2-a3d6-4ce74a394b5e",
                                 "ord": "a0"
                               },
                               {
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-bold text-base-content",
-                                "children": ["$60"],
-                                "id": "5baf8f1c-e103-41f9-9f47-c74b42ffaac7",
+                                "children": [
+                                  "$60"
+                                ],
+                                "id": "7ed2c2ed-5856-4582-93d8-a104347029af",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "aace138d-fdf4-46df-8779-8cecf6812211",
+                            "id": "bd441a5f-11d6-476f-b948-d8319b12b702",
                             "ord": "a0"
                           },
                           {
                             "kind": "element",
                             "tag": "p",
                             "class": "text-sm font-medium uppercase tracking-wide text-secondary",
-                            "children": ["1 hr"],
-                            "id": "f72ad635-dc95-4739-ad79-00f7bca75e3f",
+                            "children": [
+                              "1 hr"
+                            ],
+                            "id": "1ebc8ec6-f8a4-4ca0-b292-b16e8ad525b9",
                             "ord": "a1"
                           },
                           {
                             "kind": "element",
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
-                            "children": ["Usable goods collected and driven to local charities."],
-                            "id": "e7db6cf1-4f5d-4962-986c-80b69c81bde2",
+                            "children": [
+                              "Usable goods collected and driven to local charities."
+                            ],
+                            "id": "9c97bc04-b87f-4d68-83af-e1625ef82e12",
                             "ord": "a2"
                           }
                         ],
-                        "id": "9a0ecb37-e361-46a9-bfdc-d1466119b0f4",
+                        "id": "07108a2d-aa88-46ba-a97a-b0bbe8ea4e75",
                         "ord": "a0"
                       },
                       {
@@ -915,28 +967,34 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
-                                "children": ["Recycling haul"],
-                                "id": "7276c167-d838-4caa-bf78-b87489942ad6",
+                                "children": [
+                                  "Recycling haul"
+                                ],
+                                "id": "0c932639-f577-4afc-85a7-ec9eb03e256a",
                                 "ord": "a0"
                               },
                               {
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-bold text-base-content",
-                                "children": ["$85"],
-                                "id": "5e0e7cf1-4a5c-4a33-bafa-349a815e7962",
+                                "children": [
+                                  "$85"
+                                ],
+                                "id": "2cdb2625-3cc6-4a22-b0cf-567206d17fc1",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "4031b8cb-2903-462a-b247-b4e9c859c1b0",
+                            "id": "cb88d049-838f-42c8-938c-3816603cbd8a",
                             "ord": "a0"
                           },
                           {
                             "kind": "element",
                             "tag": "p",
                             "class": "text-sm font-medium uppercase tracking-wide text-secondary",
-                            "children": ["1 hr 30 min"],
-                            "id": "15353c4e-675a-45f9-9390-09cd69386e51",
+                            "children": [
+                              "1 hr 30 min"
+                            ],
+                            "id": "60761b24-6daa-4395-bd2d-003336fbdc9b",
                             "ord": "a1"
                           },
                           {
@@ -946,11 +1004,11 @@
                             "children": [
                               "Sorted and diverted to the right recycler, not the dump."
                             ],
-                            "id": "f4a0287a-7d24-47aa-a126-5a40dac10fb3",
+                            "id": "b1ed72c0-9977-41f1-af95-2e772cc12963",
                             "ord": "a2"
                           }
                         ],
-                        "id": "6fc72d24-41c6-41c0-80f9-db6c8469ad11",
+                        "id": "bd69ec18-1693-462a-93af-dedea76e726f",
                         "ord": "a1"
                       },
                       {
@@ -970,28 +1028,34 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
-                                "children": ["E-waste removal"],
-                                "id": "83508570-8e50-49be-9670-48a22a55ca52",
+                                "children": [
+                                  "E-waste removal"
+                                ],
+                                "id": "4b034568-579b-4cba-9e9e-c02b0274b5dd",
                                 "ord": "a0"
                               },
                               {
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-bold text-base-content",
-                                "children": ["$75"],
-                                "id": "bf6bdd48-fd4e-43a8-81ae-07d8333c9064",
+                                "children": [
+                                  "$75"
+                                ],
+                                "id": "12b278dd-a656-4099-9df3-bd5a7a247af7",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "49ac3e9e-b778-4ccb-a277-9ab90b72a1b2",
+                            "id": "7e2013af-b387-4e7d-ab3a-1ff07817de22",
                             "ord": "a0"
                           },
                           {
                             "kind": "element",
                             "tag": "p",
                             "class": "text-sm font-medium uppercase tracking-wide text-secondary",
-                            "children": ["1 hr"],
-                            "id": "7ef40087-41c3-4244-a3e1-c779f4d0ee25",
+                            "children": [
+                              "1 hr"
+                            ],
+                            "id": "916482aa-1b18-446a-86b2-f543fe3e2843",
                             "ord": "a1"
                           },
                           {
@@ -1001,11 +1065,11 @@
                             "children": [
                               "Electronics handled by a certified, responsible processor."
                             ],
-                            "id": "698e5c77-9b1b-452f-b6e9-3cdc84e7f06a",
+                            "id": "78dde07f-5bfd-459f-813b-9df0a8bfe9fd",
                             "ord": "a2"
                           }
                         ],
-                        "id": "827f140d-e719-439d-93c7-568408dd15cc",
+                        "id": "a72583af-b4b9-4368-8720-8ce289c7be2f",
                         "ord": "a2"
                       },
                       {
@@ -1025,44 +1089,52 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
-                                "children": ["Furniture removal"],
-                                "id": "21c5c0bd-f382-4c58-8e77-a8ceac734dfa",
+                                "children": [
+                                  "Furniture removal"
+                                ],
+                                "id": "1a66d66d-7a81-4a60-9b95-5c5a547cb69d",
                                 "ord": "a0"
                               },
                               {
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-bold text-base-content",
-                                "children": ["$95"],
-                                "id": "ae030471-f99a-4815-9e5c-bcf1aada0866",
+                                "children": [
+                                  "$95"
+                                ],
+                                "id": "71d6b137-4630-4436-8e1c-9bbefcf63b84",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "030dfdd9-ba43-446d-9aa8-78880ba3199f",
+                            "id": "a6222c9b-20ed-4211-80ee-d824e00e43b5",
                             "ord": "a0"
                           },
                           {
                             "kind": "element",
                             "tag": "p",
                             "class": "text-sm font-medium uppercase tracking-wide text-secondary",
-                            "children": ["1 hr 30 min"],
-                            "id": "854e6579-d321-4569-937a-bcd85fbff4a7",
+                            "children": [
+                              "1 hr 30 min"
+                            ],
+                            "id": "09757bfb-c6c5-4194-a2e7-4b8c7bf48cd8",
                             "ord": "a1"
                           },
                           {
                             "kind": "element",
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
-                            "children": ["The heavy things carried out, then donated or recycled."],
-                            "id": "a1a4e878-4b2a-469a-a82d-789add4ac77b",
+                            "children": [
+                              "The heavy things carried out, then donated or recycled."
+                            ],
+                            "id": "c97bf697-0085-4468-a652-09d0fdf83709",
                             "ord": "a2"
                           }
                         ],
-                        "id": "34310812-ef07-445a-8592-c8bdc135f996",
+                        "id": "e40f557d-d125-4457-8588-891a8b9c08ac",
                         "ord": "a3"
                       }
                     ],
-                    "id": "364696cd-c70a-4cf6-9971-4847a7a6be61",
+                    "id": "0c83f697-4fc4-47f2-8890-fed5476eac26",
                     "ord": "a1"
                   },
                   {
@@ -1077,20 +1149,22 @@
                         "attrs": {
                           "href": "/book"
                         },
-                        "children": ["See everything & book"],
-                        "id": "4a2a6e7a-1129-46da-9002-fce1ea7fcd1a",
+                        "children": [
+                          "See everything & book"
+                        ],
+                        "id": "71c0dfdf-3022-4589-912a-496382cd83d2",
                         "ord": "a0"
                       }
                     ],
-                    "id": "7fcf432f-8126-449b-aa55-2c6ce85258d3",
+                    "id": "b10b3dc5-0241-4882-b426-0dd66b341042",
                     "ord": "a2"
                   }
                 ],
-                "id": "840c8e6d-b4d8-4e83-9e18-bf0f3c4f626b",
+                "id": "5f52dff2-93d9-4b29-844c-1bc03fd4fb0a",
                 "ord": "a0"
               }
             ],
-            "id": "08bf258f-3ac3-41b3-8758-f1907ce44038",
+            "id": "e0bcce87-741a-44a6-ab5e-3ea3e1fc36c9",
             "ord": "a2"
           },
           {
@@ -1112,7 +1186,7 @@
                       "alt": "Sorted piles of furniture, electronics and recycling separated for reuse",
                       "loading": "lazy"
                     },
-                    "id": "15805000-dded-4f45-b21d-f878f07e08cd",
+                    "id": "7b7dcf8e-2e03-4e88-8b63-8fab2a619ea5",
                     "ord": "a0"
                   },
                   {
@@ -1124,8 +1198,10 @@
                         "kind": "element",
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
-                        "children": ["Donate, recycle, divert — dump last"],
-                        "id": "4ddf9086-1902-4ecc-8e00-7a2577578ce4",
+                        "children": [
+                          "Donate, recycle, divert — dump last"
+                        ],
+                        "id": "6b2bcaa7-55a1-4de4-b4eb-83f9c29ad9a3",
                         "ord": "a0"
                       },
                       {
@@ -1135,7 +1211,7 @@
                         "children": [
                           "Most hauling ends the same way: one truck, one trip, straight to the landfill. We work the other direction. Every load gets sorted first — what’s still good is donated, what can be recycled is separated out, and only what’s truly finished is disposed of."
                         ],
-                        "id": "71a8f9f2-bc39-4cb2-a0f3-fa0e6cc6c82e",
+                        "id": "5138787d-883b-43f3-9c8a-f1e8c7a6d67b",
                         "ord": "a1"
                       },
                       {
@@ -1145,7 +1221,7 @@
                         "children": [
                           "It takes a little longer at the curb, and it’s the whole point. On a typical job the great majority of what we take never becomes trash — it becomes someone else’s couch, or a bale of clean metal, instead of another cubic yard buried."
                         ],
-                        "id": "3b841092-1bb6-4ba8-b9d4-4754cc547d06",
+                        "id": "ed2770e1-2a03-4b7e-902e-d534dac68b44",
                         "ord": "a2"
                       },
                       {
@@ -1160,24 +1236,26 @@
                             "attrs": {
                               "href": "/book"
                             },
-                            "children": ["Book a pickup"],
-                            "id": "af171c25-781a-4e20-849d-f786218597c3",
+                            "children": [
+                              "Book a pickup"
+                            ],
+                            "id": "4c0d4aeb-4835-48e7-98e6-9bee45491dc1",
                             "ord": "a0"
                           }
                         ],
-                        "id": "c65f082f-6ccd-4467-a724-df4c048d4b65",
+                        "id": "20191519-70bd-4839-91ae-329f60787fde",
                         "ord": "a3"
                       }
                     ],
-                    "id": "98fdc874-bb87-4ba2-ac7a-a753e4151fb4",
+                    "id": "634b3b6d-9d9f-47ec-8b8f-4e94d38029d4",
                     "ord": "a1"
                   }
                 ],
-                "id": "e660ac05-bfee-4c6c-bf19-bd1d6c652556",
+                "id": "eef8eed3-5a40-4a01-a533-045b17da5064",
                 "ord": "a0"
               }
             ],
-            "id": "095cbcf8-97ed-4da5-9d34-1a9a3038fb0b",
+            "id": "83fb11c3-401d-4d1e-94a5-b787adc7b434",
             "ord": "a3"
           },
           {
@@ -1199,8 +1277,10 @@
                         "kind": "element",
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
-                        "children": ["The crew that shows up"],
-                        "id": "58a07d74-5c7f-4d81-9832-6e336998b50a",
+                        "children": [
+                          "The crew that shows up"
+                        ],
+                        "id": "66fd53ab-1d13-4a40-a2bd-9e68a17a7113",
                         "ord": "a0"
                       },
                       {
@@ -1210,11 +1290,11 @@
                         "children": [
                           "Real people who’ll treat your place with care — and sort every load like it matters, because it does."
                         ],
-                        "id": "adb36d6f-f395-46ab-ade6-6a249988fc5f",
+                        "id": "7c6127be-5c12-4978-a481-1ed910856f5f",
                         "ord": "a1"
                       }
                     ],
-                    "id": "4ab9655c-4671-495f-bb94-4d5ab66b03b5",
+                    "id": "eafa913d-8467-486f-9ff9-456cdb23d27f",
                     "ord": "a0"
                   },
                   {
@@ -1236,7 +1316,7 @@
                               "alt": "Rowan Ellis, lead hauler",
                               "loading": "lazy"
                             },
-                            "id": "2aa0f4d9-db85-4af4-8e32-7ecfac086c5c",
+                            "id": "e2a1c9c7-6860-46be-a640-082e0b7e4c98",
                             "ord": "a0"
                           },
                           {
@@ -1248,16 +1328,20 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
-                                "children": ["Rowan Ellis"],
-                                "id": "9330efb0-9d29-4b14-a777-048583662004",
+                                "children": [
+                                  "Rowan Ellis"
+                                ],
+                                "id": "5f74dda4-6cd6-40d3-b194-3dff5e40ed07",
                                 "ord": "a0"
                               },
                               {
                                 "kind": "element",
                                 "tag": "p",
                                 "class": "text-sm font-medium uppercase tracking-wide text-secondary",
-                                "children": ["Lead hauler"],
-                                "id": "10f4e891-6882-4dcd-9e18-0084ca872333",
+                                "children": [
+                                  "Lead hauler"
+                                ],
+                                "id": "0e6807af-6b31-460c-bad2-f7c206d1cc5b",
                                 "ord": "a1"
                               },
                               {
@@ -1267,15 +1351,15 @@
                                 "children": [
                                   "Rowan runs the donation runs and knows every charity and drop-off within a county of here."
                                 ],
-                                "id": "397d1b55-53d3-4bf3-9705-f0f7673cf2a6",
+                                "id": "51dfbdc8-fa1b-4675-b50f-4b115ced1db0",
                                 "ord": "a2"
                               }
                             ],
-                            "id": "51234097-715f-4c95-bdce-346668e71677",
+                            "id": "f9dddce6-b4e4-4483-b9fe-df6c48b967eb",
                             "ord": "a1"
                           }
                         ],
-                        "id": "baba354b-c2d7-4cc2-aa87-bac76b757b9f",
+                        "id": "301ead93-6713-41b7-af9a-feb1e4dd886e",
                         "ord": "a0"
                       },
                       {
@@ -1292,7 +1376,7 @@
                               "alt": "Sena Adeyemi, recycling & e-waste lead",
                               "loading": "lazy"
                             },
-                            "id": "30de9289-3422-484b-8296-1cf67346dc66",
+                            "id": "ebedbac8-70de-470c-b8b2-b6f1c44cc84a",
                             "ord": "a0"
                           },
                           {
@@ -1304,16 +1388,20 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
-                                "children": ["Sena Adeyemi"],
-                                "id": "eb7540e7-2b6a-44c9-b108-9568a455a357",
+                                "children": [
+                                  "Sena Adeyemi"
+                                ],
+                                "id": "8e0c435b-f432-42a5-875b-6378e41c5f42",
                                 "ord": "a0"
                               },
                               {
                                 "kind": "element",
                                 "tag": "p",
                                 "class": "text-sm font-medium uppercase tracking-wide text-secondary",
-                                "children": ["Recycling & e-waste lead"],
-                                "id": "73bf0940-8ce5-478c-8b6c-6bcceef7fc42",
+                                "children": [
+                                  "Recycling & e-waste lead"
+                                ],
+                                "id": "f6877cf7-300f-4e7b-aab5-7ae7157b757e",
                                 "ord": "a1"
                               },
                               {
@@ -1323,15 +1411,15 @@
                                 "children": [
                                   "Sena handles the sorting and the certified processors — the reason so little of a load ends up buried."
                                 ],
-                                "id": "2425e6dd-68f6-4133-8ca3-7538784bcae9",
+                                "id": "29bc60f4-37b1-4d0c-b9c7-2ba90632780a",
                                 "ord": "a2"
                               }
                             ],
-                            "id": "8dd55a9f-750f-434e-b86c-b18a329994a4",
+                            "id": "fe9ce539-4654-4c8b-90e2-8fcf5521f0cb",
                             "ord": "a1"
                           }
                         ],
-                        "id": "130ebcbe-2b9b-4dba-a550-f748db48609a",
+                        "id": "c9d0fd56-1488-4d51-9d70-66339e3c7142",
                         "ord": "a1"
                       },
                       {
@@ -1348,7 +1436,7 @@
                               "alt": "Malik Torres, cleanout specialist",
                               "loading": "lazy"
                             },
-                            "id": "b3f364e3-a10d-47cb-939e-d89df44923f5",
+                            "id": "bb7ea2dd-6dd1-43e8-a221-6c686d3a6432",
                             "ord": "a0"
                           },
                           {
@@ -1360,16 +1448,20 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
-                                "children": ["Malik Torres"],
-                                "id": "b38e855f-4812-4efa-a039-647005361914",
+                                "children": [
+                                  "Malik Torres"
+                                ],
+                                "id": "2f522587-cac8-41b0-9b55-f7b9dd925101",
                                 "ord": "a0"
                               },
                               {
                                 "kind": "element",
                                 "tag": "p",
                                 "class": "text-sm font-medium uppercase tracking-wide text-secondary",
-                                "children": ["Cleanout specialist"],
-                                "id": "d006c1a6-d70a-403e-aa5a-9631f6a469d1",
+                                "children": [
+                                  "Cleanout specialist"
+                                ],
+                                "id": "2082771a-3961-4d07-a82c-d4225038fb86",
                                 "ord": "a1"
                               },
                               {
@@ -1379,27 +1471,27 @@
                                 "children": [
                                   "Malik takes on the big garage, estate and office clearouts — calm, careful, and quick on the heavy stuff."
                                 ],
-                                "id": "ebe7c97c-e9c9-41c9-b07f-e13111aa5e66",
+                                "id": "bcae402a-51f8-4566-ade9-2bf896dacad1",
                                 "ord": "a2"
                               }
                             ],
-                            "id": "3b10c09d-2679-4967-83c8-16fba4226d80",
+                            "id": "e91d2072-b53f-47f3-9bde-7ff7d4a4db65",
                             "ord": "a1"
                           }
                         ],
-                        "id": "f56d51b2-5faa-4ad5-b4d4-4eada9f09f92",
+                        "id": "5695f71f-e1d7-4732-97ff-0d244f517b63",
                         "ord": "a2"
                       }
                     ],
-                    "id": "60f0cb65-8b1c-46be-b094-299f30eaf495",
+                    "id": "cec886e1-6ea4-44e1-b5c4-3634f663b083",
                     "ord": "a1"
                   }
                 ],
-                "id": "2719c473-844b-4181-9d11-0de2687b100c",
+                "id": "cd3dc49b-30f2-41c6-93ed-dd7edd525d92",
                 "ord": "a0"
               }
             ],
-            "id": "09fb28ff-0a1b-45da-9192-32978bd8ff44",
+            "id": "7c6544f9-64b2-45fa-b65e-53957dbe5f52",
             "ord": "a4"
           },
           {
@@ -1419,23 +1511,25 @@
                     "children": [
                       "“We cleared out my mom’s house after she moved, and I dreaded it. Green Haul turned it into something I felt good about — three carloads went to a women’s shelter, the old electronics were handled properly, and barely anything went to the dump. They made a hard week easier.”"
                     ],
-                    "id": "eb3b1beb-0346-4972-880f-9e4e12898a84",
+                    "id": "4c07c549-2e29-4151-8556-ab2c267adffb",
                     "ord": "a0"
                   },
                   {
                     "kind": "element",
                     "tag": "p",
                     "class": "text-sm font-semibold uppercase tracking-wide opacity-80",
-                    "children": ["Priya, Green Haul customer"],
-                    "id": "d7bf6c8d-84d0-45e5-a76e-610a647f0cb6",
+                    "children": [
+                      "Priya, Green Haul customer"
+                    ],
+                    "id": "17cda7aa-dfda-40ad-86d4-08dce744d73e",
                     "ord": "a1"
                   }
                 ],
-                "id": "d38e57ec-0b4e-4a2d-93b1-174c0dea479b",
+                "id": "b49f4b3e-d9b5-42da-b95e-f8c2ea278b34",
                 "ord": "a0"
               }
             ],
-            "id": "9876141b-443c-4e6a-8279-a04e2c124bdf",
+            "id": "c8a1af38-de9c-4317-bff8-b2aecbf220c7",
             "ord": "a5"
           },
           {
@@ -1452,8 +1546,10 @@
                     "kind": "element",
                     "tag": "h2",
                     "class": "text-3xl font-bold tracking-tight @3xl:text-4xl",
-                    "children": ["Ready to clear it out the right way?"],
-                    "id": "7a84895d-d8bf-4dcf-bcdf-c0e74bea12d0",
+                    "children": [
+                      "Ready to clear it out the right way?"
+                    ],
+                    "id": "d98a8d66-b9bf-4432-a1dc-5782d875b067",
                     "ord": "a0"
                   },
                   {
@@ -1463,7 +1559,7 @@
                     "children": [
                       "Book a pickup, or start with a free quote. It takes about a minute, and we’ll tell you exactly what happens to everything we take."
                     ],
-                    "id": "a13c8f7b-bd91-4621-8ea4-cd265cdccc9d",
+                    "id": "dd9986f0-83ac-4670-b547-3deb922bec80",
                     "ord": "a1"
                   },
                   {
@@ -1473,16 +1569,18 @@
                     "attrs": {
                       "href": "/book"
                     },
-                    "children": ["Book a pickup"],
-                    "id": "3baf6cd1-e23e-4e4c-af9b-a6f50c0a597f",
+                    "children": [
+                      "Book a pickup"
+                    ],
+                    "id": "7811d0be-120a-47aa-b8c5-b4c9330c0c5d",
                     "ord": "a2"
                   }
                 ],
-                "id": "2ae4db05-df48-4f66-9609-0ce2eec92f0a",
+                "id": "76cabd4c-c4cc-4ea6-ba97-1a060254f944",
                 "ord": "a0"
               }
             ],
-            "id": "022145df-d5b3-4536-8fbf-ebf67f9d7827",
+            "id": "6afa8528-226e-4b3c-9ede-cb01874c9926",
             "ord": "a6"
           }
         ]
@@ -1499,7 +1597,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "02acfa56-2108-4292-9843-5b103fd234cc",
+        "id": "db084f2a-6f04-4df5-8c4e-dbe957b64953",
         "children": [
           {
             "kind": "element",
@@ -1515,14 +1613,14 @@
                   "alt": "Cardboard boxes of clothing and household goods labelled for donation",
                   "loading": "eager"
                 },
-                "id": "a4519a65-305b-4fac-81a2-8e9a512cc98e",
+                "id": "82f595e7-4e7d-49a1-9b32-1e50861e17cc",
                 "ord": "a0"
               },
               {
                 "kind": "element",
                 "tag": "div",
                 "class": "absolute inset-0 bg-black/65",
-                "id": "09cc7c0a-9d85-484f-9fe6-c11227b9d859",
+                "id": "fc4a1c94-ec29-4d5c-8733-3fd5409d0e74",
                 "ord": "a1"
               },
               {
@@ -1534,8 +1632,10 @@
                     "kind": "element",
                     "tag": "h1",
                     "class": "max-w-3xl text-4xl font-bold leading-tight tracking-tight @2xl:text-5xl @3xl:text-6xl",
-                    "children": ["Book your pickup"],
-                    "id": "cfdcb656-a104-4019-be13-e3f3ecfbea95",
+                    "children": [
+                      "Book your pickup"
+                    ],
+                    "id": "a503f7a1-8e23-4e1a-821a-dca207381a31",
                     "ord": "a0"
                   },
                   {
@@ -1545,7 +1645,7 @@
                     "children": [
                       "Choose a service to see prices and live availability, then pick a crew and a time that suits you. Not sure what you’ve got? Start with a free quote."
                     ],
-                    "id": "838afe40-dbbe-46b3-a96e-fda2ec97434d",
+                    "id": "59165890-73f6-42af-bc01-cc040c876df7",
                     "ord": "a1"
                   },
                   {
@@ -1560,20 +1660,22 @@
                         "attrs": {
                           "href": "/book"
                         },
-                        "children": ["See pickups below"],
-                        "id": "dfe1cda3-fb24-4b09-b547-2535918d3172",
+                        "children": [
+                          "See pickups below"
+                        ],
+                        "id": "04b19874-1dd3-4d1c-86ac-6069212eeec3",
                         "ord": "a0"
                       }
                     ],
-                    "id": "90b6070d-a3a6-489b-8176-5aa601e96277",
+                    "id": "90093f71-a1e4-4aa0-b634-460bfd4fa9dd",
                     "ord": "a2"
                   }
                 ],
-                "id": "5c7f7bb1-e364-4156-809b-7eb86cac639e",
+                "id": "8e03018d-7579-4ef1-bd70-e0cb3be4aa4e",
                 "ord": "a2"
               }
             ],
-            "id": "67f5966b-e6a6-4c71-8a7e-44ca532b95cf",
+            "id": "b27b8ece-68e5-4b93-9510-fa9f2a1d13df",
             "ord": "a0"
           },
           {
@@ -1581,7 +1683,7 @@
             "component": "scheduling.services",
             "class": "mx-auto w-full max-w-5xl px-6 py-8",
             "locked": "host",
-            "id": "bc5795ba-124d-4cab-a18c-3100251e24dd",
+            "id": "f428ae85-45e0-47e6-91a0-63f4cc6d4187",
             "ord": "a1"
           },
           {
@@ -1603,8 +1705,10 @@
                         "kind": "element",
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
-                        "children": ["Good to know"],
-                        "id": "8682aa8a-3bc7-4cba-816c-e9eacaf38c00",
+                        "children": [
+                          "Good to know"
+                        ],
+                        "id": "4b67d1e8-8c4b-4dae-8732-4f17666331ea",
                         "ord": "a0"
                       },
                       {
@@ -1614,11 +1718,11 @@
                         "children": [
                           "What happens once you pick a time — and how to change it if something comes up."
                         ],
-                        "id": "4ca70010-aeb4-45ae-86ed-48eccd744ed1",
+                        "id": "ddd9447b-ced3-4551-bb4f-d686ede9c85f",
                         "ord": "a1"
                       }
                     ],
-                    "id": "616995eb-5d95-476d-9bb3-dd9271ae9442",
+                    "id": "6ca4b106-c73c-4fc9-ae96-ec736c8947fd",
                     "ord": "a0"
                   },
                   {
@@ -1635,8 +1739,10 @@
                             "kind": "element",
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
-                            "children": ["Standard booking"],
-                            "id": "f8b0c3cc-fe47-4773-827e-7b51f2541a79",
+                            "children": [
+                              "Standard booking"
+                            ],
+                            "id": "49ea9674-6426-48d9-a17b-6d20bce674d0",
                             "ord": "a0"
                           },
                           {
@@ -1646,7 +1752,7 @@
                             "children": [
                               "Please give us at least 24 hours’ notice to move or cancel a pickup. We send a reminder the day before and two hours ahead, and we’ll always text you a heads-up when the crew is on the way."
                             ],
-                            "id": "c24cc25a-478e-4824-9f77-1b346547b948",
+                            "id": "3f18430e-f9f7-440b-889c-cd3f41ac93c8",
                             "ord": "a1"
                           },
                           {
@@ -1656,11 +1762,11 @@
                             "children": [
                               "No deposit to book. Change or cancel free up to 24 hours before."
                             ],
-                            "id": "7634de95-0c79-408c-8864-620038cc460f",
+                            "id": "148f3674-5380-459c-b1f1-8041a7203e73",
                             "ord": "a2"
                           }
                         ],
-                        "id": "77725665-cff3-47c4-b562-0e802634eed6",
+                        "id": "bfd12189-a04f-40b1-93cb-157cff429d8b",
                         "ord": "a0"
                       },
                       {
@@ -1672,8 +1778,10 @@
                             "kind": "element",
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
-                            "children": ["Same-day priority"],
-                            "id": "bbadb53f-c2d0-4152-9190-8632a5956db6",
+                            "children": [
+                              "Same-day priority"
+                            ],
+                            "id": "a5454c9c-58cb-4bd5-a87e-6aa8fc9cc1e2",
                             "ord": "a0"
                           },
                           {
@@ -1683,7 +1791,7 @@
                             "children": [
                               "Same-day pickups are booked into the next open crew window and confirmed by text. If plans change, let us know as soon as you can so we can offer the slot to someone else."
                             ],
-                            "id": "98409a4e-3cce-4569-a005-683d7bd19109",
+                            "id": "616e90e6-87b2-4e5c-a4cc-446ee2159c70",
                             "ord": "a1"
                           },
                           {
@@ -1693,23 +1801,23 @@
                             "children": [
                               "No deposit to book. Change or cancel free up to 24 hours before."
                             ],
-                            "id": "61a4ba2e-edb2-4f5f-af11-fd4c91fd5f37",
+                            "id": "2b61a652-a7e1-4652-b4d4-2c21da2fa2c1",
                             "ord": "a2"
                           }
                         ],
-                        "id": "81e83244-11dc-4f53-a452-0118c1436af3",
+                        "id": "7feca052-928c-4e3c-9f2e-c42922dc052d",
                         "ord": "a1"
                       }
                     ],
-                    "id": "c496f000-e413-4a0c-ab14-802d38bd9353",
+                    "id": "0ba2e5e0-a18b-41ef-8460-6628998822a1",
                     "ord": "a1"
                   }
                 ],
-                "id": "a9adbc37-6d9a-48d1-a297-ddae17d14f11",
+                "id": "e8500dbd-eceb-454c-99a7-30e673048540",
                 "ord": "a0"
               }
             ],
-            "id": "bd91a94f-07c8-4113-926d-0df0742d7db4",
+            "id": "3c7e6be7-2f2c-4ec6-81ba-cdca10dab063",
             "ord": "a2"
           }
         ]
@@ -1726,7 +1834,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "1d368f7b-d121-4361-a982-b7c010f443a6",
+        "id": "69d07d60-6598-4e0a-9d54-b9c0523102df",
         "children": [
           {
             "kind": "element",
@@ -1747,7 +1855,7 @@
                       "alt": "An emptied garage with clear floor space after a cleanout",
                       "loading": "lazy"
                     },
-                    "id": "d28ec0c2-0cb2-4d8e-aeb0-665cdc45471b",
+                    "id": "aaa48785-b6c7-48dc-ab56-55976475b4d2",
                     "ord": "a0"
                   },
                   {
@@ -1759,8 +1867,10 @@
                         "kind": "element",
                         "tag": "h1",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
-                        "children": ["About Green Haul"],
-                        "id": "6a94abcd-5b9d-469a-9be4-3ab125be8775",
+                        "children": [
+                          "About Green Haul"
+                        ],
+                        "id": "b853b677-a1b0-423a-be5d-e92a0bd4bd67",
                         "ord": "a0"
                       },
                       {
@@ -1770,7 +1880,7 @@
                         "children": [
                           "Green Haul started with a simple gripe: clearing out a home or a business almost always meant sending a full truck straight to the landfill, usable furniture and all. It felt wasteful because it was."
                         ],
-                        "id": "8e290057-c0d6-42b9-9f8b-7639864d2481",
+                        "id": "9054ff5f-5195-4f3d-810d-5fd1bc3f395c",
                         "ord": "a1"
                       },
                       {
@@ -1780,7 +1890,7 @@
                         "children": [
                           "So we built a hauling company around a different order of operations — donate what’s still good, recycle what can be recycled, and only dump what’s genuinely finished. Same easy pickup, far less buried. It’s better for your town, and it’s the kind of work we’re proud to load onto the truck."
                         ],
-                        "id": "ba92865a-0f66-4a94-b32a-9210a70984f4",
+                        "id": "090e75e4-460b-4b0a-8cfb-e9d8bb3a65d7",
                         "ord": "a2"
                       },
                       {
@@ -1795,24 +1905,26 @@
                             "attrs": {
                               "href": "/book"
                             },
-                            "children": ["Book a pickup"],
-                            "id": "811d62c8-622f-4ad7-8b56-17b1c28560a8",
+                            "children": [
+                              "Book a pickup"
+                            ],
+                            "id": "924e5e43-a54b-4052-986c-bcf406e954b6",
                             "ord": "a0"
                           }
                         ],
-                        "id": "8cce3af2-5830-421a-abb0-b92ef6ac1484",
+                        "id": "7c819bf1-a30b-484d-b815-636b8d4471be",
                         "ord": "a3"
                       }
                     ],
-                    "id": "2a4d952e-ef5c-49f2-8893-6af8f8480516",
+                    "id": "0078126b-5226-445b-b7f1-3979accf1f5f",
                     "ord": "a1"
                   }
                 ],
-                "id": "4de14271-8b78-4d88-970f-5f48f37510c4",
+                "id": "f29bc3d0-d589-43f0-8d86-b3e66f205082",
                 "ord": "a0"
               }
             ],
-            "id": "7bea21f0-8813-41c5-a3de-ad2038166258",
+            "id": "7cd2c937-b0f3-41c5-9455-674f27cdf730",
             "ord": "a0"
           },
           {
@@ -1829,8 +1941,10 @@
                     "kind": "element",
                     "tag": "h2",
                     "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
-                    "children": ["How we work"],
-                    "id": "98d39faf-8ff8-4075-82f5-9411ba8de3c4",
+                    "children": [
+                      "How we work"
+                    ],
+                    "id": "c35c70b9-41f7-49f0-b78b-eaf9e9463771",
                     "ord": "a0"
                   },
                   {
@@ -1847,8 +1961,10 @@
                             "kind": "element",
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
-                            "children": ["Sort before we dump"],
-                            "id": "cfb17bb2-6a6d-495f-a548-8b7d849dc909",
+                            "children": [
+                              "Sort before we dump"
+                            ],
+                            "id": "a4c45640-2d21-4b94-922b-27d569dd185c",
                             "ord": "a0"
                           },
                           {
@@ -1858,11 +1974,11 @@
                             "children": [
                               "Every load gets separated on site — donations, recycling, e-waste and disposal — so the landfill is the last resort, never the default."
                             ],
-                            "id": "bd3e2a0e-abb0-43fb-9f6d-2b33fb2ec366",
+                            "id": "f0f3fb4a-db56-44ee-bf3a-0812507fb7f8",
                             "ord": "a1"
                           }
                         ],
-                        "id": "79839ba7-63a9-462b-a5da-1d477684a634",
+                        "id": "96e57680-23c0-45b6-b77e-cf6be2168513",
                         "ord": "a0"
                       },
                       {
@@ -1874,8 +1990,10 @@
                             "kind": "element",
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
-                            "children": ["Local charities first"],
-                            "id": "ac9b3215-6241-4d2b-80cd-71be23746fae",
+                            "children": [
+                              "Local charities first"
+                            ],
+                            "id": "56f791c4-7637-4b3f-a355-39d9bb742ed0",
                             "ord": "a0"
                           },
                           {
@@ -1885,11 +2003,11 @@
                             "children": [
                               "Usable goods go to shelters, thrifts and reuse centres near you, and you get the receipt. Your clutter becomes someone’s fresh start."
                             ],
-                            "id": "06ad62e2-736e-48f9-bb5a-f2063ac6b935",
+                            "id": "04f9a0ee-bf4a-4a1b-96df-cd6a1763493c",
                             "ord": "a1"
                           }
                         ],
-                        "id": "e4792955-a59c-4376-9600-2a99a98d81b8",
+                        "id": "3545d3ed-b5e1-4100-ac34-e3c00d5887d1",
                         "ord": "a1"
                       },
                       {
@@ -1901,8 +2019,10 @@
                             "kind": "element",
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
-                            "children": ["Honest, flat pricing"],
-                            "id": "c49f45f3-0345-4ffd-b171-4dcdd8ff57d9",
+                            "children": [
+                              "Honest, flat pricing"
+                            ],
+                            "id": "d53ed041-9a4c-4929-b237-daa9f06e1b22",
                             "ord": "a0"
                           },
                           {
@@ -1912,23 +2032,23 @@
                             "children": [
                               "A free quote, then one clear price by the load. No hourly meter running, no add-ons at the curb — you know the number before we lift a thing."
                             ],
-                            "id": "476dff80-1608-407f-9ca3-8daca645ba52",
+                            "id": "d28363a7-af1a-4110-ba68-33a41acf37d9",
                             "ord": "a1"
                           }
                         ],
-                        "id": "585aa89b-163e-47f5-8de9-69599fc38808",
+                        "id": "a56c8f5f-367f-4d2f-a85c-00cca8a1482b",
                         "ord": "a2"
                       }
                     ],
-                    "id": "35290a1f-f018-4e56-a5d4-ab56436dd77f",
+                    "id": "7cc04241-911a-46a9-a502-2f31fca7818a",
                     "ord": "a1"
                   }
                 ],
-                "id": "895dd295-e105-493e-a7ec-9ee0f090c69c",
+                "id": "101702bf-015a-40c2-ab39-96680b96a91d",
                 "ord": "a0"
               }
             ],
-            "id": "335ed4e9-c9d3-4c89-ad08-375458086278",
+            "id": "2b0e81a8-c6c4-4605-a13f-97d58dd6b0cc",
             "ord": "a1"
           }
         ]
@@ -1945,7 +2065,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "630a9af5-44df-4973-b8ce-4b18f0940cf1",
+        "id": "f3f9d7b4-61bc-4081-847e-2a0c96a66b01",
         "children": [
           {
             "kind": "element",
@@ -1966,8 +2086,10 @@
                         "kind": "element",
                         "tag": "h1",
                         "class": "text-4xl font-bold tracking-tight text-base-content @3xl:text-5xl",
-                        "children": ["Get in touch"],
-                        "id": "0fa128fa-4ca1-4774-b0e3-47a836267386",
+                        "children": [
+                          "Get in touch"
+                        ],
+                        "id": "a16ad95c-5ca6-41a1-8358-05a2a315ba2e",
                         "ord": "a0"
                       },
                       {
@@ -1977,11 +2099,11 @@
                         "children": [
                           "Questions before you book? Send a note and Green Haul will get back to you — usually the same day."
                         ],
-                        "id": "85880333-8032-487c-9182-77a91f9afe1a",
+                        "id": "b8b551ce-0e65-4b95-a2b3-13e6c6fb5ade",
                         "ord": "a1"
                       }
                     ],
-                    "id": "e9a60fe4-1c9d-4cfc-ac77-abe5e7304389",
+                    "id": "f7a6793e-9c91-41d0-af41-b13851c9d0dc",
                     "ord": "a0"
                   },
                   {
@@ -1993,8 +2115,10 @@
                         "kind": "element",
                         "tag": "span",
                         "class": "text-base font-medium text-base-content",
-                        "children": ["Call us"],
-                        "id": "afd5c4cc-1096-4348-b6da-8bca4a28123b",
+                        "children": [
+                          "Call us"
+                        ],
+                        "id": "424c518b-767b-4781-b844-f7657058ad2f",
                         "ord": "a0"
                       },
                       {
@@ -2005,12 +2129,14 @@
                           {
                             "kind": "element",
                             "tag": "span",
-                            "children": ["(555) 123-4567"],
+                            "children": [
+                              "(555) 123-4567"
+                            ],
                             "data": {
                               "kind": "value",
                               "ref": "site.identity.phone"
                             },
-                            "id": "1b191c47-39dd-4267-bed3-a3000fda11bb",
+                            "id": "adb66a67-01a5-4373-bd19-62fe2586a0d9",
                             "ord": "a0"
                           }
                         ],
@@ -2019,7 +2145,7 @@
                           "ref": "site.identity.phoneHref",
                           "attr": "href"
                         },
-                        "id": "59235d89-fd9a-4c2a-9f1b-d091786cbe65",
+                        "id": "9119b60c-a77d-4732-ab6c-27f99fa315d6",
                         "ord": "a1"
                       }
                     ],
@@ -2027,7 +2153,7 @@
                       "kind": "visible",
                       "ref": "site.identity.phone"
                     },
-                    "id": "1f9cf89a-cd80-4d08-90d2-c3dd92c46130",
+                    "id": "58a2cef0-2c48-4661-b32a-75563d075475",
                     "ord": "a1"
                   },
                   {
@@ -2039,8 +2165,10 @@
                         "kind": "element",
                         "tag": "span",
                         "class": "text-base font-medium text-base-content",
-                        "children": ["Email us"],
-                        "id": "03243261-e7e6-46dc-b928-a909023c6a11",
+                        "children": [
+                          "Email us"
+                        ],
+                        "id": "02f193c6-b026-4516-b687-96a80d6e8432",
                         "ord": "a0"
                       },
                       {
@@ -2051,12 +2179,14 @@
                           {
                             "kind": "element",
                             "tag": "span",
-                            "children": ["hello@yourbusiness.com"],
+                            "children": [
+                              "hello@yourbusiness.com"
+                            ],
                             "data": {
                               "kind": "value",
                               "ref": "site.identity.email"
                             },
-                            "id": "2c07ac80-2cbf-4732-95f5-8e819c85d62d",
+                            "id": "0f4077ff-e54b-42f6-ab5b-aaba71246921",
                             "ord": "a0"
                           }
                         ],
@@ -2065,7 +2195,7 @@
                           "ref": "site.identity.emailHref",
                           "attr": "href"
                         },
-                        "id": "eb435ac7-acc5-4185-8538-4a32d619541e",
+                        "id": "54fda18d-4bb8-440e-8e45-3d2e780b03d5",
                         "ord": "a1"
                       }
                     ],
@@ -2073,7 +2203,7 @@
                       "kind": "visible",
                       "ref": "site.identity.email"
                     },
-                    "id": "17f25e8e-d9e6-42e8-a637-a4aae7db10e1",
+                    "id": "2d3b3362-9ddf-400b-ad18-bc6dcef58afd",
                     "ord": "a2"
                   },
                   {
@@ -2090,8 +2220,10 @@
                             "kind": "element",
                             "tag": "span",
                             "class": "text-base font-medium text-base-content",
-                            "children": ["Your name"],
-                            "id": "4e4f76a0-da16-40cf-a043-e177d81a06e2",
+                            "children": [
+                              "Your name"
+                            ],
+                            "id": "bcd785da-0549-4610-aedc-5e83a679fb09",
                             "ord": "a0"
                           },
                           {
@@ -2103,11 +2235,11 @@
                               "name": "name",
                               "required": true
                             },
-                            "id": "3fe0474e-0239-468c-b759-22ec8480157d",
+                            "id": "bb8822ef-6f53-49d2-b28b-906c34f7ef59",
                             "ord": "a1"
                           }
                         ],
-                        "id": "2b71e03a-6eae-457e-a176-abdbb2e2df16",
+                        "id": "041ae2b4-2334-4ae7-ab55-bb86a1900eb1",
                         "ord": "a0"
                       },
                       {
@@ -2119,8 +2251,10 @@
                             "kind": "element",
                             "tag": "span",
                             "class": "text-base font-medium text-base-content",
-                            "children": ["Email address"],
-                            "id": "c251794c-9122-4a85-b55a-903c579945ff",
+                            "children": [
+                              "Email address"
+                            ],
+                            "id": "3f07f7bc-8699-4811-be43-f7660cf8eee6",
                             "ord": "a0"
                           },
                           {
@@ -2132,11 +2266,11 @@
                               "name": "email",
                               "required": true
                             },
-                            "id": "72e1ecef-38ce-4a80-ad6a-59b81656af0b",
+                            "id": "5baaf65f-846e-4068-b4b7-7a6b917a7499",
                             "ord": "a1"
                           }
                         ],
-                        "id": "d010449a-14f2-4f1c-a850-d50d566f1b75",
+                        "id": "6b54c2dc-45dc-438c-88b3-a133bb7738df",
                         "ord": "a1"
                       },
                       {
@@ -2148,8 +2282,10 @@
                             "kind": "element",
                             "tag": "span",
                             "class": "text-base font-medium text-base-content",
-                            "children": ["Phone number"],
-                            "id": "cd7c7e21-4fb7-4e8d-bce1-7bbe70ceb79d",
+                            "children": [
+                              "Phone number"
+                            ],
+                            "id": "d0b8876d-9c50-4f7e-8a58-90b62b52c0b5",
                             "ord": "a0"
                           },
                           {
@@ -2160,11 +2296,11 @@
                               "type": "tel",
                               "name": "phone"
                             },
-                            "id": "49646115-074b-4d0b-a89f-cbcc36ba3fa5",
+                            "id": "1139db1d-1509-489d-924f-b74ccb32b774",
                             "ord": "a1"
                           }
                         ],
-                        "id": "e30f13f5-52e8-4aa8-8048-cfe5902356de",
+                        "id": "ff0d31f7-c10d-4bc2-af76-39637b841495",
                         "ord": "a2"
                       },
                       {
@@ -2176,8 +2312,10 @@
                             "kind": "element",
                             "tag": "span",
                             "class": "text-base font-medium text-base-content",
-                            "children": ["How can we help?"],
-                            "id": "0f420447-7d7c-4d12-a66f-fb18094ef21b",
+                            "children": [
+                              "How can we help?"
+                            ],
+                            "id": "baada6ba-dac7-4681-9fa3-43865eb20186",
                             "ord": "a0"
                           },
                           {
@@ -2187,11 +2325,11 @@
                             "attrs": {
                               "name": "message"
                             },
-                            "id": "803d0115-48c8-4cf6-b690-32f8101d7138",
+                            "id": "4a7e1b3b-30e6-4ba7-b457-16791edf5854",
                             "ord": "a1"
                           }
                         ],
-                        "id": "ad3171ee-f64f-44dc-bacc-82a53227461c",
+                        "id": "15dc7fd5-f9c7-4501-9473-9d391457a3ab",
                         "ord": "a3"
                       },
                       {
@@ -2206,12 +2344,14 @@
                             "attrs": {
                               "type": "submit"
                             },
-                            "children": ["Send my request"],
-                            "id": "77698be1-9d2e-4568-b527-6f765b29be00",
+                            "children": [
+                              "Send my request"
+                            ],
+                            "id": "c3ca9f64-96f7-4e6e-ae73-e8a0915ddc9c",
                             "ord": "a0"
                           }
                         ],
-                        "id": "3cf2bc7f-4ee4-4e60-8519-4f15f534bbef",
+                        "id": "ff607215-4a76-4a65-ad6e-96190e92334e",
                         "ord": "a4"
                       }
                     ],
@@ -2222,15 +2362,15 @@
                       "kind": "action",
                       "ref": "submit"
                     },
-                    "id": "02a4ab68-bd88-4d05-8c9b-8ecb4c52846f",
+                    "id": "b893ff89-0dce-4e8a-b295-00515a866c91",
                     "ord": "a3"
                   }
                 ],
-                "id": "1733dd93-eb0c-40de-bfe2-ab5357418b32",
+                "id": "98e11a2d-b319-4561-a8f8-9d556cdbf2fe",
                 "ord": "a0"
               }
             ],
-            "id": "851a941e-8131-4e4c-8873-5333c85ddc52",
+            "id": "f8017ea0-0250-475a-ae85-6820eea2f39d",
             "ord": "a0"
           },
           {
@@ -2252,20 +2392,24 @@
                         "kind": "element",
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
-                        "children": ["Reach Green Haul"],
-                        "id": "5f1806ab-e08b-454f-af3d-f1e45c67a517",
+                        "children": [
+                          "Reach Green Haul"
+                        ],
+                        "id": "497a8604-94b3-4cab-9cc3-f0fbf6db7d30",
                         "ord": "a0"
                       },
                       {
                         "kind": "element",
                         "tag": "address",
                         "class": "text-lg leading-relaxed whitespace-pre-line not-italic text-base-content",
-                        "children": ["Green Haul\n212 Cedar Yard\nBay 4 · Portland, OR 97217"],
+                        "children": [
+                          "Green Haul\n212 Cedar Yard\nBay 4 · Portland, OR 97217"
+                        ],
                         "data": {
                           "kind": "value",
                           "ref": "site.identity.address"
                         },
-                        "id": "97ce7e3a-a98f-4fbc-9dcb-d283f96b3fb6",
+                        "id": "da8762b4-758c-480e-892f-e02502dcf1e9",
                         "ord": "a1"
                       },
                       {
@@ -2282,20 +2426,24 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "font-medium text-base-content",
-                                "children": ["Monday – Friday"],
-                                "id": "0887d8e3-9fca-4179-aaa3-4a381614b566",
+                                "children": [
+                                  "Monday – Friday"
+                                ],
+                                "id": "944f3fed-21b2-4834-bb52-cf342e722df8",
                                 "ord": "a0"
                               },
                               {
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-base-content",
-                                "children": ["8:00 – 6:00"],
-                                "id": "20d7c142-4014-48a3-bab9-1e63df44f83d",
+                                "children": [
+                                  "8:00 – 6:00"
+                                ],
+                                "id": "9ec08afd-3ccc-4dc1-8ad3-b7ce5b2418a9",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "0f29a365-7f7a-4a3d-84c8-a2af30e569f1",
+                            "id": "445ad359-59d5-410a-bb61-61ed807c579d",
                             "ord": "a0"
                           },
                           {
@@ -2307,20 +2455,24 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "font-medium text-base-content",
-                                "children": ["Saturday"],
-                                "id": "e31d178d-8c62-4c6e-8497-9d826da14a40",
+                                "children": [
+                                  "Saturday"
+                                ],
+                                "id": "9122cc43-c886-40d8-9fcc-e78833bef1cc",
                                 "ord": "a0"
                               },
                               {
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-base-content",
-                                "children": ["8:00 – 5:00"],
-                                "id": "4ba0d48b-1f8c-4681-8d31-e2287c4c9f44",
+                                "children": [
+                                  "8:00 – 5:00"
+                                ],
+                                "id": "dcdfe3c8-0e3e-47be-adf9-03ea54d4d97e",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "8d0078d6-b4ef-4b8d-aaa6-2849372985ea",
+                            "id": "d82e6c59-d0f9-4898-8b6c-dc97215cf4d9",
                             "ord": "a1"
                           },
                           {
@@ -2332,28 +2484,32 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "font-medium text-base-content",
-                                "children": ["Sunday"],
-                                "id": "a4fda91f-0799-4517-b7f8-edba00e5a43e",
+                                "children": [
+                                  "Sunday"
+                                ],
+                                "id": "7b13d11f-5d98-47fb-9b1c-4349379b20f9",
                                 "ord": "a0"
                               },
                               {
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-base-content",
-                                "children": ["Closed"],
-                                "id": "b9b9d4e5-c866-4b7e-91fd-ab3cab0da4f8",
+                                "children": [
+                                  "Closed"
+                                ],
+                                "id": "41771ac8-a105-4eea-af1d-b22b8e265b2c",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "ba219271-8162-4cb2-9c2b-753901e240f1",
+                            "id": "1a33f92d-4585-44b0-acae-52b1d6705c60",
                             "ord": "a2"
                           }
                         ],
-                        "id": "3aef3aef-3d01-4a44-9855-f29f35c80b6e",
+                        "id": "bf012c78-c751-4bb5-b195-8b4119ec9c17",
                         "ord": "a2"
                       }
                     ],
-                    "id": "8f26fff0-e833-4bd2-a6c3-4355b48dd174",
+                    "id": "4bd2ffa3-61cb-48b9-80f1-b0dfea110839",
                     "ord": "a0"
                   },
                   {
@@ -2366,15 +2522,15 @@
                       "zoom": 15,
                       "ratio": "classic"
                     },
-                    "id": "bc79a971-ca9d-4c0e-aa04-fd3c09d0d33b",
+                    "id": "e97b4545-4463-4334-8246-e05c69f7e496",
                     "ord": "a1"
                   }
                 ],
-                "id": "290dff9a-371b-406b-8b53-3bdbf88be671",
+                "id": "89e84e20-18bc-4ac8-a8eb-697946633066",
                 "ord": "a0"
               }
             ],
-            "id": "407970b8-a292-4d2f-9553-84abcac72b41",
+            "id": "3bdafb26-4ee2-4f32-a3e5-c2c1f3038614",
             "ord": "a1"
           },
           {
@@ -2391,8 +2547,10 @@
                     "kind": "element",
                     "tag": "h2",
                     "class": "text-3xl font-bold tracking-tight @3xl:text-4xl",
-                    "children": ["Rather book than call?"],
-                    "id": "e2771558-348c-481f-9111-d08d2e0cfd08",
+                    "children": [
+                      "Rather book than call?"
+                    ],
+                    "id": "94c4d370-dabb-4bdf-9a64-5a23e490fcb3",
                     "ord": "a0"
                   },
                   {
@@ -2402,7 +2560,7 @@
                     "children": [
                       "See live availability and reserve your pickup online — no phone tag, no quote forms to chase."
                     ],
-                    "id": "78b41e14-e691-4641-8d09-f432030141c6",
+                    "id": "b70ac8c1-e869-4775-a6e3-7798666daaba",
                     "ord": "a1"
                   },
                   {
@@ -2412,16 +2570,18 @@
                     "attrs": {
                       "href": "/book"
                     },
-                    "children": ["Book a pickup"],
-                    "id": "56e56bba-fddc-44d2-9cb0-2d2750c7a2e9",
+                    "children": [
+                      "Book a pickup"
+                    ],
+                    "id": "8dd483f9-db9b-4b98-9727-7074e875ad92",
                     "ord": "a2"
                   }
                 ],
-                "id": "394a5e00-fa22-4928-b29c-a2a129723308",
+                "id": "43871c87-3336-4484-9c09-a36fb8cdc535",
                 "ord": "a0"
               }
             ],
-            "id": "9217a735-3aa1-44b1-8784-4a2417b886df",
+            "id": "1e3da1db-43df-48c4-b943-0f0c706bccf1",
             "ord": "a2"
           }
         ]

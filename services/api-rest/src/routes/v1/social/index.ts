@@ -32,6 +32,7 @@ import { registerBuiltinSocialAdapters } from '@sparx/social/adapters';
 import { encryptSocialToken, isSocialTokenCryptoConfigured } from '@sparx/social/crypto';
 import { ok } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
+import { publishDomainEvent } from '../../../lib/staff-events.js';
 import { badRequest, conflict, notFound } from '@sparx/api-core/errors';
 import {
   requireSocialModule,
@@ -251,6 +252,16 @@ const socialRoutes: FastifyPluginAsync = async (app) => {
       params: tokens.params,
     });
 
+    // A social account is now connected. The event existed from the start with
+    // nothing publishing it, so an automation could never react to an account
+    // being linked — which is the moment a "start posting" rule wants.
+    await publishDomainEvent('social.connection.added', ctx.tenantId, null, {
+      connectionId,
+      platform: decoded.platform,
+      propertyId: decoded.propertyId ?? null,
+      displayName: tokens.displayName ?? null,
+    });
+
     // Discover the grant's post targets and persist them. A failure here does NOT
     // discard the (valuable) grant — the connection stays, targets come back empty,
     // and the UI offers a retry.
@@ -291,7 +302,14 @@ const socialRoutes: FastifyPluginAsync = async (app) => {
     await requireSocialModule(request);
     requireRole(request, 'admin');
     const { platform } = PathPlatform.parse(request.params);
-    await disconnectSocial(toSocialContext(request), platform);
+    const ctx = toSocialContext(request);
+    await disconnectSocial(ctx, platform);
+    // Deliberately distinct from `social.connection.expired`, which the health
+    // sweep publishes: expired means the grant broke and needs reconnecting,
+    // revoked means a person chose to unlink it. A rule that pauses a posting
+    // schedule wants both; a rule that emails "reconnect your account" must not
+    // fire on the second.
+    await publishDomainEvent('social.connection.revoked', ctx.tenantId, null, { platform });
     return reply.status(204).send();
   });
 };

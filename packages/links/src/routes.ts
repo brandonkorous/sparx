@@ -585,6 +585,8 @@ export const ROUTES: readonly AppRoute[] = [
   { path: '/scheduling/services/:id', surface: 'scheduling.services.detail' },
   { path: '/scheduling/people-and-equipment', surface: 'scheduling.resources.list' },
   { path: '/scheduling/people-and-equipment/:id', surface: 'scheduling.resources.detail' },
+  { path: '/scheduling/places', surface: 'scheduling.locations.list' },
+  { path: '/scheduling/places/:id', surface: 'scheduling.locations.detail' },
   { path: '/scheduling/availability', surface: 'scheduling.availability' },
   { path: '/scheduling/booking-rules', surface: 'scheduling.policies' },
   { path: '/scheduling/booking-rules/:id', surface: 'scheduling.policies.detail' },

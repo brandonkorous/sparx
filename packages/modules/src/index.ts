@@ -76,9 +76,21 @@ export type ModuleSlug =
   // whoever runs payroll. It never withholds, never files, never pays anyone.
   | 'staff';
 
-// Canonical ordering is irrelevant here — callers (sidebar, breadcrumb) order
-// by their own manifest list. This is just the closed set we probe.
-const ALL_MODULES: readonly ModuleSlug[] = [
+/**
+ * THE closed set of module slugs — the one list, exported so nothing re-declares
+ * it.
+ *
+ * It used to be private, and every consumer that needed the vocabulary kept its
+ * own copy. That is not a tidiness complaint: api-rest's copy has twice fallen
+ * behind this one (`inventory` and `finance` were both added here and forgotten
+ * there), and the symptom is that the module typechecks everywhere and then
+ * cannot be turned on at all, because the activation toggle refuses the slug as
+ * "Request validation failed".
+ *
+ * Ordering is stable but carries no meaning — callers that display modules order
+ * them by their own manifest.
+ */
+export const ALL_MODULES: readonly ModuleSlug[] = [
   'builder',
   'commerce',
   'cms',

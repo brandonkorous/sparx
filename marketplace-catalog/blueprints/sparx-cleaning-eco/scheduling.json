@@ -238,5 +238,12 @@
       ],
       "policyHandle": "clean-standard"
     }
+  ],
+  "locations": [
+    {
+      "handle": "premises",
+      "name": "Verdi Clean",
+      "timezone": "UTC"
+    }
   ]
 }

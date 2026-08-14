@@ -9,6 +9,7 @@
 
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
+import { queryBool } from '@sparx/api-core/query';
 import type { SchedulingResource } from '@sparx/db';
 import { ok } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
@@ -19,6 +20,8 @@ import {
   getResource,
   listResources,
   deleteResource,
+  getResourcePropertyIds,
+  getResourcePropertyIdsFor,
 } from '@sparx/scheduling';
 import { requireSchedulingModule, toSchedulingContext } from '../../../lib/scheduling-context.js';
 import { resolveListScopeIds } from '../../../lib/property.js';
@@ -28,7 +31,7 @@ const PathId = z.object({ id: z.string().uuid() });
 const ListQuery = z.object({
   kind: z.enum(['staff', 'asset', 'table', 'space', 'equipment']).optional(),
   locationId: z.string().uuid().optional(),
-  activeOnly: z.coerce.boolean().optional(),
+  activeOnly: queryBool.optional(),
   // Absent ⇒ the active site (`x-sparx-property-id`); `all` ⇒ every site this
   // member may reach. A resource picker / calendar lane shows one business's
   // people + equipment, not the tenant's whole roster.
@@ -48,7 +51,12 @@ const schedulingResourceRoutes: FastifyPluginAsync = async (app) => {
       request.headers['x-sparx-property-id']
     );
     const rows = await listResources(tenantId, { ...query, propertyIds });
-    return ok(rows.map(resourceView));
+    // One query for the whole page's site scope rather than one per row.
+    const scopes = await getResourcePropertyIdsFor(
+      tenantId,
+      rows.map((r) => r.id)
+    );
+    return ok(rows.map((r) => resourceView(r, scopes.get(r.id) ?? [])));
   });
 
   app.post('/v1/scheduling/resources', async (request, reply) => {
@@ -57,14 +65,18 @@ const schedulingResourceRoutes: FastifyPluginAsync = async (app) => {
     const { tenantId } = toSchedulingContext(request);
     const input = CreateResourceInput.parse(request.body);
     const row = await createResource(tenantId, input);
-    return reply.code(201).send(ok(resourceView(row)));
+    return reply.code(201).send(ok(resourceView(row, input.propertyIds)));
   });
 
   app.get('/v1/scheduling/resources/:id', async (request) => {
     await requireSchedulingModule(request);
     const { tenantId } = toSchedulingContext(request);
     const { id } = PathId.parse(request.params);
-    return ok(resourceView(await getResource(tenantId, id)));
+    const [row, scope] = await Promise.all([
+      getResource(tenantId, id),
+      getResourcePropertyIds(tenantId, id),
+    ]);
+    return ok(resourceView(row, scope));
   });
 
   // The resource's private subscribe-to `.ics` feed URL (docs/79 §8.1). Any staff
@@ -84,7 +96,8 @@ const schedulingResourceRoutes: FastifyPluginAsync = async (app) => {
     const { tenantId } = toSchedulingContext(request);
     const { id } = PathId.parse(request.params);
     const input = UpdateResourceInput.parse({ ...(request.body as object), id });
-    return ok(resourceView(await updateResource(tenantId, input)));
+    const row = await updateResource(tenantId, input);
+    return ok(resourceView(row, await getResourcePropertyIds(tenantId, id)));
   });
 
   app.delete('/v1/scheduling/resources/:id', async (request) => {
@@ -97,7 +110,7 @@ const schedulingResourceRoutes: FastifyPluginAsync = async (app) => {
   });
 };
 
-function resourceView(r: SchedulingResource) {
+function resourceView(r: SchedulingResource, propertyIds: string[]) {
   return {
     id: r.id,
     kind: r.kind,
@@ -116,6 +129,10 @@ function resourceView(r: SchedulingResource) {
     bookableOnline: r.bookableOnline,
     isActive: r.isActive,
     settings: r.settings,
+    // The sites this resource works for. EMPTY = every site — so a single-site
+    // tenant, and any resource deliberately shared across two businesses, both
+    // read as `[]` here and the picker shows "All sites".
+    propertyIds,
     createdAt: r.createdAt.toISOString(),
     updatedAt: r.updatedAt.toISOString(),
   };

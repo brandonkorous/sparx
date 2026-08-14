@@ -20,6 +20,10 @@ export {
   ModuleDisabledError,
   moduleDisabledEnvelope,
   type ModuleSlug,
+  // THE closed set of module slugs. Re-exported so nothing downstream keeps its
+  // own copy — api-rest's hand-written one fell behind twice, and a slug missing
+  // there means the module cannot be turned on at all.
+  ALL_MODULES,
   // Dependency graph (BUNDLED_FREE / REQUIRES) + write-side helpers — the module
   // toggle handlers auto-enable paid requirements and block their teardown.
   BUNDLED_FREE,

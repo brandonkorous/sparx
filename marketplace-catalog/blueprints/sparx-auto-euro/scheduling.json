@@ -364,5 +364,12 @@
       ],
       "policyHandle": "shop-standard"
     }
+  ],
+  "locations": [
+    {
+      "handle": "premises",
+      "name": "Autobahn Werks",
+      "timezone": "UTC"
+    }
   ]
 }

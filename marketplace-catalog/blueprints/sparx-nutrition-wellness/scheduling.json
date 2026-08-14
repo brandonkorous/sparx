@@ -223,5 +223,12 @@
       ],
       "policyHandle": "nutrition-no-show"
     }
+  ],
+  "locations": [
+    {
+      "handle": "premises",
+      "name": "Nourish Nutrition",
+      "timezone": "UTC"
+    }
   ]
 }

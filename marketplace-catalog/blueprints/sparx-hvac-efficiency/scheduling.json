@@ -244,5 +244,12 @@
       ],
       "policyHandle": "maintenance-plan"
     }
+  ],
+  "locations": [
+    {
+      "handle": "premises",
+      "name": "Northline Climate",
+      "timezone": "UTC"
+    }
   ]
 }

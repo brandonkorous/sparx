@@ -25,6 +25,7 @@
 
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
+import { queryBool } from '@sparx/api-core/query';
 import { inventoryService } from '@sparx/inventory';
 import {
   CreateVariantBarcodeInput,
@@ -48,7 +49,7 @@ const ListQuery = z.object({
   symbology: z.string().max(20).optional(),
   source: z.string().max(20).optional(),
   q: z.string().trim().min(1).max(64).optional(),
-  include_inactive: z.coerce.boolean().optional(),
+  include_inactive: queryBool.optional(),
   limit: z.coerce.number().int().min(1).max(200).optional(),
   offset: z.coerce.number().int().min(0).optional(),
 });

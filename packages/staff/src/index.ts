@@ -128,15 +128,26 @@ export {
 } from './documents.js';
 
 export {
+  attributeSale,
+  clearSaleAttribution,
   commissionCents,
   deleteCommission,
   listCommissions,
   recordCommission,
+  saleAttribution,
   setCommissionStatus,
   type CommissionInput,
   type CommissionSource,
   type CommissionStatus,
 } from './commissions.js';
+
+export {
+  commissionForDeal,
+  commissionForOrder,
+  decimalToCents,
+  refundAdjustedBasis,
+  type CommissionOutcome,
+} from './commission-calc.js';
 
 export { deriveLaborForPeriod, deriveLaborForRoster, type DeriveResult } from './labor.js';
 

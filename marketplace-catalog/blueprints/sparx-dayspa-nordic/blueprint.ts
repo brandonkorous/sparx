@@ -11,7 +11,7 @@ import assets from './assets.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-dayspa-nordic',
-  version: '1.2.0',
+  version: '1.3.0',
   name: 'sparx — Day Spa (Nordic)',
   summary:
     'A cool, mineral day spa and bathhouse site — a glacial off-white palette, a blue-teal primary and a clean minimal sans, with quiet, elemental photography. Installs a working booking flow: thermal soak sessions, a sauna and cold-plunge circuit, 60/90-minute massage, a mineral facial and body treatment, plus a private bathhouse hour with a deposit. Three therapists and three pools and rooms carry real hours. Ships as “Kald”.',

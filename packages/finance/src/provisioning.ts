@@ -12,7 +12,10 @@ import { type TxClient } from '@sparx/db';
 import { seedCategories } from './categories';
 
 export interface FinanceProvisionResult {
+  /** Rows this call created. Zero when the tenant was already provisioned. */
   categoriesSeeded: number;
+  /** Rows the tenant has now. Non-zero even when `categoriesSeeded` is zero. */
+  categoriesTotal: number;
 }
 
 /**
@@ -24,6 +27,6 @@ export async function provisionFinance(
   tenantId: string,
   tx?: TxClient
 ): Promise<FinanceProvisionResult> {
-  const categories = await seedCategories(tenantId, tx);
-  return { categoriesSeeded: categories.length };
+  const { categories, created } = await seedCategories(tenantId, tx);
+  return { categoriesSeeded: created, categoriesTotal: categories.length };
 }

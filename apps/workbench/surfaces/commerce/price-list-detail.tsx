@@ -44,6 +44,7 @@ import { useDirtySource } from '../../lib/workbench/dirty';
 import { afterPaneChange } from '../../lib/defer';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { FormSection } from '../../components/form-section';
+import { SiteScopeField } from '../../components/site-scope-field';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { MoneyInput } from '../invoicing/money-input';
 import { VariantPicker } from './variant-picker';
@@ -126,6 +127,8 @@ interface Draft {
   /** `YYYY-MM-DD`, or empty for "no start/end". */
   startDate: string;
   endDate: string;
+  /** The sites these prices apply on. EMPTY = all of them. */
+  propertyIds: string[];
   entries: EntryDraft[];
 }
 
@@ -141,6 +144,7 @@ function emptyDraft(): Draft {
     live: false,
     startDate: '',
     endDate: '',
+    propertyIds: [],
     entries: [],
   };
 }
@@ -175,6 +179,8 @@ function toDraft(row: PriceListRow, entries: PriceListEntryRow[]): Draft {
     live: row.status === 'active',
     startDate: isoDate(row.validFrom),
     endDate: isoDate(row.validTo),
+    // Sorted so the dirty check can't fire on ordering alone.
+    propertyIds: [...row.propertyIds].sort(),
     // Only entries added straight to a list, minQuantity 1 — quantity breaks are
     // authored on the product's own Pricing tab, so the editor keeps one price
     // per version. Any tiered entries made elsewhere are left untouched on save.
@@ -196,6 +202,16 @@ function entrySignature(entry: EntryDraft): string {
 
 function entriesSignature(entries: EntryDraft[]): string {
   return entries.map(entrySignature).sort().join('|');
+}
+
+/** Order-insensitive set compare for the site scope. This surface's dirty check is
+ *  an explicit field-by-field list rather than a whole-draft compare, so a field
+ *  added to `Draft` without a line HERE renders, edits, and can never be saved —
+ *  Save simply never enables. That is what happened to `propertyIds`. */
+function sameSet(a: string[], b: string[]): boolean {
+  if (a.length !== b.length) return false;
+  const seen = new Set(b);
+  return a.every((value) => seen.has(value));
 }
 
 /* ── Surface ────────────────────────────────────────────────────────────── */
@@ -334,6 +350,7 @@ function PriceListEditor({
       draft.live ||
       draft.startDate !== '' ||
       draft.endDate !== '' ||
+      draft.propertyIds.length > 0 ||
       draft.entries.length > 0
     : draft.name !== saved.name ||
       draft.description !== saved.description ||
@@ -345,6 +362,7 @@ function PriceListEditor({
       draft.live !== saved.live ||
       draft.startDate !== saved.startDate ||
       draft.endDate !== saved.endDate ||
+      !sameSet(draft.propertyIds, saved.propertyIds) ||
       entriesSignature(draft.entries) !== entriesSignature(saved.entries);
 
   const saving = create.isPending || update.isPending || bulkSet.isPending || deleteEntry.isPending;
@@ -372,6 +390,7 @@ function PriceListEditor({
     validFrom: toIsoStart(draft.startDate),
     validTo: toIsoEnd(draft.endDate),
     status: draft.live ? 'active' : 'draft',
+    propertyIds: draft.propertyIds,
   });
 
   const entriesPayload = (): BulkEntryInput[] =>
@@ -830,6 +849,17 @@ function PriceListEditor({
               </Field>
             </div>
           </FormSection>
+
+          {/* 2c — Which sites these prices apply on */}
+          <SiteScopeField
+            value={draft.propertyIds}
+            onChange={(next) => {
+              set('propertyIds', next);
+            }}
+            title="Which of your sites these prices apply on"
+            description="You run more than one website. Keep a price list to the business it belongs to, or it will set what customers pay at the other one's checkout."
+            everyLabel="Use these prices on every site"
+          />
 
           {/* 3 — The prices */}
           <FormSection

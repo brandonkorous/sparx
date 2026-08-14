@@ -1,6 +1,6 @@
 'use client';
 
-// "How's sparx going?" — asked once a quarter, and never in the way.
+// "How's it going?" — asked once a quarter, and never in the way.
 //
 // The dashboard asks this with a card that slides over the corner of the page.
 // That does not translate: this app's premise is that the operator decides what
@@ -20,6 +20,7 @@ import { Button, Popover, PopoverContent, PopoverTrigger } from '@wizeworks/sili
 import { recordPulseEvent, usePulse } from '../../lib/api/feedback';
 import { useWorkbench } from '../../lib/workbench/context';
 import { useFeedback } from './provider';
+import { productName } from '../../lib/product';
 
 /** A stand-in for "a natural breath" when nothing signals one explicitly. */
 const ARM_AFTER_MS = 60_000;
@@ -131,9 +132,9 @@ export function SentimentChip() {
         {/* Loud on purpose: a filled `info` chip that breathes until opened,
             so the quarterly ask actually pulls the eye on the status shelf.
             The flash is dropped the moment the popover opens — see globals.css
-            `.sparx-pulse-nudge`. */}
-        <Button color="info" size="xs" className={open ? undefined : 'sparx-pulse-nudge'}>
-          How’s sparx going?
+            `.pulse-nudge`. */}
+        <Button color="info" size="xs" className={open ? undefined : 'pulse-nudge'}>
+          How’s {productName()} going?
         </Button>
       </PopoverTrigger>
       <PopoverContent align="end" className="w-72">

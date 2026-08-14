@@ -21,6 +21,7 @@
 
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
+import { queryBool } from '@sparx/api-core/query';
 import { inventoryService } from '@sparx/inventory';
 import { ok, paged } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
@@ -38,21 +39,21 @@ const ListQuery = z.object({
   zone: z.string().max(60).optional(),
   type: z.enum(['pick', 'bulk', 'receiving', 'staging', 'quarantine', 'damaged']).optional(),
   q: z.string().trim().min(1).max(200).optional(),
-  include_system: z.coerce.boolean().optional(),
-  include_inactive: z.coerce.boolean().optional(),
-  non_empty_only: z.coerce.boolean().optional(),
+  include_system: queryBool.optional(),
+  include_inactive: queryBool.optional(),
+  non_empty_only: queryBool.optional(),
   take: z.coerce.number().int().min(1).max(500).optional(),
   skip: z.coerce.number().int().min(0).optional(),
 });
 
 const ContentsQuery = z.object({
-  include_empty: z.coerce.boolean().optional(),
+  include_empty: queryBool.optional(),
   take: z.coerce.number().int().min(1).max(1000).optional(),
 });
 
 const VariantBinsQuery = z.object({
   warehouse_id: z.string().uuid().optional(),
-  include_empty: z.coerce.boolean().optional(),
+  include_empty: queryBool.optional(),
 });
 
 const SuggestQuery = z.object({

@@ -156,17 +156,25 @@ export async function switchSite(
   nextSiteId: string,
   options?: {
     /**
-     * Reload onto the SAME address instead of the workbench root.
+     * Land on THIS address instead of the workbench root.
      *
-     * Exactly one caller wants this: arriving on a link that belongs to another
-     * business. There the address is the whole point — the reload has to land
+     * Exactly one caller passes it: arriving on a link that belongs to another
+     * business. There the address is the whole point — the switch has to land
      * back on `/commerce/orders/…?site=…` so the arrival gate can open it now
      * that the workspace matches. Everyone else is switching away from a record
      * that belongs to the site being LEFT, and carrying its address across would
      * mean the new workspace opens with a pane pointing at another business's
      * data. Hence the default.
+     *
+     * An explicit address, NOT a `keepAddress` flag that reloaded the current
+     * one. Those are not the same address by the time this runs: the history
+     * bridge replaces the bar with the restored layout's focused pane within a
+     * frame of boot, while the switch waits on the site list, so `reload()`
+     * carried the ARRANGEMENT's address across instead of the link's. Under the
+     * other business that address reads as a link back to the one just left, so
+     * the tab switched again, and again — see DeepLink.href.
      */
-    readonly keepAddress?: boolean;
+    readonly address?: string;
   }
 ): Promise<void> {
   // Flush the CURRENT arrangement under the current site before leaving —
@@ -203,14 +211,11 @@ export async function switchSite(
   // stands down: with unsaved work open, the native prompt would otherwise cancel
   // the reload and leave the cookie moved but the window (and switcher) unchanged.
   controller.markIntentionalUnload();
-  if (options?.keepAddress === true) {
-    window.location.reload();
-    return;
-  }
   // `replace`, not `assign`: the address being left names a record in the OTHER
   // business, and leaving it in history means Back walks into a pane that cannot
-  // load. Replacing drops it.
-  window.location.replace('/');
+  // load. Replacing drops it. Replacing with the SAME address still reloads, so
+  // the link case needs nothing special.
+  window.location.replace(options?.address ?? '/');
 }
 
 /* ── Favorites ──────────────────────────────────────────────────────────────
@@ -272,6 +277,14 @@ export function useRecents(take = 8) {
 export function useRecordVisit() {
   const queryClient = useQueryClient();
   return useMutation({
+    // HOUSEKEEPING, and the flag is load-bearing on two counts. Without it the
+    // status bar read this ping as the operator saving something and announced
+    // "Saved just now" the moment the app booted — an assertion about work
+    // nobody had done, in the one place people look to check their work is safe.
+    // And if it fails, that is not news to a person who never asked for it, so
+    // the failed-write net stays quiet (it still reports). See
+    // components/write-failure-reporter.tsx.
+    meta: { housekeeping: true },
     mutationFn: (actionId: string) => api.post('/v1/me/recents', { actionId }),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ['me', 'recents'] });

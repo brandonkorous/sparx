@@ -8,13 +8,14 @@
 
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
+import { queryBool } from '@sparx/api-core/query';
 import { documentLineTypeService } from '@sparx/crm';
 import { ok } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
 import { requireInvoicingModule, toInvoicingContext } from '../../../lib/invoicing-context.js';
 
 const PathId = z.object({ id: z.string().uuid() });
-const ListQuery = z.object({ include_inactive: z.coerce.boolean().optional() });
+const ListQuery = z.object({ include_inactive: queryBool.optional() });
 
 const lineTypeRoutes: FastifyPluginAsync = (app) => {
   app.get('/v1/invoicing/line-types', async (request) => {

@@ -108,7 +108,7 @@ export default function WebhooksPage() {
       editPath="apps/web/app/docs/guides/webhooks/page.tsx"
       updated="2026-06-05"
       prev={{ title: 'Building a template', href: '/docs/guides/building-a-template' }}
-      next={{ title: 'Authentication', href: '/docs/authentication' }}
+      next={{ title: 'Importing from another platform', href: '/docs/guides/migrating' }}
     >
       <DocSection id="overview" title="Overview">
         <p>

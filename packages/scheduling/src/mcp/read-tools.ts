@@ -7,6 +7,7 @@ import { z } from 'zod';
 import { getAvailability } from '../availability';
 import { listAvailabilityWindows } from '../availability-rules';
 import { getBooking, listBookings } from '../booking-queries';
+import { listLocations } from '../locations';
 import { listResources } from '../resources';
 import { listServices } from '../services';
 
@@ -116,11 +117,23 @@ export const listResourceHoursTool: McpToolDefinition = {
     listAvailabilityWindows(ctx.tenantId, (input as { resourceId: string }).resourceId),
 };
 
+export const listLocationsTool: McpToolDefinition = {
+  name: 'list_scheduling_locations',
+  description:
+    "List the tenant's business locations — the physical places customers are served from. Resources, services and bookings each reference one, so this is where to find a `locationId`. A location with no site links serves every site the tenant runs.",
+  scope: 'read:scheduling',
+  confirmation: false,
+  input: z.object({ activeOnly: z.boolean().optional() }),
+  run: (ctx, input) =>
+    listLocations(ctx.tenantId, { activeOnly: (input as { activeOnly?: boolean }).activeOnly }),
+};
+
 export const readTools = [
   listServicesTool,
   getAvailabilityTool,
   listBookingsTool,
   getBookingTool,
+  listLocationsTool,
   listResourcesTool,
   listResourceHoursTool,
 ];

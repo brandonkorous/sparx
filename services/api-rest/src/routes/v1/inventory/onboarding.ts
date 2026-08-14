@@ -51,6 +51,7 @@
 
 import type { FastifyPluginAsync, FastifyReply } from 'fastify';
 import { z } from 'zod';
+import { queryBool } from '@sparx/api-core/query';
 import { CustomFieldEntity } from '@sparx/commerce-schemas';
 import { inventoryService, toCsv, type CsvTable } from '@sparx/inventory';
 import { ok, paged } from '@sparx/api-core/envelope';
@@ -84,14 +85,14 @@ const GridQuery = z.object({
   format: z.enum(['json', 'csv']).optional(),
   warehouse_id: z.string().uuid().optional(),
   search: z.string().max(200).optional(),
-  low_only: z.coerce.boolean().optional(),
+  low_only: queryBool.optional(),
   take: z.coerce.number().int().min(1).max(5000).optional(),
   skip: z.coerce.number().int().min(0).optional(),
 });
 
 const CustomFieldQuery = z.object({
   entity: CustomFieldEntity.optional(),
-  include_inactive: z.coerce.boolean().optional(),
+  include_inactive: queryBool.optional(),
 });
 
 /** A level is identified by two ids, everything else by one. Both spellings are

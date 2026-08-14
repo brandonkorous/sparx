@@ -363,5 +363,12 @@
       ],
       "policyHandle": "lesson-standard"
     }
+  ],
+  "locations": [
+    {
+      "handle": "premises",
+      "name": "Crescendo Music School",
+      "timezone": "UTC"
+    }
   ]
 }

@@ -41,6 +41,7 @@
 
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
+import { queryBool } from '@sparx/api-core/query';
 import { bulkPriceService, productService, variantService } from '@sparx/commerce';
 import { ok, paged } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
@@ -57,7 +58,7 @@ const PathId = z.object({ id: z.string().uuid() });
 const ProductIdParam = z.object({ productId: z.string().uuid() });
 const BulkPriceRevertBody = z.object({ operationId: z.string().uuid() });
 const VariantImageParam = z.object({ imageId: z.string().uuid() });
-const ListVariantsQuery = z.object({ include_archived: z.coerce.boolean().optional() });
+const ListVariantsQuery = z.object({ include_archived: queryBool.optional() });
 
 const ListProductsQuery = z.object({
   status: z.string().optional(),
@@ -67,9 +68,9 @@ const ListProductsQuery = z.object({
   tag: z.string().optional(),
   product_type: z.string().optional(),
   q: z.string().optional(),
-  has_fitment: z.coerce.boolean().optional(),
-  include_archived: z.coerce.boolean().optional(),
-  include_deleted: z.coerce.boolean().optional(),
+  has_fitment: queryBool.optional(),
+  include_archived: queryBool.optional(),
+  include_deleted: queryBool.optional(),
   // Model B (docs/49 §3): scope the back-office list to one site — products
   // VISIBLE on it (global + scoped-here), matching that site's storefront.
   // Omitted → the site the caller is working in (`x-sparx-property-id`, else

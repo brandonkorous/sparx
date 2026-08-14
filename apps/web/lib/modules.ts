@@ -6,10 +6,10 @@
  */
 import type { MarketingModule } from '@/components/marketing/primitives';
 
-/** The modules that have a dedicated marketing landing page today. Invoicing,
- *  Inventory, and Live Chat are billable modules (see modules-catalog.ts) but do
- *  not yet have standalone pages, so they are intentionally absent from this map.
- *  Add a slug here when its page ships. */
+/** The modules that have a dedicated marketing landing page today. Invoicing and
+ *  Live Chat are billable modules (see modules-catalog.ts) but do not yet have
+ *  standalone pages, so they are intentionally absent from this map. Add a slug
+ *  here when its page ships. */
 export type ModulePageSlug = Extract<
   MarketingModule,
   | 'builder'
@@ -24,6 +24,7 @@ export type ModulePageSlug = Extract<
   | 'social'
   | 'finance'
   | 'staff'
+  | 'inventory'
 >;
 
 export interface ModuleFeature {
@@ -666,6 +667,62 @@ export const MODULES: Record<ModulePageSlug, ModuleMeta> = {
         'A flat $29/mo, whatever size your team is — not per person, because charging per head would price the module against the exact thing it measures. It is not bundled with Finance in either direction: Finance is useful without it, and a business that only wants hours, rotas and licence renewals should not have to buy a spend ledger to get them.',
     },
   },
+  // Stock, and the argument for it (docs/146 §5). The claim this whole entry
+  // serves is one sentence: the number is right, you can see exactly why, and
+  // you were running in an afternoon — without buying a seat for every person in
+  // the warehouse. Every feature below is one half of that, and none of them is
+  // a capability list item dressed up: the six are ordered as the page's own
+  // story, not as a menu.
+  inventory: {
+    slug: 'inventory',
+    module: 'inventory',
+    label: 'Inventory',
+    headlinePrimary: 'The number',
+    headlineSecondary: 'is right',
+    title: 'sparx Inventory — The stock number is right, and it can show you why.',
+    description:
+      'Stock across every location, on a record that can be taken apart back to the day you counted it — and that checks itself overnight. Set up from a spreadsheet in an afternoon. $29/mo, unlimited users, free with Commerce or B2B.',
+    lede: 'Most stock systems store a number and ask you to believe it. sparx stores every change — every delivery, sale, count, transfer and breakage — and works the number out from them, so any quantity on any screen can be taken apart in front of you, back to the day somebody last counted the shelf. It re-checks itself every night and tells you when it drifted, rather than waiting for you to find out from a customer.',
+    features: [
+      {
+        number: '01',
+        title: 'Ask any number why.',
+        body: 'Click a quantity anywhere in sparx and it comes apart: what you counted, what arrived, what sold, what came back, what broke, and who is holding the rest for orders not yet shipped. Every line names the person or the system that caused it. When the shelf disagrees with the screen, you have somewhere to start instead of a recount.',
+      },
+      {
+        number: '02',
+        title: 'It checks itself overnight.',
+        body: 'Every night sparx re-adds the whole history and compares it to the number it has been showing you. If the two ever disagree it says so, names the items and the value in question, and leaves the evidence alone rather than quietly correcting itself. The screen tells you how long it has been clean.',
+      },
+      {
+        number: '03',
+        title: 'Down to the shelf, from a phone.',
+        body: 'Shelves and zones inside each location, printed labels that still scan when the wifi does not reach the back of the building, and receiving, put-away, picking, counting and transfers all driven from a phone camera. Pick lists walk the aisle in order and refuse the wrong item.',
+      },
+      {
+        number: '04',
+        title: 'What to buy, and who is letting you down.',
+        body: 'Reorder points that move with real demand and the season instead of being a number somebody typed in last spring, with days of cover and the revenue at risk if you do nothing. Every supplier keeps a scorecard: how often they are late, how much of the order they actually send, and what they quoted against what they billed.',
+      },
+      {
+        number: '05',
+        title: 'Costs that survive an accountant.',
+        body: 'Moving average, FIFO layers or standard cost — your choice, per item if you need it. Freight and duty are shared across the delivery so a part costs what it really cost to get on your shelf, in your own currency at the rate on the day it landed. Nineteen reports, every one exportable, and every export re-imports.',
+      },
+      {
+        number: '06',
+        title: 'Off the spreadsheet in an afternoon.',
+        body: 'Bring the sheet you already keep. sparx matches your column names to its own, shows you exactly what it is about to create and change before it touches anything, and finishes with an opening count so day one is a counted number rather than an imported guess. Everyone in the warehouse can use it — we do not charge per person.',
+      },
+    ],
+    pricing: {
+      price: '$29',
+      period: '/mo',
+      modifier: '',
+      bundleNote:
+        'A flat $29/mo standalone, and free with Commerce or B2B — if you sell through sparx, the stock behind what you sell is not a second product. Unlimited users at any price: the people who actually touch stock are pickers, receivers and counters, and charging per seat would mean the accuracy of your numbers depended on how few people you let near them.',
+    },
+  },
 };
 
 export const MODULE_ORDER: ModulePageSlug[] = [
@@ -681,6 +738,7 @@ export const MODULE_ORDER: ModulePageSlug[] = [
   'social',
   'finance',
   'staff',
+  'inventory',
 ];
 
 export function getModule(slug: string): ModuleMeta | undefined {

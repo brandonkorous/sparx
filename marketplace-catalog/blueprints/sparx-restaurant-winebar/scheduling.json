@@ -335,5 +335,12 @@
       ],
       "policyHandle": "bar-standard"
     }
+  ],
+  "locations": [
+    {
+      "handle": "premises",
+      "name": "Decant",
+      "timezone": "UTC"
+    }
   ]
 }

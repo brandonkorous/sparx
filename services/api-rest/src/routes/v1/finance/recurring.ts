@@ -12,6 +12,7 @@
 
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
+import { queryBool } from '@sparx/api-core/query';
 import { ok } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
 import {
@@ -30,7 +31,7 @@ import {
 import { resolvePropertyId } from '../../../lib/property.js';
 
 const PathId = z.object({ id: z.string().uuid() });
-const ListQuery = z.object({ includeInactive: z.coerce.boolean().optional() });
+const ListQuery = z.object({ includeInactive: queryBool.optional() });
 const GenerateBody = z.object({ through: z.coerce.date().optional() }).default({});
 
 // eslint-disable-next-line @typescript-eslint/require-await -- FastifyPluginAsync type demands async; route registration is sync.

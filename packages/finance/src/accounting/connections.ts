@@ -149,6 +149,83 @@ export async function listConnections(
   );
 }
 
+/**
+ * A connection as the BROWSER may see it.
+ *
+ * `listConnections` returns the Prisma row, which carries `accessTokenEnc` and
+ * `refreshTokenEnc`. Handing that row to `ok()` ships both ciphertexts to every
+ * `viewer` who opens the accounting screen — they are encrypted, but a
+ * credential nobody needs is a credential that should not be on the wire, and
+ * the workbench's `AccountingConnection` interface listing nine safe fields does
+ * not stop the server serialising all twenty. A type on the client is a claim
+ * about the wire, never a filter on it.
+ *
+ * So the projection is an ALLOW-LIST, and it lives here rather than in the route:
+ * a second consumer of `listConnections` should not have to rediscover which
+ * fields are safe, and adding a column to the model must not silently widen what
+ * the API returns.
+ *
+ * `connected` is the field the UI actually wants and cannot derive without the
+ * secret: a row can exist with no grant behind it (created just before an OAuth
+ * redirect the person then abandoned). Without it the screen has to infer
+ * sign-in from `status`, which is `active` from the moment the row is written —
+ * so a half-finished connect would read as connected, which is the exact class
+ * of lie this module is careful about everywhere else.
+ */
+export interface PublicAccountingConnection {
+  id: string;
+  provider: string;
+  propertyId: string | null;
+  status: string;
+  displayName: string | null;
+  externalId: string | null;
+  syncExpenses: boolean;
+  syncInvoices: boolean;
+  syncPayments: boolean;
+  syncCadence: string;
+  syncFromDate: Date | null;
+  lastSyncAt: Date | null;
+  lastSyncStatus: string | null;
+  lastError: unknown;
+  createdAt: Date;
+  /** True only when a usable grant is stored. Never inferred from `status`. */
+  connected: boolean;
+  /** When the stored access token expires, for a "needs reconnecting" hint.
+   *  The token itself never leaves the server. */
+  tokenExpiresAt: Date | null;
+}
+
+export function toPublicConnection(row: FinanceAccountingConnection): PublicAccountingConnection {
+  return {
+    id: row.id,
+    provider: row.provider,
+    propertyId: row.propertyId,
+    status: row.status,
+    displayName: row.displayName,
+    externalId: row.externalId,
+    syncExpenses: row.syncExpenses,
+    syncInvoices: row.syncInvoices,
+    syncPayments: row.syncPayments,
+    syncCadence: row.syncCadence,
+    syncFromDate: row.syncFromDate,
+    lastSyncAt: row.lastSyncAt,
+    lastSyncStatus: row.lastSyncStatus,
+    lastError: row.lastError,
+    createdAt: row.createdAt,
+    connected: row.accessTokenEnc !== null,
+    tokenExpiresAt: row.tokenExpiresAt,
+  };
+}
+
+/** The tenant's connections, safe to serialise. Prefer this over
+ *  `listConnections` in anything that reaches a browser. */
+export async function listPublicConnections(
+  tenantId: string,
+  propertyId?: string | null
+): Promise<PublicAccountingConnection[]> {
+  return (await listConnections(tenantId, propertyId)).map(toPublicConnection);
+}
+
 export interface UpsertConnectionInput {
   provider: AccountingProvider;
   propertyId?: string | null;
