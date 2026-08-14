@@ -58,6 +58,12 @@ WORKDIR /app
 # so the expensive install below stays cached across ordinary source edits.
 COPY --chown=node:node pnpm-workspace.yaml pnpm-lock.yaml package.json tsconfig.base.json ./
 
+# `patchedDependencies` in the root package.json makes pnpm hash every patch file
+# before it resolves anything, so the patch has to be present even when the
+# `--filter` scope excludes the package it patches. Without this COPY the install
+# below dies with ENOENT on the patch — regardless of what is being built.
+COPY --chown=node:node patches ./patches
+
 # The Next.js apps are NOT built from this base — they ship standalone bundles
 # and are already small. Their manifests are still needed, because
 # pnpm-workspace.yaml globs `apps/*` and `--frozen-lockfile` refuses to run when

@@ -125,6 +125,52 @@ for (const { dir, text } of targets) {
   }
 }
 
+// Every image that RUNS an install needs the patch files, whatever it filters.
+//
+// WHY THIS EXISTS. `patchedDependencies` in the root package.json is hashed by pnpm
+// BEFORE it resolves anything, so a filtered install that excludes the patched package
+// still opens the patch file — and still dies with `ENOENT ... patches/<name>.patch`
+// when it is absent. That makes it the opposite of the check above: not a per-image
+// dependency question at all, but one line every installing Dockerfile owes the root
+// manifest the moment a patch is added. `patches/` landed with the Base UI patch and
+// eight Dockerfiles copied the lockfile without it; the release reached the container
+// stage before failing on a fact knowable from two files without building anything.
+const rootManifest = JSON.parse(readFileSync(join(repoRoot, 'package.json'), 'utf8'));
+const patchedCount = Object.keys(rootManifest.pnpm?.patchedDependencies ?? {}).length;
+
+const patchProblems = [];
+if (patchedCount) {
+  const dockerfiles = ['Dockerfile.base'];
+  for (const group of ['apps', 'services', 'packages']) {
+    const groupDir = join(repoRoot, group);
+    if (!existsSync(groupDir)) continue;
+    for (const entry of readdirSync(groupDir)) {
+      const rel = `${group}/${entry}/Dockerfile`;
+      if (existsSync(join(repoRoot, rel))) dockerfiles.push(rel);
+    }
+  }
+  for (const rel of dockerfiles) {
+    // Comments stripped first — several of these files TALK about `pnpm install`
+    // in prose while building FROM the base and never running one.
+    const code = readFileSync(join(repoRoot, rel), 'utf8').replace(/^\s*#.*$/gm, '');
+    if (!/pnpm install/.test(code)) continue;
+    if (!/^COPY\s+(--chown=\S+\s+)?patches\b/m.test(code)) patchProblems.push(rel);
+  }
+}
+
+if (patchProblems.length) {
+  console.error(
+    `Dockerfile patch drift — the root manifest declares ${patchedCount} patched ` +
+      'dependency(ies), and these images run an install without copying patches/:\n'
+  );
+  for (const p of patchProblems) console.error(`  ${p}: missing  COPY patches ./patches`);
+  console.error(
+    '\npnpm hashes every patch file before resolution, so the install fails with ENOENT' +
+      ' even when the filter excludes the patched package. Add the COPY above the install.'
+  );
+  process.exit(1);
+}
+
 if (problems.length) {
   console.error('Dockerfile dependency drift — an image would be built without code it imports:\n');
   for (const p of problems) console.error(`  ${p}`);

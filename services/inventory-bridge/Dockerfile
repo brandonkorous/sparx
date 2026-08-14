@@ -12,6 +12,9 @@ WORKDIR /app
 
 COPY pnpm-workspace.yaml pnpm-lock.yaml package.json ./
 COPY tsconfig.base.json ./
+# Root `patchedDependencies` is hashed before resolution, so the patch files are
+# needed even when this filter excludes the package they patch.
+COPY patches ./patches
 COPY services/inventory-bridge ./services/inventory-bridge
 
 RUN pnpm install --filter @sparx/inventory-bridge... --frozen-lockfile --prod=false

@@ -18,6 +18,9 @@ FROM base AS builder
 
 # Workspace metadata first — maximises layer cache reuse across source changes.
 COPY pnpm-workspace.yaml pnpm-lock.yaml package.json tsconfig.base.json ./
+# Root `patchedDependencies` is hashed before resolution, so the patch files are
+# needed even when this filter excludes the package they patch.
+COPY patches ./patches
 COPY apps/site/package.json apps/site/
 COPY packages/app-kit/package.json packages/app-kit/
 # @sparx/brand — the single home for the spark/wordmark/mascot geometry + BRAND

@@ -16,6 +16,9 @@ WORKDIR /app
 # Workspace context — minimum needed to install the worker + its workspace deps.
 COPY pnpm-workspace.yaml pnpm-lock.yaml package.json ./
 COPY tsconfig.base.json ./
+# Root `patchedDependencies` is hashed before resolution, so the patch files are
+# needed even when this filter excludes the package they patch.
+COPY patches ./patches
 COPY packages/db ./packages/db
 COPY services/cache-revalidation-worker ./services/cache-revalidation-worker
 
