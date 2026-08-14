@@ -37,9 +37,7 @@
                       "attrs": {
                         "href": "/menu"
                       },
-                      "children": [
-                        "Menu"
-                      ],
+                      "children": ["Menu"],
                       "slot": {
                         "name": "link1",
                         "type": "link",
@@ -55,9 +53,7 @@
                       "attrs": {
                         "href": "/book"
                       },
-                      "children": [
-                        "Reserve"
-                      ],
+                      "children": ["Reserve"],
                       "slot": {
                         "name": "link2",
                         "type": "link",
@@ -73,9 +69,7 @@
                       "attrs": {
                         "href": "/about"
                       },
-                      "children": [
-                        "About"
-                      ],
+                      "children": ["About"],
                       "slot": {
                         "name": "link3",
                         "type": "link",
@@ -91,9 +85,7 @@
                       "attrs": {
                         "href": "/contact"
                       },
-                      "children": [
-                        "Visit"
-                      ],
+                      "children": ["Visit"],
                       "slot": {
                         "name": "link4",
                         "type": "link",
@@ -118,9 +110,7 @@
                       "attrs": {
                         "href": "/account/login"
                       },
-                      "children": [
-                        "Sign in"
-                      ],
+                      "children": ["Sign in"],
                       "slot": {
                         "name": "secondary",
                         "type": "link",
@@ -198,9 +188,7 @@
                   "attrs": {
                     "href": "/menu"
                   },
-                  "children": [
-                    "Menu"
-                  ],
+                  "children": ["Menu"],
                   "slot": {
                     "name": "link1",
                     "type": "link",
@@ -216,9 +204,7 @@
                   "attrs": {
                     "href": "/book"
                   },
-                  "children": [
-                    "Reserve"
-                  ],
+                  "children": ["Reserve"],
                   "slot": {
                     "name": "link2",
                     "type": "link",
@@ -234,9 +220,7 @@
                   "attrs": {
                     "href": "/about"
                   },
-                  "children": [
-                    "About"
-                  ],
+                  "children": ["About"],
                   "slot": {
                     "name": "link3",
                     "type": "link",
@@ -252,9 +236,7 @@
                   "attrs": {
                     "href": "/contact"
                   },
-                  "children": [
-                    "Visit"
-                  ],
+                  "children": ["Visit"],
                   "slot": {
                     "name": "link4",
                     "type": "link",
@@ -357,9 +339,7 @@
                           "kind": "element",
                           "tag": "p",
                           "class": "max-w-xs text-sm text-base-content",
-                          "children": [
-                            "Everything you publish, in one place."
-                          ],
+                          "children": ["Everything you publish, in one place."],
                           "slot": {
                             "name": "blurb",
                             "type": "text",
@@ -392,9 +372,7 @@
                           "kind": "element",
                           "tag": "p",
                           "class": "text-sm font-semibold text-base-content",
-                          "children": [
-                            "Explore"
-                          ],
+                          "children": ["Explore"],
                           "slot": {
                             "name": "col1",
                             "type": "text",
@@ -422,9 +400,7 @@
                                   "attrs": {
                                     "href": "/menu"
                                   },
-                                  "children": [
-                                    "Menu"
-                                  ],
+                                  "children": ["Menu"],
                                   "slot": {
                                     "name": "link1",
                                     "type": "link",
@@ -448,9 +424,7 @@
                                   "attrs": {
                                     "href": "/book"
                                   },
-                                  "children": [
-                                    "Reserve"
-                                  ],
+                                  "children": ["Reserve"],
                                   "slot": {
                                     "name": "link2",
                                     "type": "link",
@@ -474,9 +448,7 @@
                                   "attrs": {
                                     "href": "/about"
                                   },
-                                  "children": [
-                                    "About"
-                                  ],
+                                  "children": ["About"],
                                   "slot": {
                                     "name": "link3",
                                     "type": "link",
@@ -500,9 +472,7 @@
                                   "attrs": {
                                     "href": "/contact"
                                   },
-                                  "children": [
-                                    "Visit"
-                                  ],
+                                  "children": ["Visit"],
                                   "slot": {
                                     "name": "link4",
                                     "type": "link",
@@ -595,9 +565,7 @@
                           "kind": "element",
                           "tag": "span",
                           "class": "font-medium",
-                          "children": [
-                            "Your site"
-                          ],
+                          "children": ["Your site"],
                           "data": {
                             "kind": "value",
                             "ref": "site.identity.name"
@@ -677,9 +645,7 @@
                         "kind": "element",
                         "tag": "h1",
                         "class": "text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl",
-                        "children": [
-                          "Decant"
-                        ],
+                        "children": ["Decant"],
                         "id": "1aa37b10-f79a-4190-8d73-e0da06fa30c3",
                         "ord": "a0"
                       },
@@ -705,9 +671,7 @@
                             "attrs": {
                               "href": "/book"
                             },
-                            "children": [
-                              "Reserve a table"
-                            ],
+                            "children": ["Reserve a table"],
                             "id": "1b593289-5d74-4f98-ae66-031ffddbd33c",
                             "ord": "a0"
                           },
@@ -718,9 +682,7 @@
                             "attrs": {
                               "href": "/menu"
                             },
-                            "children": [
-                              "See the wine list"
-                            ],
+                            "children": ["See the wine list"],
                             "id": "b5be9411-6219-4a09-9d86-f0fdb2411906",
                             "ord": "a1"
                           }
@@ -759,9 +721,7 @@
                         "kind": "element",
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
-                        "children": [
-                          "Open tonight"
-                        ],
+                        "children": ["Open tonight"],
                         "id": "caa5b1f3-4091-476b-a299-5e95c3964978",
                         "ord": "a0"
                       },
@@ -786,18 +746,14 @@
                           {
                             "kind": "element",
                             "tag": "span",
-                            "children": [
-                              "The full list"
-                            ],
+                            "children": ["The full list"],
                             "id": "2f16003c-d26f-473e-9cf8-b4f8d1a68927",
                             "ord": "a0"
                           },
                           {
                             "kind": "element",
                             "tag": "span",
-                            "children": [
-                              "→"
-                            ],
+                            "children": ["→"],
                             "id": "dc5fd8b9-031b-4960-b025-0f0edfdd340d",
                             "ord": "a1"
                           }
@@ -828,9 +784,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-base font-semibold text-base-content",
-                                "children": [
-                                  "Blanc de Faubourg, Loire"
-                                ],
+                                "children": ["Blanc de Faubourg, Loire"],
                                 "id": "33aa9019-7335-48e1-a51b-3490762e468e",
                                 "ord": "a0"
                               },
@@ -838,9 +792,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-sm leading-relaxed text-secondary",
-                                "children": [
-                                  "Chenin, skin-contact, bone-dry and a little wild."
-                                ],
+                                "children": ["Chenin, skin-contact, bone-dry and a little wild."],
                                 "id": "9bdddf7f-aef9-4eee-ba01-9bc888ba20a9",
                                 "ord": "a1"
                               }
@@ -852,9 +804,7 @@
                             "kind": "element",
                             "tag": "span",
                             "class": "shrink-0 text-base font-semibold text-primary",
-                            "children": [
-                              "13"
-                            ],
+                            "children": ["13"],
                             "id": "a0284b1d-64e8-486b-927a-0ebdbc77239a",
                             "ord": "a1"
                           }
@@ -876,9 +826,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-base font-semibold text-base-content",
-                                "children": [
-                                  "Cascina Vecchia, Piedmont"
-                                ],
+                                "children": ["Cascina Vecchia, Piedmont"],
                                 "id": "46c38528-2504-4e41-9a5f-998b7ab1dff2",
                                 "ord": "a0"
                               },
@@ -886,9 +834,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-sm leading-relaxed text-secondary",
-                                "children": [
-                                  "Nebbiolo, light-pressed, rose petals and tar."
-                                ],
+                                "children": ["Nebbiolo, light-pressed, rose petals and tar."],
                                 "id": "da85bc48-c143-40a3-92ad-8892b6cca3eb",
                                 "ord": "a1"
                               }
@@ -900,9 +846,7 @@
                             "kind": "element",
                             "tag": "span",
                             "class": "shrink-0 text-base font-semibold text-primary",
-                            "children": [
-                              "15"
-                            ],
+                            "children": ["15"],
                             "id": "064e9900-1f33-465d-a506-665b37fe3ee2",
                             "ord": "a1"
                           }
@@ -924,9 +868,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-base font-semibold text-base-content",
-                                "children": [
-                                  "Hirondelle Rouge, Beaujolais"
-                                ],
+                                "children": ["Hirondelle Rouge, Beaujolais"],
                                 "id": "8bfb9b54-740d-42c9-9811-31c2237f0fc0",
                                 "ord": "a0"
                               },
@@ -934,9 +876,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-sm leading-relaxed text-secondary",
-                                "children": [
-                                  "Gamay, chilled, all crunchy red fruit."
-                                ],
+                                "children": ["Gamay, chilled, all crunchy red fruit."],
                                 "id": "e1358829-7487-4145-9c40-dbbadd8024f3",
                                 "ord": "a1"
                               }
@@ -948,9 +888,7 @@
                             "kind": "element",
                             "tag": "span",
                             "class": "shrink-0 text-base font-semibold text-primary",
-                            "children": [
-                              "12"
-                            ],
+                            "children": ["12"],
                             "id": "681fa1a3-62e4-45e8-ad29-5634556ecb58",
                             "ord": "a1"
                           }
@@ -972,9 +910,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-base font-semibold text-base-content",
-                                "children": [
-                                  "Steinbruch Riesling, Mosel"
-                                ],
+                                "children": ["Steinbruch Riesling, Mosel"],
                                 "id": "2aa4079e-c161-4f8a-9785-bd59376c9c9a",
                                 "ord": "a0"
                               },
@@ -982,9 +918,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-sm leading-relaxed text-secondary",
-                                "children": [
-                                  "Off-dry, slate and lime, endlessly drinkable."
-                                ],
+                                "children": ["Off-dry, slate and lime, endlessly drinkable."],
                                 "id": "bb674122-5ef7-4f6f-ad87-849d04841bcd",
                                 "ord": "a1"
                               }
@@ -996,9 +930,7 @@
                             "kind": "element",
                             "tag": "span",
                             "class": "shrink-0 text-base font-semibold text-primary",
-                            "children": [
-                              "14"
-                            ],
+                            "children": ["14"],
                             "id": "3f10ca97-4332-4e09-b370-27ee12986d07",
                             "ord": "a1"
                           }
@@ -1020,9 +952,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-base font-semibold text-base-content",
-                                "children": [
-                                  "Poggio delle More, Etna"
-                                ],
+                                "children": ["Poggio delle More, Etna"],
                                 "id": "d53b2a67-a3e2-437e-a36f-42df47ceb99d",
                                 "ord": "a0"
                               },
@@ -1030,9 +960,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-sm leading-relaxed text-secondary",
-                                "children": [
-                                  "A pét-nat rosato — salty, foamy, joyful."
-                                ],
+                                "children": ["A pét-nat rosato — salty, foamy, joyful."],
                                 "id": "dc7c6971-ba85-493c-993c-bc32e870c7be",
                                 "ord": "a1"
                               }
@@ -1044,9 +972,7 @@
                             "kind": "element",
                             "tag": "span",
                             "class": "shrink-0 text-base font-semibold text-primary",
-                            "children": [
-                              "13"
-                            ],
+                            "children": ["13"],
                             "id": "cdf8f90a-6efc-4b56-956f-5dd132e1bdea",
                             "ord": "a1"
                           }
@@ -1085,9 +1011,7 @@
                         "kind": "element",
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
-                        "children": [
-                          "A few good plates"
-                        ],
+                        "children": ["A few good plates"],
                         "id": "14a8b61a-acd2-4884-bb05-c7d86b6e74f7",
                         "ord": "a0"
                       },
@@ -1134,9 +1058,7 @@
                             "kind": "element",
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
-                            "children": [
-                              "To pick at"
-                            ],
+                            "children": ["To pick at"],
                             "id": "58f6335f-9947-4cc8-9733-7ce4a5e1a652",
                             "ord": "a1"
                           },
@@ -1178,9 +1100,7 @@
                             "kind": "element",
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
-                            "children": [
-                              "Cheese & charcuterie"
-                            ],
+                            "children": ["Cheese & charcuterie"],
                             "id": "685f294f-7a58-4e24-bc4d-45b4f9f92e69",
                             "ord": "a1"
                           },
@@ -1222,9 +1142,7 @@
                             "kind": "element",
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
-                            "children": [
-                              "Warm plates"
-                            ],
+                            "children": ["Warm plates"],
                             "id": "d62b975d-e3ff-46c2-823f-d6f248d2d6c4",
                             "ord": "a1"
                           },
@@ -1257,18 +1175,14 @@
                       {
                         "kind": "element",
                         "tag": "span",
-                        "children": [
-                          "See the full menu"
-                        ],
+                        "children": ["See the full menu"],
                         "id": "4e60c984-9757-4cb6-93ee-78a8da065a3a",
                         "ord": "a0"
                       },
                       {
                         "kind": "element",
                         "tag": "span",
-                        "children": [
-                          "→"
-                        ],
+                        "children": ["→"],
                         "id": "703878b2-99b7-4aea-8986-58df537bda1f",
                         "ord": "a1"
                       }
@@ -1315,9 +1229,7 @@
                         "kind": "element",
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
-                        "children": [
-                          "Grab a table, or the bar"
-                        ],
+                        "children": ["Grab a table, or the bar"],
                         "id": "3fef6c75-1c25-4b9a-ac88-aafad16e1433",
                         "ord": "a0"
                       },
@@ -1343,9 +1255,7 @@
                             "attrs": {
                               "href": "/book"
                             },
-                            "children": [
-                              "Reserve a table"
-                            ],
+                            "children": ["Reserve a table"],
                             "id": "926e9275-4382-4707-b164-fb4105f9a7e0",
                             "ord": "a0"
                           }
@@ -1384,9 +1294,7 @@
                         "kind": "element",
                         "tag": "h2",
                         "class": "text-2xl font-bold tracking-tight text-base-content @3xl:text-3xl",
-                        "children": [
-                          "Hours"
-                        ],
+                        "children": ["Hours"],
                         "id": "6e72515f-84ed-4a68-b526-d88160a2fd3f",
                         "ord": "a0"
                       },
@@ -1404,9 +1312,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-base font-semibold text-base-content",
-                                "children": [
-                                  "Tue – Thu"
-                                ],
+                                "children": ["Tue – Thu"],
                                 "id": "44ba17fc-3be1-498b-9ba7-205c0effd187",
                                 "ord": "a0"
                               },
@@ -1414,9 +1320,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-base text-secondary",
-                                "children": [
-                                  "17:00 – late"
-                                ],
+                                "children": ["17:00 – late"],
                                 "id": "8ac489eb-3a36-4bcd-896e-b1f41f907e88",
                                 "ord": "a1"
                               }
@@ -1433,9 +1337,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-base font-semibold text-base-content",
-                                "children": [
-                                  "Fri – Sat"
-                                ],
+                                "children": ["Fri – Sat"],
                                 "id": "3f29b4f4-042b-47f9-aee6-166231c9bab9",
                                 "ord": "a0"
                               },
@@ -1443,9 +1345,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-base text-secondary",
-                                "children": [
-                                  "17:00 – 01:00"
-                                ],
+                                "children": ["17:00 – 01:00"],
                                 "id": "b982615b-20aa-4e5b-9e5c-fe73503e2311",
                                 "ord": "a1"
                               }
@@ -1462,9 +1362,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-base font-semibold text-base-content",
-                                "children": [
-                                  "Sunday"
-                                ],
+                                "children": ["Sunday"],
                                 "id": "174b7d51-eae2-483f-a2f3-40ed2fe63802",
                                 "ord": "a0"
                               },
@@ -1472,9 +1370,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-base text-secondary",
-                                "children": [
-                                  "Private hire only"
-                                ],
+                                "children": ["Private hire only"],
                                 "id": "84eaffcd-ec60-44ba-a7d2-c814ecf93b35",
                                 "ord": "a1"
                               }
@@ -1491,9 +1387,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-base font-semibold text-base-content",
-                                "children": [
-                                  "Monday"
-                                ],
+                                "children": ["Monday"],
                                 "id": "b2e38b12-5749-48d6-b10f-f31eb96314f6",
                                 "ord": "a0"
                               },
@@ -1501,9 +1395,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-base text-secondary",
-                                "children": [
-                                  "Closed"
-                                ],
+                                "children": ["Closed"],
                                 "id": "eab32b60-71f6-4677-bfbd-7ebcc308875b",
                                 "ord": "a1"
                               }
@@ -1528,9 +1420,7 @@
                         "kind": "element",
                         "tag": "h2",
                         "class": "text-2xl font-bold tracking-tight text-base-content @3xl:text-3xl",
-                        "children": [
-                          "Find us"
-                        ],
+                        "children": ["Find us"],
                         "id": "72e063a4-6c2d-4d42-b31a-96122c8a6de1",
                         "ord": "a0"
                       },
@@ -1555,18 +1445,14 @@
                           {
                             "kind": "element",
                             "tag": "span",
-                            "children": [
-                              "Directions & contact"
-                            ],
+                            "children": ["Directions & contact"],
                             "id": "078f4ad4-64ca-467a-9205-cd47620e896e",
                             "ord": "a0"
                           },
                           {
                             "kind": "element",
                             "tag": "span",
-                            "children": [
-                              "→"
-                            ],
+                            "children": ["→"],
                             "id": "6813ee8a-3eb6-4f79-a02a-a82fb46562ed",
                             "ord": "a1"
                           }
@@ -1616,9 +1502,7 @@
                     "kind": "element",
                     "tag": "h1",
                     "class": "text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl",
-                    "children": [
-                      "The list"
-                    ],
+                    "children": ["The list"],
                     "id": "32b09a0d-ebb3-459e-92f7-97594e8259f0",
                     "ord": "a0"
                   },
@@ -1654,9 +1538,7 @@
                     "kind": "element",
                     "tag": "h2",
                     "class": "text-3xl font-bold tracking-tight text-base-content @2xl:text-4xl",
-                    "children": [
-                      "By the glass"
-                    ],
+                    "children": ["By the glass"],
                     "id": "9e70eee9-e47f-47e0-b8d4-2df5a0a2e438",
                     "ord": "a0"
                   },
@@ -1689,9 +1571,7 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
-                                "children": [
-                                  "Blanc de Faubourg · Loire"
-                                ],
+                                "children": ["Blanc de Faubourg · Loire"],
                                 "id": "beccab7b-22c6-4565-b9ca-d5b23e46a2c1",
                                 "ord": "a0"
                               },
@@ -1699,9 +1579,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-lg font-semibold text-primary",
-                                "children": [
-                                  "13"
-                                ],
+                                "children": ["13"],
                                 "id": "ba8deed4-91c5-40de-be06-31c0be34bd82",
                                 "ord": "a1"
                               }
@@ -1713,9 +1591,7 @@
                             "kind": "element",
                             "tag": "p",
                             "class": "text-base leading-relaxed text-secondary",
-                            "children": [
-                              "Chenin blanc, skin-contact, bone-dry and a little wild."
-                            ],
+                            "children": ["Chenin blanc, skin-contact, bone-dry and a little wild."],
                             "id": "9067d375-fe85-4892-a04b-fe1b00cc5845",
                             "ord": "a1"
                           }
@@ -1737,9 +1613,7 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
-                                "children": [
-                                  "Steinbruch Riesling · Mosel"
-                                ],
+                                "children": ["Steinbruch Riesling · Mosel"],
                                 "id": "c77e451b-ea25-4a74-94ff-98e7a84153f5",
                                 "ord": "a0"
                               },
@@ -1747,9 +1621,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-lg font-semibold text-primary",
-                                "children": [
-                                  "14"
-                                ],
+                                "children": ["14"],
                                 "id": "25329fe2-0e62-4c06-8549-47ea1a6bf726",
                                 "ord": "a1"
                               }
@@ -1761,9 +1633,7 @@
                             "kind": "element",
                             "tag": "p",
                             "class": "text-base leading-relaxed text-secondary",
-                            "children": [
-                              "Off-dry, slate and lime, endlessly drinkable."
-                            ],
+                            "children": ["Off-dry, slate and lime, endlessly drinkable."],
                             "id": "e0540552-2e9b-4a94-b6d5-29cff1810b30",
                             "ord": "a1"
                           }
@@ -1785,9 +1655,7 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
-                                "children": [
-                                  "Hirondelle Rouge · Beaujolais"
-                                ],
+                                "children": ["Hirondelle Rouge · Beaujolais"],
                                 "id": "07d749ec-216e-49ea-af31-a0b219ebb1ef",
                                 "ord": "a0"
                               },
@@ -1795,9 +1663,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-lg font-semibold text-primary",
-                                "children": [
-                                  "12"
-                                ],
+                                "children": ["12"],
                                 "id": "37f49813-d6ae-4b86-9afa-51c9c401fd7b",
                                 "ord": "a1"
                               }
@@ -1809,9 +1675,7 @@
                             "kind": "element",
                             "tag": "p",
                             "class": "text-base leading-relaxed text-secondary",
-                            "children": [
-                              "Gamay, served chilled, all crunchy red fruit."
-                            ],
+                            "children": ["Gamay, served chilled, all crunchy red fruit."],
                             "id": "41384315-be99-4e53-913a-4ca47025a4c4",
                             "ord": "a1"
                           }
@@ -1833,9 +1697,7 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
-                                "children": [
-                                  "Cascina Vecchia · Piedmont"
-                                ],
+                                "children": ["Cascina Vecchia · Piedmont"],
                                 "id": "5908b6c3-7ad5-4a56-b347-d8a3ecf88ffd",
                                 "ord": "a0"
                               },
@@ -1843,9 +1705,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-lg font-semibold text-primary",
-                                "children": [
-                                  "15"
-                                ],
+                                "children": ["15"],
                                 "id": "c3002943-cfd0-4551-ad13-5f9f2f6cee5b",
                                 "ord": "a1"
                               }
@@ -1857,9 +1717,7 @@
                             "kind": "element",
                             "tag": "p",
                             "class": "text-base leading-relaxed text-secondary",
-                            "children": [
-                              "Nebbiolo, light-pressed, rose petals and tar."
-                            ],
+                            "children": ["Nebbiolo, light-pressed, rose petals and tar."],
                             "id": "e692ce46-daf6-4c98-ada4-fcf4f1a13140",
                             "ord": "a1"
                           }
@@ -1881,9 +1739,7 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
-                                "children": [
-                                  "Poggio delle More · Etna"
-                                ],
+                                "children": ["Poggio delle More · Etna"],
                                 "id": "c80c3470-e9b3-4539-a771-b388334fe0e2",
                                 "ord": "a0"
                               },
@@ -1891,9 +1747,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-lg font-semibold text-primary",
-                                "children": [
-                                  "13"
-                                ],
+                                "children": ["13"],
                                 "id": "dd3492a1-abc1-4ee0-90d0-1b4bfcd75909",
                                 "ord": "a1"
                               }
@@ -1905,9 +1759,7 @@
                             "kind": "element",
                             "tag": "p",
                             "class": "text-base leading-relaxed text-secondary",
-                            "children": [
-                              "A pét-nat rosato — salty, foamy, joyful."
-                            ],
+                            "children": ["A pét-nat rosato — salty, foamy, joyful."],
                             "id": "47d1cedb-be40-4d07-9373-3ba828342f47",
                             "ord": "a1"
                           }
@@ -1929,9 +1781,7 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
-                                "children": [
-                                  "Clos du Héron · Jura"
-                                ],
+                                "children": ["Clos du Héron · Jura"],
                                 "id": "f444d890-6bf6-495b-adaa-4ab06c98f553",
                                 "ord": "a0"
                               },
@@ -1939,9 +1789,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-lg font-semibold text-primary",
-                                "children": [
-                                  "16"
-                                ],
+                                "children": ["16"],
                                 "id": "d9a8f837-0555-4cfa-ac5f-f6e349878fb3",
                                 "ord": "a1"
                               }
@@ -1953,9 +1801,7 @@
                             "kind": "element",
                             "tag": "p",
                             "class": "text-base leading-relaxed text-secondary",
-                            "children": [
-                              "Savagnin, oxidative, walnut and green apple."
-                            ],
+                            "children": ["Savagnin, oxidative, walnut and green apple."],
                             "id": "900ed339-c0e7-42d6-a67f-ab803ce7f292",
                             "ord": "a1"
                           }
@@ -1989,9 +1835,7 @@
                     "kind": "element",
                     "tag": "h2",
                     "class": "text-3xl font-bold tracking-tight text-base-content @2xl:text-4xl",
-                    "children": [
-                      "Small plates"
-                    ],
+                    "children": ["Small plates"],
                     "id": "299a0573-f043-4971-8b4f-8aeca16e818e",
                     "ord": "a0"
                   },
@@ -2024,9 +1868,7 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
-                                "children": [
-                                  "Marinated olives & almonds"
-                                ],
+                                "children": ["Marinated olives & almonds"],
                                 "id": "48aa3620-8954-4e45-8985-891eb3b131f7",
                                 "ord": "a0"
                               },
@@ -2034,9 +1876,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-lg font-semibold text-primary",
-                                "children": [
-                                  "7"
-                                ],
+                                "children": ["7"],
                                 "id": "31fa38f1-cc39-4794-82d2-25fad9838259",
                                 "ord": "a1"
                               }
@@ -2048,9 +1888,7 @@
                             "kind": "element",
                             "tag": "p",
                             "class": "text-base leading-relaxed text-secondary",
-                            "children": [
-                              "Warm, with orange peel and rosemary."
-                            ],
+                            "children": ["Warm, with orange peel and rosemary."],
                             "id": "de0e4c2f-9cbd-404c-9e21-1ef4594cf785",
                             "ord": "a1"
                           }
@@ -2072,9 +1910,7 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
-                                "children": [
-                                  "House pickles"
-                                ],
+                                "children": ["House pickles"],
                                 "id": "164b84b7-d4bf-420b-a34b-0d4994db3e2a",
                                 "ord": "a0"
                               },
@@ -2082,9 +1918,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-lg font-semibold text-primary",
-                                "children": [
-                                  "6"
-                                ],
+                                "children": ["6"],
                                 "id": "b808c45b-274e-4e11-9281-93f651ca06ec",
                                 "ord": "a1"
                               }
@@ -2096,9 +1930,7 @@
                             "kind": "element",
                             "tag": "p",
                             "class": "text-base leading-relaxed text-secondary",
-                            "children": [
-                              "Whatever we put up this month, in a little dish."
-                            ],
+                            "children": ["Whatever we put up this month, in a little dish."],
                             "id": "2aba2076-9ddc-4141-badc-ec757b0dd0e2",
                             "ord": "a1"
                           }
@@ -2120,9 +1952,7 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
-                                "children": [
-                                  "Cured trout, dill, crème fraîche"
-                                ],
+                                "children": ["Cured trout, dill, crème fraîche"],
                                 "id": "fada687f-f0a7-4cd0-89e2-b2e842cafa38",
                                 "ord": "a0"
                               },
@@ -2130,9 +1960,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-lg font-semibold text-primary",
-                                "children": [
-                                  "13"
-                                ],
+                                "children": ["13"],
                                 "id": "e4a6d720-e47e-4316-9388-fa50f161c4d3",
                                 "ord": "a1"
                               }
@@ -2144,9 +1972,7 @@
                             "kind": "element",
                             "tag": "p",
                             "class": "text-base leading-relaxed text-secondary",
-                            "children": [
-                              "House-cured, on grilled sourdough."
-                            ],
+                            "children": ["House-cured, on grilled sourdough."],
                             "id": "9e61b907-aa69-4bf6-b9c0-95afd0e2903c",
                             "ord": "a1"
                           }
@@ -2168,9 +1994,7 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
-                                "children": [
-                                  "White beans, confit garlic, olive oil"
-                                ],
+                                "children": ["White beans, confit garlic, olive oil"],
                                 "id": "b7629c46-b754-4a0d-b229-e4cc7f21b4d2",
                                 "ord": "a0"
                               },
@@ -2178,9 +2002,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-lg font-semibold text-primary",
-                                "children": [
-                                  "11"
-                                ],
+                                "children": ["11"],
                                 "id": "469f6416-21e3-4900-8dc5-882b355be3e9",
                                 "ord": "a1"
                               }
@@ -2192,9 +2014,7 @@
                             "kind": "element",
                             "tag": "p",
                             "class": "text-base leading-relaxed text-secondary",
-                            "children": [
-                              "Slow-cooked, brothy, with a heel of bread."
-                            ],
+                            "children": ["Slow-cooked, brothy, with a heel of bread."],
                             "id": "ce92c5ba-63fd-4988-8eba-85dfcd561cf5",
                             "ord": "a1"
                           }
@@ -2216,9 +2036,7 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
-                                "children": [
-                                  "Grilled greens, chilli, lemon"
-                                ],
+                                "children": ["Grilled greens, chilli, lemon"],
                                 "id": "49dfd3cf-5017-46d9-b231-c90707ff0728",
                                 "ord": "a0"
                               },
@@ -2226,9 +2044,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-lg font-semibold text-primary",
-                                "children": [
-                                  "10"
-                                ],
+                                "children": ["10"],
                                 "id": "408d8288-0bba-4942-89f8-92bfe5455850",
                                 "ord": "a1"
                               }
@@ -2240,9 +2056,7 @@
                             "kind": "element",
                             "tag": "p",
                             "class": "text-base leading-relaxed text-secondary",
-                            "children": [
-                              "Whatever’s good that week, charred over coals."
-                            ],
+                            "children": ["Whatever’s good that week, charred over coals."],
                             "id": "cc791e81-3f9c-4c75-9887-5f84649462ca",
                             "ord": "a1"
                           }
@@ -2264,9 +2078,7 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
-                                "children": [
-                                  "Anchovies & butter"
-                                ],
+                                "children": ["Anchovies & butter"],
                                 "id": "89af34ea-c591-4c83-8bdd-4d4a24ccde83",
                                 "ord": "a0"
                               },
@@ -2274,9 +2086,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-lg font-semibold text-primary",
-                                "children": [
-                                  "12"
-                                ],
+                                "children": ["12"],
                                 "id": "4e97bbc6-06ee-469f-8094-2be622781212",
                                 "ord": "a1"
                               }
@@ -2288,9 +2098,7 @@
                             "kind": "element",
                             "tag": "p",
                             "class": "text-base leading-relaxed text-secondary",
-                            "children": [
-                              "Good tinned Cantabrian anchovies, cold butter, toast."
-                            ],
+                            "children": ["Good tinned Cantabrian anchovies, cold butter, toast."],
                             "id": "e1d38cdb-83fe-4dd8-aec9-f7b87029109b",
                             "ord": "a1"
                           }
@@ -2324,9 +2132,7 @@
                     "kind": "element",
                     "tag": "h2",
                     "class": "text-3xl font-bold tracking-tight text-base-content @2xl:text-4xl",
-                    "children": [
-                      "Cheese & charcuterie"
-                    ],
+                    "children": ["Cheese & charcuterie"],
                     "id": "2bd5c000-d870-4714-be70-d726c51b4564",
                     "ord": "a0"
                   },
@@ -2359,9 +2165,7 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
-                                "children": [
-                                  "Three"
-                                ],
+                                "children": ["Three"],
                                 "id": "6e302c14-7eaf-45b1-9d0f-5d668967b105",
                                 "ord": "a0"
                               },
@@ -2369,9 +2173,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-lg font-semibold text-primary",
-                                "children": [
-                                  "16"
-                                ],
+                                "children": ["16"],
                                 "id": "e380fe51-3507-445c-a272-989b3ed81fe9",
                                 "ord": "a1"
                               }
@@ -2383,9 +2185,7 @@
                             "kind": "element",
                             "tag": "p",
                             "class": "text-base leading-relaxed text-secondary",
-                            "children": [
-                              "Three cuts or cheeses of your choosing."
-                            ],
+                            "children": ["Three cuts or cheeses of your choosing."],
                             "id": "a9fc6e5f-ee20-455f-a5ff-93203641e918",
                             "ord": "a1"
                           }
@@ -2407,9 +2207,7 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
-                                "children": [
-                                  "Five"
-                                ],
+                                "children": ["Five"],
                                 "id": "e330d3e8-5e5b-4b71-954e-38f5a345a2eb",
                                 "ord": "a0"
                               },
@@ -2417,9 +2215,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-lg font-semibold text-primary",
-                                "children": [
-                                  "24"
-                                ],
+                                "children": ["24"],
                                 "id": "33d30811-7759-4fa4-950a-9a0e967e2c17",
                                 "ord": "a1"
                               }
@@ -2431,9 +2227,7 @@
                             "kind": "element",
                             "tag": "p",
                             "class": "text-base leading-relaxed text-secondary",
-                            "children": [
-                              "Five — the sweet spot for two or three of you."
-                            ],
+                            "children": ["Five — the sweet spot for two or three of you."],
                             "id": "acc49bb8-dc69-4db8-b4b5-7dab0321d73b",
                             "ord": "a1"
                           }
@@ -2455,9 +2249,7 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
-                                "children": [
-                                  "Seven"
-                                ],
+                                "children": ["Seven"],
                                 "id": "61fc8da8-1c89-473e-97a5-b3eaa73ef561",
                                 "ord": "a0"
                               },
@@ -2465,9 +2257,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-lg font-semibold text-primary",
-                                "children": [
-                                  "32"
-                                ],
+                                "children": ["32"],
                                 "id": "32d57944-2676-4459-8831-d4e7eee19313",
                                 "ord": "a1"
                               }
@@ -2479,9 +2269,7 @@
                             "kind": "element",
                             "tag": "p",
                             "class": "text-base leading-relaxed text-secondary",
-                            "children": [
-                              "The full board, for the table."
-                            ],
+                            "children": ["The full board, for the table."],
                             "id": "e5332e67-6d41-45aa-ae91-6a469dee3363",
                             "ord": "a1"
                           }
@@ -2503,9 +2291,7 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
-                                "children": [
-                                  "Just the cheese"
-                                ],
+                                "children": ["Just the cheese"],
                                 "id": "244df3c7-6904-41a9-917c-be3cbf6c3aa0",
                                 "ord": "a0"
                               },
@@ -2513,9 +2299,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-lg font-semibold text-primary",
-                                "children": [
-                                  "15"
-                                ],
+                                "children": ["15"],
                                 "id": "0e0cd526-9a19-4ab9-9b2b-6e3d2175fbc9",
                                 "ord": "a1"
                               }
@@ -2527,9 +2311,7 @@
                             "kind": "element",
                             "tag": "p",
                             "class": "text-base leading-relaxed text-secondary",
-                            "children": [
-                              "A rotating three from a nearby dairy, with honeycomb."
-                            ],
+                            "children": ["A rotating three from a nearby dairy, with honeycomb."],
                             "id": "d8458cc9-2072-4171-b8f6-2f0b96dea683",
                             "ord": "a1"
                           }
@@ -2563,9 +2345,7 @@
                     "kind": "element",
                     "tag": "h2",
                     "class": "text-3xl font-bold tracking-tight text-base-content @2xl:text-4xl",
-                    "children": [
-                      "Larger plates"
-                    ],
+                    "children": ["Larger plates"],
                     "id": "2bd68b68-4117-4488-b166-b4d3f91c0857",
                     "ord": "a0"
                   },
@@ -2598,9 +2378,7 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
-                                "children": [
-                                  "Wood-grilled flatbread, ’nduja, honey"
-                                ],
+                                "children": ["Wood-grilled flatbread, ’nduja, honey"],
                                 "id": "2aea5b2e-b559-445f-9f47-e09887d666c7",
                                 "ord": "a0"
                               },
@@ -2608,9 +2386,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-lg font-semibold text-primary",
-                                "children": [
-                                  "15"
-                                ],
+                                "children": ["15"],
                                 "id": "ff3d444c-da47-4b5c-91db-fb6112eaed24",
                                 "ord": "a1"
                               }
@@ -2622,9 +2398,7 @@
                             "kind": "element",
                             "tag": "p",
                             "class": "text-base leading-relaxed text-secondary",
-                            "children": [
-                              "Blistered, spicy, sweet — the one everyone orders."
-                            ],
+                            "children": ["Blistered, spicy, sweet — the one everyone orders."],
                             "id": "4e87394e-4b7a-4a35-ad3e-d75523928a2f",
                             "ord": "a1"
                           }
@@ -2646,9 +2420,7 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
-                                "children": [
-                                  "Mussels, cider, garlic, cream"
-                                ],
+                                "children": ["Mussels, cider, garlic, cream"],
                                 "id": "fe51b496-c0c4-4394-9dd5-f90d1dac71b4",
                                 "ord": "a0"
                               },
@@ -2656,9 +2428,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-lg font-semibold text-primary",
-                                "children": [
-                                  "22"
-                                ],
+                                "children": ["22"],
                                 "id": "692f7c68-ef88-4792-bfde-df6cf4e1648f",
                                 "ord": "a1"
                               }
@@ -2670,9 +2440,7 @@
                             "kind": "element",
                             "tag": "p",
                             "class": "text-base leading-relaxed text-secondary",
-                            "children": [
-                              "A pot to share, with fries to mop it up."
-                            ],
+                            "children": ["A pot to share, with fries to mop it up."],
                             "id": "246c7729-a824-4cf7-8583-dfd85a61f724",
                             "ord": "a1"
                           }
@@ -2694,9 +2462,7 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
-                                "children": [
-                                  "Steak, anchovy butter, watercress"
-                                ],
+                                "children": ["Steak, anchovy butter, watercress"],
                                 "id": "a44d5f2a-1ad6-4fcc-9104-4613085b0d0b",
                                 "ord": "a0"
                               },
@@ -2704,9 +2470,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-lg font-semibold text-primary",
-                                "children": [
-                                  "28"
-                                ],
+                                "children": ["28"],
                                 "id": "df95765e-eb8c-4928-aea1-6ac69345024b",
                                 "ord": "a1"
                               }
@@ -2742,9 +2506,7 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
-                                "children": [
-                                  "Mushrooms on toast, aged parmesan"
-                                ],
+                                "children": ["Mushrooms on toast, aged parmesan"],
                                 "id": "2a3835f9-8546-47df-8ad2-eae1a0e0abf7",
                                 "ord": "a0"
                               },
@@ -2752,9 +2514,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-lg font-semibold text-primary",
-                                "children": [
-                                  "16"
-                                ],
+                                "children": ["16"],
                                 "id": "15256d54-df8c-4efb-ab8d-fa9fcd88c821",
                                 "ord": "a1"
                               }
@@ -2766,9 +2526,7 @@
                             "kind": "element",
                             "tag": "p",
                             "class": "text-base leading-relaxed text-secondary",
-                            "children": [
-                              "Seasonal mushrooms, garlic, a slick of butter."
-                            ],
+                            "children": ["Seasonal mushrooms, garlic, a slick of butter."],
                             "id": "c4a2f155-30b4-4ae4-9cee-a9f3542c7969",
                             "ord": "a1"
                           }
@@ -2802,9 +2560,7 @@
                     "kind": "element",
                     "tag": "h2",
                     "class": "text-3xl font-bold tracking-tight text-base-content @2xl:text-4xl",
-                    "children": [
-                      "By the bottle"
-                    ],
+                    "children": ["By the bottle"],
                     "id": "4740fcde-b9f1-47ab-b6c9-26801ae208c8",
                     "ord": "a0"
                   },
@@ -2837,9 +2593,7 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
-                                "children": [
-                                  "Faubourg “Vieilles Vignes” · Loire"
-                                ],
+                                "children": ["Faubourg “Vieilles Vignes” · Loire"],
                                 "id": "a047af9e-7c78-49fe-9d14-65951763781d",
                                 "ord": "a0"
                               },
@@ -2847,9 +2601,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-lg font-semibold text-primary",
-                                "children": [
-                                  "58"
-                                ],
+                                "children": ["58"],
                                 "id": "2b3e7ec6-5dbc-4c48-8a4b-1e4cbf29ea09",
                                 "ord": "a1"
                               }
@@ -2861,9 +2613,7 @@
                             "kind": "element",
                             "tag": "p",
                             "class": "text-base leading-relaxed text-secondary",
-                            "children": [
-                              "The old-vine chenin, worth the sit-down."
-                            ],
+                            "children": ["The old-vine chenin, worth the sit-down."],
                             "id": "ec568c9d-1c80-4933-9204-f5f29bef529c",
                             "ord": "a1"
                           }
@@ -2885,9 +2635,7 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
-                                "children": [
-                                  "Cascina Vecchia Barbaresco · Piedmont"
-                                ],
+                                "children": ["Cascina Vecchia Barbaresco · Piedmont"],
                                 "id": "07517fc3-9bed-4b14-93cd-c0d9a45fc702",
                                 "ord": "a0"
                               },
@@ -2895,9 +2643,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-lg font-semibold text-primary",
-                                "children": [
-                                  "92"
-                                ],
+                                "children": ["92"],
                                 "id": "4cc0a554-e22e-4e15-9b0d-65975ba462ef",
                                 "ord": "a1"
                               }
@@ -2909,9 +2655,7 @@
                             "kind": "element",
                             "tag": "p",
                             "class": "text-base leading-relaxed text-secondary",
-                            "children": [
-                              "Give it an hour and it gives everything back."
-                            ],
+                            "children": ["Give it an hour and it gives everything back."],
                             "id": "67ed4c25-b173-4a39-bbe9-074265852a14",
                             "ord": "a1"
                           }
@@ -2933,9 +2677,7 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
-                                "children": [
-                                  "Domaine du Héron · Jura"
-                                ],
+                                "children": ["Domaine du Héron · Jura"],
                                 "id": "6cce1fc8-9db7-4899-8abf-cf134e2f3fa5",
                                 "ord": "a0"
                               },
@@ -2943,9 +2685,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-lg font-semibold text-primary",
-                                "children": [
-                                  "64"
-                                ],
+                                "children": ["64"],
                                 "id": "8eb29974-18bf-4a08-9efe-c78cc686f363",
                                 "ord": "a1"
                               }
@@ -2957,9 +2697,7 @@
                             "kind": "element",
                             "tag": "p",
                             "class": "text-base leading-relaxed text-secondary",
-                            "children": [
-                              "Poulsard, pale and haunting, a table favourite."
-                            ],
+                            "children": ["Poulsard, pale and haunting, a table favourite."],
                             "id": "0190b24a-66a1-4f78-9b47-0b476f18237e",
                             "ord": "a1"
                           }
@@ -2981,9 +2719,7 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
-                                "children": [
-                                  "Steinbruch Grosses Gewächs · Mosel"
-                                ],
+                                "children": ["Steinbruch Grosses Gewächs · Mosel"],
                                 "id": "6ebc6f34-62e4-4381-8f88-716ff5be79b9",
                                 "ord": "a0"
                               },
@@ -2991,9 +2727,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-lg font-semibold text-primary",
-                                "children": [
-                                  "78"
-                                ],
+                                "children": ["78"],
                                 "id": "d2222bbc-72d7-41cd-b74f-13b02e88eb97",
                                 "ord": "a1"
                               }
@@ -3005,9 +2739,7 @@
                             "kind": "element",
                             "tag": "p",
                             "class": "text-base leading-relaxed text-secondary",
-                            "children": [
-                              "Dry riesling with years ahead of it."
-                            ],
+                            "children": ["Dry riesling with years ahead of it."],
                             "id": "66aeb1ae-e7a8-47b8-a86e-6637c562fd07",
                             "ord": "a1"
                           }
@@ -3029,9 +2761,7 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
-                                "children": [
-                                  "House pét-nat, magnum"
-                                ],
+                                "children": ["House pét-nat, magnum"],
                                 "id": "50449b49-4310-4e81-ac44-c80256c254b2",
                                 "ord": "a0"
                               },
@@ -3039,9 +2769,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-lg font-semibold text-primary",
-                                "children": [
-                                  "110"
-                                ],
+                                "children": ["110"],
                                 "id": "09679aeb-f47f-4a94-b66c-5d89f9308bf6",
                                 "ord": "a1"
                               }
@@ -3053,9 +2781,7 @@
                             "kind": "element",
                             "tag": "p",
                             "class": "text-base leading-relaxed text-secondary",
-                            "children": [
-                              "For a crowd — pops loud, drinks easy."
-                            ],
+                            "children": ["For a crowd — pops loud, drinks easy."],
                             "id": "b2ff5f86-d5fa-4958-a72c-25755cad6e01",
                             "ord": "a1"
                           }
@@ -3105,9 +2831,7 @@
                     "kind": "element",
                     "tag": "h1",
                     "class": "text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl",
-                    "children": [
-                      "Reserve"
-                    ],
+                    "children": ["Reserve"],
                     "id": "33720458-a3e6-4bd2-bdbc-c82f5d6fbe5a",
                     "ord": "a0"
                   },
@@ -3156,9 +2880,7 @@
                         "kind": "element",
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
-                        "children": [
-                          "Good to know"
-                        ],
+                        "children": ["Good to know"],
                         "id": "65ceae8a-6a3f-4d91-b19f-2d04f41f30d6",
                         "ord": "a0"
                       },
@@ -3190,9 +2912,7 @@
                             "kind": "element",
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
-                            "children": [
-                              "Table reservation"
-                            ],
+                            "children": ["Table reservation"],
                             "id": "997f6064-f723-4cc0-b0a1-655ec94383f8",
                             "ord": "a0"
                           },
@@ -3229,9 +2949,7 @@
                             "kind": "element",
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
-                            "children": [
-                              "Bar seats"
-                            ],
+                            "children": ["Bar seats"],
                             "id": "e084eb69-754a-4a58-ab30-078921091e77",
                             "ord": "a0"
                           },
@@ -3301,9 +3019,7 @@
                     "kind": "element",
                     "tag": "h1",
                     "class": "text-5xl font-bold tracking-tight text-base-content @2xl:text-6xl",
-                    "children": [
-                      "About Decant"
-                    ],
+                    "children": ["About Decant"],
                     "id": "920703bb-5e96-4650-bf02-1f58ece82c26",
                     "ord": "a0"
                   },
@@ -3380,9 +3096,7 @@
                         "kind": "element",
                         "tag": "h1",
                         "class": "text-4xl font-bold tracking-tight text-base-content @3xl:text-5xl",
-                        "children": [
-                          "Get in touch"
-                        ],
+                        "children": ["Get in touch"],
                         "id": "bef07a86-a3ca-4057-ad59-470093c0bae6",
                         "ord": "a0"
                       },
@@ -3409,9 +3123,7 @@
                         "kind": "element",
                         "tag": "span",
                         "class": "text-base font-medium text-base-content",
-                        "children": [
-                          "Call us"
-                        ],
+                        "children": ["Call us"],
                         "id": "d1e5f57c-97ca-4ddf-83b6-f841c8c81949",
                         "ord": "a0"
                       },
@@ -3423,9 +3135,7 @@
                           {
                             "kind": "element",
                             "tag": "span",
-                            "children": [
-                              "(555) 123-4567"
-                            ],
+                            "children": ["(555) 123-4567"],
                             "data": {
                               "kind": "value",
                               "ref": "site.identity.phone"
@@ -3459,9 +3169,7 @@
                         "kind": "element",
                         "tag": "span",
                         "class": "text-base font-medium text-base-content",
-                        "children": [
-                          "Email us"
-                        ],
+                        "children": ["Email us"],
                         "id": "26055b4b-91c1-4915-aa55-8bf1304b814c",
                         "ord": "a0"
                       },
@@ -3473,9 +3181,7 @@
                           {
                             "kind": "element",
                             "tag": "span",
-                            "children": [
-                              "hello@yourbusiness.com"
-                            ],
+                            "children": ["hello@yourbusiness.com"],
                             "data": {
                               "kind": "value",
                               "ref": "site.identity.email"
@@ -3514,9 +3220,7 @@
                             "kind": "element",
                             "tag": "span",
                             "class": "text-base font-medium text-base-content",
-                            "children": [
-                              "Your name"
-                            ],
+                            "children": ["Your name"],
                             "id": "4b65a639-5ab2-4cf2-bcb1-055b4df4740a",
                             "ord": "a0"
                           },
@@ -3545,9 +3249,7 @@
                             "kind": "element",
                             "tag": "span",
                             "class": "text-base font-medium text-base-content",
-                            "children": [
-                              "Email address"
-                            ],
+                            "children": ["Email address"],
                             "id": "d4a6c8e3-5d14-4de2-9a58-729113587c66",
                             "ord": "a0"
                           },
@@ -3576,9 +3278,7 @@
                             "kind": "element",
                             "tag": "span",
                             "class": "text-base font-medium text-base-content",
-                            "children": [
-                              "Phone number"
-                            ],
+                            "children": ["Phone number"],
                             "id": "64f42e37-3495-42eb-8440-bc3170ed9934",
                             "ord": "a0"
                           },
@@ -3606,9 +3306,7 @@
                             "kind": "element",
                             "tag": "span",
                             "class": "text-base font-medium text-base-content",
-                            "children": [
-                              "How can we help?"
-                            ],
+                            "children": ["How can we help?"],
                             "id": "906afe52-5b8b-4bf6-a665-70bb9eaf26b1",
                             "ord": "a0"
                           },
@@ -3638,9 +3336,7 @@
                             "attrs": {
                               "type": "submit"
                             },
-                            "children": [
-                              "Send my request"
-                            ],
+                            "children": ["Send my request"],
                             "id": "7d7c0b1d-2b21-4faa-91f1-452a150d5ae6",
                             "ord": "a0"
                           }
@@ -3681,9 +3377,7 @@
                     "kind": "element",
                     "tag": "h2",
                     "class": "text-5xl font-bold tracking-tight text-base-content @2xl:text-6xl",
-                    "children": [
-                      "Visit Decant"
-                    ],
+                    "children": ["Visit Decant"],
                     "id": "0216a068-7e7f-4b83-b2b9-34849f44d4b2",
                     "ord": "a0"
                   },
@@ -3709,9 +3403,7 @@
                         "attrs": {
                           "href": "/book"
                         },
-                        "children": [
-                          "Reserve a table"
-                        ],
+                        "children": ["Reserve a table"],
                         "id": "89bf9264-45e8-4ee6-9221-134528bbf5f5",
                         "ord": "a0"
                       },
@@ -3722,9 +3414,7 @@
                         "attrs": {
                           "href": "mailto:hello@decant.example"
                         },
-                        "children": [
-                          "Email us"
-                        ],
+                        "children": ["Email us"],
                         "id": "3bcf6c5c-0bc7-4bbd-832a-fb3a3ba80e29",
                         "ord": "a1"
                       }

@@ -43,19 +43,15 @@ into your app.
 Example:
 
 ```jsx
-import { PigglesCharacter } from "@/lib/piggles/PigglesCharacter";
+import { PigglesCharacter } from '@/lib/piggles/PigglesCharacter';
 
-<PigglesCharacter
-  id="thinking"
-  className="w-72 h-auto"
-  alt=""
-/>
+<PigglesCharacter id="thinking" className="h-auto w-72" alt="" />;
 ```
 
 Or choose by intent:
 
 ```js
-const mascot = getPigglesByIntent("bookings");
+const mascot = getPigglesByIntent('bookings');
 ```
 
 ## Dynamic use
@@ -65,13 +61,13 @@ The site should select semantic character IDs rather than filenames.
 Good:
 
 ```js
-character="calendar"
+character = 'calendar';
 ```
 
 Bad:
 
 ```js
-src="/images/pig3.webp"
+src = '/images/pig3.webp';
 ```
 
 That lets artwork change without rewriting product code.

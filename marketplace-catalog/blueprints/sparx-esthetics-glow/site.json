@@ -37,9 +37,7 @@
                       "attrs": {
                         "href": "/book"
                       },
-                      "children": [
-                        "Book"
-                      ],
+                      "children": ["Book"],
                       "slot": {
                         "name": "link1",
                         "type": "link",
@@ -55,9 +53,7 @@
                       "attrs": {
                         "href": "/about"
                       },
-                      "children": [
-                        "About"
-                      ],
+                      "children": ["About"],
                       "slot": {
                         "name": "link2",
                         "type": "link",
@@ -73,9 +69,7 @@
                       "attrs": {
                         "href": "/contact"
                       },
-                      "children": [
-                        "Contact"
-                      ],
+                      "children": ["Contact"],
                       "slot": {
                         "name": "link3",
                         "type": "link",
@@ -100,9 +94,7 @@
                       "attrs": {
                         "href": "/account/login"
                       },
-                      "children": [
-                        "Sign in"
-                      ],
+                      "children": ["Sign in"],
                       "slot": {
                         "name": "secondary",
                         "type": "link",
@@ -180,9 +172,7 @@
                   "attrs": {
                     "href": "/book"
                   },
-                  "children": [
-                    "Book"
-                  ],
+                  "children": ["Book"],
                   "slot": {
                     "name": "link1",
                     "type": "link",
@@ -198,9 +188,7 @@
                   "attrs": {
                     "href": "/about"
                   },
-                  "children": [
-                    "About"
-                  ],
+                  "children": ["About"],
                   "slot": {
                     "name": "link2",
                     "type": "link",
@@ -216,9 +204,7 @@
                   "attrs": {
                     "href": "/contact"
                   },
-                  "children": [
-                    "Contact"
-                  ],
+                  "children": ["Contact"],
                   "slot": {
                     "name": "link3",
                     "type": "link",
@@ -321,9 +307,7 @@
                           "kind": "element",
                           "tag": "p",
                           "class": "max-w-xs text-sm text-base-content",
-                          "children": [
-                            "Everything you publish, in one place."
-                          ],
+                          "children": ["Everything you publish, in one place."],
                           "slot": {
                             "name": "blurb",
                             "type": "text",
@@ -356,9 +340,7 @@
                           "kind": "element",
                           "tag": "p",
                           "class": "text-sm font-semibold text-base-content",
-                          "children": [
-                            "Explore"
-                          ],
+                          "children": ["Explore"],
                           "slot": {
                             "name": "col1",
                             "type": "text",
@@ -386,9 +368,7 @@
                                   "attrs": {
                                     "href": "/book"
                                   },
-                                  "children": [
-                                    "Book"
-                                  ],
+                                  "children": ["Book"],
                                   "slot": {
                                     "name": "link1",
                                     "type": "link",
@@ -412,9 +392,7 @@
                                   "attrs": {
                                     "href": "/about"
                                   },
-                                  "children": [
-                                    "About"
-                                  ],
+                                  "children": ["About"],
                                   "slot": {
                                     "name": "link2",
                                     "type": "link",
@@ -438,9 +416,7 @@
                                   "attrs": {
                                     "href": "/contact"
                                   },
-                                  "children": [
-                                    "Contact"
-                                  ],
+                                  "children": ["Contact"],
                                   "slot": {
                                     "name": "link3",
                                     "type": "link",
@@ -464,9 +440,7 @@
                                   "attrs": {
                                     "href": "/search"
                                   },
-                                  "children": [
-                                    "Search"
-                                  ],
+                                  "children": ["Search"],
                                   "slot": {
                                     "name": "link4",
                                     "type": "link",
@@ -559,9 +533,7 @@
                           "kind": "element",
                           "tag": "span",
                           "class": "font-medium",
-                          "children": [
-                            "Your site"
-                          ],
+                          "children": ["Your site"],
                           "data": {
                             "kind": "value",
                             "ref": "site.identity.name"
@@ -643,9 +615,7 @@
                     "kind": "element",
                     "tag": "h1",
                     "class": "max-w-3xl text-4xl font-bold leading-tight tracking-tight @2xl:text-5xl @3xl:text-6xl",
-                    "children": [
-                      "Glow on your lunch break"
-                    ],
+                    "children": ["Glow on your lunch break"],
                     "id": "129d7b7f-803a-49fa-a3dc-85fa0c96f35f",
                     "ord": "a0"
                   },
@@ -671,9 +641,7 @@
                         "attrs": {
                           "href": "/book"
                         },
-                        "children": [
-                          "Book a glow"
-                        ],
+                        "children": ["Book a glow"],
                         "id": "f5e200c3-297d-4a58-84e0-f679afc772be",
                         "ord": "a0"
                       },
@@ -684,9 +652,7 @@
                         "attrs": {
                           "href": "/book"
                         },
-                        "children": [
-                          "See the menu"
-                        ],
+                        "children": ["See the menu"],
                         "id": "6bac54e1-5783-4e34-af7a-e4ebb561102b",
                         "ord": "a1"
                       }
@@ -726,9 +692,7 @@
                             "kind": "element",
                             "tag": "h2",
                             "class": "text-xl font-semibold text-base-content",
-                            "children": [
-                              "Express, walk-in-friendly facials"
-                            ],
+                            "children": ["Express, walk-in-friendly facials"],
                             "id": "44a7b1ed-e382-4b14-909b-b23f83a3038a",
                             "ord": "a0"
                           },
@@ -755,9 +719,7 @@
                             "kind": "element",
                             "tag": "h2",
                             "class": "text-xl font-semibold text-base-content",
-                            "children": [
-                              "Glow memberships"
-                            ],
+                            "children": ["Glow memberships"],
                             "id": "c53d6ba4-fbaf-4c5c-8711-9efceffa55a9",
                             "ord": "a0"
                           },
@@ -784,9 +746,7 @@
                             "kind": "element",
                             "tag": "h2",
                             "class": "text-xl font-semibold text-base-content",
-                            "children": [
-                              "Fun little add-ons"
-                            ],
+                            "children": ["Fun little add-ons"],
                             "id": "17cb751c-173c-4334-a1d9-9dbda6bc6dbb",
                             "ord": "a0"
                           },
@@ -835,9 +795,7 @@
                         "kind": "element",
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
-                        "children": [
-                          "The glow menu"
-                        ],
+                        "children": ["The glow menu"],
                         "id": "5d3ea4a3-23af-470f-9486-f0db04d39e3d",
                         "ord": "a0"
                       },
@@ -877,9 +835,7 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
-                                "children": [
-                                  "Express glow facial"
-                                ],
+                                "children": ["Express glow facial"],
                                 "id": "816321e7-fece-4a1c-9493-1791cc3a8832",
                                 "ord": "a0"
                               },
@@ -887,9 +843,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-bold text-base-content",
-                                "children": [
-                                  "$45"
-                                ],
+                                "children": ["$45"],
                                 "id": "84a30447-dd93-40ec-a5a9-cb448a72b7ae",
                                 "ord": "a1"
                               }
@@ -901,9 +855,7 @@
                             "kind": "element",
                             "tag": "p",
                             "class": "text-sm font-medium uppercase tracking-wide text-secondary",
-                            "children": [
-                              "30 min"
-                            ],
+                            "children": ["30 min"],
                             "id": "45e0a207-05d5-49b2-8dbb-06e967059c23",
                             "ord": "a1"
                           },
@@ -911,9 +863,7 @@
                             "kind": "element",
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
-                            "children": [
-                              "A dewy glow on your lunch break."
-                            ],
+                            "children": ["A dewy glow on your lunch break."],
                             "id": "3ca52595-760b-40d7-ba80-d7a84dd42a1a",
                             "ord": "a2"
                           }
@@ -938,9 +888,7 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
-                                "children": [
-                                  "Signature glow facial"
-                                ],
+                                "children": ["Signature glow facial"],
                                 "id": "fee17493-7180-4845-96a7-70e50faf96e2",
                                 "ord": "a0"
                               },
@@ -948,9 +896,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-bold text-base-content",
-                                "children": [
-                                  "$75"
-                                ],
+                                "children": ["$75"],
                                 "id": "b7d26bec-a2f8-4520-9730-1cb7adc5480a",
                                 "ord": "a1"
                               }
@@ -962,9 +908,7 @@
                             "kind": "element",
                             "tag": "p",
                             "class": "text-sm font-medium uppercase tracking-wide text-secondary",
-                            "children": [
-                              "45 min"
-                            ],
+                            "children": ["45 min"],
                             "id": "c01c739f-731c-4656-a365-bdba0baffdc2",
                             "ord": "a1"
                           },
@@ -972,9 +916,7 @@
                             "kind": "element",
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
-                            "children": [
-                              "The full feel-good ritual."
-                            ],
+                            "children": ["The full feel-good ritual."],
                             "id": "b9755032-9572-45a7-a431-8daa8c0c5c07",
                             "ord": "a2"
                           }
@@ -999,9 +941,7 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
-                                "children": [
-                                  "Dewy hydration facial"
-                                ],
+                                "children": ["Dewy hydration facial"],
                                 "id": "bd1d263d-8021-44b8-9e61-17b4a1cea5bf",
                                 "ord": "a0"
                               },
@@ -1009,9 +949,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-bold text-base-content",
-                                "children": [
-                                  "$70"
-                                ],
+                                "children": ["$70"],
                                 "id": "8a3b75c6-8dde-4a09-8a41-d384d7c227e1",
                                 "ord": "a1"
                               }
@@ -1023,9 +961,7 @@
                             "kind": "element",
                             "tag": "p",
                             "class": "text-sm font-medium uppercase tracking-wide text-secondary",
-                            "children": [
-                              "45 min"
-                            ],
+                            "children": ["45 min"],
                             "id": "9a41edee-f3fb-4335-9a75-3c93fc7912d3",
                             "ord": "a1"
                           },
@@ -1033,9 +969,7 @@
                             "kind": "element",
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
-                            "children": [
-                              "Layers of plump, bouncy hydration."
-                            ],
+                            "children": ["Layers of plump, bouncy hydration."],
                             "id": "9a0493e6-4a10-4e86-b726-2f3f35940b73",
                             "ord": "a2"
                           }
@@ -1060,9 +994,7 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
-                                "children": [
-                                  "LED light add-on"
-                                ],
+                                "children": ["LED light add-on"],
                                 "id": "00c02c5b-6921-44f0-8749-b4bcc07eb592",
                                 "ord": "a0"
                               },
@@ -1070,9 +1002,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-bold text-base-content",
-                                "children": [
-                                  "$25"
-                                ],
+                                "children": ["$25"],
                                 "id": "d9091525-e23e-4428-9135-d77206d4a0c3",
                                 "ord": "a1"
                               }
@@ -1084,9 +1014,7 @@
                             "kind": "element",
                             "tag": "p",
                             "class": "text-sm font-medium uppercase tracking-wide text-secondary",
-                            "children": [
-                              "15 min"
-                            ],
+                            "children": ["15 min"],
                             "id": "d27f764a-a08a-4b0c-95b2-db2d402c0d3b",
                             "ord": "a1"
                           },
@@ -1094,9 +1022,7 @@
                             "kind": "element",
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
-                            "children": [
-                              "Ten minutes under the glow lights."
-                            ],
+                            "children": ["Ten minutes under the glow lights."],
                             "id": "fff56386-e72f-410c-8bf6-227579f43ba3",
                             "ord": "a2"
                           }
@@ -1120,9 +1046,7 @@
                         "attrs": {
                           "href": "/book"
                         },
-                        "children": [
-                          "See everything & book"
-                        ],
+                        "children": ["See everything & book"],
                         "id": "64b037b2-967f-4b52-be80-0095e2928b1d",
                         "ord": "a0"
                       }
@@ -1169,9 +1093,7 @@
                         "kind": "element",
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
-                        "children": [
-                          "Glow on your schedule"
-                        ],
+                        "children": ["Glow on your schedule"],
                         "id": "5c9a624a-3e13-4353-ade1-ba60f00311b1",
                         "ord": "a0"
                       },
@@ -1207,9 +1129,7 @@
                             "attrs": {
                               "href": "/book"
                             },
-                            "children": [
-                              "Chat memberships"
-                            ],
+                            "children": ["Chat memberships"],
                             "id": "7322e56b-c6a5-4e43-a724-3ce8fa418bc1",
                             "ord": "a0"
                           }
@@ -1248,9 +1168,7 @@
                         "kind": "element",
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
-                        "children": [
-                          "Your glow team"
-                        ],
+                        "children": ["Your glow team"],
                         "id": "ab09c6fd-b910-4f99-a9c4-52186f92039a",
                         "ord": "a0"
                       },
@@ -1299,9 +1217,7 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
-                                "children": [
-                                  "Mila Fox"
-                                ],
+                                "children": ["Mila Fox"],
                                 "id": "ccf0de8e-9599-4c59-95a6-d538eb53bd35",
                                 "ord": "a0"
                               },
@@ -1309,9 +1225,7 @@
                                 "kind": "element",
                                 "tag": "p",
                                 "class": "text-sm font-medium uppercase tracking-wide text-secondary",
-                                "children": [
-                                  "Esthetician · Express & LED"
-                                ],
+                                "children": ["Esthetician · Express & LED"],
                                 "id": "6d74c49c-b649-49a7-b5ba-d86406bfbe78",
                                 "ord": "a1"
                               },
@@ -1359,9 +1273,7 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
-                                "children": [
-                                  "Priya Anand"
-                                ],
+                                "children": ["Priya Anand"],
                                 "id": "41675f5e-6e8b-4d74-b10e-f11775fca8cc",
                                 "ord": "a0"
                               },
@@ -1369,9 +1281,7 @@
                                 "kind": "element",
                                 "tag": "p",
                                 "class": "text-sm font-medium uppercase tracking-wide text-secondary",
-                                "children": [
-                                  "Esthetician · Gua sha"
-                                ],
+                                "children": ["Esthetician · Gua sha"],
                                 "id": "21d924e7-ab9f-4ea4-bc94-7d2af10ade8f",
                                 "ord": "a1"
                               },
@@ -1379,9 +1289,7 @@
                                 "kind": "element",
                                 "tag": "p",
                                 "class": "text-base leading-relaxed text-base-content",
-                                "children": [
-                                  "Sculpting gua sha and a calming, feel-good touch."
-                                ],
+                                "children": ["Sculpting gua sha and a calming, feel-good touch."],
                                 "id": "d8f6872f-a01c-42b0-824b-8a10345efd5f",
                                 "ord": "a2"
                               }
@@ -1419,9 +1327,7 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
-                                "children": [
-                                  "Jade Nguyen"
-                                ],
+                                "children": ["Jade Nguyen"],
                                 "id": "72ffd525-b12d-40fc-aa03-e8a52023337a",
                                 "ord": "a0"
                               },
@@ -1429,9 +1335,7 @@
                                 "kind": "element",
                                 "tag": "p",
                                 "class": "text-sm font-medium uppercase tracking-wide text-secondary",
-                                "children": [
-                                  "Esthetician · Add-ons"
-                                ],
+                                "children": ["Esthetician · Add-ons"],
                                 "id": "addeb0a9-95f9-4673-87bb-9ca671fc0c7c",
                                 "ord": "a1"
                               },
@@ -1439,9 +1343,7 @@
                                 "kind": "element",
                                 "tag": "p",
                                 "class": "text-base leading-relaxed text-base-content",
-                                "children": [
-                                  "The add-on queen — she’ll send you out extra dewy."
-                                ],
+                                "children": ["The add-on queen — she’ll send you out extra dewy."],
                                 "id": "d227d00a-2c58-43d4-bc5e-9746bec6b5f3",
                                 "ord": "a2"
                               }
@@ -1489,9 +1391,7 @@
                     "kind": "element",
                     "tag": "p",
                     "class": "text-sm font-semibold uppercase tracking-wide opacity-80",
-                    "children": [
-                      "Sam, member since 2024"
-                    ],
+                    "children": ["Sam, member since 2024"],
                     "id": "049d2307-1f19-497e-aa26-27e55bd67deb",
                     "ord": "a1"
                   }
@@ -1517,9 +1417,7 @@
                     "kind": "element",
                     "tag": "h2",
                     "class": "text-3xl font-bold tracking-tight @3xl:text-4xl",
-                    "children": [
-                      "Ready to glow?"
-                    ],
+                    "children": ["Ready to glow?"],
                     "id": "50ec7f21-4aec-4939-8cd1-810cc8d81a0f",
                     "ord": "a0"
                   },
@@ -1540,9 +1438,7 @@
                     "attrs": {
                       "href": "/book"
                     },
-                    "children": [
-                      "Book a glow"
-                    ],
+                    "children": ["Book a glow"],
                     "id": "428d9fb8-7ffc-45c5-aef8-0a551281bf39",
                     "ord": "a2"
                   }
@@ -1603,9 +1499,7 @@
                     "kind": "element",
                     "tag": "h1",
                     "class": "max-w-3xl text-4xl font-bold leading-tight tracking-tight @2xl:text-5xl @3xl:text-6xl",
-                    "children": [
-                      "Book a glow"
-                    ],
+                    "children": ["Book a glow"],
                     "id": "b9fa93d3-d0f8-4bd3-9528-662a6073ca9c",
                     "ord": "a0"
                   },
@@ -1631,9 +1525,7 @@
                         "attrs": {
                           "href": "/book"
                         },
-                        "children": [
-                          "See the menu below"
-                        ],
+                        "children": ["See the menu below"],
                         "id": "95f20385-b84c-459e-9f2e-f86a9b39965c",
                         "ord": "a0"
                       }
@@ -1676,9 +1568,7 @@
                         "kind": "element",
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
-                        "children": [
-                          "Good to know"
-                        ],
+                        "children": ["Good to know"],
                         "id": "d87ebc49-3746-4980-90ea-6ae4ac60c1a0",
                         "ord": "a0"
                       },
@@ -1710,9 +1600,7 @@
                             "kind": "element",
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
-                            "children": [
-                              "Standard booking"
-                            ],
+                            "children": ["Standard booking"],
                             "id": "b6276552-4921-49c5-aeff-b0ee73b4b87a",
                             "ord": "a0"
                           },
@@ -1749,9 +1637,7 @@
                             "kind": "element",
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
-                            "children": [
-                              "No-show policy"
-                            ],
+                            "children": ["No-show policy"],
                             "id": "8a2536b6-ff4b-4555-9a42-bb3a32a97590",
                             "ord": "a0"
                           },
@@ -1838,9 +1724,7 @@
                         "kind": "element",
                         "tag": "h1",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
-                        "children": [
-                          "About Dewy Skin Bar"
-                        ],
+                        "children": ["About Dewy Skin Bar"],
                         "id": "66320ba6-67c8-4b50-8b7c-b19e8cf28a6e",
                         "ord": "a0"
                       },
@@ -1876,9 +1760,7 @@
                             "attrs": {
                               "href": "/book"
                             },
-                            "children": [
-                              "Book a glow"
-                            ],
+                            "children": ["Book a glow"],
                             "id": "ff481a81-e35e-4ec7-8956-7ebf4aa5d458",
                             "ord": "a0"
                           }
@@ -1912,9 +1794,7 @@
                     "kind": "element",
                     "tag": "h2",
                     "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
-                    "children": [
-                      "How the glow bar works"
-                    ],
+                    "children": ["How the glow bar works"],
                     "id": "2ec983f3-2147-4420-98b6-d2749de5fc46",
                     "ord": "a0"
                   },
@@ -1932,9 +1812,7 @@
                             "kind": "element",
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
-                            "children": [
-                              "Quick by design"
-                            ],
+                            "children": ["Quick by design"],
                             "id": "535cc64c-f33e-4378-b228-d8f854b628d4",
                             "ord": "a0"
                           },
@@ -1961,9 +1839,7 @@
                             "kind": "element",
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
-                            "children": [
-                              "Skin you’ll actually see"
-                            ],
+                            "children": ["Skin you’ll actually see"],
                             "id": "3c3d74c5-01fa-4656-be95-dc4d6788fb38",
                             "ord": "a0"
                           },
@@ -1990,9 +1866,7 @@
                             "kind": "element",
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
-                            "children": [
-                              "Keep it going"
-                            ],
+                            "children": ["Keep it going"],
                             "id": "7263e1a6-a29a-474b-ab30-ea1a3b6f0aa9",
                             "ord": "a0"
                           },
@@ -2057,9 +1931,7 @@
                         "kind": "element",
                         "tag": "h1",
                         "class": "text-4xl font-bold tracking-tight text-base-content @3xl:text-5xl",
-                        "children": [
-                          "Get in touch"
-                        ],
+                        "children": ["Get in touch"],
                         "id": "6eb32739-7748-4fe4-9859-b24d4fa672c9",
                         "ord": "a0"
                       },
@@ -2086,9 +1958,7 @@
                         "kind": "element",
                         "tag": "span",
                         "class": "text-base font-medium text-base-content",
-                        "children": [
-                          "Call us"
-                        ],
+                        "children": ["Call us"],
                         "id": "785f6e43-596d-4e56-bb8e-c2f6660447d8",
                         "ord": "a0"
                       },
@@ -2100,9 +1970,7 @@
                           {
                             "kind": "element",
                             "tag": "span",
-                            "children": [
-                              "(555) 123-4567"
-                            ],
+                            "children": ["(555) 123-4567"],
                             "data": {
                               "kind": "value",
                               "ref": "site.identity.phone"
@@ -2136,9 +2004,7 @@
                         "kind": "element",
                         "tag": "span",
                         "class": "text-base font-medium text-base-content",
-                        "children": [
-                          "Email us"
-                        ],
+                        "children": ["Email us"],
                         "id": "d2a65aaa-d5af-4870-879e-9b3666ac9925",
                         "ord": "a0"
                       },
@@ -2150,9 +2016,7 @@
                           {
                             "kind": "element",
                             "tag": "span",
-                            "children": [
-                              "hello@yourbusiness.com"
-                            ],
+                            "children": ["hello@yourbusiness.com"],
                             "data": {
                               "kind": "value",
                               "ref": "site.identity.email"
@@ -2191,9 +2055,7 @@
                             "kind": "element",
                             "tag": "span",
                             "class": "text-base font-medium text-base-content",
-                            "children": [
-                              "Your name"
-                            ],
+                            "children": ["Your name"],
                             "id": "29d468bc-35ca-4262-9a8d-98984833019b",
                             "ord": "a0"
                           },
@@ -2222,9 +2084,7 @@
                             "kind": "element",
                             "tag": "span",
                             "class": "text-base font-medium text-base-content",
-                            "children": [
-                              "Email address"
-                            ],
+                            "children": ["Email address"],
                             "id": "0b2c57a0-107a-4ef5-9fdc-529ea66f68b4",
                             "ord": "a0"
                           },
@@ -2253,9 +2113,7 @@
                             "kind": "element",
                             "tag": "span",
                             "class": "text-base font-medium text-base-content",
-                            "children": [
-                              "Phone number"
-                            ],
+                            "children": ["Phone number"],
                             "id": "8c570587-aa41-48fa-bfbf-aca8848c0307",
                             "ord": "a0"
                           },
@@ -2283,9 +2141,7 @@
                             "kind": "element",
                             "tag": "span",
                             "class": "text-base font-medium text-base-content",
-                            "children": [
-                              "How can we help?"
-                            ],
+                            "children": ["How can we help?"],
                             "id": "70ff36f1-3fe7-4358-9371-3fe6cd347bee",
                             "ord": "a0"
                           },
@@ -2315,9 +2171,7 @@
                             "attrs": {
                               "type": "submit"
                             },
-                            "children": [
-                              "Send my request"
-                            ],
+                            "children": ["Send my request"],
                             "id": "682bc25a-63fb-4d0b-867b-0d4809e74f18",
                             "ord": "a0"
                           }
@@ -2363,9 +2217,7 @@
                         "kind": "element",
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
-                        "children": [
-                          "Find the glow bar"
-                        ],
+                        "children": ["Find the glow bar"],
                         "id": "ebe78d4c-3dcf-4d3b-962b-1f81510051b0",
                         "ord": "a0"
                       },
@@ -2373,9 +2225,7 @@
                         "kind": "element",
                         "tag": "address",
                         "class": "text-lg leading-relaxed whitespace-pre-line not-italic text-base-content",
-                        "children": [
-                          "Dewy Skin Bar\n54 Maple Court\nUnit 3 · Austin, TX 78704"
-                        ],
+                        "children": ["Dewy Skin Bar\n54 Maple Court\nUnit 3 · Austin, TX 78704"],
                         "data": {
                           "kind": "value",
                           "ref": "site.identity.address"
@@ -2397,9 +2247,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "font-medium text-base-content",
-                                "children": [
-                                  "Tuesday – Saturday"
-                                ],
+                                "children": ["Tuesday – Saturday"],
                                 "id": "3e84bdfc-d25a-40d7-98f5-b5a875b45f41",
                                 "ord": "a0"
                               },
@@ -2407,9 +2255,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-base-content",
-                                "children": [
-                                  "10:00 – 8:00"
-                                ],
+                                "children": ["10:00 – 8:00"],
                                 "id": "f345632a-b1bb-4219-9df7-37f9433151e2",
                                 "ord": "a1"
                               }
@@ -2426,9 +2272,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "font-medium text-base-content",
-                                "children": [
-                                  "Sunday"
-                                ],
+                                "children": ["Sunday"],
                                 "id": "e7313849-39ce-4427-ac37-ece4fb233dfd",
                                 "ord": "a0"
                               },
@@ -2436,9 +2280,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-base-content",
-                                "children": [
-                                  "10:00 – 6:00"
-                                ],
+                                "children": ["10:00 – 6:00"],
                                 "id": "ecbbbbfb-ba3b-48e6-adcd-4e75b467ee6d",
                                 "ord": "a1"
                               }
@@ -2455,9 +2297,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "font-medium text-base-content",
-                                "children": [
-                                  "Monday"
-                                ],
+                                "children": ["Monday"],
                                 "id": "d676100a-5380-4ea1-a988-e05cac1eb3c9",
                                 "ord": "a0"
                               },
@@ -2465,9 +2305,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-base-content",
-                                "children": [
-                                  "Closed"
-                                ],
+                                "children": ["Closed"],
                                 "id": "f23b1269-0595-4f8e-9f3e-d7d2c81a3ee1",
                                 "ord": "a1"
                               }
@@ -2518,9 +2356,7 @@
                     "kind": "element",
                     "tag": "h2",
                     "class": "text-3xl font-bold tracking-tight @3xl:text-4xl",
-                    "children": [
-                      "Rather book than call?"
-                    ],
+                    "children": ["Rather book than call?"],
                     "id": "911d0796-f2b9-4156-9538-663297693417",
                     "ord": "a0"
                   },
@@ -2541,9 +2377,7 @@
                     "attrs": {
                       "href": "/book"
                     },
-                    "children": [
-                      "Book a glow"
-                    ],
+                    "children": ["Book a glow"],
                     "id": "e3cae059-67a9-4f03-89f8-a89b441e6afd",
                     "ord": "a2"
                   }

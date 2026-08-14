@@ -37,9 +37,7 @@
                       "attrs": {
                         "href": "/book"
                       },
-                      "children": [
-                        "Book"
-                      ],
+                      "children": ["Book"],
                       "slot": {
                         "name": "link1",
                         "type": "link",
@@ -55,9 +53,7 @@
                       "attrs": {
                         "href": "/about"
                       },
-                      "children": [
-                        "About"
-                      ],
+                      "children": ["About"],
                       "slot": {
                         "name": "link2",
                         "type": "link",
@@ -73,9 +69,7 @@
                       "attrs": {
                         "href": "/contact"
                       },
-                      "children": [
-                        "Contact"
-                      ],
+                      "children": ["Contact"],
                       "slot": {
                         "name": "link3",
                         "type": "link",
@@ -100,9 +94,7 @@
                       "attrs": {
                         "href": "/account/login"
                       },
-                      "children": [
-                        "Sign in"
-                      ],
+                      "children": ["Sign in"],
                       "slot": {
                         "name": "secondary",
                         "type": "link",
@@ -180,9 +172,7 @@
                   "attrs": {
                     "href": "/book"
                   },
-                  "children": [
-                    "Book"
-                  ],
+                  "children": ["Book"],
                   "slot": {
                     "name": "link1",
                     "type": "link",
@@ -198,9 +188,7 @@
                   "attrs": {
                     "href": "/about"
                   },
-                  "children": [
-                    "About"
-                  ],
+                  "children": ["About"],
                   "slot": {
                     "name": "link2",
                     "type": "link",
@@ -216,9 +204,7 @@
                   "attrs": {
                     "href": "/contact"
                   },
-                  "children": [
-                    "Contact"
-                  ],
+                  "children": ["Contact"],
                   "slot": {
                     "name": "link3",
                     "type": "link",
@@ -321,9 +307,7 @@
                           "kind": "element",
                           "tag": "p",
                           "class": "max-w-xs text-sm text-base-content",
-                          "children": [
-                            "Everything you publish, in one place."
-                          ],
+                          "children": ["Everything you publish, in one place."],
                           "slot": {
                             "name": "blurb",
                             "type": "text",
@@ -356,9 +340,7 @@
                           "kind": "element",
                           "tag": "p",
                           "class": "text-sm font-semibold text-base-content",
-                          "children": [
-                            "Explore"
-                          ],
+                          "children": ["Explore"],
                           "slot": {
                             "name": "col1",
                             "type": "text",
@@ -386,9 +368,7 @@
                                   "attrs": {
                                     "href": "/book"
                                   },
-                                  "children": [
-                                    "Book"
-                                  ],
+                                  "children": ["Book"],
                                   "slot": {
                                     "name": "link1",
                                     "type": "link",
@@ -412,9 +392,7 @@
                                   "attrs": {
                                     "href": "/about"
                                   },
-                                  "children": [
-                                    "About"
-                                  ],
+                                  "children": ["About"],
                                   "slot": {
                                     "name": "link2",
                                     "type": "link",
@@ -438,9 +416,7 @@
                                   "attrs": {
                                     "href": "/contact"
                                   },
-                                  "children": [
-                                    "Contact"
-                                  ],
+                                  "children": ["Contact"],
                                   "slot": {
                                     "name": "link3",
                                     "type": "link",
@@ -464,9 +440,7 @@
                                   "attrs": {
                                     "href": "/search"
                                   },
-                                  "children": [
-                                    "Search"
-                                  ],
+                                  "children": ["Search"],
                                   "slot": {
                                     "name": "link4",
                                     "type": "link",
@@ -559,9 +533,7 @@
                           "kind": "element",
                           "tag": "span",
                           "class": "font-medium",
-                          "children": [
-                            "Your site"
-                          ],
+                          "children": ["Your site"],
                           "data": {
                             "kind": "value",
                             "ref": "site.identity.name"
@@ -643,9 +615,7 @@
                     "kind": "element",
                     "tag": "h1",
                     "class": "max-w-3xl text-4xl font-bold leading-tight tracking-tight @2xl:text-5xl @3xl:text-6xl",
-                    "children": [
-                      "Confident behind the wheel, one lesson at a time"
-                    ],
+                    "children": ["Confident behind the wheel, one lesson at a time"],
                     "id": "189fd6c0-1c42-4daf-8cd8-3ec95452159e",
                     "ord": "a0"
                   },
@@ -671,9 +641,7 @@
                         "attrs": {
                           "href": "/book"
                         },
-                        "children": [
-                          "Book a lesson"
-                        ],
+                        "children": ["Book a lesson"],
                         "id": "955e4ac7-de9b-40be-a535-d89d796a7f6a",
                         "ord": "a0"
                       },
@@ -684,9 +652,7 @@
                         "attrs": {
                           "href": "/book"
                         },
-                        "children": [
-                          "See lessons"
-                        ],
+                        "children": ["See lessons"],
                         "id": "9a009b3d-dd14-4ea2-9f14-a39225c3a0da",
                         "ord": "a1"
                       }
@@ -726,9 +692,7 @@
                             "kind": "element",
                             "tag": "h2",
                             "class": "text-xl font-semibold text-base-content",
-                            "children": [
-                              "Patient, certified instructors"
-                            ],
+                            "children": ["Patient, certified instructors"],
                             "id": "d7ce4b93-ea28-4e4c-ba38-c1447118c06e",
                             "ord": "a0"
                           },
@@ -755,9 +719,7 @@
                             "kind": "element",
                             "tag": "h2",
                             "class": "text-xl font-semibold text-base-content",
-                            "children": [
-                              "Dual-brake safety cars"
-                            ],
+                            "children": ["Dual-brake safety cars"],
                             "id": "dded6c7e-0b9e-4f8e-800c-a52363ef8477",
                             "ord": "a0"
                           },
@@ -784,9 +746,7 @@
                             "kind": "element",
                             "tag": "h2",
                             "class": "text-xl font-semibold text-base-content",
-                            "children": [
-                              "After-school & weekend times"
-                            ],
+                            "children": ["After-school & weekend times"],
                             "id": "f3373b00-7ee1-4425-995a-b0f0959d8357",
                             "ord": "a0"
                           },
@@ -813,9 +773,7 @@
                             "kind": "element",
                             "tag": "h2",
                             "class": "text-xl font-semibold text-base-content",
-                            "children": [
-                              "A high road-test pass rate"
-                            ],
+                            "children": ["A high road-test pass rate"],
                             "id": "fa22482d-df49-490d-9030-127b8ba7ac6b",
                             "ord": "a0"
                           },
@@ -864,9 +822,7 @@
                         "kind": "element",
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
-                        "children": [
-                          "Lessons & packages"
-                        ],
+                        "children": ["Lessons & packages"],
                         "id": "a7c028f3-9010-4202-a0b3-209da122960a",
                         "ord": "a0"
                       },
@@ -906,9 +862,7 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
-                                "children": [
-                                  "Intro drive"
-                                ],
+                                "children": ["Intro drive"],
                                 "id": "fab41a4e-a537-4723-9cd3-8adb34299011",
                                 "ord": "a0"
                               },
@@ -916,9 +870,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-bold text-base-content",
-                                "children": [
-                                  "$45"
-                                ],
+                                "children": ["$45"],
                                 "id": "610212ac-62b8-4648-b9c3-906b89ad0831",
                                 "ord": "a1"
                               }
@@ -930,9 +882,7 @@
                             "kind": "element",
                             "tag": "p",
                             "class": "text-sm font-medium uppercase tracking-wide text-secondary",
-                            "children": [
-                              "45 min"
-                            ],
+                            "children": ["45 min"],
                             "id": "740cf51c-062c-4eb4-bb9f-5dab1882029a",
                             "ord": "a1"
                           },
@@ -940,9 +890,7 @@
                             "kind": "element",
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
-                            "children": [
-                              "A gentle first time behind the wheel, at your pace."
-                            ],
+                            "children": ["A gentle first time behind the wheel, at your pace."],
                             "id": "81210a7d-465b-45d6-a3bb-4d9f86c5869d",
                             "ord": "a2"
                           }
@@ -967,9 +915,7 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
-                                "children": [
-                                  "Behind-the-wheel lesson"
-                                ],
+                                "children": ["Behind-the-wheel lesson"],
                                 "id": "a8d5051a-b668-4a1b-b23f-5cf214af0bb8",
                                 "ord": "a0"
                               },
@@ -977,9 +923,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-bold text-base-content",
-                                "children": [
-                                  "$90"
-                                ],
+                                "children": ["$90"],
                                 "id": "0d4c7b97-0861-47a6-9dd0-1f1686d5d97b",
                                 "ord": "a1"
                               }
@@ -991,9 +935,7 @@
                             "kind": "element",
                             "tag": "p",
                             "class": "text-sm font-medium uppercase tracking-wide text-secondary",
-                            "children": [
-                              "1 hr 30 min"
-                            ],
+                            "children": ["1 hr 30 min"],
                             "id": "323c31cd-1460-459a-9960-6c106aa2bf75",
                             "ord": "a1"
                           },
@@ -1001,9 +943,7 @@
                             "kind": "element",
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
-                            "children": [
-                              "A full one-on-one lesson on real roads."
-                            ],
+                            "children": ["A full one-on-one lesson on real roads."],
                             "id": "b68847ca-197b-4674-9588-2b22f0ef4221",
                             "ord": "a2"
                           }
@@ -1028,9 +968,7 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
-                                "children": [
-                                  "Driver’s-ed classroom session"
-                                ],
+                                "children": ["Driver’s-ed classroom session"],
                                 "id": "3a585fda-4800-4b5e-9869-eb4348085f8b",
                                 "ord": "a0"
                               },
@@ -1038,9 +976,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-bold text-base-content",
-                                "children": [
-                                  "$75"
-                                ],
+                                "children": ["$75"],
                                 "id": "7758f4cc-ad78-438f-b285-c0d035974d33",
                                 "ord": "a1"
                               }
@@ -1052,9 +988,7 @@
                             "kind": "element",
                             "tag": "p",
                             "class": "text-sm font-medium uppercase tracking-wide text-secondary",
-                            "children": [
-                              "2 hr"
-                            ],
+                            "children": ["2 hr"],
                             "id": "4152377c-3529-4c0c-88c9-abbf5e51b205",
                             "ord": "a1"
                           },
@@ -1062,9 +996,7 @@
                             "kind": "element",
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
-                            "children": [
-                              "Signs, rules and safe habits, in plain language."
-                            ],
+                            "children": ["Signs, rules and safe habits, in plain language."],
                             "id": "24ccb988-f4f7-4bd3-8738-a3613ab20368",
                             "ord": "a2"
                           }
@@ -1089,9 +1021,7 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
-                                "children": [
-                                  "Road-test prep"
-                                ],
+                                "children": ["Road-test prep"],
                                 "id": "5e772da3-abd8-4e15-af64-4ecf0ece21e8",
                                 "ord": "a0"
                               },
@@ -1099,9 +1029,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-bold text-base-content",
-                                "children": [
-                                  "$95"
-                                ],
+                                "children": ["$95"],
                                 "id": "f4e8e5cb-60bd-42a9-a06a-9849144ea9df",
                                 "ord": "a1"
                               }
@@ -1113,9 +1041,7 @@
                             "kind": "element",
                             "tag": "p",
                             "class": "text-sm font-medium uppercase tracking-wide text-secondary",
-                            "children": [
-                              "1 hr 30 min"
-                            ],
+                            "children": ["1 hr 30 min"],
                             "id": "2baa1b4a-4568-415e-bbfc-dd8d8577a232",
                             "ord": "a1"
                           },
@@ -1123,9 +1049,7 @@
                             "kind": "element",
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
-                            "children": [
-                              "A dress-rehearsal on the actual test route."
-                            ],
+                            "children": ["A dress-rehearsal on the actual test route."],
                             "id": "cd09fefe-cf26-4ccb-b985-2b7d14bc44e6",
                             "ord": "a2"
                           }
@@ -1149,9 +1073,7 @@
                         "attrs": {
                           "href": "/book"
                         },
-                        "children": [
-                          "See everything & book"
-                        ],
+                        "children": ["See everything & book"],
                         "id": "c6c0d488-68d1-47f6-badd-1c1c1ca92aa0",
                         "ord": "a0"
                       }
@@ -1198,9 +1120,7 @@
                         "kind": "element",
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
-                        "children": [
-                          "We teach confidence, not just parallel parking"
-                        ],
+                        "children": ["We teach confidence, not just parallel parking"],
                         "id": "6599a812-12e2-48b3-97d1-bfdf88d56bbc",
                         "ord": "a0"
                       },
@@ -1236,9 +1156,7 @@
                             "attrs": {
                               "href": "/book"
                             },
-                            "children": [
-                              "Book a lesson"
-                            ],
+                            "children": ["Book a lesson"],
                             "id": "df9b7316-0153-4570-a81f-73a51ea9648d",
                             "ord": "a0"
                           }
@@ -1277,9 +1195,7 @@
                         "kind": "element",
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
-                        "children": [
-                          "Meet your instructors"
-                        ],
+                        "children": ["Meet your instructors"],
                         "id": "91cda2bb-fb6e-4851-9520-bf286517ecc7",
                         "ord": "a0"
                       },
@@ -1328,9 +1244,7 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
-                                "children": [
-                                  "Maria Alvarez"
-                                ],
+                                "children": ["Maria Alvarez"],
                                 "id": "6539b01e-fa39-4cda-be54-fdc2cd2638de",
                                 "ord": "a0"
                               },
@@ -1338,9 +1252,7 @@
                                 "kind": "element",
                                 "tag": "p",
                                 "class": "text-sm font-medium uppercase tracking-wide text-secondary",
-                                "children": [
-                                  "Behind-the-wheel instructor"
-                                ],
+                                "children": ["Behind-the-wheel instructor"],
                                 "id": "19cf2222-8705-429f-8bdd-5e45a8772b0c",
                                 "ord": "a1"
                               },
@@ -1388,9 +1300,7 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
-                                "children": [
-                                  "James Park"
-                                ],
+                                "children": ["James Park"],
                                 "id": "67bbdcb2-9bfd-4bea-aa60-bd08a5848090",
                                 "ord": "a0"
                               },
@@ -1398,9 +1308,7 @@
                                 "kind": "element",
                                 "tag": "p",
                                 "class": "text-sm font-medium uppercase tracking-wide text-secondary",
-                                "children": [
-                                  "Driver’s-ed instructor"
-                                ],
+                                "children": ["Driver’s-ed instructor"],
                                 "id": "c4eeaf60-48ee-43e6-b7d1-b2cb82fdec17",
                                 "ord": "a1"
                               },
@@ -1448,9 +1356,7 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
-                                "children": [
-                                  "Tanya Brooks"
-                                ],
+                                "children": ["Tanya Brooks"],
                                 "id": "faf2abe6-a98c-43d1-a0f7-4d9b14b4b198",
                                 "ord": "a0"
                               },
@@ -1458,9 +1364,7 @@
                                 "kind": "element",
                                 "tag": "p",
                                 "class": "text-sm font-medium uppercase tracking-wide text-secondary",
-                                "children": [
-                                  "Road-test prep instructor"
-                                ],
+                                "children": ["Road-test prep instructor"],
                                 "id": "6ab3c1ea-bc2f-48b5-8a83-cffb1eddba5f",
                                 "ord": "a1"
                               },
@@ -1518,9 +1422,7 @@
                     "kind": "element",
                     "tag": "p",
                     "class": "text-sm font-semibold uppercase tracking-wide opacity-80",
-                    "children": [
-                      "Denise M., parent of a new driver"
-                    ],
+                    "children": ["Denise M., parent of a new driver"],
                     "id": "50bb08d7-6372-44e9-b2e2-0b7b12f9a915",
                     "ord": "a1"
                   }
@@ -1546,9 +1448,7 @@
                     "kind": "element",
                     "tag": "h2",
                     "class": "text-3xl font-bold tracking-tight @3xl:text-4xl",
-                    "children": [
-                      "Ready to get started?"
-                    ],
+                    "children": ["Ready to get started?"],
                     "id": "77c49f48-f062-4481-9ff2-a8c560137269",
                     "ord": "a0"
                   },
@@ -1569,9 +1469,7 @@
                     "attrs": {
                       "href": "/book"
                     },
-                    "children": [
-                      "Book a lesson"
-                    ],
+                    "children": ["Book a lesson"],
                     "id": "93949d70-3a88-49f0-9c75-22e71954aa47",
                     "ord": "a2"
                   }
@@ -1632,9 +1530,7 @@
                     "kind": "element",
                     "tag": "h1",
                     "class": "max-w-3xl text-4xl font-bold leading-tight tracking-tight @2xl:text-5xl @3xl:text-6xl",
-                    "children": [
-                      "Book a lesson"
-                    ],
+                    "children": ["Book a lesson"],
                     "id": "c4aa0ae8-dcff-42a2-a599-5dc70917f1e5",
                     "ord": "a0"
                   },
@@ -1660,9 +1556,7 @@
                         "attrs": {
                           "href": "/book"
                         },
-                        "children": [
-                          "See lessons below"
-                        ],
+                        "children": ["See lessons below"],
                         "id": "6e98defc-f220-4ddc-9c9b-90d92bb900e5",
                         "ord": "a0"
                       }
@@ -1705,9 +1599,7 @@
                         "kind": "element",
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
-                        "children": [
-                          "Good to know"
-                        ],
+                        "children": ["Good to know"],
                         "id": "16a0663d-7bb9-47c9-bb8b-6104ec847a56",
                         "ord": "a0"
                       },
@@ -1739,9 +1631,7 @@
                             "kind": "element",
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
-                            "children": [
-                              "Standard booking"
-                            ],
+                            "children": ["Standard booking"],
                             "id": "fdc2cc63-8df0-42c5-82e9-3a0e71ff6aae",
                             "ord": "a0"
                           },
@@ -1778,9 +1668,7 @@
                             "kind": "element",
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
-                            "children": [
-                              "No-show policy"
-                            ],
+                            "children": ["No-show policy"],
                             "id": "0d6a1e0c-5ee3-418b-82c6-dae0014df777",
                             "ord": "a0"
                           },
@@ -1867,9 +1755,7 @@
                         "kind": "element",
                         "tag": "h1",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
-                        "children": [
-                          "About RoadReady Driving School"
-                        ],
+                        "children": ["About RoadReady Driving School"],
                         "id": "c8019977-fcf6-4679-a55a-2802ada0aa80",
                         "ord": "a0"
                       },
@@ -1905,9 +1791,7 @@
                             "attrs": {
                               "href": "/book"
                             },
-                            "children": [
-                              "Book a lesson"
-                            ],
+                            "children": ["Book a lesson"],
                             "id": "36700b9d-2999-4131-9149-76a04bad79f4",
                             "ord": "a0"
                           }
@@ -1941,9 +1825,7 @@
                     "kind": "element",
                     "tag": "h2",
                     "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
-                    "children": [
-                      "How we keep it safe and encouraging"
-                    ],
+                    "children": ["How we keep it safe and encouraging"],
                     "id": "1c8aee66-6684-478b-8ac7-350159b1fda7",
                     "ord": "a0"
                   },
@@ -1961,9 +1843,7 @@
                             "kind": "element",
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
-                            "children": [
-                              "Safety comes first, always"
-                            ],
+                            "children": ["Safety comes first, always"],
                             "id": "40f2e9bd-4d72-4ada-b29d-e66bb781d070",
                             "ord": "a0"
                           },
@@ -1990,9 +1870,7 @@
                             "kind": "element",
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
-                            "children": [
-                              "A real plan, not random hours"
-                            ],
+                            "children": ["A real plan, not random hours"],
                             "id": "9a87a165-5c6d-42cb-9b68-ef4428707217",
                             "ord": "a0"
                           },
@@ -2019,9 +1897,7 @@
                             "kind": "element",
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
-                            "children": [
-                              "Parents in the loop"
-                            ],
+                            "children": ["Parents in the loop"],
                             "id": "3eb8796e-9504-4a39-8eb0-0058ff8258e7",
                             "ord": "a0"
                           },
@@ -2086,9 +1962,7 @@
                         "kind": "element",
                         "tag": "h1",
                         "class": "text-4xl font-bold tracking-tight text-base-content @3xl:text-5xl",
-                        "children": [
-                          "Get in touch"
-                        ],
+                        "children": ["Get in touch"],
                         "id": "9e65f16d-f3af-47c1-9317-272d36a2ad75",
                         "ord": "a0"
                       },
@@ -2115,9 +1989,7 @@
                         "kind": "element",
                         "tag": "span",
                         "class": "text-base font-medium text-base-content",
-                        "children": [
-                          "Call us"
-                        ],
+                        "children": ["Call us"],
                         "id": "6d59ce16-f859-4be0-ab90-4d2ab3f1ae50",
                         "ord": "a0"
                       },
@@ -2129,9 +2001,7 @@
                           {
                             "kind": "element",
                             "tag": "span",
-                            "children": [
-                              "(555) 123-4567"
-                            ],
+                            "children": ["(555) 123-4567"],
                             "data": {
                               "kind": "value",
                               "ref": "site.identity.phone"
@@ -2165,9 +2035,7 @@
                         "kind": "element",
                         "tag": "span",
                         "class": "text-base font-medium text-base-content",
-                        "children": [
-                          "Email us"
-                        ],
+                        "children": ["Email us"],
                         "id": "c43a4aeb-98e4-4991-979d-d6e7a877a777",
                         "ord": "a0"
                       },
@@ -2179,9 +2047,7 @@
                           {
                             "kind": "element",
                             "tag": "span",
-                            "children": [
-                              "hello@yourbusiness.com"
-                            ],
+                            "children": ["hello@yourbusiness.com"],
                             "data": {
                               "kind": "value",
                               "ref": "site.identity.email"
@@ -2220,9 +2086,7 @@
                             "kind": "element",
                             "tag": "span",
                             "class": "text-base font-medium text-base-content",
-                            "children": [
-                              "Your name"
-                            ],
+                            "children": ["Your name"],
                             "id": "c0372f3b-5c08-44de-b9ac-4cf9dcdd463f",
                             "ord": "a0"
                           },
@@ -2251,9 +2115,7 @@
                             "kind": "element",
                             "tag": "span",
                             "class": "text-base font-medium text-base-content",
-                            "children": [
-                              "Email address"
-                            ],
+                            "children": ["Email address"],
                             "id": "307f2f44-46a2-474b-829b-dd2ab6c37201",
                             "ord": "a0"
                           },
@@ -2282,9 +2144,7 @@
                             "kind": "element",
                             "tag": "span",
                             "class": "text-base font-medium text-base-content",
-                            "children": [
-                              "Phone number"
-                            ],
+                            "children": ["Phone number"],
                             "id": "4a2b6fa2-cc49-43c7-adcc-bfdb88492fa5",
                             "ord": "a0"
                           },
@@ -2312,9 +2172,7 @@
                             "kind": "element",
                             "tag": "span",
                             "class": "text-base font-medium text-base-content",
-                            "children": [
-                              "How can we help?"
-                            ],
+                            "children": ["How can we help?"],
                             "id": "65a4c862-d112-46d9-9e43-a36aee9603ce",
                             "ord": "a0"
                           },
@@ -2344,9 +2202,7 @@
                             "attrs": {
                               "type": "submit"
                             },
-                            "children": [
-                              "Send my request"
-                            ],
+                            "children": ["Send my request"],
                             "id": "83fc2110-6de3-48d4-aada-494be3969b87",
                             "ord": "a0"
                           }
@@ -2392,9 +2248,7 @@
                         "kind": "element",
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
-                        "children": [
-                          "Visit RoadReady"
-                        ],
+                        "children": ["Visit RoadReady"],
                         "id": "2f41546d-6e13-46ae-a54d-a7804315b901",
                         "ord": "a0"
                       },
@@ -2426,9 +2280,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "font-medium text-base-content",
-                                "children": [
-                                  "Monday – Friday"
-                                ],
+                                "children": ["Monday – Friday"],
                                 "id": "e66257f0-9134-436d-a91f-074e700bcf85",
                                 "ord": "a0"
                               },
@@ -2436,9 +2288,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-base-content",
-                                "children": [
-                                  "3:00 – 8:00"
-                                ],
+                                "children": ["3:00 – 8:00"],
                                 "id": "57249eb8-359c-460e-8969-28231cfaded0",
                                 "ord": "a1"
                               }
@@ -2455,9 +2305,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "font-medium text-base-content",
-                                "children": [
-                                  "Saturday"
-                                ],
+                                "children": ["Saturday"],
                                 "id": "84c74dca-b610-4740-9b07-ef8719791f76",
                                 "ord": "a0"
                               },
@@ -2465,9 +2313,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-base-content",
-                                "children": [
-                                  "9:00 – 5:00"
-                                ],
+                                "children": ["9:00 – 5:00"],
                                 "id": "ba1c16d4-0e7e-4972-ad77-b5e513415b2c",
                                 "ord": "a1"
                               }
@@ -2484,9 +2330,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "font-medium text-base-content",
-                                "children": [
-                                  "Sunday"
-                                ],
+                                "children": ["Sunday"],
                                 "id": "c2563021-4c97-4444-ac13-a7d2c6f6300f",
                                 "ord": "a0"
                               },
@@ -2494,9 +2338,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-base-content",
-                                "children": [
-                                  "9:00 – 5:00"
-                                ],
+                                "children": ["9:00 – 5:00"],
                                 "id": "5e7c4677-9c31-4f19-8a9f-5ef559fa52da",
                                 "ord": "a1"
                               }
@@ -2513,9 +2355,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "font-medium text-base-content",
-                                "children": [
-                                  "Holidays"
-                                ],
+                                "children": ["Holidays"],
                                 "id": "435a49d8-2e67-43de-9484-5bff687a74c7",
                                 "ord": "a0"
                               },
@@ -2523,9 +2363,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-base-content",
-                                "children": [
-                                  "Closed"
-                                ],
+                                "children": ["Closed"],
                                 "id": "be1002a5-d27f-4ed3-b6af-7d9330f81185",
                                 "ord": "a1"
                               }
@@ -2576,9 +2414,7 @@
                     "kind": "element",
                     "tag": "h2",
                     "class": "text-3xl font-bold tracking-tight @3xl:text-4xl",
-                    "children": [
-                      "Rather book than call?"
-                    ],
+                    "children": ["Rather book than call?"],
                     "id": "f35445a6-d180-422e-bcc7-920c9bbf9a70",
                     "ord": "a0"
                   },
@@ -2599,9 +2435,7 @@
                     "attrs": {
                       "href": "/book"
                     },
-                    "children": [
-                      "Book a lesson"
-                    ],
+                    "children": ["Book a lesson"],
                     "id": "3bd9ea6e-697f-4c55-9746-9e5d848b9dd1",
                     "ord": "a2"
                   }

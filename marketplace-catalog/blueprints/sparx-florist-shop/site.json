@@ -37,9 +37,7 @@
                       "attrs": {
                         "href": "/book"
                       },
-                      "children": [
-                        "Book"
-                      ],
+                      "children": ["Book"],
                       "slot": {
                         "name": "link1",
                         "type": "link",
@@ -55,9 +53,7 @@
                       "attrs": {
                         "href": "/about"
                       },
-                      "children": [
-                        "About"
-                      ],
+                      "children": ["About"],
                       "slot": {
                         "name": "link2",
                         "type": "link",
@@ -73,9 +69,7 @@
                       "attrs": {
                         "href": "/contact"
                       },
-                      "children": [
-                        "Contact"
-                      ],
+                      "children": ["Contact"],
                       "slot": {
                         "name": "link3",
                         "type": "link",
@@ -100,9 +94,7 @@
                       "attrs": {
                         "href": "/account/login"
                       },
-                      "children": [
-                        "Sign in"
-                      ],
+                      "children": ["Sign in"],
                       "slot": {
                         "name": "secondary",
                         "type": "link",
@@ -180,9 +172,7 @@
                   "attrs": {
                     "href": "/book"
                   },
-                  "children": [
-                    "Book"
-                  ],
+                  "children": ["Book"],
                   "slot": {
                     "name": "link1",
                     "type": "link",
@@ -198,9 +188,7 @@
                   "attrs": {
                     "href": "/about"
                   },
-                  "children": [
-                    "About"
-                  ],
+                  "children": ["About"],
                   "slot": {
                     "name": "link2",
                     "type": "link",
@@ -216,9 +204,7 @@
                   "attrs": {
                     "href": "/contact"
                   },
-                  "children": [
-                    "Contact"
-                  ],
+                  "children": ["Contact"],
                   "slot": {
                     "name": "link3",
                     "type": "link",
@@ -321,9 +307,7 @@
                           "kind": "element",
                           "tag": "p",
                           "class": "max-w-xs text-sm text-base-content",
-                          "children": [
-                            "Everything you publish, in one place."
-                          ],
+                          "children": ["Everything you publish, in one place."],
                           "slot": {
                             "name": "blurb",
                             "type": "text",
@@ -356,9 +340,7 @@
                           "kind": "element",
                           "tag": "p",
                           "class": "text-sm font-semibold text-base-content",
-                          "children": [
-                            "Explore"
-                          ],
+                          "children": ["Explore"],
                           "slot": {
                             "name": "col1",
                             "type": "text",
@@ -386,9 +368,7 @@
                                   "attrs": {
                                     "href": "/book"
                                   },
-                                  "children": [
-                                    "Book"
-                                  ],
+                                  "children": ["Book"],
                                   "slot": {
                                     "name": "link1",
                                     "type": "link",
@@ -412,9 +392,7 @@
                                   "attrs": {
                                     "href": "/about"
                                   },
-                                  "children": [
-                                    "About"
-                                  ],
+                                  "children": ["About"],
                                   "slot": {
                                     "name": "link2",
                                     "type": "link",
@@ -438,9 +416,7 @@
                                   "attrs": {
                                     "href": "/contact"
                                   },
-                                  "children": [
-                                    "Contact"
-                                  ],
+                                  "children": ["Contact"],
                                   "slot": {
                                     "name": "link3",
                                     "type": "link",
@@ -464,9 +440,7 @@
                                   "attrs": {
                                     "href": "/search"
                                   },
-                                  "children": [
-                                    "Search"
-                                  ],
+                                  "children": ["Search"],
                                   "slot": {
                                     "name": "link4",
                                     "type": "link",
@@ -559,9 +533,7 @@
                           "kind": "element",
                           "tag": "span",
                           "class": "font-medium",
-                          "children": [
-                            "Your site"
-                          ],
+                          "children": ["Your site"],
                           "data": {
                             "kind": "value",
                             "ref": "site.identity.name"
@@ -643,9 +615,7 @@
                     "kind": "element",
                     "tag": "h1",
                     "class": "max-w-3xl text-4xl font-bold leading-tight tracking-tight @2xl:text-5xl @3xl:text-6xl",
-                    "children": [
-                      "Fresh flowers, picked for your day"
-                    ],
+                    "children": ["Fresh flowers, picked for your day"],
                     "id": "b17bfab6-db3d-4ed8-9227-3abb22e58bfd",
                     "ord": "a0"
                   },
@@ -671,9 +641,7 @@
                         "attrs": {
                           "href": "/book"
                         },
-                        "children": [
-                          "Book a consult"
-                        ],
+                        "children": ["Book a consult"],
                         "id": "91e3aad5-e6b7-45a0-8306-315315cfeeaa",
                         "ord": "a0"
                       },
@@ -684,9 +652,7 @@
                         "attrs": {
                           "href": "/book"
                         },
-                        "children": [
-                          "See what we do"
-                        ],
+                        "children": ["See what we do"],
                         "id": "50413a58-c6a9-4f51-b789-b782ebd5a87d",
                         "ord": "a1"
                       }
@@ -726,9 +692,7 @@
                             "kind": "element",
                             "tag": "h2",
                             "class": "text-xl font-semibold text-base-content",
-                            "children": [
-                              "Fresh in every day"
-                            ],
+                            "children": ["Fresh in every day"],
                             "id": "1fec208c-f566-4d83-9164-77b47f261a1d",
                             "ord": "a0"
                           },
@@ -755,9 +719,7 @@
                             "kind": "element",
                             "tag": "h2",
                             "class": "text-xl font-semibold text-base-content",
-                            "children": [
-                              "Same-day local delivery"
-                            ],
+                            "children": ["Same-day local delivery"],
                             "id": "96ae1e47-e2b2-4916-ab77-74aafa0a8e0d",
                             "ord": "a0"
                           },
@@ -784,9 +746,7 @@
                             "kind": "element",
                             "tag": "h2",
                             "class": "text-xl font-semibold text-base-content",
-                            "children": [
-                              "Flower subscriptions"
-                            ],
+                            "children": ["Flower subscriptions"],
                             "id": "5011120e-ab63-4813-a5ba-2b620df57d72",
                             "ord": "a0"
                           },
@@ -813,9 +773,7 @@
                             "kind": "element",
                             "tag": "h2",
                             "class": "text-xl font-semibold text-base-content",
-                            "children": [
-                              "Hands-on workshops"
-                            ],
+                            "children": ["Hands-on workshops"],
                             "id": "9f79c636-9454-4d99-8d08-bd7c1df6af71",
                             "ord": "a0"
                           },
@@ -864,9 +822,7 @@
                         "kind": "element",
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
-                        "children": [
-                          "How to book with us"
-                        ],
+                        "children": ["How to book with us"],
                         "id": "dbc26a10-f325-4960-a448-ffded5086f44",
                         "ord": "a0"
                       },
@@ -906,9 +862,7 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
-                                "children": [
-                                  "Free flower consult"
-                                ],
+                                "children": ["Free flower consult"],
                                 "id": "d0129905-e77b-4256-b230-f6753e7cb616",
                                 "ord": "a0"
                               },
@@ -916,9 +870,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-bold text-base-content",
-                                "children": [
-                                  "$0"
-                                ],
+                                "children": ["$0"],
                                 "id": "f12cdb18-c919-4a21-8a93-029a998d72ec",
                                 "ord": "a1"
                               }
@@ -930,9 +882,7 @@
                             "kind": "element",
                             "tag": "p",
                             "class": "text-sm font-medium uppercase tracking-wide text-secondary",
-                            "children": [
-                              "20 min"
-                            ],
+                            "children": ["20 min"],
                             "id": "d7918091-e66f-4ea6-9d9e-a13a4884b613",
                             "ord": "a1"
                           },
@@ -940,9 +890,7 @@
                             "kind": "element",
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
-                            "children": [
-                              "A quick chat about your occasion, budget and colours."
-                            ],
+                            "children": ["A quick chat about your occasion, budget and colours."],
                             "id": "630963f8-40ed-426b-a385-591d25616ce5",
                             "ord": "a2"
                           }
@@ -967,9 +915,7 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
-                                "children": [
-                                  "Custom arrangement consult"
-                                ],
+                                "children": ["Custom arrangement consult"],
                                 "id": "a136bc96-1be4-494e-a0d4-70679c014eb6",
                                 "ord": "a0"
                               },
@@ -977,9 +923,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-bold text-base-content",
-                                "children": [
-                                  "$25"
-                                ],
+                                "children": ["$25"],
                                 "id": "0c868abb-6df3-4b0a-a97a-8bc43819561d",
                                 "ord": "a1"
                               }
@@ -991,9 +935,7 @@
                             "kind": "element",
                             "tag": "p",
                             "class": "text-sm font-medium uppercase tracking-wide text-secondary",
-                            "children": [
-                              "45 min"
-                            ],
+                            "children": ["45 min"],
                             "id": "b5d81add-bffd-4b1b-80bf-0730fa17990f",
                             "ord": "a1"
                           },
@@ -1028,9 +970,7 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
-                                "children": [
-                                  "Flower subscription setup"
-                                ],
+                                "children": ["Flower subscription setup"],
                                 "id": "ed46da7a-586e-4c99-911c-7353e1f02be2",
                                 "ord": "a0"
                               },
@@ -1038,9 +978,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-bold text-base-content",
-                                "children": [
-                                  "$15"
-                                ],
+                                "children": ["$15"],
                                 "id": "109e16d0-7e9f-4666-a2e0-b5404628e6cc",
                                 "ord": "a1"
                               }
@@ -1052,9 +990,7 @@
                             "kind": "element",
                             "tag": "p",
                             "class": "text-sm font-medium uppercase tracking-wide text-secondary",
-                            "children": [
-                              "30 min"
-                            ],
+                            "children": ["30 min"],
                             "id": "0f7e19b1-d357-46a5-af3e-bf440a3e139f",
                             "ord": "a1"
                           },
@@ -1089,9 +1025,7 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
-                                "children": [
-                                  "Hands-on flower workshop"
-                                ],
+                                "children": ["Hands-on flower workshop"],
                                 "id": "9ffc556a-7ce6-47f5-9c69-4bf8034e36a0",
                                 "ord": "a0"
                               },
@@ -1099,9 +1033,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-bold text-base-content",
-                                "children": [
-                                  "$65"
-                                ],
+                                "children": ["$65"],
                                 "id": "6f73f0d4-dfdf-4698-aea4-bc7fd4cdf82d",
                                 "ord": "a1"
                               }
@@ -1113,9 +1045,7 @@
                             "kind": "element",
                             "tag": "p",
                             "class": "text-sm font-medium uppercase tracking-wide text-secondary",
-                            "children": [
-                              "1 hr 30 min"
-                            ],
+                            "children": ["1 hr 30 min"],
                             "id": "d9edd79d-f9c2-4f60-bdd2-e053e1c5cd58",
                             "ord": "a1"
                           },
@@ -1149,9 +1079,7 @@
                         "attrs": {
                           "href": "/book"
                         },
-                        "children": [
-                          "See everything & book"
-                        ],
+                        "children": ["See everything & book"],
                         "id": "a176b5f1-375c-4087-a7b9-3c1992945e9f",
                         "ord": "a0"
                       }
@@ -1181,9 +1109,7 @@
                     "kind": "element",
                     "tag": "h2",
                     "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
-                    "children": [
-                      "Fresh from the bench"
-                    ],
+                    "children": ["Fresh from the bench"],
                     "id": "7638ba0b-c1cc-4429-8a49-df8256ea5a07",
                     "ord": "a0"
                   },
@@ -1271,9 +1197,7 @@
                         "kind": "element",
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
-                        "children": [
-                          "Fresh flowers, handled for you"
-                        ],
+                        "children": ["Fresh flowers, handled for you"],
                         "id": "f9e6b5f8-6dfb-4e7c-9327-b4683746895d",
                         "ord": "a0"
                       },
@@ -1309,9 +1233,7 @@
                             "attrs": {
                               "href": "/book"
                             },
-                            "children": [
-                              "Set up a subscription"
-                            ],
+                            "children": ["Set up a subscription"],
                             "id": "b3b87e70-3409-41ad-a315-b7b121bfccfc",
                             "ord": "a0"
                           }
@@ -1350,9 +1272,7 @@
                         "kind": "element",
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
-                        "children": [
-                          "Meet the florists"
-                        ],
+                        "children": ["Meet the florists"],
                         "id": "567ef124-b589-4524-854a-02436422b1cc",
                         "ord": "a0"
                       },
@@ -1401,9 +1321,7 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
-                                "children": [
-                                  "Rosa Mendez"
-                                ],
+                                "children": ["Rosa Mendez"],
                                 "id": "c9b0b4b5-db5f-4b27-9670-b0b6ea6f0e53",
                                 "ord": "a0"
                               },
@@ -1411,9 +1329,7 @@
                                 "kind": "element",
                                 "tag": "p",
                                 "class": "text-sm font-medium uppercase tracking-wide text-secondary",
-                                "children": [
-                                  "Owner & lead florist"
-                                ],
+                                "children": ["Owner & lead florist"],
                                 "id": "23635d79-a790-4c83-b371-263a9a81d27a",
                                 "ord": "a1"
                               },
@@ -1461,9 +1377,7 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
-                                "children": [
-                                  "Iris Lundqvist"
-                                ],
+                                "children": ["Iris Lundqvist"],
                                 "id": "cea65212-edd3-474f-b070-b760d1ea08bf",
                                 "ord": "a0"
                               },
@@ -1471,9 +1385,7 @@
                                 "kind": "element",
                                 "tag": "p",
                                 "class": "text-sm font-medium uppercase tracking-wide text-secondary",
-                                "children": [
-                                  "Florist & workshop host"
-                                ],
+                                "children": ["Florist & workshop host"],
                                 "id": "0fa68f33-a754-4b5e-9b99-464290a2116a",
                                 "ord": "a1"
                               },
@@ -1521,9 +1433,7 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
-                                "children": [
-                                  "Dahlia Okafor"
-                                ],
+                                "children": ["Dahlia Okafor"],
                                 "id": "018ec6f8-6d7c-4635-85b7-b7443b56673e",
                                 "ord": "a0"
                               },
@@ -1531,9 +1441,7 @@
                                 "kind": "element",
                                 "tag": "p",
                                 "class": "text-sm font-medium uppercase tracking-wide text-secondary",
-                                "children": [
-                                  "Florist & delivery lead"
-                                ],
+                                "children": ["Florist & delivery lead"],
                                 "id": "e298f4f7-7162-4fe1-b7ee-c471319ef8a2",
                                 "ord": "a1"
                               },
@@ -1591,9 +1499,7 @@
                     "kind": "element",
                     "tag": "p",
                     "class": "text-sm font-semibold uppercase tracking-wide opacity-80",
-                    "children": [
-                      "Meera, subscriber since 2024"
-                    ],
+                    "children": ["Meera, subscriber since 2024"],
                     "id": "4f17300d-9ccb-40d8-a25b-7a9616c4500a",
                     "ord": "a1"
                   }
@@ -1619,9 +1525,7 @@
                     "kind": "element",
                     "tag": "h2",
                     "class": "text-3xl font-bold tracking-tight @3xl:text-4xl",
-                    "children": [
-                      "Let’s make something bloom"
-                    ],
+                    "children": ["Let’s make something bloom"],
                     "id": "6c633e6d-b24b-4b16-a5c8-ee21950523fd",
                     "ord": "a0"
                   },
@@ -1642,9 +1546,7 @@
                     "attrs": {
                       "href": "/book"
                     },
-                    "children": [
-                      "Book a consult"
-                    ],
+                    "children": ["Book a consult"],
                     "id": "dfa9d810-e48a-4815-815f-7a2b6ead1cef",
                     "ord": "a2"
                   }
@@ -1705,9 +1607,7 @@
                     "kind": "element",
                     "tag": "h1",
                     "class": "max-w-3xl text-4xl font-bold leading-tight tracking-tight @2xl:text-5xl @3xl:text-6xl",
-                    "children": [
-                      "Book with Petal & Post"
-                    ],
+                    "children": ["Book with Petal & Post"],
                     "id": "5b4a1dab-1190-40c1-a196-a5c60a7478e0",
                     "ord": "a0"
                   },
@@ -1733,9 +1633,7 @@
                         "attrs": {
                           "href": "/book"
                         },
-                        "children": [
-                          "See options below"
-                        ],
+                        "children": ["See options below"],
                         "id": "b28fcf0d-5820-4fc9-9b1e-376a16443c49",
                         "ord": "a0"
                       }
@@ -1778,9 +1676,7 @@
                         "kind": "element",
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
-                        "children": [
-                          "Good to know"
-                        ],
+                        "children": ["Good to know"],
                         "id": "dc4b94e4-6d5f-495d-b13b-e7c638c4b169",
                         "ord": "a0"
                       },
@@ -1812,9 +1708,7 @@
                             "kind": "element",
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
-                            "children": [
-                              "Standard booking"
-                            ],
+                            "children": ["Standard booking"],
                             "id": "f8659d1f-2897-430b-8be7-d7c3ad52ade8",
                             "ord": "a0"
                           },
@@ -1851,9 +1745,7 @@
                             "kind": "element",
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
-                            "children": [
-                              "Workshop seat hold"
-                            ],
+                            "children": ["Workshop seat hold"],
                             "id": "7c00c88d-dd09-48b2-907b-2584363a51ec",
                             "ord": "a0"
                           },
@@ -1940,9 +1832,7 @@
                         "kind": "element",
                         "tag": "h1",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
-                        "children": [
-                          "About Petal & Post"
-                        ],
+                        "children": ["About Petal & Post"],
                         "id": "f4994d24-693e-41b1-9e23-04c353bcc52b",
                         "ord": "a0"
                       },
@@ -1978,9 +1868,7 @@
                             "attrs": {
                               "href": "/book"
                             },
-                            "children": [
-                              "Book a consult"
-                            ],
+                            "children": ["Book a consult"],
                             "id": "dfece1b0-162d-487f-9cbb-c9b77443774e",
                             "ord": "a0"
                           }
@@ -2014,9 +1902,7 @@
                     "kind": "element",
                     "tag": "h2",
                     "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
-                    "children": [
-                      "What we’re about"
-                    ],
+                    "children": ["What we’re about"],
                     "id": "4841d308-2436-44d0-b008-21456c1d8035",
                     "ord": "a0"
                   },
@@ -2034,9 +1920,7 @@
                             "kind": "element",
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
-                            "children": [
-                              "Seasonal & fresh"
-                            ],
+                            "children": ["Seasonal & fresh"],
                             "id": "8f4fc4e1-f700-4957-8188-35b7835422f1",
                             "ord": "a0"
                           },
@@ -2063,9 +1947,7 @@
                             "kind": "element",
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
-                            "children": [
-                              "Flowers for every day"
-                            ],
+                            "children": ["Flowers for every day"],
                             "id": "c40bcac5-ce94-4d54-a195-718d6162d351",
                             "ord": "a0"
                           },
@@ -2092,9 +1974,7 @@
                             "kind": "element",
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
-                            "children": [
-                              "Part of the neighbourhood"
-                            ],
+                            "children": ["Part of the neighbourhood"],
                             "id": "39ac2955-1347-464d-b380-a34ac45ba0f5",
                             "ord": "a0"
                           },
@@ -2159,9 +2039,7 @@
                         "kind": "element",
                         "tag": "h1",
                         "class": "text-4xl font-bold tracking-tight text-base-content @3xl:text-5xl",
-                        "children": [
-                          "Get in touch"
-                        ],
+                        "children": ["Get in touch"],
                         "id": "91c26e9e-5ad7-433f-a4cc-c2e7ecfc14f9",
                         "ord": "a0"
                       },
@@ -2188,9 +2066,7 @@
                         "kind": "element",
                         "tag": "span",
                         "class": "text-base font-medium text-base-content",
-                        "children": [
-                          "Call us"
-                        ],
+                        "children": ["Call us"],
                         "id": "3a5928bd-e55c-4779-b422-ce3fab778179",
                         "ord": "a0"
                       },
@@ -2202,9 +2078,7 @@
                           {
                             "kind": "element",
                             "tag": "span",
-                            "children": [
-                              "(555) 123-4567"
-                            ],
+                            "children": ["(555) 123-4567"],
                             "data": {
                               "kind": "value",
                               "ref": "site.identity.phone"
@@ -2238,9 +2112,7 @@
                         "kind": "element",
                         "tag": "span",
                         "class": "text-base font-medium text-base-content",
-                        "children": [
-                          "Email us"
-                        ],
+                        "children": ["Email us"],
                         "id": "b98d22f3-8e3d-451f-b316-2ed7e9576063",
                         "ord": "a0"
                       },
@@ -2252,9 +2124,7 @@
                           {
                             "kind": "element",
                             "tag": "span",
-                            "children": [
-                              "hello@yourbusiness.com"
-                            ],
+                            "children": ["hello@yourbusiness.com"],
                             "data": {
                               "kind": "value",
                               "ref": "site.identity.email"
@@ -2293,9 +2163,7 @@
                             "kind": "element",
                             "tag": "span",
                             "class": "text-base font-medium text-base-content",
-                            "children": [
-                              "Your name"
-                            ],
+                            "children": ["Your name"],
                             "id": "5573a823-a20b-4002-8bc1-013ad80d4c37",
                             "ord": "a0"
                           },
@@ -2324,9 +2192,7 @@
                             "kind": "element",
                             "tag": "span",
                             "class": "text-base font-medium text-base-content",
-                            "children": [
-                              "Email address"
-                            ],
+                            "children": ["Email address"],
                             "id": "db14fac5-50c9-4d15-a0d1-27e636d52975",
                             "ord": "a0"
                           },
@@ -2355,9 +2221,7 @@
                             "kind": "element",
                             "tag": "span",
                             "class": "text-base font-medium text-base-content",
-                            "children": [
-                              "Phone number"
-                            ],
+                            "children": ["Phone number"],
                             "id": "a336ae70-ac5b-4123-935f-8395b37f1faa",
                             "ord": "a0"
                           },
@@ -2385,9 +2249,7 @@
                             "kind": "element",
                             "tag": "span",
                             "class": "text-base font-medium text-base-content",
-                            "children": [
-                              "How can we help?"
-                            ],
+                            "children": ["How can we help?"],
                             "id": "8094fd41-d645-4961-ae72-a18c4fae2583",
                             "ord": "a0"
                           },
@@ -2417,9 +2279,7 @@
                             "attrs": {
                               "type": "submit"
                             },
-                            "children": [
-                              "Send my request"
-                            ],
+                            "children": ["Send my request"],
                             "id": "77ffa405-d6a7-42f8-976a-bcc434d1d43e",
                             "ord": "a0"
                           }
@@ -2465,9 +2325,7 @@
                         "kind": "element",
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
-                        "children": [
-                          "Come say hello"
-                        ],
+                        "children": ["Come say hello"],
                         "id": "f9529561-8761-46dd-a066-2c428bd7e68e",
                         "ord": "a0"
                       },
@@ -2475,9 +2333,7 @@
                         "kind": "element",
                         "tag": "address",
                         "class": "text-lg leading-relaxed whitespace-pre-line not-italic text-base-content",
-                        "children": [
-                          "Petal & Post\n14 Marigold Lane\nPortland, OR 97214"
-                        ],
+                        "children": ["Petal & Post\n14 Marigold Lane\nPortland, OR 97214"],
                         "data": {
                           "kind": "value",
                           "ref": "site.identity.address"
@@ -2499,9 +2355,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "font-medium text-base-content",
-                                "children": [
-                                  "Tuesday – Friday"
-                                ],
+                                "children": ["Tuesday – Friday"],
                                 "id": "cc14b631-2f76-41bb-ac5e-36a05454bb9b",
                                 "ord": "a0"
                               },
@@ -2509,9 +2363,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-base-content",
-                                "children": [
-                                  "9:00 – 6:00"
-                                ],
+                                "children": ["9:00 – 6:00"],
                                 "id": "d060b5f8-c6c0-4d9d-a67d-a365a05683a0",
                                 "ord": "a1"
                               }
@@ -2528,9 +2380,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "font-medium text-base-content",
-                                "children": [
-                                  "Saturday"
-                                ],
+                                "children": ["Saturday"],
                                 "id": "c959cc3c-9370-46e1-9765-5580e6884044",
                                 "ord": "a0"
                               },
@@ -2538,9 +2388,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-base-content",
-                                "children": [
-                                  "9:00 – 5:00"
-                                ],
+                                "children": ["9:00 – 5:00"],
                                 "id": "6d8e8d3f-1cba-4e21-a4fa-ce1835805b6d",
                                 "ord": "a1"
                               }
@@ -2557,9 +2405,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "font-medium text-base-content",
-                                "children": [
-                                  "Sunday"
-                                ],
+                                "children": ["Sunday"],
                                 "id": "64c27473-5d49-4842-96fa-3f0ade7592e5",
                                 "ord": "a0"
                               },
@@ -2567,9 +2413,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-base-content",
-                                "children": [
-                                  "10:00 – 3:00"
-                                ],
+                                "children": ["10:00 – 3:00"],
                                 "id": "b9dbf7c0-894f-498b-b984-a5d2bb754a8c",
                                 "ord": "a1"
                               }
@@ -2586,9 +2430,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "font-medium text-base-content",
-                                "children": [
-                                  "Monday"
-                                ],
+                                "children": ["Monday"],
                                 "id": "30fd74b4-2f2e-4ad5-b8af-099ca0b5901a",
                                 "ord": "a0"
                               },
@@ -2596,9 +2438,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-base-content",
-                                "children": [
-                                  "Closed"
-                                ],
+                                "children": ["Closed"],
                                 "id": "50fa94a1-b72e-40e2-baf7-b757cac8177a",
                                 "ord": "a1"
                               }
@@ -2649,9 +2489,7 @@
                     "kind": "element",
                     "tag": "h2",
                     "class": "text-3xl font-bold tracking-tight @3xl:text-4xl",
-                    "children": [
-                      "Rather book online?"
-                    ],
+                    "children": ["Rather book online?"],
                     "id": "673aa21a-30a3-419b-b08b-0d41811aa10e",
                     "ord": "a0"
                   },
@@ -2672,9 +2510,7 @@
                     "attrs": {
                       "href": "/book"
                     },
-                    "children": [
-                      "Book a consult"
-                    ],
+                    "children": ["Book a consult"],
                     "id": "c622a260-cf1e-4d3e-b55a-3ab20bd616a2",
                     "ord": "a2"
                   }

@@ -37,9 +37,7 @@
                       "attrs": {
                         "href": "/book"
                       },
-                      "children": [
-                        "Book"
-                      ],
+                      "children": ["Book"],
                       "slot": {
                         "name": "link1",
                         "type": "link",
@@ -55,9 +53,7 @@
                       "attrs": {
                         "href": "/about"
                       },
-                      "children": [
-                        "About"
-                      ],
+                      "children": ["About"],
                       "slot": {
                         "name": "link2",
                         "type": "link",
@@ -73,9 +69,7 @@
                       "attrs": {
                         "href": "/contact"
                       },
-                      "children": [
-                        "Contact"
-                      ],
+                      "children": ["Contact"],
                       "slot": {
                         "name": "link3",
                         "type": "link",
@@ -100,9 +94,7 @@
                       "attrs": {
                         "href": "/account/login"
                       },
-                      "children": [
-                        "Sign in"
-                      ],
+                      "children": ["Sign in"],
                       "slot": {
                         "name": "secondary",
                         "type": "link",
@@ -180,9 +172,7 @@
                   "attrs": {
                     "href": "/book"
                   },
-                  "children": [
-                    "Book"
-                  ],
+                  "children": ["Book"],
                   "slot": {
                     "name": "link1",
                     "type": "link",
@@ -198,9 +188,7 @@
                   "attrs": {
                     "href": "/about"
                   },
-                  "children": [
-                    "About"
-                  ],
+                  "children": ["About"],
                   "slot": {
                     "name": "link2",
                     "type": "link",
@@ -216,9 +204,7 @@
                   "attrs": {
                     "href": "/contact"
                   },
-                  "children": [
-                    "Contact"
-                  ],
+                  "children": ["Contact"],
                   "slot": {
                     "name": "link3",
                     "type": "link",
@@ -321,9 +307,7 @@
                           "kind": "element",
                           "tag": "p",
                           "class": "max-w-xs text-sm text-base-content",
-                          "children": [
-                            "Everything you publish, in one place."
-                          ],
+                          "children": ["Everything you publish, in one place."],
                           "slot": {
                             "name": "blurb",
                             "type": "text",
@@ -356,9 +340,7 @@
                           "kind": "element",
                           "tag": "p",
                           "class": "text-sm font-semibold text-base-content",
-                          "children": [
-                            "Explore"
-                          ],
+                          "children": ["Explore"],
                           "slot": {
                             "name": "col1",
                             "type": "text",
@@ -386,9 +368,7 @@
                                   "attrs": {
                                     "href": "/book"
                                   },
-                                  "children": [
-                                    "Book"
-                                  ],
+                                  "children": ["Book"],
                                   "slot": {
                                     "name": "link1",
                                     "type": "link",
@@ -412,9 +392,7 @@
                                   "attrs": {
                                     "href": "/about"
                                   },
-                                  "children": [
-                                    "About"
-                                  ],
+                                  "children": ["About"],
                                   "slot": {
                                     "name": "link2",
                                     "type": "link",
@@ -438,9 +416,7 @@
                                   "attrs": {
                                     "href": "/contact"
                                   },
-                                  "children": [
-                                    "Contact"
-                                  ],
+                                  "children": ["Contact"],
                                   "slot": {
                                     "name": "link3",
                                     "type": "link",
@@ -464,9 +440,7 @@
                                   "attrs": {
                                     "href": "/search"
                                   },
-                                  "children": [
-                                    "Search"
-                                  ],
+                                  "children": ["Search"],
                                   "slot": {
                                     "name": "link4",
                                     "type": "link",
@@ -559,9 +533,7 @@
                           "kind": "element",
                           "tag": "span",
                           "class": "font-medium",
-                          "children": [
-                            "Your site"
-                          ],
+                          "children": ["Your site"],
                           "data": {
                             "kind": "value",
                             "ref": "site.identity.name"
@@ -624,9 +596,7 @@
                     "kind": "element",
                     "tag": "h1",
                     "class": "text-5xl font-bold leading-none tracking-tight @2xl:text-6xl @3xl:text-7xl",
-                    "children": [
-                      "Show up. Get strong. No ego."
-                    ],
+                    "children": ["Show up. Get strong. No ego."],
                     "id": "f45a1c3c-e6d4-486a-9642-e8883eac0771",
                     "ord": "a0"
                   },
@@ -652,9 +622,7 @@
                         "attrs": {
                           "href": "/book"
                         },
-                        "children": [
-                          "Claim your spot"
-                        ],
+                        "children": ["Claim your spot"],
                         "id": "3a81aea4-d93e-4aa5-bea3-c68b4c0fa94b",
                         "ord": "a0"
                       },
@@ -665,9 +633,7 @@
                         "attrs": {
                           "href": "/book"
                         },
-                        "children": [
-                          "See the board"
-                        ],
+                        "children": ["See the board"],
                         "id": "7a1f56b2-bef9-4dd7-84c2-1b03bea4e471",
                         "ord": "a1"
                       }
@@ -707,9 +673,7 @@
                             "kind": "element",
                             "tag": "h2",
                             "class": "text-xl font-semibold text-base-content",
-                            "children": [
-                              "Coaches, not a playlist"
-                            ],
+                            "children": ["Coaches, not a playlist"],
                             "id": "7c1c25b3-8144-4116-b390-103fdfa4a8aa",
                             "ord": "a0"
                           },
@@ -736,9 +700,7 @@
                             "kind": "element",
                             "tag": "h2",
                             "class": "text-xl font-semibold text-base-content",
-                            "children": [
-                              "Small groups, hard caps"
-                            ],
+                            "children": ["Small groups, hard caps"],
                             "id": "70853eef-be4e-408e-b217-f9a144a10746",
                             "ord": "a0"
                           },
@@ -765,9 +727,7 @@
                             "kind": "element",
                             "tag": "h2",
                             "class": "text-xl font-semibold text-base-content",
-                            "children": [
-                              "Every level scaled"
-                            ],
+                            "children": ["Every level scaled"],
                             "id": "f81f41ce-bb56-46a5-9b6f-95d4ca51c2dc",
                             "ord": "a0"
                           },
@@ -828,9 +788,7 @@
                         "kind": "element",
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
-                        "children": [
-                          "Real programming, not random punishment"
-                        ],
+                        "children": ["Real programming, not random punishment"],
                         "id": "c0b79884-9cef-404a-b602-3b1b3084bdb4",
                         "ord": "a0"
                       },
@@ -866,9 +824,7 @@
                             "attrs": {
                               "href": "/book"
                             },
-                            "children": [
-                              "Start free"
-                            ],
+                            "children": ["Start free"],
                             "id": "7818b67e-bc8a-4a95-825a-fb856732c0d8",
                             "ord": "a0"
                           }
@@ -907,9 +863,7 @@
                         "kind": "element",
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
-                        "children": [
-                          "The board"
-                        ],
+                        "children": ["The board"],
                         "id": "f36e03ed-9cff-4620-a5d0-b4c56fa0774f",
                         "ord": "a0"
                       },
@@ -949,9 +903,7 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
-                                "children": [
-                                  "Strength"
-                                ],
+                                "children": ["Strength"],
                                 "id": "2c2f4b47-c164-44cb-83bd-f240857bbdd1",
                                 "ord": "a0"
                               },
@@ -959,9 +911,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-bold text-base-content",
-                                "children": [
-                                  "$30"
-                                ],
+                                "children": ["$30"],
                                 "id": "bfcfaee9-c174-4427-aa43-a224c1c66d7d",
                                 "ord": "a1"
                               }
@@ -973,9 +923,7 @@
                             "kind": "element",
                             "tag": "p",
                             "class": "text-sm font-medium uppercase tracking-wide text-secondary",
-                            "children": [
-                              "1 hr"
-                            ],
+                            "children": ["1 hr"],
                             "id": "af893c54-16f7-4d5e-843a-e9129461fdc8",
                             "ord": "a1"
                           },
@@ -983,9 +931,7 @@
                             "kind": "element",
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
-                            "children": [
-                              "Barbell strength, coached, capped at 14."
-                            ],
+                            "children": ["Barbell strength, coached, capped at 14."],
                             "id": "02ff353c-04e9-47da-abf2-83014dc6197a",
                             "ord": "a2"
                           }
@@ -1010,9 +956,7 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
-                                "children": [
-                                  "HIIT"
-                                ],
+                                "children": ["HIIT"],
                                 "id": "c728401f-17de-4936-b7a5-fe328ffdd3f1",
                                 "ord": "a0"
                               },
@@ -1020,9 +964,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-bold text-base-content",
-                                "children": [
-                                  "$28"
-                                ],
+                                "children": ["$28"],
                                 "id": "9dff638a-199b-4c27-8867-e574776a86fe",
                                 "ord": "a1"
                               }
@@ -1034,9 +976,7 @@
                             "kind": "element",
                             "tag": "p",
                             "class": "text-sm font-medium uppercase tracking-wide text-secondary",
-                            "children": [
-                              "45 min"
-                            ],
+                            "children": ["45 min"],
                             "id": "81c35600-5528-4f16-8637-581193599d94",
                             "ord": "a1"
                           },
@@ -1044,9 +984,7 @@
                             "kind": "element",
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
-                            "children": [
-                              "Loud intervals, full recoveries, your intensity."
-                            ],
+                            "children": ["Loud intervals, full recoveries, your intensity."],
                             "id": "5abc85ee-0b73-4b72-9c96-4bf488a240d6",
                             "ord": "a2"
                           }
@@ -1071,9 +1009,7 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
-                                "children": [
-                                  "Metcon"
-                                ],
+                                "children": ["Metcon"],
                                 "id": "985d73de-7198-4ff7-a33e-92ce0432b845",
                                 "ord": "a0"
                               },
@@ -1081,9 +1017,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-bold text-base-content",
-                                "children": [
-                                  "$28"
-                                ],
+                                "children": ["$28"],
                                 "id": "513fc26f-55df-4797-9cb6-e18aef4ad425",
                                 "ord": "a1"
                               }
@@ -1095,9 +1029,7 @@
                             "kind": "element",
                             "tag": "p",
                             "class": "text-sm font-medium uppercase tracking-wide text-secondary",
-                            "children": [
-                              "45 min"
-                            ],
+                            "children": ["45 min"],
                             "id": "b65fe755-3b3f-4c45-a72b-13051fb67e3f",
                             "ord": "a1"
                           },
@@ -1105,9 +1037,7 @@
                             "kind": "element",
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
-                            "children": [
-                              "Mixed-modal conditioning with a score to chase."
-                            ],
+                            "children": ["Mixed-modal conditioning with a score to chase."],
                             "id": "659c072f-3ec9-47a1-a531-a28dff8336af",
                             "ord": "a2"
                           }
@@ -1132,9 +1062,7 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
-                                "children": [
-                                  "Foundations"
-                                ],
+                                "children": ["Foundations"],
                                 "id": "43458446-de5a-422d-b79b-94d1a98144f0",
                                 "ord": "a0"
                               },
@@ -1142,9 +1070,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-bold text-base-content",
-                                "children": [
-                                  "$25"
-                                ],
+                                "children": ["$25"],
                                 "id": "1f60cfdc-ef15-4224-bb90-f56eb4bbe286",
                                 "ord": "a1"
                               }
@@ -1156,9 +1082,7 @@
                             "kind": "element",
                             "tag": "p",
                             "class": "text-sm font-medium uppercase tracking-wide text-secondary",
-                            "children": [
-                              "45 min"
-                            ],
+                            "children": ["45 min"],
                             "id": "3b2502fb-1456-42a2-8026-c214b5daaac4",
                             "ord": "a1"
                           },
@@ -1166,9 +1090,7 @@
                             "kind": "element",
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
-                            "children": [
-                              "The six core lifts, drilled from zero."
-                            ],
+                            "children": ["The six core lifts, drilled from zero."],
                             "id": "22cc9658-a104-4f53-ba4c-cdd327cb8176",
                             "ord": "a2"
                           }
@@ -1193,9 +1115,7 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
-                                "children": [
-                                  "Engine"
-                                ],
+                                "children": ["Engine"],
                                 "id": "e9f0282e-07b9-4ab2-b123-55bfe7cb1263",
                                 "ord": "a0"
                               },
@@ -1203,9 +1123,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-bold text-base-content",
-                                "children": [
-                                  "$25"
-                                ],
+                                "children": ["$25"],
                                 "id": "288ffc8e-c11c-4e41-b18d-01dff49e0e5d",
                                 "ord": "a1"
                               }
@@ -1217,9 +1135,7 @@
                             "kind": "element",
                             "tag": "p",
                             "class": "text-sm font-medium uppercase tracking-wide text-secondary",
-                            "children": [
-                              "30 min"
-                            ],
+                            "children": ["30 min"],
                             "id": "9aaaba93-5dd4-4763-966c-c0f905af720f",
                             "ord": "a1"
                           },
@@ -1227,9 +1143,7 @@
                             "kind": "element",
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
-                            "children": [
-                              "Thirty minutes of pure conditioning."
-                            ],
+                            "children": ["Thirty minutes of pure conditioning."],
                             "id": "7f335951-7254-4d4b-87c9-9a1675d3c0f8",
                             "ord": "a2"
                           }
@@ -1254,9 +1168,7 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
-                                "children": [
-                                  "1:1 Personal training"
-                                ],
+                                "children": ["1:1 Personal training"],
                                 "id": "cd38998a-be77-4aba-98ea-744930e64d5a",
                                 "ord": "a0"
                               },
@@ -1264,9 +1176,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-bold text-base-content",
-                                "children": [
-                                  "$85"
-                                ],
+                                "children": ["$85"],
                                 "id": "91f555cf-764c-416b-a8c9-c0ac9a48175a",
                                 "ord": "a1"
                               }
@@ -1278,9 +1188,7 @@
                             "kind": "element",
                             "tag": "p",
                             "class": "text-sm font-medium uppercase tracking-wide text-secondary",
-                            "children": [
-                              "1 hr"
-                            ],
+                            "children": ["1 hr"],
                             "id": "3e31c078-aabe-4c2b-9c98-cdda2456ebe3",
                             "ord": "a1"
                           },
@@ -1288,9 +1196,7 @@
                             "kind": "element",
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
-                            "children": [
-                              "Your coach, your plan, your schedule."
-                            ],
+                            "children": ["Your coach, your plan, your schedule."],
                             "id": "5d9d3fd4-e001-4839-9ba1-6a3662b7b13f",
                             "ord": "a2"
                           }
@@ -1314,9 +1220,7 @@
                         "attrs": {
                           "href": "/book"
                         },
-                        "children": [
-                          "See the schedule & book"
-                        ],
+                        "children": ["See the schedule & book"],
                         "id": "edd13c07-3882-47d4-ae98-3d403083e4e0",
                         "ord": "a0"
                       }
@@ -1351,9 +1255,7 @@
                         "kind": "element",
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
-                        "children": [
-                          "Your coaches"
-                        ],
+                        "children": ["Your coaches"],
                         "id": "9a890cd1-8f36-4d8a-b51f-158f3b2bc315",
                         "ord": "a0"
                       },
@@ -1402,9 +1304,7 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
-                                "children": [
-                                  "Marcus Vane"
-                                ],
+                                "children": ["Marcus Vane"],
                                 "id": "e76ccc14-8d10-4ade-aaaa-460ff09cd5d2",
                                 "ord": "a0"
                               },
@@ -1412,9 +1312,7 @@
                                 "kind": "element",
                                 "tag": "p",
                                 "class": "text-sm font-medium uppercase tracking-wide text-secondary",
-                                "children": [
-                                  "Head strength coach"
-                                ],
+                                "children": ["Head strength coach"],
                                 "id": "6a515d6d-ea4e-474e-b2ad-e25fd7687058",
                                 "ord": "a1"
                               },
@@ -1462,9 +1360,7 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
-                                "children": [
-                                  "Déja Okafor"
-                                ],
+                                "children": ["Déja Okafor"],
                                 "id": "8fddf03d-16fe-4d39-9772-6250cf158ba0",
                                 "ord": "a0"
                               },
@@ -1472,9 +1368,7 @@
                                 "kind": "element",
                                 "tag": "p",
                                 "class": "text-sm font-medium uppercase tracking-wide text-secondary",
-                                "children": [
-                                  "Conditioning coach"
-                                ],
+                                "children": ["Conditioning coach"],
                                 "id": "379802e5-e2e7-48c9-8d40-d4e094983d41",
                                 "ord": "a1"
                               },
@@ -1522,9 +1416,7 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
-                                "children": [
-                                  "Theo Marsh"
-                                ],
+                                "children": ["Theo Marsh"],
                                 "id": "0044cd74-276f-45d5-8063-a72612b6d88a",
                                 "ord": "a0"
                               },
@@ -1532,9 +1424,7 @@
                                 "kind": "element",
                                 "tag": "p",
                                 "class": "text-sm font-medium uppercase tracking-wide text-secondary",
-                                "children": [
-                                  "Foundations coach"
-                                ],
+                                "children": ["Foundations coach"],
                                 "id": "7691817e-8bfb-4c50-a68b-5cb3c6cbc71d",
                                 "ord": "a1"
                               },
@@ -1582,9 +1472,7 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
-                                "children": [
-                                  "Rae Calloway"
-                                ],
+                                "children": ["Rae Calloway"],
                                 "id": "2e96303b-b720-4ddc-a314-7da264c7ef7c",
                                 "ord": "a0"
                               },
@@ -1592,9 +1480,7 @@
                                 "kind": "element",
                                 "tag": "p",
                                 "class": "text-sm font-medium uppercase tracking-wide text-secondary",
-                                "children": [
-                                  "Strength & PT coach"
-                                ],
+                                "children": ["Strength & PT coach"],
                                 "id": "906647d7-35af-4f95-beeb-da5a5a23d7e4",
                                 "ord": "a1"
                               },
@@ -1642,9 +1528,7 @@
                     "kind": "element",
                     "tag": "h2",
                     "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
-                    "children": [
-                      "Inside the room"
-                    ],
+                    "children": ["Inside the room"],
                     "id": "53663092-91de-4388-bc6b-b47fc3fc66a5",
                     "ord": "a0"
                   },
@@ -1725,9 +1609,7 @@
                     "kind": "element",
                     "tag": "p",
                     "class": "text-sm font-semibold uppercase tracking-wide opacity-80",
-                    "children": [
-                      "Devon, member since this spring"
-                    ],
+                    "children": ["Devon, member since this spring"],
                     "id": "ce34205a-d212-460c-838a-add579dc067b",
                     "ord": "a1"
                   }
@@ -1753,9 +1635,7 @@
                     "kind": "element",
                     "tag": "h2",
                     "class": "text-3xl font-bold tracking-tight @3xl:text-4xl",
-                    "children": [
-                      "Your first session is on us"
-                    ],
+                    "children": ["Your first session is on us"],
                     "id": "7fcd7388-e340-4b4e-9ab3-b32c787344f6",
                     "ord": "a0"
                   },
@@ -1776,9 +1656,7 @@
                     "attrs": {
                       "href": "/book"
                     },
-                    "children": [
-                      "Claim your spot"
-                    ],
+                    "children": ["Claim your spot"],
                     "id": "6ebe0574-1105-4e01-86b3-04a23d9744e7",
                     "ord": "a2"
                   }
@@ -1839,9 +1717,7 @@
                     "kind": "element",
                     "tag": "h1",
                     "class": "max-w-3xl text-4xl font-bold leading-tight tracking-tight @2xl:text-5xl @3xl:text-6xl",
-                    "children": [
-                      "Book your session"
-                    ],
+                    "children": ["Book your session"],
                     "id": "61f3447e-ce5a-42d2-a776-79b717a5b0d5",
                     "ord": "a0"
                   },
@@ -1867,9 +1743,7 @@
                         "attrs": {
                           "href": "/book"
                         },
-                        "children": [
-                          "See the board below"
-                        ],
+                        "children": ["See the board below"],
                         "id": "cff646e9-d011-4a28-b508-50d1d310f7b1",
                         "ord": "a0"
                       }
@@ -1912,9 +1786,7 @@
                         "kind": "element",
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
-                        "children": [
-                          "Good to know"
-                        ],
+                        "children": ["Good to know"],
                         "id": "bd78a194-1907-4cb0-855e-a91d19e7f5e2",
                         "ord": "a0"
                       },
@@ -1946,9 +1818,7 @@
                             "kind": "element",
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
-                            "children": [
-                              "Class booking"
-                            ],
+                            "children": ["Class booking"],
                             "id": "2e7f6788-83fe-4479-ba3c-15ff1f551199",
                             "ord": "a0"
                           },
@@ -1985,9 +1855,7 @@
                             "kind": "element",
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
-                            "children": [
-                              "Personal-training hold"
-                            ],
+                            "children": ["Personal-training hold"],
                             "id": "24f55c63-9522-4376-9ea5-4f3156a69227",
                             "ord": "a0"
                           },
@@ -2005,9 +1873,7 @@
                             "kind": "element",
                             "tag": "p",
                             "class": "text-base font-medium text-base-content",
-                            "children": [
-                              "Change or cancel free up to 24 hours before."
-                            ],
+                            "children": ["Change or cancel free up to 24 hours before."],
                             "id": "62845fa5-4cb9-4975-ace8-329036222ccf",
                             "ord": "a2"
                           }
@@ -2074,9 +1940,7 @@
                         "kind": "element",
                         "tag": "h1",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
-                        "children": [
-                          "Built for people, not personal records they’ll never chase"
-                        ],
+                        "children": ["Built for people, not personal records they’ll never chase"],
                         "id": "45c496cd-2508-4b9b-a003-2f35c08cb616",
                         "ord": "a0"
                       },
@@ -2112,9 +1976,7 @@
                             "attrs": {
                               "href": "/book"
                             },
-                            "children": [
-                              "Start free"
-                            ],
+                            "children": ["Start free"],
                             "id": "2d0056c6-d46d-42fc-9f6d-2deb91cb429b",
                             "ord": "a0"
                           }
@@ -2148,9 +2010,7 @@
                     "kind": "element",
                     "tag": "h2",
                     "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
-                    "children": [
-                      "How we train"
-                    ],
+                    "children": ["How we train"],
                     "id": "a1fec203-048a-4b6f-8c3b-cbdecdff58d5",
                     "ord": "a0"
                   },
@@ -2168,9 +2028,7 @@
                             "kind": "element",
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
-                            "children": [
-                              "Coached every rep"
-                            ],
+                            "children": ["Coached every rep"],
                             "id": "dee7642e-22db-4f4a-9109-ddc69799212c",
                             "ord": "a0"
                           },
@@ -2197,9 +2055,7 @@
                             "kind": "element",
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
-                            "children": [
-                              "Programmed on purpose"
-                            ],
+                            "children": ["Programmed on purpose"],
                             "id": "c3e4ae60-30e4-4c1f-aae8-b432d30e01f6",
                             "ord": "a0"
                           },
@@ -2226,9 +2082,7 @@
                             "kind": "element",
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
-                            "children": [
-                              "Scaled for you"
-                            ],
+                            "children": ["Scaled for you"],
                             "id": "129fae8e-c927-4c1c-a225-8c19bf01c0e9",
                             "ord": "a0"
                           },
@@ -2293,9 +2147,7 @@
                         "kind": "element",
                         "tag": "h1",
                         "class": "text-4xl font-bold tracking-tight text-base-content @3xl:text-5xl",
-                        "children": [
-                          "Get in touch"
-                        ],
+                        "children": ["Get in touch"],
                         "id": "8ebee656-c1bc-4852-bfe0-b7f4d53f437b",
                         "ord": "a0"
                       },
@@ -2322,9 +2174,7 @@
                         "kind": "element",
                         "tag": "span",
                         "class": "text-base font-medium text-base-content",
-                        "children": [
-                          "Call us"
-                        ],
+                        "children": ["Call us"],
                         "id": "5bfbf9d3-1311-480d-867c-801a84b80fd7",
                         "ord": "a0"
                       },
@@ -2336,9 +2186,7 @@
                           {
                             "kind": "element",
                             "tag": "span",
-                            "children": [
-                              "(555) 123-4567"
-                            ],
+                            "children": ["(555) 123-4567"],
                             "data": {
                               "kind": "value",
                               "ref": "site.identity.phone"
@@ -2372,9 +2220,7 @@
                         "kind": "element",
                         "tag": "span",
                         "class": "text-base font-medium text-base-content",
-                        "children": [
-                          "Email us"
-                        ],
+                        "children": ["Email us"],
                         "id": "c0a386a6-2c3a-4607-bd52-56e794e823b2",
                         "ord": "a0"
                       },
@@ -2386,9 +2232,7 @@
                           {
                             "kind": "element",
                             "tag": "span",
-                            "children": [
-                              "hello@yourbusiness.com"
-                            ],
+                            "children": ["hello@yourbusiness.com"],
                             "data": {
                               "kind": "value",
                               "ref": "site.identity.email"
@@ -2427,9 +2271,7 @@
                             "kind": "element",
                             "tag": "span",
                             "class": "text-base font-medium text-base-content",
-                            "children": [
-                              "Your name"
-                            ],
+                            "children": ["Your name"],
                             "id": "9db46bb9-f877-4d1c-9872-81a4ed77ec09",
                             "ord": "a0"
                           },
@@ -2458,9 +2300,7 @@
                             "kind": "element",
                             "tag": "span",
                             "class": "text-base font-medium text-base-content",
-                            "children": [
-                              "Email address"
-                            ],
+                            "children": ["Email address"],
                             "id": "dff9e296-5c0c-4af0-a389-fac7c2379218",
                             "ord": "a0"
                           },
@@ -2489,9 +2329,7 @@
                             "kind": "element",
                             "tag": "span",
                             "class": "text-base font-medium text-base-content",
-                            "children": [
-                              "Phone number"
-                            ],
+                            "children": ["Phone number"],
                             "id": "33a686cf-7fee-48f6-9d2d-10c21e775866",
                             "ord": "a0"
                           },
@@ -2519,9 +2357,7 @@
                             "kind": "element",
                             "tag": "span",
                             "class": "text-base font-medium text-base-content",
-                            "children": [
-                              "How can we help?"
-                            ],
+                            "children": ["How can we help?"],
                             "id": "41c480ae-d705-49ed-a898-bdb10fb0e977",
                             "ord": "a0"
                           },
@@ -2551,9 +2387,7 @@
                             "attrs": {
                               "type": "submit"
                             },
-                            "children": [
-                              "Send my request"
-                            ],
+                            "children": ["Send my request"],
                             "id": "830102e8-8fb6-40f2-aa9e-1c01da7dd72e",
                             "ord": "a0"
                           }
@@ -2599,9 +2433,7 @@
                         "kind": "element",
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
-                        "children": [
-                          "Find the floor"
-                        ],
+                        "children": ["Find the floor"],
                         "id": "75b6f6ce-f20e-496e-ac97-9af33e186b84",
                         "ord": "a0"
                       },
@@ -2633,9 +2465,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "font-medium text-base-content",
-                                "children": [
-                                  "Monday – Friday"
-                                ],
+                                "children": ["Monday – Friday"],
                                 "id": "cbd0f0d3-e5b7-4691-a4ca-7ab0f17ab081",
                                 "ord": "a0"
                               },
@@ -2643,9 +2473,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-base-content",
-                                "children": [
-                                  "5:00 – 21:00"
-                                ],
+                                "children": ["5:00 – 21:00"],
                                 "id": "1e728881-3dbc-4fb2-ba82-441171314255",
                                 "ord": "a1"
                               }
@@ -2662,9 +2490,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "font-medium text-base-content",
-                                "children": [
-                                  "Saturday"
-                                ],
+                                "children": ["Saturday"],
                                 "id": "46ff1073-13fc-4273-b636-cc307e4a0407",
                                 "ord": "a0"
                               },
@@ -2672,9 +2498,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-base-content",
-                                "children": [
-                                  "7:00 – 15:00"
-                                ],
+                                "children": ["7:00 – 15:00"],
                                 "id": "c6044489-45af-4249-9b6d-ef8d0342eee6",
                                 "ord": "a1"
                               }
@@ -2691,9 +2515,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "font-medium text-base-content",
-                                "children": [
-                                  "Sunday"
-                                ],
+                                "children": ["Sunday"],
                                 "id": "2a48ba8f-42e9-4db3-9488-5b01142baabf",
                                 "ord": "a0"
                               },
@@ -2701,9 +2523,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-base-content",
-                                "children": [
-                                  "8:00 – 13:00"
-                                ],
+                                "children": ["8:00 – 13:00"],
                                 "id": "d37eb210-d7e5-4ac2-bb4f-8b906129f0e1",
                                 "ord": "a1"
                               }
@@ -2720,9 +2540,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "font-medium text-base-content",
-                                "children": [
-                                  "Staffed coaching"
-                                ],
+                                "children": ["Staffed coaching"],
                                 "id": "feb81b56-1d4e-46a8-969b-21dee0561216",
                                 "ord": "a0"
                               },
@@ -2730,9 +2548,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-base-content",
-                                "children": [
-                                  "See class times"
-                                ],
+                                "children": ["See class times"],
                                 "id": "b1082483-c3b4-42e1-87ee-e5b5593fea50",
                                 "ord": "a1"
                               }
@@ -2783,9 +2599,7 @@
                     "kind": "element",
                     "tag": "h2",
                     "class": "text-3xl font-bold tracking-tight @3xl:text-4xl",
-                    "children": [
-                      "Stop scrolling. Start lifting."
-                    ],
+                    "children": ["Stop scrolling. Start lifting."],
                     "id": "97f91f9c-5bb1-4685-8dc5-03a79fbf02cb",
                     "ord": "a0"
                   },
@@ -2806,9 +2620,7 @@
                     "attrs": {
                       "href": "/book"
                     },
-                    "children": [
-                      "Book online"
-                    ],
+                    "children": ["Book online"],
                     "id": "ab10abe8-2bac-470d-9823-7cfcc77deef8",
                     "ord": "a2"
                   }

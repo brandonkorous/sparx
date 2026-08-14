@@ -1,11 +1,11 @@
-import React from "react";
-import { getPigglesCharacter } from "./pigglesCharacters";
+import React from 'react';
+import { getPigglesCharacter } from './pigglesCharacters';
 
 export function PigglesCharacter({
-  id = "neutral",
+  id = 'neutral',
   alt,
-  className = "",
-  loading = "lazy",
+  className = '',
+  loading = 'lazy',
   ...props
 }) {
   const character = getPigglesCharacter(id);

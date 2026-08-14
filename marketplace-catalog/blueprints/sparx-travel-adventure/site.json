@@ -37,9 +37,7 @@
                       "attrs": {
                         "href": "/book"
                       },
-                      "children": [
-                        "Book"
-                      ],
+                      "children": ["Book"],
                       "slot": {
                         "name": "link1",
                         "type": "link",
@@ -55,9 +53,7 @@
                       "attrs": {
                         "href": "/about"
                       },
-                      "children": [
-                        "About"
-                      ],
+                      "children": ["About"],
                       "slot": {
                         "name": "link2",
                         "type": "link",
@@ -73,9 +69,7 @@
                       "attrs": {
                         "href": "/contact"
                       },
-                      "children": [
-                        "Contact"
-                      ],
+                      "children": ["Contact"],
                       "slot": {
                         "name": "link3",
                         "type": "link",
@@ -100,9 +94,7 @@
                       "attrs": {
                         "href": "/account/login"
                       },
-                      "children": [
-                        "Sign in"
-                      ],
+                      "children": ["Sign in"],
                       "slot": {
                         "name": "secondary",
                         "type": "link",
@@ -180,9 +172,7 @@
                   "attrs": {
                     "href": "/book"
                   },
-                  "children": [
-                    "Book"
-                  ],
+                  "children": ["Book"],
                   "slot": {
                     "name": "link1",
                     "type": "link",
@@ -198,9 +188,7 @@
                   "attrs": {
                     "href": "/about"
                   },
-                  "children": [
-                    "About"
-                  ],
+                  "children": ["About"],
                   "slot": {
                     "name": "link2",
                     "type": "link",
@@ -216,9 +204,7 @@
                   "attrs": {
                     "href": "/contact"
                   },
-                  "children": [
-                    "Contact"
-                  ],
+                  "children": ["Contact"],
                   "slot": {
                     "name": "link3",
                     "type": "link",
@@ -321,9 +307,7 @@
                           "kind": "element",
                           "tag": "p",
                           "class": "max-w-xs text-sm text-base-content",
-                          "children": [
-                            "Everything you publish, in one place."
-                          ],
+                          "children": ["Everything you publish, in one place."],
                           "slot": {
                             "name": "blurb",
                             "type": "text",
@@ -356,9 +340,7 @@
                           "kind": "element",
                           "tag": "p",
                           "class": "text-sm font-semibold text-base-content",
-                          "children": [
-                            "Explore"
-                          ],
+                          "children": ["Explore"],
                           "slot": {
                             "name": "col1",
                             "type": "text",
@@ -386,9 +368,7 @@
                                   "attrs": {
                                     "href": "/book"
                                   },
-                                  "children": [
-                                    "Book"
-                                  ],
+                                  "children": ["Book"],
                                   "slot": {
                                     "name": "link1",
                                     "type": "link",
@@ -412,9 +392,7 @@
                                   "attrs": {
                                     "href": "/about"
                                   },
-                                  "children": [
-                                    "About"
-                                  ],
+                                  "children": ["About"],
                                   "slot": {
                                     "name": "link2",
                                     "type": "link",
@@ -438,9 +416,7 @@
                                   "attrs": {
                                     "href": "/contact"
                                   },
-                                  "children": [
-                                    "Contact"
-                                  ],
+                                  "children": ["Contact"],
                                   "slot": {
                                     "name": "link3",
                                     "type": "link",
@@ -464,9 +440,7 @@
                                   "attrs": {
                                     "href": "/search"
                                   },
-                                  "children": [
-                                    "Search"
-                                  ],
+                                  "children": ["Search"],
                                   "slot": {
                                     "name": "link4",
                                     "type": "link",
@@ -559,9 +533,7 @@
                           "kind": "element",
                           "tag": "span",
                           "class": "font-medium",
-                          "children": [
-                            "Your site"
-                          ],
+                          "children": ["Your site"],
                           "data": {
                             "kind": "value",
                             "ref": "site.identity.name"
@@ -643,9 +615,7 @@
                     "kind": "element",
                     "tag": "h1",
                     "class": "max-w-3xl text-4xl font-bold leading-tight tracking-tight @2xl:text-5xl @3xl:text-6xl",
-                    "children": [
-                      "Go further than the guidebook"
-                    ],
+                    "children": ["Go further than the guidebook"],
                     "id": "df82fe8f-08bd-4b76-b493-1684b60d6423",
                     "ord": "a0"
                   },
@@ -671,9 +641,7 @@
                         "attrs": {
                           "href": "/book"
                         },
-                        "children": [
-                          "Plan your adventure"
-                        ],
+                        "children": ["Plan your adventure"],
                         "id": "626db17b-3517-4d56-8cea-7bf6a4099b68",
                         "ord": "a0"
                       },
@@ -684,9 +652,7 @@
                         "attrs": {
                           "href": "/book"
                         },
-                        "children": [
-                          "See how it works"
-                        ],
+                        "children": ["See how it works"],
                         "id": "71e230e7-716d-439b-9a67-b5eb104a67e5",
                         "ord": "a1"
                       }
@@ -726,9 +692,7 @@
                             "kind": "element",
                             "tag": "h2",
                             "class": "text-xl font-semibold text-base-content",
-                            "children": [
-                              "Real adventure specialists"
-                            ],
+                            "children": ["Real adventure specialists"],
                             "id": "058b8d21-3eab-4290-ae5b-5246ccb4a409",
                             "ord": "a0"
                           },
@@ -755,9 +719,7 @@
                             "kind": "element",
                             "tag": "h2",
                             "class": "text-xl font-semibold text-base-content",
-                            "children": [
-                              "Small groups & solo, both"
-                            ],
+                            "children": ["Small groups & solo, both"],
                             "id": "4c3d9a2d-1a10-4ac5-8c9a-a98126d247ad",
                             "ord": "a0"
                           },
@@ -784,9 +746,7 @@
                             "kind": "element",
                             "tag": "h2",
                             "class": "text-xl font-semibold text-base-content",
-                            "children": [
-                              "Responsible & local"
-                            ],
+                            "children": ["Responsible & local"],
                             "id": "300ad7d8-4a91-4064-b306-563dcc7c033d",
                             "ord": "a0"
                           },
@@ -813,9 +773,7 @@
                             "kind": "element",
                             "tag": "h2",
                             "class": "text-xl font-semibold text-base-content",
-                            "children": [
-                              "Logistics handled"
-                            ],
+                            "children": ["Logistics handled"],
                             "id": "e16e860d-5992-4d3a-8c50-ad66418a9f1f",
                             "ord": "a0"
                           },
@@ -864,9 +822,7 @@
                         "kind": "element",
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
-                        "children": [
-                          "Where do you want to go?"
-                        ],
+                        "children": ["Where do you want to go?"],
                         "id": "4b85099e-5d99-42bb-a9ca-67ad28194fb0",
                         "ord": "a0"
                       },
@@ -906,9 +862,7 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
-                                "children": [
-                                  "Discovery call"
-                                ],
+                                "children": ["Discovery call"],
                                 "id": "f4d74eeb-34e3-4024-8f61-3348e93c3444",
                                 "ord": "a0"
                               },
@@ -916,9 +870,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-bold text-base-content",
-                                "children": [
-                                  "$0"
-                                ],
+                                "children": ["$0"],
                                 "id": "57178403-0ac1-43e8-a9d2-d768fc25ce3e",
                                 "ord": "a1"
                               }
@@ -930,9 +882,7 @@
                             "kind": "element",
                             "tag": "p",
                             "class": "text-sm font-medium uppercase tracking-wide text-secondary",
-                            "children": [
-                              "30 min"
-                            ],
+                            "children": ["30 min"],
                             "id": "05139562-b0d4-4bc9-b542-b8e3c6d34025",
                             "ord": "a1"
                           },
@@ -940,9 +890,7 @@
                             "kind": "element",
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
-                            "children": [
-                              "Free — talk it through, find your next step."
-                            ],
+                            "children": ["Free — talk it through, find your next step."],
                             "id": "f4fd030e-e140-4f48-a8ce-cfba5cff4b40",
                             "ord": "a2"
                           }
@@ -967,9 +915,7 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
-                                "children": [
-                                  "Custom adventure planning"
-                                ],
+                                "children": ["Custom adventure planning"],
                                 "id": "c2b79ca8-e385-4635-b19d-4c0cf96984cc",
                                 "ord": "a0"
                               },
@@ -977,9 +923,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-bold text-base-content",
-                                "children": [
-                                  "$75"
-                                ],
+                                "children": ["$75"],
                                 "id": "da250e24-7c6e-4e06-b8e5-95f98c14e6fb",
                                 "ord": "a1"
                               }
@@ -991,9 +935,7 @@
                             "kind": "element",
                             "tag": "p",
                             "class": "text-sm font-medium uppercase tracking-wide text-secondary",
-                            "children": [
-                              "1 hr"
-                            ],
+                            "children": ["1 hr"],
                             "id": "bf42bbad-12a4-4c47-a327-3415c75603a6",
                             "ord": "a1"
                           },
@@ -1001,9 +943,7 @@
                             "kind": "element",
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
-                            "children": [
-                              "A one-of-a-kind trip built around you."
-                            ],
+                            "children": ["A one-of-a-kind trip built around you."],
                             "id": "8a3c9f55-3c3e-4d3e-9df2-07974adcc3b9",
                             "ord": "a2"
                           }
@@ -1028,9 +968,7 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
-                                "children": [
-                                  "Trekking & hiking"
-                                ],
+                                "children": ["Trekking & hiking"],
                                 "id": "eb1ae02b-270c-4792-b021-fd0785cc7654",
                                 "ord": "a0"
                               },
@@ -1038,9 +976,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-bold text-base-content",
-                                "children": [
-                                  "$50"
-                                ],
+                                "children": ["$50"],
                                 "id": "4d60283e-bd1e-4a18-b195-cad6922a1cbb",
                                 "ord": "a1"
                               }
@@ -1052,9 +988,7 @@
                             "kind": "element",
                             "tag": "p",
                             "class": "text-sm font-medium uppercase tracking-wide text-secondary",
-                            "children": [
-                              "45 min"
-                            ],
+                            "children": ["45 min"],
                             "id": "6c624d1e-e752-463a-b4b4-7b9beb7a83a5",
                             "ord": "a1"
                           },
@@ -1062,9 +996,7 @@
                             "kind": "element",
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
-                            "children": [
-                              "Multi-day treks, permits and huts sorted."
-                            ],
+                            "children": ["Multi-day treks, permits and huts sorted."],
                             "id": "f17a7930-a5ec-45ad-bb5d-43709c603470",
                             "ord": "a2"
                           }
@@ -1089,9 +1021,7 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
-                                "children": [
-                                  "Safari & wildlife"
-                                ],
+                                "children": ["Safari & wildlife"],
                                 "id": "1917ad4e-cbb3-4325-bbd7-6f6f18257c08",
                                 "ord": "a0"
                               },
@@ -1099,9 +1029,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-bold text-base-content",
-                                "children": [
-                                  "$50"
-                                ],
+                                "children": ["$50"],
                                 "id": "80a4535b-58fc-4a13-a6ed-cdf563efa2b6",
                                 "ord": "a1"
                               }
@@ -1113,9 +1041,7 @@
                             "kind": "element",
                             "tag": "p",
                             "class": "text-sm font-medium uppercase tracking-wide text-secondary",
-                            "children": [
-                              "45 min"
-                            ],
+                            "children": ["45 min"],
                             "id": "d7a6791c-4ccd-4896-8605-d46e7caccb7f",
                             "ord": "a1"
                           },
@@ -1123,9 +1049,7 @@
                             "kind": "element",
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
-                            "children": [
-                              "Camps and guides we know on the ground."
-                            ],
+                            "children": ["Camps and guides we know on the ground."],
                             "id": "88fc65cf-e50d-40ab-a960-6f724ffcf676",
                             "ord": "a2"
                           }
@@ -1150,9 +1074,7 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
-                                "children": [
-                                  "Dive trips"
-                                ],
+                                "children": ["Dive trips"],
                                 "id": "f188e6ab-eca5-451f-bbb1-171a02af6fca",
                                 "ord": "a0"
                               },
@@ -1160,9 +1082,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-bold text-base-content",
-                                "children": [
-                                  "$50"
-                                ],
+                                "children": ["$50"],
                                 "id": "d15b4b23-43e5-4b85-b442-74b8a596a356",
                                 "ord": "a1"
                               }
@@ -1174,9 +1094,7 @@
                             "kind": "element",
                             "tag": "p",
                             "class": "text-sm font-medium uppercase tracking-wide text-secondary",
-                            "children": [
-                              "45 min"
-                            ],
+                            "children": ["45 min"],
                             "id": "4bd379d9-e926-4c5f-97ba-fc31356bc3ee",
                             "ord": "a1"
                           },
@@ -1184,9 +1102,7 @@
                             "kind": "element",
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
-                            "children": [
-                              "Liveaboards and reefs matched to your cert."
-                            ],
+                            "children": ["Liveaboards and reefs matched to your cert."],
                             "id": "4ee3047c-ee1f-49cb-83b8-e3c32aea1210",
                             "ord": "a2"
                           }
@@ -1211,9 +1127,7 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
-                                "children": [
-                                  "Expedition cruises"
-                                ],
+                                "children": ["Expedition cruises"],
                                 "id": "a1a88da4-3539-4b8c-afc4-a885e11d2d10",
                                 "ord": "a0"
                               },
@@ -1221,9 +1135,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-bold text-base-content",
-                                "children": [
-                                  "$75"
-                                ],
+                                "children": ["$75"],
                                 "id": "59bd7fdc-a26e-4a8b-b0e3-1587f5289e33",
                                 "ord": "a1"
                               }
@@ -1235,9 +1147,7 @@
                             "kind": "element",
                             "tag": "p",
                             "class": "text-sm font-medium uppercase tracking-wide text-secondary",
-                            "children": [
-                              "1 hr"
-                            ],
+                            "children": ["1 hr"],
                             "id": "b1cfb312-bb36-4551-a104-9eed8f8652a2",
                             "ord": "a1"
                           },
@@ -1245,9 +1155,7 @@
                             "kind": "element",
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
-                            "children": [
-                              "Antarctica, the Arctic, the Galápagos."
-                            ],
+                            "children": ["Antarctica, the Arctic, the Galápagos."],
                             "id": "c9b443b8-95be-410b-b2ef-6cf063914de4",
                             "ord": "a2"
                           }
@@ -1271,9 +1179,7 @@
                         "attrs": {
                           "href": "/book"
                         },
-                        "children": [
-                          "See everything & book"
-                        ],
+                        "children": ["See everything & book"],
                         "id": "f83914da-ee2f-44dd-be0f-34af5f27dc8b",
                         "ord": "a0"
                       }
@@ -1303,9 +1209,7 @@
                     "kind": "element",
                     "tag": "h2",
                     "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
-                    "children": [
-                      "Adventures we’ve sent people on"
-                    ],
+                    "children": ["Adventures we’ve sent people on"],
                     "id": "75844780-aac5-4248-a207-aa35712c39d0",
                     "ord": "a0"
                   },
@@ -1393,9 +1297,7 @@
                         "kind": "element",
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
-                        "children": [
-                          "How we plan an adventure"
-                        ],
+                        "children": ["How we plan an adventure"],
                         "id": "c90ddfbc-4c07-4000-a4be-1ac6503720e7",
                         "ord": "a0"
                       },
@@ -1431,9 +1333,7 @@
                             "attrs": {
                               "href": "/book"
                             },
-                            "children": [
-                              "Start with a discovery call"
-                            ],
+                            "children": ["Start with a discovery call"],
                             "id": "2efe6d42-038e-4f90-b676-d27d3c6f442b",
                             "ord": "a0"
                           }
@@ -1472,9 +1372,7 @@
                         "kind": "element",
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
-                        "children": [
-                          "Meet your specialists"
-                        ],
+                        "children": ["Meet your specialists"],
                         "id": "40623557-22e4-4948-a015-0d7148a1951d",
                         "ord": "a0"
                       },
@@ -1523,9 +1421,7 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
-                                "children": [
-                                  "Marisol Vega"
-                                ],
+                                "children": ["Marisol Vega"],
                                 "id": "ec2690a3-6bd9-46f6-af21-13b62ee11a67",
                                 "ord": "a0"
                               },
@@ -1533,9 +1429,7 @@
                                 "kind": "element",
                                 "tag": "p",
                                 "class": "text-sm font-medium uppercase tracking-wide text-secondary",
-                                "children": [
-                                  "Trekking & safari"
-                                ],
+                                "children": ["Trekking & safari"],
                                 "id": "c2358a0d-b30c-4852-9856-700829841221",
                                 "ord": "a1"
                               },
@@ -1583,9 +1477,7 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
-                                "children": [
-                                  "Desmond Okoye"
-                                ],
+                                "children": ["Desmond Okoye"],
                                 "id": "2026a79f-99b6-4c5e-8bea-b830e08f849b",
                                 "ord": "a0"
                               },
@@ -1593,9 +1485,7 @@
                                 "kind": "element",
                                 "tag": "p",
                                 "class": "text-sm font-medium uppercase tracking-wide text-secondary",
-                                "children": [
-                                  "Dive & expedition cruise"
-                                ],
+                                "children": ["Dive & expedition cruise"],
                                 "id": "1836f2b7-40f3-4594-8b61-bc6359b00bb2",
                                 "ord": "a1"
                               },
@@ -1643,9 +1533,7 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
-                                "children": [
-                                  "Priya Anand"
-                                ],
+                                "children": ["Priya Anand"],
                                 "id": "cc5c6e79-f756-41a5-813b-4573ce9bdf07",
                                 "ord": "a0"
                               },
@@ -1653,9 +1541,7 @@
                                 "kind": "element",
                                 "tag": "p",
                                 "class": "text-sm font-medium uppercase tracking-wide text-secondary",
-                                "children": [
-                                  "High-altitude & expedition"
-                                ],
+                                "children": ["High-altitude & expedition"],
                                 "id": "59b57da4-bc3c-414b-8580-71a794aea989",
                                 "ord": "a1"
                               },
@@ -1713,9 +1599,7 @@
                     "kind": "element",
                     "tag": "p",
                     "class": "text-sm font-semibold uppercase tracking-wide opacity-80",
-                    "children": [
-                      "Daniel R., climbed with Trailhead in 2024"
-                    ],
+                    "children": ["Daniel R., climbed with Trailhead in 2024"],
                     "id": "837418b8-cb9f-4cda-a107-93c47384f43f",
                     "ord": "a1"
                   }
@@ -1741,9 +1625,7 @@
                     "kind": "element",
                     "tag": "h2",
                     "class": "text-3xl font-bold tracking-tight @3xl:text-4xl",
-                    "children": [
-                      "Your next adventure starts here"
-                    ],
+                    "children": ["Your next adventure starts here"],
                     "id": "a2b4f0c7-b11e-40f9-be00-506d4efa1ae9",
                     "ord": "a0"
                   },
@@ -1764,9 +1646,7 @@
                     "attrs": {
                       "href": "/book"
                     },
-                    "children": [
-                      "Plan your adventure"
-                    ],
+                    "children": ["Plan your adventure"],
                     "id": "294bf13e-a94e-4dad-9cc6-743e405e61da",
                     "ord": "a2"
                   }
@@ -1827,9 +1707,7 @@
                     "kind": "element",
                     "tag": "h1",
                     "class": "max-w-3xl text-4xl font-bold leading-tight tracking-tight @2xl:text-5xl @3xl:text-6xl",
-                    "children": [
-                      "Plan your adventure"
-                    ],
+                    "children": ["Plan your adventure"],
                     "id": "f673a53d-8ce4-4bd9-ac5e-8ec2ed2e449f",
                     "ord": "a0"
                   },
@@ -1855,9 +1733,7 @@
                         "attrs": {
                           "href": "/book"
                         },
-                        "children": [
-                          "See consults below"
-                        ],
+                        "children": ["See consults below"],
                         "id": "54287c75-5571-4ff6-bca5-c9ae1d3b5a6b",
                         "ord": "a0"
                       }
@@ -1900,9 +1776,7 @@
                         "kind": "element",
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
-                        "children": [
-                          "Good to know"
-                        ],
+                        "children": ["Good to know"],
                         "id": "1db40555-98d4-49ae-bd12-2db04225f3cd",
                         "ord": "a0"
                       },
@@ -1934,9 +1808,7 @@
                             "kind": "element",
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
-                            "children": [
-                              "Standard consultation"
-                            ],
+                            "children": ["Standard consultation"],
                             "id": "cfb43369-1d31-4aa1-9b87-7c90010ebf2b",
                             "ord": "a0"
                           },
@@ -1973,9 +1845,7 @@
                             "kind": "element",
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
-                            "children": [
-                              "Trip-planning deposit"
-                            ],
+                            "children": ["Trip-planning deposit"],
                             "id": "4e2ab5f7-783f-4a04-ade8-44d55bae4efa",
                             "ord": "a0"
                           },
@@ -2062,9 +1932,7 @@
                         "kind": "element",
                         "tag": "h1",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
-                        "children": [
-                          "About Trailhead Travel"
-                        ],
+                        "children": ["About Trailhead Travel"],
                         "id": "0f0cb422-508e-4217-ae07-ff7dd11984ff",
                         "ord": "a0"
                       },
@@ -2100,9 +1968,7 @@
                             "attrs": {
                               "href": "/book"
                             },
-                            "children": [
-                              "Book a discovery call"
-                            ],
+                            "children": ["Book a discovery call"],
                             "id": "b48014d5-175d-45ed-8721-88dda5437b88",
                             "ord": "a0"
                           }
@@ -2136,9 +2002,7 @@
                     "kind": "element",
                     "tag": "h2",
                     "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
-                    "children": [
-                      "What you can count on"
-                    ],
+                    "children": ["What you can count on"],
                     "id": "95da80b5-005e-43e4-8480-26b2771ba63f",
                     "ord": "a0"
                   },
@@ -2156,9 +2020,7 @@
                             "kind": "element",
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
-                            "children": [
-                              "We’ve been there"
-                            ],
+                            "children": ["We’ve been there"],
                             "id": "70fcc57c-2ef3-4981-90c5-544da4a32e3b",
                             "ord": "a0"
                           },
@@ -2185,9 +2047,7 @@
                             "kind": "element",
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
-                            "children": [
-                              "Built around you"
-                            ],
+                            "children": ["Built around you"],
                             "id": "f4296deb-ac4e-4819-a620-689a8587e6c7",
                             "ord": "a0"
                           },
@@ -2214,9 +2074,7 @@
                             "kind": "element",
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
-                            "children": [
-                              "Good for the places we love"
-                            ],
+                            "children": ["Good for the places we love"],
                             "id": "b556f9bc-0341-4176-aea9-253dd166d1dd",
                             "ord": "a0"
                           },
@@ -2281,9 +2139,7 @@
                         "kind": "element",
                         "tag": "h1",
                         "class": "text-4xl font-bold tracking-tight text-base-content @3xl:text-5xl",
-                        "children": [
-                          "Get in touch"
-                        ],
+                        "children": ["Get in touch"],
                         "id": "6b085f9f-7557-43aa-a88f-a0c9d3d1ca8d",
                         "ord": "a0"
                       },
@@ -2310,9 +2166,7 @@
                         "kind": "element",
                         "tag": "span",
                         "class": "text-base font-medium text-base-content",
-                        "children": [
-                          "Call us"
-                        ],
+                        "children": ["Call us"],
                         "id": "9dd4cf33-b504-4f0d-9be2-53375603036e",
                         "ord": "a0"
                       },
@@ -2324,9 +2178,7 @@
                           {
                             "kind": "element",
                             "tag": "span",
-                            "children": [
-                              "(555) 123-4567"
-                            ],
+                            "children": ["(555) 123-4567"],
                             "data": {
                               "kind": "value",
                               "ref": "site.identity.phone"
@@ -2360,9 +2212,7 @@
                         "kind": "element",
                         "tag": "span",
                         "class": "text-base font-medium text-base-content",
-                        "children": [
-                          "Email us"
-                        ],
+                        "children": ["Email us"],
                         "id": "b890be3e-88a9-46c8-859f-700799628079",
                         "ord": "a0"
                       },
@@ -2374,9 +2224,7 @@
                           {
                             "kind": "element",
                             "tag": "span",
-                            "children": [
-                              "hello@yourbusiness.com"
-                            ],
+                            "children": ["hello@yourbusiness.com"],
                             "data": {
                               "kind": "value",
                               "ref": "site.identity.email"
@@ -2415,9 +2263,7 @@
                             "kind": "element",
                             "tag": "span",
                             "class": "text-base font-medium text-base-content",
-                            "children": [
-                              "Your name"
-                            ],
+                            "children": ["Your name"],
                             "id": "b3336ea5-a7c9-4d3a-bdcf-9eaa97ef712c",
                             "ord": "a0"
                           },
@@ -2446,9 +2292,7 @@
                             "kind": "element",
                             "tag": "span",
                             "class": "text-base font-medium text-base-content",
-                            "children": [
-                              "Email address"
-                            ],
+                            "children": ["Email address"],
                             "id": "5717230e-c207-4b7d-a269-6c3a47a12f1f",
                             "ord": "a0"
                           },
@@ -2477,9 +2321,7 @@
                             "kind": "element",
                             "tag": "span",
                             "class": "text-base font-medium text-base-content",
-                            "children": [
-                              "Phone number"
-                            ],
+                            "children": ["Phone number"],
                             "id": "f2995d4f-0194-4fc0-b787-2ac63c90eefe",
                             "ord": "a0"
                           },
@@ -2507,9 +2349,7 @@
                             "kind": "element",
                             "tag": "span",
                             "class": "text-base font-medium text-base-content",
-                            "children": [
-                              "How can we help?"
-                            ],
+                            "children": ["How can we help?"],
                             "id": "9ecf177c-51e0-4502-b89e-c5dd9717c02c",
                             "ord": "a0"
                           },
@@ -2539,9 +2379,7 @@
                             "attrs": {
                               "type": "submit"
                             },
-                            "children": [
-                              "Send my request"
-                            ],
+                            "children": ["Send my request"],
                             "id": "38e71c0d-91ef-43d6-b3a0-e8398f22bd5f",
                             "ord": "a0"
                           }
@@ -2587,9 +2425,7 @@
                         "kind": "element",
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
-                        "children": [
-                          "Come talk adventures"
-                        ],
+                        "children": ["Come talk adventures"],
                         "id": "84bcc1e5-fc84-4b4e-9402-19d8c10ca71a",
                         "ord": "a0"
                       },
@@ -2621,9 +2457,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "font-medium text-base-content",
-                                "children": [
-                                  "Monday – Friday"
-                                ],
+                                "children": ["Monday – Friday"],
                                 "id": "d3b5e96c-c17a-49a3-b47f-45ed5f62a2f1",
                                 "ord": "a0"
                               },
@@ -2631,9 +2465,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-base-content",
-                                "children": [
-                                  "9:00 – 6:00"
-                                ],
+                                "children": ["9:00 – 6:00"],
                                 "id": "8445c03d-28fa-4f19-a191-802b6625d437",
                                 "ord": "a1"
                               }
@@ -2650,9 +2482,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "font-medium text-base-content",
-                                "children": [
-                                  "Saturday"
-                                ],
+                                "children": ["Saturday"],
                                 "id": "7c559baa-553d-4caf-97d9-61c13770cdcd",
                                 "ord": "a0"
                               },
@@ -2660,9 +2490,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-base-content",
-                                "children": [
-                                  "10:00 – 4:00"
-                                ],
+                                "children": ["10:00 – 4:00"],
                                 "id": "fd5ec093-8225-40cd-9ffe-ff005d549a27",
                                 "ord": "a1"
                               }
@@ -2679,9 +2507,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "font-medium text-base-content",
-                                "children": [
-                                  "Sunday"
-                                ],
+                                "children": ["Sunday"],
                                 "id": "eeba96ef-e126-4f66-9848-30328ea9d495",
                                 "ord": "a0"
                               },
@@ -2689,9 +2515,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-base-content",
-                                "children": [
-                                  "Closed"
-                                ],
+                                "children": ["Closed"],
                                 "id": "16e4e3df-4044-4851-9661-004bcd33b930",
                                 "ord": "a1"
                               }
@@ -2742,9 +2566,7 @@
                     "kind": "element",
                     "tag": "h2",
                     "class": "text-3xl font-bold tracking-tight @3xl:text-4xl",
-                    "children": [
-                      "Rather book than call?"
-                    ],
+                    "children": ["Rather book than call?"],
                     "id": "8e462b06-ee73-4d9f-bafb-e6e7d4d4db13",
                     "ord": "a0"
                   },
@@ -2765,9 +2587,7 @@
                     "attrs": {
                       "href": "/book"
                     },
-                    "children": [
-                      "Plan your adventure"
-                    ],
+                    "children": ["Plan your adventure"],
                     "id": "1a8b8b66-11d2-44b7-8423-7602e6d8eef2",
                     "ord": "a2"
                   }

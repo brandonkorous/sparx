@@ -1,14 +1,13 @@
 export type PigglesCharacterId =
-  | "neutral"
-  | "wave"
-  | "laptop"
-  | "desk"
-  | "thinking"
-  | "celebrate"
-  | "point-left"
-  | "invoice"
-  | "calendar"
-;
+  | 'neutral'
+  | 'wave'
+  | 'laptop'
+  | 'desk'
+  | 'thinking'
+  | 'celebrate'
+  | 'point-left'
+  | 'invoice'
+  | 'calendar';
 
 export type PigglesCharacter = {
   src: string;

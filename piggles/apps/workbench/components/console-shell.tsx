@@ -88,7 +88,17 @@ export function ConsoleShell({
   // reads as a glitch rather than a movement.
   const [panelApp, setPanelApp] = useState<string>('home');
   const [pinned, setPinned] = useState(false);
-  const [railExpanded, setRailExpanded] = useState(false);
+  // Labelled by DEFAULT, which is the opposite of sparx's icon rail.
+  //
+  // sparx's audience learns fifteen glyphs once and then wants the pixels back;
+  // Piggles' audience did not choose to be in software today and should never
+  // have to decode an icon to find their invoices. The rail still collapses —
+  // the control is in its footer and the choice persists — but somebody who has
+  // never expressed a preference gets words.
+  //
+  // `loadNavState` overwrites this after mount for anyone who HAS expressed one,
+  // so this only decides the first visit.
+  const [railExpanded, setRailExpanded] = useState(true);
   const [navOpen, setNavOpen] = useState(false);
   const postRef = useRef<((message: BusMessage) => void) | null>(null);
   const isCompact = useIsCompact();

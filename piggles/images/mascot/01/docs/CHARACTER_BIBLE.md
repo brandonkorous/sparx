@@ -5,6 +5,7 @@
 Piggles is a very round, soft, pink 3D pig mascot. The character is meant to make serious business software feel approachable, not juvenile.
 
 ### Anatomy
+
 - large round head blended softly into a chubby torso
 - very short, soft limbs
 - small rounded hooves
@@ -15,8 +16,10 @@ Piggles is a very round, soft, pink 3D pig mascot. The character is meant to mak
 - small curled tail where visible
 
 ### Expression
+
 Default expression is friendly and alert.
 Piggles may be:
+
 - happy
 - welcoming
 - thoughtful
@@ -25,6 +28,7 @@ Piggles may be:
 - sleepy
 
 Avoid:
+
 - rage
 - sarcasm
 - smugness
@@ -32,6 +36,7 @@ Avoid:
 - grotesque exaggeration
 
 ## Surface style
+
 - soft polished 3D
 - gentle studio lighting
 - minimal texture
@@ -41,7 +46,9 @@ Avoid:
 - transparent background for reusable assets
 
 ## Props
+
 Props must communicate a job:
+
 - laptop = work/workspace
 - calendar = bookings
 - invoice = invoicing/money
@@ -52,7 +59,9 @@ Props must communicate a job:
 Do not add random decorative props just to make the illustration busy.
 
 ## Brand relationship
+
 Piggles may use the Piggles P mark on owned objects such as:
+
 - laptop
 - mug
 - package
@@ -61,7 +70,9 @@ Piggles may use the Piggles P mark on owned objects such as:
 Keep it subtle.
 
 ## UX rule
+
 Use Piggles where personality helps:
+
 - onboarding
 - empty states
 - completion

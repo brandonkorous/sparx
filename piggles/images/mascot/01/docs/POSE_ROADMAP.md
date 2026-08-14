@@ -25,11 +25,13 @@ Highest-priority next assets:
 `piggles-<semantic-action>.png`
 
 Examples:
+
 - `piggles-message.png`
 - `piggles-package.png`
 - `piggles-chart-up.png`
 
 Avoid naming by visual appearance such as:
+
 - `pig-03.png`
 - `happy-pig.png`
 - `pink-pig-2.png`

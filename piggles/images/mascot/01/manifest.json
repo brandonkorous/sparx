@@ -10,13 +10,7 @@
   "rules": {
     "defaultBackground": "transparent",
     "renderStyle": "soft polished 3D character illustration",
-    "personality": [
-      "warm",
-      "capable",
-      "friendly",
-      "slightly mischievous",
-      "never childish"
-    ],
+    "personality": ["warm", "capable", "friendly", "slightly mischievous", "never childish"],
     "body": "very round/chubby with short limbs and soft proportions",
     "ears": "large soft floppy ears",
     "eyes": "large warm dark-brown eyes with simple highlights",
@@ -39,18 +33,9 @@
       "source": "cheerful_chubby_pink_pig_mascot.png",
       "filename": "piggles-neutral",
       "category": "core",
-      "intent": [
-        "default",
-        "welcome",
-        "about",
-        "empty-state"
-      ],
+      "intent": ["default", "welcome", "about", "empty-state"],
       "alt": "Piggles standing and smiling.",
-      "recommended": [
-        "generic mascot placement",
-        "about Piggles",
-        "neutral empty states"
-      ],
+      "recommended": ["generic mascot placement", "about Piggles", "neutral empty states"],
       "anchor": "center",
       "energy": "calm",
       "png": "assets/png/piggles-neutral.png",
@@ -66,19 +51,9 @@
       "source": "cheerful_waving_pink_pig_mascot.png",
       "filename": "piggles-wave",
       "category": "core",
-      "intent": [
-        "welcome",
-        "hello",
-        "onboarding",
-        "success"
-      ],
+      "intent": ["welcome", "hello", "onboarding", "success"],
       "alt": "Piggles smiling and waving.",
-      "recommended": [
-        "welcome screens",
-        "signup",
-        "onboarding intro",
-        "friendly greetings"
-      ],
+      "recommended": ["welcome screens", "signup", "onboarding intro", "friendly greetings"],
       "anchor": "bottom",
       "energy": "friendly",
       "png": "assets/png/piggles-wave.png",
@@ -94,19 +69,9 @@
       "source": "piggles_typing_on_a_laptop.png",
       "filename": "piggles-laptop",
       "category": "work",
-      "intent": [
-        "login",
-        "work",
-        "workspace",
-        "productivity"
-      ],
+      "intent": ["login", "work", "workspace", "productivity"],
       "alt": "Piggles sitting with a laptop and working.",
-      "recommended": [
-        "sign in",
-        "workspace education",
-        "productivity messaging",
-        "app loading"
-      ],
+      "recommended": ["sign in", "workspace education", "productivity messaging", "app loading"],
       "anchor": "bottom",
       "energy": "focused",
       "png": "assets/png/piggles-laptop.png",
@@ -122,12 +87,7 @@
       "source": "cheerful_pig_at_the_laptop.png",
       "filename": "piggles-desk-scene",
       "category": "scene",
-      "intent": [
-        "login",
-        "hero",
-        "marketing",
-        "workspace"
-      ],
+      "intent": ["login", "hero", "marketing", "workspace"],
       "alt": "Piggles working at a laptop at a desk with a plant and coffee mug.",
       "recommended": [
         "large login illustrations",
@@ -149,19 +109,9 @@
       "source": "thoughtful_pink_pig_mascot.png",
       "filename": "piggles-thinking",
       "category": "state",
-      "intent": [
-        "thinking",
-        "help",
-        "question",
-        "empty-state"
-      ],
+      "intent": ["thinking", "help", "question", "empty-state"],
       "alt": "Piggles thinking with one hoof under the chin.",
-      "recommended": [
-        "help prompts",
-        "search empty states",
-        "decision points",
-        "tips"
-      ],
+      "recommended": ["help prompts", "search empty states", "decision points", "tips"],
       "anchor": "bottom",
       "energy": "thoughtful",
       "png": "assets/png/piggles-thinking.png",
@@ -177,19 +127,9 @@
       "source": "imagegen.png",
       "filename": "piggles-celebrate",
       "category": "state",
-      "intent": [
-        "success",
-        "celebrate",
-        "milestone",
-        "complete"
-      ],
+      "intent": ["success", "celebrate", "milestone", "complete"],
       "alt": "Piggles jumping in celebration.",
-      "recommended": [
-        "onboarding completion",
-        "first sale",
-        "milestones",
-        "successful publish"
-      ],
+      "recommended": ["onboarding completion", "first sale", "milestones", "successful publish"],
       "anchor": "center",
       "energy": "high",
       "png": "assets/png/piggles-celebrate.png",
@@ -205,18 +145,9 @@
       "source": "cheerful_pig_mascot_pointing_left.png",
       "filename": "piggles-point-left",
       "category": "directional",
-      "intent": [
-        "point",
-        "cta",
-        "callout",
-        "guide"
-      ],
+      "intent": ["point", "cta", "callout", "guide"],
       "alt": "Piggles smiling and pointing to the left.",
-      "recommended": [
-        "CTA callouts",
-        "feature explanations",
-        "onboarding guidance"
-      ],
+      "recommended": ["CTA callouts", "feature explanations", "onboarding guidance"],
       "anchor": "bottom",
       "energy": "friendly",
       "png": "assets/png/piggles-point-left.png",
@@ -232,12 +163,7 @@
       "source": "piggles_presents_a_friendly_invoice.png",
       "filename": "piggles-invoice",
       "category": "business",
-      "intent": [
-        "invoice",
-        "money",
-        "billing",
-        "paid"
-      ],
+      "intent": ["invoice", "money", "billing", "paid"],
       "alt": "Piggles holding and pointing to an invoice.",
       "recommended": [
         "invoice empty states",
@@ -260,18 +186,9 @@
       "source": "cheerful_pig_mascot_presenting_calendar.png",
       "filename": "piggles-calendar",
       "category": "business",
-      "intent": [
-        "bookings",
-        "calendar",
-        "schedule",
-        "appointments"
-      ],
+      "intent": ["bookings", "calendar", "schedule", "appointments"],
       "alt": "Piggles presenting a calendar.",
-      "recommended": [
-        "bookings",
-        "scheduling onboarding",
-        "appointment empty states"
-      ],
+      "recommended": ["bookings", "scheduling onboarding", "appointment empty states"],
       "anchor": "bottom",
       "energy": "helpful",
       "png": "assets/png/piggles-calendar.png",
@@ -289,18 +206,9 @@
       "source": "cheerful_chubby_pink_pig_mascot.png",
       "filename": "piggles-neutral",
       "category": "core",
-      "intent": [
-        "default",
-        "welcome",
-        "about",
-        "empty-state"
-      ],
+      "intent": ["default", "welcome", "about", "empty-state"],
       "alt": "Piggles standing and smiling.",
-      "recommended": [
-        "generic mascot placement",
-        "about Piggles",
-        "neutral empty states"
-      ],
+      "recommended": ["generic mascot placement", "about Piggles", "neutral empty states"],
       "anchor": "center",
       "energy": "calm",
       "png": "assets/png/piggles-neutral.png",
@@ -316,19 +224,9 @@
       "source": "cheerful_waving_pink_pig_mascot.png",
       "filename": "piggles-wave",
       "category": "core",
-      "intent": [
-        "welcome",
-        "hello",
-        "onboarding",
-        "success"
-      ],
+      "intent": ["welcome", "hello", "onboarding", "success"],
       "alt": "Piggles smiling and waving.",
-      "recommended": [
-        "welcome screens",
-        "signup",
-        "onboarding intro",
-        "friendly greetings"
-      ],
+      "recommended": ["welcome screens", "signup", "onboarding intro", "friendly greetings"],
       "anchor": "bottom",
       "energy": "friendly",
       "png": "assets/png/piggles-wave.png",
@@ -344,19 +242,9 @@
       "source": "piggles_typing_on_a_laptop.png",
       "filename": "piggles-laptop",
       "category": "work",
-      "intent": [
-        "login",
-        "work",
-        "workspace",
-        "productivity"
-      ],
+      "intent": ["login", "work", "workspace", "productivity"],
       "alt": "Piggles sitting with a laptop and working.",
-      "recommended": [
-        "sign in",
-        "workspace education",
-        "productivity messaging",
-        "app loading"
-      ],
+      "recommended": ["sign in", "workspace education", "productivity messaging", "app loading"],
       "anchor": "bottom",
       "energy": "focused",
       "png": "assets/png/piggles-laptop.png",
@@ -372,12 +260,7 @@
       "source": "cheerful_pig_at_the_laptop.png",
       "filename": "piggles-desk-scene",
       "category": "scene",
-      "intent": [
-        "login",
-        "hero",
-        "marketing",
-        "workspace"
-      ],
+      "intent": ["login", "hero", "marketing", "workspace"],
       "alt": "Piggles working at a laptop at a desk with a plant and coffee mug.",
       "recommended": [
         "large login illustrations",
@@ -399,19 +282,9 @@
       "source": "thoughtful_pink_pig_mascot.png",
       "filename": "piggles-thinking",
       "category": "state",
-      "intent": [
-        "thinking",
-        "help",
-        "question",
-        "empty-state"
-      ],
+      "intent": ["thinking", "help", "question", "empty-state"],
       "alt": "Piggles thinking with one hoof under the chin.",
-      "recommended": [
-        "help prompts",
-        "search empty states",
-        "decision points",
-        "tips"
-      ],
+      "recommended": ["help prompts", "search empty states", "decision points", "tips"],
       "anchor": "bottom",
       "energy": "thoughtful",
       "png": "assets/png/piggles-thinking.png",
@@ -427,19 +300,9 @@
       "source": "imagegen.png",
       "filename": "piggles-celebrate",
       "category": "state",
-      "intent": [
-        "success",
-        "celebrate",
-        "milestone",
-        "complete"
-      ],
+      "intent": ["success", "celebrate", "milestone", "complete"],
       "alt": "Piggles jumping in celebration.",
-      "recommended": [
-        "onboarding completion",
-        "first sale",
-        "milestones",
-        "successful publish"
-      ],
+      "recommended": ["onboarding completion", "first sale", "milestones", "successful publish"],
       "anchor": "center",
       "energy": "high",
       "png": "assets/png/piggles-celebrate.png",
@@ -455,18 +318,9 @@
       "source": "cheerful_pig_mascot_pointing_left.png",
       "filename": "piggles-point-left",
       "category": "directional",
-      "intent": [
-        "point",
-        "cta",
-        "callout",
-        "guide"
-      ],
+      "intent": ["point", "cta", "callout", "guide"],
       "alt": "Piggles smiling and pointing to the left.",
-      "recommended": [
-        "CTA callouts",
-        "feature explanations",
-        "onboarding guidance"
-      ],
+      "recommended": ["CTA callouts", "feature explanations", "onboarding guidance"],
       "anchor": "bottom",
       "energy": "friendly",
       "png": "assets/png/piggles-point-left.png",
@@ -482,12 +336,7 @@
       "source": "piggles_presents_a_friendly_invoice.png",
       "filename": "piggles-invoice",
       "category": "business",
-      "intent": [
-        "invoice",
-        "money",
-        "billing",
-        "paid"
-      ],
+      "intent": ["invoice", "money", "billing", "paid"],
       "alt": "Piggles holding and pointing to an invoice.",
       "recommended": [
         "invoice empty states",
@@ -510,18 +359,9 @@
       "source": "cheerful_pig_mascot_presenting_calendar.png",
       "filename": "piggles-calendar",
       "category": "business",
-      "intent": [
-        "bookings",
-        "calendar",
-        "schedule",
-        "appointments"
-      ],
+      "intent": ["bookings", "calendar", "schedule", "appointments"],
       "alt": "Piggles presenting a calendar.",
-      "recommended": [
-        "bookings",
-        "scheduling onboarding",
-        "appointment empty states"
-      ],
+      "recommended": ["bookings", "scheduling onboarding", "appointment empty states"],
       "anchor": "bottom",
       "energy": "helpful",
       "png": "assets/png/piggles-calendar.png",
@@ -535,440 +375,280 @@
     {
       "id": "point-right",
       "category": "directional",
-      "intent": [
-        "point",
-        "cta",
-        "guide"
-      ],
+      "intent": ["point", "cta", "guide"],
       "alt": "Piggles pointing to the right.",
       "status": "planned"
     },
     {
       "id": "point-down",
       "category": "directional",
-      "intent": [
-        "point",
-        "cta",
-        "scroll"
-      ],
+      "intent": ["point", "cta", "scroll"],
       "alt": "Piggles pointing downward.",
       "status": "planned"
     },
     {
       "id": "point-up",
       "category": "directional",
-      "intent": [
-        "point",
-        "callout",
-        "tip"
-      ],
+      "intent": ["point", "callout", "tip"],
       "alt": "Piggles pointing upward.",
       "status": "planned"
     },
     {
       "id": "thumbs-up",
       "category": "state",
-      "intent": [
-        "success",
-        "approval",
-        "done"
-      ],
+      "intent": ["success", "approval", "done"],
       "alt": "Piggles giving a thumbs-up style hoof gesture.",
       "status": "planned"
     },
     {
       "id": "clap",
       "category": "state",
-      "intent": [
-        "celebrate",
-        "success",
-        "milestone"
-      ],
+      "intent": ["celebrate", "success", "milestone"],
       "alt": "Piggles clapping happily.",
       "status": "planned"
     },
     {
       "id": "confused",
       "category": "state",
-      "intent": [
-        "confused",
-        "help",
-        "error-recovery"
-      ],
+      "intent": ["confused", "help", "error-recovery"],
       "alt": "Piggles looking mildly confused.",
       "status": "planned"
     },
     {
       "id": "concerned",
       "category": "state",
-      "intent": [
-        "warning",
-        "attention",
-        "problem"
-      ],
+      "intent": ["warning", "attention", "problem"],
       "alt": "Piggles looking concerned but calm.",
       "status": "planned"
     },
     {
       "id": "oops",
       "category": "state",
-      "intent": [
-        "error",
-        "failed",
-        "retry"
-      ],
+      "intent": ["error", "failed", "retry"],
       "alt": "Piggles reacting to a small mistake.",
       "status": "planned"
     },
     {
       "id": "sleeping",
       "category": "state",
-      "intent": [
-        "empty-state",
-        "quiet",
-        "after-hours"
-      ],
+      "intent": ["empty-state", "quiet", "after-hours"],
       "alt": "Piggles sleeping peacefully.",
       "status": "planned"
     },
     {
       "id": "peek-left",
       "category": "directional",
-      "intent": [
-        "peek",
-        "callout",
-        "sidebar"
-      ],
+      "intent": ["peek", "callout", "sidebar"],
       "alt": "Piggles peeking in from the left edge.",
       "status": "planned"
     },
     {
       "id": "peek-right",
       "category": "directional",
-      "intent": [
-        "peek",
-        "callout",
-        "sidebar"
-      ],
+      "intent": ["peek", "callout", "sidebar"],
       "alt": "Piggles peeking in from the right edge.",
       "status": "planned"
     },
     {
       "id": "phone",
       "category": "work",
-      "intent": [
-        "messages",
-        "mobile",
-        "call"
-      ],
+      "intent": ["messages", "mobile", "call"],
       "alt": "Piggles holding a smartphone.",
       "status": "planned"
     },
     {
       "id": "message",
       "category": "business",
-      "intent": [
-        "messages",
-        "chat",
-        "reply"
-      ],
+      "intent": ["messages", "chat", "reply"],
       "alt": "Piggles presenting a message bubble.",
       "status": "planned"
     },
     {
       "id": "email",
       "category": "business",
-      "intent": [
-        "email",
-        "campaign",
-        "messages"
-      ],
+      "intent": ["email", "campaign", "messages"],
       "alt": "Piggles holding an envelope.",
       "status": "planned"
     },
     {
       "id": "package",
       "category": "business",
-      "intent": [
-        "orders",
-        "shipping",
-        "fulfillment"
-      ],
+      "intent": ["orders", "shipping", "fulfillment"],
       "alt": "Piggles holding a package.",
       "status": "planned"
     },
     {
       "id": "product",
       "category": "business",
-      "intent": [
-        "products",
-        "sell",
-        "catalog"
-      ],
+      "intent": ["products", "sell", "catalog"],
       "alt": "Piggles presenting a product box.",
       "status": "planned"
     },
     {
       "id": "stock",
       "category": "business",
-      "intent": [
-        "inventory",
-        "stock",
-        "restock"
-      ],
+      "intent": ["inventory", "stock", "restock"],
       "alt": "Piggles carrying small boxes.",
       "status": "planned"
     },
     {
       "id": "money",
       "category": "business",
-      "intent": [
-        "money",
-        "revenue",
-        "paid"
-      ],
+      "intent": ["money", "revenue", "paid"],
       "alt": "Piggles holding a coin or small stack of coins.",
       "status": "planned"
     },
     {
       "id": "chart-up",
       "category": "business",
-      "intent": [
-        "analytics",
-        "growth",
-        "reports"
-      ],
+      "intent": ["analytics", "growth", "reports"],
       "alt": "Piggles pointing at an upward chart.",
       "status": "planned"
     },
     {
       "id": "receipt",
       "category": "business",
-      "intent": [
-        "expenses",
-        "receipt",
-        "money"
-      ],
+      "intent": ["expenses", "receipt", "money"],
       "alt": "Piggles holding a receipt.",
       "status": "planned"
     },
     {
       "id": "customer",
       "category": "business",
-      "intent": [
-        "customers",
-        "crm",
-        "contacts"
-      ],
+      "intent": ["customers", "crm", "contacts"],
       "alt": "Piggles presenting a customer/contact card.",
       "status": "planned"
     },
     {
       "id": "store",
       "category": "business",
-      "intent": [
-        "site",
-        "store",
-        "commerce"
-      ],
+      "intent": ["site", "store", "commerce"],
       "alt": "Piggles standing beside a small storefront.",
       "status": "planned"
     },
     {
       "id": "site",
       "category": "business",
-      "intent": [
-        "site",
-        "builder",
-        "publish"
-      ],
+      "intent": ["site", "builder", "publish"],
       "alt": "Piggles presenting a web page or browser window.",
       "status": "planned"
     },
     {
       "id": "paint",
       "category": "work",
-      "intent": [
-        "design",
-        "branding",
-        "site"
-      ],
+      "intent": ["design", "branding", "site"],
       "alt": "Piggles holding a paint roller or palette.",
       "status": "planned"
     },
     {
       "id": "camera",
       "category": "work",
-      "intent": [
-        "media",
-        "photos",
-        "content"
-      ],
+      "intent": ["media", "photos", "content"],
       "alt": "Piggles holding a camera.",
       "status": "planned"
     },
     {
       "id": "megaphone",
       "category": "work",
-      "intent": [
-        "marketing",
-        "announce",
-        "campaign"
-      ],
+      "intent": ["marketing", "announce", "campaign"],
       "alt": "Piggles using a small megaphone.",
       "status": "planned"
     },
     {
       "id": "automate",
       "category": "work",
-      "intent": [
-        "automations",
-        "workflow",
-        "time-saving"
-      ],
+      "intent": ["automations", "workflow", "time-saving"],
       "alt": "Piggles beside simple connected workflow nodes.",
       "status": "planned"
     },
     {
       "id": "connection",
       "category": "work",
-      "intent": [
-        "connections",
-        "integration",
-        "mcp"
-      ],
+      "intent": ["connections", "integration", "mcp"],
       "alt": "Piggles connecting two plugs/blocks.",
       "status": "planned"
     },
     {
       "id": "shield",
       "category": "trust",
-      "intent": [
-        "security",
-        "privacy",
-        "safe"
-      ],
+      "intent": ["security", "privacy", "safe"],
       "alt": "Piggles holding a shield.",
       "status": "planned"
     },
     {
       "id": "support",
       "category": "trust",
-      "intent": [
-        "support",
-        "help",
-        "human"
-      ],
+      "intent": ["support", "help", "human"],
       "alt": "Piggles wearing a support headset.",
       "status": "planned"
     },
     {
       "id": "coffee",
       "category": "lifestyle",
-      "intent": [
-        "break",
-        "morning",
-        "welcome"
-      ],
+      "intent": ["break", "morning", "welcome"],
       "alt": "Piggles holding a coffee mug.",
       "status": "planned"
     },
     {
       "id": "late-night",
       "category": "lifestyle",
-      "intent": [
-        "dark-mode",
-        "work",
-        "night"
-      ],
+      "intent": ["dark-mode", "work", "night"],
       "alt": "Piggles working late at a laptop.",
       "status": "planned"
     },
     {
       "id": "sunrise",
       "category": "lifestyle",
-      "intent": [
-        "morning",
-        "home",
-        "daily"
-      ],
+      "intent": ["morning", "home", "daily"],
       "alt": "Piggles greeting the morning.",
       "status": "planned"
     },
     {
       "id": "party-hat",
       "category": "state",
-      "intent": [
-        "milestone",
-        "birthday",
-        "celebrate"
-      ],
+      "intent": ["milestone", "birthday", "celebrate"],
       "alt": "Piggles wearing a small party hat.",
       "status": "planned"
     },
     {
       "id": "heart",
       "category": "state",
-      "intent": [
-        "love",
-        "thanks",
-        "customer"
-      ],
+      "intent": ["love", "thanks", "customer"],
       "alt": "Piggles holding a heart.",
       "status": "planned"
     },
     {
       "id": "high-five",
       "category": "state",
-      "intent": [
-        "success",
-        "team",
-        "celebrate"
-      ],
+      "intent": ["success", "team", "celebrate"],
       "alt": "Piggles offering a high five.",
       "status": "planned"
     },
     {
       "id": "loading",
       "category": "system",
-      "intent": [
-        "loading",
-        "working",
-        "processing"
-      ],
+      "intent": ["loading", "working", "processing"],
       "alt": "Piggles busily working or jogging in place.",
       "status": "planned"
     },
     {
       "id": "searching",
       "category": "system",
-      "intent": [
-        "search",
-        "find",
-        "empty-state"
-      ],
+      "intent": ["search", "find", "empty-state"],
       "alt": "Piggles looking through a magnifying glass.",
       "status": "planned"
     },
     {
       "id": "maintenance",
       "category": "system",
-      "intent": [
-        "maintenance",
-        "status",
-        "downtime"
-      ],
+      "intent": ["maintenance", "status", "downtime"],
       "alt": "Piggles with a tiny tool kit.",
       "status": "planned"
     },
     {
       "id": "404",
       "category": "system",
-      "intent": [
-        "404",
-        "lost",
-        "not-found"
-      ],
+      "intent": ["404", "lost", "not-found"],
       "alt": "Piggles looking at a simple map/sign.",
       "status": "planned"
     }

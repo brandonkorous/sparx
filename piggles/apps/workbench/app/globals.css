@@ -199,3 +199,106 @@ h6 {
     transform: scale(1.04);
   }
 }
+
+/* ── THE DOCK, AS WINDOWS ─────────────────────────────────────────────────────
+ *
+ * sparx's dock is a tab dock: groups sit flush, separated by hairlines, and the
+ * active tab merges into the pane so the whole canvas reads as one continuous
+ * work surface. That is the right answer for a dense utility app, and it is the
+ * wrong one here.
+ *
+ * Piggles is the comfortable-density brand (DESIGN.md §5): the feeling every
+ * surface has to produce is "I can breathe here". A flush tab dock is the
+ * opposite instinct — it packs the most into the least. So the console gives
+ * each group its own inset, rounded, bordered card with real space around it,
+ * and the whole canvas reads as things laid out on a desk rather than documents
+ * stacked in a folder.
+ *
+ * This is the density rule expressed in LAYOUT rather than in tokens, which is
+ * the gap the console had: Piggles was differentiated with colour, radius and
+ * spacing, and none of those change the SHAPE of a screen. The console looked
+ * like sparx because it was shaped like sparx.
+ *
+ * ── WHY THIS IS NOT A FORK ──────────────────────────────────────────────────
+ *
+ * Everything below overrides `--dv-*` custom properties and dockview's own class
+ * names, from the console's OWN stylesheet. The shared dock (lib/dock) is
+ * mounted exactly as sparx mounts it — same controller, same panes, same drag,
+ * split, tear-off and persistence. Only the skin differs, which is precisely the
+ * split piggles/CLAUDE.md RULE #0 draws: the shell forks, the surfaces do not.
+ * If a change here ever needs a prop or a DOM change in lib/dock, it is no
+ * longer a skin and it needs a different answer.
+ *
+ * Loaded after `@workbench/lib/dock/dock-theme.css` (which the shared Dock
+ * imports), so these win on source order at equal specificity. */
+
+.dv-dockview {
+  /* The ground the windows sit on. Deeper than the pane so each card reads as
+     lifted onto it rather than cut out of it. */
+  --dv-background-color: var(--color-base-200);
+
+  /* The title bar. sparx puts the strip on the GROUND and lifts only the active
+     tab to the pane surface, which is what makes a tab merge into its content.
+     A window does the opposite: the bar belongs to the window, so the strip and
+     the pane are the same surface and the bar is separated by a border instead. */
+  --dv-tabs-and-actions-container-background-color: var(--color-base-100);
+  --dv-activegroup-visiblepanel-tab-background-color: var(--color-base-100);
+  --dv-inactivegroup-visiblepanel-tab-background-color: var(--color-base-100);
+  --dv-activegroup-hiddenpanel-tab-background-color: var(--color-base-200);
+  --dv-inactivegroup-hiddenpanel-tab-background-color: var(--color-base-200);
+
+  /* 44px, up from the shared 36. The title bar carries the app's icon and name
+     and has to be comfortable to grab — it is the window's drag handle. */
+  --dv-tabs-and-actions-container-height: 44px;
+
+  --dv-group-view-background-color: var(--color-base-100);
+  /* The gutter colour is the ground itself, so a separator would be a line
+     drawn on empty space between two cards. The space IS the separator. */
+  --dv-separator-border: transparent;
+  --dv-tab-divider-color: transparent;
+}
+
+/* Each group is a window: inset from its slot so the ground shows through as a
+ * real gutter, rounded to the brand's box radius, and outlined.
+ *
+ * `inset` rather than margin because dockview positions each group absolutely
+ * inside its splitview slot — a margin on an absolutely-positioned element with
+ * an explicit size does nothing. 5px on each side gives a 10px gutter between
+ * neighbours, which is the smallest gap that still reads as two objects rather
+ * than one object with a line through it. */
+.dv-dockview .dv-groupview {
+  position: absolute;
+  inset: 5px;
+  border: 1px solid var(--color-base-300);
+  border-radius: var(--radius-box);
+  /* Clips the title bar's square corners to the card's radius. Without this the
+     bar's background paints over the rounded corner and every window has two
+     hard pixels at the top. */
+  overflow: hidden;
+  background-color: var(--color-base-100);
+}
+
+/* The focused window says so with the ACTIVE APP'S hue, not a generic accent —
+ * the same `--color-module` the rail and the panes already use, so "which thing
+ * am I in" is one signal answered consistently everywhere. A border colour
+ * change rather than a shadow: `--depth: 1` is Piggles' only elevation and a
+ * hand-rolled shadow here would be the re-skin DESIGN.md §8 bans. */
+.dv-dockview .dv-groupview.dv-active-group {
+  border-color: var(--color-module);
+}
+
+/* The title bar's underline. It separates the bar from the content INSIDE one
+ * window, which is a different job from the gutters BETWEEN windows — so it is
+ * a real hairline rather than space. */
+.dv-dockview .dv-tabs-and-actions-container {
+  border-bottom: 1px solid var(--color-base-300);
+}
+
+/* A window's title is not a tab to be squeezed alongside others. Most Piggles
+ * groups hold ONE pane, so the tab is the window's name and should take the room
+ * it needs; several panes in one group still behave as tabs, just roomier ones. */
+.dv-dockview .dv-tab {
+  min-width: 8rem;
+  max-width: 20rem;
+  margin-right: 0;
+}

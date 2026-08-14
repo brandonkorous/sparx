@@ -37,9 +37,7 @@
                       "attrs": {
                         "href": "/book"
                       },
-                      "children": [
-                        "Book"
-                      ],
+                      "children": ["Book"],
                       "slot": {
                         "name": "link1",
                         "type": "link",
@@ -55,9 +53,7 @@
                       "attrs": {
                         "href": "/about"
                       },
-                      "children": [
-                        "About"
-                      ],
+                      "children": ["About"],
                       "slot": {
                         "name": "link2",
                         "type": "link",
@@ -73,9 +69,7 @@
                       "attrs": {
                         "href": "/contact"
                       },
-                      "children": [
-                        "Contact"
-                      ],
+                      "children": ["Contact"],
                       "slot": {
                         "name": "link3",
                         "type": "link",
@@ -100,9 +94,7 @@
                       "attrs": {
                         "href": "/account/login"
                       },
-                      "children": [
-                        "Sign in"
-                      ],
+                      "children": ["Sign in"],
                       "slot": {
                         "name": "secondary",
                         "type": "link",
@@ -180,9 +172,7 @@
                   "attrs": {
                     "href": "/book"
                   },
-                  "children": [
-                    "Book"
-                  ],
+                  "children": ["Book"],
                   "slot": {
                     "name": "link1",
                     "type": "link",
@@ -198,9 +188,7 @@
                   "attrs": {
                     "href": "/about"
                   },
-                  "children": [
-                    "About"
-                  ],
+                  "children": ["About"],
                   "slot": {
                     "name": "link2",
                     "type": "link",
@@ -216,9 +204,7 @@
                   "attrs": {
                     "href": "/contact"
                   },
-                  "children": [
-                    "Contact"
-                  ],
+                  "children": ["Contact"],
                   "slot": {
                     "name": "link3",
                     "type": "link",
@@ -321,9 +307,7 @@
                           "kind": "element",
                           "tag": "p",
                           "class": "max-w-xs text-sm text-base-content",
-                          "children": [
-                            "Everything you publish, in one place."
-                          ],
+                          "children": ["Everything you publish, in one place."],
                           "slot": {
                             "name": "blurb",
                             "type": "text",
@@ -356,9 +340,7 @@
                           "kind": "element",
                           "tag": "p",
                           "class": "text-sm font-semibold text-base-content",
-                          "children": [
-                            "Explore"
-                          ],
+                          "children": ["Explore"],
                           "slot": {
                             "name": "col1",
                             "type": "text",
@@ -386,9 +368,7 @@
                                   "attrs": {
                                     "href": "/book"
                                   },
-                                  "children": [
-                                    "Book"
-                                  ],
+                                  "children": ["Book"],
                                   "slot": {
                                     "name": "link1",
                                     "type": "link",
@@ -412,9 +392,7 @@
                                   "attrs": {
                                     "href": "/about"
                                   },
-                                  "children": [
-                                    "About"
-                                  ],
+                                  "children": ["About"],
                                   "slot": {
                                     "name": "link2",
                                     "type": "link",
@@ -438,9 +416,7 @@
                                   "attrs": {
                                     "href": "/contact"
                                   },
-                                  "children": [
-                                    "Contact"
-                                  ],
+                                  "children": ["Contact"],
                                   "slot": {
                                     "name": "link3",
                                     "type": "link",
@@ -464,9 +440,7 @@
                                   "attrs": {
                                     "href": "/search"
                                   },
-                                  "children": [
-                                    "Search"
-                                  ],
+                                  "children": ["Search"],
                                   "slot": {
                                     "name": "link4",
                                     "type": "link",
@@ -559,9 +533,7 @@
                           "kind": "element",
                           "tag": "span",
                           "class": "font-medium",
-                          "children": [
-                            "Your site"
-                          ],
+                          "children": ["Your site"],
                           "data": {
                             "kind": "value",
                             "ref": "site.identity.name"
@@ -643,9 +615,7 @@
                     "kind": "element",
                     "tag": "h1",
                     "class": "max-w-3xl text-4xl font-bold leading-tight tracking-tight @2xl:text-5xl @3xl:text-6xl",
-                    "children": [
-                      "Real results, glowing skin"
-                    ],
+                    "children": ["Real results, glowing skin"],
                     "id": "3c57425d-da1f-490a-b260-8fd1f93a2259",
                     "ord": "a0"
                   },
@@ -671,9 +641,7 @@
                         "attrs": {
                           "href": "/book"
                         },
-                        "children": [
-                          "Book a facial"
-                        ],
+                        "children": ["Book a facial"],
                         "id": "9205c112-d9b5-455b-9b00-b2bb1943256d",
                         "ord": "a0"
                       },
@@ -684,9 +652,7 @@
                         "attrs": {
                           "href": "/book"
                         },
-                        "children": [
-                          "See treatments"
-                        ],
+                        "children": ["See treatments"],
                         "id": "9025c2bc-0fca-456c-84b3-b8fcc6d03df7",
                         "ord": "a1"
                       }
@@ -726,9 +692,7 @@
                             "kind": "element",
                             "tag": "h2",
                             "class": "text-xl font-semibold text-base-content",
-                            "children": [
-                              "Licensed, expert estheticians"
-                            ],
+                            "children": ["Licensed, expert estheticians"],
                             "id": "2c864cec-f163-4edf-86c2-99852bb35c73",
                             "ord": "a0"
                           },
@@ -755,9 +719,7 @@
                             "kind": "element",
                             "tag": "h2",
                             "class": "text-xl font-semibold text-base-content",
-                            "children": [
-                              "Medical-grade, results-first"
-                            ],
+                            "children": ["Medical-grade, results-first"],
                             "id": "64e1918f-3843-46a3-adc0-e8f21ff195f2",
                             "ord": "a0"
                           },
@@ -784,9 +746,7 @@
                             "kind": "element",
                             "tag": "h2",
                             "class": "text-xl font-semibold text-base-content",
-                            "children": [
-                              "A custom plan, real progress"
-                            ],
+                            "children": ["A custom plan, real progress"],
                             "id": "88505ebc-7971-40d1-8d46-cbdc18781f28",
                             "ord": "a0"
                           },
@@ -835,9 +795,7 @@
                         "kind": "element",
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
-                        "children": [
-                          "Treatments"
-                        ],
+                        "children": ["Treatments"],
                         "id": "e3dc958f-5d27-473c-b25b-f790a29bb012",
                         "ord": "a0"
                       },
@@ -877,9 +835,7 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
-                                "children": [
-                                  "Signature facial"
-                                ],
+                                "children": ["Signature facial"],
                                 "id": "275a93a1-a85f-4bb9-9eaa-e1a6a5edbde0",
                                 "ord": "a0"
                               },
@@ -887,9 +843,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-bold text-base-content",
-                                "children": [
-                                  "$120"
-                                ],
+                                "children": ["$120"],
                                 "id": "72694b4c-3fa9-4dbd-8304-3849e4c9396a",
                                 "ord": "a1"
                               }
@@ -901,9 +855,7 @@
                             "kind": "element",
                             "tag": "p",
                             "class": "text-sm font-medium uppercase tracking-wide text-secondary",
-                            "children": [
-                              "1 hr"
-                            ],
+                            "children": ["1 hr"],
                             "id": "19f6f310-bf9f-4a73-9949-87b8e1452701",
                             "ord": "a1"
                           },
@@ -911,9 +863,7 @@
                             "kind": "element",
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
-                            "children": [
-                              "A deep-cleanse facial tailored to your skin."
-                            ],
+                            "children": ["A deep-cleanse facial tailored to your skin."],
                             "id": "6a9c6d4e-4924-4bb5-a42e-0dbd64107692",
                             "ord": "a2"
                           }
@@ -938,9 +888,7 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
-                                "children": [
-                                  "Chemical peel"
-                                ],
+                                "children": ["Chemical peel"],
                                 "id": "a18391c0-953b-4af0-a008-7b4a2960f33c",
                                 "ord": "a0"
                               },
@@ -948,9 +896,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-bold text-base-content",
-                                "children": [
-                                  "$150"
-                                ],
+                                "children": ["$150"],
                                 "id": "ce72f994-a828-4a2d-85fb-235a59d37fe4",
                                 "ord": "a1"
                               }
@@ -962,9 +908,7 @@
                             "kind": "element",
                             "tag": "p",
                             "class": "text-sm font-medium uppercase tracking-wide text-secondary",
-                            "children": [
-                              "45 min"
-                            ],
+                            "children": ["45 min"],
                             "id": "d9e58bc8-3403-4adb-afbf-e74f0da1895a",
                             "ord": "a1"
                           },
@@ -972,9 +916,7 @@
                             "kind": "element",
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
-                            "children": [
-                              "Medical-grade resurfacing for tone and texture."
-                            ],
+                            "children": ["Medical-grade resurfacing for tone and texture."],
                             "id": "b4b753c8-2ac4-418c-a80c-368524611744",
                             "ord": "a2"
                           }
@@ -999,9 +941,7 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
-                                "children": [
-                                  "Microneedling"
-                                ],
+                                "children": ["Microneedling"],
                                 "id": "67c4572b-ff93-42af-9b0c-04f183823518",
                                 "ord": "a0"
                               },
@@ -1009,9 +949,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-bold text-base-content",
-                                "children": [
-                                  "$220"
-                                ],
+                                "children": ["$220"],
                                 "id": "b49b87b7-9a2b-4a74-b3a0-a86c5755ba76",
                                 "ord": "a1"
                               }
@@ -1023,9 +961,7 @@
                             "kind": "element",
                             "tag": "p",
                             "class": "text-sm font-medium uppercase tracking-wide text-secondary",
-                            "children": [
-                              "1 hr"
-                            ],
+                            "children": ["1 hr"],
                             "id": "9a997bd3-7051-42e0-866f-796788e8d47c",
                             "ord": "a1"
                           },
@@ -1033,9 +969,7 @@
                             "kind": "element",
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
-                            "children": [
-                              "Collagen-induction for scarring and fine lines."
-                            ],
+                            "children": ["Collagen-induction for scarring and fine lines."],
                             "id": "7f0bf452-e7ac-43b0-9b5e-b32a11f4c50c",
                             "ord": "a2"
                           }
@@ -1060,9 +994,7 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
-                                "children": [
-                                  "Dermaplaning"
-                                ],
+                                "children": ["Dermaplaning"],
                                 "id": "d3c3edd6-161a-4963-bc08-fb0e984a82b0",
                                 "ord": "a0"
                               },
@@ -1070,9 +1002,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-bold text-base-content",
-                                "children": [
-                                  "$110"
-                                ],
+                                "children": ["$110"],
                                 "id": "f3275a7a-58ee-4bc1-bca0-e2b5fb157bd0",
                                 "ord": "a1"
                               }
@@ -1084,9 +1014,7 @@
                             "kind": "element",
                             "tag": "p",
                             "class": "text-sm font-medium uppercase tracking-wide text-secondary",
-                            "children": [
-                              "45 min"
-                            ],
+                            "children": ["45 min"],
                             "id": "1bfcd1cb-82cd-4d14-8b65-3400c2b14079",
                             "ord": "a1"
                           },
@@ -1094,9 +1022,7 @@
                             "kind": "element",
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
-                            "children": [
-                              "Gentle resurfacing for an instant glow."
-                            ],
+                            "children": ["Gentle resurfacing for an instant glow."],
                             "id": "2c003ac8-2f8d-40a2-b917-f48708d6d1ed",
                             "ord": "a2"
                           }
@@ -1120,9 +1046,7 @@
                         "attrs": {
                           "href": "/book"
                         },
-                        "children": [
-                          "See everything & book"
-                        ],
+                        "children": ["See everything & book"],
                         "id": "54e25b42-56c4-4161-a2ab-7827d3b70377",
                         "ord": "a0"
                       }
@@ -1169,9 +1093,7 @@
                         "kind": "element",
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
-                        "children": [
-                          "A plan built for your skin"
-                        ],
+                        "children": ["A plan built for your skin"],
                         "id": "e1df049c-3c58-48b2-85e5-6e45ca51f62a",
                         "ord": "a0"
                       },
@@ -1207,9 +1129,7 @@
                             "attrs": {
                               "href": "/book"
                             },
-                            "children": [
-                              "Start with a consult"
-                            ],
+                            "children": ["Start with a consult"],
                             "id": "a715cf46-14c7-4380-8295-6468419801ca",
                             "ord": "a0"
                           }
@@ -1248,9 +1168,7 @@
                         "kind": "element",
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
-                        "children": [
-                          "Your estheticians"
-                        ],
+                        "children": ["Your estheticians"],
                         "id": "b0a00c3e-bbda-4a6e-9b76-9a7dab7ff8e4",
                         "ord": "a0"
                       },
@@ -1299,9 +1217,7 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
-                                "children": [
-                                  "Camille Fontaine"
-                                ],
+                                "children": ["Camille Fontaine"],
                                 "id": "d03ef45d-14a6-47aa-ab61-aca22ea997d0",
                                 "ord": "a0"
                               },
@@ -1309,9 +1225,7 @@
                                 "kind": "element",
                                 "tag": "p",
                                 "class": "text-sm font-medium uppercase tracking-wide text-secondary",
-                                "children": [
-                                  "Lead esthetician"
-                                ],
+                                "children": ["Lead esthetician"],
                                 "id": "14c568c1-2d5b-44b4-b34f-932742ee1668",
                                 "ord": "a1"
                               },
@@ -1359,9 +1273,7 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
-                                "children": [
-                                  "Rosa Vance"
-                                ],
+                                "children": ["Rosa Vance"],
                                 "id": "99d624c8-b842-40eb-8ffc-9522d2f9e3a3",
                                 "ord": "a0"
                               },
@@ -1369,9 +1281,7 @@
                                 "kind": "element",
                                 "tag": "p",
                                 "class": "text-sm font-medium uppercase tracking-wide text-secondary",
-                                "children": [
-                                  "Esthetician"
-                                ],
+                                "children": ["Esthetician"],
                                 "id": "9ee73d44-b4ed-4b1b-a091-a87c87a36def",
                                 "ord": "a1"
                               },
@@ -1419,9 +1329,7 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
-                                "children": [
-                                  "Ingrid Okafor"
-                                ],
+                                "children": ["Ingrid Okafor"],
                                 "id": "7f9d3233-4bb0-4c42-aea5-bb8aed5748ad",
                                 "ord": "a0"
                               },
@@ -1429,9 +1337,7 @@
                                 "kind": "element",
                                 "tag": "p",
                                 "class": "text-sm font-medium uppercase tracking-wide text-secondary",
-                                "children": [
-                                  "Advanced-treatment esthetician"
-                                ],
+                                "children": ["Advanced-treatment esthetician"],
                                 "id": "873a0d5e-e129-43ba-9855-5f1d7d8e557d",
                                 "ord": "a1"
                               },
@@ -1489,9 +1395,7 @@
                     "kind": "element",
                     "tag": "p",
                     "class": "text-sm font-semibold uppercase tracking-wide opacity-80",
-                    "children": [
-                      "Deneen, client since 2024"
-                    ],
+                    "children": ["Deneen, client since 2024"],
                     "id": "c98244dd-6422-43d7-b196-73628af04b5e",
                     "ord": "a1"
                   }
@@ -1517,9 +1421,7 @@
                     "kind": "element",
                     "tag": "h2",
                     "class": "text-3xl font-bold tracking-tight @3xl:text-4xl",
-                    "children": [
-                      "Ready for skin you love?"
-                    ],
+                    "children": ["Ready for skin you love?"],
                     "id": "15c6cb2e-1567-4bfc-b034-754c078c4b5f",
                     "ord": "a0"
                   },
@@ -1540,9 +1442,7 @@
                     "attrs": {
                       "href": "/book"
                     },
-                    "children": [
-                      "Book a facial"
-                    ],
+                    "children": ["Book a facial"],
                     "id": "32a6a7cd-6e76-4bd6-96a0-bb09f78f0be7",
                     "ord": "a2"
                   }
@@ -1603,9 +1503,7 @@
                     "kind": "element",
                     "tag": "h1",
                     "class": "max-w-3xl text-4xl font-bold leading-tight tracking-tight @2xl:text-5xl @3xl:text-6xl",
-                    "children": [
-                      "Book your treatment"
-                    ],
+                    "children": ["Book your treatment"],
                     "id": "50cc9909-e9c0-4aa8-a788-164d0ef0de3f",
                     "ord": "a0"
                   },
@@ -1631,9 +1529,7 @@
                         "attrs": {
                           "href": "/book"
                         },
-                        "children": [
-                          "See treatments below"
-                        ],
+                        "children": ["See treatments below"],
                         "id": "c51b3781-5113-4a9b-b484-ce741735929d",
                         "ord": "a0"
                       }
@@ -1676,9 +1572,7 @@
                         "kind": "element",
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
-                        "children": [
-                          "Good to know"
-                        ],
+                        "children": ["Good to know"],
                         "id": "61b931ce-d5dc-40c8-a08a-97904701e2a5",
                         "ord": "a0"
                       },
@@ -1710,9 +1604,7 @@
                             "kind": "element",
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
-                            "children": [
-                              "Standard booking"
-                            ],
+                            "children": ["Standard booking"],
                             "id": "52532c0f-3657-40fc-9db8-dd6b3c74e43e",
                             "ord": "a0"
                           },
@@ -1749,9 +1641,7 @@
                             "kind": "element",
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
-                            "children": [
-                              "Advanced-treatment deposit"
-                            ],
+                            "children": ["Advanced-treatment deposit"],
                             "id": "2915dad8-a20f-4a98-b51d-58b447d44876",
                             "ord": "a0"
                           },
@@ -1838,9 +1728,7 @@
                         "kind": "element",
                         "tag": "h1",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
-                        "children": [
-                          "About Lumière Skin Studio"
-                        ],
+                        "children": ["About Lumière Skin Studio"],
                         "id": "c84cacfe-ae9c-424f-a2c9-cf9c2073079c",
                         "ord": "a0"
                       },
@@ -1876,9 +1764,7 @@
                             "attrs": {
                               "href": "/book"
                             },
-                            "children": [
-                              "Book a facial"
-                            ],
+                            "children": ["Book a facial"],
                             "id": "e8765050-7788-404a-adb4-352815e044e1",
                             "ord": "a0"
                           }
@@ -1912,9 +1798,7 @@
                     "kind": "element",
                     "tag": "h2",
                     "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
-                    "children": [
-                      "How we work"
-                    ],
+                    "children": ["How we work"],
                     "id": "f30b6fc7-3452-493c-b945-38fdf0396441",
                     "ord": "a0"
                   },
@@ -1932,9 +1816,7 @@
                             "kind": "element",
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
-                            "children": [
-                              "Consultation first"
-                            ],
+                            "children": ["Consultation first"],
                             "id": "971ab5ab-4479-46c8-b76b-f5044e5c5568",
                             "ord": "a0"
                           },
@@ -1961,9 +1843,7 @@
                             "kind": "element",
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
-                            "children": [
-                              "Medical-grade products"
-                            ],
+                            "children": ["Medical-grade products"],
                             "id": "d996d317-5dd1-41a7-ba8b-9631aa61cd62",
                             "ord": "a0"
                           },
@@ -1990,9 +1870,7 @@
                             "kind": "element",
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
-                            "children": [
-                              "Progress you can see"
-                            ],
+                            "children": ["Progress you can see"],
                             "id": "5655b705-20d3-4987-9073-38d1fa15c90d",
                             "ord": "a0"
                           },
@@ -2057,9 +1935,7 @@
                         "kind": "element",
                         "tag": "h1",
                         "class": "text-4xl font-bold tracking-tight text-base-content @3xl:text-5xl",
-                        "children": [
-                          "Get in touch"
-                        ],
+                        "children": ["Get in touch"],
                         "id": "aaff7251-b91a-4132-b00b-0a2b2e273fee",
                         "ord": "a0"
                       },
@@ -2086,9 +1962,7 @@
                         "kind": "element",
                         "tag": "span",
                         "class": "text-base font-medium text-base-content",
-                        "children": [
-                          "Call us"
-                        ],
+                        "children": ["Call us"],
                         "id": "bc9c49db-15de-4294-aa71-276d2720f0a5",
                         "ord": "a0"
                       },
@@ -2100,9 +1974,7 @@
                           {
                             "kind": "element",
                             "tag": "span",
-                            "children": [
-                              "(555) 123-4567"
-                            ],
+                            "children": ["(555) 123-4567"],
                             "data": {
                               "kind": "value",
                               "ref": "site.identity.phone"
@@ -2136,9 +2008,7 @@
                         "kind": "element",
                         "tag": "span",
                         "class": "text-base font-medium text-base-content",
-                        "children": [
-                          "Email us"
-                        ],
+                        "children": ["Email us"],
                         "id": "14ea980e-8c22-4c1e-a18f-69814a6b14f8",
                         "ord": "a0"
                       },
@@ -2150,9 +2020,7 @@
                           {
                             "kind": "element",
                             "tag": "span",
-                            "children": [
-                              "hello@yourbusiness.com"
-                            ],
+                            "children": ["hello@yourbusiness.com"],
                             "data": {
                               "kind": "value",
                               "ref": "site.identity.email"
@@ -2191,9 +2059,7 @@
                             "kind": "element",
                             "tag": "span",
                             "class": "text-base font-medium text-base-content",
-                            "children": [
-                              "Your name"
-                            ],
+                            "children": ["Your name"],
                             "id": "d335f1c8-8729-4add-a567-cb18ccfcf1c8",
                             "ord": "a0"
                           },
@@ -2222,9 +2088,7 @@
                             "kind": "element",
                             "tag": "span",
                             "class": "text-base font-medium text-base-content",
-                            "children": [
-                              "Email address"
-                            ],
+                            "children": ["Email address"],
                             "id": "8c796ba7-f851-4a12-9a00-119801fbf59a",
                             "ord": "a0"
                           },
@@ -2253,9 +2117,7 @@
                             "kind": "element",
                             "tag": "span",
                             "class": "text-base font-medium text-base-content",
-                            "children": [
-                              "Phone number"
-                            ],
+                            "children": ["Phone number"],
                             "id": "dc88fba6-a94d-412f-ab7b-c5588109daac",
                             "ord": "a0"
                           },
@@ -2283,9 +2145,7 @@
                             "kind": "element",
                             "tag": "span",
                             "class": "text-base font-medium text-base-content",
-                            "children": [
-                              "How can we help?"
-                            ],
+                            "children": ["How can we help?"],
                             "id": "3b40c0b4-c648-4cc4-b91b-b279f94e57c2",
                             "ord": "a0"
                           },
@@ -2315,9 +2175,7 @@
                             "attrs": {
                               "type": "submit"
                             },
-                            "children": [
-                              "Send my request"
-                            ],
+                            "children": ["Send my request"],
                             "id": "0926cd90-f211-4233-96db-f1f424002e42",
                             "ord": "a0"
                           }
@@ -2363,9 +2221,7 @@
                         "kind": "element",
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
-                        "children": [
-                          "Visit the studio"
-                        ],
+                        "children": ["Visit the studio"],
                         "id": "0c1542f1-0425-49a0-9b38-51f9af8bf9e7",
                         "ord": "a0"
                       },
@@ -2397,9 +2253,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "font-medium text-base-content",
-                                "children": [
-                                  "Tuesday – Friday"
-                                ],
+                                "children": ["Tuesday – Friday"],
                                 "id": "5de76358-bf6c-4c4d-b9b4-795c9fc9bef3",
                                 "ord": "a0"
                               },
@@ -2407,9 +2261,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-base-content",
-                                "children": [
-                                  "9:00 – 7:00"
-                                ],
+                                "children": ["9:00 – 7:00"],
                                 "id": "e356ae64-70cb-41d5-98e9-efb08f9dd468",
                                 "ord": "a1"
                               }
@@ -2426,9 +2278,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "font-medium text-base-content",
-                                "children": [
-                                  "Saturday"
-                                ],
+                                "children": ["Saturday"],
                                 "id": "00533140-0e53-4eb6-aa84-cc77fec5e1f6",
                                 "ord": "a0"
                               },
@@ -2436,9 +2286,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-base-content",
-                                "children": [
-                                  "9:00 – 6:00"
-                                ],
+                                "children": ["9:00 – 6:00"],
                                 "id": "5a8fb34d-ca2d-4344-946e-1de3cf1ec000",
                                 "ord": "a1"
                               }
@@ -2455,9 +2303,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "font-medium text-base-content",
-                                "children": [
-                                  "Sunday"
-                                ],
+                                "children": ["Sunday"],
                                 "id": "8d139113-fd13-475f-baf9-680e25f0b0b3",
                                 "ord": "a0"
                               },
@@ -2465,9 +2311,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-base-content",
-                                "children": [
-                                  "10:00 – 4:00"
-                                ],
+                                "children": ["10:00 – 4:00"],
                                 "id": "c8290884-d7bb-4127-9091-8ce77892c7c7",
                                 "ord": "a1"
                               }
@@ -2484,9 +2328,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "font-medium text-base-content",
-                                "children": [
-                                  "Monday"
-                                ],
+                                "children": ["Monday"],
                                 "id": "0495347e-97ff-4181-a0d0-2a6b058f8ec4",
                                 "ord": "a0"
                               },
@@ -2494,9 +2336,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-base-content",
-                                "children": [
-                                  "Closed"
-                                ],
+                                "children": ["Closed"],
                                 "id": "3ee0894f-facc-4eee-b72e-e14647b84dd4",
                                 "ord": "a1"
                               }
@@ -2547,9 +2387,7 @@
                     "kind": "element",
                     "tag": "h2",
                     "class": "text-3xl font-bold tracking-tight @3xl:text-4xl",
-                    "children": [
-                      "Rather book than call?"
-                    ],
+                    "children": ["Rather book than call?"],
                     "id": "c38dbb25-26f0-4903-b8b6-dc1e15f8b4fd",
                     "ord": "a0"
                   },
@@ -2570,9 +2408,7 @@
                     "attrs": {
                       "href": "/book"
                     },
-                    "children": [
-                      "Book a facial"
-                    ],
+                    "children": ["Book a facial"],
                     "id": "09d97df4-6bfe-4f01-a4a3-2ecb3c04974e",
                     "ord": "a2"
                   }

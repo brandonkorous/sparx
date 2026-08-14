@@ -37,9 +37,7 @@
                       "attrs": {
                         "href": "/book"
                       },
-                      "children": [
-                        "Book"
-                      ],
+                      "children": ["Book"],
                       "slot": {
                         "name": "link1",
                         "type": "link",
@@ -55,9 +53,7 @@
                       "attrs": {
                         "href": "/about"
                       },
-                      "children": [
-                        "About"
-                      ],
+                      "children": ["About"],
                       "slot": {
                         "name": "link2",
                         "type": "link",
@@ -73,9 +69,7 @@
                       "attrs": {
                         "href": "/contact"
                       },
-                      "children": [
-                        "Contact"
-                      ],
+                      "children": ["Contact"],
                       "slot": {
                         "name": "link3",
                         "type": "link",
@@ -100,9 +94,7 @@
                       "attrs": {
                         "href": "/account/login"
                       },
-                      "children": [
-                        "Sign in"
-                      ],
+                      "children": ["Sign in"],
                       "slot": {
                         "name": "secondary",
                         "type": "link",
@@ -180,9 +172,7 @@
                   "attrs": {
                     "href": "/book"
                   },
-                  "children": [
-                    "Book"
-                  ],
+                  "children": ["Book"],
                   "slot": {
                     "name": "link1",
                     "type": "link",
@@ -198,9 +188,7 @@
                   "attrs": {
                     "href": "/about"
                   },
-                  "children": [
-                    "About"
-                  ],
+                  "children": ["About"],
                   "slot": {
                     "name": "link2",
                     "type": "link",
@@ -216,9 +204,7 @@
                   "attrs": {
                     "href": "/contact"
                   },
-                  "children": [
-                    "Contact"
-                  ],
+                  "children": ["Contact"],
                   "slot": {
                     "name": "link3",
                     "type": "link",
@@ -321,9 +307,7 @@
                           "kind": "element",
                           "tag": "p",
                           "class": "max-w-xs text-sm text-base-content",
-                          "children": [
-                            "Everything you publish, in one place."
-                          ],
+                          "children": ["Everything you publish, in one place."],
                           "slot": {
                             "name": "blurb",
                             "type": "text",
@@ -356,9 +340,7 @@
                           "kind": "element",
                           "tag": "p",
                           "class": "text-sm font-semibold text-base-content",
-                          "children": [
-                            "Explore"
-                          ],
+                          "children": ["Explore"],
                           "slot": {
                             "name": "col1",
                             "type": "text",
@@ -386,9 +368,7 @@
                                   "attrs": {
                                     "href": "/book"
                                   },
-                                  "children": [
-                                    "Book"
-                                  ],
+                                  "children": ["Book"],
                                   "slot": {
                                     "name": "link1",
                                     "type": "link",
@@ -412,9 +392,7 @@
                                   "attrs": {
                                     "href": "/about"
                                   },
-                                  "children": [
-                                    "About"
-                                  ],
+                                  "children": ["About"],
                                   "slot": {
                                     "name": "link2",
                                     "type": "link",
@@ -438,9 +416,7 @@
                                   "attrs": {
                                     "href": "/contact"
                                   },
-                                  "children": [
-                                    "Contact"
-                                  ],
+                                  "children": ["Contact"],
                                   "slot": {
                                     "name": "link3",
                                     "type": "link",
@@ -464,9 +440,7 @@
                                   "attrs": {
                                     "href": "/search"
                                   },
-                                  "children": [
-                                    "Search"
-                                  ],
+                                  "children": ["Search"],
                                   "slot": {
                                     "name": "link4",
                                     "type": "link",
@@ -559,9 +533,7 @@
                           "kind": "element",
                           "tag": "span",
                           "class": "font-medium",
-                          "children": [
-                            "Your site"
-                          ],
+                          "children": ["Your site"],
                           "data": {
                             "kind": "value",
                             "ref": "site.identity.name"
@@ -643,9 +615,7 @@
                     "kind": "element",
                     "tag": "h1",
                     "class": "max-w-3xl text-4xl font-bold leading-tight tracking-tight @2xl:text-5xl @3xl:text-6xl",
-                    "children": [
-                      "Where kids find their confidence"
-                    ],
+                    "children": ["Where kids find their confidence"],
                     "id": "c2e376ff-3db2-4d74-8044-350a30a1ed12",
                     "ord": "a0"
                   },
@@ -671,9 +641,7 @@
                         "attrs": {
                           "href": "/book"
                         },
-                        "children": [
-                          "Book a free assessment"
-                        ],
+                        "children": ["Book a free assessment"],
                         "id": "ccf09d28-eeb2-4b58-88b0-83323dc5b65f",
                         "ord": "a0"
                       },
@@ -684,9 +652,7 @@
                         "attrs": {
                           "href": "/book"
                         },
-                        "children": [
-                          "See our subjects"
-                        ],
+                        "children": ["See our subjects"],
                         "id": "02150fb0-88ad-4766-a16b-ec9a014bd34e",
                         "ord": "a1"
                       }
@@ -726,9 +692,7 @@
                             "kind": "element",
                             "tag": "h2",
                             "class": "text-xl font-semibold text-base-content",
-                            "children": [
-                              "Certified, caring tutors"
-                            ],
+                            "children": ["Certified, caring tutors"],
                             "id": "b9aed940-5bb8-4e4e-a420-9323b17d4991",
                             "ord": "a0"
                           },
@@ -755,9 +719,7 @@
                             "kind": "element",
                             "tag": "h2",
                             "class": "text-xl font-semibold text-base-content",
-                            "children": [
-                              "A plan made for your child"
-                            ],
+                            "children": ["A plan made for your child"],
                             "id": "c9aa0a79-a680-485c-9929-d4846171e595",
                             "ord": "a0"
                           },
@@ -784,9 +746,7 @@
                             "kind": "element",
                             "tag": "h2",
                             "class": "text-xl font-semibold text-base-content",
-                            "children": [
-                              "Small-group & one-to-one"
-                            ],
+                            "children": ["Small-group & one-to-one"],
                             "id": "b8be05e1-22a0-441e-82b1-e5d474b3ad6e",
                             "ord": "a0"
                           },
@@ -813,9 +773,7 @@
                             "kind": "element",
                             "tag": "h2",
                             "class": "text-xl font-semibold text-base-content",
-                            "children": [
-                              "Progress you can see"
-                            ],
+                            "children": ["Progress you can see"],
                             "id": "e179f6cb-9a02-4974-bba7-d89d46bd167a",
                             "ord": "a0"
                           },
@@ -864,9 +822,7 @@
                         "kind": "element",
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
-                        "children": [
-                          "What we help with"
-                        ],
+                        "children": ["What we help with"],
                         "id": "05291fb0-88a0-4b60-a92b-3a0a8a4c305b",
                         "ord": "a0"
                       },
@@ -906,9 +862,7 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
-                                "children": [
-                                  "Free assessment"
-                                ],
+                                "children": ["Free assessment"],
                                 "id": "f657822f-d3a8-4859-ada9-56e75464294c",
                                 "ord": "a0"
                               },
@@ -916,9 +870,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-bold text-base-content",
-                                "children": [
-                                  "$0"
-                                ],
+                                "children": ["$0"],
                                 "id": "0e75e431-7dba-4aa9-895c-e7a8ba84337a",
                                 "ord": "a1"
                               }
@@ -930,9 +882,7 @@
                             "kind": "element",
                             "tag": "p",
                             "class": "text-sm font-medium uppercase tracking-wide text-secondary",
-                            "children": [
-                              "45 min"
-                            ],
+                            "children": ["45 min"],
                             "id": "f9e7a2e2-6782-41f6-b2e7-917f8dc2f64a",
                             "ord": "a1"
                           },
@@ -967,9 +917,7 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
-                                "children": [
-                                  "Math tutoring"
-                                ],
+                                "children": ["Math tutoring"],
                                 "id": "230c0c1b-f83d-4b35-be7b-37cf647f28bd",
                                 "ord": "a0"
                               },
@@ -977,9 +925,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-bold text-base-content",
-                                "children": [
-                                  "$65"
-                                ],
+                                "children": ["$65"],
                                 "id": "9f8a63f0-ce81-47ff-b58f-6d6b58962b08",
                                 "ord": "a1"
                               }
@@ -991,9 +937,7 @@
                             "kind": "element",
                             "tag": "p",
                             "class": "text-sm font-medium uppercase tracking-wide text-secondary",
-                            "children": [
-                              "1 hr"
-                            ],
+                            "children": ["1 hr"],
                             "id": "62477423-4c21-4c1a-bcaf-963af0245dba",
                             "ord": "a1"
                           },
@@ -1001,9 +945,7 @@
                             "kind": "element",
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
-                            "children": [
-                              "Times tables to algebra, built on real understanding."
-                            ],
+                            "children": ["Times tables to algebra, built on real understanding."],
                             "id": "f3b12d66-6b0f-4c51-a308-726575dc568a",
                             "ord": "a2"
                           }
@@ -1028,9 +970,7 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
-                                "children": [
-                                  "Reading tutoring"
-                                ],
+                                "children": ["Reading tutoring"],
                                 "id": "82baceeb-a90d-45c4-b9f2-0357923d7746",
                                 "ord": "a0"
                               },
@@ -1038,9 +978,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-bold text-base-content",
-                                "children": [
-                                  "$60"
-                                ],
+                                "children": ["$60"],
                                 "id": "d54cbde5-fec3-4c7b-b0af-eb8c482d3419",
                                 "ord": "a1"
                               }
@@ -1052,9 +990,7 @@
                             "kind": "element",
                             "tag": "p",
                             "class": "text-sm font-medium uppercase tracking-wide text-secondary",
-                            "children": [
-                              "45 min"
-                            ],
+                            "children": ["45 min"],
                             "id": "b56456c8-fbaa-45d5-9f4f-51db83b91e1d",
                             "ord": "a1"
                           },
@@ -1062,9 +998,7 @@
                             "kind": "element",
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
-                            "children": [
-                              "Phonics, fluency and comprehension, at their pace."
-                            ],
+                            "children": ["Phonics, fluency and comprehension, at their pace."],
                             "id": "7853b1c8-6bc5-4b71-a03b-23bcb80af422",
                             "ord": "a2"
                           }
@@ -1089,9 +1023,7 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
-                                "children": [
-                                  "Homework help"
-                                ],
+                                "children": ["Homework help"],
                                 "id": "79122184-f6f7-4ab5-8a29-6c218e88ef00",
                                 "ord": "a0"
                               },
@@ -1099,9 +1031,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-bold text-base-content",
-                                "children": [
-                                  "$45"
-                                ],
+                                "children": ["$45"],
                                 "id": "9453a053-8d19-4bee-ae59-b40460abd309",
                                 "ord": "a1"
                               }
@@ -1113,9 +1043,7 @@
                             "kind": "element",
                             "tag": "p",
                             "class": "text-sm font-medium uppercase tracking-wide text-secondary",
-                            "children": [
-                              "30 min"
-                            ],
+                            "children": ["30 min"],
                             "id": "1b9f6665-6d6a-4c9c-b8c8-52a5f27f1ed8",
                             "ord": "a1"
                           },
@@ -1123,9 +1051,7 @@
                             "kind": "element",
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
-                            "children": [
-                              "Get today’s homework done — and actually understood."
-                            ],
+                            "children": ["Get today’s homework done — and actually understood."],
                             "id": "d9fc9267-2b22-4a08-83b1-0a50d02e84d2",
                             "ord": "a2"
                           }
@@ -1149,9 +1075,7 @@
                         "attrs": {
                           "href": "/book"
                         },
-                        "children": [
-                          "See everything & book"
-                        ],
+                        "children": ["See everything & book"],
                         "id": "61eebcdb-a2af-4ffb-ad7e-3dcc8b9ed649",
                         "ord": "a0"
                       }
@@ -1198,9 +1122,7 @@
                         "kind": "element",
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
-                        "children": [
-                          "Confidence first, grades follow"
-                        ],
+                        "children": ["Confidence first, grades follow"],
                         "id": "a7e33fc4-94cf-4a81-ae7d-6691ca3df91d",
                         "ord": "a0"
                       },
@@ -1236,9 +1158,7 @@
                             "attrs": {
                               "href": "/book"
                             },
-                            "children": [
-                              "Book a free assessment"
-                            ],
+                            "children": ["Book a free assessment"],
                             "id": "3f14ff6e-790f-485f-92c7-e50da5690638",
                             "ord": "a0"
                           }
@@ -1277,9 +1197,7 @@
                         "kind": "element",
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
-                        "children": [
-                          "Meet the tutors"
-                        ],
+                        "children": ["Meet the tutors"],
                         "id": "7260a05b-f882-4267-813d-5e47a19d0b48",
                         "ord": "a0"
                       },
@@ -1328,9 +1246,7 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
-                                "children": [
-                                  "Elena Marsh"
-                                ],
+                                "children": ["Elena Marsh"],
                                 "id": "b25f23ff-306d-48fc-8cbc-9e58d4f71ac6",
                                 "ord": "a0"
                               },
@@ -1338,9 +1254,7 @@
                                 "kind": "element",
                                 "tag": "p",
                                 "class": "text-sm font-medium uppercase tracking-wide text-secondary",
-                                "children": [
-                                  "Math & science tutor"
-                                ],
+                                "children": ["Math & science tutor"],
                                 "id": "e0a2f408-1bf9-4e87-b798-5a619d629292",
                                 "ord": "a1"
                               },
@@ -1388,9 +1302,7 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
-                                "children": [
-                                  "Marcus Bell"
-                                ],
+                                "children": ["Marcus Bell"],
                                 "id": "df77ff18-4234-4750-aa94-b34a53dc460f",
                                 "ord": "a0"
                               },
@@ -1398,9 +1310,7 @@
                                 "kind": "element",
                                 "tag": "p",
                                 "class": "text-sm font-medium uppercase tracking-wide text-secondary",
-                                "children": [
-                                  "Reading & writing tutor"
-                                ],
+                                "children": ["Reading & writing tutor"],
                                 "id": "0c897f2e-8cfe-412c-967e-d7bd585531d2",
                                 "ord": "a1"
                               },
@@ -1448,9 +1358,7 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
-                                "children": [
-                                  "Priya Nair"
-                                ],
+                                "children": ["Priya Nair"],
                                 "id": "3d47c555-9a50-4fb6-aa08-16c3f6417a99",
                                 "ord": "a0"
                               },
@@ -1458,9 +1366,7 @@
                                 "kind": "element",
                                 "tag": "p",
                                 "class": "text-sm font-medium uppercase tracking-wide text-secondary",
-                                "children": [
-                                  "Math & homework coach"
-                                ],
+                                "children": ["Math & homework coach"],
                                 "id": "12191f75-34ec-4f75-91f9-9bd4192bb892",
                                 "ord": "a1"
                               },
@@ -1518,9 +1424,7 @@
                     "kind": "element",
                     "tag": "p",
                     "class": "text-sm font-semibold uppercase tracking-wide opacity-80",
-                    "children": [
-                      "Danielle, parent of a 5th grader"
-                    ],
+                    "children": ["Danielle, parent of a 5th grader"],
                     "id": "55b7d0f5-de65-4952-af58-0de41a61be20",
                     "ord": "a1"
                   }
@@ -1546,9 +1450,7 @@
                     "kind": "element",
                     "tag": "h2",
                     "class": "text-3xl font-bold tracking-tight @3xl:text-4xl",
-                    "children": [
-                      "Start with a free assessment"
-                    ],
+                    "children": ["Start with a free assessment"],
                     "id": "d1e0605a-9014-41e9-bda6-117868e467b8",
                     "ord": "a0"
                   },
@@ -1569,9 +1471,7 @@
                     "attrs": {
                       "href": "/book"
                     },
-                    "children": [
-                      "Book a free assessment"
-                    ],
+                    "children": ["Book a free assessment"],
                     "id": "74a6e0c4-39b8-4c3b-b041-d04e47d96862",
                     "ord": "a2"
                   }
@@ -1632,9 +1532,7 @@
                     "kind": "element",
                     "tag": "h1",
                     "class": "max-w-3xl text-4xl font-bold leading-tight tracking-tight @2xl:text-5xl @3xl:text-6xl",
-                    "children": [
-                      "Book a session"
-                    ],
+                    "children": ["Book a session"],
                     "id": "17a678b3-3020-4e4c-b70e-c5a431c09600",
                     "ord": "a0"
                   },
@@ -1660,9 +1558,7 @@
                         "attrs": {
                           "href": "/book"
                         },
-                        "children": [
-                          "See sessions below"
-                        ],
+                        "children": ["See sessions below"],
                         "id": "c3ab522e-5023-42df-8983-6a13bae6bfb8",
                         "ord": "a0"
                       }
@@ -1705,9 +1601,7 @@
                         "kind": "element",
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
-                        "children": [
-                          "Good to know"
-                        ],
+                        "children": ["Good to know"],
                         "id": "a4e158ed-b0ff-4123-aa1a-8052019136f4",
                         "ord": "a0"
                       },
@@ -1739,9 +1633,7 @@
                             "kind": "element",
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
-                            "children": [
-                              "Standard session"
-                            ],
+                            "children": ["Standard session"],
                             "id": "c4eb8797-95f5-4c26-b571-14d0448729c4",
                             "ord": "a0"
                           },
@@ -1828,9 +1720,7 @@
                         "kind": "element",
                         "tag": "h1",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
-                        "children": [
-                          "About Summit Learning"
-                        ],
+                        "children": ["About Summit Learning"],
                         "id": "85cceffa-d2b1-446d-9584-0e7378420862",
                         "ord": "a0"
                       },
@@ -1866,9 +1756,7 @@
                             "attrs": {
                               "href": "/book"
                             },
-                            "children": [
-                              "Book a free assessment"
-                            ],
+                            "children": ["Book a free assessment"],
                             "id": "f154c640-ba6b-496d-9a3f-4cbdb8494a61",
                             "ord": "a0"
                           }
@@ -1902,9 +1790,7 @@
                     "kind": "element",
                     "tag": "h2",
                     "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
-                    "children": [
-                      "How we work"
-                    ],
+                    "children": ["How we work"],
                     "id": "f517f934-fe35-4513-93df-3cf46597bbca",
                     "ord": "a0"
                   },
@@ -1922,9 +1808,7 @@
                             "kind": "element",
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
-                            "children": [
-                              "A free assessment first"
-                            ],
+                            "children": ["A free assessment first"],
                             "id": "9e381e4e-6430-4935-97d1-3a13a9998276",
                             "ord": "a0"
                           },
@@ -1951,9 +1835,7 @@
                             "kind": "element",
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
-                            "children": [
-                              "Patience over pressure"
-                            ],
+                            "children": ["Patience over pressure"],
                             "id": "1aeb465e-133b-47e4-8986-428c88e718b1",
                             "ord": "a0"
                           },
@@ -1980,9 +1862,7 @@
                             "kind": "element",
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
-                            "children": [
-                              "Parents in the loop"
-                            ],
+                            "children": ["Parents in the loop"],
                             "id": "ece43d7f-1e8a-4aac-be5f-943afce746b6",
                             "ord": "a0"
                           },
@@ -2047,9 +1927,7 @@
                         "kind": "element",
                         "tag": "h1",
                         "class": "text-4xl font-bold tracking-tight text-base-content @3xl:text-5xl",
-                        "children": [
-                          "Get in touch"
-                        ],
+                        "children": ["Get in touch"],
                         "id": "a37cd143-3feb-43fb-839f-e57a55e2302f",
                         "ord": "a0"
                       },
@@ -2076,9 +1954,7 @@
                         "kind": "element",
                         "tag": "span",
                         "class": "text-base font-medium text-base-content",
-                        "children": [
-                          "Call us"
-                        ],
+                        "children": ["Call us"],
                         "id": "cb16d1a1-aaf2-4d3b-ab87-06cddf4f513c",
                         "ord": "a0"
                       },
@@ -2090,9 +1966,7 @@
                           {
                             "kind": "element",
                             "tag": "span",
-                            "children": [
-                              "(555) 123-4567"
-                            ],
+                            "children": ["(555) 123-4567"],
                             "data": {
                               "kind": "value",
                               "ref": "site.identity.phone"
@@ -2126,9 +2000,7 @@
                         "kind": "element",
                         "tag": "span",
                         "class": "text-base font-medium text-base-content",
-                        "children": [
-                          "Email us"
-                        ],
+                        "children": ["Email us"],
                         "id": "63ad0ae6-3c64-49df-8045-d7a9345dafff",
                         "ord": "a0"
                       },
@@ -2140,9 +2012,7 @@
                           {
                             "kind": "element",
                             "tag": "span",
-                            "children": [
-                              "hello@yourbusiness.com"
-                            ],
+                            "children": ["hello@yourbusiness.com"],
                             "data": {
                               "kind": "value",
                               "ref": "site.identity.email"
@@ -2181,9 +2051,7 @@
                             "kind": "element",
                             "tag": "span",
                             "class": "text-base font-medium text-base-content",
-                            "children": [
-                              "Your name"
-                            ],
+                            "children": ["Your name"],
                             "id": "585a767a-b202-4f85-9fe8-5ee8ce78981f",
                             "ord": "a0"
                           },
@@ -2212,9 +2080,7 @@
                             "kind": "element",
                             "tag": "span",
                             "class": "text-base font-medium text-base-content",
-                            "children": [
-                              "Email address"
-                            ],
+                            "children": ["Email address"],
                             "id": "4bf55c23-41e1-445d-bb4c-37e7db6ec279",
                             "ord": "a0"
                           },
@@ -2243,9 +2109,7 @@
                             "kind": "element",
                             "tag": "span",
                             "class": "text-base font-medium text-base-content",
-                            "children": [
-                              "Phone number"
-                            ],
+                            "children": ["Phone number"],
                             "id": "a2ec9bc1-2786-48c9-a929-182513e5d92a",
                             "ord": "a0"
                           },
@@ -2273,9 +2137,7 @@
                             "kind": "element",
                             "tag": "span",
                             "class": "text-base font-medium text-base-content",
-                            "children": [
-                              "How can we help?"
-                            ],
+                            "children": ["How can we help?"],
                             "id": "e524acd2-3db4-48a9-b1f8-b3b000b2650d",
                             "ord": "a0"
                           },
@@ -2305,9 +2167,7 @@
                             "attrs": {
                               "type": "submit"
                             },
-                            "children": [
-                              "Send my request"
-                            ],
+                            "children": ["Send my request"],
                             "id": "0a6857e0-d0f4-4e49-9e41-c84539002a86",
                             "ord": "a0"
                           }
@@ -2353,9 +2213,7 @@
                         "kind": "element",
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
-                        "children": [
-                          "Visit the center"
-                        ],
+                        "children": ["Visit the center"],
                         "id": "9381a72a-448d-4c24-b232-7c46df107a2d",
                         "ord": "a0"
                       },
@@ -2387,9 +2245,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "font-medium text-base-content",
-                                "children": [
-                                  "Monday – Friday"
-                                ],
+                                "children": ["Monday – Friday"],
                                 "id": "f7f043bf-4a45-4478-bb20-81eb1236593c",
                                 "ord": "a0"
                               },
@@ -2397,9 +2253,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-base-content",
-                                "children": [
-                                  "3:00 – 8:00"
-                                ],
+                                "children": ["3:00 – 8:00"],
                                 "id": "30d9ca79-ae97-403f-8bda-f97045c29bb1",
                                 "ord": "a1"
                               }
@@ -2416,9 +2270,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "font-medium text-base-content",
-                                "children": [
-                                  "Saturday"
-                                ],
+                                "children": ["Saturday"],
                                 "id": "fd72100f-71b4-43c8-aa1f-0e761fa3f199",
                                 "ord": "a0"
                               },
@@ -2426,9 +2278,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-base-content",
-                                "children": [
-                                  "9:00 – 2:00"
-                                ],
+                                "children": ["9:00 – 2:00"],
                                 "id": "39f24ee9-5f31-4911-9417-fafad85aa0cd",
                                 "ord": "a1"
                               }
@@ -2445,9 +2295,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "font-medium text-base-content",
-                                "children": [
-                                  "Sunday"
-                                ],
+                                "children": ["Sunday"],
                                 "id": "a7e4254d-76ec-447c-9b53-8743b3c3500f",
                                 "ord": "a0"
                               },
@@ -2455,9 +2303,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-base-content",
-                                "children": [
-                                  "10:00 – 2:00"
-                                ],
+                                "children": ["10:00 – 2:00"],
                                 "id": "b548895c-2f0b-4cf1-bcb5-5a4d9d66fa11",
                                 "ord": "a1"
                               }
@@ -2474,9 +2320,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "font-medium text-base-content",
-                                "children": [
-                                  "Weekday mornings"
-                                ],
+                                "children": ["Weekday mornings"],
                                 "id": "27abd93b-a7ff-474c-a219-e04d32bb0b12",
                                 "ord": "a0"
                               },
@@ -2484,9 +2328,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-base-content",
-                                "children": [
-                                  "By appointment"
-                                ],
+                                "children": ["By appointment"],
                                 "id": "9b9810b7-c4d6-489c-a83c-fc2156f2fa4b",
                                 "ord": "a1"
                               }
@@ -2537,9 +2379,7 @@
                     "kind": "element",
                     "tag": "h2",
                     "class": "text-3xl font-bold tracking-tight @3xl:text-4xl",
-                    "children": [
-                      "Questions before you book?"
-                    ],
+                    "children": ["Questions before you book?"],
                     "id": "afcc234c-e601-4339-a35b-8484f071436b",
                     "ord": "a0"
                   },
@@ -2560,9 +2400,7 @@
                     "attrs": {
                       "href": "/book"
                     },
-                    "children": [
-                      "Book a free assessment"
-                    ],
+                    "children": ["Book a free assessment"],
                     "id": "6a071ce6-f767-4da7-8835-f93e48b7ec10",
                     "ord": "a2"
                   }
