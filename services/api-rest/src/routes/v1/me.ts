@@ -62,6 +62,26 @@ const TourPrefs = z.object({
   modules: z.partialRecord(z.enum(TOUR_MODULES), TourOutcome).optional(),
 });
 
+// Cookie/tracking consent, recorded against the ACCOUNT rather than a cookie.
+//
+// It rides this blob for the same reason the tour state does — it is per-user,
+// it is small, and the merge-patch below preserves keys it does not own — but it
+// is READ-ONLY here, and deliberately absent from `PreferencesPatch` below.
+//
+// The decision is taken and written on the surface where a customer deals with
+// the vendor (Piggles: getpiggles.com; sparx: its own account settings), which
+// has a session and direct database access. The CONSOLE only ever renders it and
+// gates its analytics on it. Accepting a patch here would give the operating app
+// a way to change a consent record — which is the one thing a tracked surface
+// must not be able to do to its own tracking permission.
+//
+// `at` is required alongside the flags: consent that cannot be dated cannot be
+// evidenced. A record missing it degrades to "no decision", which re-asks.
+const ConsentPrefs = z.object({
+  analytics: z.boolean(),
+  at: z.string().min(1).max(40),
+});
+
 const PreferencesPatch = z.object({
   defaultDetailView: z.enum(DEFAULT_DETAIL_VIEWS).optional(),
   defaultListView: z.enum(DEFAULT_LIST_VIEWS).optional(),
@@ -97,15 +117,22 @@ function parsePreferences(raw: unknown): {
   defaultDetailView: (typeof DEFAULT_DETAIL_VIEWS)[number];
   defaultListView: (typeof DEFAULT_LIST_VIEWS)[number];
   tour: z.infer<typeof TourPrefs>;
+  consent: z.infer<typeof ConsentPrefs> | null;
 } {
-  if (!raw || typeof raw !== 'object') return { ...DEFAULT_PREFERENCES, tour: {} };
+  if (!raw || typeof raw !== 'object') return { ...DEFAULT_PREFERENCES, tour: {}, consent: null };
   const obj = raw as Record<string, unknown>;
   const view = obj.defaultDetailView;
   const listView = obj.defaultListView;
   // Tolerant parse: a malformed/legacy tour blob degrades to "not seen" rather
   // than 400ing an unrelated preferences read.
   const tour = TourPrefs.safeParse(obj.tour);
+  // Absent OR malformed both mean "no decision on record", and `null` is the
+  // only value that can carry that. It must never fall back to a default object
+  // — an all-false default is indistinguishable from a real refusal, and an
+  // all-true one grants a permission nobody gave.
+  const consent = ConsentPrefs.safeParse(obj.consent);
   return {
+    consent: consent.success ? consent.data : null,
     defaultDetailView:
       typeof view === 'string' && (DEFAULT_DETAIL_VIEWS as readonly string[]).includes(view)
         ? (view as (typeof DEFAULT_DETAIL_VIEWS)[number])
@@ -190,8 +217,10 @@ const meRoutes: FastifyPluginAsync = async (app) => {
         where: { id: auth.actorId },
         data: { preferences: merged },
       });
-      // Return only the keys this endpoint owns — the response contract is the
-      // view defaults, not the whole blob.
+      // Return the same shape GET does, not the whole blob. That includes
+      // `consent`, which this endpoint reads but cannot write — it is carried
+      // through from `base` untouched, so a view-default patch never disturbs a
+      // consent record and the client sees a consistent view either way.
       return parsePreferences(merged);
     });
     return ok(next);

@@ -2,6 +2,7 @@ import { NextResponse, type NextRequest } from 'next/server';
 import { getSession } from '@sparx/auth';
 import { mintHandoffUrl } from '@piggles/auth-handoff';
 import { safeInternalPath } from '@piggles/config';
+import { readConsent } from '@/lib/consent';
 import { sameOriginRedirectWithNext } from '@/lib/same-origin-redirect';
 
 // The one door from getpiggles.com into mypiggles.com.
@@ -23,6 +24,24 @@ import { sameOriginRedirectWithNext } from '@/lib/same-origin-redirect';
 // it is issued over HTTPS. Both names are checked because dev is plain HTTP and
 // production is not, and hardcoding either one breaks the other environment in a
 // way that only shows up after deploy.
+//
+// ── WHY THE CONSENT GATE IS HERE AND NOT IN THE CONSOLE ─────────────────────
+//
+// This route is the ONE door from getpiggles.com into mypiggles.com, which makes
+// it the only place a check can be complete. Every way in passes through it:
+// finishing onboarding, the account home's button, the console bouncing an
+// unauthenticated visitor back and forward again, a bookmark. A check anywhere
+// else is a check with a way round it.
+//
+// The console used to ask for itself, with a banner, AFTER somebody had already
+// arrived — so the answer was a cookie on the wrong domain, and the first thing
+// a new customer saw of their business was a consent bar over the top of it.
+// Asking at the door means the console only ever loads for somebody whose answer
+// is already on record, and it means the console needs no ask of its own at all.
+//
+// A missing answer is not a failure and is not treated as one: it is a question
+// nobody has put yet, so the door sends them to put it, carrying where they were
+// headed so the trip costs them nothing but the answer.
 const COOKIE_NAMES = ['__Secure-better-auth.session_token', 'better-auth.session_token'];
 
 export const dynamic = 'force-dynamic';
@@ -34,6 +53,20 @@ export async function GET(request: NextRequest) {
   // reach the console so they land there rather than on the account home.
   if (!session) {
     return sameOriginRedirectWithNext('/sign-in', `/handoff${request.nextUrl.search}`);
+  }
+
+  // Signed in, but never asked whether we may measure them. Ask before opening
+  // the door, and come back here afterwards so the destination they wanted is
+  // still the destination they get.
+  //
+  // Deliberately NOT wrapped in a try/catch that lets them through. If this read
+  // fails we do not know whether an answer exists, and "we could not tell" must
+  // never resolve to "carry on and start the tracker" — the ask is cheap and
+  // idempotent, so an unreadable record costs one screen rather than one
+  // unconsented session.
+  const consent = await readConsent(session.user.id, session.user.tenantId);
+  if (!consent) {
+    return sameOriginRedirectWithNext('/cookie-choices', `/handoff${request.nextUrl.search}`);
   }
 
   const raw = COOKIE_NAMES.map((n) => request.cookies.get(n)?.value).find(Boolean);

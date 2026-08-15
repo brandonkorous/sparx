@@ -71,6 +71,15 @@ export function ConsoleProviders({ children }: { children: React.ReactNode }) {
               before the shell ever renders, which is precisely when nothing else
               can recover it. */}
             <CrashListeners />
+            {/* There is NO consent banner here, and its absence is a decision.
+                It asked after somebody had already arrived, which meant the
+                first thing a new customer saw of their own business was a
+                consent bar over the top of it — and it recorded the answer in a
+                cookie on this domain, which is not the domain a customer deals
+                with WizeWorks on. Both moved to getpiggles.com: answered at
+                signup or at /handoff, which will not open the door to this app
+                without a record. The tracker above reads that record; it never
+                asks for one. See lib/consent.ts. */}
           </ToastProvider>
         </PostHogProvider>
       </QueryProvider>

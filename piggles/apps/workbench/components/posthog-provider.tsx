@@ -14,6 +14,7 @@ import { PostHogProvider as PHProvider } from 'posthog-js/react';
 import { usePathname, useSearchParams } from 'next/navigation';
 import { useReportWebVitals } from 'next/web-vitals';
 import { Suspense, useEffect } from 'react';
+import { useAnalyticsGranted } from '@/lib/consent';
 
 function WebVitals() {
   useReportWebVitals((metric) => {
@@ -48,22 +49,49 @@ function PageViews() {
 }
 
 export function PostHogProvider({ children }: { children: React.ReactNode }) {
+  // CONSENT-GATED, on a decision this app cannot make.
+  //
+  // This used to call `posthog.init()` unconditionally, guarded only by the
+  // build mode and the presence of a key — neither of which is consent.
+  // Autocapture, pageviews, web vitals and an `identify` carrying first-touch
+  // attribution all started on mount, for everybody, unasked.
+  //
+  // Then it was gated on a banner in this app, which was better and still wrong:
+  // the ask arrived after somebody had already reached their business, and the
+  // answer lived in a cookie on this domain. Both moved to getpiggles.com, and
+  // the answer now rides the account — so this reads it and does nothing else.
+  //
+  // `false` while the read is in flight and `false` when no record exists, which
+  // is the direction this is allowed to be wrong in: analytics starting a beat
+  // late costs a few events, and starting it unasked costs the thing consent is
+  // for. The gate cannot normally return "no record" at all — /handoff will not
+  // open the door to this app without one.
+  const granted = useAnalyticsGranted();
+
   useEffect(() => {
+    if (!granted) return;
     // Never init off a non-production build — `pnpm dev` runs with
     // NODE_ENV !== 'production', and the shared key would otherwise pump
     // localhost traffic into the production project and drown real signal.
     if (process.env.NODE_ENV !== 'production') return;
     const key = process.env.NEXT_PUBLIC_POSTHOG_KEY;
     if (!key) return;
+
+    // `posthog.init` is not idempotent — a second call on the same key warns and
+    // re-registers capture handlers. The effect re-runs whenever `granted`
+    // flips, so the already-loaded check is what keeps a cache refetch from
+    // double-initialising a live session.
+    if (posthog.__loaded) return;
+
     posthog.init(key, {
       api_host: process.env.NEXT_PUBLIC_POSTHOG_HOST ?? 'https://us.i.posthog.com',
       person_profiles: 'identified_only',
-      // We drive pageviews by hand from PageViews (SPA route changes); pageleave
-      // still fires natively so session duration stays accurate.
+      // We drive pageviews by hand from PageViews (SPA route changes);
+      // pageleave still fires natively so session duration stays accurate.
       capture_pageview: false,
       capture_pageleave: true,
     });
-  }, []);
+  }, [granted]);
 
   return (
     <PHProvider client={posthog}>

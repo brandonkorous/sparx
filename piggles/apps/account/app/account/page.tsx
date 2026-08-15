@@ -6,6 +6,7 @@ import { requireSession } from '@sparx/auth';
 import { prisma } from '@sparx/db';
 import { Logo } from '@piggles/brand/react';
 import { PRODUCT } from '@piggles/config';
+import { readConsent } from '@/lib/consent';
 
 export const metadata: Metadata = { title: 'Your account' };
 export const dynamic = 'force-dynamic';
@@ -49,6 +50,15 @@ export default async function AccountPage() {
   });
 
   const trial = trialState(tenant?.trialEndsAt ?? null, tenant?.subscriptionStatus ?? '');
+
+  // The analytics answer, shown as a fact rather than as a control. This page
+  // reports where things stand; changing a decision happens on the screen that
+  // asked for it, which is the same screen either way.
+  //
+  // Three states, and all three are rendered differently. "Not asked yet" is not
+  // folded into "no" — they mean different things, and a person who has never
+  // been asked seeing the word "no" would reasonably conclude they had answered.
+  const consent = await readConsent(session.user.id, session.user.tenantId);
 
   return (
     <main className="mx-auto max-w-3xl px-6 py-12 sm:py-16">
@@ -117,6 +127,43 @@ export default async function AccountPage() {
           There is nothing to pay while you are on the trial, and no card on file. Adding a payment
           method, seeing invoices, and adding room for more people, storage or email all live here —
           they are the next thing being built.
+        </p>
+      </div>
+
+      <div className="border-base-300 mt-10 border-t pt-8">
+        <h2 className="text-xl font-bold">Cookie choices</h2>
+        <div className="mt-3 flex flex-wrap items-center gap-4">
+          {consent === null ? (
+            <Badge color="warning" variant="soft" size="lg">
+              Not asked yet
+            </Badge>
+          ) : (
+            <Badge color={consent.analytics ? 'success' : 'neutral'} variant="soft" size="lg">
+              {consent.analytics ? 'Helping us improve' : 'Analytics off'}
+            </Badge>
+          )}
+          <Link
+            className={buttonClasses({ color: 'neutral', variant: 'outline' })}
+            href="/cookie-choices"
+          >
+            {consent === null ? 'Answer it' : 'Change this'}
+          </Link>
+        </div>
+        <p className="mt-3 max-w-prose text-base">
+          {consent === null
+            ? `Whether ${PRODUCT.name} may see which screens you use. Nothing is being counted until you say so.`
+            : consent.analytics
+              ? `${PRODUCT.name} counts which screens get used inside your workspace, so we can fix what is confusing. Never sold, never advertising, and never anything you have stored.`
+              : `${PRODUCT.name} is counting nothing. The only cookies left are the ones that keep you signed in.`}{' '}
+          <a
+            className="font-semibold underline"
+            href={`https://${PRODUCT.hosts.marketing}/cookies`}
+            target="_blank"
+            rel="noreferrer"
+          >
+            Every cookie we set
+          </a>
+          .
         </p>
       </div>
     </main>

@@ -41,10 +41,37 @@ import { PageHero } from '@/components/marketing/page-hero';
 //
 //   cookies().set | Set-Cookie | document.cookie | localStorage.setItem
 //
-// A cookie CONSENT banner is deliberately absent, and that is a consequence of
-// the table rather than an omission: nothing here is advertising, nothing is
-// sold on, and nothing is set by another company on our pages. If that ever
-// stops being true, the banner arrives in the same commit as the tag.
+// ── THE CONSENT ASK, AND WHERE IT IS ────────────────────────────────────────
+//
+// This file has been wrong about this twice, in opposite directions, and both
+// mistakes are worth keeping written down.
+//
+// First it said a consent ask was "deliberately absent" because nothing here is
+// advertising and nothing is set by another company. The first half is true and
+// the second was WRONG: PostHog is another company's analytics on mypiggles.com's
+// pages, and analytics is not exempt from consent just because it is not
+// advertising.
+//
+// Then the console asked for itself, with a banner, and stored the answer in a
+// cookie on mypiggles.com. That gated the tracker correctly and got the MOMENT
+// wrong: somebody reached their business before being asked, and the answer sat
+// on the domain where they run their business rather than the one where they
+// deal with WizeWorks.
+//
+// It is asked on getpiggles.com now — a checkbox on the signup form, and
+// `/cookie-choices` for anyone who arrives without one, which /handoff (the only
+// door into the console) will not let past. The answer is recorded on the
+// ACCOUNT, in `users.preferences.consent`, because three registrable domains
+// cannot share a cookie but all three can read a user row. The console reads it
+// and gates PostHog on it; it no longer asks anything.
+//
+//   • meetpiggles.com — sets nothing. Nothing to ask.
+//   • getpiggles.com  — the session cookie, and where the question is put.
+//   • mypiggles.com   — reads the answer. Never asks.
+//
+// If a tag ever lands on THIS site, an ask for it arrives in the same commit —
+// and it will need a different mechanism, because this domain has no session to
+// record an answer against.
 
 export const metadata: Metadata = {
   title: 'Cookies',
@@ -109,6 +136,10 @@ const FACTS = [
   {
     title: 'Your own visitors are your business, not ours',
     body: 'The website you build with Piggles is yours. If you add something to it that sets cookies — a chat widget, an ad pixel, a video embed — that is your decision to make and yours to tell your visitors about.',
+  },
+  {
+    title: 'You are asked before anything is counted',
+    body: `The one optional thing on this list runs inside ${PRODUCT.hosts.console}, and the question is put before you ever get there — on the signup form, or on a screen of its own if you signed up with Google. Say no and it never starts. Either answer is kept with your account and changed whenever you like, from ${PRODUCT.hosts.account}. Nothing on this site needs asking, because this site sets nothing.`,
   },
   {
     title: 'Turning them off',
@@ -178,7 +209,11 @@ export default function CookiesPage() {
 
       <section className="px-6 py-16 sm:py-24">
         <div className="mx-auto max-w-7xl">
-          <h2 className="text-3xl font-extrabold sm:text-4xl">Four things worth knowing</h2>
+          {/* The count is written out and there are seven of them. It said
+              "Four" while rendering seven — a number nobody would check and
+              everybody would believe, on the page whose whole job is being
+              checkable. If an entry is added or removed, this word changes. */}
+          <h2 className="text-3xl font-extrabold sm:text-4xl">Seven things worth knowing</h2>
           <ul className="mt-10 grid gap-8 sm:grid-cols-2 lg:gap-10">
             {FACTS.map((f) => (
               <li key={f.title} className="border-base-content border-t-2 pt-5">
