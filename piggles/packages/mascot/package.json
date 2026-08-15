@@ -16,13 +16,13 @@
   },
   "peerDependencies": {
     "next": "^16.2.6",
-    "react": "^19.0.0"
+    "react": "^19.2.8"
   },
   "devDependencies": {
-    "@types/react": "^19.0.0",
+    "@types/react": "^19.2.18",
     "next": "^16.2.6",
     "prettier": "^3.4.0",
-    "react": "^19.0.0",
+    "react": "^19.2.8",
     "sharp": "^0.34.5",
     "typescript": "^6.0.3"
   },
