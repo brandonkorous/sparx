@@ -2,6 +2,7 @@ import { NextResponse, type NextRequest } from 'next/server';
 import { getSession } from '@sparx/auth';
 import { mintHandoffUrl } from '@piggles/auth-handoff';
 import { safeInternalPath } from '@piggles/config';
+import { sameOriginRedirectWithNext } from '@/lib/same-origin-redirect';
 
 // The one door from getpiggles.com into mypiggles.com.
 //
@@ -32,9 +33,7 @@ export async function GET(request: NextRequest) {
   // Not signed in: send them to sign in, and remember that they were trying to
   // reach the console so they land there rather than on the account home.
   if (!session) {
-    const back = new URL('/sign-in', request.url);
-    back.searchParams.set('next', `/handoff${request.nextUrl.search}`);
-    return NextResponse.redirect(back);
+    return sameOriginRedirectWithNext('/sign-in', `/handoff${request.nextUrl.search}`);
   }
 
   const raw = COOKIE_NAMES.map((n) => request.cookies.get(n)?.value).find(Boolean);

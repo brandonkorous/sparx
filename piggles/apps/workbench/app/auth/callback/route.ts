@@ -41,12 +41,31 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
   }
 
   const cookie = sessionCookie(result.sessionToken);
-  const destination = new URL(safeInternalPath(result.next), request.nextUrl.origin);
 
-  // 303 so the browser makes a plain GET of the destination, and never repeats
-  // this one. A cached redirect here would be actively dangerous: the token is
-  // single-use, so replaying it lands the NEXT person on a dead end.
-  const response = NextResponse.redirect(destination, 303);
+  // A RELATIVE Location, not `new URL(path, request.nextUrl.origin)`.
+  //
+  // That origin is built from the address the server is BOUND to, and a pod
+  // binds to HOSTNAME=0.0.0.0 on PORT=3000 — so the far side of a successful
+  // handoff sent people to `https://0.0.0.0:3000/…`, an address that exists
+  // nowhere. It is invisible in development, where the bind address and the
+  // public address are the same machine, and total in production. The account
+  // app's /handoff had the identical bug; see lib/same-origin-redirect.ts there
+  // for the full reasoning.
+  //
+  // A relative Location is valid HTTP (RFC 7231 §7.1.2), the browser resolves it
+  // against the URL it actually asked for, and it therefore cannot name the
+  // wrong host on any proxy, hostname or environment.
+  //
+  // NOT NextResponse.redirect(): it parses its argument as an absolute URL and
+  // refuses a bare path, which is exactly why the broken spelling looked like
+  // the only one on offer.
+  const response = new NextResponse(null, {
+    // 303 so the browser makes a plain GET of the destination, and never repeats
+    // this one. A cached redirect here would be actively dangerous: the token is
+    // single-use, so replaying it lands the NEXT person on a dead end.
+    status: 303,
+    headers: { location: safeInternalPath(result.next) },
+  });
   response.cookies.set({ name: cookie.name, value: cookie.value, ...cookie.options });
   return noStore(response);
 }
