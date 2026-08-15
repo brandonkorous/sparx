@@ -99,6 +99,31 @@ const PLATFORM_HOSTNAMES = new Set<string>([
   // maintenance time, never boot) stay healthy.
   'silicaui.com',
   'www.silicaui.com',
+  // ── Piggles ──────────────────────────────────────────────────────────────
+  // The sister brand's three surfaces + its api-rest hostname. They are PLATFORM
+  // hosts, not tenant sites, so `isHostAuthorized` below cannot vouch for them —
+  // it resolves against the `domains` table and these have no row there and
+  // never will.
+  //
+  // Without these entries the failure is total and looks like nothing to do with
+  // this file: their Caddy blocks `import tls_policy`, which is `tls { on_demand }`
+  // (k8s/ingress/mode.caddy), so every first HTTPS request asks this endpoint,
+  // gets 403 unknown_host, and Cloudflare answers 525 — for the whole brand.
+  // That is exactly what happened to `workbench.sparx.works` and
+  // `media.sparx.works`, both of which are in this list for the same reason.
+  'meetpiggles.com',
+  'www.meetpiggles.com',
+  'getpiggles.com',
+  'www.getpiggles.com',
+  'mypiggles.com',
+  'www.mypiggles.com',
+  'api.mypiggles.com',
+  // The tenant zone's apex + www, which Caddy redirects to meetpiggles.com but
+  // must still terminate TLS for. Tenant sites UNDER it (`<slug>.piggles.site`)
+  // are deliberately absent: those are real tenant hosts with `domains` rows and
+  // are authorised by the resolver below, per brand, exactly like *.sparx.zone.
+  'piggles.site',
+  'www.piggles.site',
 ]);
 
 const domainCheckRoutes: FastifyPluginAsync = (app) => {

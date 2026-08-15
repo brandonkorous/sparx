@@ -1,21 +1,16 @@
 import React from 'react';
 import { getPigglesCharacter } from './pigglesCharacters';
-
 export function PigglesCharacter({
-  id = 'neutral',
-  alt,
-  className = '',
+  id,
+  format = 'webp',
+  basePath = '',
+  alt = '',
   loading = 'lazy',
-  ...props
+  decoding = 'async',
+  ...imgProps
 }) {
-  const character = getPigglesCharacter(id);
-  return (
-    <img
-      src={character.src}
-      alt={alt ?? character.alt}
-      loading={loading}
-      className={className}
-      {...props}
-    />
-  );
+  const relativePath = getPigglesCharacter(id, format);
+  const src = [basePath.replace(/\/$/, ''), relativePath].filter(Boolean).join('/');
+  return <img src={src} alt={alt} loading={loading} decoding={decoding} {...imgProps} />;
 }
+export default PigglesCharacter;

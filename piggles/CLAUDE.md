@@ -5,37 +5,83 @@ Guidance for Claude Code when working anywhere under `piggles/`. This file is
 [CLAUDE.md](../CLAUDE.md) wherever the two disagree. Where it is silent, the root
 file still applies.
 
-Piggles is WizeWorks' second brand: the same platform, a different product. Not
-"sparx Lite", not a reskin, not a fork.
+Piggles is WizeWorks' second brand: the same platform, a different product. Not "sparx Lite", not a reskin, not a fork.
 
-## RULE #0 — the boundary. Break this and there is no point to any of it.
+## RULE #0 — Piggles and sparx are two applications. Neither may touch the other.
 
-**`piggles/` owns brand, apps, components, copy, and design language. It CONSUMES
-the shared platform and contributes nothing back into it.**
+**Either product must be deletable tomorrow without affecting the other.**
+Delete `apps/` and Piggles keeps working. Delete `piggles/` and sparx keeps
+working. That is the test, and it is the whole rule.
 
-| Layer                                             | Owner           | Piggles may                            |
-| ------------------------------------------------- | --------------- | -------------------------------------- |
-| `packages/*`, `services/*`, `packages/db`         | shared platform | import, never modify for brand reasons |
-| `apps/site` (tenant sites)                        | shared platform | nothing — that is the tenant's brand   |
-| workbench **surfaces** (the ~500 panels)          | shared platform | mount them, never fork them            |
-| workbench **shell** (chrome, nav, theme, lexicon) | Piggles         | own outright                           |
-| marketing + account apps                          | Piggles         | own outright                           |
+`piggles/apps/workbench` therefore contains its **own copy** of everything it
+renders — the surfaces, the dock plumbing, the controller, the registry, the
+API routes. It imports nothing from `apps/workbench`, there is no `@workbench/*`
+alias, and no path in `piggles/` climbs out into `apps/`.
+
+| Layer                                                 | Owner           | Piggles may                              |
+| ----------------------------------------------------- | --------------- | ---------------------------------------- |
+| `packages/*`, `services/*`, `packages/db`             | shared platform | import — these are libraries, not an app |
+| `apps/**` (sparx web, site, market, admin, workbench) | sparx           | **nothing. Never read, never edit.**     |
+| `piggles/**`                                          | Piggles         | own outright                             |
 
 Both brands run on **one database and one tenant pool**. A tenant belongs to the
 brand it signed up under, recorded on `Tenant.brand`, and never changes brands.
+Sharing a DATABASE is not sharing an application: the database is a service both
+speak to, and either app can be deleted without disturbing it.
 
-**The rule that keeps this from rotting: feature code never branches on brand.**
-No `if (brand === 'piggles')` in a shared package, service, or surface. Brand
-reaches the UI through tokens, the app registry, and the lexicon — never a
-conditional. The moment a brand check lands in shared code you have rebuilt the
-fork somewhere it is harder to see. The source pack says the same thing in its own
-words: _"avoid scattered product checks in UI code"_
-([SHARED_PLATFORM_STRATEGY.md](docs/initial/docs/architecture/SHARED_PLATFORM_STRATEGY.md)).
+### Why this was not always the rule, and what it cost
 
-**Shell forks; surfaces do not.** Piggles gets its own chrome, navigation,
-theming, onboarding and vocabulary. It does not get its own products panel. If a
-Piggles need can only be met by editing a shared surface, the fix is a prop, a
-registry entry, or a token — not a copy.
+The console was originally built to MOUNT `apps/workbench` through a tsconfig
+alias — 84 imports, with `piggles/CLAUDE.md` telling you to "mount them, never
+fork them". It looked like the disciplined choice and it was the expensive one:
+
+- Every Piggles wording change had to be made in sparx's tree, behind a seam,
+  and ~350 of sparx's files ended up carrying Piggles-shaped machinery.
+- A build error in Piggles surfaced as a build error in sparx.
+- Deleting either product would have broken the other.
+
+That was undone on 2026-08-14. `apps/workbench` was restored to its committed
+state, the tree was copied into `piggles/`, and every import was repointed at
+`@/`. **Do not reintroduce it.** If a fix is needed in both products, make it
+twice — that cost is real, and it is smaller than the coupling.
+
+### What still holds from the old rule
+
+**Feature code never branches on brand.** No `if (brand === 'piggles')`
+anywhere. Piggles' copy is Piggles' — change it directly rather than adding a
+conditional. Brand reaches the UI through tokens, the app registry and the
+lexicon, and a product adapter (`lib/product.ts`) is still the tidy way to keep
+wording out of a hundred components; it is just Piggles' own file now.
+
+### A sparx PRODUCT is not a Piggles capability
+
+**sparx.market, sparx Pay, sparx Commerce, the sparx partner directory — these do
+not exist in Piggles. Exclude them. Do not rename them, and do not ask.**
+
+The surfaces are full of them because they were originally written for sparx's
+customers, and Piggles' copy inherited every one. Three ways to get this wrong,
+in order of how bad they are:
+
+1. **Renaming.** "Piggles.market" and "Piggles Pay" are products nobody can sign
+   up for. A brand-name swap makes the sentence grammatical, on-voice, and false
+   — which is worse than the leak, because now nothing looks wrong.
+2. **Asking.** The boundary already answered it. A different product does not
+   inherit another product's marketplace, and treating that as an open question
+   is deferring a decision that was made the day Piggles became a second brand.
+3. **Leaving it.** A Piggles customer offered a listing on another company's
+   marketplace is a bug with a support ticket attached.
+
+The seams exist, so use them: `hiddenSurfaces` for a whole surface,
+`hiddenFeatures` for a block inside one — both in
+[lib/product.ts](apps/workbench/lib/product.ts), both declared in
+[lib/console/product.tsx](apps/workbench/lib/console/product.tsx). Both files are
+Piggles' own; nothing here reaches into another application.
+
+**The one genuine exception, which must be argued rather than assumed:** a
+capability WizeWorks operates for both brands under two names. That is a product
+decision with a real Piggles-side thing behind it — a domain that resolves, an
+account that exists — and it is Brandon's to make. Absent that, the default is
+exclude.
 
 ## RULE #1 — Piggles is not a smaller product
 

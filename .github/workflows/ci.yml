@@ -226,6 +226,23 @@ jobs:
       - name: Check Dockerfile dependency closure
         run: node scripts/check-dockerfile-deps.mjs
 
+  brand-isolation:
+    name: Brand isolation
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    # Piggles and sparx are two applications and neither may import the other
+    # (piggles/CLAUDE.md RULE #0). Pure Node, no install, so it fails in seconds
+    # rather than after a build.
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+
+      - name: Check piggles and sparx share no application code
+        run: node scripts/check-piggles-isolation.mjs
+
   webhook-events:
     name: Webhook event parity
     runs-on: ubuntu-latest

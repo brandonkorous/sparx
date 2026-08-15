@@ -4,8 +4,8 @@ import { redirect } from 'next/navigation';
 import { requireSession } from '@sparx/auth';
 import { withTenant } from '@sparx/db';
 import { PIGGLES_GROUPS, type PigglesGroup } from '@piggles/brand';
-import { modulesForGroups } from '@piggles/config';
-import { announceActivations, moduleFlags, withRequirements } from '@/lib/activate-modules';
+import { furnishTenant } from '@/lib/furnish';
+import { isKnownTrade } from '@/lib/trades';
 import { text, textAll } from '@/lib/form';
 
 // Onboarding, which is two questions long.
@@ -17,28 +17,46 @@ import { text, textAll } from '@/lib/form';
 // modules you want, because modules are what it bills for. Piggles includes
 // every app on every plan, so there is nothing to choose and nothing to sell.
 //
-// What is left is genuinely two things — what the business is called, and what
-// it does. The first is data the product needs. The second does two jobs, and
-// keeping them straight is the whole subtlety of this file.
+// What is left is genuinely two things — what the business IS (its name and its
+// line of work), and what it DOES. Both are data the product needs, and each is
+// put to a use that is easy to mix up, which is the whole subtlety of this file.
 //
-// ── WHAT THE SECOND ANSWER DOES ─────────────────────────────────────────────
+// ── WHAT EACH ANSWER DOES ───────────────────────────────────────────────────
 //
-// It decides which apps are ON THE RAIL, and it ACTIVATES the platform modules
-// behind them. The second half is not bookkeeping: `module.activated` is what
-// seeds the CRM's pipeline, the automation catalogue, commerce's tax and
-// shipping defaults, finance's accounts and the default emails. A business that
-// said it sells things should arrive at a Sell app that is already set up, not
-// at fifteen apps each waiting for someone to configure them.
+// The LINE OF WORK is handed to the platform, where it does two jobs at once:
+// it picks the sample dataset (a bakery gets a bakery's products, customers,
+// bookings and articles) and it selects the config presets stamped into each
+// app. One slug, both jobs — the platform calls it `settings.industry`, and the
+// installer is what writes it, so the workbench's own "what kind of business"
+// screen agrees with what was chosen here instead of asking again.
 //
-// ── AND WHAT IT MUST NEVER DO: GATE ─────────────────────────────────────────
+// WHAT YOU DO decides which apps are ON THE RAIL. That is the whole of its job.
 //
-// This is the rule most likely to be broken later by someone reading the answer
-// as an entitlement. An app whose module is not active is NOT a locked door — it
-// stays listed, and turning it on is one tap with no price attached ("Add app").
-// The answer decides what starts SET UP and VISIBLE, never what somebody is
-// ALLOWED to open. The moment it decides the latter, Piggles has reinvented
-// module pricing without charging for it — all of the friction, none of the
-// revenue (piggles/CLAUDE.md RULE #2).
+// ── WHAT NEITHER ANSWER DOES: GATE ──────────────────────────────────────────
+//
+// This is the rule most likely to be broken later by someone reading an answer
+// as an entitlement. **Every module is switched on for every business, no matter
+// what was ticked** (RULE #2: every app ships enabled; the answer HIDES, it
+// never gates). Ticking "I sell things" does not buy Commerce and leaving it
+// unticked does not withhold it — it decides what is on the rail on day one, and
+// the launcher still lists all fifteen.
+//
+// It used to activate only the modules behind the ticked groups, and that was
+// wrong in a way the copy on the screen made worse: the screen promises
+// "everything is included either way", while a module that is off returns 404,
+// runs no workers and stores no rows. So the unticked apps WERE locked doors,
+// and Piggles had reinvented module pricing without charging for it — all of the
+// friction, none of the revenue. Switching everything on is what makes the
+// promise on the screen true, and it is also what lets the sample data furnish
+// all fifteen apps instead of the three somebody happened to tick.
+//
+// ── WHAT THIS FILE DOES NOT DO ──────────────────────────────────────────────
+//
+// It names the business and records the rail preference, and then hands off.
+// Switching the apps on, stamping the trade's setup and filling the account are
+// ONE platform operation with a load-bearing internal order, and it runs in
+// api-rest because that is the only process where it can be correct — see
+// lib/furnish.ts for the bus that made doing it here silently wrong.
 //
 // The practical test: ticking nothing here must still leave a completely usable
 // product, three taps from selling. It does.
@@ -64,11 +82,8 @@ export async function completeOnboarding(
     (PIGGLES_GROUPS as readonly string[]).includes(g)
   );
 
-  // The modules behind the chosen groups, plus anything they REQUIRE (B2B
-  // without Commerce is not a smaller feature set, it is a broken one). Computed
-  // before the transaction so a bad mapping fails here rather than half-way
-  // through a rename.
-  const modules = withRequirements(modulesForGroups(does));
+  const chosen = text(formData, 'industry');
+  const industry = chosen && isKnownTrade(chosen) ? chosen : null;
 
   // `withTenant`, NOT `prisma.$transaction`.
   //
@@ -100,10 +115,23 @@ export async function completeOnboarding(
           name: businessName,
           settings: {
             ...settings,
-            // The platform's own module flags — the shape every gate reads.
-            // Merged over what is there, never assigned: a module already on for
-            // another reason must not be switched off by writing this one.
-            modules: moduleFlags(settings.modules as Record<string, unknown> | undefined, modules),
+            // NEITHER `modules` NOR `industry` is written here, and both
+            // omissions are deliberate.
+            //
+            // `settings.modules` is not ours to write. A flag write is only half
+            // an activation — the other half is announcing it on the in-process
+            // bus that seeds each module's baseline, which only api-rest can do
+            // (lib/furnish.ts). Writing the flag from here would make every gate
+            // report the app as ON while none of its setup had run, and the
+            // furnish step that follows would then see nothing to change and
+            // announce nothing. The flag being absent until the platform sets it
+            // is what keeps those two halves together.
+            //
+            // `settings.industry` is written by the industry-starter installer,
+            // as the last step of stamping the trade's config. Setting it here
+            // would mark the trade as chosen before its setup existed — and the
+            // workbench reads exactly that key to decide the question is
+            // answered, so the setup would then never be offered.
             piggles: {
               ...((settings.piggles as Record<string, unknown> | undefined) ?? {}),
               // What the rail shows on day one. A WORKSPACE PREFERENCE, and the
@@ -140,13 +168,39 @@ export async function completeOnboarding(
     return { error: 'We could not save that just now. Please try again.' };
   }
 
-  // AFTER the commit, never inside it. A consumer that wakes on this event has
-  // to find the flag already true; publishing first races the seeding against
-  // the write. Best-effort — see lib/activate-modules for why a failure here
-  // must not undo the rename that already succeeded.
-  await announceActivations(session.user.tenantId, session.user.id, modules);
+  // AFTER the commit, never inside it: furnishing reads the tenant from another
+  // process, so it has to find the rename already there.
+  //
+  // NOT best-effort, unlike the naming above — and that is the one judgement
+  // call in this file worth defending. Everything furnishing does is what makes
+  // the business USABLE: the apps switched on and seeded, the trade's setup
+  // stamped, something in every list. Swallowing a failure here would redirect
+  // somebody into precisely the empty workspace this whole path exists to
+  // prevent, and they would have no idea anything had gone wrong — the failure
+  // would look exactly like the product.
+  //
+  // So it is shown, and retrying is safe: every step is idempotent (modules
+  // already on are not re-announced, presets are skip-if-present, a sample load
+  // clears its own prior rows), and the rename above is an update. Pressing the
+  // button again finishes the job rather than doubling it.
+  try {
+    await furnishTenant({ tenantId: session.user.tenantId, industry });
+  } catch (err) {
+    console.error(
+      JSON.stringify({
+        level: 'error',
+        tenantId: session.user.tenantId,
+        industry,
+        err: err instanceof Error ? err.message : String(err),
+        msg: 'piggles onboarding: furnishing the tenant failed',
+      })
+    );
+    return {
+      error: 'We saved your details but could not finish setting things up. Please try again.',
+    };
+  }
 
-  // Straight into the console — not to an account home. Somebody who has just
+  // Straight into the workbench — not to an account home. Somebody who has just
   // finished setting up wants to see their business, and the account app's job
   // is done until they need to change something about their subscription.
   redirect('/handoff');

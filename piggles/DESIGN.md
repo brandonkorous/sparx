@@ -1,6 +1,6 @@
 # DESIGN.md — Piggles
 
-**Version:** 1.3
+**Version:** 1.5
 **Author:** Brandon Korous
 **Last Updated:** 2026-08-14
 
@@ -182,6 +182,11 @@ token, set once in `@piggles/brand`. This does **not** license `shadow-*` in
 feature code — a hand-rolled shadow is a re-skin under root RULE #1, and there is
 nothing to add per component because the token already did it.
 
+It equally does not mean **only** silica components may be lifted. Piggles owns
+chrome that silica never sees — the console's dock windows, most obviously — and
+that chrome is elevated with **Tailwind's `shadow-*` scale**, which is where
+elevation lives for anything silica does not paint itself. §8 draws the line.
+
 ## 5. Density — comfortable, not compact
 
 sparx can be a dense utility surface. Its audience is a doer at a desk who wants
@@ -279,7 +284,14 @@ the same job. A friendly brand is not a licence for editorial furniture.
   blue-grey. This is quiet and it is most of the difference.
 - **Roundness and depth.** See §4.
 - **The mascot.** Empty states, onboarding, success moments, 404s. Never in the
-  nav, never during money, tax, payroll or deletion.
+  nav, never during money, tax, payroll or deletion. That sentence is now
+  ENFORCED rather than remembered: she is only reachable through
+  `<PigglesMascot>` from [@piggles/mascot](packages/mascot/README.md), whose
+  `MascotIntent` is a closed union with no member for a deletion confirm, a
+  failed payment, a past-due account, a tax filing, a payroll run or a capacity
+  block. Putting her in one means adding a line to that union and being asked
+  why. Never a filename, never a raw `<img>` — the assets under
+  `apps/*/public/mascot/` are generated and rewritten wholesale on every ingest.
 - **The pale pinks.** `accentPale` `#FFE9ED` as washes and empty-state fills — the
   one sanctioned decorative use of brand color.
 
@@ -297,10 +309,23 @@ the same job. A friendly brand is not a licence for editorial furniture.
   unchanged: edge-runtime OG images (satori cannot resolve custom properties) and
   other companies' brand marks.
 
-- **Hand-rolled shadows.** Root's no-shadow rule is superseded for Piggles only in
-  the sense that `--depth: 1` is on (§4). That token is the entire mechanism. A
-  `shadow-*` utility or a `box-shadow` in feature code is still a re-skin, and
-  still banned.
+- **Hand-rolled shadows _on things silica already elevates_.** A `shadow-*`
+  utility or a `box-shadow` on a Card, Button, Dialog or Popover is a re-skin:
+  `--depth: 1` already elevated it, and painting over that is the call-site patch
+  root RULE #1 exists to stop. Still banned.
+
+  **It is not a ban on depth.** Read as one it produces flat Piggles chrome with
+  a comment explaining why — which is what happened to the console's dock
+  windows, left flat against a mockup that showed them lifted. Chrome that is
+  not a silica component (a library's DOM, something we own outright) has no
+  component shadow to double up on, and it gets elevated.
+
+  **Use Tailwind's `shadow-*` scale for it.** silica has no elevation utility
+  because Tailwind already ships one and two scales would drift apart; `--depth`
+  only decides whether silica's own components carry theirs. Never hand-author a
+  `box-shadow` — a tuned alpha ladder matches nothing and nothing points at it.
+  The dock windows are the worked example: `shadow-sm` at rest, `shadow-lg` once
+  torn off ([apps/workbench/app/globals.css](apps/workbench/app/globals.css)).
 
 ## 9. The ship gate
 

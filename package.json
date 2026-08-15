@@ -21,6 +21,7 @@
     "check:events": "node scripts/check-event-topics.mjs",
     "check:routes": "node scripts/check-surface-routes.mjs",
     "check:docker": "node scripts/check-dockerfile-deps.mjs",
+    "check:isolation": "node scripts/check-piggles-isolation.mjs",
     "check:webhooks": "node scripts/check-webhook-events.mjs",
     "check:inventory-api": "node scripts/check-inventory-api-docs.mjs",
     "gen:inventory-api": "node scripts/gen-inventory-api-reference.mjs",

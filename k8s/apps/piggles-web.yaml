@@ -1,0 +1,159 @@
+# @piggles/web — meetpiggles.com, the Piggles marketing site.
+#
+# ── WHY THIS LIVES IN sparx-prod ────────────────────────────────────────────
+#
+# piggles/CLAUDE.md RULE #0 says either product must be deletable tomorrow
+# without affecting the other, and a shared NAMESPACE does not compromise that.
+# What makes deletion real is `--prune` on the release's ownership label: drop
+# these three files from k8s/apps/kustomization.yaml and the pods are actually
+# deleted, which is the property that matters. A separate namespace would buy the
+# same guarantee and cost a duplicated `sparx-app-secrets` — one more copy of
+# every credential on the platform, in a second place, drifting.
+#
+# The two products share a database, an api-rest and a secret store because those
+# are the PLATFORM. They share no application code, and that is what the boundary
+# is about.
+#
+# This pod is the simplest thing in the cluster: no database, no auth, no
+# api-rest. It is also the only Piggles surface that can ship on its own — the
+# account app before the console gives a live signup funnel with a dead end.
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: piggles-web
+  namespace: sparx-prod
+  labels:
+    app: piggles-web
+    tier: web
+    brand: piggles
+spec:
+  replicas: 1
+  revisionHistoryLimit: 5
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: piggles-web
+  template:
+    metadata:
+      labels:
+        app: piggles-web
+        tier: web
+        brand: piggles
+    spec:
+      serviceAccountName: sparx-app
+      containers:
+        - name: piggles-web
+          image: us-central1-docker.pkg.dev/sparxworks/sparx/piggles-web:latest
+          # Always — `:latest` is a placeholder the release rewrites to an
+          # immutable SHA, and IfNotPresent would risk a stale node-cached layer
+          # after a bare restart.
+          imagePullPolicy: Always
+          ports:
+            - name: http
+              containerPort: 3000
+          # NO envFrom. This app reads nothing from the platform — it has no
+          # database client, no api-rest call and no auth. Mounting
+          # `sparx-app-secrets` here would hand every credential on the platform
+          # to the one pod that needs none of them.
+          env:
+            - name: NODE_ENV
+              value: production
+            - name: SERVICE_NAME
+              value: piggles-web
+            - name: PORT
+              value: '3000'
+            - name: HOSTNAME
+              value: 0.0.0.0
+            - name: NEXT_TELEMETRY_DISABLED
+              value: '1'
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 1001
+            runAsGroup: 1001
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ['ALL']
+            seccompProfile:
+              type: RuntimeDefault
+          # NO CPU LIMIT, on purpose. CPU is compressible and a request is a
+          # floor, not a cap — a limit here would only throttle the cold start
+          # this pod's readiness probe is already waiting on. Memory is the
+          # opposite and does get a ceiling: it is incompressible, and a leak
+          # without one takes the node rather than the pod.
+          #
+          # The request is an ESTIMATE, not a measurement, and that distinction
+          # is the whole reason for this comment. sparx's marketing pod measured
+          # 419Mi; this one serves the same shape of app from a smaller route
+          # table, so 288Mi is a first guess with headroom. MEASURE IT with
+          # `kubectl top` once it has served real traffic and move the number —
+          # the kubelet evicts by usage ABOVE request, so a request that sits
+          # below actual is a vote for this pod to be killed first.
+          resources:
+            requests:
+              cpu: '25m'
+              memory: '288Mi'
+            limits:
+              memory: '640Mi'
+          # `/api/health`, not `/`. sparx's marketing pod probes its home page
+          # and gets away with it, but a probe that renders a page fails whenever
+          # the app is merely BUSY rather than broken — and this home page draws a
+          # full-bleed video hero. A static handler answers on a stalled event
+          # loop; a render does not.
+          #
+          # The tolerances match the other Next.js pods rather than the k8s
+          # defaults, and that is deliberate: a 1s default timeout is what
+          # SIGKILLed the workbench during a roll (exit 137) and CrashLooped
+          # api-rest for 30 hours. 5s absorbs an event-loop stall on a 25m CPU
+          # floor; 30s + failureThreshold 5 tolerates a cold standalone start.
+          livenessProbe:
+            httpGet:
+              path: /api/health
+              port: 3000
+            initialDelaySeconds: 30
+            periodSeconds: 30
+            timeoutSeconds: 5
+            failureThreshold: 5
+          readinessProbe:
+            httpGet:
+              path: /api/health
+              port: 3000
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          lifecycle:
+            preStop:
+              exec:
+                command: ['/bin/sh', '-c', 'sleep 5']
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: piggles-web
+  namespace: sparx-prod
+spec:
+  type: ClusterIP
+  ports:
+    - name: http
+      port: 3000
+      targetPort: 3000
+  selector:
+    app: piggles-web
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: piggles-web
+  namespace: sparx-prod
+spec:
+  # maxUnavailable, not minAvailable: with one replica a budget demanding
+  # availability blocks every node drain forever.
+  maxUnavailable: 1
+  selector:
+    matchLabels:
+      app: piggles-web

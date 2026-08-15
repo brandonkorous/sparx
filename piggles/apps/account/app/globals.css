@@ -59,6 +59,13 @@
  * broken. Add a scan here for any Piggles package that ships className strings. */
 @source '../../../packages/brand/src/**/*.{ts,tsx}';
 
+/* Same reason, same failure: <PigglesMascot> picks its width from a table of
+ * literal class strings (`w-24`/`w-44`/`w-72`/`w-112`). Unscanned, none of them
+ * are generated and the mascot silently falls back to `max-w-full` — she fills
+ * whatever column she is in, at whatever size it happens to be, and nothing
+ * anywhere reports a problem. */
+@source '../../../packages/mascot/src/**/*.{ts,tsx}';
+
 /* Bridge the brand's font tokens into the Tailwind v4 theme, so `font-heading`
  * and `font-sans` EXIST as utilities.
  *

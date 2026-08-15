@@ -50,6 +50,7 @@ import {
   FieldControl,
   FieldDescription,
   FieldLabel,
+  Badge,
   Sidebar,
   SidebarContent,
   SidebarFooter,
@@ -60,22 +61,19 @@ import {
   useSidebar,
   useToast,
 } from '@wizeworks/silicaui-react';
+import { Mark } from '@piggles/brand/react';
 import { PIGGLES_GROUPS, type PigglesGroup } from '@piggles/brand';
-import { useConfirm } from '@workbench/lib/confirm';
-import { afterMenuClose, deferTick } from '@workbench/lib/defer';
-import {
-  useClearRecents,
-  useFavorites,
-  useRecents,
-  useToggleFavorite,
-} from '@workbench/lib/api/shell-data';
-import { getSurface, resolveTitle, type SurfaceDefinition } from '@workbench/lib/surfaces/registry';
+import { useConfirm } from '@/lib/confirm';
+import { afterMenuClose, deferTick } from '@/lib/defer';
+import { useClearRecents, useFavorites, useRecents, useToggleFavorite } from '@/lib/api/shell-data';
+import { useBill } from '@/surfaces/finance/bill-data';
+import { getSurface, resolveTitle, type SurfaceDefinition } from '@/lib/surfaces/registry';
 import {
   moduleIsVisible,
   useKnownModules,
   useReachableModules,
-} from '@workbench/lib/surfaces/use-visible-nav';
-import { useWorkbench } from '@workbench/lib/workbench/context';
+} from '@/lib/surfaces/use-visible-nav';
+import { useWorkbench } from '@/lib/workbench/context';
 import {
   clearLayout,
   deleteWorkspace,
@@ -83,8 +81,10 @@ import {
   saveLayout,
   saveWorkspace,
   type NamedWorkspace,
-} from '@workbench/lib/workbench/persistence';
-import { ModuleScope } from '@workbench/components/module-scope';
+} from '@/lib/workbench/persistence';
+import { clearModeLayouts } from '@/lib/mode-layouts';
+import { useAttention, type AttentionKey } from '@/lib/console/home-data';
+import { ModuleScope } from '@/components/module-scope';
 import { AllAppsDialog } from './all-apps-dialog';
 import { AppScope } from './app-scope';
 import type { ConsoleNavApp } from '@/lib/console/nav';
@@ -97,10 +97,19 @@ interface AppRailProps {
   siteKey: string;
   /** Labels showing beside the icons. Owned by the shell so it persists. */
   expanded: boolean;
+  /** Where the account app lives. The plan card's only link leaves for it. */
+  accountOrigin: string;
   onBrowse: (appId: string) => void;
 }
 
-export function AppRail({ nav, browsing, siteKey, expanded, onBrowse }: AppRailProps) {
+export function AppRail({
+  nav,
+  browsing,
+  siteKey,
+  expanded,
+  accountOrigin,
+  onBrowse,
+}: AppRailProps) {
   const { controller } = useWorkbench();
   const confirm = useConfirm();
   const toast = useToast();
@@ -119,6 +128,9 @@ export function AppRail({ nav, browsing, siteKey, expanded, onBrowse }: AppRailP
   const clearRecents = useClearRecents();
   const reachable = useReachableModules();
   const known = useKnownModules();
+  // Shares its queries with Home by query key, so the rail and Home can never
+  // show two different numbers for the same thing.
+  const attention = useAttention();
 
   const resolveVisible = (actionId: string): SurfaceDefinition | null => {
     const definition = getSurface(actionId);
@@ -201,6 +213,11 @@ export function AppRail({ nav, browsing, siteKey, expanded, onBrowse }: AppRailP
     });
     if (!ok) return;
     clearLayout(siteKey);
+    // The other presentation's remembered arrangement goes too. Left behind, the
+    // first flick of the windows/tabs toggle would deal an empty workspace an
+    // arrangement from before it was emptied — and "start empty" has to mean it
+    // in both presentations, not just the one you happened to be looking at.
+    clearModeLayouts(siteKey);
     window.location.reload();
   };
 
@@ -260,6 +277,17 @@ export function AppRail({ nav, browsing, siteKey, expanded, onBrowse }: AppRailP
                       onClick={() => {
                         onBrowse(entry.app.id);
                       }}
+                      // The count of things WAITING in this app — the same five
+                      // server counts Home shows, so the rail and Home can never
+                      // disagree (react-query dedupes them to one request each).
+                      //
+                      // Only ever a real, measured number. A count that is
+                      // loading, failed, unmeasured, or zero renders NOTHING:
+                      // a badge is a claim that something needs doing, and the
+                      // only honest states for it are "n waiting" and silence.
+                      // Zero especially — a grey 0 on every row is noise that
+                      // trains people to stop reading the ones that matter.
+                      trailing={<WaitingBadge appId={entry.app.id} attention={attention} />}
                     >
                       {entry.label}
                     </SidebarItem>
@@ -330,6 +358,11 @@ export function AppRail({ nav, browsing, siteKey, expanded, onBrowse }: AppRailP
         </SidebarContent>
 
         <SidebarFooter className={expanded ? undefined : 'px-1.5'}>
+          {/* Only when the rail is showing words. Collapsed it is a 48px column
+              and a plan card there would be an unreadable smudge; the same
+              information is one click away in the account menu. */}
+          {expanded ? <PlanCard accountOrigin={accountOrigin} /> : null}
+
           {/* The door to everything not on the rail.
               It sits in the FOOTER, in the rail itself, and it is permanent —
               not a menu item, not behind a "…". Piggles includes every app on
@@ -465,6 +498,110 @@ export function AppRail({ nav, browsing, siteKey, expanded, onBrowse }: AppRailP
 }
 
 /**
+ * The plan card at the foot of the rail.
+ *
+ * ── WHY THE CONSOLE SHOWS THIS AT ALL ───────────────────────────────────────
+ *
+ * Every Piggles business starts on a trial, and until now the console said
+ * nothing about it — so a trial ended by the lights going out, with the person
+ * sitting in the app that stopped working and no explanation anywhere in it.
+ * That was a known gap; this closes it.
+ *
+ * ── AND WHY IT STILL OBEYS "THE CONSOLE NEVER KNOWS A PRICE" ────────────────
+ *
+ * RULE #2 is not "never mention billing", it is that billing LOGIC and prices
+ * live in the account service. This card names the plan and says when it renews.
+ * It computes nothing, it shows no amount, and its only action is a link OUT to
+ * getpiggles, which owns the whole of that conversation. If a number with a
+ * currency symbol ever appears in this component, the rule has been broken.
+ *
+ * The lifecycle STATE is what earns the colour: a live subscription is a calm
+ * neutral fact, a trial running out is a warning, and an expired one is a
+ * danger — resolved through the same semantic axis every status badge uses, so
+ * it reads the way the rest of the product reads.
+ */
+function PlanCard({ accountOrigin }: { accountOrigin: string }) {
+  const { data: bill } = useBill();
+
+  // Nothing until the answer arrives. A card that says "Business plan" before it
+  // knows the plan is a value nobody measured being rendered as one — and the
+  // entire job of this card is telling somebody the truth about their account
+  // before it stops working.
+  if (!bill) return null;
+
+  // ── ONLY THE PHASE VIEW IS READ ─────────────────────────────────────────────
+  //
+  // `Bill` also carries `planTotalCents`, `planModules` and a card's last four
+  // digits. NONE of it is touched here and none of it may be: the console never
+  // knows a price (piggles/CLAUDE.md RULE #2), and `bill.billing` is exactly the
+  // lifecycle slice — phase, days left, dates — with no money in it.
+  //
+  // The cleaner long-term shape is a narrow account-service endpoint that
+  // returns only this, so the console cannot fetch an amount even by accident.
+  // Until that exists, the discipline is the destructure below: read `billing`,
+  // never `bill` itself.
+  const { phase, daysLeft, trialEndsAt } = bill.billing;
+  const days = daysLeft ?? 0;
+
+  const tone: 'neutral' | 'warning' | 'danger' =
+    phase === 'suspended'
+      ? 'danger'
+      : phase === 'grace' || (phase === 'trialing' && days <= 3)
+        ? 'warning'
+        : 'neutral';
+
+  const heading = phase === 'trialing' ? 'Free trial' : 'Business plan';
+
+  const renewal = trialEndsAt
+    ? new Date(trialEndsAt).toLocaleDateString(undefined, {
+        day: 'numeric',
+        month: 'short',
+        year: 'numeric',
+      })
+    : null;
+
+  const detail =
+    phase === 'suspended'
+      ? 'Your site is offline'
+      : phase === 'grace'
+        ? `Site stays live ${days} more day${days === 1 ? '' : 's'}`
+        : phase === 'trialing'
+          ? `${days} day${days === 1 ? '' : 's'} left`
+          : renewal
+            ? `Renews ${renewal}`
+            : 'Everything included';
+
+  return (
+    <div
+      data-plan-tone={tone}
+      className="rounded-box border-base-300 bg-base-200 mx-1 mb-2 border p-3"
+    >
+      <div className="flex items-center gap-2">
+        <Mark className="text-primary size-5 shrink-0" />
+        <span className="text-base font-bold">{heading}</span>
+      </div>
+      {/* A real ink, never faded — this is the line that tells somebody their
+          business is about to stop working. */}
+      <p className="mt-0.5 text-sm">{detail}</p>
+      <Button
+        color={tone === 'neutral' ? 'neutral' : tone}
+        variant={tone === 'neutral' ? 'outline' : 'solid'}
+        size="sm"
+        block
+        className="mt-2.5"
+        onClick={() => {
+          // Out to the account app, which owns every question this card raises
+          // and is the only place allowed to answer them with numbers.
+          window.location.href = `${accountOrigin}/account`;
+        }}
+      >
+        {tone === 'neutral' ? 'View plan' : 'Keep my business running'}
+      </Button>
+    </div>
+  );
+}
+
+/**
  * One starred or recent row. A launch shortcut, not a navigation position — it
  * never carries an `active` state; clicking opens the surface where any other
  * open would land it.
@@ -593,5 +730,58 @@ function SaveLayoutDialog({
         </DialogFooter>
       </DialogContent>
     </Dialog>
+  );
+}
+
+/**
+ * The count of things waiting in one app, or nothing at all.
+ *
+ * ── WHY MOST STATES RENDER NOTHING ──────────────────────────────────────────
+ *
+ * A badge on a nav row is a claim that something needs doing, and there are only
+ * two honest things it can say: "n waiting" or silence. Every other state is
+ * silence:
+ *
+ *   loading    a skeleton in a 20px slot is a flicker, not information
+ *   error      a red pip on the rail reports a failed COUNT as a business
+ *              problem, which is a lie about the thing it is attached to
+ *   unknown    no number was measured, so there is no number to show
+ *   zero       nothing is waiting — and a grey 0 on every row is noise that
+ *              trains people to stop reading the rows that do have something
+ *
+ * The zero case is the one worth being firm about. A rail where five of fifteen
+ * rows permanently wear a "0" has fifteen things competing for attention and
+ * nothing standing out, which is the exact opposite of what a badge is for.
+ *
+ * Only five apps map to a count. The rest never badge, because nothing behind
+ * them is a queue — "Get found" has no inbox.
+ */
+const APP_COUNTS: Record<string, AttentionKey> = {
+  sell: 'orders',
+  bookings: 'bookings',
+  messages: 'messages',
+  invoices: 'invoices',
+  stock: 'stock',
+};
+
+function WaitingBadge({
+  appId,
+  attention,
+}: {
+  appId: string;
+  attention: ReturnType<typeof useAttention>;
+}) {
+  const key = APP_COUNTS[appId];
+  if (!key) return null;
+  const count = attention[key];
+  if (count.state !== 'ready' || !count.value) return null;
+
+  return (
+    // The app's own hue, matching the icon beside it and the tile on Home, so
+    // one glance ties all three together. `soft` because a solid pill on a nav
+    // row competes with the row's own selected state.
+    <Badge color="module" variant="soft" size="sm">
+      {count.value > 99 ? '99+' : count.value}
+    </Badge>
   );
 }

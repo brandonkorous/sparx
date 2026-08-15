@@ -66,6 +66,16 @@ configMapGenerator:
     behavior: create
     envs:
       - app-env-configmap.env
+  # The Piggles brand's overrides, mounted AFTER the one above by the three
+  # Piggles Deployments so its keys win for those pods and only those pods. It
+  # lives in this overlay for the same reason its sibling does — generated once,
+  # here, rather than hand-written into three manifests where three copies of one
+  # origin would drift. Read the file's header before changing a value; every key
+  # in it is one somebody has already been bitten by.
+  - name: piggles-app-env
+    behavior: create
+    envs:
+      - piggles-app-env.env
 
 generatorOptions:
   disableNameSuffixHash: true

@@ -46,7 +46,7 @@
      INK — a pink button with a charcoal label is what the logo board already
      does, not a compromise. */
   --color-primary: #ff6f86;
-  --color-primary-content: #202631;
+  --color-primary-content: #ffffff; /*#202631;*/
 
   --color-secondary: #2d3443;
   --color-secondary-content: #ffffff;
@@ -131,8 +131,17 @@
   --color-danger: #ef4444;
   --color-danger-content: #250909;
 
-  --color-neutral: #6b5a66;
-  --color-neutral-content: #ffffff;
+  /* Inverted role, for the same reason `secondary` is inverted three tokens up
+     and by the same reasoning — this one was simply missed.
+     `neutral` is "the opposite of the canvas": in light it is a dark plum you put
+     white on, so in dark it has to be a light plum you put near-black on. Left at
+     a dark value it worked as a FILL and failed everywhere it is INK, which is
+     `btn-neutral btn-outline` and `btn-ghost` — the rail's own "View plan" button
+     measured 2.52:1, the exact figure DESIGN.md already records for this mistake.
+     Now 6.78:1 as ink on base-100 and 8.09:1 as a fill under its own content, and
+     it holds a 1.47 surface step against `secondary` (the light pair's is 1.38). */
+  --color-neutral: #c2b1bc;
+  --color-neutral-content: #241d22;
 
   /* Correction 1 — see the header. Same three values as the spec, assignment
      reversed: base-100 is the TOP surface in dark exactly as in light, so an MDI
@@ -162,9 +171,14 @@
  * against `success`, which would have made the Money app and a success badge the
  * same colour. This is ΔE 28.4 from success and 72.9 from the nearest other group.
  *
- * Theme-independent on purpose — a saturated hue reads on either canvas, and the
- * tinted rendering is derived by silicaui's universal `soft` treatment at paint
- * time, so there is no pre-baked tint token to drift.
+ * These were ONCE theme-independent, on the reasoning that a saturated hue reads
+ * on either canvas. That is true of a FILL, where the hue is the background and
+ * `-content` is the ink. It is false everywhere the hue is itself the INK — and
+ * that is most of the console: every icon in the app panel and the launcher is
+ * `text-module`, and every `soft` control puts the hue on a tinted ground. On the
+ * dark canvas the 600/700-weight values measured 1.98:1 (run) to 3.23:1 (money)
+ * as ink, so a whole column of navigation glyphs was below AA and `run` was
+ * effectively invisible. See the dark block below.
  *
  * Adding a SIXTH group hue is a design decision, not a token edit: run the
  * separation screen against every existing hue AND both brand pinks first. */
@@ -189,7 +203,57 @@
 
   --color-group-run: #7e22ce; /* My Team, Automations, Partners, Connections — 6.98:1 */
   --color-group-run-content: #ffffff;
+}
 
+/* ── The same five groups, lifted for the dark canvas ──────────────────────────
+ *
+ * Same families, three steps lighter, so an app keeps its identity across a theme
+ * switch — Sell is orange in both, Money is lime in both. What changes is which
+ * end of the family is doing the work, because on a dark ground the hue is the
+ * INK and a 700-weight shade is not ink, it is a smudge.
+ *
+ * MEASURED, both gates, against the canvas each one actually lands on:
+ *
+ *   as ink on base-100 (#272d39, the lightest dark surface — an MDI window):
+ *     web 6.93 · sell 8.19 · people 9.53 · money 10.57 · run 7.81 · home 5.62
+ *     (before: 2.20 · 2.67 · 2.58 · 2.77 · 1.98 — every one of them failing)
+ *
+ *   separation, DE2000, which is the gate lightening a palette usually fails:
+ *     closest group pair   web ↔ run   12.8
+ *     closest to a status  web ↔ info  10.8
+ *   The SHIPPING LIGHT SET clears 9.6 and 5.9 on those same two tests, so this
+ *   set is better separated than the one already in production — which is the
+ *   bar that matters, not a round number.
+ *
+ * `-content` INVERTS with them, and that is not optional. It is the ink on a
+ * SOLID fill; white on #bef264 is 1.3:1. Each is a near-black carrying a little
+ * of its own hue, matching what the semantic tokens above already do, and every
+ * pair clears 8.6:1 or better. */
+[data-theme='dark'] {
+  /* home is deliberately absent — it aliases --color-primary, which the dark
+     block above already lifts to #ff7c91. Restating it here is how the two
+     would drift. */
+
+  --color-group-web: #a5b4fc;
+  --color-group-web-content: #171a2e;
+
+  --color-group-sell: #fdba74;
+  --color-group-sell-content: #2a1608;
+
+  --color-group-people: #67e8f9;
+  --color-group-people-content: #06222a;
+
+  --color-group-money: #bef264;
+  --color-group-money-content: #1a2404;
+
+  --color-group-run: #d8b4fe;
+  --color-group-run-content: #23103a;
+}
+
+/* Every app and every platform module resolves THROUGH the six above, so both
+   themes are covered by the one set of aliases below. */
+[data-theme='light'],
+[data-theme='dark'] {
   /* ── Piggles app keys ───────────────────────────────────────────────────────
    * The 15 apps in docs/initial/config/apps.yaml, each pointing at its group.
    * Same value within a group ON PURPOSE — see the header. */
@@ -219,8 +283,15 @@
   --color-app-team-content: var(--color-group-run-content);
   --color-app-automations: var(--color-group-run);
   --color-app-automations-content: var(--color-group-run-content);
-  --color-app-partners: var(--color-group-run);
-  --color-app-partners-content: var(--color-group-run-content);
+  /* `sell`, not `run`. Partners is about buying the stock you sell, and the app
+     moved into the sell group with the registry (@piggles/config). This file
+     RESTATES that mapping because a stylesheet cannot import TypeScript, which
+     makes it the one place the two can drift — and they did: the rail rendered
+     a purple Partners icon between an orange Stock and an orange Sell for
+     exactly as long as this line said `run`. If an app changes group, change it
+     here in the same edit. */
+  --color-app-partners: var(--color-group-sell);
+  --color-app-partners-content: var(--color-group-sell-content);
   --color-app-connections: var(--color-group-run);
   --color-app-connections-content: var(--color-group-run-content);
 
@@ -287,6 +358,36 @@
   --radius-field: 12px; /* Input, Select, Textarea, Button — board radiusMd */
   --radius-box: 18px; /* Card, Dialog, Popover, panels — board radiusLg */
   --border: 1px;
+
+  /* Board radiusXl, which silicaui has no slot for because nothing IT paints is
+   * this big. Piggles' marketing surfaces are built from inset rounded panels
+   * rather than full-bleed bands, and 18px on a 1280×600 panel reads as a
+   * rectangle with the corners knocked off — the radius has to grow with the
+   * shape for the roundness to still be roundness.
+   *
+   * Not `--radius-box` raised: that would re-shape every Card, Dialog and Popover
+   * in three apps to fix a section. Bridged into Tailwind as `rounded-section`
+   * per app (see each globals.css) because @theme cannot read a token declared
+   * inside `[data-theme]`. */
+  --radius-section: 24px;
+
+  /* ── MOTION ────────────────────────────────────────────────────────────────
+   * Tokens rather than a library, and tokens rather than numbers typed at call
+   * sites, for the same reason as every other value here: one edit re-times the
+   * whole brand.
+   *
+   * The easing is the brand argument. `--ease-piggles` overshoots slightly at the
+   * end — the settle a round, soft object has and a flat rectangle does not — and
+   * it is what stops motion here reading like sparx's. `--ease-out-soft` is the
+   * unremarkable one, for anything that should not draw attention to its own
+   * arrival. Durations are deliberately short: comfortable is a spacing decision,
+   * not a slow one, and a landing page that makes somebody wait for a heading to
+   * finish sliding is being decorative at their expense. */
+  --ease-piggles: cubic-bezier(0.34, 1.36, 0.64, 1);
+  --ease-out-soft: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --duration-quick: 160ms;
+  --duration-base: 320ms;
+  --duration-slow: 620ms;
 
   /* Depth 1 — silicaui's own default, and the whole of Piggles' soft elevation:
      resting shadow + hover-lift on Card, inset highlight on solid Buttons. sparx
@@ -410,6 +511,172 @@
    * `w-64`. That one is deliberately NOT taken yet; look at a real screen with
    * the changes above in place first. */
   gap: 1rem;
+}
+
+/* ── The type ladder, re-hung on the size ladder ──────────────────────────────
+ *
+ * `--size-field` moves every control's HEIGHT and nothing else. silica bakes a
+ * font-size into each size step separately, and those two ladders were never
+ * meant to be moved apart — so raising the height alone produced the exact
+ * opposite of comfort:
+ *
+ *     default control   48px tall   14px text
+ *     size="sm"         38px tall   12px text
+ *     size="xs"         29px tall   11px text
+ *
+ * A 48px input with 14px text is not spacious, it is STRETCHED: seventeen
+ * pixels of padding above and below a small glyph, so the writing floats in the
+ * middle of a big empty box. That reads as a control that was resized by
+ * accident, and it is most of why the console felt cramped despite every
+ * measurement saying it was not.
+ *
+ * It also broke the type floor outright. `size="sm"` appears throughout the
+ * ~500 shared surfaces — filter rows, toolbar buttons, pane headers — and every
+ * one of them was rendering 12px, which DESIGN.md §3 allows for nothing at all.
+ *
+ * So the type ladder is re-hung here to match the heights the brand actually
+ * runs. One block, no call sites, and it reaches the shared surfaces:
+ *
+ *     xs  29px → 13px      the one genuine caption tier
+ *     sm  38px → 14px      the caption allowance, and no lower
+ *     md  48px → 16px      the body floor, on the control everything defaults to
+ *     lg  58px → 17px
+ *     xl  67px → 18px
+ *
+ * Specificity: `.btn.btn-sm` (two classes) over silica's `.btn-sm` (one), so
+ * these win without !important. The bare `.btn` rule is the md tier, which
+ * carries no modifier class of its own.
+ */
+.btn,
+.input,
+.select,
+.textarea,
+.file-input {
+  font-size: 1rem;
+}
+.btn.btn-xs,
+.input.input-xs,
+.select.select-xs,
+.textarea.textarea-xs {
+  font-size: 0.8125rem;
+}
+.btn.btn-sm,
+.input.input-sm,
+.select.select-sm,
+.textarea.textarea-sm {
+  font-size: 0.875rem;
+}
+.btn.btn-md,
+.input.input-md,
+.select.select-md,
+.textarea.textarea-md {
+  font-size: 1rem;
+}
+.btn.btn-lg,
+.input.input-lg,
+.select.select-lg,
+.textarea.textarea-lg {
+  font-size: 1.0625rem;
+}
+.btn.btn-xl,
+.input.input-xl,
+.select.select-xl,
+.textarea.textarea-xl {
+  font-size: 1.125rem;
+}
+
+/* Status pills sit in table rows and beside headings, so they are a tier below
+ * the fields rather than level with them — but 11px on the small one was a
+ * legibility problem rather than a density choice. */
+.badge {
+  font-size: 0.8125rem;
+}
+.badge.badge-sm {
+  font-size: 0.75rem;
+}
+
+/* ── Motion: the soft settle ──────────────────────────────────────────────────
+ *
+ * silica runs every transition in the library off two tokens, and its defaults
+ * are the standard material curve at 150ms — correct, neutral, and the same
+ * curve sparx uses.
+ *
+ * theme.css has carried `--ease-piggles` since the brand was set up, described
+ * there as "the settle a round, soft object has and a flat rectangle does not".
+ * It was never wired to anything silica paints, so every hover, focus, open and
+ * close in the console moved like sparx's while the token sat unused two
+ * hundred lines above.
+ *
+ * Pointing silica's own `--ease` at it is the whole of the fix, and it is felt
+ * everywhere at once — a dropdown that overshoots a hair and settles is the
+ * difference between software that feels mechanical and software that feels
+ * physical. Slightly longer than the default too: 150ms is snappy, and snappy
+ * is not what this brand is.
+ *
+ * Untouched under `prefers-reduced-motion: reduce`, where silica forces the
+ * duration to 0.01ms with !important — which is the correct outcome and not
+ * something this file should try to win. */
+[data-theme='light'],
+[data-theme='dark'] {
+  --ease: var(--ease-piggles);
+  --duration: 200ms;
+}
+
+/* ── Navigation, de-jargonised ────────────────────────────────────────────────
+ *
+ * silica's Sidebar group heading ships as an 11px, 700-weight, letter-spaced,
+ * UPPERCASE label at 55% ink. That is the micro-caps idiom every developer tool
+ * uses, and it is wrong here three separate ways:
+ *
+ *   • Root RULE #3 — 55% ink is faded text on something a person is meant to
+ *     read. Fading is reserved for text deliberately NOT meant to be read.
+ *   • The 16px body floor — 11px is below even the 14px caption allowance, and
+ *     this is the label organising the primary navigation.
+ *   • DESIGN.md §1 — "if a screen could be dropped into sparx without anyone
+ *     noticing, it is not finished." Uppercase micro-caps are the single
+ *     loudest signal that a screen was built for an operator.
+ *
+ * Fixed HERE, once, rather than at the call sites: the same class renders the
+ * rail's Starred and Recent headings, every group in the app panel, and the
+ * mobile drawer. A className on one of them would have left the other two, which
+ * is exactly the deferred fix RULE #1 exists to stop.
+ *
+ * Sentence case, a real ink, and hierarchy from weight and size — which is what
+ * root RULE #3 asks for in place of fading.
+ *
+ * The one thing NOT changed is that it is still a heading: 700 weight against
+ * the rows' 400 is what separates them now.
+ */
+.sidebar-group-label {
+  text-transform: none;
+  letter-spacing: normal;
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--color-base-content);
+}
+
+/* Nav rows — the text somebody reads more often than anything else in the
+ * product, shipped by silica at a 14px caption size with 8px of padding.
+ *
+ * 16px and roomier. The fifteen-app rail gets taller and that is fine: the rail
+ * already scrolls, and a scroll is a much smaller cost than fifteen rows of
+ * small type somebody has to lean towards. Spacious is the brief. */
+.sidebar-item {
+  font-size: 1rem;
+  padding: 0.625rem 0.75rem;
+}
+
+/* And air BETWEEN the rows. silica ships a 2px gap, which is a list; 4px with
+ * the taller rows above is a set of things you can hit without aiming. */
+.sidebar-group {
+  gap: 0.25rem;
+}
+
+/* The gap between GROUPS — the six colour families in the rail, and the sections
+ * inside an app's panel. This is the spacing that does the actual grouping work,
+ * so it is the one that has to be unmistakable. */
+.sidebar-content {
+  gap: 1.25rem;
 }
 
 /* ── The bridges: data-app / data-group / data-module ⇒ active hue ─────────────

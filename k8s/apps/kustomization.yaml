@@ -19,4 +19,16 @@ resources:
   # so the host passed Cloudflare Access and then 502'd at Caddy. It lives in
   # sparx-prod with everything else now.
   - admin.yaml
+  # ── Piggles ────────────────────────────────────────────────────────────────
+  # The sister brand's three surfaces. They share this namespace, the database,
+  # api-rest and the secret store — the PLATFORM — and share no application code
+  # (piggles/CLAUDE.md RULE #0). Removing these three lines is how Piggles gets
+  # deleted, and it actually deletes: the release prunes on its ownership label,
+  # so `apply` is not the no-op it would otherwise be.
+  #
+  # Order matters to nobody here, but it reads as the customer's journey:
+  # discover → sign up → operate.
+  - piggles-web.yaml
+  - piggles-account.yaml
+  - piggles-console.yaml
 # Add per-app manifests here as they ship to Artifact Registry.

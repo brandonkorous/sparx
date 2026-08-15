@@ -18,6 +18,7 @@
     "@piggles/auth-handoff": "workspace:*",
     "@piggles/brand": "workspace:*",
     "@piggles/config": "workspace:*",
+    "@piggles/mascot": "workspace:*",
     "@sparx/api-client": "workspace:*",
     "@sparx/app-kit": "workspace:*",
     "@sparx/attribution": "workspace:*",

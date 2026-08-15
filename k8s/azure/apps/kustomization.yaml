@@ -83,6 +83,18 @@ images:
   - name: us-central1-docker.pkg.dev/sparxworks/sparx/admin
     newName: ghcr.io/brandonkorous/sparx/admin
     newTag: latest
+  # Piggles. Same registry and the same `sparx/` package path — the repository
+  # is the unit GHCR names, not the brand, and inventing a second package path
+  # would mean a second set of package permissions to keep public.
+  - name: us-central1-docker.pkg.dev/sparxworks/sparx/piggles-web
+    newName: ghcr.io/brandonkorous/sparx/piggles-web
+    newTag: latest
+  - name: us-central1-docker.pkg.dev/sparxworks/sparx/piggles-account
+    newName: ghcr.io/brandonkorous/sparx/piggles-account
+    newTag: latest
+  - name: us-central1-docker.pkg.dev/sparxworks/sparx/piggles-console
+    newName: ghcr.io/brandonkorous/sparx/piggles-console
+    newTag: latest
   # The workers carry `sparx/<name>:local` in the shared base, since that base
   # is written for the workstation case. Rewrite them the same way.
   #
@@ -118,6 +130,12 @@ replicas:
   - name: site
     count: 1
   - name: market
+    count: 1
+  - name: piggles-web
+    count: 1
+  - name: piggles-account
+    count: 1
+  - name: piggles-console
     count: 1
 
 patches:
@@ -369,6 +387,29 @@ patches:
                   # many sites are live, so it gets margin the others don't.
                   requests: { cpu: '25m', memory: '160Mi' }
                   limits: { memory: '640Mi' }
+  # --- Piggles: no patch, and that is the point ------------------------------
+  # The three Piggles Deployments already declare node-tuned numbers in the base
+  # (25m CPU, no CPU limit, a memory request sized to the nearest measured
+  # sibling), because they were written after this file existed rather than
+  # before it. Patching them here would be restating the same values in a second
+  # place for two of them to drift apart later.
+  #
+  # WHAT THEY COST THIS NODE, said plainly, because adding three pods to a
+  # single 2-vCPU / 8 GiB box is a capacity decision and not a formality:
+  #
+  #   CPU      +75m of a ~1290m budget after kube-system's ~610m.
+  #   MEMORY   +800Mi of requests (288 + 256 + 256), against ~2.4Gi already
+  #            requested on a node with ~5.3Gi allocatable.
+  #
+  # That lands the node near 3.2Gi requested — comfortable, but it is the
+  # measured-requests discipline above that keeps it so. If any of the three
+  # turns out to use materially more than it asks for, it becomes the eviction
+  # candidate before anything else does, exactly as api-rest did at 128Mi
+  # requested against 614Mi used. Measure them once they serve traffic.
+  #
+  # If the node cannot take them, the answer is a bigger node or a second one —
+  # NOT shaving these requests back below what the pods actually use. That trade
+  # has already been made once here and it cost twelve hours of downtime.
   - target: { kind: Deployment, name: market }
     patch: |-
       apiVersion: apps/v1

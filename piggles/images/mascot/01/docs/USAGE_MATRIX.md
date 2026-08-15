@@ -1,42 +1,16 @@
 # Usage Matrix
 
-| Context                | Recommended character                  |
-| ---------------------- | -------------------------------------- |
-| Login                  | `laptop` or `desk`                     |
-| Signup intro           | `wave`                                 |
-| Onboarding start       | `wave`                                 |
-| Onboarding complete    | `celebrate`                            |
-| Generic empty state    | `neutral`                              |
-| Search/no results      | `thinking`                             |
-| Contextual CTA         | `point-left`                           |
-| Bookings onboarding    | `calendar`                             |
-| Invoice onboarding     | `invoice`                              |
-| First invoice paid     | `celebrate`                            |
-| Product published      | `celebrate`                            |
-| Help/tip               | `thinking`                             |
-| Marketing hero         | `desk`, `wave`, or purpose-built scene |
-| Footer/brand signature | `neutral` at low emphasis              |
+| Asset                  | Primary use                 | Secondary use           |
+| ---------------------- | --------------------------- | ----------------------- |
+| `piggles-mascot-base`  | Brand introduction          | Login and welcome       |
+| `piggles-planner`      | Projects and scheduling     | Setup planning          |
+| `piggles-analyst`      | Reporting and insights      | Opportunity discovery   |
+| `piggles-communicator` | Messaging and support       | Notifications           |
+| `piggles-builder`      | Sites, pages, configuration | Content creation        |
+| `piggles-protector`    | Security and privacy        | Backups and permissions |
+| `piggles-money-minder` | Finance and revenue         | Sales reporting         |
+| `piggles-organizer`    | Tasks and records           | Workflow completion     |
+| `piggles-cheerleader`  | Wins and milestones         | Success screens         |
+| `piggles-sidekick`     | Companion and onboarding    | General help            |
 
-## Density
-
-Mascot usage should be intentionally sparse.
-
-Recommended:
-
-- authentication/onboarding: 1 major character per screen
-- MDI workbench: mostly contextual empty states and milestone moments
-- marketing: 1 major mascot moment every 1–2 major sections at most
-- transactional forms: avoid mascot unless it explains/reassures
-
-## Accessibility
-
-Decorative mascot:
-
-```html
-<img src="..." alt="" />
-```
-
-Meaningful mascot:
-Use the manifest-provided alt text or context-specific equivalent.
-
-Never use the mascot as the only indicator of success, warning, or error.
+Decorative images use empty alt text. Meaningful images should describe the product message, not merely the mascot pose.

@@ -8,8 +8,10 @@ import {
   Button,
   Checkbox,
   Field,
+  FieldDescription,
   FieldLabel,
   Input,
+  NativeSelect,
 } from '@wizeworks/silicaui-react';
 import type { PigglesGroup } from '@piggles/brand';
 import { appsInGroup } from '@piggles/config';
@@ -41,6 +43,29 @@ import { RailPreview } from './rail-preview';
 //
 // The shell is presentational — layout, a logo, a card — so pulling it into this
 // route's client bundle costs nothing anybody can measure.
+
+// The lines of work the platform has a sample dataset for. The VALUES are the
+// real pack slugs (`settings.industry`) and must stay that way — the action
+// validates them against the packs, and anything it does not recognise falls
+// back to the generic set rather than failing, so a typo here would ship as a
+// bakery quietly getting generic data.
+//
+// The labels are ours. The packs call themselves things like "Apparel & fashion"
+// and "Generic starter", which is a catalogue talking about itself; a person
+// picking their own trade off a list should read words they would use about
+// their own business (RULE #3). Ordered by how likely somebody is to find
+// themselves in it, with the catch-all last where a catch-all belongs.
+const TRADES: { value: string; label: string }[] = [
+  { value: 'food', label: 'Food & drink' },
+  { value: 'salon', label: 'Beauty & salon' },
+  { value: 'apparel', label: 'Clothing & accessories' },
+  { value: 'professional', label: 'Professional services' },
+  { value: 'fitness', label: 'Fitness & wellbeing' },
+  { value: 'auto-parts', label: 'Car parts & repair' },
+  { value: 'electronics', label: 'Electronics & tech' },
+  { value: 'wholesale', label: 'Wholesale & trade supply' },
+  { value: 'generic', label: 'Something else' },
+];
 
 const OPTIONS: { group: PigglesGroup; label: string; hint: string }[] = [
   { group: 'web', label: 'I need a website', hint: 'Pages, writing, and turning up in search' },
@@ -86,16 +111,41 @@ export function Onboarding({ suggestedName }: { suggestedName: string }) {
           </Alert>
         ) : null}
 
-        <Field>
-          <FieldLabel>What is your business called?</FieldLabel>
-          <Input
-            name="businessName"
-            size="lg"
-            defaultValue={suggestedName}
-            required
-            maxLength={120}
-          />
-        </Field>
+        {/* The business itself — what it is called and what it does for a
+            living. Two fields, one question: both describe the same thing, and
+            splitting them into separate beats would make a two-question screen
+            claim to be three. */}
+        <div className="flex flex-col gap-5">
+          <Field>
+            <FieldLabel>What is your business called?</FieldLabel>
+            <Input
+              name="businessName"
+              size="lg"
+              defaultValue={suggestedName}
+              required
+              maxLength={120}
+            />
+          </Field>
+
+          <Field>
+            <FieldLabel>What kind of business is it?</FieldLabel>
+            <NativeSelect name="industry" size="lg" defaultValue="" required>
+              <option value="" disabled>
+                Pick the closest one
+              </option>
+              {TRADES.map((t) => (
+                <option key={t.value} value={t.value}>
+                  {t.label}
+                </option>
+              ))}
+            </NativeSelect>
+            <FieldDescription>
+              We use this to fill your account with realistic examples — products, customers,
+              bookings and pages — so nothing is empty when you walk in. Change or clear them
+              whenever you like.
+            </FieldDescription>
+          </Field>
+        </div>
 
         <div>
           <h2 className="text-xl font-bold">What do you do?</h2>

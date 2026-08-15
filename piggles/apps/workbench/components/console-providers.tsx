@@ -2,16 +2,26 @@
 
 import { QueryProvider } from '@sparx/query/provider';
 import { ImperativeAlertDialogProvider, ToastProvider } from '@wizeworks/silicaui-react';
-import { CrashListeners } from '@workbench/components/crash-listeners';
-import { PostHogProvider } from '@workbench/components/posthog-provider';
-import { RootBoundary } from '@workbench/components/root-boundary';
-import { WriteFailureReporter } from '@workbench/components/write-failure-reporter';
+import { CrashListeners } from '@/components/crash-listeners';
+import { PostHogProvider } from '@/components/posthog-provider';
+import { RootBoundary } from '@/components/root-boundary';
+import { WriteFailureReporter } from '@/components/write-failure-reporter';
 // Importing this module IS the brand configuration — it calls configureProduct()
 // at module scope. It sits FIRST on purpose: everything below is a consumer, and
 // the root boundary in particular renders when the app has already fallen over,
 // which is the worst possible moment to discover the product's name has not been
-// set yet. See lib/product-adapter.tsx.
-import '@/lib/product-adapter';
+// set yet.
+//
+// The SAME module is imported by components/console-shell.tsx, which needs it
+// evaluated before the surface catalog. Two import sites of one side-effect
+// module is correct and deliberate: ES modules evaluate once, so whichever loads
+// first configures the adapter and the other is a no-op.
+//
+// There used to be TWO adapter modules — this one and lib/console/product.tsx —
+// both calling configureProduct at module scope with different values. Whichever
+// ran last won, which is how the loading mark quietly lost its breathing
+// animation. There is one now.
+import '@/lib/console/product';
 
 // The console's root providers.
 //

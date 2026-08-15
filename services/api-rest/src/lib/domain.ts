@@ -14,15 +14,62 @@ import { randomBytes } from 'node:crypto';
 import { prisma, withTenant } from '@sparx/db';
 import { createTtlCache } from './ttl-cache.js';
 
-// The zone we own — `<label>.sparx.zone` subdomains issue instantly (no DNS
-// verification needed, we control the zone). Kept in sync with the Caddy ask
-// endpoint (routes/internal/domain-check.ts) and apps/site SPARX_ZONE_DOMAIN.
-export const SPARX_ZONE = process.env.SPARX_ZONE_DOMAIN ?? 'sparx.zone';
-const ZONE_SUFFIX = `.${SPARX_ZONE}`;
+// ── THE ZONES WE OWN ────────────────────────────────────────────────────────
+//
+// More than one, because more than one BRAND is served by this process. A sparx
+// tenant lives on `<slug>.sparx.zone`; a Piggles tenant lives on
+// `<slug>.piggles.site` (piggles/CLAUDE.md, "The three surfaces").
+//
+// `SPARX_ZONE_DOMAINS` is a comma-separated list; the first entry is the
+// DEFAULT — the zone anything that does not say otherwise is minted in. The old
+// singular `SPARX_ZONE_DOMAIN` still works and means a one-entry list, so no
+// existing deployment changes behaviour.
+//
+// WHY A LIST IS THE RIGHT SHAPE HERE, when `provisionTenant` deliberately made
+// the zone a PARAMETER instead. The two questions are different. "Which zone
+// does this NEW tenant get?" varies per request and can never come from the
+// environment — that is why signup takes an argument. "Which zones does this
+// deployment own?" is a fact about the deployment, identical for every request,
+// and a list is exactly what it is.
+const ZONE_LIST = (process.env.SPARX_ZONE_DOMAINS ?? process.env.SPARX_ZONE_DOMAIN ?? 'sparx.zone')
+  .split(',')
+  .map((zone) => zone.trim().toLowerCase())
+  .filter((zone) => zone.length > 0);
 
-// The CNAME target tenants point a custom domain at (the shared ingress). Caddy
-// terminates TLS for it via on-demand certs once the host is authorized.
-export const CNAME_TARGET = process.env.SPARX_CNAME_TARGET ?? `customers.${SPARX_ZONE}`;
+/** Every zone this deployment owns, in declaration order. */
+export const OWNED_ZONES: readonly string[] = ZONE_LIST.length > 0 ? ZONE_LIST : ['sparx.zone'];
+
+/** The default zone — what a caller that names no zone gets. */
+export const SPARX_ZONE = OWNED_ZONES[0]!;
+
+/** Which owned zone `host` sits in, or null if it sits in none of them.
+ *
+ *  This is how a caller works out a tenant's zone WITHOUT branching on its
+ *  brand: read the host the tenant already has and ask which zone it belongs to.
+ *  A `if (brand === 'piggles')` in a shared service is the fork RULE #0 exists to
+ *  prevent, and it would also be wrong the day a third brand appears. */
+export function zoneOf(host: string): string | null {
+  return OWNED_ZONES.find((zone) => host === zone || host.endsWith(`.${zone}`)) ?? null;
+}
+
+/** The CNAME target for a given zone — the shared ingress, under the brand's own
+ *  name. Piggles tenants are told `customers.piggles.site`, which is the value
+ *  `piggles/packages/config/src/product.ts` also advertises; a sparx tenant is
+ *  told `customers.sparx.zone`. Same address, and the customer must never be
+ *  handed another company's hostname to point their domain at. */
+export function cnameTargetFor(zoneDomain?: string | null): string {
+  const zone = zoneDomain && OWNED_ZONES.includes(zoneDomain) ? zoneDomain : SPARX_ZONE;
+  if (zone === SPARX_ZONE && process.env.SPARX_CNAME_TARGET) {
+    return process.env.SPARX_CNAME_TARGET;
+  }
+  return `customers.${zone}`;
+}
+
+// The default zone's CNAME target. Retained as a constant because several
+// callers legitimately have no tenant in hand (the operator console lists the
+// record before a tenant is chosen); anything that DOES know the tenant should
+// call `cnameTargetFor(await tenantZone(id))` instead.
+export const CNAME_TARGET = cnameTargetFor(SPARX_ZONE);
 
 // Where the control-proof TXT record lives: `_sparx-verify.<host>`.
 const TXT_PREFIX = '_sparx-verify.';
@@ -48,10 +95,12 @@ export function isValidHost(host: string): boolean {
   return HOST_RE.test(host);
 }
 
-/** True for a host inside the zone we own (`*.sparx.zone`). Those are issued by
- *  us, never tenant-verified, and can't be connected as a "custom" domain. */
+/** True for a host inside ANY zone we own. Those are issued by us, never
+ *  tenant-verified, and can't be connected as a "custom" domain — which has to
+ *  hold for every brand, or a Piggles tenant could "connect"
+ *  `someone-else.piggles.site` as though it were their own domain. */
 export function isZoneHost(host: string): boolean {
-  return host === SPARX_ZONE || host.endsWith(ZONE_SUFFIX);
+  return zoneOf(host) !== null;
 }
 
 /** The always-on subdomain for a property: the primary keeps the bare
@@ -88,9 +137,46 @@ export function isZoneHost(host: string): boolean {
  *  like a certificate problem rather than a routing one. Ingress is a
  *  `Service type=LoadBalancer` (`k8s/ingress`) precisely so that cannot recur —
  *  the tunnel had no inbound path, so Caddy could never complete an ACME
- *  challenge behind it. `*.sparx.zone` must stay DNS-only for the same reason. */
-export function mintZoneHost(tenantSlug: string, propertySlug: string, isPrimary: boolean): string {
-  return isPrimary ? `${tenantSlug}${ZONE_SUFFIX}` : `${propertySlug}.${tenantSlug}${ZONE_SUFFIX}`;
+ *  challenge behind it. `*.sparx.zone` must stay DNS-only for the same reason.
+ *
+ *  `zoneDomain` names which owned zone to mint in, and defaults to the first —
+ *  so every existing caller is unchanged. A caller that has a tenant should pass
+ *  `await tenantZone(tenantId)`: minting a SECOND site for a Piggles business
+ *  under the default zone would give one business two sites in two different
+ *  brands' zones, and the second one would be `<prop>.<tenant>.sparx.zone` on a
+ *  console that never mentions sparx. */
+export function mintZoneHost(
+  tenantSlug: string,
+  propertySlug: string,
+  isPrimary: boolean,
+  zoneDomain?: string | null
+): string {
+  const zone = zoneDomain && OWNED_ZONES.includes(zoneDomain) ? zoneDomain : SPARX_ZONE;
+  const suffix = `.${zone}`;
+  return isPrimary ? `${tenantSlug}${suffix}` : `${propertySlug}.${tenantSlug}${suffix}`;
+}
+
+/**
+ * The zone a tenant's sites live in, read off the subdomain it already has.
+ *
+ * Derived, never branched on: provisioning recorded the answer at signup when it
+ * created `<slug>.<zoneDomain>`, so the honest way to find it later is to look at
+ * that row rather than to re-decide it from the tenant's brand. It also means a
+ * third brand needs no change here at all.
+ *
+ * Falls back to the default zone when the tenant has no subdomain row — which is
+ * every pre-multi-zone tenant, and is exactly right for them.
+ */
+export async function tenantZone(tenantId: string): Promise<string> {
+  const rows = await prisma.domain.findMany({
+    where: { tenantId, type: 'subdomain' },
+    select: { host: true },
+  });
+  for (const row of rows) {
+    const zone = zoneOf(row.host);
+    if (zone) return zone;
+  }
+  return SPARX_ZONE;
 }
 
 /** A fresh DNS-control-proof token (the tenant adds it as a TXT record). */
@@ -114,13 +200,19 @@ export function isSubdomainHost(host: string): boolean {
  *  verbatim. */
 export function connectInstructions(
   host: string,
-  token: string | null
+  token: string | null,
+  /** The tenant's own CNAME target — `cnameTargetFor(await tenantZone(id))`.
+   *  Defaults to the platform's default zone for callers that have no tenant in
+   *  hand. A Piggles customer told to point their domain at
+   *  `customers.sparx.zone` is being handed another company's hostname, and it
+   *  is the kind of instruction people paste into a registrar and never revisit. */
+  cnameTarget: string = CNAME_TARGET
 ): {
   cname: { name: string; value: string };
   txt: { name: string; value: string } | null;
 } {
   return {
-    cname: { name: host, value: CNAME_TARGET },
+    cname: { name: host, value: cnameTarget },
     txt: token ? { name: `${TXT_PREFIX}${host}`, value: token } : null,
   };
 }
@@ -239,10 +331,15 @@ async function resolveSiteByHostUncached(host: string): Promise<SiteRoute | null
     }
   }
 
-  // 2. Bare `<tenant>.sparx.zone` fallback → primary property. Survives even if
-  //    no subdomain row exists yet (older tenants, pre-backfill).
-  if (host.endsWith(ZONE_SUFFIX)) {
-    const label = host.slice(0, -ZONE_SUFFIX.length);
+  // 2. Bare `<tenant>.<owned zone>` fallback → primary property. Survives even
+  //    if no subdomain row exists yet (older tenants, pre-backfill).
+  //
+  //    Any owned zone, not just the default one: this path is what keeps a
+  //    tenant reachable when its `domains` row is missing, and a Piggles tenant
+  //    needs that safety net for the same reasons a sparx one does.
+  const hostZone = zoneOf(host);
+  if (hostZone && host !== hostZone) {
+    const label = host.slice(0, -(hostZone.length + 1));
     if (label.length > 0 && !label.includes('.')) {
       const tenant = await prisma.tenant.findUnique({
         where: { slug: label },
@@ -269,13 +366,13 @@ async function resolveSiteByHostUncached(host: string): Promise<SiteRoute | null
     }
   }
 
-  // 3. Hierarchical `<property>.<tenant>.sparx.zone` fallback → that tenant's
+  // 3. Hierarchical `<property>.<tenant>.<owned zone>` fallback → that tenant's
   //    named property. The additional-site analogue of path 2: survives a missing
   //    subdomain row (pre-backfill, or the window while the host-scheme migration
   //    rolls). Splits on the SINGLE remaining dot — exactly two labels — so it
   //    never collides with the bare-tenant path (one label) or deeper hosts.
-  if (host.endsWith(ZONE_SUFFIX)) {
-    const labels = host.slice(0, -ZONE_SUFFIX.length).split('.');
+  if (hostZone && host !== hostZone) {
+    const labels = host.slice(0, -(hostZone.length + 1)).split('.');
     if (labels.length === 2 && labels[0] && labels[1]) {
       const [propertyLabel, tenantLabel] = labels;
       const tenant = await prisma.tenant.findUnique({

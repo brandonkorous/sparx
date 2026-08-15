@@ -33,12 +33,8 @@ import {
   Text,
   Tooltip,
 } from '@wizeworks/silicaui-react';
-import {
-  resolveTitle,
-  type OpenTarget,
-  type SurfaceDefinition,
-} from '@workbench/lib/surfaces/registry';
-import { useWorkbench } from '@workbench/lib/workbench/context';
+import { resolveTitle, type OpenTarget, type SurfaceDefinition } from '@/lib/surfaces/registry';
+import { useWorkbench } from '@/lib/workbench/context';
 import { AppScope } from './app-scope';
 import type { ConsoleNavApp } from '@/lib/console/nav';
 
@@ -54,6 +50,18 @@ interface AppPanelProps {
    * work, so the control is not disabled, it is absent.
    */
   pinnable?: boolean;
+  /**
+   * `panel` takes the fixed 20rem the desktop shell clips it to. `fill` takes
+   * whatever the container is, for the mobile drawer.
+   *
+   * Not a detail. The drawer is `85vw` capped at `max-w-sm`, so on a 320px phone
+   * it is 272px — and a panel insisting on 20rem inside it overflows by 48px,
+   * which is a sideways scrollbar on the primary navigation. The desktop case
+   * genuinely does want the fixed width: its wrapper animates from `w-80` to
+   * `w-0`, and a percentage panel would re-wrap every label on the way shut
+   * instead of sliding out cleanly.
+   */
+  width?: 'panel' | 'fill';
 }
 
 function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
@@ -109,6 +117,7 @@ export function AppPanel({
   onTogglePin,
   onDismiss,
   pinnable = true,
+  width = 'panel',
 }: AppPanelProps) {
   const { controller } = useWorkbench();
   const listRef = useRef<HTMLDivElement>(null);
@@ -181,7 +190,17 @@ export function AppPanel({
         collapsed={false}
         color="module"
         aria-label={`${entry.label} navigation`}
-        className="h-full bg-transparent"
+        // 20rem, matching the wrapper the shell clips this to.
+        //
+        // BOTH are needed and that is not belt-and-braces. The shell's wrapper
+        // owns the open/close animation and therefore the CLIP width; silica's
+        // Sidebar sizes itself from its own `--sidebar-w`, which defaults to
+        // 16rem. Widening only the wrapper produced a 20rem box with a 16rem
+        // panel in it and four rems of dead space on the right, while the labels
+        // carried on truncating — the change looked applied and did nothing.
+        className={`h-full bg-transparent ${
+          width === 'fill' ? 'w-full [--sidebar-w:100%]' : '[--sidebar-w:20rem]'
+        }`}
       >
         <SidebarHeader>
           <SidebarHeaderBrand>
@@ -190,7 +209,11 @@ export function AppPanel({
                 An abstract dot named nothing and forced the eye back to the rail
                 to confirm what had been clicked. */}
             <AppIcon className="text-module size-5 shrink-0" aria-hidden />
-            <span className="min-w-0 truncate text-sm font-medium" title={entry.label}>
+            {/* The name of the column, so it reads as at least as important as
+                the rows under it. At `text-sm` it was 14px heading a list of
+                16px items — a heading smaller than its own contents, which
+                inverts the hierarchy it exists to state. */}
+            <span className="min-w-0 truncate text-base font-semibold" title={entry.label}>
               {entry.label}
             </span>
           </SidebarHeaderBrand>
@@ -221,8 +244,10 @@ export function AppPanel({
               <SearchInput
                 size="sm"
                 value={filter}
-                aria-label={`Filter ${entry.label}`}
-                placeholder="Filter…"
+                aria-label={`Search ${entry.label}`}
+                // "Filter" is what the control DOES to a list. "Search" is what
+                // the person is doing, and it is the word they already know.
+                placeholder="Search…"
                 onValueChange={setFilter}
               />
             </div>
@@ -257,7 +282,19 @@ export function AppPanel({
                         <SidebarItem
                           data-nav-item
                           className="flex-1"
-                          icon={<surface.icon className="size-4" aria-hidden />}
+                          // The app's hue, on every row. It is the SAME hue for
+                          // the whole column on purpose: within one app it
+                          // distinguishes nothing, but between apps it is the
+                          // whole distinction — the panel for Sell has to be
+                          // recognisably not the panel for Money at a glance,
+                          // the way the rail already is. Left neutral, this
+                          // column was twenty identical black glyphs and the
+                          // only colour anywhere on a browsing screen was the
+                          // one rail row behind it (DESIGN.md RULE #4).
+                          //
+                          // The hue comes from the <AppScope> around the whole
+                          // panel, so nothing here names a colour.
+                          icon={<surface.icon className="text-module size-4" aria-hidden />}
                           // `trailing` is for badges and chevrons —
                           // non-interactive, so the count can live inside the
                           // row's button.

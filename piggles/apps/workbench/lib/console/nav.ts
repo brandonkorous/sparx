@@ -4,9 +4,9 @@ import { useMemo } from 'react';
 import type { LucideIcon } from 'lucide-react';
 import { APPS, appIcon, moduleTerm, type PigglesAppDef } from '@piggles/config';
 import type { PigglesGroup } from '@piggles/brand';
-import { useVisibleNav } from '@workbench/lib/surfaces/use-visible-nav';
-import type { NavSection } from '@workbench/lib/surfaces/nav';
-import type { WorkbenchModule } from '@workbench/components/module-scope';
+import { useVisibleNav } from '@/lib/surfaces/use-visible-nav';
+import type { NavSection } from '@/lib/surfaces/nav';
+import type { WorkbenchModule } from '@/components/module-scope';
 
 // The console's navigation: fifteen APPS, built from the platform's surfaces.
 //
@@ -82,6 +82,38 @@ export function useConsoleNav(): ConsoleNavApp[] {
     const byModule = new Map<string, (typeof visible)[number]>(
       visible.map((entry) => [entry.module, entry])
     );
+
+    // ── CLAIMED SURFACES ──────────────────────────────────────────────────────
+    //
+    // A surface a DIFFERENT app has claimed leaves its module's panel and joins
+    // the claimant's. Partners is the case that needs it: the platform keeps
+    // suppliers, purchase orders and receiving inside `inventory` beside stock
+    // levels, and Piggles advertises them as their own app. See
+    // `PigglesAppDef.claims`.
+    //
+    // Built once for every app, so the two halves — remove from here, add over
+    // there — can never disagree.
+    const claimedBy = new Map<string, string>();
+    for (const app of APPS) {
+      for (const key of app.claims ?? []) claimedBy.set(key, app.id);
+    }
+
+    /** Every claimed surface that is actually VISIBLE, with the section heading
+     *  it arrived under. Anything gated away simply is not in here, so a claim
+     *  can never resurrect a surface this person cannot reach. */
+    const claimable = new Map<
+      string,
+      { surface: NavSection['surfaces'][number]; title: string | null }
+    >();
+    for (const entry of visible) {
+      for (const section of entry.sections) {
+        for (const surface of section.surfaces) {
+          if (!claimedBy.has(surface.key)) continue;
+          claimable.set(surface.key, { surface, title: section.title });
+        }
+      }
+    }
+
     const apps: ConsoleNavApp[] = [];
 
     for (const app of [...APPS].sort((a, b) => a.navOrder - b.navOrder)) {
@@ -89,29 +121,74 @@ export function useConsoleNav(): ConsoleNavApp[] {
       // — nothing registered, or everything gated away from this person — must
       // not leave an empty heading behind.
       const live = app.modules.filter((module) => byModule.has(module));
-      const primary = live[0];
-      if (primary === undefined) continue;
 
       const multiModule = live.length > 1;
       const sections: NavSection[] = [];
-      let count = 0;
 
-      for (const module of live) {
+      /** Add rows under a heading, merging into one that is already there — a
+       *  claimed "Buying it in" must not sit beside a same-named section this
+       *  app already had. */
+      const push = (title: string | null, surfaces: NavSection['surfaces']) => {
+        if (surfaces.length === 0) return;
+        const existing = sections.find((section) => section.title === title);
+        if (existing) existing.surfaces = [...existing.surfaces, ...surfaces];
+        else sections.push({ title, surfaces });
+      };
+
+      for (const [index, module] of live.entries()) {
         const entry = byModule.get(module);
         if (!entry) continue;
-        count += entry.count;
 
         for (const section of entry.sections) {
-          sections.push({
-            // An untitled section is a module's landing group. Alone in its app
-            // it stays untitled and sits at the top, exactly as the platform
-            // intends. Sharing an app, it takes the module's name so the seam is
-            // visible.
-            title: section.title ?? (multiModule ? (moduleTerm(module) ?? entry.label) : null),
-            surfaces: section.surfaces,
-          });
+          push(
+            // An untitled section is a module's landing group.
+            //
+            // The app's FIRST module keeps it untitled and it sits at the top —
+            // that is the app's own front door, and heading it with the app's
+            // own name puts "Sell" above the first row of the Sell panel, which
+            // is a label explaining a thing the person just clicked. Later
+            // modules in a multi-module app DO get a heading, because that is a
+            // real seam: without it commerce, wholesale and dropshipping run
+            // together into one thirty-row list.
+            section.title ??
+              (multiModule && index > 0 ? (moduleTerm(module) ?? entry.label) : null),
+            // Rows another app has claimed leave this panel.
+            section.surfaces.filter((surface) => (claimedBy.get(surface.key) ?? app.id) === app.id)
+          );
         }
       }
+
+      // ...and the rows this app claimed from elsewhere, under the heading they
+      // arrived with.
+      //
+      // A claimed row that arrived UNSECTIONED is the interesting case, and the
+      // right answer depends on whether this app has a front door of its own.
+      // Partners does not — it is built entirely from claims — so its claimed
+      // landing rows belong at the top, untitled, exactly as any other app's
+      // would be. An app that DOES have its own modules keeps that slot for
+      // itself, and a foreign row takes the name of the module it came from
+      // rather than displacing the app's own first rows.
+      for (const key of app.claims ?? []) {
+        const claimed = claimable.get(key);
+        if (!claimed) continue;
+        const heading =
+          claimed.title ??
+          (live.length === 0 ? null : (moduleTerm(claimed.surface.module) ?? null));
+        push(heading, [claimed.surface]);
+      }
+
+      // An app with nothing behind it is not an app this business has. Counted
+      // AFTER claims are settled, so an app made entirely of claimed surfaces
+      // (Partners, when dropshipping is off) still appears.
+      const count = sections.reduce((total, section) => total + section.surfaces.length, 0);
+      if (count === 0) continue;
+
+      // The hue and `data-module` for this app's panes. The first live module,
+      // or — for an app built purely from claims — the module the first claimed
+      // surface belongs to, so a Partners pane still wears a hue rather than
+      // none.
+      const primary = live[0] ?? sections[0]?.surfaces[0]?.module;
+      if (primary === undefined) continue;
 
       apps.push({
         app,

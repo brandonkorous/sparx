@@ -120,3 +120,4 @@ apply.log
 crash.log
 override.tf
 override_*.tf
+apps-workbench-reverted-*.patch

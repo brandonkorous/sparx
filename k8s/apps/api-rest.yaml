@@ -8,6 +8,9 @@
 # dashboard and other services use. The internal-trust JWT secret +
 # Pub/Sub project id are expected to be in sparx-app-secrets:
 #   - SPARX_INTERNAL_JWT_SECRET — shared with dashboard for the JWT bridge
+#   - SPARX_INTERNAL_FURNISH_TOKEN — shared with the app that runs signup; gates
+#     POST /internal/tenant/furnish. Unset → 401, which stops onboarding rather
+#     than letting businesses arrive unfurnished and look normal.
 #   - GCP_PROJECT_ID            — enables the real Pub/Sub publisher
 #   - PUBSUB_TOPIC              — defaults to sparx.events
 #

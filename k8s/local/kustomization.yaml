@@ -90,6 +90,15 @@ configMapGenerator:
     behavior: create
     envs:
       - app-env-configmap.env
+  # The Piggles brand's overrides — same generator as the AKS overlay, localhost
+  # origins. Present here so the Piggles pods are startable on a workstation:
+  # a Deployment whose `envFrom` names a ConfigMap that does not exist does not
+  # fail `kustomize build`, it fails at pod creation, which is a much later and
+  # much less obvious place to find out.
+  - name: piggles-app-env
+    behavior: create
+    envs:
+      - piggles-app-env.env
   # The workstation TLS policy. `behavior: merge` overwrites the `mode.caddy`
   # KEY inside the ConfigMap ../ingress generated, leaving the Caddyfile key
   # untouched — so the routing table is shared byte-for-byte and only the

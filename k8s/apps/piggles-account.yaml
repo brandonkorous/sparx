@@ -1,0 +1,190 @@
+# @piggles/account — getpiggles.com. Sign-up, sign-in, onboarding, provisioning,
+# and the money a customer pays WizeWorks.
+#
+# THE AUTH AUTHORITY for the Piggles brand. mypiggles.com mounts no Better Auth
+# handler at all; it receives a session through a single-use, origin-bound,
+# 60-second handoff token. That split is deliberate and load-bearing — three
+# registrable domains cannot share a cookie, and a second thing able to mint
+# sessions is exactly what the split exists to prevent.
+#
+# Namespace rationale: see the header of piggles-web.yaml.
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: piggles-account
+  namespace: sparx-prod
+  labels:
+    app: piggles-account
+    tier: web
+    brand: piggles
+spec:
+  replicas: 1
+  revisionHistoryLimit: 5
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: piggles-account
+  template:
+    metadata:
+      labels:
+        app: piggles-account
+        tier: web
+        brand: piggles
+    spec:
+      serviceAccountName: sparx-app
+      containers:
+        - name: piggles-account
+          image: us-central1-docker.pkg.dev/sparxworks/sparx/piggles-account:latest
+          imagePullPolicy: Always
+          ports:
+            - name: http
+              containerPort: 3000
+          # ORDER IS THE DESIGN, not a formatting choice. Later entries override
+          # earlier ones, so the platform's shared values arrive first and
+          # `piggles-app-env` replaces the handful that must differ for this
+          # brand. Read k8s/azure/infra/piggles-app-env.env before changing this
+          # list — the ordering is what keeps one origin in one place.
+          envFrom:
+            - configMapRef:
+                name: sparx-app-env
+            - secretRef:
+                name: sparx-app-secrets
+            - configMapRef:
+                name: piggles-app-env
+          env:
+            - name: NODE_ENV
+              value: production
+            - name: SERVICE_NAME
+              value: piggles-account
+            - name: PORT
+              value: '3000'
+            - name: HOSTNAME
+              value: 0.0.0.0
+            - name: NEXT_TELEMETRY_DISABLED
+              value: '1'
+            # ── THE ONE THAT CANNOT BE SHARED ──────────────────────────────
+            #
+            # Per-POD, not in piggles-app-env, because the two Piggles apps run
+            # on two different origins and Better Auth derives its trusted origin
+            # from this exact string — protocol included, no trailing slash,
+            # because the callback path is built from it.
+            #
+            # Get it wrong and the failure is invisible in every cheap check:
+            # sign-UP keeps working (a server action, so no Origin header),
+            # curl keeps working (no Origin header), and the browser gets
+            # `Invalid origin` on sign-IN which the UI reports as a wrong
+            # password. That is piggles/STATUS.md "THE LOCKOUT", and it cost
+            # hours the first time.
+            - name: BETTER_AUTH_URL
+              value: https://getpiggles.com
+            # ── Piggles' OWN Better Auth secret ────────────────────────────
+            #
+            # Distinct from sparx's: different brand, different cookie domain,
+            # and sessions signed by one must not be readable by the other.
+            # It must be the SAME value the console carries, though — both read
+            # and write the same Better Auth session rows, and a differing secret
+            # makes every session unverifiable at the far side of the handoff.
+            #
+            # Mapped from a KEY in the shared secret rather than a second Secret
+            # object: there is one credential store on this platform, synced by
+            # one path, and a second one is a second thing to keep populated.
+            # Deliberately NOT `optional` — a missing auth secret must stop the
+            # pod, not produce an app that half-works.
+            - name: BETTER_AUTH_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: sparx-app-secrets
+                  key: PIGGLES_BETTER_AUTH_SECRET
+            # ── Piggles' OWN Google OAuth client ───────────────────────────
+            #
+            # A SEPARATE Google Cloud project, not just another client in
+            # sparx's: the consent screen (app name, logo, support email) is
+            # configured per PROJECT and shared by every client in it, so a
+            # Piggles customer would otherwise be asked to grant access to
+            # "sparx". getpiggles.com is the only Piggles domain with an OAuth
+            # client at all — see piggles/STATUS.md.
+            - name: GOOGLE_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: sparx-app-secrets
+                  key: PIGGLES_GOOGLE_CLIENT_ID
+            - name: GOOGLE_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: sparx-app-secrets
+                  key: PIGGLES_GOOGLE_CLIENT_SECRET
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 1001
+            runAsGroup: 1001
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ['ALL']
+            seccompProfile:
+              type: RuntimeDefault
+          # No CPU limit, memory ceilinged — see the note in piggles-web.yaml.
+          # 256Mi is an ESTIMATE from sparx's workbench (measured 232Mi), which
+          # is the nearest thing to this app's shape: a small route table over
+          # @sparx/auth and Prisma. Measure and move it.
+          resources:
+            requests:
+              cpu: '25m'
+              memory: '256Mi'
+            limits:
+              memory: '640Mi'
+          # `/sign-in` is a full RSC render and would be the wrong probe for
+          # exactly the reason the workbench learned it: under load it hits the
+          # event loop, and a probe that fails when the app is merely busy
+          # restarts a healthy pod. `/api/health` is a static, dependency-free
+          # handler that answers even when the database and Better Auth are down,
+          # so a downstream outage never rolls this pod.
+          livenessProbe:
+            httpGet:
+              path: /api/health
+              port: 3000
+            initialDelaySeconds: 30
+            periodSeconds: 30
+            timeoutSeconds: 5
+            failureThreshold: 5
+          readinessProbe:
+            httpGet:
+              path: /api/health
+              port: 3000
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          lifecycle:
+            preStop:
+              exec:
+                command: ['/bin/sh', '-c', 'sleep 10']
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: piggles-account
+  namespace: sparx-prod
+spec:
+  type: ClusterIP
+  ports:
+    - name: http
+      port: 3000
+      targetPort: 3000
+  selector:
+    app: piggles-account
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: piggles-account
+  namespace: sparx-prod
+spec:
+  maxUnavailable: 1
+  selector:
+    matchLabels:
+      app: piggles-account

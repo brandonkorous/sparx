@@ -37,8 +37,8 @@ import type { PigglesGroup } from '@piggles/brand';
 export function RailPreview({ picked }: { picked: PigglesGroup[] }) {
   const apps = [...APPS].sort((a, b) => a.navOrder - b.navOrder);
   // Home is not a choice — it fronts `platform`, which is the console itself
-  // rather than a module anything can activate (see `modulesForGroups`). It is
-  // on from the moment the business exists, so it is on here too.
+  // rather than a module anything can activate. It is on from the moment the
+  // business exists, so it is on here too.
   const isOn = (group: PigglesGroup) => group === 'home' || picked.includes(group);
   const onCount = apps.filter((app) => isOn(app.group)).length;
 

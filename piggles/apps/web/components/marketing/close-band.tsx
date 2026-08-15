@@ -40,22 +40,33 @@ export function CloseBand({
   heading,
   primary,
   secondary,
+  note,
 }: {
   heading: string;
   primary: { label: string; href: string };
   secondary: { label: string; href: string };
+  /** The terms, restated at the point of decision. Optional because only the
+   *  home page ends 3000px below the price — the other pages ARE the price and
+   *  the trust pages, and repeating it there is noise rather than a reminder. */
+  note?: string;
 }) {
   return (
-    <section data-theme="dark" className="bg-base-200 px-6 py-16 sm:py-24">
-      <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-2 lg:items-end lg:gap-16">
+    <section className="px-4 sm:px-6">
+      <div
+        data-theme="dark"
+        className="rounded-section bg-base-200 mx-auto grid max-w-7xl gap-10 px-6 py-16 sm:px-10 sm:py-20 lg:grid-cols-2 lg:items-end lg:gap-16 lg:px-14"
+      >
         <h2 className="text-3xl font-extrabold sm:text-4xl lg:text-5xl">{heading}</h2>
-        <div className="flex flex-wrap gap-3 lg:justify-end">
-          <a className={buttonClasses({ color: 'primary', size: 'lg' })} href={primary.href}>
-            {primary.label}
-          </a>
-          <a className={buttonClasses({ variant: 'outline', size: 'lg' })} href={secondary.href}>
-            {secondary.label}
-          </a>
+        <div>
+          <div className="flex flex-wrap gap-3 lg:justify-end">
+            <a className={buttonClasses({ color: 'primary', size: 'lg' })} href={primary.href}>
+              {primary.label}
+            </a>
+            <a className={buttonClasses({ variant: 'outline', size: 'lg' })} href={secondary.href}>
+              {secondary.label}
+            </a>
+          </div>
+          {note && <p className="text-accent mt-5 text-base font-semibold lg:text-right">{note}</p>}
         </div>
       </div>
     </section>

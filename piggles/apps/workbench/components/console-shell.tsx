@@ -28,26 +28,36 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { SidebarProvider } from '@wizeworks/silicaui-react';
-import { mintWindowId, openBus, type BusMessage } from '@workbench/lib/bus';
-import { useActiveSiteId, useSites } from '@workbench/lib/api/shell-data';
-import { WorkbenchProvider } from '@workbench/lib/workbench/context';
-import { BackNavigation } from '@workbench/lib/workbench/nav-history';
-import { readDeepLink, tidyLegacyParams } from '@workbench/lib/workbench/deep-link';
-import { loadNavState, saveNavState } from '@workbench/lib/workbench/persistence';
-import { Dock } from '@workbench/lib/dock/dock';
-import { useIsCompact } from '@workbench/lib/use-compact';
-import { ChromeBoundary } from '@workbench/components/chrome-boundary';
-import { DeepLinkArrival } from '@workbench/components/deep-link-arrival';
-import { FeedbackProvider } from '@workbench/components/feedback/provider';
-import { Launcher } from '@workbench/components/launcher';
-import { PaneWaiting } from '@workbench/components/pane-waiting';
-import { RecentsRecorder } from '@workbench/components/recents-recorder';
-import { StatusBar } from '@workbench/components/status-bar';
-import { UpdateNotifier } from '@workbench/components/update-notifier';
+import { mintWindowId, openBus, type BusMessage } from '@/lib/bus';
+import { useActiveSiteId, useSites } from '@/lib/api/shell-data';
+import { WorkbenchProvider } from '@/lib/workbench/context';
+import { BackNavigation } from '@/lib/workbench/nav-history';
+import { readDeepLink, tidyLegacyParams } from '@/lib/workbench/deep-link';
+import { loadNavState, saveNavState } from '@/lib/workbench/persistence';
+import { ConsoleDock } from '@/lib/dock/console-dock';
+import { useIsCompact } from '@/lib/use-compact';
+import { ChromeBoundary } from '@/components/chrome-boundary';
+import { DeepLinkArrival } from '@/components/deep-link-arrival';
+import { FeedbackProvider } from '@/components/feedback/provider';
+import { Launcher } from '@/components/launcher';
+import { PaneWaiting } from '@/components/pane-waiting';
+import { RecentsRecorder } from '@/components/recents-recorder';
+import { StatusBar } from '@/components/status-bar';
+import { UpdateNotifier } from '@/components/update-notifier';
 // Registers every surface. MUST be imported before the dock mounts, since a
 // restored arrangement resolves surface keys synchronously while deserializing.
-import '@workbench/lib/surfaces/catalog';
+// Points the SHARED surfaces at Piggles — the product name, the module
+// lexicon, and the loading mark. MUST come before the catalog: surfaces read
+// the adapter at module scope, and an unconfigured one silently answers with
+// sparx's name, sparx's module names and sparx's mascot.
+import '@/lib/console/product';
+import '@/lib/surfaces/catalog';
+// Piggles' OWN surfaces, registered after the platform's so nothing shared can
+// shadow them. Additions only — never a re-registration of a platform key.
+import '@/lib/surfaces/piggles-catalog';
 import { applyThemeToDocument, readTheme, THEME_STORAGE_KEY, type Theme } from '@/lib/theme';
+import { readRailExpanded, writeRailExpanded } from '@/lib/rail-preference';
+import { readWindowMode, writeWindowMode, type WindowMode } from '@/lib/window-mode';
 import { useConsoleNav, useUnclaimedModules } from '@/lib/console/nav';
 import { AppPanel } from './app-panel';
 import { AppRail } from './app-rail';
@@ -100,6 +110,17 @@ export function ConsoleShell({
   // so this only decides the first visit.
   const [railExpanded, setRailExpanded] = useState(true);
   const [navOpen, setNavOpen] = useState(false);
+  // Windows or tabs — NULL until the stored preference is read after mount.
+  //
+  // Tabs is where somebody with no preference lands, even though windows is the
+  // more Piggles-shaped answer: a first-time person should meet a workspace
+  // where nothing overlaps and nothing can be lost behind anything, and
+  // discover floating when they want it. But "nobody has chosen" has to stay
+  // distinguishable from "chose tabs", because the dock treats the first
+  // presentation it is given as the one already on screen — hand it a
+  // placeholder and it will tile a returning windows user's layout and save the
+  // result over their real one. See lib/window-mode.ts and lib/mode-layouts.ts.
+  const [windowMode, setWindowMode] = useState<WindowMode | null>(null);
   const postRef = useRef<((message: BusMessage) => void) | null>(null);
   const isCompact = useIsCompact();
 
@@ -170,7 +191,12 @@ export function ConsoleShell({
   useEffect(() => {
     const state = loadNavState();
     setPinned(state.pinned);
-    setRailExpanded(state.railExpanded);
+    // The rail's width comes from Piggles' OWN key, not the shared nav state —
+    // the shared one defaults to collapsed and cannot express "never chosen".
+    // See lib/rail-preference.ts. Only overrides the comfortable default when
+    // somebody has actually made a choice.
+    const storedRail = readRailExpanded();
+    if (storedRail !== null) setRailExpanded(storedRail);
     // Only reopen the panel automatically if it was pinned. An unpinned panel is
     // transient by definition; restoring one would greet somebody with an
     // overlay they have to dismiss before they can work.
@@ -179,6 +205,7 @@ export function ConsoleShell({
 
   useEffect(() => {
     saveNavState({ module: browsing, pinned, railExpanded });
+    writeRailExpanded(railExpanded);
   }, [browsing, pinned, railExpanded]);
 
   useEffect(() => {
@@ -190,6 +217,23 @@ export function ConsoleShell({
   // state and never causes a flash.
   useEffect(() => {
     setTheme(readTheme());
+  }, []);
+
+  // Resolve the presentation after mount — localStorage does not exist on the
+  // server, and reading it during render would break hydration. Somebody who
+  // has never chosen gets 'tabs' here rather than staying null, so the dock is
+  // told a presentation on the first pass either way.
+  useEffect(() => {
+    setWindowMode(readWindowMode() ?? 'tabs');
+  }, []);
+
+  // The shell owns the CHOICE and nothing else. Acting on it — photographing
+  // the arrangement being left, restoring the one being returned to — needs the
+  // dockview api, the controller and the site key, so it lives with them in
+  // lib/dock/console-dock.tsx and reacts to this prop.
+  const onChangeWindowMode = useCallback((next: WindowMode) => {
+    setWindowMode(next);
+    writeWindowMode(next);
   }, []);
 
   useEffect(() => {
@@ -310,6 +354,8 @@ export function ConsoleShell({
               theme={theme}
               siteKey={siteKey ?? 'default'}
               accountOrigin={accountOrigin}
+              windowMode={windowMode ?? 'tabs'}
+              onChangeWindowMode={onChangeWindowMode}
               onToggleTheme={toggleTheme}
               onOpenLauncher={openLauncher}
             />
@@ -341,6 +387,7 @@ export function ConsoleShell({
                     browsing={browsing}
                     siteKey={siteKey ?? 'default'}
                     expanded={railExpanded}
+                    accountOrigin={accountOrigin}
                     onBrowse={(appId) => {
                       // Clicking the app you are already browsing closes the
                       // panel — the same toggle every icon rail teaches.
@@ -366,8 +413,22 @@ export function ConsoleShell({
             <div
               inert={browsing === null}
               aria-hidden={browsing === null}
+              // 20rem, not silica's 16. Two reasons compounding, both of them
+              // Piggles' own choices:
+              //
+              //   • Piggles names screens by what you are DOING rather than by
+              //     category, so the labels are longer than sparx's — "Reviews
+              //     and questions" against "Reviews".
+              //   • Nav rows are 16px here rather than 14, because a rail is not
+              //     a caption (@piggles/brand's theme.css).
+              //
+              // At 18rem the longer names still ended in an ellipsis, and a nav
+              // row nobody can read is worse than a wide panel. Widening is the
+              // fix rather than shortening the names back into category nouns —
+              // and it agrees with the brief: this app is meant to feel
+              // spacious.
               className={`bg-base-200 shrink-0 overflow-hidden rounded-r-xl transition-[width] duration-200 ease-in-out motion-reduce:transition-none ${
-                browsing ? 'w-64' : 'w-0'
+                browsing ? 'w-80' : 'w-0'
               }`}
             >
               <ChromeBoundary region="app-panel" whatStopped="This app's menu has stopped working.">
@@ -388,7 +449,7 @@ export function ConsoleShell({
               </ChromeBoundary>
             </div>
 
-            <main className="min-w-0 flex-1 p-1">
+            <main className="piggles-dock-host min-w-0 flex-1 p-1">
               {/* The dock waits for the site key — restoring Site A's
                   arrangement and then discovering we are on Site B would strand
                   panels. With the cookie handed down at SSR this is resolved on
@@ -396,7 +457,11 @@ export function ConsoleShell({
                   visit lands here, and it gets the brand's loading mark rather
                   than an empty void, so the shell reads as loading its work
                   rather than as broken chrome. */}
-              {siteKey ? <Dock siteKey={siteKey} /> : <PaneWaiting label="Getting your things" />}
+              {siteKey ? (
+                <ConsoleDock siteKey={siteKey} mode={windowMode} />
+              ) : (
+                <PaneWaiting label="Getting your things" />
+              )}
             </main>
 
             {/* The launcher is an overlay, so a crash in it renders NOTHING

@@ -1,0 +1,163 @@
+# @piggles/console — mypiggles.com, the operating console.
+#
+# NAME: `piggles-console`, not `piggles-workbench`. The directory is
+# `piggles/apps/workbench` because it is a workbench-shaped app, but "workbench"
+# is a sparx word (piggles/CLAUDE.md RULE #3 — the lexicon calls this Home, and
+# the app is the console) and nothing an operator reads should carry it.
+#
+# It mounts NO Better Auth handler and has NO sign-in UI: an unauthenticated hit
+# bounces to getpiggles.com, which mints a single-use, origin-bound, 60-second
+# token and redirects back to /auth/callback here, where it is exchanged
+# server-side for this domain's own cookie. Both cookies address ONE Better Auth
+# session row, so logout, expiry and revocation stay consistent for free — and no
+# third-party cookie is involved, so there is nothing for Safari to break.
+#
+# Namespace rationale: see the header of piggles-web.yaml.
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: piggles-console
+  namespace: sparx-prod
+  labels:
+    app: piggles-console
+    tier: web
+    brand: piggles
+spec:
+  # 1 replica. The console is browser-rendered: the pod serves the shell, the
+  # session read and the /api/token BFF, and every pane's data comes from
+  # api-rest directly. Per-user load therefore lands on api-rest, not here.
+  replicas: 1
+  revisionHistoryLimit: 5
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: piggles-console
+  template:
+    metadata:
+      labels:
+        app: piggles-console
+        tier: web
+        brand: piggles
+    spec:
+      serviceAccountName: sparx-app
+      containers:
+        - name: piggles-console
+          image: us-central1-docker.pkg.dev/sparxworks/sparx/piggles-console:latest
+          imagePullPolicy: Always
+          ports:
+            - name: http
+              containerPort: 3000
+          # Order is the design — see piggles-account.yaml.
+          envFrom:
+            - configMapRef:
+                name: sparx-app-env
+            - secretRef:
+                name: sparx-app-secrets
+            - configMapRef:
+                name: piggles-app-env
+          env:
+            - name: NODE_ENV
+              value: production
+            - name: SERVICE_NAME
+              value: piggles-console
+            - name: PORT
+              value: '3000'
+            - name: HOSTNAME
+              value: 0.0.0.0
+            - name: NEXT_TELEMETRY_DISABLED
+              value: '1'
+            # This app's own origin. Per-pod for the same reason the account
+            # app's is: two Piggles surfaces, two origins, and Better Auth
+            # derives its trusted origin from this exact string. The console
+            # serves no sign-in, but it READS the session server-side and calls
+            # the organization endpoints for the business switcher, so the
+            # instance still has to know where it is running.
+            - name: BETTER_AUTH_URL
+              value: https://mypiggles.com
+            # The SAME value the account app carries, and that is not a
+            # convenience — the two read and write the same Better Auth session
+            # rows, so a differing secret makes every handed-off session
+            # unverifiable at this end. One key, two pods.
+            - name: BETTER_AUTH_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: sparx-app-secrets
+                  key: PIGGLES_BETTER_AUTH_SECRET
+            # NO GOOGLE_CLIENT_* here, deliberately. This domain gets no OAuth
+            # client at all: a callback here would be a second thing able to mint
+            # sessions, which is precisely what the three-domain split exists to
+            # prevent.
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 1001
+            runAsGroup: 1001
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ['ALL']
+            seccompProfile:
+              type: RuntimeDefault
+          # No CPU limit, memory ceilinged — see the note in piggles-web.yaml.
+          # 256Mi is sparx's workbench measured at 232Mi, rounded up one step:
+          # this app is a fork of it, so its runtime footprint is the closest
+          # estimate available anywhere. Measure and move it.
+          resources:
+            requests:
+              cpu: '25m'
+              memory: '256Mi'
+            limits:
+              memory: '640Mi'
+          # Static handler, never a rendered page. `/` on this app is the shell
+          # plus a session read plus a layout restore; probing it would restart a
+          # healthy pod whenever the database was slow. `/api/health` answers
+          # with the process, which is the only thing a liveness probe should
+          # ever be asking about.
+          livenessProbe:
+            httpGet:
+              path: /api/health
+              port: 3000
+            initialDelaySeconds: 30
+            periodSeconds: 30
+            timeoutSeconds: 5
+            failureThreshold: 5
+          readinessProbe:
+            httpGet:
+              path: /api/health
+              port: 3000
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          lifecycle:
+            preStop:
+              exec:
+                command: ['/bin/sh', '-c', 'sleep 10']
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: piggles-console
+  namespace: sparx-prod
+spec:
+  type: ClusterIP
+  ports:
+    - name: http
+      port: 3000
+      targetPort: 3000
+  selector:
+    app: piggles-console
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: piggles-console
+  namespace: sparx-prod
+spec:
+  maxUnavailable: 1
+  selector:
+    matchLabels:
+      app: piggles-console

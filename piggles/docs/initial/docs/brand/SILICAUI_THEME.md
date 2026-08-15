@@ -48,14 +48,6 @@ Piggles defines:
 `neutral` and `danger` are **required, not optional**, and both were missing from an
 earlier revision of this list.
 
-- SilicaUI's `colors:` plugin list **replaces** the default set rather than extending
-  it, so any built-in role not re-listed is simply gone. Omitting `neutral` does not
-  fail loudly — it silently falls through to SilicaUI's default cool slate, which is
-  an off-brand grey nobody chose, on every `btn-neutral`, `bg-neutral` and tooltip.
-- `danger` is the ninth role. The shared platform's `statusTone()` returns `danger`
-  (not `error`), so without the pair every `<Badge color="danger">` rendered by a
-  shared workbench surface inside Piggles paints colorless.
-
 Additional named colors are allowed only for durable semantic concepts, and every additional color must define a matching `-content` color in **both** themes.
 
 # Canonical Light Theme

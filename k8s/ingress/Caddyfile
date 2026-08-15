@@ -205,6 +205,64 @@ import mode.caddy
 	reverse_proxy web.sparx-prod.svc.cluster.local:3000
 }
 
+# ----- Piggles (the sister brand, same cluster, same namespace) -----
+#
+# Three registrable domains, and the split between them is load-bearing rather
+# than cosmetic (piggles/CLAUDE.md, "The three surfaces"):
+#
+#   meetpiggles.com  discover and understand      — no auth, no database
+#   getpiggles.com   the AUTH AUTHORITY           — sign-up, sign-in, and the
+#                                                   money a customer pays us
+#   mypiggles.com    operate the business         — no sign-in UI at all
+#
+# Three registrable domains cannot share a cookie, which is why mypiggles mounts
+# no Better Auth handler: getpiggles mints a single-use, origin-bound, 60-second
+# exchange token and redirects to mypiggles.com/auth/callback, which swaps it
+# server-side for its own cookie on its own domain. Both address ONE session row,
+# so logout and revocation stay consistent, and no third-party cookie is involved.
+#
+# They take ORDINARY Caddy-managed certificates (`tls_policy`), not the on-demand
+# policy the tenant hostnames use. On-demand calls api-rest's /internal/domain-check,
+# which knows tenant subdomains and custom domains — it has never heard of
+# meetpiggles.com and would refuse to authorise it, leaving the host with no
+# certificate at all. Same reasoning as the kanNINJA blocks below.
+{$SX_SCHEME:https}://meetpiggles.com, {$SX_SCHEME:https}://www.meetpiggles.com {
+	import tls_policy
+	import security_headers
+	reverse_proxy piggles-web.sparx-prod.svc.cluster.local:3000
+}
+
+{$SX_SCHEME:https}://getpiggles.com, {$SX_SCHEME:https}://www.getpiggles.com {
+	import tls_policy
+	import security_headers
+	reverse_proxy piggles-account.sparx-prod.svc.cluster.local:3000
+}
+
+{$SX_SCHEME:https}://mypiggles.com, {$SX_SCHEME:https}://www.mypiggles.com {
+	import tls_policy
+	import security_headers
+	reverse_proxy piggles-console.sparx-prod.svc.cluster.local:3000
+}
+
+# The SAME api-rest the sparx apps use, on a hostname that is not another
+# company's. The console hands this origin to the customer's BROWSER (via
+# /api/token) and the browser calls it directly with a short-lived bearer token,
+# so it is the one platform address a Piggles customer actually sees — in their
+# network tab, in their devtools, and in any CORS error they ever hit.
+#
+# One host block, no extra pod, and no allowlist change: api-rest runs
+# `cors: { origin: true, credentials: false }`.
+#
+# Deliberately NOT the media host. api-rest mints variant URLs server-side from
+# the shared MEDIA_PUBLIC_URL, so those still say sparx; giving Piggles its own
+# would need a per-brand value threaded through the media path, which is a real
+# change rather than a routing line. Flagged in piggles/STATUS.md.
+{$SX_SCHEME:https}://api.mypiggles.com {
+	import tls_policy
+	import security_headers
+	reverse_proxy api-rest.sparx-prod.svc.cluster.local:3000
+}
+
 # ----- kanNINJA (co-tenant in the `kanninja` namespace) -----
 # kanNINJA's workloads live in their own namespace; Caddy reaches them
 # cross-namespace via ClusterIP Services (port 80 → the app's http port).
@@ -364,6 +422,21 @@ import mode.caddy
 {$SX_SCHEME:https}://sparx.zone, {$SX_SCHEME:https}://www.sparx.zone {
 	import tls_policy
 	redir https://sparx.works{uri} permanent
+}
+
+# piggles.site apex — the same shape, one brand over. The zone exists to carry
+# `<slug>.piggles.site` tenant sites; the apex itself is not a destination, so it
+# goes to the brand's home.
+#
+# Tenant sites need NO block of their own: the catch-all below already serves any
+# host that reaches it, which is how `<tenant>.sparx.zone` works today. What they
+# DO need is a certificate, and that is decided by the on-demand ask endpoint,
+# which currently recognises exactly one zone. See the note on
+# `piggles_site_wildcard` in terraform/modules/dns/main.tf — DNS resolving while
+# the handshake fails is the symptom to expect until api-rest learns the second.
+{$SX_SCHEME:https}://piggles.site, {$SX_SCHEME:https}://www.piggles.site {
+	import tls_policy
+	redir https://meetpiggles.com{uri} permanent
 }
 
 # ----- Catch-all: tenant sites -----

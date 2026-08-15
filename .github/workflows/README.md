@@ -17,7 +17,7 @@ There are four, and each is a different KIND of thing:
 
 ```
 push to main
-  build            22 images → ghcr.io/<repo>/<image>:<sha>
+  build            16 images → ghcr.io/<repo>/<image>:<sha>
   1 infrastructure terraform apply, then namespace + secrets + k8s/azure/infra
   2 data           roles → migrate → seed platform rows
   3 containers     pin every image to <sha>, apply k8s/azure/apps, wait
@@ -95,7 +95,7 @@ always the same", and a loop walking back fifty commits asking GHCR whether each
 one had images. All of it existed to answer _which images do these manifests go
 with_ — a question this pipeline does not have, because it builds them.
 
-The path filter was there to avoid rebuilding 22 images to publish identical
+The path filter was there to avoid rebuilding every image to publish identical
 bytes. It was not worth its complexity: this repository is **public**, so
 Actions minutes are free, and each image restores from its own `type=gha` cache
 scope when nothing under it changed. The cost was never money; it was two SHAs

@@ -74,6 +74,16 @@ Ports: **3020** meet, **3021** get (reserved), **3022** my (reserved).
 - **`neutral` is unusable as ink on a dark ground** in this palette (2.52:1 even
   inside a dark island). Dark bands are real `data-theme="dark"` islands and their
   secondary button asks for `outline` with **no colour**. Table in DESIGN.md §3.
+  **Superseded for the CONSOLE, and worth knowing which half:** that measurement
+  was of a dark ISLAND on the marketing site, where the surrounding page is light
+  and `neutral` has to keep working on both. In the console the whole document is
+  `data-theme="dark"`, so `neutral` could simply be inverted the way `secondary`
+  already was — it is now `#c2b1bc` with near-black content. The marketing-site
+  rule stands unchanged; see the 2026-08-14 (last) section.
+- **Colour tokens are NOT theme-independent, and the reasoning that said they
+  were is the trap.** "A saturated hue reads on either canvas" is true of a FILL
+  and false of INK, and most of a console is ink. Any new hue needs measuring on
+  base-100 in BOTH themes before it is written down.
 
 ## Where the open questions live
 
@@ -432,6 +442,224 @@ the depth is a local fact.
   console with an empty site and no guidance.
 - **No lifecycle notice.** FOLLOW_UPS #2.
 
+## 2026-08-14 — all three Piggles apps are now in the pipeline
+
+Superseded: the "Neither Piggles app is deployable" section below is kept for the
+reasoning, but every one of its four missing pieces now exists, for THREE apps
+rather than two (the console did not exist when that list was written).
+
+| Piece           | Where                                                               |
+| --------------- | ------------------------------------------------------------------- |
+| Dockerfiles     | `piggles/apps/{web,account,workbench}/Dockerfile`                   |
+| Release matrix  | `release.yml` — `piggles-web`, `piggles-account`, `piggles-console` |
+| Manifests       | `k8s/apps/piggles-{web,account,console}.yaml` + both kustomizations |
+| Routing         | `k8s/ingress/Caddyfile` — four host blocks                          |
+| Brand env       | `piggles-app-env`, generated per overlay                            |
+| The dep checker | `scripts/check-dockerfile-deps.mjs` now reads `piggles/*`           |
+
+### The trap was real, and it would have passed in green
+
+`check-dockerfile-deps.mjs` walked `['apps','services','packages']` only. That is
+not merely "it did not check Piggles": Piggles' packages were absent from the
+workspace map, so every closure came back EMPTY, and its Dockerfiles were absent
+from the scan, so they were not even reported as orphans. The script would have
+printed "every workspace dependency copied" over an image built without code it
+imports — which is the exact failure it exists to prevent, one directory over.
+
+Fixed by extracting `WORKSPACE_GROUPS` (one list, used by all three loops) and
+teaching the COPY matcher both prefixes. **The two prefixes are kept apart on
+purpose:** `packages/brand` and `piggles/packages/brand` are different packages,
+and a Piggles image needs BOTH — matching on the slug alone would let either
+satisfy the other and pass an image that cannot build.
+
+Verified by deleting one COPY line from each Piggles Dockerfile and confirming
+the check fails with the right message for both spellings, then restoring them.
+
+### What each image actually is
+
+Closures computed from the manifests rather than guessed:
+
+- **piggles-web** — 3 packages, all `@piggles/*`, and NOT ONE `@sparx/*`. No
+  database, no auth, no api-rest. It is the only Piggles surface that can ship
+  alone; the account app before the console is a live funnel with a dead end.
+- **piggles-account** — 27: the platform account spine (`@sparx/auth` → the whole
+  `signUpMerchant` closure) plus the four Piggles packages.
+- **piggles-console** — 38, and it hits the same V8 heap wall sparx's workbench
+  does (`--max-old-space-size=8192`), because it carries the same surface layer.
+
+### The environment, and the ordering that keeps it honest
+
+The three Deployments mount `sparx-app-env` → `sparx-app-secrets` →
+**`piggles-app-env`**, in that order, and later entries win. So the platform's
+values arrive first and the brand replaces the handful that must differ — one
+origin, in one place, for both apps.
+
+`BETTER_AUTH_URL` is the exception and is set PER POD, because the two Piggles
+apps run on two different origins. Getting it wrong is THE LOCKOUT (below): sign-
+up keeps working (a server action, no `Origin` header), curl keeps working (no
+`Origin` header), and the browser gets `Invalid origin` on sign-in which the UI
+reports as a wrong password.
+
+`PIGGLES_BETTER_AUTH_SECRET`, `PIGGLES_GOOGLE_CLIENT_ID` and
+`PIGGLES_GOOGLE_CLIENT_SECRET` are new keys in the EXISTING `sparx-app-secrets`,
+mapped onto the ordinary names per-pod. One credential store, synced by one path;
+a second store is a second thing to keep populated. Documented in
+`k8s/local/secrets.example.env`. **The account and console pods must carry the
+SAME auth secret** — they read and write the same session rows, so a mismatch
+makes every handed-off session unverifiable.
+
+### api.mypiggles.com
+
+The console hands an api-rest origin to the customer's BROWSER, which then calls
+it directly with a short-lived bearer token — so it is the one platform address a
+Piggles customer actually sees, in their network tab and in any CORS error. It is
+now `api.mypiggles.com`: the same Service behind the same Caddy, one extra host
+block, no extra pod, and no allowlist change (api-rest runs `cors: { origin: true }`).
+
+**Media is deliberately NOT done.** api-rest mints variant URLs server-side from
+the shared `MEDIA_PUBLIC_URL`, so product images still resolve through
+`media.sparx.works`. Giving Piggles its own needs a per-brand value threaded
+through the media path — a real change, not a routing line — so it is flagged
+rather than half-done.
+
+### What this costs the node, stated rather than assumed
+
+Three more pods on a single 2-vCPU / 8 GiB box is a capacity decision:
+
+- **CPU** +75m against a ~1290m budget (after kube-system's ~610m)
+- **Memory** +800Mi of requests (288 + 256 + 256) against ~2.4Gi already
+  requested on ~5.3Gi allocatable — landing near 3.2Gi
+
+Comfortable, but the memory requests are ESTIMATES sized to the nearest measured
+sibling, not measurements. The kubelet evicts by usage ABOVE request, so a
+request that sits under actual is a vote for that pod to be killed first —
+which is precisely how api-rest (128Mi requested, 614Mi used) became the first
+casualty of the 2026-08-08 eviction. **Measure all three with `kubectl top` once
+they serve traffic and move the numbers.** If the node cannot take them the
+answer is a bigger node, not smaller requests.
+
+### Decisions worth not re-litigating
+
+- **They live in `sparx-prod`, not their own namespace.** What makes deletion
+  real is `--prune` on the release's ownership label: removing the three lines
+  from `k8s/apps/kustomization.yaml` actually deletes the pods. A separate
+  namespace buys the same guarantee and costs a duplicated `sparx-app-secrets` —
+  one more copy of every credential on the platform, drifting.
+- **Ordinary certificates, not on-demand TLS.** The on-demand policy asks
+  api-rest's `/internal/domain-check`, which knows tenant subdomains and custom
+  domains and has never heard of meetpiggles.com. It would refuse, and the host
+  would have no certificate at all. Same reasoning as the kanNINJA blocks.
+- **The image is `piggles-console`, the directory is `apps/workbench`.** The app
+  is workbench-shaped; "workbench" is a sparx word and nothing an operator reads
+  should carry it (RULE #3).
+- **Probes hit `/api/health` on all three**, including the marketing site.
+  sparx's marketing pod probes its home page and gets away with it; that page
+  renders a full-bleed video hero, and a probe that renders fails when the app is
+  merely BUSY. A 1s default timeout is what SIGKILLed the workbench mid-roll.
+
+### DNS is Terraform, not the Cloudflare dashboard
+
+`terraform/modules/dns` holds every record and is shared VERBATIM between the GCP
+and Azure envs — the only thing that varies is `var.ingress_ip`. The Piggles
+records are in it now: three zones (apex + www, proxied), `api.mypiggles.com`,
+and the `piggles.site` tenant zone. `terraform validate` passes and
+`fmt -check` is clean.
+
+Nothing here is done by hand. Editing a record in the dashboard is drift the next
+apply silently reverts, and the module's own header records that the Azure
+deployment once had exactly that: hand-made records that diverged from Terraform
+the moment they were made.
+
+Two gates, neither of them code:
+
+- **The zones must exist in the Cloudflare account.** The module looks each one
+  up with `data "cloudflare_zone"`, so a zone that is not there fails the PLAN —
+  loudly, before anything changes, which is the good failure.
+- **`CLOUDFLARE_ENABLED` must be `true`** (a repo variable; `cloudflare_enabled`
+  defaults to FALSE and counts every DNS resource to zero). Flipping it repoints
+  the platform's live public DNS, which is why it is a deliberate act.
+
+### The certificate path — one blocker, and a correction
+
+**Correction first, because the first version of this section was wrong.** It
+claimed a Piggles TENANT site could not get a certificate, on the reasoning that
+`/internal/domain-check` resolves against the single `SPARX_ZONE`. It does not
+call `isZoneHost` at all: it checks a hardcoded platform allow-list, then falls
+through to `resolveSiteByHost`, which matches the `domains` table **by exact
+host**. Signup already writes a `<slug>.piggles.site` row (that is what
+`provisionTenant`'s `zoneDomain` parameter is for), so path 1 authorises it and
+the certificate issues. Tenant sites were never blocked.
+
+**The real blocker was the opposite of the guess: the three BRAND domains.**
+Their Caddy blocks `import tls_policy`, and `tls_policy` is `tls { on_demand }`
+(k8s/ingress/mode.caddy) — so every first HTTPS request asks that endpoint.
+meetpiggles.com, getpiggles.com, mypiggles.com and api.mypiggles.com are
+PLATFORM hosts with no `domains` row and never will have one, so all four would
+have returned 403 `unknown_host` → no certificate → **Cloudflare 525 for the
+entire brand**. That is precisely what happened to `workbench.sparx.works` and
+`media.sparx.works`, both of which sit in that list for the same reason.
+
+Fixed: the seven Piggles hostnames are in `PLATFORM_HOSTNAMES`. Tenant sites
+under `piggles.site` are deliberately NOT — those are real tenant hosts and are
+authorised by the resolver, per brand, exactly like `*.sparx.zone`.
+
+### api-rest now owns more than one zone
+
+The single-zone reading was still a real defect, just a smaller and different one
+than claimed. `SPARX_ZONE` is now `OWNED_ZONES`, a list from
+`SPARX_ZONE_DOMAINS` (`sparx.zone,piggles.site`, declared in both env configmaps).
+The singular `SPARX_ZONE_DOMAIN` still works and means a one-entry list, so no
+existing deployment changes behaviour.
+
+**Why a list is right here when signup deliberately used a parameter.** Two
+different questions. "Which zone does this NEW tenant get?" varies per request
+and can never come from the environment — hence `provisionTenant`'s argument.
+"Which zones does this deployment own?" is identical for every request, and a
+list is exactly what it is.
+
+What it fixed, each a real bug:
+
+- **`isZoneHost`** now matches any owned zone. It is what stops a host being
+  "connected" as a custom domain, so without this a Piggles tenant could have
+  claimed `someone-else.piggles.site` as their own.
+- **The routing fallbacks** (bare `<tenant>.<zone>` and hierarchical
+  `<property>.<tenant>.<zone>`) work for every owned zone. They are the safety
+  net for a missing `domains` row, and a Piggles tenant needs it for the same
+  reasons a sparx one does.
+- **`mintZoneHost`** takes the zone. A Piggles business adding a SECOND site was
+  getting `<site>.<tenant>.sparx.zone` — one business with two sites in two
+  brands' zones, the second named after a product it has never heard of.
+- **`cnameTargetFor`** replaces the constant, so a Piggles customer connecting
+  their own domain is told to point it at `customers.piggles.site` (which is what
+  `piggles/packages/config` already advertises) rather than at another company's
+  hostname.
+
+**No brand conditional anywhere.** `tenantZone(tenantId)` reads the zone off the
+subdomain the tenant already has — provisioning recorded the answer at signup, so
+the honest way to find it later is to look, not to re-decide it from the brand. A
+third brand needs no change to any of this.
+
+One trap worth keeping: `rows.map(toView)` had to become
+`rows.map((row) => toView(row, cname))`. Adding a second parameter to a function
+used point-free hands it `.map`'s INDEX, and it was caught only because the
+parameter is typed.
+
+### Still not done
+
+- **Nothing has been built.** These are structurally verified — every check
+  passes, all three kustomize overlays render, the images resolve to GHCR and the
+  env wiring is correct in the rendered output — but no `docker build` has run,
+  so a missing transitive dependency inside a package's SOURCE (as opposed to its
+  manifest) would still surface on the first release.
+- **The three `PIGGLES_*` secrets do not exist yet.** The pods will not start
+  without them, deliberately: a missing auth secret must stop a pod rather than
+  produce an app that half-works. They go in `SPARX_APP_SECRETS_ENV` / Key Vault.
+- **The Google Cloud project for Piggles** still has to be created — see the
+  section below on why it cannot be another client in sparx's.
+- **DNS is written; two switches are not flipped.** The records are in
+  `terraform/modules/dns` — see the section above. What remains is confirming the
+  four zones are in the Cloudflare account and setting `CLOUDFLARE_ENABLED=true`.
+
 ## Neither Piggles app is deployable — four missing pieces
 
 Both build locally and neither can ship. Nothing about them is wired into the
@@ -547,45 +775,659 @@ even for the same person; and a custom logo on the consent screen triggers
 Google verification (days, wants a privacy policy on a verified domain), so
 launch without the logo and add it once meetpiggles.com is live.
 
+## 2026-08-14 — the account app's face, and the console stops looking like sparx
+
+### The account app (getpiggles) — sign-in, signup, onboarding
+
+Rebuilt to the approved reference: a split shell (`components/auth-shell.tsx`),
+the mascot at her desk with two app cards floating in the artwork's clear
+top-left quadrant, and a full-bleed assurance band. Onboarding shares the shell
+but replaces the pitch with a LIVE RAIL PREVIEW — all fifteen apps, filling in as
+the boxes are ticked, so "everything is included either way" is shown rather than
+only stated.
+
+Rules that came out of it, now in [DESIGN.md](DESIGN.md) §10 and §11:
+
+- **Nothing on a Piggles screen may be invented.** The reference had "trusted by
+  thousands of small businesses", five customer logos and 99.9% uptime. Piggles
+  has not launched. Every claim on a product surface must already be made on
+  meetpiggles.com, whose /trust page refuses badges and uptime figures in
+  writing.
+- **Signed-out screens are a glance, not a read.** Title of three or four words,
+  then ONE short line. The first pass wrote paragraphs and had to be cut.
+
+Assets: this artwork is the `desk` pose in [@piggles/mascot](packages/mascot/README.md)
+and is served from `apps/account/public/mascot/desk.webp`, generated by the
+ingest. It is a genuinely clean cutout — 52% clear / 48% opaque, 0.4% partial,
+which is edge antialiasing rather than a glow — which is what lets it sit
+directly on the pink wash.
+
+`piggles/images/piggles-at-desk.png` is a duplicate of the batch-01 master
+`images/mascot/01/assets/png/piggles-desk-scene.png` (same 1536×1024 canvas, same
+1502×851 subject box). The hand-trimmed web copy that used to sit at
+`apps/account/public/piggles-at-desk.png` is deleted — two copies of one asset
+meant a re-cut would land in the catalog and silently miss this screen.
+
+### THE LOCKOUT — read this before debugging any Piggles auth problem
+
+`piggles/apps/account/.env` did not exist, so `BETTER_AUTH_URL` fell back to
+`http://localhost:3001` while the app runs on **3021**. Better Auth derives its
+trusted origin from that value and answered `Invalid origin` to every
+BROWSER sign-in.
+
+It hid for hours because every cheap check passes:
+
+- **Sign-up keeps working** — it is a server action, so no `Origin` header.
+- **curl keeps working** — curl sends no `Origin` header either, so the endpoint
+  tests healthy from a terminal and fails in a browser.
+- **The UI blamed the password**, because the error handler collapsed every
+  failure into the credential message.
+
+`apps/workbench/.env` carries a comment predicting this exact symptom
+("looks exactly like a wrong password"). It was read and not connected.
+
+Fixed: `.env` + `.env.example` in the account app, and three error handlers that
+now name the real cause. The ambiguity on SIGN-IN is still deliberate for
+`INVALID_EMAIL_OR_PASSWORD` only — note it keys off the CODE, because `403` is
+what invalid-origin returns and an earlier draft treated 403 as a credential
+failure, which would have re-hidden the bug it was written to expose.
+
+Also added `normalizeEmail()` in `@piggles/config` — signup trimmed the address
+and sign-in did not, so a stray space or capital created an account that could
+never be signed into. Passwords are never normalised.
+
+Dev email is DEAD: `SPARX_DEV_WORKER_ROUTES` is unset, so `email.send` is a
+silent no-op and both recovery paths do nothing while claiming success
+(FOLLOW_UPS #8). Reset tokens are stored PLAINTEXT in `verifications.identifier`
+— usable for recovery in dev, and a security item to raise.
+
+### The console (mypiggles) — Piggles owns its dock chrome
+
+`apps/workbench` has **zero modifications**. The console has its own dock:
+
+```
+piggles/apps/workbench/lib/dock/console-dock.tsx    the dockview component
+                            /pane-tab.tsx           the title bar
+                            /group-actions.tsx      its buttons
+                            /default-layout.ts      the six opening windows
+piggles/apps/workbench/lib/dock-theme.ts            theme + gap
+piggles/apps/workbench/lib/window-mode.ts           windows ⇄ tabs
+```
+
+The split: **presentation is Piggles', plumbing is platform.** It still imports
+`Pane`, `DockPaneHost`, `loadLayout`/`saveLayout` and the controller — forking
+those means two consoles losing arrangements in two different ways. sparx's
+`dock-theme.css` is deliberately NOT imported; Piggles starts from dockview's
+bare reset.
+
+Also landed: business switcher AND site switcher (the tenancy spine was already
+session-aware with a membership check — the only missing piece was
+`organizationClient()` on the shared auth client), the plan card in the rail
+footer, labelled rail by default, and the top bar's wide "What do you want to
+do?" search, quick-add, help and named avatar.
+
+### Four traps that cost hours, in order of how much
+
+1. **The compiled chunk is the only honest witness.** Typecheck and lint never
+   look at CSS. Four rounds of dock styling were reasoned about while the browser
+   was serving a stylesheet from 03:45. Fetch
+   `/_next/static/chunks/*globals_css*.single.css` and grep it before believing
+   any CSS change landed.
+2. **There are two directories called `workbench`.** Clearing
+   `apps/workbench/.next` or `piggles/apps/account/.next` does nothing for the
+   console. The console's cache is `piggles/apps/workbench/.next`, and a plain
+   restart reuses it.
+3. **`<DockviewReact theme={…}>` typechecks and does nothing.** The props
+   interface extends `DockviewOptions`, so TypeScript accepts it; the React
+   wrapper's compiled source contains no reference to `theme`. Use
+   `api.updateOptions({ theme })` in `onReady`.
+4. **Never scope CSS to a class a library is expected to apply.** Every dock rule
+   originally hung off dockview's theme `className`, which was never verified.
+   They now also match `.piggles-dock-host`, a wrapper the console renders
+   itself.
+
+Related: `gap` is read by dockview's LAYOUT ENGINE (`gridview.margin`), which
+derives drop targets and sash hit-areas — so it can never be done in CSS. Three
+attempts proved it.
+
+### The surface ramp is a contract
+
+base-300 = ground (gutters), base-200 = window (title bar + body), base-100 =
+content lifted onto it. An early version made the window base-100 and every card
+in every shared surface lost its lift. **Piggles may change what the tones ARE —
+warm here, cool in sparx — never what they MEAN.**
+
+### Still open on the console
+
+- The Piggles **Home surface** (greeting, KPI tiles, quick actions) — decided to
+  be a NEW Piggles-owned surface, an addition rather than a fork. Not started.
+- **Unread badges** on rail items (the reference shows Messages 3) — needs a real
+  unread count; do not invent one.
+- The reference's **settings gear** — deliberately not built, because no
+  console-wide settings surface exists to open (the ones that exist are
+  per-module).
+- One file outside `piggles/` is modified: `packages/auth/src/client.ts`
+  (`organizationClient()`). Shared auth, no sparx behaviour change — flagged, not
+  yet blessed.
+
+### Verify surface keys before using them
+
+Four of six default-layout keys were guessed and wrong. A key that does not
+resolve opens nothing and reports nothing. Real ones: `workbench.home`,
+`builder.site`, `crm.customers.list`, `scheduling.calendar`, `chat.inbox`,
+`invoicing.invoices.list`. Grep `key: '` in
+`apps/workbench/lib/surfaces/catalog` first.
+
+## 2026-08-14 (later) — the pane states, and Piggles stops speaking as sparx
+
+Two jobs, both in SHARED code (`apps/workbench`), both because a Piggles console
+was mounting surfaces written for a different product and a different reader.
+
+### 1. Every pane's states now have one shape each
+
+Three idioms existed for "there is nothing to show", and a person saw all three
+side by side in one window: an `<Alert>` centred in a bare div, a bare
+`<EmptyState>` centred in a bare div, and an `<EmptyState>` inside the surface's
+own card. Plus `<p className="p-4 text-sm">Loading…</p>` in the top-left.
+
+Now: **waiting → `<PaneWaiting>` · nothing there → `<ListEmptyState>` /
+`<PaneEmpty>` · could not load → `<PaneLoadError>`**, all rendering INSIDE the
+surface's content card with the toolbar above still present and still enabled.
+Contract in [apps/workbench/CLAUDE.md](../apps/workbench/CLAUDE.md).
+
+Swept: **92 error blocks · 43 empty blocks · 299 loading blocks**. Zero of the
+old idioms remain.
+
+**`<Alert>` is a banner and is never a replacement.** It is for when the content
+IS on screen and something needs saying. When content is absent, an alert is
+describing a thing nobody can see — which is exactly why the Site pane read as a
+stray red box floating in a void.
+
+**The frame belongs to the SURFACE, not the state.** Tried it the other way (the
+state component carrying its own card) and it broke the one pane that was already
+correct. The card is the content REGION; what fills it is the state.
+
+**Glyph tones, decided inside the components.** silica's `EmptyState` is
+colourless by design — a 55%-faded glyph on base-200 — so a failure, an empty
+filter and a first run drew the identical grey picture and only a sentence told
+them apart. Now error → `text-error`, gone → `text-warning`, no-results →
+`text-warning`, first-run / nothing-chosen → `text-module`. Decided in the two
+components because there are a hundred call sites: callers pass their glyph, the
+component decides what that STATE looks like.
+
+**`reason: 'missing' | 'unreachable'`** on `PaneLoadError`. 27 surfaces already
+distinguished a deleted record (retry is pointless) from an unreachable server
+(retry is the move) via `color={gone ? 'warning' : 'danger'}`. The component
+would have flattened both, so it grew the distinction instead, and it IGNORES
+`onRetry` when the reason is missing — a button that cannot work is worse than no
+button.
+
+### 2. Piggles speaks for itself inside shared surfaces
+
+**The product adapter was never wired for Piggles.** `apps/workbench/lib/product.ts`
+is the one seam for what cannot ride a token, and the console never called it —
+so inside every shared pane Piggles was showing sparx's product name, sparx's
+module vocabulary ("CRM", "Commerce"), and **Sparky, sparx's mascot**. Nearly
+invisible until the loading sweep put the mark on every list's first load.
+
+Now wired in [lib/console/product.tsx](apps/workbench/lib/console/product.tsx),
+with the module lexicon DERIVED from the APPS registry (each app already declares
+the modules it fronts — restating it would create a second source that drifts).
+
+The adapter grew from 3 fields to 6:
+
+| field            | for                                   |
+| ---------------- | ------------------------------------- |
+| `name`           | the product's name mid-sentence       |
+| `moduleLabels`   | what a module is called               |
+| `LoadingMark`    | the brand's mark while a pane loads   |
+| `hiddenSurfaces` | a whole pane this brand does not have |
+| `hiddenFeatures` | a BLOCK inside a shared pane          |
+| `copy`           | whole sentences, written by hand      |
+
+**108 strings written in Piggles' voice** — [lib/console/copy.ts](apps/workbench/lib/console/copy.ts).
+Not substituted. `productCopy(key, sparxFallback)` for quoted strings,
+`productCopyWith(key, fallback, values)` for template literals with `{placeholders}`.
+108 wired, 108 written, zero gaps in either direction (there is a reconcile script
+pattern in the scratchpad; regenerate it by walking `productCopy(?:With)?\(\s*'([^']+)'`).
+
+**TWO STRINGS WERE FACTUALLY WRONG, not merely off-voice** — and both would have
+survived a name swap looking perfect:
+
+- turning off an app: _"…and you stop being billed for it"_ (sparx charges per
+  module; Piggles is one flat price, so turning an app off saves nothing)
+- the partner pitch: _"priced only on the modules they keep switched on"_ — a
+  partner repeating that would be misselling
+
+This is the whole argument against find-and-replace on prose, and it is now a
+rule in [piggles/CLAUDE.md](CLAUDE.md): **"A sparx PRODUCT is not a Piggles
+capability."** Exclude, never rename, never ask. Excluded so far: `sparx.market`
+(whole surface), the marketplace card on a product's Channels tab, and the
+`sparx_pay` gateway.
+
+### Traps this cost time on — do not repeat
+
+1. **A codemod is right for JSX structure and WRONG for prose.** The structural
+   sweeps were fine; proposing `productName()` interpolation for copy was not.
+2. **Template literals are invisible to a quoted-string scan.** 17 were missed on
+   the first pass, including BOTH factually-wrong pricing claims. Scan backticks
+   separately.
+3. **Prettier splits a call across lines, which breaks an "already wired" guard**
+   that looks for `productCopy('key'` as a contiguous string. Produced two
+   double-wrapped calls. Reconcile both directions afterwards rather than
+   trusting the wiring.
+4. **`tsc` and `prettier` OOM on this repo.** Use
+   `NODE_OPTIONS=--max-old-space-size=8192`, and never glob prettier over
+   `surfaces/**` — format changed files only, in batches.
+5. **Line-numbered edit lists go stale the moment an import is inserted.** Match
+   by content.
+
+### Still open from this session
+
+- **`noreply@piggles.email` has no DNS behind it.** Wired as the sender fallback
+  so Piggles mail does not arrive from `sparx.email`, but it will not deliver
+  until the domain exists. Flagged rather than invented.
+- **Dock elevation is unverified by eye** — `shadow-sm` at rest, `shadow-lg` torn
+  off, via Tailwind's scale (silica ships no elevation utility because Tailwind
+  already has one).
+- **`packages/auth/src/client.ts`** still carries the `organizationClient()` line
+  — the only file changed outside `piggles/` and `apps/workbench`.
+
+## 2026-08-14 (later still) — THE SEPARATION
+
+**The console no longer shares a single line of code with sparx.** This is the
+biggest structural change the project has had and it invalidates a lot of what
+is written above.
+
+### What was true before
+
+`piggles/apps/workbench` MOUNTED `apps/workbench` through a `@workbench/*`
+tsconfig alias — 84 imports reaching into sparx's application for the surfaces,
+the dock plumbing, the controller, the registry and three API routes. The old
+RULE #0 called for it in as many words: _"mount them, never fork them."_
+
+### Why it had to go
+
+Brandon, plainly: _"piggles might be deleted tomorrow and must not affect sparx.
+and sparx might be deleted tomorrow and must not affect piggles."_
+
+That test was failing in both directions. Making Piggles speak for itself meant
+editing sparx's tree — around 350 of sparx's files ended up carrying
+Piggles-shaped machinery — and a build error in one product surfaced in the
+other. (It did: a `Spinner` import that does not exist in silica broke the
+PIGGLES build, in a file under `apps/workbench`.)
+
+### What was done
+
+1. Copied `apps/workbench/{components,lib,surfaces}` + `app/surface-support.css`
+   into `piggles/apps/workbench`, from the WORKING TREE — so every Piggles-facing
+   change made that day came along.
+2. Rewrote all 84 `@workbench/*` imports and 5 escaping relative paths to `@/`,
+   the console's alias for itself. Directory shape was preserved exactly, which
+   is why the relative imports inside the copied tree needed no edits at all.
+3. Repointed `globals.css` — a `@source '@/…'` does not resolve, because `@/` is
+   a TypeScript alias and PostCSS has never heard of it.
+4. Gave the console its own `token` / `active-site` / `version` handlers. They
+   used to re-export sparx's, which after the rewrite meant re-exporting
+   themselves (`TS2303: Circular definition of import alias`).
+5. **Restored `apps/workbench` to HEAD.** `git status apps/` is now 0 files. The
+   uncommitted diff is preserved at
+   `scratchpad/apps-workbench-uncommitted.patch` (16k lines) if anything in it
+   is ever wanted for sparx.
+6. Deleted sparx's own shell from the Piggles copy — toolbar, workbench-shell,
+   mobile-shell, mobile-nav, auth-shell, rail, module-panel, `auth/`, `billing/`.
+   None of it was reachable and all of it said "sparx".
+7. Unregistered `workbench.home` ("Start here"). Piggles has its own Home, and
+   two screens with that name is one too many.
+
+### The guard
+
+`scripts/check-piggles-isolation.mjs`, wired into `pnpm check:isolation`, the
+pre-push hook and a CI job. It fails on any import from `piggles/` into `apps/`
+or the reverse, and it strips comments first so prose ABOUT the boundary does
+not trip it.
+
+**`@sparx/*` PACKAGE imports stay allowed and that is deliberate.** Those are
+libraries under `packages/` — a database client, a query wrapper, a UI kit.
+Deleting the sparx APPS does not delete them, so depending on one couples
+nothing.
+
+### What this costs, stated honestly
+
+A platform fix now has to be made twice. That is real and it is the price of the
+guarantee; do not "fix" it by reintroducing an alias. RULE #0 in
+[CLAUDE.md](CLAUDE.md) is rewritten around this and carries the history so
+nobody re-derives the old arrangement from first principles.
+
+### What else landed the same day, before the separation
+
+All of it survived the copy and now lives in Piggles' own tree:
+
+- **The console could not load anything.** `piggles/apps/workbench` had no
+  `.env`, so `/api/token` answered 500 and every pane failed at once while the
+  chrome rendered perfectly. Same shape as THE LOCKOUT.
+- **Home rebuilt** — sentences, not a KPI grid. Pale-pink hero, greeting by
+  name, the date, rows whose number is the loudest thing in the line, cleared
+  items collapsed into one quiet line, the mascot cropped by the panel's edge.
+- **The default layout is ONE pane.** Six `controller.open()` calls do not tile
+  — they make one group with six tabs whose active one is in the overflow menu.
+- **The business switcher never appeared.** `organization.list()` posts to
+  `/api/auth`, which this console does not mount, so it got the catch-all page
+  back as HTML with a 200 and rendered "one business". Now a console route.
+- **97 screen names and 30 section headings** written in Piggles' words. Two
+  sections were literally called "What sparx does" and "What you pay sparx".
+- **Partners fronted sparx's reseller programme** — referrals, commissions,
+  bootcamps — while meetpiggles advertises it as suppliers and purchase orders.
+  Re-pointed via a new `claims` field on the app registry.
+- **187 copy keys**, all written by hand, reconciled both directions.
+- **Spacious density.** The real defect was that `--size-field` moves HEIGHT and
+  silica bakes font-size per size step, so every control was a comfortable box
+  with cramped type (48px button, 14px text; `sm` at 12px). The type ladder is
+  re-hung on the size ladder in `@piggles/brand`, nav rows are 16px, and
+  silica's `--ease` finally points at `--ease-piggles`.
+- **The mascot is in the states.** `StateArt` on the product adapter maps
+  waiting / empty / no-results / unreachable / missing to a pose, per app where
+  one exists. Small on purpose.
+
+### The console works, end to end, standalone
+
+Driven in a browser after the separation, and it is the first time anything
+here has been checked by eye rather than by typecheck:
+
+| Checked                 | Result                                                      |
+| ----------------------- | ----------------------------------------------------------- |
+| Home                    | greets by name, date, counts land, quiet line, mascot       |
+| First run               | three steps, real server ticks, module-hued                 |
+| Rail + app panels       | six group hues, sentence-case headings, no truncation       |
+| Stock panel             | purchasing gone (moved to Partners) — the claims seam works |
+| Partners panel          | suppliers and POs, no reseller programme anywhere           |
+| Launcher (⌘K)           | groups by PIGGLES app names, Piggles screen names           |
+| All apps                | every app, "On" badges, the flat-plan sentence              |
+| Empty state (Customers) | mascot, centred, honest copy                                |
+| Waiting state           | mascot + "Just a moment…"                                   |
+| Dark theme              | warm dark canvas, hero holds, rail hues survive             |
+| 390px                   | compact shell, drawer, Home + first run all render          |
+
+`apps/` has 0 changed files throughout.
+
+**One trap the separation left, worth knowing about.** `/api/token` hung —
+literally no response in 180 seconds — while `/api/health`, `/api/version`,
+`/api/active-site` and `/api/businesses` all answered in under a second. Every
+pane waits on that token, so the whole console sat on skeletons and the renderer
+eventually stopped answering CDP at all.
+
+It was ONE wedged incremental compile in Turbopack, not a poisoned cache: the
+route had been a re-export and became a real handler with new imports, and the
+dev server had been hot-patching through 668 moved files and a `tsconfig` paths
+change. **Touching the file was the entire fix** — inserting a line forced a
+recompile and it answered in 0.7s. If a single route hangs after a big move,
+edit it before restarting anything.
+
+### Windows stay in the workspace
+
+A floating window could be dragged out over the app rail and sit on top of the
+navigation — covering the one thing you would use to get out from under it.
+
+dockview positions a floating group against its OWN container rather than the
+browser, so the geometry was never wrong; the DEFAULT is. `floatingGroupBounds`
+is unset by default, which means dockview keeps only
+`DEFAULT_FLOATING_GROUP_OVERFLOW_SIZE` inside the dock and lets the rest hang
+out. Set to `'boundedWithinViewport'` — dockview's way of saying fully inside —
+in the same `api.updateOptions` call as the theme, and BEFORE the layout is
+restored, because dockview reads the option when it constructs each overlay.
+
+Verified by dragging a window 600px past the left edge: it moved down and its
+left edge stayed pinned to the workspace boundary.
+
+### The in-console first run
+
+A brand-new business used to land in a working console with an empty site and no
+guidance. It now gets three real jobs on Home — something to sell, somebody to
+sell it to, an invoice — each ticked from the same server `total` the real list
+screen reads, and the panel retires itself permanently once all three are done.
+
+Deliberately NOT a wizard. sparx's `OnboardingGate` owns the viewport and its
+spine is the modules step, which Piggles has no use for; and a wizard opening
+over a working console contradicts the one promise the product makes, which is
+that you are already in. getpiggles has also already asked the two questions
+worth asking, so asking again would be the software forgetting a conversation it
+just had.
+
+## 2026-08-14 (last) — the console gets its colour, its ranking, and its own voice
+
+Driven app by app, screen by screen, at desktop, at 360px and in dark. Everything
+below was found by looking at it; every one of them passed typecheck and lint.
+
+### The two biggest finds were both invisible to every check we run
+
+**1. In dark mode, every app colour was unreadable.** The five group hues were
+declared once for both themes, on the stated reasoning that "a saturated hue
+reads on either canvas". True of a FILL, where the hue is the background. False
+wherever the hue is the INK — and that is most of this console, because the app
+panel's glyphs, the launcher's glyphs and every `soft` control paint with it.
+Measured against the canvas each one lands on:
+
+| group  | was    | is now  |
+| ------ | ------ | ------- |
+| web    | 2.20:1 | 6.93:1  |
+| sell   | 2.67:1 | 8.19:1  |
+| people | 2.58:1 | 9.53:1  |
+| money  | 2.77:1 | 10.57:1 |
+| run    | 1.98:1 | 7.81:1  |
+
+Same families, three steps lighter, so an app keeps its identity across a theme
+switch. **Lightening a palette usually costs separation, so both gates were
+re-run:** closest group pair 12.8 ΔE2000, closest to a semantic colour 10.8 —
+against the SHIPPING LIGHT SET's own 9.6 and 5.9. The dark set is better
+separated than the one already in production, which is the bar that matters.
+`-content` inverts with them and is not optional: white on `#bef264` is 1.3:1.
+
+**`--color-neutral` had the same bug and the same fix.** `secondary` was already
+inverted for dark with a comment explaining why; `neutral` was missed. It worked
+as a fill and failed as ink — the rail's own "View plan" button measured
+**2.52:1**, the exact figure this file already records under "Decisions worth not
+re-litigating". Now 6.78:1 as ink, 8.09:1 as a fill, holding a 1.47 surface step
+against `secondary` (the light pair's is 1.38).
+
+**2. The first-run checklist was asking two endpoints that do not exist.** It
+called `/v1/products` and `/v1/customers`; the console's own list panes call
+`/v1/commerce/products` and `/v1/crm/customers`. The requests failed, the failure
+became `unknown`, and `unknown` drew the same empty ring as `todo` — so a
+business that had just added its first product was told, in a panel about first
+products, that it had not added one. Fixed three ways, because one was not
+enough:
+
+- the paths now match the lists that own them;
+- `unknown` draws a **dashed grey** ring and says "We could not check this one
+  just now" — absence must never render as a measurement;
+- the queries are keyed UNDER the roots each list already invalidates
+  (`productKeys.lists()`, `customerKeys.all`, `['invoicing']`), so the tick
+  refreshes on exactly the events that could change it. `staleTime: Infinity`
+  was the other half of the bug: adding a product left the answer stuck at zero
+  for the whole session.
+
+Verified by adding a product through the form: the row turned green and read
+"You have something to sell".
+
+### The app panel wears its app
+
+Every row's glyph was `base-content`, so the widest, most-read column in the
+product was twenty identical black marks and the only colour on a browsing screen
+was the one rail row behind it. They now carry the app's hue from the `<AppScope>`
+already wrapping the panel. Within one app the colour distinguishes nothing;
+between apps it is the whole distinction, which is what the rail already does.
+
+Its header was `text-sm` — a 14px heading over 16px rows, a heading smaller than
+its own contents. Now `text-base font-semibold`.
+
+### The launcher ranks
+
+Typing `customers` put **"How this app behaves"** first and the screen actually
+called Customers third. The filter was one `includes` across the label, the GROUP
+and the keywords, with results left in registry order — and every screen in the
+Customers app carries "Customers" as its group, so they all matched equally.
+
+Now scored: exact name 100, name starts with it 80, contains it as a word 60,
+anywhere in the name 40, keyword 30/20, group alone 10. A group match is the
+weakest possible evidence and must never outrank a real name. Groups are ordered
+by their best member so the runs stay contiguous — the render re-collects rows
+into group buckets while the keyboard walks the flat array, and a scattered group
+would make ↓ jump around the screen.
+
+Glyphs also carry their module's hue (via `data-module` written straight onto the
+row — `<ModuleScope>` renders a `<div>`, which is invalid inside a `<button>`),
+and the rows went from 14px to 16px, the group headings from 12px to 14px.
+
+### 131 sentences that still spoke as sparx
+
+Not a rename — a rewrite, read and written one at a time. Most were the product
+naming itself and Piggles is simply the true subject. The ones that were not:
+
+- **"you only pay for the parts you use"**, on the screen shown when a link opens
+  an app you have not switched on. Piggles is one flat plan with every app in it,
+  so that sentence is not off-voice, it is **false** — and a customer reading it
+  would reasonably expect a smaller bill for using less. This is the third
+  factually-wrong pricing claim inherited from sparx's copy.
+- **"turn on the AI part of sparx under Modules"** (×2) points at a screen this
+  product does not have — `platform.settings.modules` is excluded, because it is
+  built around per-module pricing. Now points at All apps.
+- **"parts of sparx you have switched on"** (×6) is the module vocabulary. Apps.
+- **"the Online store, Invoicing or Email"** → Sell, Invoices, Messages.
+- **"your sparx administrator"** invents a role Piggles has no name for.
+- **"the free sparx.zone address"** (×3) — a Piggles business is provisioned on
+  `piggles.site`; that is what `provisionTenant`'s `zoneDomain` parameter is for.
+
+Three channel-label maps printed the literal string `sparx.market`. They now say
+"Marketplace", matching what `surfaces/chat/data.ts` already decided — the value
+cannot occur for a Piggles business, and the fallback would otherwise print the
+raw slug.
+
+**Hidden is not the same as absent, and one surface proved it.** `sparx_pay` is
+in `hiddenFeatures`, so the provider LIST filters it out — but the DETAIL pane is
+deep-linkable and restored from a saved arrangement, and it rendered a full "Set
+up sparx Pay" form. It now applies the same seam, one level down. Hiding a row
+and leaving its screen open is a door that is only closed from the front.
+
+Fifteen client-side names still said `sparx-workbench` — storage keys, the
+BroadcastChannel, the user agent it sends. All Piggles' now. Deliberately NOT
+touched: `sparx_active_property` (a cookie api-rest reads), `sparx_attr_first`,
+the `sparx-stripe` / `sparx-accounting` postMessage sources (the far side of an
+OAuth popup sends them back), and the `sparx_market` / `sparx_pay` wire enums.
+
+### Smaller things, all found by clicking
+
+- **The Add-a-product form opened with a red error.** "Give the product a code."
+  was computed and rendered unconditionally, so the first product form a new
+  business ever sees told them off before they typed a character — and the error
+  replaced the description explaining what a product code even is. Held until the
+  form has been started, which is when it can be true and useful at once.
+- **The mobile drawer's navigation was 72px narrower than the drawer.** Silica's
+  `Sidebar` sizes from its own `--sidebar-w` (16rem) and does not fill. Worse,
+  `AppPanel` hardcoded `20rem`, which on a 320px phone is 48px WIDER than the
+  drawer containing it. `AppPanel` grew a `width` prop; the desktop case keeps
+  the fixed width because its wrapper animates `w-80 → w-0` and a percentage
+  panel would re-wrap every label on the way shut instead of sliding.
+- **The first-run tick floated in the middle of its row on a phone**, beside the
+  explanation rather than the job, because the row was `items-center` and the
+  label wraps to five lines at 360px.
+- **"Nothing in your catalog yet"** was a third word for a thing this console
+  already calls two things. "Nothing to sell yet".
+- **The All apps dialog's description contradicted the list under it** — "these
+  are just the ones you have not switched on yet", above all fifteen.
+- `sparx.market` came out of a visible surface's launcher KEYWORDS, where typing
+  another company's product name would surface a Piggles screen.
+- `lib/product.ts`'s unconfigured default named the wrong product.
+
+### What was checked and is right
+
+| Checked                   | Result                                                      |
+| ------------------------- | ----------------------------------------------------------- |
+| All 15 app panels         | own hue, sentence headings, Piggles screen names throughout |
+| Launcher, empty and typed | ranks the named screen first, hued glyphs, groups by app    |
+| All apps                  | fifteen cards, honest description, flat-plan sentence       |
+| Add a product, end to end | created, list populated, tab renamed, first-run ticked      |
+| Product detail            | pills, lifecycle in the header, plain-English descriptions  |
+| Dark, every surface above | measured, not eyeballed — table at the top of this section  |
+| 360px in an iframe        | drawer fills, hero stacks, checklist aligns, no h-scroll    |
+
+`apps/` has 0 changed files throughout, and `check:isolation` passes.
+
+### Still open from this session
+
+- **The console shows an empty workspace for a few seconds on a cold load.** In
+  development that is Turbopack compiling the surface chunks and says nothing
+  about production; it wants a production build to measure honestly before
+  anything is designed around it.
+- **`lib/tour/` is dead code in Piggles** — nothing imports it, the first run is
+  deliberately not a tour, and its `.sparx-tour` CSS classes have no definitions
+  in this app. It costs nothing at runtime (unreferenced, so unbundled) and is
+  left rather than deleted mid-session.
+- **The money field carries no currency symbol.** Noticed while adding a product;
+  shared-surface behaviour, not investigated.
+
 ## Next
 
-1. **Sign into the console and drive it.** Everything about it is unverified
-   beyond a redirect and a typecheck — the rail, the dock, a real pane, the
-   density change, "Add app". Sign up fresh at `localhost:3021/signup` rather
-   than reusing `marta@thistlebakery.test`: that tenant predates the activation
-   fix and has `railGroups: []` and `modules: NULL`, so it lands in a console
-   with only Home on the rail. (Useful for testing "Add app" — useless for
-   testing onboarding.)
-2. **The in-console first run.** The console mounts no onboarding gate, so a new
-   business arrives at a working console with an empty site and no guidance.
-   Piggles' version has no modules step (everything is included) and no card
-   step. The story composer and the shared `useOnboardingActions` are reusable;
-   the chrome and the step list are Piggles'.
-3. **Deployment**, as one piece — see the four missing parts above. Gated on the
-   three domains actually resolving to us. `meetpiggles.com` can go first and
-   alone; the account app before the console gives a live funnel with a dead end.
-4. **Billing** on top of the meters: payment method, invoices, one-tap
+1. **A first release.** The pipeline is wired and structurally verified but
+   nothing has been BUILT — see "Still not done" in the deployment section. The
+   three things standing between here and a live meetpiggles.com are the
+   `PIGGLES_*` secrets, the Piggles Google Cloud project, and DNS. Ship
+   `meetpiggles.com` first: it stands alone, it needs no secrets at all, and it
+   is the one surface where a broken deploy costs nothing.
+
+2. **Billing** on top of the meters: payment method, invoices, one-tap
    expansion. The meters record; nothing reads them yet. Do FOLLOW_UPS #1 and #2
    as part of this — flat-plan Stripe items and the console's lifecycle notice
    are the same piece of work.
-5. Piggles' own video footage (currently sparx's), and a decision on the pricing
+
+3. **`noreply@piggles.email` still has no DNS behind it.** Wired as the sender
+   fallback so Piggles mail does not arrive from sparx.email, and it will not
+   deliver until the domain exists.
+
+4. Piggles' own video footage (currently sparx's), and a decision on the pricing
    allowances (`/pricing` publishes the low end of an unvalidated range).
 
-**Done since this list was last written:** the console shell (item 1) and the
-platform-side vocabulary provider (item 4) — see the two sections above.
+5. **Two dock ideas, deliberately NOT built** — raised, discussed, parked by
+   Brandon ("keep the tabs in windows for now"). They are two different features
+   and worth keeping apart:
+   - _A one-pane window gets a title bar._ Today a floating window holding one
+     pane shows a single tinted chip with `min-width: 8rem` in an otherwise
+     empty 44px bar, which reads as "there are other tabs you cannot see". Pure
+     CSS on `.dv-resize-container .dv-tab:only-child` — reactive for free, and
+     the tabs return the moment two panes share a window.
+   - _Windows never hold more than one pane._ Refuse the drop into a floating
+     group, which would make the title bar unconditional. The bigger change of
+     the two, because stacking windows is a real arrangement today.
+
+## Known defect
+
+**`piggles/apps/workbench/.next` predates the fork.** The dev server hot-patched
+through 668 moved files, three replaced route handlers and a `tsconfig` paths
+change. It survived, but `/api/token` wedged once (see above) and a clean
+`rm -rf piggles/apps/workbench/.next` before the next session would remove the
+whole class of problem.
+
+## The reverted sparx work
+
+`apps-workbench-reverted-2026-08-14.patch` at the repo root (gitignored) is the
+16k-line diff that `apps/workbench` carried before it was restored to HEAD. It
+holds today's Piggles-motivated edits AND the previous session's genuine sparx
+improvement — the unified pane states swept across 447 surfaces. **That sweep is
+no longer in sparx.** If sparx wants it back, it is in there; if not, delete the
+file. It is kept only because reverting was the right call for the boundary and
+a wrong one to make silently.
 
 ## How to resume
 
-Read this file, then `piggles/CLAUDE.md` (rules), `piggles/DESIGN.md` (the
-design contract, §5 is new) and `docs/FOLLOW_UPS.md` (parked decisions).
+Read this file, then `piggles/CLAUDE.md` (RULE #0 is rewritten — the two
+products share nothing), `piggles/DESIGN.md` and `docs/FOLLOW_UPS.md`.
 
 **The habit this build keeps re-teaching: a green typecheck, lint and build says
 almost nothing about whether a screen works.** Every real defect has been found
 by opening the page or querying the database, and every one of them passed all
 three checks first — the unsized logo, the invisible button, the site that never
 got renamed, the token sent to a parked domain, module flags that activated
-nothing, and a route segment config that compiled perfectly and 500'd on every
-request.
+nothing, a route segment config that compiled perfectly and 500'd on every
+request, and — this session — a console with no `.env` whose chrome rendered
+beautifully while every pane failed to load.
 
-The console is the current instance of that risk: it typechecks, it lints, its
-redirects are right, and **not one pixel of it has ever been on a screen.**
+The console has now been driven, and the table above is what was actually seen.

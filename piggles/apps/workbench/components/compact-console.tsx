@@ -38,12 +38,12 @@ import {
 } from '@wizeworks/silicaui-react';
 import { Logo } from '@piggles/brand/react';
 import { PRODUCT } from '@piggles/config';
-import { titleFor } from '@workbench/lib/surfaces/registry';
-import { useWorkbench } from '@workbench/lib/workbench/context';
-import { ChromeBoundary } from '@workbench/components/chrome-boundary';
-import { useCopyLink, usePaneLink } from '@workbench/components/copy-pane-link';
-import { useFeedback } from '@workbench/components/feedback/provider';
-import { MobileStack } from '@workbench/components/mobile-stack';
+import { titleFor } from '@/lib/surfaces/registry';
+import { useWorkbench } from '@/lib/workbench/context';
+import { ChromeBoundary } from '@/components/chrome-boundary';
+import { useCopyLink, usePaneLink } from '@/components/copy-pane-link';
+import { useFeedback } from '@/components/feedback/provider';
+import { MobileStack } from '@/components/mobile-stack';
 import type { Theme } from '@/lib/theme';
 import type { ConsoleNavApp } from '@/lib/console/nav';
 import { AllAppsDialog } from './all-apps-dialog';
@@ -295,6 +295,8 @@ function AppDrawer({
               entry={entry}
               pinned={false}
               pinnable={false}
+              // The drawer decides the width here, not the panel — see the prop.
+              width="fill"
               onTogglePin={() => undefined}
               onDismiss={close}
             />
@@ -304,7 +306,16 @@ function AppDrawer({
             <DrawerHeader sticky>
               <DrawerTitle>Everything {PRODUCT.name} does</DrawerTitle>
             </DrawerHeader>
-            <Sidebar collapsed={false} color="module" aria-label="Apps" className="h-full">
+            {/* Fills the drawer. Left at silica's own 16rem it was a 256px list
+                inside a 328px drawer, with 72px of nothing down the right-hand
+                side — and every row's tap target 72px narrower than the sheet
+                it appears to be part of. */}
+            <Sidebar
+              collapsed={false}
+              color="module"
+              aria-label="Apps"
+              className="h-full w-full [--sidebar-w:100%]"
+            >
               <SidebarContent>
                 <SidebarGroup>
                   {nav.map((candidate) => (

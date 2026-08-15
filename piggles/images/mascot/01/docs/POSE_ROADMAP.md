@@ -1,39 +1,16 @@
 # Pose Roadmap
 
-The `catalog` array in `manifest.json` is the long-term asset vocabulary.
+## Foundational set
 
-Highest-priority next assets:
+1. Helper — canonical welcoming base
+2. Planner — clipboard and pencil
+3. Analyst — magnifier and insight card
+4. Communicator — charcoal headset
+5. Builder — yellow hard hat and laptop
+6. Protector — charcoal shield
+7. Money Minder — restrained yellow finance accent
+8. Organizer — checklist tablet
+9. Cheerleader — controlled win celebration
+10. Sidekick — calm seated companion
 
-1. `message`
-2. `package`
-3. `money`
-4. `chart-up`
-5. `site`
-6. `customer`
-7. `phone`
-8. `searching`
-9. `confused`
-10. `oops`
-11. `sleeping`
-12. `support`
-13. `shield`
-14. `peek-left`
-15. `peek-right`
-
-## Naming convention
-
-`piggles-<semantic-action>.png`
-
-Examples:
-
-- `piggles-message.png`
-- `piggles-package.png`
-- `piggles-chart-up.png`
-
-Avoid naming by visual appearance such as:
-
-- `pig-03.png`
-- `happy-pig.png`
-- `pink-pig-2.png`
-
-Semantic names make dynamic selection stable even if artwork is replaced later.
+Future role work must begin from `piggles-mascot-base` and preserve body, face, shirt, and official mark before adding a single functional accessory.

@@ -1,0 +1,32 @@
+{
+  "name": "@piggles/mascot",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Piggles the character — the pose catalog, the intent map, and the one component that renders her.",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./react": "./src/react/index.ts"
+  },
+  "scripts": {
+    "ingest": "node scripts/ingest.mjs",
+    "lint": "eslint src",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf *.tsbuildinfo"
+  },
+  "peerDependencies": {
+    "next": "^16.2.6",
+    "react": "^19.0.0"
+  },
+  "devDependencies": {
+    "@types/react": "^19.0.0",
+    "next": "^16.2.6",
+    "prettier": "^3.4.0",
+    "react": "^19.0.0",
+    "sharp": "^0.34.5",
+    "typescript": "^6.0.3"
+  },
+  "files": [
+    "src"
+  ]
+}

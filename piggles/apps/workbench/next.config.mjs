@@ -34,20 +34,20 @@ function devMediaPatterns() {
 /** @type {import('next').NextConfig} */
 const config = {
   reactStrictMode: true,
-  // ── Why this list mirrors apps/workbench's ────────────────────────────────
+  // ── Every workspace package that ships raw TypeScript ─────────────────────
   //
-  // This app MOUNTS the shared workbench's surfaces (piggles/CLAUDE.md RULE #0:
-  // the shell forks, the surfaces do not), so its module graph is that app's
-  // module graph. Every workspace package that ships raw TypeScript therefore
-  // has to be transpiled HERE as well — a `transpilePackages` entry belongs to a
-  // build, not to the file that needs it, so nothing about the shared app's own
-  // config carries over.
+  // A `transpilePackages` entry belongs to a BUILD, not to the file that needs
+  // it, so every source-shipping package this app's graph reaches has to be
+  // listed here.
   //
-  // Divergence between the two lists is a build error waiting for whoever adds
-  // the next source-shipping package. Keep them in step.
+  // This list happens to resemble the sparx workbench's, because the two apps
+  // grew from one and use the same libraries. It is NOT kept in step with it and
+  // must not be: they are separate applications (piggles/CLAUDE.md RULE #0), and
+  // either one may add or drop a package without the other caring.
   transpilePackages: [
     '@piggles/brand',
     '@piggles/config',
+    '@piggles/mascot',
     '@sparx/app-kit',
     '@wizeworks/silicaui-react',
     '@wizeworks/silicaui-charts',

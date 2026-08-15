@@ -40,14 +40,14 @@
  * no path-based `@source`, because a path resolved from the wrong depth
  * generates nothing and reports nothing. Which is why the scan lines below are
  * here, where the depth is a local fact. */
-@import '../../../../apps/workbench/app/surface-support.css';
+@import './surface-support.css';
 
 /* ── THE SHARED WORKBENCH'S OWN SOURCE ───────────────────────────────────────
  *
  * Tailwind emits only the classes it finds in scanned source, and it scans THIS
  * app — which contains the shell and nothing else. Every one of the ~500 shared
  * surfaces, and the chrome components they compose with, lives up in
- * apps/workbench. Without these three lines the console renders every pane with
+ * this app. Without these three lines the console renders every pane with
  * no CSS at all: correct markup, correct data, no layout.
  *
  * Nothing about that failure is visible to typecheck, to `next build`, or to
@@ -57,15 +57,22 @@
  * Three directories rather than the app root, deliberately: the root would drag
  * in `.next` and `node_modules`, and naming the directories keeps the scan
  * describing what it is for. */
-@source '../../../../apps/workbench/components/**/*.{ts,tsx}';
-@source '../../../../apps/workbench/lib/**/*.{ts,tsx}';
-@source '../../../../apps/workbench/surfaces/**/*.{ts,tsx}';
+@source '../components/**/*.{ts,tsx}';
+@source '../lib/**/*.{ts,tsx}';
+@source '../surfaces/**/*.{ts,tsx}';
 
 /* @piggles/brand's mark components carry their own layout classes (`h-9 w-9`,
  * `inline-flex`), so without this scan those classes are never generated and the
  * marks render UNSIZED. Add a scan for any Piggles package that ships className
  * strings. */
 @source '../../../packages/brand/src/**/*.{ts,tsx}';
+
+/* Same reason, same failure: <PigglesMascot> picks its width from a table of
+ * literal class strings (`w-24`/`w-44`/`w-72`/`w-112`). Unscanned, none of them
+ * are generated and the mascot silently falls back to `max-w-full` — she fills
+ * whatever column she is in, at whatever size it happens to be, and nothing
+ * anywhere reports a problem. */
+@source '../../../packages/mascot/src/**/*.{ts,tsx}';
 
 /* The CMS block editor's own surface styles (`.sparx-content-editor`), plus a
  * scan so Tailwind emits the utility classes its TOOLBAR carries in TSX. The
@@ -90,7 +97,7 @@
  * `@source not` — so scanning the `src` root emits `background-image: url(x)`,
  * Turbopack tries to resolve a module called `x`, and the build fails. So:
  * silica-catalog/src whole, and for builder-schemas only the four
- * vocabulary-bearing sources. Keep in step with apps/workbench/app/globals.css. */
+ * vocabulary-bearing sources. */
 @source '../../../../packages/silica-catalog/src';
 @source '../../../../packages/builder-schemas/src/catalog';
 @source '../../../../packages/builder-schemas/src/site-chrome.ts';
@@ -202,103 +209,178 @@ h6 {
 
 /* ── THE DOCK, AS WINDOWS ─────────────────────────────────────────────────────
  *
- * sparx's dock is a tab dock: groups sit flush, separated by hairlines, and the
- * active tab merges into the pane so the whole canvas reads as one continuous
- * work surface. That is the right answer for a dense utility app, and it is the
- * wrong one here.
+ * sparx's dock is a tab dock: groups flush, separated by hairlines, the active
+ * tab merging into its pane so the canvas reads as one continuous work surface.
+ * Right for a dense utility app, wrong for Piggles — the comfortable-density
+ * brand, where every surface has to produce "I can breathe here" (DESIGN.md §5).
+ * So each group is its own rounded, bordered card with real space around it.
  *
- * Piggles is the comfortable-density brand (DESIGN.md §5): the feeling every
- * surface has to produce is "I can breathe here". A flush tab dock is the
- * opposite instinct — it packs the most into the least. So the console gives
- * each group its own inset, rounded, bordered card with real space around it,
- * and the whole canvas reads as things laid out on a desk rather than documents
- * stacked in a folder.
+ * ── THE GAP IS NOT IN THIS FILE, AND MUST NOT BE ────────────────────────────
  *
- * This is the density rule expressed in LAYOUT rather than in tokens, which is
- * the gap the console had: Piggles was differentiated with colour, radius and
- * spacing, and none of those change the SHAPE of a screen. The console looked
- * like sparx because it was shaped like sparx.
+ * The spacing between groups comes from `DockviewTheme.gap` (lib/dock-theme.ts),
+ * passed to the shared Dock as a prop. It is NOT a CSS rule and three attempts
+ * to make it one all failed: `inset` on the group, padding on its slot, then
+ * margin plus a `calc()` height.
  *
- * ── WHY THIS IS NOT A FORK ──────────────────────────────────────────────────
+ * The reason is worth keeping. `gap` is read by dockview's LAYOUT ENGINE, which
+ * positions every group and derives drop targets, sash hit-areas and drag
+ * previews from those rectangles. CSS moves pixels, not geometry — so even the
+ * attempt that would have looked correct would have left dropping, splitting and
+ * dragging all aiming at the old, gapless rectangle. Do not "simplify" the gap
+ * back into this stylesheet.
  *
- * Everything below overrides `--dv-*` custom properties and dockview's own class
- * names, from the console's OWN stylesheet. The shared dock (lib/dock) is
- * mounted exactly as sparx mounts it — same controller, same panes, same drag,
- * split, tear-off and persistence. Only the skin differs, which is precisely the
- * split piggles/CLAUDE.md RULE #0 draws: the shell forks, the surfaces do not.
- * If a change here ever needs a prop or a DOM change in lib/dock, it is no
- * longer a skin and it needs a different answer.
+ * What IS left here is skin: colour, radius, borders. That is the correct split,
+ * and it is why nothing in lib/dock was forked (piggles/CLAUDE.md RULE #0).
  *
- * Loaded after `@workbench/lib/dock/dock-theme.css` (which the shared Dock
- * imports), so these win on source order at equal specificity. */
+ * ── WHY EVERY SELECTOR CARRIES TWO CLASSES ──────────────────────────────────
+ *
+ * `.dv-dockview.piggles-dock`, never `.dv-dockview` alone. The shared
+ * `lib/dock/dock-theme.css` is imported from dock.tsx — a COMPONENT import — and
+ * Next injects component CSS AFTER the global stylesheet. At equal specificity
+ * the shared file wins, and single-class overrides here were being discarded
+ * silently. The second class is the theme's own `className`, which dockview puts
+ * on its root for exactly this purpose. */
 
-.dv-dockview {
-  /* The ground the windows sit on. Deeper than the pane so each card reads as
-     lifted onto it rather than cut out of it. */
-  --dv-background-color: var(--color-base-200);
+.piggles-dock-host .dv-dockview,
+.dv-dockview.piggles-dock {
+  /* ── THE THREE-LEVEL RAMP, AND WHY IT IS NOT NEGOTIABLE ───────────────────
+   *
+   * base-300 is the GROUND (the gutters between windows), base-200 is the
+   * WINDOW — a surface laid on the ground — and base-100 is CONTENT lifted onto
+   * the window: cards, rows, toolbars.
+   *
+   * The first version of this theme made the window base-100. It looked
+   * plausible in isolation and quietly broke every shared surface: those ~500
+   * panes are written against this ramp and render their cards on base-100, so
+   * a base-100 window left them nothing to be lifted ONTO. Every list becomes a
+   * flat slab divided only by hairlines — which is the exact failure sparx's own
+   * dock theme documents having already made once.
+   *
+   * The lesson generalises: the SHELL is Piggles' to design, but the surface
+   * ramp is a contract the shared panes are built against. Piggles may change
+   * what the tones ARE (they are warm here, cool in sparx); it may not change
+   * what they MEAN. */
+  --dv-background-color: var(--color-base-300);
+  --dv-group-view-background-color: var(--color-base-300);
 
-  /* The title bar. sparx puts the strip on the GROUND and lifts only the active
-     tab to the pane surface, which is what makes a tab merge into its content.
-     A window does the opposite: the bar belongs to the window, so the strip and
-     the pane are the same surface and the bar is separated by a border instead. */
-  --dv-tabs-and-actions-container-background-color: var(--color-base-100);
-  --dv-activegroup-visiblepanel-tab-background-color: var(--color-base-100);
-  --dv-inactivegroup-visiblepanel-tab-background-color: var(--color-base-100);
-  --dv-activegroup-hiddenpanel-tab-background-color: var(--color-base-200);
-  --dv-inactivegroup-hiddenpanel-tab-background-color: var(--color-base-200);
+  /* The title bar is the window's own surface, so it matches the window rather
+     than the content it sits above — the hairline below it does the separating.
+     A white bar over a base-200 body reads as a card floating on the window
+     instead of as the window's own chrome. */
+  --dv-tabs-and-actions-container-background-color: var(--color-base-200);
 
-  /* 44px, up from the shared 36. The title bar carries the app's icon and name
-     and has to be comfortable to grab — it is the window's drag handle. */
+  /* ── ONE THING IN THIS STRIP IS FILLED, AND IT IS THE OPEN PANE ───────────
+   *
+   * All four tab tokens are transparent because dockview must not paint a tab
+   * at all — PaneTab does, so the fill can be the APP'S hue, which a static
+   * token cannot express.
+   *
+   * Giving the hidden tab base-300 (as this did) put a third tone in a 44px
+   * bar: chrome, a grey block, and a tinted block. Three tones and no
+   * hierarchy — the two blocks butt together into one continuous band and the
+   * strip stops reading as tabs. Transparent leaves exactly two states: the
+   * bar, and the one filled shape on it. That shape is the pane you are in. */
+  --dv-activegroup-visiblepanel-tab-background-color: transparent;
+  --dv-inactivegroup-visiblepanel-tab-background-color: transparent;
+  --dv-activegroup-hiddenpanel-tab-background-color: transparent;
+  --dv-inactivegroup-hiddenpanel-tab-background-color: transparent;
+
+  /* 44px, up from the shared 36 — the bar carries the app's icon and name and is
+     the window's drag handle, so it has to be comfortable to grab. */
   --dv-tabs-and-actions-container-height: 44px;
 
-  --dv-group-view-background-color: var(--color-base-100);
-  /* The gutter colour is the ground itself, so a separator would be a line
-     drawn on empty space between two cards. The space IS the separator. */
+  /* The gap IS the separator; a line drawn in it would be a mark on empty
+     ground. The sash stays transparent for the same reason. */
   --dv-separator-border: transparent;
   --dv-tab-divider-color: transparent;
+  --dv-sash-color: transparent;
 }
 
-/* Each group is a window: inset from its slot so the ground shows through as a
- * real gutter, rounded to the brand's box radius, and outlined.
+/* ── ELEVATION ──────────────────────────────────────────────────────────────
  *
- * `inset` rather than margin because dockview positions each group absolutely
- * inside its splitview slot — a margin on an absolutely-positioned element with
- * an explicit size does nothing. 5px on each side gives a 10px gutter between
- * neighbours, which is the smallest gap that still reads as two objects rather
- * than one object with a line through it. */
-.dv-dockview .dv-groupview {
-  position: absolute;
-  inset: 5px;
+ * Tailwind's shadow scale. silica ships no elevation utility on purpose —
+ * Tailwind already has one and duplicating it would be two scales to keep in
+ * step; silica's `--depth` only decides whether its OWN components (Card,
+ * Button) carry theirs. A dock window is chrome, not a silica component, so it
+ * takes the utility directly.
+ *
+ * Root's no-shadow rule is superseded for Piggles (piggles/CLAUDE.md) — lifted
+ * and soft IS the brand, and the console mockup showed shadowed windows.
+ *
+ * Two earlier passes at this block were both wrong: flat, with a comment
+ * explaining why, and then a hand-tuned ladder of invented alphas. Reach for
+ * the scale. */
+
+.piggles-dock-host .dv-groupview,
+.dv-dockview.piggles-dock .dv-groupview {
   border: 1px solid var(--color-base-300);
   border-radius: var(--radius-box);
-  /* Clips the title bar's square corners to the card's radius. Without this the
-     bar's background paints over the rounded corner and every window has two
-     hard pixels at the top. */
+  /* Clips the title bar's square corners to the card radius. Without it the bar
+     paints over the corner and every window has two hard pixels on top. */
   overflow: hidden;
-  background-color: var(--color-base-100);
+  /* At rest on the ground. Same step silica's Card sits at. */
+  @apply shadow-sm;
 }
 
-/* The focused window says so with the ACTIVE APP'S hue, not a generic accent —
- * the same `--color-module` the rail and the panes already use, so "which thing
- * am I in" is one signal answered consistently everywhere. A border colour
- * change rather than a shadow: `--depth: 1` is Piggles' only elevation and a
- * hand-rolled shadow here would be the re-skin DESIGN.md §8 bans. */
-.dv-dockview .dv-groupview.dv-active-group {
+/* Focus is the ACTIVE APP'S hue on the border, and nothing else — one signal for
+   one fact. */
+.piggles-dock-host .dv-groupview.dv-active-group,
+.dv-dockview.piggles-dock .dv-groupview.dv-active-group {
   border-color: var(--color-module);
 }
 
-/* The title bar's underline. It separates the bar from the content INSIDE one
- * window, which is a different job from the gutters BETWEEN windows — so it is
- * a real hairline rather than space. */
-.dv-dockview .dv-tabs-and-actions-container {
+/* Torn-off and floating groups are literally above the grid, overlapping what is
+   behind them — so they go up a step. */
+.piggles-dock-host .dv-resize-container,
+.dv-dockview.piggles-dock .dv-resize-container {
+  border-radius: var(--radius-box);
+  @apply shadow-lg;
+}
+
+/* One shadow per window. The floating container already casts it, so the group
+   inside it must not cast a second one concentrically. */
+.piggles-dock-host .dv-resize-container .dv-groupview,
+.dv-dockview.piggles-dock .dv-resize-container .dv-groupview {
+  box-shadow: none;
+}
+
+/* Without this, every shadow above is drawn and immediately clipped away.
+   dockview gives each grid slot `overflow: auto` (`.dv-view-container .dv-view`)
+   and the group fills its slot exactly, so a shadow has nowhere to fall. The
+   content it was clipping is already contained one level down — `.dv-groupview`
+   is `overflow: hidden` — so releasing it costs nothing and lets the shadow
+   spill into the gutter the `gap` created for it. */
+.piggles-dock-host .dv-view-container > .dv-view,
+.dv-dockview.piggles-dock .dv-view-container > .dv-view {
+  overflow: visible;
+}
+
+/* Separates the bar from the content INSIDE one window — a different job from
+   the gutters BETWEEN windows, so a hairline rather than space. */
+.piggles-dock-host .dv-tabs-and-actions-container,
+.dv-dockview.piggles-dock .dv-tabs-and-actions-container {
   border-bottom: 1px solid var(--color-base-300);
 }
 
-/* A window's title is not a tab to be squeezed alongside others. Most Piggles
- * groups hold ONE pane, so the tab is the window's name and should take the room
- * it needs; several panes in one group still behave as tabs, just roomier ones. */
-.dv-dockview .dv-tab {
+/* A window's title is not a tab competing for room. Most Piggles groups hold ONE
+   pane, so the tab IS the window's name; several panes in a group still behave
+   as tabs, just roomier ones. */
+.piggles-dock-host .dv-tab,
+.dv-dockview.piggles-dock .dv-tab {
   min-width: 8rem;
   max-width: 20rem;
   margin-right: 0;
+
+  /* dockview's base sheet insets tab content with `padding: .25rem .5rem`, and
+     the tab ELEMENT is also what it paints its background tokens onto. So a
+     dockview fill covered the whole rectangle while PaneTab's fill — painted on
+     a child — stopped 4px short all round: a half-height tint floating in a tab,
+     which reads as a mistake rather than a state.
+     Zeroing it hands the whole rectangle to the component, which already carries
+     its own `px-3`, so only the fill's reach changes. dockview does this itself
+     for a lone tab (`.dv-single-tab.dv-full-width-single-tab`), which is why
+     one-pane windows always looked right and only grouped ones did not.
+     Skin, not geometry: the tab's box is unchanged, so drop targets and drag
+     previews are untouched. */
+  padding: 0;
 }

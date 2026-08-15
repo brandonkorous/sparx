@@ -41,6 +41,8 @@ import {
   normalizeHost,
   isValidHost,
   isZoneHost,
+  cnameTargetFor,
+  tenantZone,
   isSubdomainHost,
   newVerificationToken,
   connectInstructions,
@@ -141,24 +143,27 @@ interface DomainPurchaseView {
   createdAt: string;
 }
 
-function toView(row: {
-  id: string;
-  propertyId: string;
-  host: string;
-  type: string;
-  status: string;
-  isCanonical: boolean;
-  verificationToken: string | null;
-  verifiedAt: Date | null;
-  registrar: string | null;
-  registrarOrderId: string | null;
-  registeredAt: Date | null;
-  expiresAt: Date | null;
-  autoRenew: boolean;
-  whoisPrivacy: boolean;
-  renewalPriceCents: number | null;
-  createdAt: Date;
-}): DomainView {
+function toView(
+  row: {
+    id: string;
+    propertyId: string;
+    host: string;
+    type: string;
+    status: string;
+    isCanonical: boolean;
+    verificationToken: string | null;
+    verifiedAt: Date | null;
+    registrar: string | null;
+    registrarOrderId: string | null;
+    registeredAt: Date | null;
+    expiresAt: Date | null;
+    autoRenew: boolean;
+    whoisPrivacy: boolean;
+    renewalPriceCents: number | null;
+    createdAt: Date;
+  },
+  cnameTarget: string = CNAME_TARGET
+): DomainView {
   const isCustom = row.type === 'custom';
   return {
     id: row.id,
@@ -178,7 +183,9 @@ function toView(row: {
     createdAt: row.createdAt.toISOString(),
     verifiesByTxt: isCustom && !isSubdomainHost(row.host),
     // CNAME always (re-checkable after connecting); TXT only while a token is live.
-    instructions: isCustom ? connectInstructions(row.host, row.verificationToken) : null,
+    instructions: isCustom
+      ? connectInstructions(row.host, row.verificationToken, cnameTarget)
+      : null,
   };
 }
 
@@ -521,7 +528,7 @@ const domainsRoutes: FastifyPluginAsync = async (app) => {
     );
 
     return ok({
-      domain: toView(domainRow),
+      domain: toView(domainRow, cnameTargetFor(await tenantZone(auth.tenantId))),
       purchase: toPurchaseView(purchaseRow),
       orderId,
       expiresAt: expiresAt.toISOString(),
@@ -536,7 +543,11 @@ const domainsRoutes: FastifyPluginAsync = async (app) => {
       where: { tenantId: auth.tenantId, ...(propertyId ? { propertyId } : {}) },
       orderBy: [{ isCanonical: 'desc' }, { createdAt: 'asc' }],
     });
-    return ok(rows.map(toView));
+    // `rows.map(toView)` would hand `.map`'s INDEX to the new second parameter —
+    // the classic point-free trap, caught here only because the parameter is
+    // typed. One zone lookup for the whole list, not one per row.
+    const cname = cnameTargetFor(await tenantZone(auth.tenantId));
+    return ok(rows.map((row) => toView(row, cname)));
   });
 
   // ── GET /v1/domains/:id ───────────────────────────────────────────────────
@@ -545,7 +556,7 @@ const domainsRoutes: FastifyPluginAsync = async (app) => {
     const { id } = IdParam.parse(request.params);
     const row = await prisma.domain.findFirst({ where: { id, tenantId: auth.tenantId } });
     if (!row) throw notFound('Domain', id);
-    return ok(toView(row));
+    return ok(toView(row, cnameTargetFor(await tenantZone(auth.tenantId))));
   });
 
   // Connect a domain the tenant already owns. Mints a TXT proof token and stores
@@ -587,7 +598,7 @@ const domainsRoutes: FastifyPluginAsync = async (app) => {
         verificationToken,
       },
     });
-    return ok(toView(row));
+    return ok(toView(row, cnameTargetFor(await tenantZone(auth.tenantId))));
   });
 
   // Poll DNS for ownership proof. On success the domain becomes routable
@@ -605,7 +616,7 @@ const domainsRoutes: FastifyPluginAsync = async (app) => {
     if (!row) throw notFound('Domain', id);
     if (row.type !== 'custom') {
       // zone-subdomain / purchased hosts are already live; nothing to verify.
-      return ok(toView(row));
+      return ok(toView(row, cnameTargetFor(await tenantZone(auth.tenantId))));
     }
 
     let passed: boolean;
@@ -635,7 +646,7 @@ const domainsRoutes: FastifyPluginAsync = async (app) => {
         : `We couldn't find the TXT record at _sparx-verify.${row.host} yet. DNS propagation can take a few minutes — add both the CNAME/ALIAS and the TXT record, then try again.`;
       throw validationError(hint, [{ field: 'host', message: 'Verification failed.' }]);
     }
-    return ok(toView(updated));
+    return ok(toView(updated, cnameTargetFor(await tenantZone(auth.tenantId))));
   });
 
   // Re-issue a fresh verification token for an apex custom domain. Verifying a
@@ -659,7 +670,7 @@ const domainsRoutes: FastifyPluginAsync = async (app) => {
       where: { id },
       data: { verificationToken: newVerificationToken() },
     });
-    return ok(toView(updated));
+    return ok(toView(updated, cnameTargetFor(await tenantZone(auth.tenantId))));
   });
 
   // Make this host the canonical (apex) one for its property — at most one
@@ -681,7 +692,7 @@ const domainsRoutes: FastifyPluginAsync = async (app) => {
       });
       return tx.domain.update({ where: { id }, data: { isCanonical: true } });
     });
-    return ok(toView(updated));
+    return ok(toView(updated, cnameTargetFor(await tenantZone(auth.tenantId))));
   });
 
   // Disconnect a custom/purchased domain. The always-on subdomain is the site's
@@ -816,7 +827,7 @@ const domainsRoutes: FastifyPluginAsync = async (app) => {
       data: { whoisPrivacy: enabled },
     });
 
-    return ok(toView(updated));
+    return ok(toView(updated, cnameTargetFor(await tenantZone(auth.tenantId))));
   });
 
   // ── PATCH /v1/domains/:id/auto-renew ─────────────────────────────────────
@@ -834,7 +845,7 @@ const domainsRoutes: FastifyPluginAsync = async (app) => {
       data: { autoRenew: enabled },
     });
 
-    return ok(toView(updated));
+    return ok(toView(updated, cnameTargetFor(await tenantZone(auth.tenantId))));
   });
 };
 

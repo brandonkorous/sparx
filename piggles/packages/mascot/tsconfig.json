@@ -1,0 +1,10 @@
+{
+  "extends": "../../../tsconfig.base.json",
+  "compilerOptions": {
+    // `react-jsx`, for the same reason as @piggles/brand: nothing here imports
+    // React at runtime, and under the base's `preserve` TypeScript would resolve
+    // JSX against a global namespace that only exists once something has.
+    "jsx": "react-jsx"
+  },
+  "include": ["src/**/*"]
+}

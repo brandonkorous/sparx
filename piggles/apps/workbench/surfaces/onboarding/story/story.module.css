@@ -1,0 +1,346 @@
+/* The story composer's sentence canvas — a bespoke inline-prose builder (an editable
+   sentence you tap to change). It is a genuinely novel UI element, not a re-skinned
+   silica control, so its chips / slots / menus live in this SCOPED CSS module rather
+   than as global styles.
+
+   House rules honoured here:
+     • No box-shadow as a visual device — surfaces separate by edge + base-tone shift,
+       hover deepens the tint, focus uses an outline ring.
+     • No hardcoded colour — every value is a brand token var. A chip's hue comes from
+       `--color-module`, which the element sets purely by carrying `data-module="…"`
+       (the @sparx/brand bridge maps the attribute to the hue — no inline style, the
+       same mechanism as <ModuleScope>).
+     • Readable text keeps a real ink; only the dashed placeholder + the "+" affordances
+       read quiet, and they lean on border/shape for that, not faded body copy. */
+
+/* the self-assembling sentence */
+.story {
+  font-weight: 500;
+  font-size: 31px;
+  letter-spacing: -0.02em;
+  line-height: 1.5;
+  color: var(--color-base-content);
+}
+@container (max-width: 64rem) {
+  .story {
+    font-size: 26px;
+  }
+}
+@container (max-width: 35rem) {
+  .story {
+    font-size: 22px;
+  }
+}
+
+/* a chosen, tappable token (tense / industry / audience / clause). The hue rides
+   `--color-module`, set by the element's own data-module attribute. */
+.tok {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  vertical-align: middle;
+  font: inherit;
+  letter-spacing: inherit;
+  border: none;
+  border-radius: 10px;
+  padding: 2px 12px 5px;
+  margin: 3px 1px;
+  cursor: pointer;
+  background: color-mix(in oklch, var(--color-module) 14%, transparent);
+  color: color-mix(in oklch, var(--color-module) 58%, var(--color-base-content));
+  transition: background-color 0.12s ease;
+}
+.tok:hover {
+  background: color-mix(in oklch, var(--color-module) 24%, transparent);
+}
+.tok:focus-visible,
+.tokBody:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+
+/* neutral variant — the tense verb has no module, so it wears a base-tone chip with
+   full-strength ink (readable, never faded). Defined after .tok so it wins. */
+.neutral {
+  background: color-mix(in oklch, var(--color-base-content) 8%, transparent);
+  color: var(--color-base-content);
+}
+.neutral:hover {
+  background: color-mix(in oklch, var(--color-base-content) 13%, transparent);
+}
+
+/* clause chip: a container span with a toggle body button + a remove button */
+.tokBody {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font: inherit;
+  letter-spacing: inherit;
+  color: inherit;
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+}
+.x {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 1px;
+  padding: 1px;
+  border: none;
+  border-radius: 5px;
+  background: none;
+  color: inherit;
+  cursor: pointer;
+  transition: background-color 0.12s ease;
+}
+.x:hover {
+  background: color-mix(in oklch, var(--color-base-content) 14%, transparent);
+}
+.ico,
+.chev {
+  flex-shrink: 0;
+}
+
+/* a dashed placeholder pulsing to invite the next choice. The dashed pulsing border
+   carries the "not yet chosen" signal; the label stays full-strength + readable. */
+.ghost {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  vertical-align: middle;
+  font: inherit;
+  letter-spacing: inherit;
+  color: var(--color-base-content);
+  background: transparent;
+  border: 2px dashed var(--color-base-300);
+  border-radius: 10px;
+  padding: 1px 13px 4px;
+  margin: 3px 1px;
+  cursor: pointer;
+  animation: storyPulse 2.6s ease-in-out infinite;
+}
+.ghost:hover {
+  background: color-mix(in oklch, var(--color-module) 12%, transparent);
+  border-color: var(--color-module);
+}
+@keyframes storyPulse {
+  0%,
+  100% {
+    border-color: var(--color-base-300);
+  }
+  50% {
+    border-color: var(--color-module);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ghost,
+  .addBtn,
+  .addMore {
+    animation: none;
+  }
+}
+
+/* one unified inline "+" — per-sentence AND new-sentence share the round look */
+.addBtn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  vertical-align: middle;
+  width: 30px;
+  height: 30px;
+  border-radius: 9999px;
+  border: 2px dashed var(--color-base-300);
+  background: transparent;
+  color: var(--color-base-content);
+  cursor: pointer;
+  transition:
+    border-color 0.14s ease,
+    color 0.14s ease;
+  animation: storyPulse 2.6s ease-in-out infinite;
+}
+.addBtn:hover {
+  border-style: solid;
+  border-color: var(--color-module);
+  color: var(--color-module);
+}
+.addIn {
+  margin: 2px 1px 2px 4px;
+}
+.addNext {
+  margin: 3px 2px 3px 8px;
+}
+
+/* empty-state labelled pill */
+.addMore {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  vertical-align: middle;
+  padding: 5px 15px;
+  margin: 3px 2px 3px 8px;
+  border-radius: 9999px;
+  border: 1.5px dashed var(--color-base-300);
+  background: transparent;
+  color: var(--color-base-content);
+  font: inherit;
+  font-size: 18px;
+  cursor: pointer;
+  animation: storyPulse 2.6s ease-in-out infinite;
+}
+.addMore:hover {
+  border-style: solid;
+  border-color: var(--color-module);
+  color: var(--color-module);
+}
+
+/* the closing web-address sentence on its own line */
+.domainLine {
+  display: block;
+  margin-top: 24px;
+}
+.slot,
+.handle {
+  font: inherit;
+  letter-spacing: inherit;
+  vertical-align: middle;
+  color: var(--color-base-content);
+  background: color-mix(in oklch, var(--color-base-content) 6%, transparent);
+  border: none;
+  border-radius: 10px;
+  padding: 2px 12px 5px;
+  margin: 3px 1px;
+  min-width: 3ch;
+  /* auto-size to content where supported; the `size` attribute is the fallback */
+  field-sizing: content;
+  outline: none;
+}
+.handle {
+  font-family: var(--font-geist-mono, ui-monospace, monospace);
+}
+.slot::placeholder,
+.handle::placeholder {
+  color: color-mix(in oklch, var(--color-base-content) 55%, transparent);
+}
+.slot:focus,
+.handle:focus {
+  outline: 2px solid var(--color-module);
+  outline-offset: 1px;
+}
+.sfx {
+  font-family: var(--font-geist-mono, ui-monospace, monospace);
+  font-weight: 500;
+  color: var(--color-base-content);
+  vertical-align: middle;
+}
+.autoWrap {
+  display: inline-flex;
+  vertical-align: middle;
+}
+
+/* popover menu — separated by edge + base surface, never a shadow */
+.popover {
+  position: relative;
+  display: inline-flex;
+  vertical-align: middle;
+}
+.menu {
+  position: absolute;
+  z-index: 60;
+  top: calc(100% + 8px);
+  left: 0;
+  min-width: 300px;
+  max-height: 64vh;
+  overflow: auto;
+  background: var(--color-base-100);
+  border: 1px solid var(--color-base-300);
+  border-radius: 14px;
+  padding: 8px;
+  animation: storyPop 0.16s ease;
+}
+@keyframes storyPop {
+  from {
+    opacity: 0;
+    transform: translateY(-6px) scale(0.98);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .menu {
+    animation: none;
+  }
+}
+.filter {
+  width: 100%;
+  font-family: inherit;
+  font-size: 16px;
+  padding: 9px 12px;
+  border: 1px solid var(--color-base-300);
+  border-radius: 9px;
+  margin-bottom: 6px;
+  outline: none;
+  background: var(--color-base-100);
+  color: var(--color-base-content);
+}
+.filter:focus {
+  border-color: var(--color-module);
+}
+.mhead {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-base-content);
+  padding: 9px 11px 4px;
+}
+.opt {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  text-align: left;
+  padding: 9px 11px;
+  border: none;
+  background: none;
+  border-radius: 9px;
+  font-family: inherit;
+  font-size: 16px;
+  color: var(--color-base-content);
+  cursor: pointer;
+}
+.opt:hover,
+.optActive {
+  background: color-mix(in oklch, var(--color-base-content) 6%, transparent);
+}
+.badge {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  background: color-mix(in oklch, var(--color-module) 14%, transparent);
+  color: color-mix(in oklch, var(--color-module) 58%, var(--color-base-content));
+}
+.dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 3px;
+  flex-shrink: 0;
+  background: var(--color-module);
+}
+.ot {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+.ot small {
+  font-size: 13px;
+  color: color-mix(in oklch, var(--color-base-content) 72%, transparent);
+}
+.sg {
+  color: var(--color-success);
+}

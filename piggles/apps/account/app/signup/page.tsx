@@ -60,7 +60,27 @@ export default async function SignUpPage({ searchParams }: { searchParams: Promi
         //
         // Line comments, not a block comment: this is a prop's expression
         // container, so the JSX `{/* … */}` form is a syntax error here.
-        <p>{`Creating an account means you agree to the ${PRODUCT.name} terms and privacy policy.`}</p>
+        // BOTH documents are linked. This sentence used to name them as plain
+        // text, which meant the one screen where somebody is asked to agree to
+        // two things gave them no way to read either.
+        //
+        // Absolute hosts, because the documents live on the marketing site and
+        // that is a different registrable domain from this one — a relative
+        // href here resolves to getpiggles.com and 404s.
+        <p>
+          {`Creating an account means you agree to the ${PRODUCT.name} `}
+          <a className="font-semibold underline" href={`https://${PRODUCT.hosts.marketing}/terms`}>
+            terms
+          </a>
+          {` and `}
+          <a
+            className="font-semibold underline"
+            href={`https://${PRODUCT.hosts.marketing}/privacy`}
+          >
+            privacy policy
+          </a>
+          {`.`}
+        </p>
       }
     >
       <SignUpForm from={from} google={googleSignInAvailable()} />

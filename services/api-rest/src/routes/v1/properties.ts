@@ -38,7 +38,7 @@ import { isModuleEnabled } from '@sparx/auth';
 // Universal search (docs/39): a property IS a `site` entity. Re-index it after
 // each write so ⌘K stays live; indexEntity never throws into the handler.
 import { indexEntity } from '@sparx/events';
-import { mintZoneHost } from '../../lib/domain.js';
+import { mintZoneHost, tenantZone } from '../../lib/domain.js';
 import { PropertyBrandOverrideSchema, parseBrandOverride } from '../../lib/property-brand.js';
 
 // A stable per-tenant property handle from a display name: lowercase, hyphenated,
@@ -221,7 +221,11 @@ const propertiesRoutes: FastifyPluginAsync = async (app) => {
       select: { slug: true },
     });
     if (!tenant) throw notFound('Tenant', auth.tenantId);
-    const host = mintZoneHost(tenant.slug, slug, false);
+    // The tenant's OWN zone, read off the subdomain it already has rather than
+    // decided from its brand. A Piggles business adding a second site was
+    // getting `<site>.<tenant>.sparx.zone` — one business with two sites in two
+    // brands' zones, the second one named after a product it has never heard of.
+    const host = mintZoneHost(tenant.slug, slug, false, await tenantZone(auth.tenantId));
 
     const row = await withTenant({ tenantId: auth.tenantId, userId: auth.actorId }, async (tx) => {
       // Slug unique per tenant (@@unique([tenantId, slug])).
@@ -353,15 +357,17 @@ const propertiesRoutes: FastifyPluginAsync = async (app) => {
     const auth = requireRole(request, 'editor');
     const { id } = IdParam.parse(request.params);
 
-    // Tenant slug anchors every *.sparx.zone host (`tenants` is non-RLS). The
-    // bare host is `<tenant>.sparx.zone` (mintZoneHost ignores the slug arg when
-    // isPrimary=true).
+    // Tenant slug anchors every zone host (`tenants` is non-RLS). The bare host
+    // is `<tenant>.<zone>` (mintZoneHost ignores the slug arg when
+    // isPrimary=true), and the zone is the tenant's own — see the note on the
+    // create path above.
     const tenant = await prisma.tenant.findUnique({
       where: { id: auth.tenantId },
       select: { slug: true },
     });
     if (!tenant) throw notFound('Tenant', auth.tenantId);
-    const bareHost = mintZoneHost(tenant.slug, 'primary', true);
+    const zone = await tenantZone(auth.tenantId);
+    const bareHost = mintZoneHost(tenant.slug, 'primary', true, zone);
 
     const row = await withTenant({ tenantId: auth.tenantId, userId: auth.actorId }, async (tx) => {
       const target = await tx.property.findUnique({ where: { id } });
@@ -382,7 +388,7 @@ const propertiesRoutes: FastifyPluginAsync = async (app) => {
       //     that site's canonical (it's about to lose the bare host). Upsert by
       //     the globally-unique host so re-running make-primary is idempotent.
       if (prevPrimary) {
-        const demotedHost = mintZoneHost(tenant.slug, prevPrimary.slug, false);
+        const demotedHost = mintZoneHost(tenant.slug, prevPrimary.slug, false, zone);
         await tx.domain.upsert({
           where: { host: demotedHost },
           update: { propertyId: prevPrimary.id, status: 'active' },

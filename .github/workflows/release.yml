@@ -271,6 +271,20 @@ jobs:
           - { name: site, dockerfile: apps/site/Dockerfile }
           - { name: market, dockerfile: apps/market/Dockerfile }
           - { name: admin, dockerfile: apps/admin/Dockerfile }
+          # Piggles — the sister brand's three surfaces (k8s/apps). Separate
+          # images because they are separate applications: piggles/CLAUDE.md
+          # RULE #0 says either product must be deletable tomorrow without
+          # affecting the other, and sharing an image is sharing a build.
+          #
+          # `piggles-web` is the only one that stands alone. The account app
+          # before the console gives a live signup funnel with a dead end at the
+          # far side of the handoff, so those two ship together or not at all.
+          - { name: piggles-web, dockerfile: piggles/apps/web/Dockerfile }
+          - { name: piggles-account, dockerfile: piggles/apps/account/Dockerfile }
+          # Directory `apps/workbench`, image `piggles-console`: the console is a
+          # workbench-shaped app, but "workbench" is a sparx word and nothing an
+          # operator reads should carry it (RULE #3).
+          - { name: piggles-console, dockerfile: piggles/apps/workbench/Dockerfile }
           # Workers (k8s/self-hosted/workers.yaml). THREE images, not fourteen:
           # twelve of them were the same container with a different WORKDIR, and
           # are now handler libraries under packages/*-worker running inside

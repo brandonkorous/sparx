@@ -9,6 +9,7 @@ const config = {
   transpilePackages: [
     '@piggles/brand',
     '@piggles/config',
+    '@piggles/mascot',
     '@sparx/auth',
     '@wizeworks/silicaui-react',
   ],

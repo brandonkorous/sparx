@@ -36,6 +36,30 @@ export interface PigglesAppDef {
    *  several — "Sell" is commerce + B2B + dropship — which is most of how the
    *  product feels smaller than it is without being smaller than it is. */
   modules: ModuleKey[];
+  /**
+   * Individual SURFACES this app takes over from whichever module owns them.
+   *
+   * ── WHY A MODULE IS NOT ALWAYS THE RIGHT UNIT ─────────────────────────────
+   *
+   * `modules` groups whole modules under one app, which covers almost every
+   * case. It cannot express a SPLIT — one platform module whose surfaces belong
+   * under two different Piggles apps — and Partners is exactly that.
+   *
+   * The platform keeps suppliers, purchase orders, receiving, landed cost and
+   * supplier performance inside `inventory`, beside stock levels and shelves,
+   * because to sparx it is all one module. Piggles advertises them as a separate
+   * app: meetpiggles.com/apps/partners is titled "The suppliers and people you
+   * work alongside" and promises purchase orders, what they really cost and how
+   * long they actually take. Without this field that app could only front the
+   * platform's `partner` MODULE — which is sparx's reseller programme, a
+   * completely different product — so a Piggles customer clicking Partners
+   * expecting their suppliers got referrals, commissions and bootcamps.
+   *
+   * A surface may be claimed by at most one app; the claiming app wins and the
+   * owning module's panel no longer lists it. Keys are verified against the
+   * surface registry — a key that does not resolve claims nothing, silently.
+   */
+  claims?: string[];
 }
 
 // ── NAV ORDER ────────────────────────────────────────────────────────────────
@@ -104,11 +128,55 @@ export const APPS: readonly PigglesAppDef[] = [
     modules: ['inventory'],
   },
   {
+    id: 'partners',
+    label: 'Partners',
+    purpose: 'Your suppliers, what they charge and what you have on order',
+    // MOVED from `run` to `sell`, with the app itself. Partners is about buying
+    // the stock you sell, so it belongs beside Sell and Stock — and a colour
+    // group only does its job when the things sharing it sit together
+    // (DESIGN.md §2). It sat in `run` while it fronted sparx's reseller
+    // programme, which is a different app that Piggles does not have.
+    group: 'sell',
+    navOrder: 70,
+    defaultEnabled: false,
+    // Built ENTIRELY from claims, with no module of its own — see `claims` on
+    // the interface for why a module is the wrong unit here.
+    //
+    // `dropship` is not listed either, deliberately. It splits the same way
+    // `inventory` does: its supplier screens belong here, and "Shipped by a
+    // supplier" is a panel on a PRODUCT and belongs in Sell beside the product
+    // it is about. Claiming the four supplier screens leaves that one where it
+    // makes sense.
+    modules: [],
+    claims: [
+      // Who supplies what, and on what terms.
+      'dropship.suppliers.list',
+      'dropship.products.list',
+      'dropship.orders.list',
+      'dropship.analytics',
+      'inventory.suppliers.list',
+      'inventory.sources',
+      'inventory.suppliers.scorecards',
+      // Purchase orders, end to end.
+      'inventory.purchase-orders.list',
+      'inventory.purchase-orders.approvals',
+      'inventory.purchase-orders.approval-rules',
+      'inventory.purchase-orders.late',
+      'inventory.advance-ship-notices',
+      'inventory.receiving.list',
+      // What it actually cost, and what came back.
+      'inventory.costing.variance',
+      'inventory.supplier-bills',
+      'inventory.supplier-returns',
+      'inventory.consignment',
+    ],
+  },
+  {
     id: 'customers',
     label: 'Customers',
     purpose: 'Who you work with, and everything you know about them',
     group: 'people',
-    navOrder: 70,
+    navOrder: 80,
     defaultEnabled: true,
     modules: ['crm'],
   },
@@ -117,7 +185,7 @@ export const APPS: readonly PigglesAppDef[] = [
     label: 'Messages',
     purpose: 'Email and conversations with your customers',
     group: 'people',
-    navOrder: 80,
+    navOrder: 90,
     defaultEnabled: true,
     modules: ['email', 'chat'],
   },
@@ -126,7 +194,7 @@ export const APPS: readonly PigglesAppDef[] = [
     label: 'Bookings',
     purpose: 'Appointments, availability and your calendar',
     group: 'people',
-    navOrder: 90,
+    navOrder: 100,
     defaultEnabled: true,
     modules: ['scheduling'],
   },
@@ -135,7 +203,7 @@ export const APPS: readonly PigglesAppDef[] = [
     label: 'Invoices',
     purpose: 'Bill people and track who has paid',
     group: 'money',
-    navOrder: 100,
+    navOrder: 110,
     defaultEnabled: true,
     modules: ['invoicing'],
   },
@@ -144,7 +212,7 @@ export const APPS: readonly PigglesAppDef[] = [
     label: 'Money',
     purpose: 'What came in, what went out, and what you kept',
     group: 'money',
-    navOrder: 110,
+    navOrder: 120,
     defaultEnabled: true,
     modules: ['finance'],
   },
@@ -153,7 +221,7 @@ export const APPS: readonly PigglesAppDef[] = [
     label: 'My Team',
     purpose: 'The people who work with you, and what they can do',
     group: 'run',
-    navOrder: 120,
+    navOrder: 130,
     defaultEnabled: true,
     modules: ['staff'],
   },
@@ -162,25 +230,16 @@ export const APPS: readonly PigglesAppDef[] = [
     label: 'Automations',
     purpose: 'Let routine things happen without you',
     group: 'run',
-    navOrder: 130,
-    defaultEnabled: false,
-    modules: ['automations'],
-  },
-  {
-    id: 'partners',
-    label: 'Partners',
-    purpose: 'Suppliers, vendors and the people you work alongside',
-    group: 'run',
     navOrder: 140,
     defaultEnabled: false,
-    modules: ['partner'],
+    modules: ['automations'],
   },
   {
     id: 'connections',
     label: 'Connections',
     purpose: 'Link Piggles to the other tools you use',
     group: 'run',
-    navOrder: 150,
+    navOrder: 160,
     defaultEnabled: false,
     modules: ['ai'],
   },
@@ -226,36 +285,13 @@ export const appsInGroup = (group: PigglesGroup): PigglesAppDef[] =>
 export const defaultRail = (): PigglesAppDef[] =>
   APPS.filter((a) => a.defaultEnabled).sort((x, y) => x.navOrder - y.navOrder);
 
-/**
- * The platform modules behind a set of colour groups — what onboarding's "what do
- * you do?" answer actually turns on.
- *
- * ── WHY THIS EXISTS, AND WHAT IT IS NOT ─────────────────────────────────────
- *
- * The answer is a set of GROUPS ("I sell things"), the rail is a set of APPS
- * ("Sell", "Stock"), and the platform activates MODULES (`commerce`, `b2b`,
- * `dropship`, `inventory`). This is the only place that walks all three, derived
- * from the registry so the three can never disagree.
- *
- * **It is not an entitlement.** A module that is off in Piggles is not a locked
- * door and must never become one — every app stays listed, and turning one on is
- * one tap with no price attached (piggles/CLAUDE.md RULE #2: the answer HIDES,
- * it never gates). What activation buys is that a business which said it sells
- * things arrives to a Sell app that already has its tax and shipping defaults,
- * rather than to fifteen apps each waiting to be set up.
- *
- * `platform` is filtered out: it is the console itself, not a module anything
- * can activate. Anything else the registry names is passed through as written —
- * validating against the platform's catalogue would mean holding a copy of it
- * here, and an unknown slug is inert anyway.
- */
-export const modulesForGroups = (groups: readonly PigglesGroup[]): string[] => {
-  const wanted = new Set(groups);
-  return [
-    ...new Set(
-      APPS.filter((app) => wanted.has(app.group))
-        .flatMap((app) => app.modules)
-        .filter((module) => module !== 'platform')
-    ),
-  ];
-};
+// There is deliberately NO `modulesForGroups` here any more.
+//
+// It mapped onboarding's "what do you do?" answer to the modules to activate,
+// and that mapping was the bug: a module left off returns 404, runs no workers
+// and stores no rows, so the groups somebody did not tick became locked doors on
+// a screen promising "everything is included either way". Onboarding now
+// activates ALL_MODULES for every business (RULE #2) and the groups decide only
+// what starts on the rail. Reintroducing a groups→modules function is
+// reintroducing the gate — if you need one, you are about to charge for
+// something Piggles does not charge for.

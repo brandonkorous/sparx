@@ -52,6 +52,13 @@
  * broken. Add a scan here for any Piggles package that ships className strings. */
 @source '../../../packages/brand/src/**/*.{ts,tsx}';
 
+/* Same reason, same failure: <PigglesMascot> picks its width from a table of
+ * literal class strings (`w-24`/`w-44`/`w-72`/`w-112`). Unscanned, none of them
+ * are generated and the mascot silently falls back to `max-w-full` — she fills
+ * whatever column she is in, at whatever size it happens to be, and nothing
+ * anywhere reports a problem. */
+@source '../../../packages/mascot/src/**/*.{ts,tsx}';
+
 /* Bridge the brand's font tokens into the Tailwind v4 theme, so `font-heading`
  * and `font-sans` EXIST as utilities.
  *
@@ -70,6 +77,12 @@
   --font-sans: var(--font-sans);
   --font-heading: var(--font-heading);
   --font-mono: var(--font-mono);
+
+  /* `rounded-section` — board radiusXl, declared in @piggles/brand's theme.css.
+   * Same bridge, same reason as the fonts above: a token declared inside
+   * `[data-theme]` is invisible to @theme, so the utility would not exist and
+   * every panel on this site would silently render square. */
+  --radius-section: var(--radius-section);
 }
 
 /* Fonts. theme.css declares the INTENT with literal family names ('Nunito',
@@ -106,4 +119,199 @@ h4,
 h5,
 h6 {
   font-family: var(--font-heading);
+}
+
+/* ── MOTION ───────────────────────────────────────────────────────────────────
+ *
+ * NO ANIMATION LIBRARY, and the reason is structural rather than a byte count.
+ * This page is deliberately server components — the comment at the top of
+ * home.tsx explains what breaks when that slips — and every React motion library
+ * animates by rendering, so `motion.div` would drag the marketing argument into
+ * the client bundle to make a heading fade in. Scroll-driven CSS animation does
+ * the same job with no JavaScript at all and no `'use client'` anywhere.
+ *
+ * Layered three deep so it degrades in the right direction:
+ *   • `@supports (animation-timeline: view())` — a browser without scroll-driven
+ *     animation never sees a rule, so it renders the page fully visible. The
+ *     failure mode of the JS approach is the opposite: elements start at
+ *     `opacity: 0` and stay there if the observer never runs.
+ *   • `prefers-reduced-motion: no-preference` — opt IN, not opt out. Someone who
+ *     has asked for less motion gets a completely static page rather than a
+ *     smaller amount of the thing they asked not to have.
+ *   • Every range is expressed in `entry`, never `cover`. A `cover` range is a
+ *     percentage of the element's trip across the whole viewport, and an element
+ *     near the bottom of the document can never finish that trip — the page runs
+ *     out of scroll first, so it sits permanently half-faded with nothing to
+ *     report it. `entry 0% → entry 85%` completes when the element is nearly
+ *     fully on screen, which every element can reach, and it means content is
+ *     settled by the time it is read.
+ *
+ * Timing and easing are TOKENS from @piggles/brand — `--ease-piggles` has the
+ * slight overshoot a soft round object has, which is most of why this reads as
+ * Piggles rather than as a generic fade-up. */
+
+@keyframes piggles-rise {
+  from {
+    opacity: 0;
+    transform: translateY(1.5rem);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes piggles-settle {
+  from {
+    opacity: 0;
+    transform: translateY(2rem) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* A slow, small drift. The mascot is a cutout with no ground under her, and a
+ * few pixels of vertical movement is what stops her reading as a sticker laid on
+ * the panel. Deliberately long and deliberately tiny — anything faster becomes a
+ * bouncing pig, which is the childish failure DESIGN.md §5 guards against. */
+@keyframes piggles-float {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(-0.625rem);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    .rise,
+    .settle {
+      animation: piggles-rise both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 85%;
+      animation-timing-function: var(--ease-out-soft);
+    }
+
+    .settle {
+      animation-name: piggles-settle;
+      animation-timing-function: var(--ease-piggles);
+    }
+
+    /* Stagger without a delay per element: each child enters over a slightly
+     * later slice of the same scroll range, so the sequence is tied to where the
+     * page IS rather than to a clock that started when the first one crossed. */
+    .stagger > * {
+      animation: piggles-rise both;
+      animation-timeline: view();
+      animation-timing-function: var(--ease-out-soft);
+      animation-range: entry 0% entry 70%;
+    }
+    .stagger > *:nth-child(2) {
+      animation-range: entry 0% entry 80%;
+    }
+    .stagger > *:nth-child(3) {
+      animation-range: entry 0% entry 90%;
+    }
+    .stagger > *:nth-child(4) {
+      animation-range: entry 0% entry 100%;
+    }
+    .stagger > *:nth-child(5) {
+      animation-range: entry 5% entry 100%;
+    }
+    .stagger > *:nth-child(n + 6) {
+      animation-range: entry 10% entry 100%;
+    }
+  }
+
+  /* Not scroll-driven: she drifts the whole time she is on screen. */
+  .float {
+    animation: piggles-float 4.5s var(--ease-out-soft) infinite alternate;
+  }
+}
+
+/* A group hue as READABLE INK, on whichever surface it lands on.
+ *
+ * The six group hues were measured for AA against white — `money` is lime-700,
+ * `web` is indigo-600 — so `text-module` on a dark theme island drops under 3:1
+ * and the word reads as switched off. Measured against `base-200` inside
+ * `data-theme="dark"`:
+ *
+ *   | plain `text-module` |  1.4–2.1:1  |  ← unreadable
+ *   | this rule           |  6.6–7.1:1  |
+ *
+ * This is the same lesson close-band.tsx already records: a colour pinned at the
+ * call site stops following the surface. So the value is DERIVED from
+ * `--color-module` rather than replacing it — change a group hue in
+ * @piggles/brand and both branches of this rule move with it, which a pair of
+ * hand-picked hex values would not. */
+.ink-module {
+  color: var(--color-module);
+}
+[data-theme='dark'] .ink-module {
+  color: color-mix(in oklab, var(--color-module) 52%, white);
+}
+
+/* The desk in <TheDay>.
+ *
+ * The one piece of bespoke CSS the film needs, and only because a dot grid is a
+ * background-image: everything else about that component — hues, positions,
+ * sizes — is a `data-group` bridge or a Tailwind utility.
+ *
+ * It exists so that empty space on the desk has something to BE. The first
+ * beats are meant to be sparse and fill up, and against a flat surface that
+ * read as a void rather than as a workspace waiting for the day. */
+.day-desk {
+  background-image: radial-gradient(
+    circle at 1px 1px,
+    color-mix(in oklab, var(--color-base-content) 9%, transparent) 1.4px,
+    transparent 0
+  );
+  background-size: 26px 26px;
+}
+
+/* The Turn's strikethrough, drawn rather than printed.
+ *
+ * `text-decoration: line-through` cannot be animated, so the rule is a
+ * pseudo-element the width of the word and the scroll position scales it from the
+ * left. The point is the ORDER: the jargon is readable for a moment, and then it
+ * is struck and the plain word beside it is what is left. A pre-struck word is a
+ * layout; a word being struck is the argument happening.
+ *
+ * The base rule paints the line at full width with no animation, so a browser
+ * without scroll-driven timelines — and anyone who asked for reduced motion —
+ * still gets the struck word rather than an unmarked one. */
+.strike {
+  position: relative;
+}
+.strike::after {
+  content: '';
+  position: absolute;
+  inset-inline: 0;
+  top: 50%;
+  height: 1px;
+  background: currentColor;
+  transform-origin: left center;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    .strike::after {
+      animation: piggles-strike both;
+      animation-timeline: view();
+      animation-range: entry 20% entry 95%;
+      animation-timing-function: var(--ease-out-soft);
+    }
+  }
+}
+
+@keyframes piggles-strike {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
 }

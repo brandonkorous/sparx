@@ -17,7 +17,7 @@ import './globals.css';
 // ── WHAT THIS APP IS, AND IS NOT ────────────────────────────────────────────
 //
 // It is a SHELL. Every screen inside it is a shared workbench surface, mounted
-// from apps/workbench and never forked (piggles/CLAUDE.md RULE #0). What Piggles
+// its own, forked from the platform on 2026-08-14 (piggles/CLAUDE.md RULE #0). What Piggles
 // owns is everything around them: the chrome, the navigation, the vocabulary,
 // the theme, and the first run.
 //

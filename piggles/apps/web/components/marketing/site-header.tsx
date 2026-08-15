@@ -48,7 +48,13 @@ export function SiteHeader() {
   const [open, setOpen] = useState(false);
 
   return (
-    <header className="bg-base-100 border-base-300 border-b">
+    // Sticky, so the CTA survives a 7,000px page. Navigation on a landing page
+    // is part of the conversion path, not a directory you visit once at the top —
+    // and the alternative (a floating pill that appears on scroll) is a second
+    // component that can disagree with this one about what the primary action is.
+    // `bg-base-100` is opaque on purpose: a translucent bar over the module-tinted
+    // bento gives the brand six different header colours on the way down.
+    <header className="bg-base-100 border-base-300 sticky top-0 z-50 border-b">
       <Navbar className="mx-auto max-w-7xl px-6">
         <NavbarStart>
           <Link href="/" aria-label={`${'Piggles'} home`}>

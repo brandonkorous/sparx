@@ -109,12 +109,29 @@ async function announceModuleTransition(
 //
 // Returns the effective settings blob (next when anything changed, else the
 // original) so callers can shape their response without a re-read.
+export interface ApplyModuleWritesOptions {
+  /**
+   * Whether this tenant's plan bills PER MODULE. Default true — sparx's model,
+   * and the behaviour every existing caller already has.
+   *
+   * A caller on a FLAT plan passes false: syncing per-module subscription items
+   * for a tenant whose price does not vary by module is not a no-op, it is an
+   * outright billing bug — it would create line items nobody agreed to pay.
+   *
+   * A PARAMETER, never a brand check. The pricing model belongs to whoever is
+   * provisioning, and it says so; the moment this reads `tenant.platformBrand`
+   * instead, shared code has grown a fork (piggles/CLAUDE.md RULE #0).
+   */
+  billPerModule?: boolean;
+}
+
 export async function applyModuleWrites(
   log: FastifyBaseLogger,
   tenantId: string,
   actorId: string | null,
   beforeSettings: unknown,
-  writes: Map<ModuleSlug, boolean>
+  writes: Map<ModuleSlug, boolean>,
+  options: ApplyModuleWritesOptions = {}
 ): Promise<unknown> {
   if (writes.size === 0) return beforeSettings;
 
@@ -147,7 +164,7 @@ export async function applyModuleWrites(
   // Best-effort + guarded: a no-op until billing is configured, and a Stripe
   // failure never blocks the toggle (the flag is already written; the webhook
   // reconciles authoritative state).
-  if (isBillingConfigured()) {
+  if ((options.billPerModule ?? true) && isBillingConfigured()) {
     try {
       const explicitEnabled = MODULE_SLUGS.filter((s) => afterStates[s].source === 'explicit');
       const t = await prisma.tenant.findUnique({

@@ -516,6 +516,150 @@ resource "cloudflare_record" "marketing_www" {
 }
 
 # =========================================================================
+# Piggles — the sister brand's three surfaces
+# =========================================================================
+# Same cluster, same ingress IP, same Caddy. Three REGISTRABLE domains, and that
+# is the point rather than an accident: they cannot share a cookie, which is what
+# makes getpiggles the sole auth authority and lets mypiggles carry no sign-in UI
+# at all (piggles/CLAUDE.md, "Cross-domain auth").
+#
+#   meetpiggles.com  discover        → piggles-web
+#   getpiggles.com   authenticate    → piggles-account
+#   mypiggles.com    operate         → piggles-console
+#
+# Proxied, like sparx.works and unlike sparx.zone: these are OUR hostnames with
+# ordinary Caddy-managed certificates, so there is no ACME challenge that needs
+# to reach the origin directly.
+
+locals {
+  piggles_zones = var.cloudflare_enabled ? toset([
+    "meetpiggles.com",
+    "getpiggles.com",
+    "mypiggles.com",
+  ]) : toset([])
+}
+
+data "cloudflare_zone" "piggles" {
+  for_each = local.piggles_zones
+  name     = each.value
+}
+
+resource "cloudflare_record" "piggles_root" {
+  for_each        = local.piggles_zones
+  zone_id         = data.cloudflare_zone.piggles[each.value].id
+  name            = "@"
+  type            = "A"
+  content         = var.ingress_ip
+  ttl             = 1
+  proxied         = true
+  allow_overwrite = true
+  comment         = "Piggles — Caddy host-matches this name"
+}
+
+resource "cloudflare_record" "piggles_www" {
+  for_each        = local.piggles_zones
+  zone_id         = data.cloudflare_zone.piggles[each.value].id
+  name            = "www"
+  type            = "CNAME"
+  content         = each.value
+  ttl             = 1
+  proxied         = true
+  allow_overwrite = true
+}
+
+# api.mypiggles.com — the SAME api-rest every sparx app uses, on a hostname that
+# is not another company's.
+#
+# This is not cosmetic. The console hands this origin to the CUSTOMER'S BROWSER
+# (via /api/token) and the browser then calls it directly with a short-lived
+# bearer token, so it is the one platform address a Piggles customer actually
+# sees — in their network tab, in devtools, and in any CORS error they hit.
+# api-rest runs `cors: { origin: true }`, so nothing needs allowlisting.
+resource "cloudflare_record" "piggles_api" {
+  count           = var.cloudflare_enabled ? 1 : 0
+  zone_id         = data.cloudflare_zone.piggles["mypiggles.com"].id
+  name            = "api"
+  type            = "A"
+  content         = var.ingress_ip
+  ttl             = 1
+  proxied         = true
+  allow_overwrite = true
+  comment         = "api-rest, on the brand's own hostname"
+}
+
+# =========================================================================
+# piggles.site — Piggles TENANT sites (the sparx.zone of this brand)
+# =========================================================================
+# A Piggles business is provisioned on `<slug>.piggles.site` — that is what
+# `provisionTenant`'s `zoneDomain` parameter exists for, and it is why the
+# subdomain is a parameter rather than the `SPARX_ZONE_DOMAIN` env var: an env
+# var is fixed per deployment and BOTH brands are served by the same processes,
+# so every Piggles signup would otherwise have been handed a sparx.zone address.
+#
+# ⚠ THESE RECORDS ARE NECESSARY AND NOT SUFFICIENT. Caddy issues a per-hostname
+# certificate on first request and asks api-rest's `/internal/domain-check`
+# whether the name is legitimate. That endpoint resolves against ONE zone —
+# `SPARX_ZONE = process.env.SPARX_ZONE_DOMAIN ?? 'sparx.zone'` in
+# services/api-rest/src/lib/domain.ts — so a `*.piggles.site` host is not
+# recognised as ours, falls through to the custom-domain path, fails
+# verification, and NEVER GETS A CERTIFICATE. DNS resolves perfectly and the
+# handshake fails, which is the failure shape this file already warns about
+# twice.
+#
+# The fix is the same one signup already applied one layer up: api-rest has to
+# know about a LIST of owned zones rather than a single one. Tracked in
+# piggles/STATUS.md; these records land now because they are correct regardless
+# and nothing can be tested without them.
+data "cloudflare_zone" "piggles_site" {
+  count = var.cloudflare_enabled ? 1 : 0
+  name  = "piggles.site"
+}
+
+resource "cloudflare_record" "piggles_site_root" {
+  count           = var.cloudflare_enabled ? 1 : 0
+  zone_id         = data.cloudflare_zone.piggles_site[0].id
+  name            = "@"
+  type            = "A"
+  content         = var.ingress_ip
+  ttl             = 1
+  proxied         = true
+  allow_overwrite = true
+}
+
+# Every tenant site. DNS-ONLY, for exactly the reasons spelled out on
+# `sparx_zone_wildcard` above — an ACME challenge cannot reach the origin through
+# Cloudflare's proxy, and a Universal SSL wildcard matches only ONE label, so
+# proxying this breaks `<site>.<tenant>.piggles.site` while DNS resolves fine.
+#
+# The same landmine applies: creating an explicit record for one tenant makes it
+# the closest encloser and instantly NXDOMAINs every deeper name beneath it.
+resource "cloudflare_record" "piggles_site_wildcard" {
+  count           = var.cloudflare_enabled ? 1 : 0
+  zone_id         = data.cloudflare_zone.piggles_site[0].id
+  name            = "*"
+  type            = "A"
+  content         = var.ingress_ip
+  ttl             = 1
+  proxied         = false
+  allow_overwrite = true
+}
+
+# The CNAME target a Piggles tenant points a custom domain at. Named in
+# piggles/packages/config/src/product.ts as `customers.piggles.site`, so this
+# record and that constant have to agree.
+resource "cloudflare_record" "piggles_site_customers" {
+  count           = var.cloudflare_enabled ? 1 : 0
+  zone_id         = data.cloudflare_zone.piggles_site[0].id
+  name            = "customers"
+  type            = "A"
+  content         = var.ingress_ip
+  ttl             = 1
+  proxied         = false
+  allow_overwrite = true
+  comment         = "Piggles tenant custom-domain CNAME target"
+}
+
+# =========================================================================
 # wize.works — WizeWorks operator console (admin.wize.works)
 # =========================================================================
 # The Layer-4 operator console (docs/16 §2.4, docs/apps/admin/build-plan.md).

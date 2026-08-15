@@ -32,8 +32,8 @@ import {
   useToast,
 } from '@wizeworks/silicaui-react';
 import { useQueryClient } from '@sparx/query';
-import { api } from '@workbench/lib/api/client';
-import { useViewer } from '@workbench/lib/api/shell-data';
+import { api } from '@/lib/api/client';
+import { useViewer } from '@/lib/api/shell-data';
 import { AppScope } from './app-scope';
 import { useAllApps, type ConsoleApp } from '@/lib/console/nav';
 
@@ -50,9 +50,13 @@ export function AllAppsDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-3xl">
         <DialogTitle>All apps</DialogTitle>
+        {/* Describes what is ACTUALLY on the screen. The first version said
+            "these are just the ones you have not switched on yet" while listing
+            all fifteen, on and off alike — a sentence that reads perfectly and
+            is contradicted by the thing directly under it. */}
         <DialogDescription>
-          Everything is included — these are just the ones you have not switched on yet. Adding one
-          takes a moment and never changes what you pay.
+          Everything Piggles does, whether you have switched it on or not. Adding one takes a
+          moment, sets itself up, and never changes what you pay.
         </DialogDescription>
 
         {/* Two columns from `sm` up. Fifteen rows in one column is a scroll for

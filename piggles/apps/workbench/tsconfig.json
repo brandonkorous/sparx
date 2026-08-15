@@ -6,8 +6,7 @@
     "noEmit": true,
     "incremental": true,
     "paths": {
-      "@/*": ["./*"],
-      "@workbench/*": ["../../../apps/workbench/*"]
+      "@/*": ["./*"]
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],

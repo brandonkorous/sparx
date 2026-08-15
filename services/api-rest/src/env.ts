@@ -40,6 +40,15 @@ const EnvSchema = z
     // A SEPARATE secret (writes cross-org referral/commission rows) — its own
     // blast radius, rotates independently. Optional in dev; unset → endpoints 401.
     SPARX_INTERNAL_PARTNERS_TOKEN: z.string().min(16).optional(),
+    // Shared secret for the tenant-furnishing hook (POST /internal/tenant/furnish).
+    // The app that runs signup calls this once, after it has a tenant + owner, to
+    // switch the modules on, stamp the trade's config, optionally install a site
+    // template and load sample records. A SEPARATE secret because it WRITES
+    // heavily into a named tenant — a different blast radius from triggering a
+    // scheduler or reading a report — so it rotates independently. Optional in
+    // dev; unset → the endpoint returns 401 (fail-closed, and loudly: a signup
+    // that arrives unfurnished should carry an error rather than look normal).
+    SPARX_INTERNAL_FURNISH_TOKEN: z.string().min(16).optional(),
     // Shared secret for the WizeWorks operator console's internal endpoints
     // (GET/POST /internal/operator/*, docs/apps/admin/build-plan.md §2 D6). The
     // admin app authenticates the operator (Better Auth + capabilities) then

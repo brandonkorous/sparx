@@ -1,84 +1,18 @@
 # Piggles Character Bible
 
-## Canonical character
+Piggles is business software made human: approachable, helpful, competent, dependable, modern, slightly mischievous, and never childish.
 
-Piggles is a very round, soft, pink 3D pig mascot. The character is meant to make serious business software feel approachable, not juvenile.
+## Canonical identity
 
-### Anatomy
+- Almost-circular combined body and head with no visible neck.
+- Natural soft peach-pink skin; richer natural-pink snout and inner ears.
+- Tiny legs, tiny muted dark-brown hooves, small rounded arms, subtle tail.
+- Small black oval eyes with minimal white; centered horizontal snout and two vertical nostrils.
+- Plain matte charcoal short-sleeve shirt with official Piggles pink `P`.
+- Soft dimensional animation-quality rendering, minimal texture, gentle studio light.
 
-- large round head blended softly into a chubby torso
-- very short, soft limbs
-- small rounded hooves
-- large floppy ears
-- broad oval snout
-- two vertical/oval nostrils
-- large dark-brown eyes
-- small curled tail where visible
+## Role system
 
-### Expression
+Roles are the same Piggles plus one defining accessory. Use charcoal, warm gray, cream, and restrained Piggles pink. Yellow is reserved for intentional role or success accents. Do not replace the uniform, alter anatomy, enlarge eyes or limbs, use candy-pink skin, add costume stacks, or redesign the `P`.
 
-Default expression is friendly and alert.
-Piggles may be:
-
-- happy
-- welcoming
-- thoughtful
-- mildly concerned
-- excited
-- sleepy
-
-Avoid:
-
-- rage
-- sarcasm
-- smugness
-- fear
-- grotesque exaggeration
-
-## Surface style
-
-- soft polished 3D
-- gentle studio lighting
-- minimal texture
-- no fur
-- no photorealism
-- restrained soft shadow
-- transparent background for reusable assets
-
-## Props
-
-Props must communicate a job:
-
-- laptop = work/workspace
-- calendar = bookings
-- invoice = invoicing/money
-- phone/message = customer communication
-- package = orders/shipping
-- chart = reporting/growth
-
-Do not add random decorative props just to make the illustration busy.
-
-## Brand relationship
-
-Piggles may use the Piggles P mark on owned objects such as:
-
-- laptop
-- mug
-- package
-- tiny UI card
-
-Keep it subtle.
-
-## UX rule
-
-Use Piggles where personality helps:
-
-- onboarding
-- empty states
-- completion
-- guidance
-- error recovery
-- login
-- marketing
-
-Do not place Piggles beside every form or every table. The mascot should remain special.
+The creative north star: would this make someone who hates business software more comfortable using it?

@@ -1,5 +1,5 @@
-import Image from 'next/image';
 import { Badge } from '@wizeworks/silicaui-react';
+import { PigglesMascot } from '@piggles/mascot/react';
 
 // The mascot at her desk, with two cards from the product floating beside her.
 //
@@ -49,9 +49,19 @@ import { Badge } from '@wizeworks/silicaui-react';
 //
 // ── THE ASSET ───────────────────────────────────────────────────────────────
 //
-// Master lives in `piggles/images/piggles-at-desk.png` (1536×1024). What ships
-// here is trimmed of its transparent margin and resized to 1200px wide — 2× its
-// largest real display size — and `next/image` serves the WebP.
+// The `desk` pose from @piggles/mascot. It was previously a hand-cut copy of the
+// same artwork at `public/piggles-at-desk.png` — identical master (1536×1024,
+// subject box 1502×851), trimmed and resized by hand instead of by the ingest.
+// Two copies of one asset meant a re-cut would have landed in the catalog and
+// silently missed this screen, which is the exact drift the package exists to
+// stop; the hand-cut copy is gone.
+//
+// THE GRID WAS RE-SAMPLED for the swap, as the note above requires. The package
+// trims tighter (1200×683 against the old 1200×720, all of it bottom margin), so
+// the clear region moves — and measured, it does not move enough to matter: the
+// top-left quadrant reads 0% coverage across x 0–42%, y 0–37% in both cuts, and
+// the row at y 38% is if anything CLEARER in the new one (68/62/57 against
+// 90/85/80). The percentages below stand on measurement, not on assumption.
 //
 // The cutout is genuinely transparent: the alpha channel is 52% clear, 48%
 // opaque and only 0.4% in between, and that fraction is edge antialiasing rather
@@ -88,15 +98,14 @@ const CARDS: {
 export function ProductGlimpse() {
   return (
     <div aria-hidden className="relative mt-8 hidden sm:block">
-      <Image
-        src="/piggles-at-desk.png"
-        alt=""
-        width={1200}
-        height={720}
-        // Sized by the column, not by the viewport: the panel is roughly half of
-        // a 72rem shell at `lg` and full width below it.
+      <PigglesMascot
+        pose="desk"
+        // She IS the panel here — the column decides her width, not one of the
+        // four fixed sizes. `sizes` is required with `fill` for that reason:
+        // sized by the column, not by the viewport, since the panel is roughly
+        // half of a 72rem shell at `lg` and full width below it.
+        size="fill"
         sizes="(min-width: 1024px) 38rem, 100vw"
-        className="h-auto w-full"
       />
 
       {CARDS.map((card) => (

@@ -1,84 +1,9 @@
-# Piggles Mascot System
+# Piggles Mascot System — Batch 01
 
-Drop-in mascot asset package for Piggles.
+The foundational Piggles brand-character set, rebuilt from `MASCOT.md` v1.1 and the approved `originals.png` reference board.
 
-## Included
-
-- 9 production-ready Piggles illustrations
-- PNG source assets
-- optimized WebP production assets
-- `manifest.json`
-- JavaScript registry/helper
-- TypeScript declarations
-- React `<PigglesCharacter />` helper
-- character bible
-- usage matrix
-- future pose catalog
-- visual character sheet
-
-## Suggested app install
-
-Copy:
-
-```text
-assets/webp/*
-```
-
-into:
-
-```text
-public/characters/piggles/
-```
-
-Then copy:
-
-```text
-src/pigglesCharacters.js
-src/pigglesCharacters.d.ts
-src/PigglesCharacter.jsx
-```
-
-into your app.
-
-Example:
+The package contains ten original transparent illustrations in PNG and WebP, a character sheet, manifest, documentation, and application helpers. Canonical and role assets use the required formula: natural peach-pink Piggles, charcoal shirt, official pink `P`, and controlled role accessories.
 
 ```jsx
-import { PigglesCharacter } from '@/lib/piggles/PigglesCharacter';
-
-<PigglesCharacter id="thinking" className="h-auto w-72" alt="" />;
+<PigglesCharacter id="piggles-mascot-base" alt="Meet Piggles" />
 ```
-
-Or choose by intent:
-
-```js
-const mascot = getPigglesByIntent('bookings');
-```
-
-## Dynamic use
-
-The site should select semantic character IDs rather than filenames.
-
-Good:
-
-```js
-character = 'calendar';
-```
-
-Bad:
-
-```js
-src = '/images/pig3.webp';
-```
-
-That lets artwork change without rewriting product code.
-
-## Formats
-
-- PNG = source/master
-- WebP = default production format
-
-All reusable mascot assets are intended for transparent-background placement.
-
-## Important
-
-See `docs/CHARACTER_BIBLE.md` before creating new Piggles artwork.

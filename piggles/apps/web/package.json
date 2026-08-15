@@ -14,6 +14,7 @@
   "dependencies": {
     "@piggles/brand": "workspace:*",
     "@piggles/config": "workspace:*",
+    "@piggles/mascot": "workspace:*",
     "@wizeworks/silicaui": "catalog:",
     "@wizeworks/silicaui-react": "catalog:",
     "next": "^16.2.6",
