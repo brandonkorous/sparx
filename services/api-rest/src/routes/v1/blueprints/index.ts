@@ -27,6 +27,11 @@ import { conflict, notFound } from '@sparx/api-core/errors';
 import { requireTenantProperty, resolvePropertyId } from '../../../lib/property.js';
 import { resolveBlueprintManifest } from '../../../lib/marketplace/resolve.js';
 import {
+  blueprintSlugsHiddenFrom,
+  blueprintVisibleTo,
+} from '../../../lib/marketplace/brand-scope.js';
+import { tenantPlatformBrand } from '../../../lib/tenant-brand.js';
+import {
   deleteInstall,
   findInstall,
   goLiveInstall,
@@ -139,9 +144,21 @@ const blueprintRoutes: FastifyPluginAsync = (app) => {
     // (eval Finding 8). With no installs, `slug: { in: [] }` matches nothing and the
     // page is simply empty.
     const installedKeys = installs.map((i) => i.blueprintKey);
-    const where = installedOnly
-      ? { status: 'published' as const, visibility: 'public' as const, slug: { in: installedKeys } }
-      : { status: 'published' as const, visibility: 'public' as const };
+    // Another brand's SHOWCASE listings are not this tenant's to see. Excluded in
+    // the WHERE rather than filtered off the results, because this query paginates
+    // and counts: filtering afterwards returns short pages against a total that
+    // disagrees with them. Only the showcase family is ever restricted — the
+    // vertical templates are shared platform content (see lib/marketplace/brand-scope.ts).
+    const hiddenSlugs = await blueprintSlugsHiddenFrom(await tenantPlatformBrand(auth.tenantId));
+    const slugFilter = {
+      ...(installedOnly ? { in: installedKeys } : {}),
+      ...(hiddenSlugs.length ? { notIn: hiddenSlugs } : {}),
+    };
+    const where = {
+      status: 'published' as const,
+      visibility: 'public' as const,
+      ...(Object.keys(slugFilter).length ? { slug: slugFilter } : {}),
+    };
     const [rows, total] = await Promise.all([
       // The catalog IS the marketplace rows — sparx's own blueprints and a
       // collaborator's sit in the same table, told apart only by their publisher.
@@ -242,6 +259,14 @@ const blueprintRoutes: FastifyPluginAsync = (app) => {
     const { property_id } = InstallBody.parse(request.body ?? {});
     const bp = await resolveBlueprintManifest(auth.tenantId, key);
     if (!bp) throw notFound('Blueprint', key);
+    // Hidden from the browse list is not the same as unreachable — this route
+    // takes the key straight off the URL, so without this check another brand's
+    // showcase installs perfectly for anyone who knows its slug. 404 rather than
+    // 403: to this tenant the listing genuinely does not exist, and saying
+    // "forbidden" would confirm it does.
+    if (!(await blueprintVisibleTo(key, await tenantPlatformBrand(auth.tenantId)))) {
+      throw notFound('Blueprint', key);
+    }
     // Explicit body target wins (validated, 404 on miss — the wizard installs into
     // the site it just created); else the active site (header → primary).
     const propertyId = property_id

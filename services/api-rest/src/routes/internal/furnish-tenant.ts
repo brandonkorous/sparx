@@ -24,6 +24,10 @@
 // app publishing to the broker alone gets the flags and none of the seeding —
 // silently. See lib/furnish-tenant.ts.
 //
+//   • GET  /internal/tenant/blueprints?tenantId=…  → the templates that tenant's
+//     BRAND may see, for the signup app's picker. It lives here rather than in the
+//     signup app because brand visibility is declared in the bundle manifests,
+//     which ship in this image and not that one.
 //   • POST /internal/tenant/furnish   → { tenantId, modules, industry, … }
 //
 // The `tenants` table is deliberately non-RLS (the dispatch row), so the tenant
@@ -38,6 +42,8 @@ import { prisma } from '@sparx/db';
 
 import { env } from '../../env.js';
 import { furnishTenant } from '../../lib/furnish-tenant.js';
+import { blueprintSlugsHiddenFrom } from '../../lib/marketplace/brand-scope.js';
+import { tenantPlatformBrand } from '../../lib/tenant-brand.js';
 
 const FURNISH_TOKEN_HEADER = 'x-sparx-internal-furnish-token';
 
@@ -76,7 +82,64 @@ function authorize(request: FastifyRequest): void {
   }
 }
 
+const listQuerySchema = z.object({ tenantId: z.string().uuid() });
+
 const furnishTenantRoutes: FastifyPluginAsync = async (app) => {
+  // The templates a tenant may choose from, for the signup app's picker.
+  //
+  // The onboarding app CANNOT compute this itself, which is the whole reason the
+  // endpoint exists. Brand visibility is declared in the bundle manifests, and
+  // those ship in THIS image — the account app has the database but not the
+  // catalog, so a direct query there would happily hand a Piggles business the
+  // other brand's showcase.
+  app.get('/internal/tenant/blueprints', async (request) => {
+    authorize(request);
+    const { tenantId } = listQuerySchema.parse(request.query);
+
+    const tenant = await prisma.tenant.findUnique({
+      where: { id: tenantId },
+      select: { id: true },
+    });
+    if (!tenant) throw notFound(`Tenant ${tenantId} does not exist.`);
+
+    const hidden = await blueprintSlugsHiddenFrom(await tenantPlatformBrand(tenantId));
+    const rows = await prisma.marketplaceBlueprint.findMany({
+      where: {
+        status: 'published',
+        visibility: 'public',
+        ...(hidden.length ? { slug: { notIn: hidden } } : {}),
+      },
+      orderBy: { sortWeight: 'desc' },
+      select: {
+        slug: true,
+        name: true,
+        tagline: true,
+        description: true,
+        vertical: true,
+        media: true,
+      },
+    });
+
+    return {
+      success: true,
+      data: {
+        blueprints: rows.map((r) => {
+          const media = Array.isArray(r.media)
+            ? (r.media as { url?: string; kind?: string }[])
+            : [];
+          const preview = media.find((m) => m.kind === 'preview') ?? media[0];
+          return {
+            key: r.slug,
+            name: r.name,
+            summary: r.tagline ?? r.description ?? '',
+            vertical: r.vertical,
+            ...(preview?.url ? { preview: preview.url } : {}),
+          };
+        }),
+      },
+    };
+  });
+
   app.post('/internal/tenant/furnish', async (request, reply) => {
     authorize(request);
     const body = bodySchema.parse(request.body);

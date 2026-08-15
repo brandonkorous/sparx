@@ -59,8 +59,10 @@ import {
   starterRegistry,
   type InstallStarterResult,
 } from './industry-starters.js';
+import { blueprintVisibleTo } from './marketplace/brand-scope.js';
 import { resolveBlueprintManifest } from './marketplace/resolve.js';
 import { applyModuleWrites, readModuleFlags } from './module-toggle.js';
+import { tenantPlatformBrand } from './tenant-brand.js';
 
 export interface FurnishTenantSpec {
   tenantId: string;
@@ -161,6 +163,20 @@ async function applyBlueprint(
   logger: FastifyBaseLogger
 ): Promise<BlueprintOutcome> {
   if (!spec.blueprintKey) return { status: 'skipped', reason: 'no blueprintKey' };
+
+  // The brand gate applies HERE TOO, and not because a caller is untrusted — the
+  // token-holder is a first-party app. It applies because the key travels from a
+  // BROWSER FORM through that app: whatever the picker offered, what arrives is
+  // whatever was posted. Without this, one edited form field installs the other
+  // brand's showcase, and the listing filter that hides it becomes decoration.
+  const brand = await tenantPlatformBrand(spec.tenantId);
+  if (!(await blueprintVisibleTo(spec.blueprintKey, brand))) {
+    return {
+      status: 'skipped',
+      reason: `blueprint ${spec.blueprintKey} is not available to the ${brand} brand`,
+    };
+  }
+
   const blueprint = await resolveBlueprintManifest(spec.tenantId, spec.blueprintKey);
   if (!blueprint) {
     return {

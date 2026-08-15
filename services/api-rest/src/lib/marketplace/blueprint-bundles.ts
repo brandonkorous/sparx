@@ -78,6 +78,21 @@ const ManifestSchema = z.object({
   accent: z.string().max(9).optional(),
   icon: z.string().max(64).optional(),
   sortWeight: z.number().int().optional(),
+  /**
+   * Which platform brands may see this listing. OMITTED means EVERY brand, and
+   * that default is the important half: the catalog is shared platform content,
+   * and a template that has to name its brands to be visible would quietly fork
+   * the library the first time somebody forgot.
+   *
+   * Set it only on a listing that IS brand identity rather than a vertical
+   * template — the showcase family whose `brand.businessName` is the platform's
+   * own name. Those are the ones that must not cross: a Piggles business offered
+   * a site branded "sparx" is a bug with a support ticket attached.
+   *
+   * NOT a browse facet. `facets` is what a person filters by; this decides
+   * whether the row exists for them at all.
+   */
+  brands: z.array(z.string().min(1).max(20)).nonempty().optional(),
 });
 
 export type BlueprintManifest = z.infer<typeof ManifestSchema>;

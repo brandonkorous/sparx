@@ -84,6 +84,27 @@ model MarketplaceBlueprint {
   sortWeight   Int     @default(0) @map("sort_weight")
 
   // ── Blueprint-specific ──────────────────────────────────────────────────────
+  //
+  // PROVENANCE, not visibility, and the two must not be conflated.
+  //
+  // `origin_brand` is the platform brand this listing CAME FROM — the brand of
+  // the tenant that uploaded it. NULL means first-party: published by WizeWorks
+  // for every brand, which is what the ~169 shared bundles are. It is immutable,
+  // because a tenant never changes brands, which is also why denormalizing it off
+  // `publisher_tenant_id` is safe rather than a stale-copy risk.
+  //
+  // Visibility is a SEPARATE question with a separate answer (`brands` in the
+  // bundle manifest — who may SEE the listing). They diverge the moment a seller
+  // lists into both marketplaces: origin stays where it was made, visibility
+  // grows. One column cannot say both, and the rule that ties them is a DEFAULT,
+  // never an equality — a tenant upload defaults to being visible only on its own
+  // brand, and first-party defaults to everywhere.
+  //
+  // Derived SERVER-SIDE from the authenticated publisher at publish time, NEVER
+  // read from the uploaded manifest: a manifest is attacker-controlled, and a
+  // self-asserted origin would let an uploader place a listing on another brand's
+  // marketplace by typing its name.
+  originBrand     String?  @map("origin_brand") @db.VarChar(20)
   vertical        String   @db.VarChar(20)
   requiredModules String[] @map("required_modules") @db.VarChar(20)
   // Lightweight "what this creates" counts for the browse/detail card, so list
@@ -104,6 +125,9 @@ model MarketplaceBlueprint {
   @@index([publisherTenantId])
   @@index([publisherId])
   @@index([vertical])
+  // Every brand's listing query filters on this once uploads exist, alongside
+  // status + visibility — the partial-index shape mirrors `vertical`'s.
+  @@index([originBrand])
   @@map("marketplace_blueprints")
 }
 
