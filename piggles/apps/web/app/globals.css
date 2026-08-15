@@ -99,13 +99,22 @@
   --font-heading: var(--font-nunito), var(--font-inter), system-ui, sans-serif;
 }
 
-/* The canvas. silicaui paints `[data-theme]` itself, but the surface an app
- * chooses for its page body is the app's call — this one sits on the recessed
- * warm off-white so cards and panels read as raised against it. Unlayered, so it
- * beats silicaui's base-layer surface paint. */
+/* The canvas — `base-300`, the GROUND, and everything else lifts off it.
+ *
+ * silicaui paints `[data-theme]` with `base-100` and treats the ramp as depth
+ * from the viewer, which puts the page on the TOP surface and leaves a raised
+ * card nothing to be raised against. That is silica's bug, not this app's model,
+ * and it is being corrected upstream; until it is, the body paint is the seam
+ * where an app states the ladder it actually wants. Here it is:
+ *
+ *   base-300  the ground — the page itself, and the console shell
+ *   base-200  a surface resting on it — panels, a window's canvas
+ *   base-100  the top — cards, chrome, anything that has to read as lifted
+ *
+ * Unlayered, so it beats silicaui's base-layer surface paint. */
 html,
 body {
-  background-color: var(--color-base-200);
+  background-color: var(--color-base-300);
   color: var(--color-base-content);
 }
 

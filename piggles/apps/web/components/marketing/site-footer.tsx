@@ -53,7 +53,13 @@ const COLUMNS: readonly (readonly PigglesGroup[])[] = [
 
 export function SiteFooter() {
   return (
-    <div className="bg-base-100 border-base-300 border-t">
+    // The top margin is the footer's own, not the last section's. Every page
+    // ends on the dark close band, which sits in a rounded card with the page
+    // ground showing around three of its sides — butting the footer straight
+    // against it closed that fourth side and read as a page that had been cut
+    // off rather than finished. The band now floats clear of the footer the same
+    // way it floats clear of everything else.
+    <div className="bg-base-100 border-base-300 mt-24 border-t sm:mt-32 lg:mt-40">
       <div className="mx-auto max-w-7xl px-6 py-16 sm:py-20">
         <div className="grid gap-12 lg:grid-cols-4 lg:gap-16">
           {/* The ask. One column of four, so it reads as the footer's subject
@@ -63,15 +69,25 @@ export function SiteFooter() {
               <Logo />
             </Link>
             <p className="mt-5 text-lg font-semibold">{PRODUCT.tagline}</p>
-            <div className="mt-6 flex flex-wrap gap-3">
+            {/* Both stacked and `block`, so they are one column of two equal
+                bars rather than two pills of whatever width their labels
+                happened to want. `block` is silica's own full-width mode
+                (`btn-block`) — a `w-full` utility on top of the control would be
+                painting over it. */}
+            <div className="mt-6 flex flex-col gap-3">
               <a
-                className={buttonClasses({ color: 'primary', size: 'lg' })}
+                className={buttonClasses({ color: 'primary', size: 'lg', block: true })}
                 href={accountUrl('signup', 'footer')}
               >
                 Start free
               </a>
               <a
-                className={buttonClasses({ color: 'neutral', variant: 'outline', size: 'lg' })}
+                className={buttonClasses({
+                  color: 'neutral',
+                  variant: 'outline',
+                  size: 'lg',
+                  block: true,
+                })}
                 href={accountUrl('contact', 'footer')}
               >
                 Talk to a person
