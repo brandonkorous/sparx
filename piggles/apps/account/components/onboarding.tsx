@@ -1,6 +1,6 @@
 'use client';
 
-import { useActionState, useState } from 'react';
+import { useActionState, useMemo, useState } from 'react';
 import { useFormStatus } from 'react-dom';
 import {
   Alert,
@@ -15,6 +15,7 @@ import {
 } from '@wizeworks/silicaui-react';
 import type { PigglesGroup } from '@piggles/brand';
 import { appsInGroup } from '@piggles/config';
+import type { BlueprintChoice } from '@/lib/furnish';
 import { completeOnboarding, type OnboardingState } from '@/app/onboarding/actions';
 import { AuthShell } from './auth-shell';
 import { RailPreview } from './rail-preview';
@@ -67,6 +68,33 @@ const TRADES: { value: string; label: string }[] = [
   { value: 'generic', label: 'Something else' },
 ];
 
+/** The brand's own showcase — always offered, always first, preselected. */
+const SHOWCASE_KEY = 'piggles-starter';
+
+/** How many looks to show. A wall of 190 is not a choice, it is a search task,
+ *  and this screen is meant to take a glance. The trade narrows it; this caps it. */
+const LOOK_LIMIT = 6;
+
+/**
+ * The trade a person picks → the broad shelf its templates sit on.
+ *
+ * Coarse ON PURPOSE. The catalog classifies templates four ways (retail ·
+ * services · content · b2b) and separately names ~138 specific trades that are
+ * NOT stored anywhere queryable — so this is the honest join, not a lossy one.
+ * It orders the shelf; it never hides the rest, which is why the list falls back
+ * to everything when a trade has no obvious shelf.
+ */
+const TRADE_SHELF: Record<string, string> = {
+  food: 'retail',
+  salon: 'services',
+  apparel: 'retail',
+  professional: 'services',
+  fitness: 'services',
+  'auto-parts': 'services',
+  electronics: 'retail',
+  wholesale: 'b2b',
+};
+
 const OPTIONS: { group: PigglesGroup; label: string; hint: string }[] = [
   { group: 'web', label: 'I need a website', hint: 'Pages, writing, and turning up in search' },
   { group: 'sell', label: 'I sell things', hint: 'Products or services, and what you have left' },
@@ -88,20 +116,43 @@ function Submit() {
   );
 }
 
-export function Onboarding({ suggestedName }: { suggestedName: string }) {
+export function Onboarding({
+  suggestedName,
+  blueprints,
+}: {
+  suggestedName: string;
+  blueprints: BlueprintChoice[];
+}) {
   const [state, action] = useActionState<OnboardingState, FormData>(completeOnboarding, {
     error: null,
   });
   const [picked, setPicked] = useState<PigglesGroup[]>([]);
+  const [trade, setTrade] = useState('');
+  const [look, setLook] = useState(SHOWCASE_KEY);
 
   const toggle = (g: PigglesGroup) =>
     setPicked((cur) => (cur.includes(g) ? cur.filter((x) => x !== g) : [...cur, g]));
 
+  // The showcase first, then this trade's shelf, capped. Recomputed as the trade
+  // changes, so answering "what kind of business" visibly re-orders the looks
+  // rather than leaving a stale set that no longer matches the answer above it.
+  const looks = useMemo(() => {
+    const showcase = blueprints.filter((b) => b.key === SHOWCASE_KEY);
+    const shelf = TRADE_SHELF[trade];
+    const rest = blueprints.filter((b) => b.key !== SHOWCASE_KEY);
+    const onShelf = shelf ? rest.filter((b) => b.vertical === shelf) : rest;
+    // Falling back to the whole list matters: a trade whose shelf happens to be
+    // empty must still offer looks, or the section renders as one lonely card
+    // and reads like the catalog is broken.
+    const pool = onShelf.length > 0 ? onShelf : rest;
+    return [...showcase, ...pool].slice(0, LOOK_LIMIT);
+  }, [blueprints, trade]);
+
   return (
     <AuthShell
       shape="setup"
-      heading="Two quick things."
-      lede="Then you are in. Both are changeable later, so nothing here is a commitment."
+      heading="A few quick things."
+      lede="Then you are in. Nothing here is a commitment — we set it all up for you and you can change your mind once you are inside."
       panel={<RailPreview picked={picked} />}
     >
       <form action={action} className="flex flex-col gap-8">
@@ -129,7 +180,13 @@ export function Onboarding({ suggestedName }: { suggestedName: string }) {
 
           <Field>
             <FieldLabel>What kind of business is it?</FieldLabel>
-            <NativeSelect name="industry" size="lg" defaultValue="" required>
+            <NativeSelect
+              name="industry"
+              size="lg"
+              value={trade}
+              onChange={(e) => setTrade(e.target.value)}
+              required
+            >
               <option value="" disabled>
                 Pick the closest one
               </option>
@@ -203,6 +260,60 @@ export function Onboarding({ suggestedName }: { suggestedName: string }) {
             })}
           </ul>
         </div>
+
+        {/* The look. Shown only when the catalog answered — an empty list means
+            the picker could not load, and the action falls back to the brand's
+            own showcase, so a broken fetch costs a choice rather than a site. */}
+        {looks.length > 0 ? (
+          <div>
+            <h2 className="text-xl font-bold">How should it look?</h2>
+            <p className="mt-1 text-base">
+              Every one is a complete working site — shop, journal, bookings and all. You can
+              rewrite any of it once you are in.
+            </p>
+
+            <ul className="mt-4 grid gap-3 sm:grid-cols-2">
+              {looks.map((b) => {
+                const on = look === b.key;
+                return (
+                  <li key={b.key}>
+                    <label
+                      htmlFor={`look-${b.key}`}
+                      className={`rounded-box grid cursor-pointer grid-cols-[auto_1fr] items-start gap-x-4 border p-5 transition-colors ${
+                        on ? 'border-module bg-module bg-soft' : 'border-base-300 bg-base-100'
+                      }`}
+                    >
+                      <input
+                        type="radio"
+                        id={`look-${b.key}`}
+                        name="blueprintKey"
+                        value={b.key}
+                        checked={on}
+                        onChange={() => setLook(b.key)}
+                        className="radio radio-module row-span-3 mt-0.5"
+                      />
+                      <span className="text-lg font-bold">{b.name}</span>
+                      <span className="text-base">{b.summary}</span>
+                      {b.preview ? (
+                        // A plain <img>, not next/image: the card art is served by
+                        // api-rest's media proxy on a host this app has no remote
+                        // pattern for, and adding one is a wider change than this
+                        // screen. Lazy, and decorative — the name beside it is the
+                        // accessible label, so the alt is deliberately empty.
+                        <img
+                          src={b.preview}
+                          alt=""
+                          loading="lazy"
+                          className="rounded-box border-base-300 mt-3 w-full border"
+                        />
+                      ) : null}
+                    </label>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        ) : null}
 
         <Submit />
       </form>

@@ -33,6 +33,7 @@ import 'server-only';
 // tenant.
 
 const FURNISH_PATH = '/internal/tenant/furnish';
+const BLUEPRINTS_PATH = '/internal/tenant/blueprints';
 const FURNISH_TOKEN_HEADER = 'X-sparx-Internal-Furnish-Token';
 
 /** How long to wait. Furnishing is a real body of work — module baselines, the
@@ -42,8 +43,65 @@ const FURNISH_TOKEN_HEADER = 'X-sparx-Internal-Furnish-Token';
  *  mid-signup with no way forward. */
 const FURNISH_TIMEOUT_MS = 120_000;
 
+/**
+ * The site template a business gets when it does not choose one.
+ *
+ * Piggles' own showcase — the reference site, in the Piggles look, with an
+ * invented demo business rather than any product's name. It is `brands:
+ * ['piggles']` in the catalog, so it is the one showcase a Piggles tenant can
+ * see; sparx's equivalent is restricted the other way and neither crosses.
+ *
+ * A default matters more than it looks: most people click straight through, and
+ * the difference between landing on a working site and landing on a blank one is
+ * the whole first impression. Choosing is still better than defaulting, which is
+ * what the picker is for — this is what happens when nobody chooses.
+ */
+const DEFAULT_BLUEPRINT_KEY = 'piggles-starter';
+
+export interface BlueprintChoice {
+  key: string;
+  name: string;
+  summary: string;
+  vertical: string;
+  preview?: string;
+}
+
+/**
+ * The templates this business may choose from.
+ *
+ * Fetched rather than queried, even though this app has the database, because
+ * brand visibility is declared in the bundle MANIFESTS — which ship in api-rest's
+ * image, not this one. A direct query here would return every published row and
+ * cheerfully offer a Piggles business the other brand's showcase.
+ *
+ * Returns an empty list rather than throwing: a picker that cannot load is a
+ * reason to fall back to the default template, not a reason nobody can finish
+ * signing up.
+ */
+export async function listBlueprints(tenantId: string): Promise<BlueprintChoice[]> {
+  const base = process.env.PIGGLES_API_REST_URL;
+  const token = process.env.SPARX_INTERNAL_FURNISH_TOKEN;
+  if (!base || !token) return [];
+
+  try {
+    const url = `${base.replace(/\/$/, '')}${BLUEPRINTS_PATH}?tenantId=${encodeURIComponent(tenantId)}`;
+    const response = await fetch(url, {
+      headers: { [FURNISH_TOKEN_HEADER]: token },
+      signal: AbortSignal.timeout(15_000),
+      cache: 'no-store',
+    });
+    if (!response.ok) return [];
+    const body = (await response.json()) as { data?: { blueprints?: BlueprintChoice[] } };
+    return body.data?.blueprints ?? [];
+  } catch {
+    return [];
+  }
+}
+
 export interface FurnishRequest {
   tenantId: string;
+  /** The template the person picked. Omitted → the brand's own showcase. */
+  blueprintKey?: string;
   /** The trade — both the starter slug and the sample-pack key. Null when the
    *  person did not pick one, which the platform reads as "use the generic set"
    *  rather than guessing a vertical for them. */
@@ -59,7 +117,11 @@ export interface FurnishRequest {
  * that is safe, because every step of furnishing is idempotent — beats redirecting
  * somebody into the exact state we were trying to avoid.
  */
-export async function furnishTenant({ tenantId, industry }: FurnishRequest): Promise<void> {
+export async function furnishTenant({
+  tenantId,
+  industry,
+  blueprintKey,
+}: FurnishRequest): Promise<void> {
   const base = process.env.PIGGLES_API_REST_URL;
   const token = process.env.SPARX_INTERNAL_FURNISH_TOKEN;
 
@@ -84,10 +146,7 @@ export async function furnishTenant({ tenantId, industry }: FurnishRequest): Pro
       // precisely how an unticked app becomes a 404 on a screen that promised
       // otherwise.
       //
-      // `blueprintKey` is omitted too: which of the platform's site templates a
-      // given trade should get is an unmade product decision, and picking one
-      // here would be inventing it. Until it is made the site stays as signup
-      // left it rather than wearing a template nobody chose.
+      blueprintKey: blueprintKey ?? DEFAULT_BLUEPRINT_KEY,
       billPerModule: false,
     }),
     signal: AbortSignal.timeout(FURNISH_TIMEOUT_MS),

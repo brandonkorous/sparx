@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { requireSession } from '@sparx/auth';
 import { prisma } from '@sparx/db';
+import { listBlueprints } from '@/lib/furnish';
 import { Onboarding } from '@/components/onboarding';
 
 export const metadata: Metadata = { title: 'Set up your business' };
@@ -27,5 +28,10 @@ export default async function OnboardingPage() {
   // it. Do not reuse the placeholder anywhere a customer would see it.
   const suggestedName = tenant?.name ?? '';
 
-  return <Onboarding suggestedName={suggestedName} />;
+  // Fetched here, not in the client: the list depends on the tenant's brand, and
+  // deciding that on the client would mean shipping the rule to the browser.
+  // Empty is a legitimate answer — the form falls back to the default template.
+  const blueprints = await listBlueprints(session.user.tenantId);
+
+  return <Onboarding suggestedName={suggestedName} blueprints={blueprints} />;
 }

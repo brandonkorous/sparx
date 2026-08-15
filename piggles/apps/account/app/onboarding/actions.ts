@@ -85,6 +85,13 @@ export async function completeOnboarding(
   const chosen = text(formData, 'industry');
   const industry = chosen && isKnownTrade(chosen) ? chosen : null;
 
+  // The look. Not validated against a list here on purpose: the catalog is the
+  // platform's and the picker was built FROM it, so a second copy of the valid
+  // keys in this app is a copy that drifts. The furnishing endpoint re-checks the
+  // key against the tenant's own brand and skips a template it does not
+  // recognise — a bad value costs the site's look, never the signup.
+  const blueprintKey = text(formData, 'blueprintKey') || undefined;
+
   // `withTenant`, NOT `prisma.$transaction`.
   //
   // `properties` is under FORCE row-level security, so an UPDATE issued without
@@ -184,7 +191,7 @@ export async function completeOnboarding(
   // clears its own prior rows), and the rename above is an update. Pressing the
   // button again finishes the job rather than doubling it.
   try {
-    await furnishTenant({ tenantId: session.user.tenantId, industry });
+    await furnishTenant({ tenantId: session.user.tenantId, industry, blueprintKey });
   } catch (err) {
     console.error(
       JSON.stringify({
