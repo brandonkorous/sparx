@@ -812,7 +812,7 @@ const CONTENT = [
 const SPEC: TemplateSiteSpec = {
   slug: 'retail-plant-botanical',
   key: 'sparx-retail-plant-botanical',
-  name: 'sparx — Plant Nursery (Botanical)',
+  name: 'Plant Nursery (Botanical)',
   theme: THEME,
   summary:
     'A complete, working shop for a houseplant nursery: a real catalogue of easy-care starters, statement plants, pots, tools and a monthly plant subscription, with categories, collections, a bespoke plant PDP and a merchandised home page. Botanical theme — soft sage ground, deep leaf green, a warm terracotta accent. A care-first, beginner-friendly voice. Shipped as Fernwood Plant Co.',

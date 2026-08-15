@@ -444,7 +444,7 @@ const CONTACT = [
 // ── The spec ──────────────────────────────────────────────────────────────────
 const SPEC: ServiceSiteSpec = {
   key: 'sparx-pest-home',
-  name: 'sparx — Pest Control (Home)',
+  name: 'Pest Control (Home)',
   summary:
     'A friendly residential pest-control site built on a reliable teal-and-green palette over a clean near-white ground. Installs a working booking flow: free inspections plus general, ant/roach, rodent, termite and mosquito treatments and recurring protection plans, three licensed technicians dispatched by skill with their own hours, and a plan policy. Ships as "ShieldGuard Pest Control".',
   tagline: 'A reliable, reassuring template for pest-control companies — book inspections from day one.',

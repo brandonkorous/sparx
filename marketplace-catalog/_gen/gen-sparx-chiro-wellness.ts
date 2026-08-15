@@ -461,7 +461,7 @@ const CONTACT = [
 // ── The spec ──────────────────────────────────────────────────────────────────
 const SPEC: ServiceSiteSpec = {
   key: 'sparx-chiro-wellness',
-  name: 'sparx — Chiropractic (Wellness)',
+  name: 'Chiropractic (Wellness)',
   summary:
     'A calm, clean chiropractic-clinic site — a soft-teal palette, a warm-coral accent and a bright near-white ground, built around gentle everyday care. Installs a working booking flow for adjustments, exams, posture and massage: two chiropractors and a massage therapist you book by name, two treatment rooms, and appointments that reserve a provider AND a room. Ships as "Align Chiropractic", a modern wellness clinic.',
   tagline: 'A calm, wellness-first template for chiropractors — book online from day one.',

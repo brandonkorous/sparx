@@ -1289,7 +1289,7 @@ const CART: Node[] = [
 const SPEC: TemplateSiteSpec = {
   slug: 'beauty-counter',
   key: 'sparx-beauty-counter',
-  name: 'sparx — Beauty Counter',
+  name: 'Beauty Counter',
   summary:
     'A shade-forward storefront for an own-brand colour-cosmetics house — a full-bleed lifestyle hero over a "find your perfect match" funnel of best-sellers, shade-matching editorial bands, face/lip/eye carousels and a gift-with-purchase reward, in a blush-tinted theme with a bold hot-magenta primary. Modelled on the beauty-counter archetype; shipped as Maeve.',
   tagline: 'A glossy, shade-forward template for own-brand colour cosmetics and beauty counters.',

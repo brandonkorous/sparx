@@ -829,7 +829,7 @@ const CONTENT = [
 const SPEC: TemplateSiteSpec = {
   slug: 'retail-candle-modern',
   key: 'sparx-retail-candle-modern',
-  name: 'sparx — Candle Studio (Modern)',
+  name: 'Candle Studio (Modern)',
   theme: THEME,
   summary:
     'A complete, working shop for a modern, clean candle & home-fragrance studio: a real catalogue of clean-fragrance candles with scent options, a ceramic travel candle, a reed diffuser, a room spray, a refill, a matches set and gift sets, with categories, collections, a bespoke bright PDP and a fully merchandised home page. Fresh, minimalist theme — a pale blush-white ground, a single sage accent, a clean grotesk. Shipped as Lumen.',

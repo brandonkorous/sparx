@@ -383,7 +383,7 @@ const CONTACT = [
 // ── The spec ──────────────────────────────────────────────────────────────────
 const SPEC: ServiceSiteSpec = {
   key: 'sparx-travel-luxe',
-  name: 'sparx — Travel Advisory (Luxury)',
+  name: 'Travel Advisory (Luxury)',
   summary:
     'A refined, editorial travel-advisory site — a deep navy-teal palette, a warm brass accent and an elegant serif display over ivory, with worldly destination photography carrying the page. Installs a working consultation-booking flow: a real menu of consult types (discovery call, custom itineraries, honeymoons, luxury and VIP trips), three travel advisors you book by name with their own hours, and a planning-fee deposit policy. Ships as "Wander & Co. Travel", a luxury bespoke travel studio.',
   tagline: 'A refined template for luxury travel advisories — book consultations online from day one.',

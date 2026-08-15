@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "category": "blueprint",
   "slug": "sparx-retail-tea-modern",
-  "name": "sparx — Matcha & Tea (Modern)",
+  "name": "Matcha & Tea (Modern)",
   "version": "1.4.0",
   "tagline": "A bright, working storefront for a modern matcha brand.",
   "description": "A complete, working shop for a modern matcha and tea brand: ceremonial and daily matcha with grade and size options, functional focus / calm / sleep blends, grab-and-go iced sachets, a starter kit, a bamboo whisk, a travel shaker and a flexible club subscription, with categories, collections, a bespoke product-forward PDP and a merchandised home page. Bright wellness-modern theme — soft-mint ground, vibrant matcha-green, a punchy coral accent. Shipped as Matcha Club.",
@@ -22,16 +22,16 @@
     {
       "file": "media/icon.png",
       "kind": "icon",
-      "alt": "sparx — Matcha & Tea (Modern) icon"
+      "alt": "Matcha & Tea (Modern) icon"
     },
     {
       "file": "media/preview.png",
       "kind": "preview",
-      "alt": "sparx — Matcha & Tea (Modern) — home page preview"
+      "alt": "Matcha & Tea (Modern) — home page preview"
     }
   ],
   "author": {
-    "displayName": "sparx"
+    "displayName": "WizeWorks"
   },
   "accent": "#157e2c",
   "sortWeight": 86

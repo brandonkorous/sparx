@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "category": "blueprint",
   "slug": "sparx-catalog-dense",
-  "name": "sparx — Catalog Dense",
+  "name": "Catalog Dense",
   "version": "1.4.0",
   "tagline": "A dense, energetic template for high-volume apparel and fast-fashion catalogs.",
   "description": "A high-volume, discount-forward storefront for a fast-fashion apparel shop — a full-bleed offer hero over relentless dense product grids, per-category rails and candy-loud promo bands, in a bright near-black-chrome theme with one sale-red accent. Modelled on the dense fast-fashion catalog archetype; shipped as Voltage.",
@@ -22,16 +22,16 @@
     {
       "file": "media/icon.png",
       "kind": "icon",
-      "alt": "sparx — Catalog Dense icon"
+      "alt": "Catalog Dense icon"
     },
     {
       "file": "media/preview.png",
       "kind": "preview",
-      "alt": "sparx — Catalog Dense — home page preview"
+      "alt": "Catalog Dense — home page preview"
     }
   ],
   "author": {
-    "displayName": "sparx"
+    "displayName": "WizeWorks"
   },
   "accent": "#0d0d0f",
   "sortWeight": 55

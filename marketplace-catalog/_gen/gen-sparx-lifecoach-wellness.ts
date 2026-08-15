@@ -412,7 +412,7 @@ const CONTACT = [
 // ── The spec ──────────────────────────────────────────────────────────────────
 const SPEC: ServiceSiteSpec = {
   key: 'sparx-lifecoach-wellness',
-  name: 'sparx — Life Coach (Wellness)',
+  name: 'Life Coach (Wellness)',
   summary:
     'A warm, encouraging site for a life & wellness coaching practice — a cream palette, a terracotta primary and a soft humanist serif, with hopeful photography carrying the page. Installs online booking from day one: a free discovery call plus real coaching sessions (life, mindset, confidence, balance, purpose), and three coaches you book by name as bookable resources with their own hours. Ships as "Brightpath Life Coaching".',
   tagline: 'A warm, uplifting template for life & wellness coaches — book online from day one.',

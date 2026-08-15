@@ -671,7 +671,7 @@ const CONTENT = [
 const SPEC: TemplateSiteSpec = {
   slug: 'culture-bold',
   key: 'sparx-culture-bold',
-  name: 'sparx — Culture Bold',
+  name: 'Culture Bold',
   summary:
     'A loud music & pop-culture magazine — a full-bleed feature lead over a dense feed, a signature ranked “most read” countdown, and a bespoke bylined article page, on a near-black ground with one hot crimson-magenta accent and heavy condensed display type. Modelled on the bold-culture-magazine archetype; shipped as Static. Ships a light store (vinyl + merch) to demonstrate content + commerce together.',
   tagline: 'A loud dark-mode magazine template for a publication that reports and sells.',

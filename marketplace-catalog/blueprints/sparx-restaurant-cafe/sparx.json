@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "category": "blueprint",
   "slug": "sparx-restaurant-cafe",
-  "name": "sparx — Café",
+  "name": "Café",
   "version": "1.3.0",
   "tagline": "A sunny, working template for an all-day café that takes bookings.",
   "description": "A complete, working site for an all-day café: a real all-day brunch menu, and a live table-reservations flow (tables as bookable resources, party-size reservation services, daytime hours, a relaxed no-deposit policy — walk-ins welcome) on the /reserve page. Sunny café theme — warm cream, fresh café-green, a cheerful coral accent. Pages: Home, Menu, Reserve, About, Visit. Shipped as Kettle & Crumb.",
@@ -23,16 +23,16 @@
     {
       "file": "media/icon.png",
       "kind": "icon",
-      "alt": "sparx — Café icon"
+      "alt": "Café icon"
     },
     {
       "file": "media/preview.png",
       "kind": "preview",
-      "alt": "sparx — Café — home page preview"
+      "alt": "Café — home page preview"
     }
   ],
   "author": {
-    "displayName": "sparx"
+    "displayName": "WizeWorks"
   },
   "accent": "#246e3a",
   "sortWeight": 85

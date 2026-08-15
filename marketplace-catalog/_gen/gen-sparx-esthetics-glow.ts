@@ -381,7 +381,7 @@ const CONTACT = [
 // ── The spec ──────────────────────────────────────────────────────────────────
 const SPEC: ServiceSiteSpec = {
   key: 'sparx-esthetics-glow',
-  name: 'sparx — Esthetics (Glow Bar)',
+  name: 'Esthetics (Glow Bar)',
   summary:
     'A playful, dewy express-facial glow bar — a bright peach-coral palette, aqua accent and rounded, friendly type. Installs a working booking flow: express facials, hydration and brightening treatments, and fun add-ons (LED, gua sha), with three estheticians and two treatment rooms as bookable resources so every glow pairs a face and a room. Ships as "Dewy Skin Bar", a fun, feel-good glow on your lunch break.',
   tagline: 'A playful, dewy template for express facial bars — book a glow from day one.',

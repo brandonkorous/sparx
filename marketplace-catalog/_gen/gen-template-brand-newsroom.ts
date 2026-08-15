@@ -751,7 +751,7 @@ const CONTENT = [
 const SPEC: TemplateSiteSpec = {
   slug: 'brand-newsroom',
   key: 'sparx-brand-newsroom',
-  name: 'sparx — Brand Newsroom',
+  name: 'Brand Newsroom',
   summary:
     'A first-party brand newsroom for a product studio — a big latest-release feature over a live launch feed, a release-notes changelog, a spotlight drop, and a bound store carousel, on a true-dark ground with one electric-violet accent. Modelled on the brand-community-newsroom archetype; shipped as Launch Notes. Ships a light studio store (merch) to demonstrate content + commerce together.',
   tagline: 'A dark, cover-art brand-newsroom template for a studio that ships and sells.',

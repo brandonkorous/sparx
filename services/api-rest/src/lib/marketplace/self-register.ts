@@ -120,13 +120,26 @@ function spine(
   };
 }
 
-/** sparx's publisher row, created if absent so a fresh database needs no seed
- *  ordering — this module is self-sufficient. */
+/**
+ * The first-party publisher row, created if absent so a fresh database needs no
+ * seed ordering — this module is self-sufficient.
+ *
+ * `slug` and `type` stay `'sparx'` and MUST: `type` is what the prune scopes to
+ * ("rows THIS publisher owns"), so changing it would orphan every listing this
+ * module is responsible for retracting. They are keys, and nobody sees them.
+ *
+ * `displayName` is the one a tenant reads, on every card, as "by …". WizeWorks
+ * is the company that publishes these, which is true on every brand's
+ * marketplace and names none of the products — where "sparx" was a competitor's
+ * name on a Piggles customer's screen. The manifests carry the same value in
+ * `author.displayName`, which the published row does NOT read; this line is the
+ * one that shows.
+ */
 async function sparxPublisherId(tx: TxClient): Promise<string> {
   const pub = await tx.marketplacePublisher.upsert({
     where: { slug: 'sparx' },
-    update: { type: 'sparx', displayName: 'sparx', verified: true },
-    create: { slug: 'sparx', type: 'sparx', displayName: 'sparx', verified: true },
+    update: { type: 'sparx', displayName: 'WizeWorks', verified: true },
+    create: { slug: 'sparx', type: 'sparx', displayName: 'WizeWorks', verified: true },
     select: { id: true },
   });
   return pub.id;

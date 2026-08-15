@@ -601,7 +601,7 @@ const CONTENT = [
 const SPEC: PortfolioSiteSpec = {
   slug: 'portfolio-designer',
   key: 'sparx-portfolio-designer',
-  name: 'sparx — Designer Portfolio',
+  name: 'Designer Portfolio',
   summary:
     'A hire-me portfolio for a product / UX / design-systems designer: a plain-spoken statement hero, selected work as outcome-led rows, a short “how I work” band, and case-study pages that walk the brief, the work and the result. Restraint over decoration — the typography and the thinking do the work. Dressed in a cool near-white theme carried by one electric signal-blue. Shipped as Sasha Rourke.',
   tagline: 'A case-study-led portfolio for a product & UX designer.',

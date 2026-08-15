@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "category": "blueprint",
   "slug": "sparx-accounting-advisory",
-  "name": "sparx — Accounting (Advisory)",
+  "name": "Accounting (Advisory)",
   "version": "1.3.0",
   "tagline": "A premium, advisory-led template for CPA and wealth firms — book consultations from day one.",
   "description": "A premium CPA advisory and wealth site — a deep-navy palette with a refined gold accent and a data-forward layout. Installs a working consultation-booking flow: a real menu of advisory sessions (tax strategy, CFO advisory, business valuation, wealth and retirement planning), three CPAs and advisors you book by name with their own hours, and a complimentary initial strategy call. Ships as \"Northpoint CPA\", a modern firm for established businesses and high earners.",
@@ -23,16 +23,16 @@
     {
       "file": "media/icon.png",
       "kind": "icon",
-      "alt": "sparx — Accounting (Advisory) icon"
+      "alt": "Accounting (Advisory) icon"
     },
     {
       "file": "media/preview.png",
       "kind": "preview",
-      "alt": "sparx — Accounting (Advisory) — home page preview"
+      "alt": "Accounting (Advisory) — home page preview"
     }
   ],
   "author": {
-    "displayName": "sparx"
+    "displayName": "WizeWorks"
   },
   "accent": "#20385c",
   "sortWeight": 63

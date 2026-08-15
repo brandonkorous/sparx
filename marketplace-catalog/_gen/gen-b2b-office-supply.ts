@@ -848,7 +848,7 @@ const CONTENT = [
 const SPEC: TemplateSiteSpec = {
   slug: 'b2b-office-supply',
   key: 'sparx-b2b-office-supply',
-  name: 'sparx — Office Supply (B2B / Wholesale)',
+  name: 'Office Supply (B2B / Wholesale)',
   theme: THEME,
   summary:
     'A complete, working wholesale shop for a workplace-supplies distributor: a real trade catalogue sold by the box and case — paper & ink, writing, furniture and breakroom supplies — with categories, collections, a bespoke trade PDP (per-box pricing, volume breaks, net-30), and a full merchandised home page. Clean corporate theme — cool slate ground, confident blue, teal accent. Shipped as Worksmith Supply Co.',

@@ -390,7 +390,7 @@ const CONTACT = [
 // ── The spec ──────────────────────────────────────────────────────────────────
 const SPEC: ServiceSiteSpec = {
   key: 'sparx-pressurewash-home',
-  name: 'sparx — Pressure Washing (Home)',
+  name: 'Pressure Washing (Home)',
   summary:
     'A bright, satisfying residential pressure & soft washing site — a vivid aqua palette on a crisp near-white ground, built around booking a free quote online. Installs a working flow: a $0 quote booking, driveway, house soft-wash, deck, roof and gutter services plus a full-exterior package, and three techs you book with their own hours. Ships as "Blast Master Pressure Washing" — make it look new again.',
   tagline: 'A bright residential pressure-washing template — book a free quote from day one.',

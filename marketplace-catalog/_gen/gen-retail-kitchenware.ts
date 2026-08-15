@@ -769,7 +769,7 @@ const CONTENT = [
 const SPEC: TemplateSiteSpec = {
   slug: 'retail-kitchenware',
   key: 'sparx-retail-kitchenware',
-  name: 'sparx — Kitchenware & Cookware',
+  name: 'Kitchenware & Cookware',
   theme: THEME,
   summary:
     'A complete, working shop for a chef-grade kitchenware store: a real catalogue of carbon-steel pans, cast-iron Dutch ovens, forged knives, and honest tools, with categories, collections, a bespoke cookware PDP and a full merchandised home page. Warm kitchen theme — slate-cream ground, deep copper, a verdigris accent. Shipped as Copper & Cast.',

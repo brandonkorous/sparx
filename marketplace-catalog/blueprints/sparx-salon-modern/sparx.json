@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "category": "blueprint",
   "slug": "sparx-salon-modern",
-  "name": "sparx — Salon (Modern)",
+  "name": "Salon (Modern)",
   "version": "1.3.0",
   "tagline": "A warm, modern-boho template for hair salons — book online from day one.",
   "description": "A modern, warm, boho hair-salon site — an oat-cream palette, a terracotta primary and a sage-green accent, with natural-light photography and a relaxed, friendly voice. Installs a working booking flow: a real service menu (cuts, curly & textured cuts, colour, balayage), three stylists you book by name with their own hours, and a colour-deposit policy. Ships as \"Wildroot\", a plant-filled little studio that specialises in curls and texture.",
@@ -23,16 +23,16 @@
     {
       "file": "media/icon.png",
       "kind": "icon",
-      "alt": "sparx — Salon (Modern) icon"
+      "alt": "Salon (Modern) icon"
     },
     {
       "file": "media/preview.png",
       "kind": "preview",
-      "alt": "sparx — Salon (Modern) — home page preview"
+      "alt": "Salon (Modern) — home page preview"
     }
   ],
   "author": {
-    "displayName": "sparx"
+    "displayName": "WizeWorks"
   },
   "accent": "#b55934",
   "sortWeight": 89

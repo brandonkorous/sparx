@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "category": "blueprint",
   "slug": "sparx-restaurant-bistro",
-  "name": "sparx — Bistro",
+  "name": "Bistro",
   "version": "1.3.0",
   "tagline": "A warm, working template for a restaurant that takes reservations.",
   "description": "A complete, working site for a neighbourhood restaurant: a real seasonal menu, and a live table-reservations flow (tables as bookable resources, party-size reservation services, opening hours, a cancellation policy) on the /reserve page. Warm bistro theme — candle-cream, deep olive-green, a warm amber accent. Pages: Home, Menu, Reserve, About, Visit. Shipped as Larkspur.",
@@ -23,16 +23,16 @@
     {
       "file": "media/icon.png",
       "kind": "icon",
-      "alt": "sparx — Bistro icon"
+      "alt": "Bistro icon"
     },
     {
       "file": "media/preview.png",
       "kind": "preview",
-      "alt": "sparx — Bistro — home page preview"
+      "alt": "Bistro — home page preview"
     }
   ],
   "author": {
-    "displayName": "sparx"
+    "displayName": "WizeWorks"
   },
   "accent": "#32512c",
   "sortWeight": 86

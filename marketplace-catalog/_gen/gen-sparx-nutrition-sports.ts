@@ -376,7 +376,7 @@ const CONTACT = [
 // ── The spec ──────────────────────────────────────────────────────────────────
 const SPEC: ServiceSiteSpec = {
   key: 'sparx-nutrition-sports',
-  name: 'sparx — Nutrition (Sports & Performance)',
+  name: 'Nutrition (Sports & Performance)',
   summary:
     'A bold, athletic sports-nutrition site — a crisp near-white ground, an electric-blue primary and a lime accent with a sturdy condensed display. Installs a working booking flow: a real consult menu (free strategy call, performance assessment, fueling plans, endurance & strength sessions, body-composition testing, follow-ups), three sports dietitians booked by name with their own hours, and a no-show policy. Ships as "Fuel Performance Nutrition".',
   tagline: 'A bold, data-driven template for sports & performance nutrition — book consults from day one.',

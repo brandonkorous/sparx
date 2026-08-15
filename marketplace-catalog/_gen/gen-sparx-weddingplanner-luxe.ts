@@ -389,7 +389,7 @@ const CONTACT = [
 // ── The spec ──────────────────────────────────────────────────────────────────
 const SPEC: ServiceSiteSpec = {
   key: 'sparx-weddingplanner-luxe',
-  name: 'sparx — Wedding Planner (Luxe)',
+  name: 'Wedding Planner (Luxe)',
   summary:
     'An elegant, romantic wedding-studio site — a soft-ivory palette, a dusty-rose primary and a champagne-gold accent, with editorial wedding photography carrying the page. Installs online booking for planning consultations, planners you book by name as bookable resources, and a booking-deposit policy. Ships as "Ever After Events", a luxury full-service wedding planner.',
   tagline: 'A romantic, editorial template for wedding planners — book consultations from day one.',

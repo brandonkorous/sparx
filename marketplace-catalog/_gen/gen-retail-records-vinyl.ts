@@ -788,7 +788,7 @@ const CONTENT = [
 const SPEC: TemplateSiteSpec = {
   slug: 'retail-records-vinyl',
   key: 'sparx-retail-records-vinyl',
-  name: 'sparx — Record Shop (Vinyl)',
+  name: 'Record Shop (Vinyl)',
   theme: THEME,
   summary:
     'A complete, working shop for an independent record store: a real catalogue of vinyl LPs across genres, a turntable, a slipmat, a record-cleaning kit, a tote and a monthly Wax Club subscription, with categories, collections, a bespoke crate-digger PDP and a full merchandised home page. Moody dark theme — near-black ground, hot-magenta primary, electric-cyan accent; the album covers carry the colour. Shipped as Third Side Records.',

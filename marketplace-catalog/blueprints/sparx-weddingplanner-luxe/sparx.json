@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "category": "blueprint",
   "slug": "sparx-weddingplanner-luxe",
-  "name": "sparx — Wedding Planner (Luxe)",
+  "name": "Wedding Planner (Luxe)",
   "version": "1.3.0",
   "tagline": "A romantic, editorial template for wedding planners — book consultations from day one.",
   "description": "An elegant, romantic wedding-studio site — a soft-ivory palette, a dusty-rose primary and a champagne-gold accent, with editorial wedding photography carrying the page. Installs online booking for planning consultations, planners you book by name as bookable resources, and a booking-deposit policy. Ships as \"Ever After Events\", a luxury full-service wedding planner.",
@@ -23,16 +23,16 @@
     {
       "file": "media/icon.png",
       "kind": "icon",
-      "alt": "sparx — Wedding Planner (Luxe) icon"
+      "alt": "Wedding Planner (Luxe) icon"
     },
     {
       "file": "media/preview.png",
       "kind": "preview",
-      "alt": "sparx — Wedding Planner (Luxe) — home page preview"
+      "alt": "Wedding Planner (Luxe) — home page preview"
     }
   ],
   "author": {
-    "displayName": "sparx"
+    "displayName": "WizeWorks"
   },
   "accent": "#c28f92",
   "sortWeight": 40

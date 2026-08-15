@@ -790,7 +790,7 @@ const CONTENT = [
 const SPEC: TemplateSiteSpec = {
   slug: 'retail-ceramics-modern',
   key: 'sparx-retail-ceramics-modern',
-  name: 'sparx — Ceramics Studio (Modern)',
+  name: 'Ceramics Studio (Modern)',
   theme: THEME,
   summary:
     'A complete, working shop for a contemporary ceramics studio: a real catalogue of modern tableware — a cylinder mug, nesting bowls, a coupe plate set, a carafe & cup, a tumbler set, two sculptural vases, a cylinder planter and a full table set, each in three house colours — with categories, collections, a crisp-on-white PDP and a fully merchandised home page. Bright cool-white theme, near-black ink and a single bold clay-coral accent, in a geometric grotesk with sharp corners. Shipped as Form.',

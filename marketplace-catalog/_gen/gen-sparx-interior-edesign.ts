@@ -378,7 +378,7 @@ const CONTACT = [
 // ── The spec ──────────────────────────────────────────────────────────────────
 const SPEC: ServiceSiteSpec = {
   key: 'sparx-interior-edesign',
-  name: 'sparx — Interior (E-Design)',
+  name: 'Interior (E-Design)',
   summary:
     'A bright, friendly interior-design site for online e-design studios — a warm coral palette, a teal accent and a modern sans, built around a HOW-IT-WORKS story and flat-fee packages. Installs a working booking flow: a real menu of consults and packages (free consult, single-room e-design, colour, layout, room refresh), three designers you book by name with their own hours, and shoppable, affordable e-design. Ships as "Room & Co." for everyday homeowners.',
   tagline: 'A bright, friendly template for online interior e-design — book consults from day one.',

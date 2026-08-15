@@ -435,7 +435,7 @@ const CONTACT = [
 // ── The spec ──────────────────────────────────────────────────────────────────
 const SPEC: ServiceSiteSpec = {
   key: 'sparx-plumbing-modern',
-  name: 'sparx — Plumbing (Modern)',
+  name: 'Plumbing (Modern)',
   summary:
     'A modern, on-demand plumbing site — a crisp near-white palette with a vivid teal primary and warm amber accent, type-led with a "how it works" flow. Installs a working booking spine: flat-rate visits (same-day repair, drain clearing, water-heater swap, leak detection, emergency callout), three technicians dispatched by skill with their own weekly hours, and a same-day priority policy. Ships as "Rivet Plumbing Co.".',
   tagline: 'A bright, modern template for on-demand plumbers — book online from day one.',

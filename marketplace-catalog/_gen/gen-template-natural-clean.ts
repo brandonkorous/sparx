@@ -1128,7 +1128,7 @@ const CART: Node[] = [
 const SPEC: TemplateSiteSpec = {
   slug: 'natural-clean',
   key: 'sparx-natural-clean',
-  name: 'sparx — Natural Clean',
+  name: 'Natural Clean',
   summary:
     'A calm, oat-tinted storefront for a natural or sustainable brand — a full-bleed hero over color-blocked category tiles and a repeating shoppable-carousel and material-story rhythm that closes on a quiet mission moment, in a warm paper-ground theme. Modelled on the natural/sustainable-clean archetype; shipped as Fernwood Goods.',
   tagline: 'A warm, honest template for eco housewares and any planet-minded brand.',

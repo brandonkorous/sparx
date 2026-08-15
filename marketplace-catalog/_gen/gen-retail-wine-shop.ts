@@ -793,7 +793,7 @@ const CONTENT = [
 const SPEC: TemplateSiteSpec = {
   slug: 'retail-wine-shop',
   key: 'sparx-retail-wine-shop',
-  name: 'sparx — Natural Wine Shop',
+  name: 'Natural Wine Shop',
   theme: THEME,
   summary:
     'A complete, working shop for a natural-wine bottle shop: a real catalogue of low-intervention bottles — a pét-nat, a skin-contact orange, a chillable red, a mineral white, a dry rosé, a magnum, a mixed six and a non-alc — with categories, collections, a bespoke bottle-shop PDP and a fully merchandised home page. Low-lit cellar theme — deep plum-charcoal ground, warm cream ink, a wine-garnet primary and a brass accent. Shipped as Sediment.',

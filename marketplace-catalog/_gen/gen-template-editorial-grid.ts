@@ -1021,7 +1021,7 @@ const CART: Node[] = [
 const SPEC: TemplateSiteSpec = {
   slug: 'editorial-grid',
   key: 'sparx-editorial-grid',
-  name: 'sparx — Editorial Grid',
+  name: 'Editorial Grid',
   summary:
     'A magazine-quiet storefront for design furniture and objects — a full-bleed serif hero over a repeating editorial-band and shoppable-carousel rhythm, in a paper-ground mono theme. Modelled on the editorial-streetwear archetype; shipped as Atelier Nord.',
   tagline: 'An editorial, gallery-quiet template for makers of considered furniture and objects.',

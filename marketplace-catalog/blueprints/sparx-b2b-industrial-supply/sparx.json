@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "category": "blueprint",
   "slug": "sparx-b2b-industrial-supply",
-  "name": "sparx — Industrial Supply (B2B / Wholesale)",
+  "name": "Industrial Supply (B2B / Wholesale)",
   "version": "1.4.0",
   "tagline": "A wholesale storefront built for trade buyers.",
   "description": "A complete, working wholesale shop for an industrial MRO distributor: a real trade catalogue sold by the case — fasteners, abrasives, safety & PPE and bulk consumables — with categories, collections, a bespoke trade PDP (per-case pricing, volume breaks, net-30), and a full merchandised home page. Sturdy industrial theme — steel ground, deep navy, safety-amber accent. Shipped as Ironworks Supply Co.",
@@ -22,16 +22,16 @@
     {
       "file": "media/icon.png",
       "kind": "icon",
-      "alt": "sparx — Industrial Supply (B2B / Wholesale) icon"
+      "alt": "Industrial Supply (B2B / Wholesale) icon"
     },
     {
       "file": "media/preview.png",
       "kind": "preview",
-      "alt": "sparx — Industrial Supply (B2B / Wholesale) — home page preview"
+      "alt": "Industrial Supply (B2B / Wholesale) — home page preview"
     }
   ],
   "author": {
-    "displayName": "sparx"
+    "displayName": "WizeWorks"
   },
   "accent": "#274777",
   "sortWeight": 86

@@ -829,7 +829,7 @@ const CONTENT = [
 const SPEC: TemplateSiteSpec = {
   slug: 'retail-chocolate-playful',
   key: 'sparx-retail-chocolate-playful',
-  name: 'sparx — Chocolate & Sweets (Playful)',
+  name: 'Chocolate & Sweets (Playful)',
   theme: THEME,
   summary:
     'A complete, working shop for a bright, gift-forward chocolate & sweets maker: colourful bonbon boxes, a build-your-own selection, hot-cocoa bombs, dipped treats, a birthday box, a kids’ bundle and a flexible subscription, with categories, collections, a bespoke PDP and a fully merchandised home page. Joyful sweet-shop theme — vanilla cream, a raspberry candy primary, a berry-grape pop accent, a rounded display and playful hovers. Shipped as Sweet Tooth Co.',

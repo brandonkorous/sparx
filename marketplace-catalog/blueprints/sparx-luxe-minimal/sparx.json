@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "category": "blueprint",
   "slug": "sparx-luxe-minimal",
-  "name": "sparx — Luxe Minimal",
+  "name": "Luxe Minimal",
   "version": "1.4.0",
   "tagline": "A minimal, image-led luxury template for premium skincare, beauty and wellness brands.",
   "description": "A quiet-luxury storefront where imagery carries the weight and type stays out of the way — a full-bleed hero with a bottom-left headline, a 4-up category-tile row, best-sellers and treatment carousels, full-bleed editorial bands and a centered mission statement, all warm-neutral monochrome with no accent. Modelled on the minimal-luxury archetype; shipped as Nue Skincare, a premium-skincare essentials brand.",
@@ -22,16 +22,16 @@
     {
       "file": "media/icon.png",
       "kind": "icon",
-      "alt": "sparx — Luxe Minimal icon"
+      "alt": "Luxe Minimal icon"
     },
     {
       "file": "media/preview.png",
       "kind": "preview",
-      "alt": "sparx — Luxe Minimal — home page preview"
+      "alt": "Luxe Minimal — home page preview"
     }
   ],
   "author": {
-    "displayName": "sparx"
+    "displayName": "WizeWorks"
   },
   "accent": "#13110f",
   "sortWeight": 95

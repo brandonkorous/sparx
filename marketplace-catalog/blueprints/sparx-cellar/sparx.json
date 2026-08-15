@@ -2,10 +2,10 @@
   "schemaVersion": 1,
   "category": "blueprint",
   "slug": "sparx-cellar",
-  "name": "sparx — Cellar",
+  "name": "Cellar",
   "version": "1.2.0",
   "tagline": "A complete multi-module starter in the Cellar look — for wine, beer, spirits, and bars.",
-  "description": "The complete sparx starter — a faceted shop, a journal, a booking page, and a wholesale page — in the Cellar look, tuned for wine, beer, spirits, and bars. Install it, make it yours, and launch a polished working site in minutes.",
+  "description": "The complete starter — a faceted shop, a journal, a booking page, and a wholesale page — in the Cellar look, tuned for wine, beer, spirits, and bars. Install it, make it yours, and launch a polished working site in minutes.",
   "payload": "blueprint.ts",
   "facets": {
     "vertical": "retail",
@@ -22,17 +22,18 @@
     {
       "file": "media/icon.png",
       "kind": "icon",
-      "alt": "sparx — Cellar icon"
+      "alt": "Cellar icon"
     },
     {
       "file": "media/preview.png",
       "kind": "preview",
-      "alt": "sparx — Cellar — home page preview"
+      "alt": "Cellar — home page preview"
     }
   ],
   "author": {
-    "displayName": "sparx"
+    "displayName": "WizeWorks"
   },
+  "brands": ["sparx"],
   "accent": "#f68ca1",
   "sortWeight": 88
 }

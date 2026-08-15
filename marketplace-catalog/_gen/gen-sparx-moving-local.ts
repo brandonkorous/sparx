@@ -441,7 +441,7 @@ const CONTACT = [
 // ── The spec ──────────────────────────────────────────────────────────────────
 const SPEC: ServiceSiteSpec = {
   key: 'sparx-moving-local',
-  name: 'sparx — Moving (Local & Friendly)',
+  name: 'Moving (Local & Friendly)',
   summary:
     'A friendly local-mover site — a clean off-white palette with a confident green primary and warm amber accent, a sturdy sans display and photo-led care. Installs a working online booking flow: customers book a free estimate or an in-home walkthrough and get a real time slot. Ships a full estimate menu (local, apartment, packing, loading help, furniture), three move coordinators as dispatchable crews with their own hours, and standard + move-date deposit policies. Ships as "Sure Hands Moving".',
   tagline: 'A friendly, reliable template for local movers — book free estimates online from day one.',

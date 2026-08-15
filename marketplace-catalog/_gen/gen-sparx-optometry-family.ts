@@ -421,7 +421,7 @@ const CONTACT = [
 // ── The spec ──────────────────────────────────────────────────────────────────
 const SPEC: ServiceSiteSpec = {
   key: 'sparx-optometry-family',
-  name: 'sparx — Optometry (Family)',
+  name: 'Optometry (Family)',
   summary:
     'A warm, family-friendly optometry site — a clear teal palette, a warm coral accent and rounded type, with gentle, all-ages copy. Installs a working online booking flow for eye exams: real visit types (comprehensive and contact-lens exams, kids’ exams, dry-eye, medical visits and free frame styling), two optometrists and an optician booked by name with their own hours, exam rooms as resources, and a no-show hold policy. Ships as "Clearview Eye Care", a family eye-care practice.',
   tagline: 'A warm, family template for optometry practices — book eye exams online from day one.',

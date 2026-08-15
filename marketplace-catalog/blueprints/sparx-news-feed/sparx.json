@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "category": "blueprint",
   "slug": "sparx-news-feed",
-  "name": "sparx — News Feed",
+  "name": "News Feed",
   "version": "1.4.0",
   "tagline": "A high-signal news-feed template for a publication that reports and sells.",
   "description": "A dense front-page feed for a technology & business publication — a full-width lead over a rail of the day’s stories, a live journal, and a bespoke bylined article page, in a white-ground one-accent theme. Modelled on the tech-newsroom archetype; shipped as Frequency. Ships a light store (reports, a book, membership) to demonstrate content + commerce together.",
@@ -22,16 +22,16 @@
     {
       "file": "media/icon.png",
       "kind": "icon",
-      "alt": "sparx — News Feed icon"
+      "alt": "News Feed icon"
     },
     {
       "file": "media/preview.png",
       "kind": "preview",
-      "alt": "sparx — News Feed — home page preview"
+      "alt": "News Feed — home page preview"
     }
   ],
   "author": {
-    "displayName": "sparx"
+    "displayName": "WizeWorks"
   },
   "accent": "#007e4b",
   "sortWeight": 100

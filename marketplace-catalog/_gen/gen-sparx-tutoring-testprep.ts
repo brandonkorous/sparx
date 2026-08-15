@@ -411,7 +411,7 @@ const CONTACT = [
 // ── The spec ──────────────────────────────────────────────────────────────────
 const SPEC: ServiceSiteSpec = {
   key: 'sparx-tutoring-testprep',
-  name: 'sparx — Tutoring (Test Prep)',
+  name: 'Tutoring (Test Prep)',
   summary:
     'A bold, confident test-prep site — a deep-indigo primary, a punchy amber accent and sharp Space Grotesk headings on a crisp near-white ground. Installs a working booking flow: a free diagnostic plus SAT, ACT, AP and admissions-essay sessions, with three coaches you book by name and their own after-school and weekend hours. Ships as "Apex Test Prep", a results-driven SAT/ACT and college-admissions coaching studio.',
   tagline: 'A sharp, score-focused template for tutoring & test prep — book online from day one.',

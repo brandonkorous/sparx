@@ -439,7 +439,7 @@ const CONTACT = [
 // ── The spec ──────────────────────────────────────────────────────────────────
 const SPEC: ServiceSiteSpec = {
   key: 'sparx-fitness-bold',
-  name: 'sparx — Fitness (Bold)',
+  name: 'Fitness (Bold)',
   summary:
     'A dark, electric strength & conditioning studio site — near-black charcoal ground, a volt-green primary and a bold condensed display. Installs a working booking flow: capacity-based GROUP CLASSES (strength, HIIT, metcon, foundations, conditioning) with per-class caps, plus 1:1 personal training and a free intro assessment. Coaches and the gym floor are bookable resources with early-morning and evening hours. Ships as "Forge".',
   tagline: 'A loud, high-energy template for gyms & studios — book classes and 1:1s from day one.',

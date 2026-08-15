@@ -409,7 +409,7 @@ const CONTACT = [
 // ── The spec ──────────────────────────────────────────────────────────────────
 const SPEC: ServiceSiteSpec = {
   key: 'sparx-acupuncture-modern',
-  name: 'sparx — Acupuncture (Modern)',
+  name: 'Acupuncture (Modern)',
   summary:
     'A clean, calming site for a modern integrative acupuncture studio — a soft sage-and-white minimal palette, a modern sans display and online booking from day one. Installs a working booking flow: seven session types (acupuncture, facial/cosmetic acupuncture, dry needling, stress & sleep), three licensed practitioners you book by name with their own hours, and two treatment rooms as bookable resources. Ships as "Meridian Wellness".',
   tagline: 'A clean, modern template for acupuncture & wellness studios — book online from day one.',

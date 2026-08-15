@@ -2,10 +2,10 @@
   "schemaVersion": 1,
   "category": "blueprint",
   "slug": "sparx-workshop",
-  "name": "sparx — Workshop",
+  "name": "Workshop",
   "version": "1.2.0",
   "tagline": "A complete multi-module starter in the Workshop look — for fabrication, joinery, and general trade.",
-  "description": "The complete sparx starter — a faceted shop, a journal, a booking page, and a wholesale page — in the Workshop look, tuned for fabrication, joinery, and general trade. Install it, make it yours, and launch a polished working site in minutes.",
+  "description": "The complete starter — a faceted shop, a journal, a booking page, and a wholesale page — in the Workshop look, tuned for fabrication, joinery, and general trade. Install it, make it yours, and launch a polished working site in minutes.",
   "payload": "blueprint.ts",
   "facets": {
     "vertical": "services",
@@ -22,17 +22,18 @@
     {
       "file": "media/icon.png",
       "kind": "icon",
-      "alt": "sparx — Workshop icon"
+      "alt": "Workshop icon"
     },
     {
       "file": "media/preview.png",
       "kind": "preview",
-      "alt": "sparx — Workshop — home page preview"
+      "alt": "Workshop — home page preview"
     }
   ],
   "author": {
-    "displayName": "sparx"
+    "displayName": "WizeWorks"
   },
+  "brands": ["sparx"],
   "accent": "#ff992b",
   "sortWeight": 85
 }

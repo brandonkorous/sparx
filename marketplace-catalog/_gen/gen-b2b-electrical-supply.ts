@@ -862,7 +862,7 @@ const CONTENT = [
 const SPEC: TemplateSiteSpec = {
   slug: 'b2b-electrical-supply',
   key: 'sparx-b2b-electrical-supply',
-  name: 'sparx — Electrical Supply (B2B / Wholesale)',
+  name: 'Electrical Supply (B2B / Wholesale)',
   theme: THEME,
   summary:
     'A complete, working wholesale shop for an electrical wholesaler: a real trade catalogue sold by the reel, box and pack — twin & earth cable, consumer units, sockets & switches, LED downlights, circuit breakers, conduit and a tester — with categories, collections, a bespoke trade PDP (per-unit pricing, volume breaks, net-30), and a full merchandised home page. Cool electrical theme — slate ground, deep electric-blue, live-amber accent. Shipped as Livewire Trade.',

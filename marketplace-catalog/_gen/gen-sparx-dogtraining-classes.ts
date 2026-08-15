@@ -414,7 +414,7 @@ const CONTACT = [
 // ── The spec ──────────────────────────────────────────────────────────────────
 const SPEC: ServiceSiteSpec = {
   key: 'sparx-dogtraining-classes',
-  name: 'sparx — Dog Training (Classes)',
+  name: 'Dog Training (Classes)',
   summary:
     'A warm, playful dog-training-school site — a cheerful teal-green palette, sunny coral accent and rounded, friendly type. Installs a live class schedule with capacity: puppy kindergarten, basic and intermediate obedience and a tricks class, each a group class you enroll in online, plus 1:1 private sessions and a free evaluation. Three positive-reinforcement trainers and a training hall book as resources. Ships as "Good Dog Academy".',
   tagline: 'A friendly, force-free template for dog-training schools — enroll in classes online from day one.',

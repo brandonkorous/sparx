@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "category": "blueprint",
   "slug": "sparx-portfolio-illustrator",
-  "name": "sparx — Illustrator Portfolio",
+  "name": "Illustrator Portfolio",
   "version": "1.2.0",
   "tagline": "A loud, work-wall portfolio for an illustrator.",
   "description": "A personality-first portfolio for an illustrator: a loud two-tone hero, a dense playful work wall of tiled pieces that tilt on hover, a warm “hi, I’m me” band, and case-study pages that walk the brief, the making and where it ran. The palette IS the brand — warm riso-cream carried by a coral primary and a cobalt accent, expressive Syne display. Shipped as Pilar Ortega.",
@@ -22,16 +22,16 @@
     {
       "file": "media/icon.png",
       "kind": "icon",
-      "alt": "sparx — Illustrator Portfolio icon"
+      "alt": "Illustrator Portfolio icon"
     },
     {
       "file": "media/preview.png",
       "kind": "preview",
-      "alt": "sparx — Illustrator Portfolio — home page preview"
+      "alt": "Illustrator Portfolio — home page preview"
     }
   ],
   "author": {
-    "displayName": "sparx"
+    "displayName": "WizeWorks"
   },
   "accent": "#cc2823",
   "sortWeight": 88

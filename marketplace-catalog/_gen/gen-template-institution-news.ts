@@ -782,7 +782,7 @@ const CONTENT = [
 const SPEC: TemplateSiteSpec = {
   slug: 'institution-news',
   key: 'sparx-institution-news',
-  name: 'sparx — Institution News',
+  name: 'Institution News',
   summary:
     'A curated institutional newsroom for a university, hospital system, museum or agency — a marquee research lead over a rail of the day’s stories, a live feed, a departments directory, an upcoming-events band, and a bespoke bylined research writeup, in a paper-ground navy-primary + crimson-accent serif theme. Shipped as the Northgate University news office, with a light university-press + alumni store to demo content + commerce together.',
   tagline: 'An authoritative newsroom template for an institution that reports and belongs to a place.',

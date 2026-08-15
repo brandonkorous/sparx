@@ -469,7 +469,7 @@ const CONTACT = [
 // ── The spec ──────────────────────────────────────────────────────────────────
 const SPEC: ServiceSiteSpec = {
   key: 'sparx-driving-pro',
-  name: 'sparx — Driving Academy (Pro)',
+  name: 'Driving Academy (Pro)',
   summary:
     'A sharp, confident driving-academy site — a deep-navy primary, an electric-amber accent and a crisp near-white ground with modern-sans display. Installs online booking for lessons and assessments: adult, defensive, nervous-driver, senior-refresher, advanced/highway and license-transfer lessons, with three instructors booked by name and two dual-control training cars as bookable resources. Ships as "Apex Driving Academy" for adult and advanced drivers.',
   tagline: 'A confident, modern template for adult & advanced driving schools — book online from day one.',

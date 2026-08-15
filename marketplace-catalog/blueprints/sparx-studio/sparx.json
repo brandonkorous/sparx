@@ -2,10 +2,10 @@
   "schemaVersion": 1,
   "category": "blueprint",
   "slug": "sparx-studio",
-  "name": "sparx — Studio",
+  "name": "Studio",
   "version": "1.2.0",
   "tagline": "A complete multi-module starter in the Studio look — for design, photography, and creative studios.",
-  "description": "The complete sparx starter — a faceted shop, a journal, a booking page, and a wholesale page — in the Studio look, tuned for design, photography, and creative studios. Install it, make it yours, and launch a polished working site in minutes.",
+  "description": "The complete starter — a faceted shop, a journal, a booking page, and a wholesale page — in the Studio look, tuned for design, photography, and creative studios. Install it, make it yours, and launch a polished working site in minutes.",
   "payload": "blueprint.ts",
   "facets": {
     "vertical": "services",
@@ -22,17 +22,18 @@
     {
       "file": "media/icon.png",
       "kind": "icon",
-      "alt": "sparx — Studio icon"
+      "alt": "Studio icon"
     },
     {
       "file": "media/preview.png",
       "kind": "preview",
-      "alt": "sparx — Studio — home page preview"
+      "alt": "Studio — home page preview"
     }
   ],
   "author": {
-    "displayName": "sparx"
+    "displayName": "WizeWorks"
   },
+  "brands": ["sparx"],
   "accent": "#121212",
   "sortWeight": 75
 }

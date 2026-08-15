@@ -457,7 +457,7 @@ const CONTACT = [
 // ── The spec ──────────────────────────────────────────────────────────────────
 const SPEC: ServiceSiteSpec = {
   key: 'sparx-lifecoach-career',
-  name: 'sparx — Life Coaching (Career)',
+  name: 'Life Coaching (Career)',
   summary:
     'A sharp, empowering career-coaching site — a deep-navy palette, a confident amber accent and a modern sans, built for ambitious professionals. Installs a working booking flow: a free discovery call plus career-strategy, executive, leadership, interview-prep and promotion sessions, three coaches you book by name with evening hours, and a no-show policy. Ships as "Ascend Coaching", a results-focused practice you can book in about a minute.',
   tagline: 'A sharp template for career & executive coaches — book discovery calls from day one.',

@@ -385,7 +385,7 @@ const CONTACT = [
 // ── The spec ──────────────────────────────────────────────────────────────────
 const SPEC: ServiceSiteSpec = {
   key: 'sparx-salon-editorial',
-  name: 'sparx — Salon (Editorial)',
+  name: 'Salon (Editorial)',
   summary:
     'An upscale, editorial hair-salon site — a warm-ivory palette, a brass primary and a high-contrast serif display, with soft-lit photography carrying the page. Installs a working booking flow: a real service menu (cuts, colour, balayage), three stylists you book by name with their own hours, and a colour-deposit policy. Ships as "Maison Élan", a calm three-chair studio.',
   tagline: 'A warm, editorial template for hair salons — book online from day one.',

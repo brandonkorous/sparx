@@ -437,7 +437,7 @@ const CONTACT = [
 // ── The spec ──────────────────────────────────────────────────────────────────
 const SPEC: ServiceSiteSpec = {
   key: 'sparx-auto-neighborhood',
-  name: 'sparx — Auto Repair (Neighborhood)',
+  name: 'Auto Repair (Neighborhood)',
   summary:
     'A warm, honest template for a family-run neighborhood auto shop — a racing-blue palette with a warm-red accent and real shop photography. Installs online booking from day one: a menu of visits (free estimate, oil, brakes, diagnostics, inspections) with three mechanics AND two service bays as bookable resources, plus a drop-off policy. Ships as "Sparrow & Sons Auto", the shop that tells you what it actually needs.',
   tagline: 'A trusted-neighborhood template for auto shops — book a visit from day one.',

@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "category": "blueprint",
   "slug": "sparx-retail-ceramics-studio",
-  "name": "sparx — Ceramics Studio (Handmade)",
+  "name": "Ceramics Studio (Handmade)",
   "version": "1.4.0",
   "tagline": "A quiet, tactile storefront for a handmade ceramics studio.",
   "description": "A complete, working shop for a handmade pottery studio: a real catalogue of thrown-and-glazed stoneware — mugs, bowls, plates, a serving platter, a vase, a planter, tumblers and a dinner set, each in three studio glazes — with categories, collections, a gallery-calm PDP and a fully merchandised home page. Warm clay-and-stone theme with a muted sage-glaze accent. Shipped as Kiln & Clay.",
@@ -22,16 +22,16 @@
     {
       "file": "media/icon.png",
       "kind": "icon",
-      "alt": "sparx — Ceramics Studio (Handmade) icon"
+      "alt": "Ceramics Studio (Handmade) icon"
     },
     {
       "file": "media/preview.png",
       "kind": "preview",
-      "alt": "sparx — Ceramics Studio (Handmade) — home page preview"
+      "alt": "Ceramics Studio (Handmade) — home page preview"
     }
   ],
   "author": {
-    "displayName": "sparx"
+    "displayName": "WizeWorks"
   },
   "accent": "#564434",
   "sortWeight": 87

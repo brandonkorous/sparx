@@ -415,7 +415,7 @@ const CONTACT = [
 // ── The spec ──────────────────────────────────────────────────────────────────
 const SPEC: ServiceSiteSpec = {
   key: 'sparx-auto-euro',
-  name: 'sparx — Auto (European Specialist)',
+  name: 'Auto (European Specialist)',
   summary:
     'A precision European-import auto shop — BMW, Mercedes, Audi, Porsche and VW — in a dark graphite palette with a sharp marque-red primary. Installs a working booking flow: factory-trained master technicians you book by name, real service bays as bookable resources (a visit reserves both), and a live menu of diagnostics, scheduled maintenance, performance and pre-purchase inspection with a diagnostic-deposit policy. Ships as "Autobahn Werks" — dealer-level, without the dealer markup.',
   tagline: 'A dark, precise template for European auto specialists — book online from day one.',

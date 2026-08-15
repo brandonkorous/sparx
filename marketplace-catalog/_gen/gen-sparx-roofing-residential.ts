@@ -435,7 +435,7 @@ const CONTACT = [
 // ── The spec ──────────────────────────────────────────────────────────────────
 const SPEC: ServiceSiteSpec = {
   key: 'sparx-roofing-residential',
-  name: 'sparx — Roofing (Residential)',
+  name: 'Roofing (Residential)',
   summary:
     'A dependable residential-roofing site — a sturdy slate-blue palette with a warm amber accent and photo-led, honest reliability. Installs a working online booking flow: homeowners book a free inspection or replacement estimate and get a real time slot. Ships a full visit menu (inspection, repair, estimate, leak, gutters, maintenance, storm), three roofers as dispatchable staff with their own hours, and a standard visit policy. Ships as "Summit Roofing".',
   tagline: 'A dependable template for residential roofers — book inspections online from day one.',

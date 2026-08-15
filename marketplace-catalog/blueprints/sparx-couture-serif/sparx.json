@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "category": "blueprint",
   "slug": "sparx-couture-serif",
-  "name": "sparx — Couture Serif",
+  "name": "Couture Serif",
   "version": "1.4.0",
   "tagline": "A stark, serif-everything luxury template for jewellers, perfumers and fashion houses.",
   "description": "A high-fashion luxury-serif storefront where restraint is the premium — a centered-overlay campaign hero over collection tiles, a featured carousel and an editorial lookbook, all pure black on white in a classical serif. Modelled on the couture-serif archetype; shipped as Vérane, a fine-jewellery & fragrance maison.",
@@ -22,16 +22,16 @@
     {
       "file": "media/icon.png",
       "kind": "icon",
-      "alt": "sparx — Couture Serif icon"
+      "alt": "Couture Serif icon"
     },
     {
       "file": "media/preview.png",
       "kind": "preview",
-      "alt": "sparx — Couture Serif — home page preview"
+      "alt": "Couture Serif — home page preview"
     }
   ],
   "author": {
-    "displayName": "sparx"
+    "displayName": "WizeWorks"
   },
   "accent": "#020202",
   "sortWeight": 70

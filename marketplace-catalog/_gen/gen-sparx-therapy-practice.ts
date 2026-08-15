@@ -502,7 +502,7 @@ const CONTACT = [
 // ── The spec ──────────────────────────────────────────────────────────────────
 const SPEC: ServiceSiteSpec = {
   key: 'sparx-therapy-practice',
-  name: 'sparx — Therapy Practice',
+  name: 'Therapy Practice',
   summary:
     'A warm, grounded template for a private therapy & counseling practice — a soft-cream palette, a calm sage primary and a humanist serif, carried by gentle photography. Installs online booking for free consultations and sessions (individual, couples, teen, anxiety, trauma, telehealth), with therapists and private offices as bookable resources for in-person & telehealth counseling. Ships as "Anchor Counseling".',
   tagline: 'A warm, human template for therapists — book consultations & sessions from day one.',

@@ -419,7 +419,7 @@ const CONTACT = [
 // ── The spec ──────────────────────────────────────────────────────────────────
 const SPEC: ServiceSiteSpec = {
   key: 'sparx-handyman-modern',
-  name: 'sparx — Handyman (Modern)',
+  name: 'Handyman (Modern)',
   summary:
     'A bright, techy handyman site for on-demand home repairs — book a vetted pro online in minutes at a flat hourly rate. Installs a working booking flow: a real task menu (mounting, assembly, smart-home, half-day projects), three vetted pros dispatched as bookable resources with long weekday and weekend hours, and same-day scheduling. Ships as "FixList", a modern on-demand handyman service.',
   tagline: 'A modern, on-demand template for handymen — booked online from day one.',

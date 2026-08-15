@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "category": "blueprint",
   "slug": "sparx-tutoring-academic",
-  "name": "sparx — Tutoring (Academic)",
+  "name": "Tutoring (Academic)",
   "version": "1.3.0",
   "tagline": "A warm, confidence-building template for academic tutoring — book online from day one.",
   "description": "A warm, encouraging K–12 tutoring center — math, reading, writing, science and homework help for kids and teens. A friendly warm-blue palette with a sunny accent and online booking from day one: a free assessment plus subject and small-group sessions, three caring tutors and two learning rooms provisioned as bookable resources, and a 24-hour reschedule policy. Ships as \"Summit Learning\", built to book.",
@@ -23,16 +23,16 @@
     {
       "file": "media/icon.png",
       "kind": "icon",
-      "alt": "sparx — Tutoring (Academic) icon"
+      "alt": "Tutoring (Academic) icon"
     },
     {
       "file": "media/preview.png",
       "kind": "preview",
-      "alt": "sparx — Tutoring (Academic) — home page preview"
+      "alt": "Tutoring (Academic) — home page preview"
     }
   ],
   "author": {
-    "displayName": "sparx"
+    "displayName": "WizeWorks"
   },
   "accent": "#1b84b4",
   "sortWeight": 32

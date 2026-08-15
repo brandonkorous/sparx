@@ -391,7 +391,7 @@ const CONTACT = [
 // ── The spec ──────────────────────────────────────────────────────────────────
 const SPEC: ServiceSiteSpec = {
   key: 'sparx-painting-premium',
-  name: 'sparx — Painting (Premium)',
+  name: 'Painting (Premium)',
   summary:
     'A refined site for a premium fine-finishes painting studio — a deep heritage-green palette, a warm brass accent and an elegant serif display over soft-lit interiors. Installs a working booking flow: consultation types from a complimentary walk-through to cabinet refinishing, specialty finishes and historic-home work, three craftsmen you book by name with their own hours, and a project-deposit policy. Ships as "Heritage Painters".',
   tagline: 'A refined, craftsman template for fine-finishes painters — book consultations online from day one.',

@@ -395,7 +395,7 @@ const CONTACT = [
 // ── The spec ──────────────────────────────────────────────────────────────────
 const SPEC: ServiceSiteSpec = {
   key: 'sparx-catering-events',
-  name: 'sparx — Catering (Events & Weddings)',
+  name: 'Catering (Events & Weddings)',
   summary:
     'An elegant events-and-wedding catering site — a warm-cream palette, a deep saffron primary and a sage accent under a Fraunces serif display, with seasonal food photography carrying the page. Installs a working booking flow: tastings and consultations you book online, three event coordinators you book by name with their own hours, and a tasting-deposit policy credited to your event. Ships as "Saffron & Sage Catering", a from-scratch seasonal kitchen for weddings and events.',
   tagline: 'A refined, seasonal template for events caterers — book tastings online from day one.',

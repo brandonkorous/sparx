@@ -850,7 +850,7 @@ const CONTENT = [
 const SPEC: TemplateSiteSpec = {
   slug: 'b2b-restaurant-equipment',
   key: 'sparx-b2b-restaurant-equipment',
-  name: 'sparx — Restaurant Equipment (B2B / Wholesale)',
+  name: 'Restaurant Equipment (B2B / Wholesale)',
   theme: THEME,
   summary:
     'A complete, working wholesale shop for a commercial kitchen & restaurant-equipment distributor: a real trade catalogue sold by the unit and the case — prep tables, cooking gear, food storage, front-of-house service and smallwares — with categories, collections, a bespoke trade PDP (per-unit/per-case pricing, volume breaks, net-30), and a full merchandised home page. Kitchen-grade theme — warm steel ground, deep graphite, an ember copper accent. Shipped as Pass Supply Co.',

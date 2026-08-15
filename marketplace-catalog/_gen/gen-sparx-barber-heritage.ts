@@ -388,7 +388,7 @@ const CONTACT = [
 // ── The spec ──────────────────────────────────────────────────────────────────
 const SPEC: ServiceSiteSpec = {
   key: 'sparx-barber-heritage',
-  name: 'sparx — Barbershop (Heritage)',
+  name: 'Barbershop (Heritage)',
   summary:
     'A dark, masculine heritage-barbershop site — a warm charcoal-black palette, a brass-gold primary, an oxblood accent and a heritage serif over sharp, low-radius chrome. Installs a working booking flow: a real menu (cuts, skin fades, beard work, a hot-towel straight-razor shave), three barbers you book by name with their own hours, and walk-in-friendly no-deposit policies. Ships as "Copper & Cole", a shop running the old way since 2014.',
   tagline: 'A dark, heritage template for barbershops — book online from day one.',

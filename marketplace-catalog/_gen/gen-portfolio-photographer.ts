@@ -578,7 +578,7 @@ const CONTENT = [
 const SPEC: PortfolioSiteSpec = {
   slug: 'portfolio-photographer',
   key: 'sparx-portfolio-photographer',
-  name: 'sparx — Photographer Portfolio',
+  name: 'Photographer Portfolio',
   summary:
     'An image-first portfolio for a photographer: a centered wordmark, a near-full-bleed hero, selected series as large edge-to-edge frames, and photo-story pages that read like a gallery wall. Chrome recedes and type stays recessive so the photographs carry all the colour. Dressed in a cool gallery-white theme with a near-black mono primary, zero radius and a serif display. Shipped as Mara Ilić.',
   tagline: 'An image-first gallery portfolio for a photographer.',

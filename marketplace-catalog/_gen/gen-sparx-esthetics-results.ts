@@ -401,7 +401,7 @@ const CONTACT = [
 // ── The spec ──────────────────────────────────────────────────────────────────
 const SPEC: ServiceSiteSpec = {
   key: 'sparx-esthetics-results',
-  name: 'sparx — Esthetics (Results)',
+  name: 'Esthetics (Results)',
   summary:
     'A luminous, results-driven esthetics studio site — a soft-plum palette, a warm-peach accent and a clean near-white ground, with glowing-skin photography. Installs a working booking flow: a real treatment menu (signature facials, chemical peels, dermaplaning, microneedling), licensed estheticians you book by name, two treatment rooms as bookable resources, and a deposit policy. Ships as "Lumière Skin Studio", a clean, expert skincare studio.',
   tagline: 'A clean, expert template for skincare studios — book facials online from day one.',

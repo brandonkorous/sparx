@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "category": "blueprint",
   "slug": "sparx-therapy-modern",
-  "name": "sparx — Therapy (Modern)",
+  "name": "Therapy (Modern)",
   "version": "1.3.0",
   "tagline": "A modern template for online therapy practices — book sessions from day one.",
   "description": "A clean, modern teletherapy site — a soft-indigo palette, a warm accent and a modern sans, built for accessible online mental-wellness care. Installs a working booking flow: a free matching call plus individual, stress & burnout, and professional-wellness sessions, three therapists you book by name with evening and weekend hours, and a no-show hold policy. Ships as \"Clearmind Therapy\", an online-first practice you can book in about a minute.",
@@ -23,16 +23,16 @@
     {
       "file": "media/icon.png",
       "kind": "icon",
-      "alt": "sparx — Therapy (Modern) icon"
+      "alt": "Therapy (Modern) icon"
     },
     {
       "file": "media/preview.png",
       "kind": "preview",
-      "alt": "sparx — Therapy (Modern) — home page preview"
+      "alt": "Therapy (Modern) — home page preview"
     }
   ],
   "author": {
-    "displayName": "sparx"
+    "displayName": "WizeWorks"
   },
   "accent": "#4e78c7",
   "sortWeight": 33

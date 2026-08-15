@@ -479,7 +479,7 @@ const CONTACT = [
 // ── The spec ──────────────────────────────────────────────────────────────────
 const SPEC: ServiceSiteSpec = {
   key: 'sparx-petgroom-boutique',
-  name: 'sparx — Pet Grooming (Boutique)',
+  name: 'Pet Grooming (Boutique)',
   summary:
     'An upscale, boutique pet-spa site — a warm ivory ground, a deep-plum primary and a blush accent, with an elegant serif display and calm photography. Installs a working booking flow: a real spa menu (signature groom, breed hand styling, spa add-ons, cat grooming), three master groomers you book by name, two private suites as bookable rooms, and a deposit policy. Ships as "The Groom Room".',
   tagline: 'A refined, boutique template for pet groomers — book online from day one.',

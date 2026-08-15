@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "category": "blueprint",
   "slug": "sparx-pest-home",
-  "name": "sparx — Pest Control (Home)",
+  "name": "Pest Control (Home)",
   "version": "1.3.0",
   "tagline": "A reliable, reassuring template for pest-control companies — book inspections from day one.",
   "description": "A friendly residential pest-control site built on a reliable teal-and-green palette over a clean near-white ground. Installs a working booking flow: free inspections plus general, ant/roach, rodent, termite and mosquito treatments and recurring protection plans, three licensed technicians dispatched by skill with their own hours, and a plan policy. Ships as \"ShieldGuard Pest Control\".",
@@ -23,16 +23,16 @@
     {
       "file": "media/icon.png",
       "kind": "icon",
-      "alt": "sparx — Pest Control (Home) icon"
+      "alt": "Pest Control (Home) icon"
     },
     {
       "file": "media/preview.png",
       "kind": "preview",
-      "alt": "sparx — Pest Control (Home) — home page preview"
+      "alt": "Pest Control (Home) — home page preview"
     }
   ],
   "author": {
-    "displayName": "sparx"
+    "displayName": "WizeWorks"
   },
   "accent": "#028a9b",
   "sortWeight": 28

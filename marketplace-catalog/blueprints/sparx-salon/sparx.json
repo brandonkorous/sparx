@@ -2,10 +2,10 @@
   "schemaVersion": 1,
   "category": "blueprint",
   "slug": "sparx-salon",
-  "name": "sparx — Salon",
+  "name": "Salon",
   "version": "1.2.0",
   "tagline": "A complete multi-module starter in the Salon look — for hair, beauty, nails, and spa.",
-  "description": "The complete sparx starter — a faceted shop, a journal, a booking page, and a wholesale page — in the Salon look, tuned for hair, beauty, nails, and spa. Install it, make it yours, and launch a polished working site in minutes.",
+  "description": "The complete starter — a faceted shop, a journal, a booking page, and a wholesale page — in the Salon look, tuned for hair, beauty, nails, and spa. Install it, make it yours, and launch a polished working site in minutes.",
   "payload": "blueprint.ts",
   "facets": {
     "vertical": "services",
@@ -22,17 +22,18 @@
     {
       "file": "media/icon.png",
       "kind": "icon",
-      "alt": "sparx — Salon icon"
+      "alt": "Salon icon"
     },
     {
       "file": "media/preview.png",
       "kind": "preview",
-      "alt": "sparx — Salon — home page preview"
+      "alt": "Salon — home page preview"
     }
   ],
   "author": {
-    "displayName": "sparx"
+    "displayName": "WizeWorks"
   },
+  "brands": ["sparx"],
   "accent": "#e6b9e8",
   "sortWeight": 79
 }

@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "category": "blueprint",
   "slug": "sparx-retail-eyewear",
-  "name": "sparx — Eyewear (Modern)",
+  "name": "Eyewear (Modern)",
   "version": "1.4.0",
   "tagline": "A modern, working storefront for a direct-to-consumer eyewear brand.",
   "description": "A complete, working shop for a direct-to-consumer eyewear brand: a real catalogue of optical frames (each in its own colourways with a lens choice), sunglasses, a blue-light pair, reading glasses, a free home try-on kit and a care accessory, with categories, collections, a bespoke eyewear PDP and a fully merchandised home page. Modern fashion-optical theme — crisp warm-neutral paper, a deep-teal primary, a warm tortoise accent. Shipped as Frame & Lens.",
@@ -22,16 +22,16 @@
     {
       "file": "media/icon.png",
       "kind": "icon",
-      "alt": "sparx — Eyewear (Modern) icon"
+      "alt": "Eyewear (Modern) icon"
     },
     {
       "file": "media/preview.png",
       "kind": "preview",
-      "alt": "sparx — Eyewear (Modern) — home page preview"
+      "alt": "Eyewear (Modern) — home page preview"
     }
   ],
   "author": {
-    "displayName": "sparx"
+    "displayName": "WizeWorks"
   },
   "accent": "#00555b",
   "sortWeight": 86

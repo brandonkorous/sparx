@@ -417,7 +417,7 @@ const CONTACT = [
 // ── The spec ──────────────────────────────────────────────────────────────────
 const SPEC: ServiceSiteSpec = {
   key: 'sparx-vet-modern',
-  name: 'sparx — Veterinary (Modern)',
+  name: 'Veterinary (Modern)',
   summary:
     'A calm, modern veterinary-wellness site — a sage-and-cream palette, a refined serif display and soft, unhurried photography. Installs a working booking flow for fear-free care: real appointment types (wellness, nutrition, telehealth, senior), three vets you book by name plus two calm exam rooms as resources, and a wellness-plan policy. Ships as "Fauna Veterinary", a whole-pet, fear-free practice for dogs and cats.',
   tagline: 'A calm, fear-free template for modern vet practices — book online from day one.',

@@ -433,7 +433,7 @@ const CONTACT = [
 // ── The spec ──────────────────────────────────────────────────────────────────
 const SPEC: ServiceSiteSpec = {
   key: 'sparx-pt-wellness',
-  name: 'sparx — Physical Therapy & Wellness',
+  name: 'Physical Therapy & Wellness',
   summary:
     'A calm, whole-person physical-therapy site — a soft-sage palette, a warm-clay accent and a gentle serif display. Installs online booking from day one: evaluations and one-on-one sessions for pelvic health, balance, chronic pain and wellness, three therapists you book by name plus two private treatment rooms as resources, and reminder + evaluation-hold policies. Ships as "Restore Physical Therapy & Wellness".',
   tagline: 'A gentle, restorative template for physical-therapy clinics — book evaluations online from day one.',

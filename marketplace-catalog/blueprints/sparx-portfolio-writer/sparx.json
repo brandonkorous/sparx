@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "category": "blueprint",
   "slug": "sparx-portfolio-writer",
-  "name": "sparx — Writer Portfolio",
+  "name": "Writer Portfolio",
   "version": "1.2.0",
   "tagline": "An editorial, type-led portfolio for an essayist & reporter.",
   "description": "A read-me portfolio for a working writer: a type-only editorial masthead, selected writing as a hairline-ruled index (not cards), reading pages that give an essay room, and a plain about + contact. The words are the work — warm-paper page, serif across, one oxblood on rubrics and links. Shipped as Iris Bellamy.",
@@ -22,16 +22,16 @@
     {
       "file": "media/icon.png",
       "kind": "icon",
-      "alt": "sparx — Writer Portfolio icon"
+      "alt": "Writer Portfolio icon"
     },
     {
       "file": "media/preview.png",
       "kind": "preview",
-      "alt": "sparx — Writer Portfolio — home page preview"
+      "alt": "Writer Portfolio — home page preview"
     }
   ],
   "author": {
-    "displayName": "sparx"
+    "displayName": "WizeWorks"
   },
   "accent": "#8f3222",
   "sortWeight": 86

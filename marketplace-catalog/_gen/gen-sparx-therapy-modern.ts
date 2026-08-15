@@ -456,7 +456,7 @@ const CONTACT = [
 // ── The spec ──────────────────────────────────────────────────────────────────
 const SPEC: ServiceSiteSpec = {
   key: 'sparx-therapy-modern',
-  name: 'sparx — Therapy (Modern)',
+  name: 'Therapy (Modern)',
   summary:
     'A clean, modern teletherapy site — a soft-indigo palette, a warm accent and a modern sans, built for accessible online mental-wellness care. Installs a working booking flow: a free matching call plus individual, stress & burnout, and professional-wellness sessions, three therapists you book by name with evening and weekend hours, and a no-show hold policy. Ships as "Clearmind Therapy", an online-first practice you can book in about a minute.',
   tagline: 'A modern template for online therapy practices — book sessions from day one.',

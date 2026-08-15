@@ -867,7 +867,7 @@ const CONTENT = [
 const SPEC: TemplateSiteSpec = {
   slug: 'retail-apparel-minimal',
   key: 'sparx-retail-apparel-minimal',
-  name: 'sparx — Fashion Boutique (Minimal)',
+  name: 'Fashion Boutique (Minimal)',
   theme: THEME,
   summary:
     'A complete, working shop for a quiet-luxury clothing boutique: a real wardrobe of essentials — tees, an oxford shirt, heavyweight and fine knitwear, tailored and wide-leg trousers, an overcoat, a scarf and a leather tote — each sized XS–XL in a tight colour palette, with categories, collections, a bespoke editorial PDP and a merchandised home page. Warm bone paper, near-black mono type, no accent — the clothes are the colour. Shipped as Kestrel.',

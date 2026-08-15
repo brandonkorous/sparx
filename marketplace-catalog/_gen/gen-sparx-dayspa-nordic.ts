@@ -477,7 +477,7 @@ const CONTACT = [
 // ── The spec ──────────────────────────────────────────────────────────────────
 const SPEC: ServiceSiteSpec = {
   key: 'sparx-dayspa-nordic',
-  name: 'sparx — Day Spa (Nordic)',
+  name: 'Day Spa (Nordic)',
   summary:
     'A cool, mineral day spa and bathhouse site — a glacial off-white palette, a blue-teal primary and a clean minimal sans, with quiet, elemental photography. Installs a working booking flow: thermal soak sessions, a sauna and cold-plunge circuit, 60/90-minute massage, a mineral facial and body treatment, plus a private bathhouse hour with a deposit. Three therapists and three pools and rooms carry real hours. Ships as “Kald”.',
   tagline: 'A calm, mineral template for day spas and bathhouses — book online from day one.',

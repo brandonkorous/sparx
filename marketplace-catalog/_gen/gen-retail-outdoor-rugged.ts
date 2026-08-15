@@ -922,7 +922,7 @@ const CONTENT = [
 const SPEC: TemplateSiteSpec = {
   slug: 'retail-outdoor-rugged',
   key: 'sparx-retail-outdoor-rugged',
-  name: 'sparx — Outdoor Gear (Rugged)',
+  name: 'Outdoor Gear (Rugged)',
   theme: THEME,
   summary:
     'A complete, working shop for an outdoor & adventure gear outfitter: a real catalogue of hardshells, down insulation, merino base layers, packs, a roll-top dry bag, trail socks, an insulated bottle, a headlamp and trekking poles — with categories, collections, a spec-forward PDP and a fully merchandised home page. Rugged field theme — muted stone-khaki ground, deep forest-green, a blaze-orange accent. Shipped as Ridgeline Supply.',

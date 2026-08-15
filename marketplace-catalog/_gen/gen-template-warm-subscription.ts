@@ -1309,7 +1309,7 @@ const CART: Node[] = [
 const SPEC: TemplateSiteSpec = {
   slug: 'warm-subscription',
   key: 'sparx-warm-subscription',
-  name: 'sparx — Warm Subscription',
+  name: 'Warm Subscription',
   summary:
     'A warm, editorial storefront for a subscription food & drink brand — a full-bleed cream-and-terracotta hero over a "how the club works" trio, provenance editorial bands, shoppable carousels, a static subscription plan-selector and an inclusion list, in a bespoke warm `roastery` theme with an espresso footer island. Modelled on the warm-subscription / food-editorial archetype; shipped as Latitude Coffee Club, a single-origin coffee subscription and roastery.',
   tagline: 'A warm, story-rich template for subscription and specialty food & drink brands.',

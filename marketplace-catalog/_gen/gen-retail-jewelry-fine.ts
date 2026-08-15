@@ -835,7 +835,7 @@ const CONTENT = [
 const SPEC: TemplateSiteSpec = {
   slug: 'retail-jewelry-fine',
   key: 'sparx-retail-jewelry-fine',
-  name: 'sparx — Fine Jeweler',
+  name: 'Fine Jeweler',
   theme: THEME,
   summary:
     'A complete, working shop for a fine & demi-fine jeweler: a real catalogue of solid 14k gold and sterling silver pieces — a signet, stacking rings, a pendant, hoops, a tennis bracelet, a birthstone necklace, a cuff and a solitaire — with Metal and Size variants, categories, collections, a bespoke PDP and a merchandised home page. Precious, restrained theme — a bone/ivory ground, near-black ink, an antique-gold accent, a serif display. Shipped as Aurelia.',

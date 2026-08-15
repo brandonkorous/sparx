@@ -541,7 +541,7 @@ const CONTENT = [
 const SPEC: PortfolioSiteSpec = {
   slug: 'portfolio-writer',
   key: 'sparx-portfolio-writer',
-  name: 'sparx — Writer Portfolio',
+  name: 'Writer Portfolio',
   summary:
     'A read-me portfolio for a working writer: a type-only editorial masthead, selected writing as a hairline-ruled index (not cards), reading pages that give an essay room, and a plain about + contact. The words are the work — warm-paper page, serif across, one oxblood on rubrics and links. Shipped as Iris Bellamy.',
   tagline: 'An editorial, type-led portfolio for an essayist & reporter.',

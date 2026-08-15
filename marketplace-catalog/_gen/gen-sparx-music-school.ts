@@ -463,7 +463,7 @@ const CONTACT = [
 // ── The spec ──────────────────────────────────────────────────────────────────
 const SPEC: ServiceSiteSpec = {
   key: 'sparx-music-school',
-  name: 'sparx — Music School',
+  name: 'Music School',
   summary:
     'A warm, all-ages music-school site — a cream palette, a burgundy primary and a friendly serif display — with online booking for free trial lessons from day one. Installs a working booking flow: a real menu of private lessons (piano, guitar, voice, violin) and a group class, three teachers you book by name matched with a lesson room, and a no-show policy. Ships as "Crescendo Music School", an encouraging community school for every age and level.',
   tagline: 'A warm, joyful template for music schools — book trial lessons online from day one.',

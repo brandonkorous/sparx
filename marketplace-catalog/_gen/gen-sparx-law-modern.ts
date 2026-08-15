@@ -445,7 +445,7 @@ const CONTACT = [
 // ── The spec ──────────────────────────────────────────────────────────────────
 const SPEC: ServiceSiteSpec = {
   key: 'sparx-law-modern',
-  name: 'sparx — Law Firm (Modern)',
+  name: 'Law Firm (Modern)',
   summary:
     'A sharp, modern business & litigation law-firm site — a midnight-slate palette, a confident blue accent and a precise modern sans. Installs a working consultation-booking flow: real consult types (litigation, formation, M&A, IP, employment), three partner attorneys booked by name with their own hours, and a credited-deposit policy. Ships as "Meridian Law Group", a boutique with big-firm reach.',
   tagline: 'A sharp, modern template for business & litigation firms — book consultations from day one.',

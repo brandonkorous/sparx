@@ -539,7 +539,7 @@ const SCHEDULING = {
 
 const SPEC: ServiceSiteSpec = {
   key: 'sparx-restaurant-vegan',
-  name: 'sparx — Plant Kitchen',
+  name: 'Plant Kitchen',
   summary:
     'A complete, working site for a modern plant-based restaurant: a real vegetable-forward menu, and a live table-reservations flow (tables as bookable resources, party-size reservation services, opening hours, a relaxed no-deposit policy, walk-ins welcome) on the Reserve page. Bright plant-kitchen theme — green-tinted cream, vibrant leaf-green, a warm terracotta accent. Pages: Home, Menu, Reserve, About, Visit. Shipped as Sprout & Vine.',
   tagline: 'A fresh, working template for a plant-based restaurant that takes reservations.',

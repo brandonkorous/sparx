@@ -663,7 +663,7 @@ const CONTENT = [
 const SPEC: PortfolioSiteSpec = {
   slug: 'portfolio-developer',
   key: 'sparx-portfolio-developer',
-  name: 'sparx — Developer Portfolio',
+  name: 'Developer Portfolio',
   summary:
     'A hire-me portfolio for a creative developer / technologist: a mono terminal hero, selected builds as bordered cards that light up on hover, a “Now” band of what’s running, and case-study pages that walk what it is, the hard part, the stack and what shipped. Dressed in a near-black terminal theme with a monospace body, acid-green primary and electric-cyan accent. The site is its own proof of taste. Shipped as Kade Nakamura.',
   tagline: 'A build-led portfolio for a creative developer.',

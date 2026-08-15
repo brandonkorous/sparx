@@ -1158,7 +1158,7 @@ const CART: Node[] = [
 const SPEC: TemplateSiteSpec = {
   slug: 'couture-serif',
   key: 'sparx-couture-serif',
-  name: 'sparx — Couture Serif',
+  name: 'Couture Serif',
   summary:
     'A high-fashion luxury-serif storefront where restraint is the premium — a centered-overlay campaign hero over collection tiles, a featured carousel and an editorial lookbook, all pure black on white in a classical serif. Modelled on the couture-serif archetype; shipped as Vérane, a fine-jewellery & fragrance maison.',
   tagline: 'A stark, serif-everything luxury template for jewellers, perfumers and fashion houses.',

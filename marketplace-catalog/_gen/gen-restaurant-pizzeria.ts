@@ -515,7 +515,7 @@ const SCHEDULING = {
 
 const SPEC: ServiceSiteSpec = {
   key: 'sparx-restaurant-pizzeria',
-  name: 'sparx — Pizzeria',
+  name: 'Pizzeria',
   summary:
     'A complete, working site for a wood-fired pizzeria & trattoria: a real menu (antipasti, pizza, pasta, dolci, drinks) and a live table-reservations flow (tables as bookable resources, party-size reservation services, opening hours, a cancellation policy) on the /reserve page. Warm terracotta theme — cream, tomato-brick red, a basil-green accent. Pages: Home, Menu, Reserve, About, Visit. Shipped as Forno.',
   tagline: 'Flour, fire, and a long table — a working template for a pizzeria that books tables.',

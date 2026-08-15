@@ -794,7 +794,7 @@ const CONTENT = [
 const SPEC: TemplateSiteSpec = {
   slug: 'retail-eyewear',
   key: 'sparx-retail-eyewear',
-  name: 'sparx — Eyewear (Modern)',
+  name: 'Eyewear (Modern)',
   theme: THEME,
   summary:
     'A complete, working shop for a direct-to-consumer eyewear brand: a real catalogue of optical frames (each in its own colourways with a lens choice), sunglasses, a blue-light pair, reading glasses, a free home try-on kit and a care accessory, with categories, collections, a bespoke eyewear PDP and a fully merchandised home page. Modern fashion-optical theme — crisp warm-neutral paper, a deep-teal primary, a warm tortoise accent. Shipped as Frame & Lens.',

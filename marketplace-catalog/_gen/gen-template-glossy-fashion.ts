@@ -727,7 +727,7 @@ const CONTENT = [
 const SPEC: TemplateSiteSpec = {
   slug: 'glossy-fashion',
   key: 'sparx-glossy-fashion',
-  name: 'sparx — Glossy Fashion',
+  name: 'Glossy Fashion',
   summary:
     'An image-first, editorial-luxury template for a style & design magazine — a full-bleed cover story, an editorial feed, a lookbook of looks, image-led department tiles and a bespoke photo-story article page, in a pure black-and-white serif theme where the photograph supplies every colour. Modelled on the high-fashion glossy archetype; shipped as Mode & Object. Ships a light object edit (accessories, ceramics, a print) to demonstrate content + commerce together.',
   tagline: 'An image-first editorial template for a magazine of style and taste.',

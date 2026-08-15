@@ -441,7 +441,7 @@ const CONTACT = [
 // ── The spec ──────────────────────────────────────────────────────────────────
 const SPEC: ServiceSiteSpec = {
   key: 'sparx-massage-sanctuary',
-  name: 'sparx — Massage (Sanctuary)',
+  name: 'Massage (Sanctuary)',
   summary:
     'A serene relaxation-massage retreat site — warm sand and oat grounds, a soft sage-green primary, a clay accent and a serif display, with dim, candlelit photography carrying the page. Installs a working booking flow: a calm treatment menu (Swedish, warm stone, aromatherapy, the signature Stillwater ritual, couples), three therapists and three rooms (incl. a couples suite) you book by name, and a deposit policy on longer rituals. Ships as "Stillwater".',
   tagline: 'A warm, serene template for massage & wellness — book online from day one.',

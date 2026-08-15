@@ -389,7 +389,7 @@ const CONTACT = [
 // ── The spec ──────────────────────────────────────────────────────────────────
 const SPEC: ServiceSiteSpec = {
   key: 'sparx-eventplanner-modern',
-  name: 'sparx — Event Planner (Modern)',
+  name: 'Event Planner (Modern)',
   summary:
     'A bold, modern site for corporate & social event planners — a crisp near-white palette, a confident navy primary and a punchy coral accent, with a clean modern sans. Installs online booking for consultations: a real consult menu (discovery call through gala and brand-activation), three producers you book by name with their own hours, and a planning-deposit policy. Ships as "Assembly Events", a full-service event production studio.',
   tagline: 'A bold, modern template for event planners — book consultations online from day one.',

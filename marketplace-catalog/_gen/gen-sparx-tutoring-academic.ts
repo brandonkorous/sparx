@@ -461,7 +461,7 @@ const CONTACT = [
 // ── The spec ──────────────────────────────────────────────────────────────────
 const SPEC: ServiceSiteSpec = {
   key: 'sparx-tutoring-academic',
-  name: 'sparx — Tutoring (Academic)',
+  name: 'Tutoring (Academic)',
   summary:
     'A warm, encouraging K–12 tutoring center — math, reading, writing, science and homework help for kids and teens. A friendly warm-blue palette with a sunny accent and online booking from day one: a free assessment plus subject and small-group sessions, three caring tutors and two learning rooms provisioned as bookable resources, and a 24-hour reschedule policy. Ships as "Summit Learning", built to book.',
   tagline: 'A warm, confidence-building template for academic tutoring — book online from day one.',

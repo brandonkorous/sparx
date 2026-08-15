@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "category": "blueprint",
   "slug": "sparx-florist-shop",
-  "name": "sparx — Florist (Shop)",
+  "name": "Florist (Shop)",
   "version": "1.3.0",
   "tagline": "A cheerful template for neighbourhood flower shops — book online from day one.",
   "description": "A bright, joyful neighbourhood flower-shop site — a warm off-white ground, a cheerful coral primary, a fresh-green accent and a friendly rounded display. Installs a working booking flow: online booking for consults, flower subscriptions and hands-on workshops, with the shop’s florists as bookable resources on their own hours. Same-day local delivery, daily fresh arrangements, sympathy and celebration flowers. Ships as \"Petal & Post\".",
@@ -23,16 +23,16 @@
     {
       "file": "media/icon.png",
       "kind": "icon",
-      "alt": "sparx — Florist (Shop) icon"
+      "alt": "Florist (Shop) icon"
     },
     {
       "file": "media/preview.png",
       "kind": "preview",
-      "alt": "sparx — Florist (Shop) — home page preview"
+      "alt": "Florist (Shop) — home page preview"
     }
   ],
   "author": {
-    "displayName": "sparx"
+    "displayName": "WizeWorks"
   },
   "accent": "#e55551",
   "sortWeight": 17

@@ -378,7 +378,7 @@ const CONTACT = [
 // ── The spec ──────────────────────────────────────────────────────────────────
 const SPEC: ServiceSiteSpec = {
   key: 'sparx-landscaping-lawncare',
-  name: 'sparx — Landscaping (Lawn Care)',
+  name: 'Landscaping (Lawn Care)',
   summary:
     'A bright, friendly lawn-care & maintenance site — a fresh grass-green palette on a crisp near-white ground, built around recurring service and online booking. Installs a working flow: a free-quote booking, flat-rate mowing plus fertilization, weed control, aeration, cleanups and mulch, and three crews you book with their own hours. Ships as "GreenBlade Lawn Care" — a lawn you’re proud of, handled.',
   tagline: 'A friendly lawn-care template — book a free quote and start service from day one.',

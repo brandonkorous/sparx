@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "category": "blueprint",
   "slug": "sparx-optometry-family",
-  "name": "sparx — Optometry (Family)",
+  "name": "Optometry (Family)",
   "version": "1.3.0",
   "tagline": "A warm, family template for optometry practices — book eye exams online from day one.",
   "description": "A warm, family-friendly optometry site — a clear teal palette, a warm coral accent and rounded type, with gentle, all-ages copy. Installs a working online booking flow for eye exams: real visit types (comprehensive and contact-lens exams, kids’ exams, dry-eye, medical visits and free frame styling), two optometrists and an optician booked by name with their own hours, exam rooms as resources, and a no-show hold policy. Ships as \"Clearview Eye Care\", a family eye-care practice.",
@@ -23,16 +23,16 @@
     {
       "file": "media/icon.png",
       "kind": "icon",
-      "alt": "sparx — Optometry (Family) icon"
+      "alt": "Optometry (Family) icon"
     },
     {
       "file": "media/preview.png",
       "kind": "preview",
-      "alt": "sparx — Optometry (Family) — home page preview"
+      "alt": "Optometry (Family) — home page preview"
     }
   ],
   "author": {
-    "displayName": "sparx"
+    "displayName": "WizeWorks"
   },
   "accent": "#0094a2",
   "sortWeight": 44

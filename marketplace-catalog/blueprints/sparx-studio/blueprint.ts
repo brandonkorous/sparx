@@ -17,9 +17,9 @@ import welcomeEmail2 from './welcome-email-2.json' with { type: 'json' };
 const blueprint = {
   key: 'sparx-studio',
   version: '1.2.0',
-  name: 'sparx — Studio',
+  name: 'Studio',
   summary:
-    'The complete sparx starter — a faceted shop, a journal, a booking page, and a wholesale page — in the Studio look, tuned for design, photography, and creative studios. Install it, make it yours, and launch a polished working site in minutes.',
+    'The complete starter — a faceted shop, a journal, a booking page, and a wholesale page — in the Studio look, tuned for design, photography, and creative studios. Install it, make it yours, and launch a polished working site in minutes.',
   vertical: 'services',
   preview: 'media/preview.png',
   requiresModules: ['builder', 'commerce', 'cms', 'crm', 'email'],

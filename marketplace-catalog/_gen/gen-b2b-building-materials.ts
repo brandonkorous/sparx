@@ -874,7 +874,7 @@ const CONTENT = [
 const SPEC: TemplateSiteSpec = {
   slug: 'b2b-building-materials',
   key: 'sparx-b2b-building-materials',
-  name: 'sparx — Building Materials (B2B / Wholesale)',
+  name: 'Building Materials (B2B / Wholesale)',
   theme: THEME,
   summary:
     'A complete, working wholesale yard for a builders’ merchant: a real trade catalogue sold by the pack, pallet and bulk bag — timber & sheet, plasterboard, cement, insulation, fixings, sealant, aggregates and safety — with categories, collections, a bespoke trade PDP (per-pack pricing, volume breaks, net-30, collect or deliver) and a full merchandised home page. Rugged yard theme — warm concrete, timber-bark, safety-ochre accent. Shipped as Yardstock Trade Supplies.',

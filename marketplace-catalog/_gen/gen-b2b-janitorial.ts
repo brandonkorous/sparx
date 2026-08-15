@@ -838,7 +838,7 @@ const CONTENT = [
 const SPEC: TemplateSiteSpec = {
   slug: 'b2b-janitorial',
   key: 'sparx-b2b-janitorial',
-  name: 'sparx — Janitorial & Facility Supply (B2B)',
+  name: 'Janitorial & Facility Supply (B2B)',
   theme: THEME,
   summary:
     'A complete, working wholesale shop for a janitorial and facility-supply distributor: a real catalogue of cleaning chemicals, paper, liners and tools sold by the case with pack sizes and MOQs, per-case trade pricing, categories, collections, a trade PDP and a merchandised home page framed for facilities buyers. Clean teal-tinted theme. Shipped as Saniworx.',

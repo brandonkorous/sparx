@@ -796,7 +796,7 @@ const CONTENT = [
 const SPEC: TemplateSiteSpec = {
   slug: 'retail-stationery-editorial',
   key: 'sparx-retail-stationery-editorial',
-  name: 'sparx — Stationery & Paper Goods (Editorial)',
+  name: 'Stationery & Paper Goods (Editorial)',
   theme: THEME,
   summary:
     'A complete, working shop for a stationery & paper-goods store: a real catalogue of hardcover and pocket notebooks, a fountain pen, bottled inks, a weekly planner and desk pad, card sets, washi tape and a gift bundle, with categories, collections, a bespoke PDP and a full merchandised home page. Editorial paper theme — warm cream ground, a confident ink-blue, a warm-red accent, a characterful Fraunces display. Shipped as Margin & Co.',

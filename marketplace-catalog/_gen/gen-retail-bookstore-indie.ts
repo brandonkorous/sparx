@@ -793,7 +793,7 @@ const CONTENT = [
 const SPEC: TemplateSiteSpec = {
   slug: 'retail-bookstore-indie',
   key: 'sparx-retail-bookstore-indie',
-  name: 'sparx — Independent Bookshop',
+  name: 'Independent Bookshop',
   theme: THEME,
   summary:
     'A complete, working shop for an independent bookshop: a real catalogue of staff-picked books, a canvas tote, a bookmark set, a gift card and a hand-picked book-club subscription, with categories, collections, a bespoke literary PDP and a full merchandised home page led by staff picks. Warm foxed-paper theme — cream ground, deep oxblood, an ink accent on rubrics and links. Shipped as Marginalia Books.',

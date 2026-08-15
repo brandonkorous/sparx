@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "category": "blueprint",
   "slug": "sparx-b2b-apparel-blanks",
-  "name": "sparx — Blank Apparel (Wholesale)",
+  "name": "Blank Apparel (Wholesale)",
   "version": "1.4.0",
   "tagline": "A working wholesale storefront for a blank-apparel supplier.",
   "description": "A complete, working wholesale shop for a blank-apparel supplier: a real catalogue of blank tees, fleece, headwear and bags sold by the case and priced per unit, with Color × Size variant grids, categories, collections, a bespoke trade PDP carrying bulk price breaks and net-terms, and a merchandised home page pitched at decorators. Clean, catalogue-efficient theme — cool slate paper, near-black ink, one confident cobalt accent. Shipped as Blankstock.",
@@ -22,16 +22,16 @@
     {
       "file": "media/icon.png",
       "kind": "icon",
-      "alt": "sparx — Blank Apparel (Wholesale) icon"
+      "alt": "Blank Apparel (Wholesale) icon"
     },
     {
       "file": "media/preview.png",
       "kind": "preview",
-      "alt": "sparx — Blank Apparel (Wholesale) — home page preview"
+      "alt": "Blank Apparel (Wholesale) — home page preview"
     }
   ],
   "author": {
-    "displayName": "sparx"
+    "displayName": "WizeWorks"
   },
   "accent": "#1a1f29",
   "sortWeight": 86

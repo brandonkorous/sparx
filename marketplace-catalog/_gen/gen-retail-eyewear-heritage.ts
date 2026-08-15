@@ -801,7 +801,7 @@ const CONTENT = [
 const SPEC: TemplateSiteSpec = {
   slug: 'retail-eyewear-heritage',
   key: 'sparx-retail-eyewear-heritage',
-  name: 'sparx — Eyewear (Heritage)',
+  name: 'Eyewear (Heritage)',
   theme: THEME,
   summary:
     'A complete, working shop for a heritage, hand-made eyewear house: named acetate optical frames (each hand-finished in its own colourways with a lens choice), hand-polished sunglasses, a reading pair, a numbered limited-run frame, a leather case and a care kit, with categories, collections, a bespoke PDP and a merchandised home page. Warm heritage theme — bone/tobacco paper, a bottle-green primary, a tobacco accent, a serif display. Shipped as Atelier Optique.',

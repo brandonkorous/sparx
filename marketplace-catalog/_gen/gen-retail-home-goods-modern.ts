@@ -803,7 +803,7 @@ const CONTENT = [
 const SPEC: TemplateSiteSpec = {
   slug: 'retail-home-goods-modern',
   key: 'sparx-retail-home-goods-modern',
-  name: 'sparx — Home Goods (Modern Design)',
+  name: 'Home Goods (Modern Design)',
   theme: THEME,
   summary:
     'A complete, working shop for a design-led homeware brand: a real catalogue of a modern arc floor lamp, a sculptural vase, a graphic wool-blend rug, a lacquer tray, a modular steel-and-oak shelf, geometric cushions, a glass carafe set and a minimalist wall clock, with categories, collections, a bespoke PDP and a full merchandised home page. Crisp, architectural theme — a cool near-white ground, a near-black primary and an ochre accent. Shipped as Form & Field.',

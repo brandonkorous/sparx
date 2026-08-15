@@ -455,7 +455,7 @@ const CONTACT = [
 // ── The spec ──────────────────────────────────────────────────────────────────
 const SPEC: ServiceSiteSpec = {
   key: 'sparx-hvac-efficiency',
-  name: 'sparx — HVAC (Efficiency)',
+  name: 'HVAC (Efficiency)',
   summary:
     'A data-forward HVAC site for energy-efficiency pros — a cool evergreen-and-slate palette with a bright teal signal accent, built around online booking. Homeowners book an energy assessment, a free install estimate or a tune-up in about a minute; three technicians carry their own skills and hours. Leads with lower bills, heat-pump expertise and rebate help. Ships as "Northline Climate", a high-efficiency heating-and-cooling company.',
   tagline: 'A cool, technical template for efficiency-focused HVAC — book visits from day one.',

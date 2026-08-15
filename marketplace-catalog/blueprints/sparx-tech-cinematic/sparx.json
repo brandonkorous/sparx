@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "category": "blueprint",
   "slug": "sparx-tech-cinematic",
-  "name": "sparx — Tech Cinematic",
+  "name": "Tech Cinematic",
   "version": "1.4.0",
   "tagline": "A dark, cinematic, spec-forward template for makers of premium engineered hardware.",
   "description": "A dark, spec-forward storefront for engineered hardware — a full-bleed cinematic hero over a repeating capability-band and shoppable-carousel rhythm, on a genuinely dark page with one electric-blue signal. Modelled on the tech/cinematic product archetype; shipped as Aphelion, a premium-audio brand.",
@@ -22,16 +22,16 @@
     {
       "file": "media/icon.png",
       "kind": "icon",
-      "alt": "sparx — Tech Cinematic icon"
+      "alt": "Tech Cinematic icon"
     },
     {
       "file": "media/preview.png",
       "kind": "preview",
-      "alt": "sparx — Tech Cinematic — home page preview"
+      "alt": "Tech Cinematic — home page preview"
     }
   ],
   "author": {
-    "displayName": "sparx"
+    "displayName": "WizeWorks"
   },
   "accent": "#0088f2",
   "sortWeight": 65

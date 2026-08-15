@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "category": "blueprint",
   "slug": "sparx-travel-luxe",
-  "name": "sparx — Travel Advisory (Luxury)",
+  "name": "Travel Advisory (Luxury)",
   "version": "1.3.0",
   "tagline": "A refined template for luxury travel advisories — book consultations online from day one.",
   "description": "A refined, editorial travel-advisory site — a deep navy-teal palette, a warm brass accent and an elegant serif display over ivory, with worldly destination photography carrying the page. Installs a working consultation-booking flow: a real menu of consult types (discovery call, custom itineraries, honeymoons, luxury and VIP trips), three travel advisors you book by name with their own hours, and a planning-fee deposit policy. Ships as \"Wander & Co. Travel\", a luxury bespoke travel studio.",
@@ -23,16 +23,16 @@
     {
       "file": "media/icon.png",
       "kind": "icon",
-      "alt": "sparx — Travel Advisory (Luxury) icon"
+      "alt": "Travel Advisory (Luxury) icon"
     },
     {
       "file": "media/preview.png",
       "kind": "preview",
-      "alt": "sparx — Travel Advisory (Luxury) — home page preview"
+      "alt": "Travel Advisory (Luxury) — home page preview"
     }
   ],
   "author": {
-    "displayName": "sparx"
+    "displayName": "WizeWorks"
   },
   "accent": "#1d4e60",
   "sortWeight": 16

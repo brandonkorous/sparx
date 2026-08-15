@@ -778,7 +778,7 @@ const CONTENT = [
 const SPEC: TemplateSiteSpec = {
   slug: 'retail-kitchenware-modern',
   key: 'sparx-retail-kitchenware-modern',
-  name: 'sparx — Kitchenware (Modern)',
+  name: 'Kitchenware (Modern)',
   theme: THEME,
   summary:
     'A complete, working shop for a modern kitchen-design studio: a real catalogue of ceramic nonstick cookware, a precision kettle, a clean knife set, nesting prep bowls, a digital scale, silicone tools and modular storage, with categories, collections, a bespoke PDP and a full merchandised home page. Sleek modern theme — crisp cool-grey ground, near-black controls, an electric cobalt accent, clean grotesk type. Shipped as Edge.',

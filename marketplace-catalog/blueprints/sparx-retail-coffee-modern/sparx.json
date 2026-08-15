@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "category": "blueprint",
   "slug": "sparx-retail-coffee-modern",
-  "name": "sparx — Coffee Roaster (Modern)",
+  "name": "Coffee Roaster (Modern)",
   "version": "1.4.0",
   "tagline": "A crisp, modern storefront for a specialty coffee roaster.",
   "description": "A complete, working shop for a modern specialty coffee roaster: a real catalogue of single-origin bags, blends, a Swiss-water decaf, single-serve steep bags, brew gear and a flexible subscription, with categories, collections, a bespoke PDP and a sharp, product-forward home page. Bright, minimalist theme — a crisp near-white ground, one electric-orange accent, a clean grotesk display. Shipped as Meridian Coffee.",
@@ -22,16 +22,16 @@
     {
       "file": "media/icon.png",
       "kind": "icon",
-      "alt": "sparx — Coffee Roaster (Modern) icon"
+      "alt": "Coffee Roaster (Modern) icon"
     },
     {
       "file": "media/preview.png",
       "kind": "preview",
-      "alt": "sparx — Coffee Roaster (Modern) — home page preview"
+      "alt": "Coffee Roaster (Modern) — home page preview"
     }
   ],
   "author": {
-    "displayName": "sparx"
+    "displayName": "WizeWorks"
   },
   "accent": "#151b24",
   "sortWeight": 87

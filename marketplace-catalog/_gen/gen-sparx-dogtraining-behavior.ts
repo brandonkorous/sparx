@@ -439,7 +439,7 @@ const CONTACT = [
 // ── The spec ──────────────────────────────────────────────────────────────────
 const SPEC: ServiceSiteSpec = {
   key: 'sparx-dogtraining-behavior',
-  name: 'sparx — Dog Training (Behavior)',
+  name: 'Dog Training (Behavior)',
   summary:
     'A bold, professional dog-training & behavior site — a deep charcoal-navy palette, a confident amber accent and sturdy condensed type. Installs a working booking flow: online booking for assessments and private sessions, specialist trainers you choose by name with their own hours, and a program-deposit policy for board-and-train. Covers reactivity, aggression, puppy foundations and service-dog work. Ships as "K9 Method".',
   tagline: 'A bold, results-driven template for private dog trainers — book assessments from day one.',

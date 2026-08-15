@@ -429,7 +429,7 @@ const CONTACT = [
 // ── The spec ──────────────────────────────────────────────────────────────────
 const SPEC: ServiceSiteSpec = {
   key: 'sparx-dental-family',
-  name: 'sparx — Dental (Family)',
+  name: 'Dental (Family)',
   summary:
     'A warm, family-friendly dental site — a soft teal-blue palette, a coral accent and rounded type, with gentle, low-anxiety copy for every age. Installs a working booking flow: real appointment types (new-patient exams, cleanings, kids’ checkups, whitening, fillings and same-day emergencies), a dentist and two hygienists booked by name with their own hours, operatories as rooms, and a reserved-chair hold policy. Ships as "Maple Grove Dental", a family dentist.',
   tagline: 'A warm, family template for dental practices — book online from day one.',

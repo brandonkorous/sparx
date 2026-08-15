@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "category": "blueprint",
   "slug": "sparx-accounting-smallbiz",
-  "name": "sparx — Accounting (Small Business)",
+  "name": "Accounting (Small Business)",
   "version": "1.3.0",
   "tagline": "A friendly template for bookkeeping & tax practices — take bookings from day one.",
   "description": "A warm, friendly small-business accounting site — a fresh teal palette, a coral accent and a clean, approachable look. Installs a working booking flow: three accountants you book by name, and a real menu of consultations (a free consult, bookkeeping, payroll, quarterly taxes, new-business setup). Ships as \"Ledger & Co.\", the everyday bookkeeping & tax practice for freelancers and small businesses.",
@@ -23,16 +23,16 @@
     {
       "file": "media/icon.png",
       "kind": "icon",
-      "alt": "sparx — Accounting (Small Business) icon"
+      "alt": "Accounting (Small Business) icon"
     },
     {
       "file": "media/preview.png",
       "kind": "preview",
-      "alt": "sparx — Accounting (Small Business) — home page preview"
+      "alt": "Accounting (Small Business) — home page preview"
     }
   ],
   "author": {
-    "displayName": "sparx"
+    "displayName": "WizeWorks"
   },
   "accent": "#008f83",
   "sortWeight": 64

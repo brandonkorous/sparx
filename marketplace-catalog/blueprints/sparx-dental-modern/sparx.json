@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "category": "blueprint",
   "slug": "sparx-dental-modern",
-  "name": "sparx — Dental (Modern Cosmetic)",
+  "name": "Dental (Modern Cosmetic)",
   "version": "1.3.0",
   "tagline": "A crisp, modern template for cosmetic dental studios — book consults online from day one.",
   "description": "A modern cosmetic-and-general dental studio site — a crisp porcelain palette, a deep-teal primary and a refined serif display, with a calm, spa-like structure. Installs a working booking flow: free consults plus whitening, aligners, veneers and implants, clinicians and treatment suites as bookable resources (a visit reserves a provider AND a suite), and a cosmetic-consult deposit policy. Ships as \"Arch Dental Studio\".",
@@ -23,16 +23,16 @@
     {
       "file": "media/icon.png",
       "kind": "icon",
-      "alt": "sparx — Dental (Modern Cosmetic) icon"
+      "alt": "Dental (Modern Cosmetic) icon"
     },
     {
       "file": "media/preview.png",
       "kind": "preview",
-      "alt": "sparx — Dental (Modern Cosmetic) — home page preview"
+      "alt": "Dental (Modern Cosmetic) — home page preview"
     }
   ],
   "author": {
-    "displayName": "sparx"
+    "displayName": "WizeWorks"
   },
   "accent": "#266266",
   "sortWeight": 69

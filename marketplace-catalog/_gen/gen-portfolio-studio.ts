@@ -663,7 +663,7 @@ const CONTENT = [
 const SPEC: PortfolioSiteSpec = {
   slug: 'portfolio-studio',
   key: 'sparx-portfolio-studio',
-  name: 'sparx — Studio / Architect Portfolio',
+  name: 'Studio / Architect Portfolio',
   summary:
     'A hire-me portfolio for an architect & spatial designer: a statement hero over a large-format project image, a structured grid of project tiles, a sober practice band, and project sheets that open with the facts — Year, Role, Location, Scope — then tell the site, the idea and the making. Range shown with precision. Dressed in a bone-and-concrete theme carried by one burnt-amber signal and a cool slate for the facts. Shipped as Nadia Rehman.',
   tagline: 'A facts-driven portfolio for an architect & spatial designer.',

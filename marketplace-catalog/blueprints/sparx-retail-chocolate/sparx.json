@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "category": "blueprint",
   "slug": "sparx-retail-chocolate",
-  "name": "sparx — Chocolatier (Artisan)",
+  "name": "Chocolatier (Artisan)",
   "version": "1.4.0",
   "tagline": "A warm, working storefront for an artisan chocolatier.",
   "description": "A complete, working shop for a bean-to-bar chocolatier: a real catalogue of single-origin bars, truffle and confection boxes, drinking chocolate, gift sets and a flexible subscription, with categories, collections, a bespoke PDP and a fully merchandised home page. Rich, low-lit chocolate-room theme — deep cocoa grounds, a burgundy primary, a warm gold accent. Shipped as Cacao & Co.",
@@ -22,16 +22,16 @@
     {
       "file": "media/icon.png",
       "kind": "icon",
-      "alt": "sparx — Chocolatier (Artisan) icon"
+      "alt": "Chocolatier (Artisan) icon"
     },
     {
       "file": "media/preview.png",
       "kind": "preview",
-      "alt": "sparx — Chocolatier (Artisan) — home page preview"
+      "alt": "Chocolatier (Artisan) — home page preview"
     }
   ],
   "author": {
-    "displayName": "sparx"
+    "displayName": "WizeWorks"
   },
   "accent": "#a73445",
   "sortWeight": 84

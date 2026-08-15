@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "category": "blueprint",
   "slug": "sparx-retail-bookstore-modern",
-  "name": "sparx — Modern Bookshop",
+  "name": "Modern Bookshop",
   "version": "1.4.0",
   "tagline": "A bright, working storefront for a modern bookshop.",
   "description": "A complete, working shop for a bright, contemporary bookshop: a real catalogue of new releases, fiction, nonfiction and books for young readers, plus an enamel-pin set, a clip reading light and a monthly reading subscription — with categories, collections, a bespoke cover-forward PDP and a full merchandised home page led by new releases. Crisp modern theme — a near-white ground, a confident blue, a coral accent, a clean grotesk display. Shipped as Volume Books.",
@@ -22,16 +22,16 @@
     {
       "file": "media/icon.png",
       "kind": "icon",
-      "alt": "sparx — Modern Bookshop icon"
+      "alt": "Modern Bookshop icon"
     },
     {
       "file": "media/preview.png",
       "kind": "preview",
-      "alt": "sparx — Modern Bookshop — home page preview"
+      "alt": "Modern Bookshop — home page preview"
     }
   ],
   "author": {
-    "displayName": "sparx"
+    "displayName": "WizeWorks"
   },
   "accent": "#0056c5",
   "sortWeight": 86

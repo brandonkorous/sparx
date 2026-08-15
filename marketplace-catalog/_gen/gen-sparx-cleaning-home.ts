@@ -445,7 +445,7 @@ const CONTACT = [
 // ── The spec ──────────────────────────────────────────────────────────────────
 const SPEC: ServiceSiteSpec = {
   key: 'sparx-cleaning-home',
-  name: 'sparx — House Cleaning (Home)',
+  name: 'House Cleaning (Home)',
   summary:
     'A bright, cheerful residential house-cleaning site — a fresh aqua palette, a sunny coral accent and a friendly rounded display, with clean, light-filled home photography. Installs a working booking flow: online booking for standard, deep, move-out and recurring cleans plus free estimates, four vetted cleaners as bookable resources with their own hours, and a satisfaction-guarantee policy. Ships as "Tidy Nest", with a recurring-plan angle — the same trusted cleaner every visit.',
   tagline: 'A bright, friendly template for house cleaners — book cleans online from day one.',

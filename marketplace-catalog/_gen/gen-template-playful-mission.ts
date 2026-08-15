@@ -1278,7 +1278,7 @@ const CART: Node[] = [
 const SPEC: TemplateSiteSpec = {
   slug: 'playful-mission',
   key: 'sparx-playful-mission',
-  name: 'sparx — Playful Mission',
+  name: 'Playful Mission',
   summary:
     'A playful, colourful, mission-driven DTC storefront for a give-back brand — a warm-cream page broken up by saturated colour bands (a marigold buy-one-give-one band, a navy impact stat, a sage "the rest" band) over a rhythm of shoppable carousels, in a bright `romp` theme. Modelled on the playful give-back DTC archetype; shipped as Rally, a pet-supplies brand that gives one item to a shelter for every one sold.',
   tagline: 'A bright, warm template for playful, mission-driven brands with a give-back at their heart.',

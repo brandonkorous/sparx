@@ -1045,7 +1045,7 @@ const CART: Node[] = [
 const SPEC: TemplateSiteSpec = {
   slug: 'bold-athletic',
   key: 'sparx-bold-athletic',
-  name: 'sparx — Bold Athletic',
+  name: 'Bold Athletic',
   summary:
     'A bold-athletic DTC storefront for a performance apparel label — a confident full-bleed hero over a drop-culture rhythm of shoppable carousels, a signature power-tiles grid and a ride-shot strip, in a dark mono `velodrome` theme with one hi-vis accent. Modelled on the bold-athletic DTC archetype; shipped as Threshold, an endurance cycling-apparel label.',
   tagline: 'A bold, high-energy template for performance and athletic apparel brands.',

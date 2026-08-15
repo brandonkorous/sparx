@@ -504,7 +504,7 @@ const SCHEDULING = {
 
 const SPEC: ServiceSiteSpec = {
   key: 'sparx-restaurant-bistro',
-  name: 'sparx — Bistro',
+  name: 'Bistro',
   summary:
     'A complete, working site for a neighbourhood restaurant: a real seasonal menu, and a live table-reservations flow (tables as bookable resources, party-size reservation services, opening hours, a cancellation policy) on the /reserve page. Warm bistro theme — candle-cream, deep olive-green, a warm amber accent. Pages: Home, Menu, Reserve, About, Visit. Shipped as Larkspur.',
   tagline: 'A warm, working template for a restaurant that takes reservations.',

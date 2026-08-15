@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "category": "blueprint",
   "slug": "sparx-b2b-janitorial",
-  "name": "sparx — Janitorial & Facility Supply (B2B)",
+  "name": "Janitorial & Facility Supply (B2B)",
   "version": "1.4.0",
   "tagline": "A trade-account storefront for a janitorial & facility-supply distributor.",
   "description": "A complete, working wholesale shop for a janitorial and facility-supply distributor: a real catalogue of cleaning chemicals, paper, liners and tools sold by the case with pack sizes and MOQs, per-case trade pricing, categories, collections, a trade PDP and a merchandised home page framed for facilities buyers. Clean teal-tinted theme. Shipped as Saniworx.",
@@ -22,16 +22,16 @@
     {
       "file": "media/icon.png",
       "kind": "icon",
-      "alt": "sparx — Janitorial & Facility Supply (B2B) icon"
+      "alt": "Janitorial & Facility Supply (B2B) icon"
     },
     {
       "file": "media/preview.png",
       "kind": "preview",
-      "alt": "sparx — Janitorial & Facility Supply (B2B) — home page preview"
+      "alt": "Janitorial & Facility Supply (B2B) — home page preview"
     }
   ],
   "author": {
-    "displayName": "sparx"
+    "displayName": "WizeWorks"
   },
   "accent": "#006283",
   "sortWeight": 84

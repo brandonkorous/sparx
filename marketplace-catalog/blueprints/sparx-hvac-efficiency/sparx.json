@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "category": "blueprint",
   "slug": "sparx-hvac-efficiency",
-  "name": "sparx — HVAC (Efficiency)",
+  "name": "HVAC (Efficiency)",
   "version": "1.3.0",
   "tagline": "A cool, technical template for efficiency-focused HVAC — book visits from day one.",
   "description": "A data-forward HVAC site for energy-efficiency pros — a cool evergreen-and-slate palette with a bright teal signal accent, built around online booking. Homeowners book an energy assessment, a free install estimate or a tune-up in about a minute; three technicians carry their own skills and hours. Leads with lower bills, heat-pump expertise and rebate help. Ships as \"Northline Climate\", a high-efficiency heating-and-cooling company.",
@@ -23,16 +23,16 @@
     {
       "file": "media/icon.png",
       "kind": "icon",
-      "alt": "sparx — HVAC (Efficiency) icon"
+      "alt": "HVAC (Efficiency) icon"
     },
     {
       "file": "media/preview.png",
       "kind": "preview",
-      "alt": "sparx — HVAC (Efficiency) — home page preview"
+      "alt": "HVAC (Efficiency) — home page preview"
     }
   ],
   "author": {
-    "displayName": "sparx"
+    "displayName": "WizeWorks"
   },
   "accent": "#106c3e",
   "sortWeight": 75

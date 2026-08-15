@@ -765,7 +765,7 @@ const CONTENT = [
 const SPEC: TemplateSiteSpec = {
   slug: 'retail-coffee-craft',
   key: 'sparx-retail-coffee-craft',
-  name: 'sparx — Coffee Roaster (Craft)',
+  name: 'Coffee Roaster (Craft)',
   theme: THEME,
   summary:
     'A complete, working shop for a small-batch coffee roaster: a real catalogue of single-origin bags, blends, decaf, brew gear and a flexible subscription, with categories, collections, a bespoke coffee-shop PDP and a full merchandised home page. Warm roastery theme — cream paper, deep coffee-brown, a terracotta accent. Shipped as Cairn Coffee Roasters.',

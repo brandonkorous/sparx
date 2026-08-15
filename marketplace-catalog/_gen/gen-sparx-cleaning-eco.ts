@@ -432,7 +432,7 @@ const CONTACT = [
 // ── The spec ──────────────────────────────────────────────────────────────────
 const SPEC: ServiceSiteSpec = {
   key: 'sparx-cleaning-eco',
-  name: 'sparx — Cleaning (Eco)',
+  name: 'Cleaning (Eco)',
   summary:
     'An eco, plant-based residential and boutique cleaning site — a natural sage-and-clay palette on a soft cream ground, refined type and calm, plant-filled photography. Installs a working booking flow: real green cleans (walkthrough, standard, deep, recurring, move-out, nursery, office), three cleaners you book by name with their own hours, and a non-toxic promise safe for kids, pets and sensitive homes. Ships as "Verdi Clean", a premium green cleaning service.',
   tagline: 'A natural, non-toxic template for green cleaning services — book online from day one.',

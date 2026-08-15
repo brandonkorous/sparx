@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "category": "blueprint",
   "slug": "sparx-hvac-comfort",
-  "name": "sparx — HVAC (Comfort)",
+  "name": "HVAC (Comfort)",
   "version": "1.3.0",
   "tagline": "A warm, friendly template for HVAC companies — book comfort visits from day one.",
   "description": "A friendly residential HVAC site built on year-round comfort — a warm amber-heating and cool sky-blue palette on a clean warm-white ground. Installs a working booking flow: tune-ups, free install estimates, diagnostics and air-quality visits, three techs dispatched by skill with their own hours, and a maintenance-plan priority policy. Ships as \"Evenair Heating & Cooling\".",
@@ -23,16 +23,16 @@
     {
       "file": "media/icon.png",
       "kind": "icon",
-      "alt": "sparx — HVAC (Comfort) icon"
+      "alt": "HVAC (Comfort) icon"
     },
     {
       "file": "media/preview.png",
       "kind": "preview",
-      "alt": "sparx — HVAC (Comfort) — home page preview"
+      "alt": "HVAC (Comfort) — home page preview"
     }
   ],
   "author": {
-    "displayName": "sparx"
+    "displayName": "WizeWorks"
   },
   "accent": "#e28339",
   "sortWeight": 76

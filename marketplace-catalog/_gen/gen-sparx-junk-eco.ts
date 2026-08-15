@@ -440,7 +440,7 @@ const CONTACT = [
 // ── The spec ──────────────────────────────────────────────────────────────────
 const SPEC: ServiceSiteSpec = {
   key: 'sparx-junk-eco',
-  name: 'sparx — Junk Removal (Eco)',
+  name: 'Junk Removal (Eco)',
   summary:
     'A natural palette and online booking for an eco, donation-first junk removal and hauling service — free quotes and pickups booked online, three crews as dispatchable resources with their own hours, and a donate-recycle-divert promise that keeps most of every load out of the landfill. Ships as "Green Haul", a conscientious, community-minded hauler.',
   tagline: 'A natural, donation-first template for eco junk removal — book pickups online from day one.',

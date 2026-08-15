@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "category": "blueprint",
   "slug": "sparx-photo-portrait",
-  "name": "sparx — Photography (Portrait)",
+  "name": "Photography (Portrait)",
   "version": "1.3.0",
   "tagline": "A bright, modern template for portrait photographers — book online from day one.",
   "description": "A bright, modern family & portrait photography site — a fresh coral palette, a crisp near-white ground and a clean modern sans, with a joyful session menu. Installs a working booking flow: real session types (mini, family, newborn, branding, headshots), photographers you book by name with their own hours, a studio space in-studio sessions reserve, and a session-deposit policy. Ships as \"Frame & Field\", a light-filled portrait studio.",
@@ -23,16 +23,16 @@
     {
       "file": "media/icon.png",
       "kind": "icon",
-      "alt": "sparx — Photography (Portrait) icon"
+      "alt": "Photography (Portrait) icon"
     },
     {
       "file": "media/preview.png",
       "kind": "preview",
-      "alt": "sparx — Photography (Portrait) — home page preview"
+      "alt": "Photography (Portrait) — home page preview"
     }
   ],
   "author": {
-    "displayName": "sparx"
+    "displayName": "WizeWorks"
   },
   "accent": "#ea6b5e",
   "sortWeight": 59

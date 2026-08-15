@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "category": "blueprint",
   "slug": "sparx-moving-premium",
-  "name": "sparx — Moving (Premium White-Glove)",
+  "name": "Moving (Premium White-Glove)",
   "version": "1.3.0",
   "tagline": "A premium, white-glove template for moving companies — book consultations online from day one.",
   "description": "A refined, premium site for a white-glove long-distance moving company — a deep charcoal palette, a warm brass accent and an elegant serif display over calm relocation photography. Installs online booking for complimentary consultations and estimates, three move managers you book by name with their own hours, and a deposit policy to reserve a move date. Ships as \"Whiteglove Movers\".",
@@ -23,16 +23,16 @@
     {
       "file": "media/icon.png",
       "kind": "icon",
-      "alt": "sparx — Moving (Premium White-Glove) icon"
+      "alt": "Moving (Premium White-Glove) icon"
     },
     {
       "file": "media/preview.png",
       "kind": "preview",
-      "alt": "sparx — Moving (Premium White-Glove) — home page preview"
+      "alt": "Moving (Premium White-Glove) — home page preview"
     }
   ],
   "author": {
-    "displayName": "sparx"
+    "displayName": "WizeWorks"
   },
   "accent": "#1a2532",
   "sortWeight": 13

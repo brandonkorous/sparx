@@ -378,7 +378,7 @@ const CONTACT = [
 // ── The spec ──────────────────────────────────────────────────────────────────
 const SPEC: ServiceSiteSpec = {
   key: 'sparx-pool-service',
-  name: 'sparx — Pool Service',
+  name: 'Pool Service',
   summary:
     'A bright, fresh pool-cleaning & maintenance site — a vivid aqua palette on a crisp near-white ground, built around recurring weekly service and online booking. Installs a working flow: a free-quote booking, weekly cleaning plus openings, closings, filter service and green-to-clean rescue, and three techs you book as dispatchable resources with their own hours. Ships as "BlueWave Pool Care" — a sparkling pool, handled every week.',
   tagline: 'A friendly pool-care template — book a free quote and start weekly service from day one.',

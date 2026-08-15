@@ -837,7 +837,7 @@ const CONTENT = [
 const SPEC: TemplateSiteSpec = {
   slug: 'b2b-industrial-supply',
   key: 'sparx-b2b-industrial-supply',
-  name: 'sparx — Industrial Supply (B2B / Wholesale)',
+  name: 'Industrial Supply (B2B / Wholesale)',
   theme: THEME,
   summary:
     'A complete, working wholesale shop for an industrial MRO distributor: a real trade catalogue sold by the case — fasteners, abrasives, safety & PPE and bulk consumables — with categories, collections, a bespoke trade PDP (per-case pricing, volume breaks, net-30), and a full merchandised home page. Sturdy industrial theme — steel ground, deep navy, safety-amber accent. Shipped as Ironworks Supply Co.',

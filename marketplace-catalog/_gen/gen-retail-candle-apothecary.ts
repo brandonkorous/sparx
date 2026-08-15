@@ -782,7 +782,7 @@ const CONTENT = [
 const SPEC: TemplateSiteSpec = {
   slug: 'retail-candle-apothecary',
   key: 'sparx-retail-candle-apothecary',
-  name: 'sparx — Candle Apothecary (Retail)',
+  name: 'Candle Apothecary (Retail)',
   theme: THEME,
   summary:
     'A complete, working shop for a candle & home-fragrance apothecary: a real catalogue of hand-poured signature candles, a reed diffuser, a room mist, a wax-melt set, candle-care accessories and a gift set, with categories, collections, a bespoke candlelit PDP and a full merchandised home page. Moody apothecary theme — warm charcoal ground, ember accent, a characterful serif. Shipped as Ember & Ash.',

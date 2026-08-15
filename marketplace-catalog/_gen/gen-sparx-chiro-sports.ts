@@ -409,7 +409,7 @@ const CONTACT = [
 // ── The spec ──────────────────────────────────────────────────────────────────
 const SPEC: ServiceSiteSpec = {
   key: 'sparx-chiro-sports',
-  name: 'sparx — Chiropractic (Sports & Rehab)',
+  name: 'Chiropractic (Sports & Rehab)',
   summary:
     'A bold, athletic chiropractic & performance site — electric-blue palette, sturdy condensed type, built for athletes and active people. Installs a working booking flow: sports-injury visits, active-release, dry needling, rehab and a free performance consult, with providers AND treatment rooms as multi-requirement resources. Ships as "Kinetic Spine & Sport", a sports/rehab clinic that books online from day one.',
   tagline: 'An athletic template for sports & rehab chiropractic — book assessments online from day one.',

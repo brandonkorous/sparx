@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "category": "blueprint",
   "slug": "sparx-junk-eco",
-  "name": "sparx — Junk Removal (Eco)",
+  "name": "Junk Removal (Eco)",
   "version": "1.3.0",
   "tagline": "A natural, donation-first template for eco junk removal — book pickups online from day one.",
   "description": "A natural palette and online booking for an eco, donation-first junk removal and hauling service — free quotes and pickups booked online, three crews as dispatchable resources with their own hours, and a donate-recycle-divert promise that keeps most of every load out of the landfill. Ships as \"Green Haul\", a conscientious, community-minded hauler.",
@@ -23,16 +23,16 @@
     {
       "file": "media/icon.png",
       "kind": "icon",
-      "alt": "sparx — Junk Removal (Eco) icon"
+      "alt": "Junk Removal (Eco) icon"
     },
     {
       "file": "media/preview.png",
       "kind": "preview",
-      "alt": "sparx — Junk Removal (Eco) — home page preview"
+      "alt": "Junk Removal (Eco) — home page preview"
     }
   ],
   "author": {
-    "displayName": "sparx"
+    "displayName": "WizeWorks"
   },
   "accent": "#2a7449",
   "sortWeight": 9

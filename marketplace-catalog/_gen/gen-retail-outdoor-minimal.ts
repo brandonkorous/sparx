@@ -881,7 +881,7 @@ const CONTENT = [
 const SPEC: TemplateSiteSpec = {
   slug: 'retail-outdoor-minimal',
   key: 'sparx-retail-outdoor-minimal',
-  name: 'sparx — Outdoor Essentials (Minimal)',
+  name: 'Outdoor Essentials (Minimal)',
   theme: THEME,
   summary:
     'A complete, working shop for a clean, design-led urban-outdoor label: a real catalogue of a packable shell, a merino tee, technical trousers, a commuter pack, a packable tote, a cap, an insulated bottle and merino socks — with categories, collections, a minimal PDP and a fully merchandised home page. Design-studio theme — a cool near-white ground, a near-black primary and a single restrained blue accent, under a crisp grotesk. Shipped as Tarn.',

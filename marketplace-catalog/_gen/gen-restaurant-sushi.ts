@@ -529,7 +529,7 @@ const SCHEDULING = {
 
 const SPEC: ServiceSiteSpec = {
   key: 'sparx-restaurant-sushi',
-  name: 'sparx — Sushi & omakase',
+  name: 'Sushi & omakase',
   summary:
     'A complete, working site for a sushi & omakase counter: a real omakase and à-la-carte menu, and a live reservations flow (counter seats and tables as bookable resources, an "Omakase counter" plus "Table for two/four" reservation services, two nightly seatings, a card-hold deposit and a cancellation policy) on the /reserve page. Minimal near-white paper theme, cool ink, a quiet indigo accent, a refined serif over a clean sans. Pages: Home, Menu, Reserve, About, Visit. Shipped as Nori.',
   tagline: 'A precise, working template for a sushi counter that takes reservations.',

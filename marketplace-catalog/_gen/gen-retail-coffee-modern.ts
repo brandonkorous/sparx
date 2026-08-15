@@ -834,7 +834,7 @@ const CONTENT = [
 const SPEC: TemplateSiteSpec = {
   slug: 'retail-coffee-modern',
   key: 'sparx-retail-coffee-modern',
-  name: 'sparx — Coffee Roaster (Modern)',
+  name: 'Coffee Roaster (Modern)',
   theme: THEME,
   summary:
     'A complete, working shop for a modern specialty coffee roaster: a real catalogue of single-origin bags, blends, a Swiss-water decaf, single-serve steep bags, brew gear and a flexible subscription, with categories, collections, a bespoke PDP and a sharp, product-forward home page. Bright, minimalist theme — a crisp near-white ground, one electric-orange accent, a clean grotesk display. Shipped as Meridian Coffee.',

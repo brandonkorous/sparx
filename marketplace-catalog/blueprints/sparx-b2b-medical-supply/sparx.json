@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "category": "blueprint",
   "slug": "sparx-b2b-medical-supply",
-  "name": "sparx — Medical Supply (B2B / Wholesale)",
+  "name": "Medical Supply (B2B / Wholesale)",
   "version": "1.4.0",
   "tagline": "A wholesale storefront built for clinics and practices.",
   "description": "A complete, working wholesale shop for a medical, dental & clinical supplies distributor: a real trade catalogue sold by the case — PPE, consumables, wound care and infection control — with categories, collections, a bespoke trade PDP (per-case pricing, volume breaks, net-30, lot traceability), and a full merchandised home page. Clean clinical theme — crisp cool ground, calm medical-blue, a teal accent. Shipped as Meridian Medical Supplies.",
@@ -22,16 +22,16 @@
     {
       "file": "media/icon.png",
       "kind": "icon",
-      "alt": "sparx — Medical Supply (B2B / Wholesale) icon"
+      "alt": "Medical Supply (B2B / Wholesale) icon"
     },
     {
       "file": "media/preview.png",
       "kind": "preview",
-      "alt": "sparx — Medical Supply (B2B / Wholesale) — home page preview"
+      "alt": "Medical Supply (B2B / Wholesale) — home page preview"
     }
   ],
   "author": {
-    "displayName": "sparx"
+    "displayName": "WizeWorks"
   },
   "accent": "#085b87",
   "sortWeight": 85

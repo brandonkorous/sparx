@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "category": "blueprint",
   "slug": "sparx-retail-plant-modern",
-  "name": "sparx — Plant Studio (Modern)",
+  "name": "Plant Studio (Modern)",
   "version": "1.4.0",
   "tagline": "A clean, working storefront for a modern plant studio.",
   "description": "A complete, working shop for a modern plant studio: a real catalogue of sculptural plants, designed stoneware and concrete planters, oak and steel stands, a considered brass care kit and a plant-of-the-month, with categories, collections, a bespoke PDP and a merchandised home page. Architectural theme — a cool pale-stone ground, a single confident deep-green primary, a refined brass accent, and a crisp grotesk voice. Shipped as Frond.",
@@ -22,16 +22,16 @@
     {
       "file": "media/icon.png",
       "kind": "icon",
-      "alt": "sparx — Plant Studio (Modern) icon"
+      "alt": "Plant Studio (Modern) icon"
     },
     {
       "file": "media/preview.png",
       "kind": "preview",
-      "alt": "sparx — Plant Studio (Modern) — home page preview"
+      "alt": "Plant Studio (Modern) — home page preview"
     }
   ],
   "author": {
-    "displayName": "sparx"
+    "displayName": "WizeWorks"
   },
   "accent": "#034d2e",
   "sortWeight": 86

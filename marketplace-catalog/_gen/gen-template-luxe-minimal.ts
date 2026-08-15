@@ -1105,7 +1105,7 @@ const CART: Node[] = [
 const SPEC: TemplateSiteSpec = {
   slug: 'luxe-minimal',
   key: 'sparx-luxe-minimal',
-  name: 'sparx — Luxe Minimal',
+  name: 'Luxe Minimal',
   summary:
     'A quiet-luxury storefront where imagery carries the weight and type stays out of the way — a full-bleed hero with a bottom-left headline, a 4-up category-tile row, best-sellers and treatment carousels, full-bleed editorial bands and a centered mission statement, all warm-neutral monochrome with no accent. Modelled on the minimal-luxury archetype; shipped as Nue Skincare, a premium-skincare essentials brand.',
   tagline: 'A minimal, image-led luxury template for premium skincare, beauty and wellness brands.',

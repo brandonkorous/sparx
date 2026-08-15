@@ -444,7 +444,7 @@ const CONTACT = [
 // ── The spec ──────────────────────────────────────────────────────────────────
 const SPEC: ServiceSiteSpec = {
   key: 'sparx-plumbing-trusted',
-  name: 'sparx — Plumbing (Trusted Local)',
+  name: 'Plumbing (Trusted Local)',
   summary:
     'A warm, trusted local-plumber site — a deep navy palette with a brass accent, sturdy sans display and photo-led reliability. Installs a working online booking flow: homeowners book a free estimate or a service call and get a real time slot. Ships a full visit menu (estimate, drain, leak, water-heater, fixture install, emergency), three plumbers as dispatchable staff with their own hours, and standard + emergency policies. Ships as "Copper & Main Plumbing".',
   tagline: 'A warm, trusted template for local plumbers — book visits online from day one.',

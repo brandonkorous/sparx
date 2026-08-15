@@ -397,7 +397,7 @@ const CONTACT = [
 // ── The spec ──────────────────────────────────────────────────────────────────
 const SPEC: ServiceSiteSpec = {
   key: 'sparx-salon-modern',
-  name: 'sparx — Salon (Modern)',
+  name: 'Salon (Modern)',
   summary:
     'A modern, warm, boho hair-salon site — an oat-cream palette, a terracotta primary and a sage-green accent, with natural-light photography and a relaxed, friendly voice. Installs a working booking flow: a real service menu (cuts, curly & textured cuts, colour, balayage), three stylists you book by name with their own hours, and a colour-deposit policy. Ships as "Wildroot", a plant-filled little studio that specialises in curls and texture.',
   tagline: 'A warm, modern-boho template for hair salons — book online from day one.',

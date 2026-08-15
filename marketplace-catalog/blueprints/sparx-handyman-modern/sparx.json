@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "category": "blueprint",
   "slug": "sparx-handyman-modern",
-  "name": "sparx — Handyman (Modern)",
+  "name": "Handyman (Modern)",
   "version": "1.3.0",
   "tagline": "A modern, on-demand template for handymen — booked online from day one.",
   "description": "A bright, techy handyman site for on-demand home repairs — book a vetted pro online in minutes at a flat hourly rate. Installs a working booking flow: a real task menu (mounting, assembly, smart-home, half-day projects), three vetted pros dispatched as bookable resources with long weekday and weekend hours, and same-day scheduling. Ships as \"FixList\", a modern on-demand handyman service.",
@@ -23,16 +23,16 @@
     {
       "file": "media/icon.png",
       "kind": "icon",
-      "alt": "sparx — Handyman (Modern) icon"
+      "alt": "Handyman (Modern) icon"
     },
     {
       "file": "media/preview.png",
       "kind": "preview",
-      "alt": "sparx — Handyman (Modern) — home page preview"
+      "alt": "Handyman (Modern) — home page preview"
     }
   ],
   "author": {
-    "displayName": "sparx"
+    "displayName": "WizeWorks"
   },
   "accent": "#009d9e",
   "sortWeight": 41

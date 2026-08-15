@@ -790,7 +790,7 @@ const CONTENT = [
 const SPEC: TemplateSiteSpec = {
   slug: 'retail-ceramics-studio',
   key: 'sparx-retail-ceramics-studio',
-  name: 'sparx — Ceramics Studio (Handmade)',
+  name: 'Ceramics Studio (Handmade)',
   theme: THEME,
   summary:
     'A complete, working shop for a handmade pottery studio: a real catalogue of thrown-and-glazed stoneware — mugs, bowls, plates, a serving platter, a vase, a planter, tumblers and a dinner set, each in three studio glazes — with categories, collections, a gallery-calm PDP and a fully merchandised home page. Warm clay-and-stone theme with a muted sage-glaze accent. Shipped as Kiln & Clay.',

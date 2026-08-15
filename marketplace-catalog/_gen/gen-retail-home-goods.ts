@@ -844,7 +844,7 @@ const CONTENT = [
 const SPEC: TemplateSiteSpec = {
   slug: 'retail-home-goods',
   key: 'sparx-retail-home-goods',
-  name: 'sparx — Home Goods (Homeware)',
+  name: 'Home Goods (Homeware)',
   theme: THEME,
   summary:
     'A complete, working shop for a considered homeware brand: a real catalogue of washed linen bedding, a wool throw, hand-thrown tableware, lighting, storage, scent and serving pieces, with categories, collections, a bespoke homeware PDP and a full merchandised home page. Warm, tactile theme — a linen ground, a grounded terracotta primary and a soft sage accent. Shipped as Hearth & Hollow.',

@@ -840,7 +840,7 @@ const CONTENT = [
 const SPEC: TemplateSiteSpec = {
   slug: 'retail-plant-modern',
   key: 'sparx-retail-plant-modern',
-  name: 'sparx — Plant Studio (Modern)',
+  name: 'Plant Studio (Modern)',
   theme: THEME,
   summary:
     'A complete, working shop for a modern plant studio: a real catalogue of sculptural plants, designed stoneware and concrete planters, oak and steel stands, a considered brass care kit and a plant-of-the-month, with categories, collections, a bespoke PDP and a merchandised home page. Architectural theme — a cool pale-stone ground, a single confident deep-green primary, a refined brass accent, and a crisp grotesk voice. Shipped as Frond.',

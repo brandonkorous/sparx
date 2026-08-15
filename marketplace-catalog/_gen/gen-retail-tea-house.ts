@@ -827,7 +827,7 @@ const CONTENT = [
 const SPEC: TemplateSiteSpec = {
   slug: 'retail-tea-house',
   key: 'sparx-retail-tea-house',
-  name: 'sparx — Tea House (Loose Leaf)',
+  name: 'Tea House (Loose Leaf)',
   theme: THEME,
   summary:
     'A complete, working shop for a loose-leaf tea house: a real catalogue of single-origin greens, whites, blacks, oolong, chai and caffeine-free herbals, a matcha, a sampler set, brewing teaware and a flexible tea-club subscription, with categories, collections, a bespoke tea-shop PDP and a full merchandised home page. Calm botanical theme — soft oat-green paper, a muted jade primary, a warm clay accent. Shipped as Steepwell Tea House.',

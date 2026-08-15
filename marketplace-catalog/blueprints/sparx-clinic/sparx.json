@@ -2,10 +2,10 @@
   "schemaVersion": 1,
   "category": "blueprint",
   "slug": "sparx-clinic",
-  "name": "sparx — Clinic",
+  "name": "Clinic",
   "version": "1.2.0",
   "tagline": "A complete multi-module starter in the Clinic look — for medical, dental, and wellness practices.",
-  "description": "The complete sparx starter — a faceted shop, a journal, a booking page, and a wholesale page — in the Clinic look, tuned for medical, dental, and wellness practices. Install it, make it yours, and launch a polished working site in minutes.",
+  "description": "The complete starter — a faceted shop, a journal, a booking page, and a wholesale page — in the Clinic look, tuned for medical, dental, and wellness practices. Install it, make it yours, and launch a polished working site in minutes.",
   "payload": "blueprint.ts",
   "facets": {
     "vertical": "services",
@@ -22,17 +22,18 @@
     {
       "file": "media/icon.png",
       "kind": "icon",
-      "alt": "sparx — Clinic icon"
+      "alt": "Clinic icon"
     },
     {
       "file": "media/preview.png",
       "kind": "preview",
-      "alt": "sparx — Clinic — home page preview"
+      "alt": "Clinic — home page preview"
     }
   ],
   "author": {
-    "displayName": "sparx"
+    "displayName": "WizeWorks"
   },
+  "brands": ["sparx"],
   "accent": "#006970",
   "sortWeight": 80
 }

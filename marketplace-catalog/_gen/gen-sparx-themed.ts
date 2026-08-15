@@ -224,7 +224,14 @@ function manifestJson(opts: {
       { file: 'media/icon.png', kind: 'icon', alt: `${opts.name} icon` },
       { file: 'media/preview.png', kind: 'preview', alt: `${opts.name} — home page preview` },
     ],
-    author: { displayName: 'sparx' },
+    author: { displayName: 'WizeWorks' },
+    // THIS FAMILY IS SPARX'S OWN SHOWCASE, and that is what makes it restricted.
+    // Its captured site says "sparx" in the page copy and its `brand.businessName`
+    // is "sparx" — it is the product demonstrating itself, not a vertical template.
+    // The other ~169 bundles carry no `brands` and are shared by every brand, which
+    // is the default and should stay the default: a template that must name its
+    // brands to be seen forks the catalog the first time someone forgets.
+    brands: ['sparx'],
     accent: opts.accent,
     sortWeight: opts.sortWeight,
   };
@@ -270,9 +277,15 @@ async function main(): Promise<void> {
     const accent = hex(light['--color-accent'], `${key} accent`);
     const secondary = hex(light['--color-secondary'], `${key} secondary`);
 
-    const name = `sparx — ${t}`;
+    // The theme's own name, with NO brand prefix. Every row in this family carried
+    // one, and a word that appears on all 190 cards cannot be the thing that tells
+    // them apart — it is noise in the one place the name has to do work. It is also
+    // the product's name on another brand's marketplace, which is the leak
+    // `brands` (below) exists to stop; dropping it here means the label is right
+    // even where the gate is not the thing being tested.
+    const name = t;
     const summary =
-      `The complete sparx starter — a faceted shop, a journal, a booking page, and a ` +
+      `The complete starter — a faceted shop, a journal, a booking page, and a ` +
       `wholesale page — in the ${t} look, tuned for ${desc.audience}. Install it, make it ` +
       `yours, and launch a polished working site in minutes.`;
     const tagline = `A complete multi-module starter in the ${t} look — for ${desc.audience}.`;

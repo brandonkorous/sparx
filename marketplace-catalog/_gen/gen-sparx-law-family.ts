@@ -370,7 +370,7 @@ const CONTACT = [
 // ── The spec ──────────────────────────────────────────────────────────────────
 const SPEC: ServiceSiteSpec = {
   key: 'sparx-law-family',
-  name: 'sparx — Law (Family & Estate)',
+  name: 'Law (Family & Estate)',
   summary:
     'A warm, approachable family and estate law site — a cream ground, a deep-navy primary and a trustworthy serif — built around booking a free consultation. Installs a working booking flow: wills, trusts, probate, family-law and guardianship consults, three attorneys you book by name with their own hours, and a standard reschedule policy. Ships as "Hearth & Stone Law", a caring, plain-English practice.',
   tagline: 'A warm, human template for family & estate law firms — book consultations from day one.',

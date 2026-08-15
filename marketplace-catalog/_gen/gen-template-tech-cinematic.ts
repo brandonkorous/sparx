@@ -1206,7 +1206,7 @@ const CART: Node[] = [
 const SPEC: TemplateSiteSpec = {
   slug: 'tech-cinematic',
   key: 'sparx-tech-cinematic',
-  name: 'sparx — Tech Cinematic',
+  name: 'Tech Cinematic',
   summary:
     'A dark, spec-forward storefront for engineered hardware — a full-bleed cinematic hero over a repeating capability-band and shoppable-carousel rhythm, on a genuinely dark page with one electric-blue signal. Modelled on the tech/cinematic product archetype; shipped as Aphelion, a premium-audio brand.',
   tagline: 'A dark, cinematic, spec-forward template for makers of premium engineered hardware.',

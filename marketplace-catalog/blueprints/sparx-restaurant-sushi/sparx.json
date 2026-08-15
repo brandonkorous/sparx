@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "category": "blueprint",
   "slug": "sparx-restaurant-sushi",
-  "name": "sparx — Sushi & omakase",
+  "name": "Sushi & omakase",
   "version": "1.3.0",
   "tagline": "A precise, working template for a sushi counter that takes reservations.",
   "description": "A complete, working site for a sushi & omakase counter: a real omakase and à-la-carte menu, and a live reservations flow (counter seats and tables as bookable resources, an \"Omakase counter\" plus \"Table for two/four\" reservation services, two nightly seatings, a card-hold deposit and a cancellation policy) on the /reserve page. Minimal near-white paper theme, cool ink, a quiet indigo accent, a refined serif over a clean sans. Pages: Home, Menu, Reserve, About, Visit. Shipped as Nori.",
@@ -23,16 +23,16 @@
     {
       "file": "media/icon.png",
       "kind": "icon",
-      "alt": "sparx — Sushi & omakase icon"
+      "alt": "Sushi & omakase icon"
     },
     {
       "file": "media/preview.png",
       "kind": "preview",
-      "alt": "sparx — Sushi & omakase — home page preview"
+      "alt": "Sushi & omakase — home page preview"
     }
   ],
   "author": {
-    "displayName": "sparx"
+    "displayName": "WizeWorks"
   },
   "accent": "#1c1f25",
   "sortWeight": 85

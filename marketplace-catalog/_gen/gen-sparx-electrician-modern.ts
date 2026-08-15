@@ -464,7 +464,7 @@ const CONTACT = [
 // ── The spec ──────────────────────────────────────────────────────────────────
 const SPEC: ServiceSiteSpec = {
   key: 'sparx-electrician-modern',
-  name: 'sparx — Electrician (Modern)',
+  name: 'Electrician (Modern)',
   summary:
     'A sleek, high-tech electrical-contractor site — a near-black graphite palette with an electric-blue accent and a bold type-first hero, built for the modern home and business: EV chargers, smart-home wiring, solar and battery hookups, and panel upgrades. Installs a working booking flow: real visit types (site assessment, EV-charger consult, free estimate), three electricians you book by skill with their own hours, and a priority policy for commercial jobs. Ships as "Voltline Electric".',
   tagline: 'A modern, high-tech template for electricians — book visits online from day one.',

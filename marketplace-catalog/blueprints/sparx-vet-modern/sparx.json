@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "category": "blueprint",
   "slug": "sparx-vet-modern",
-  "name": "sparx — Veterinary (Modern)",
+  "name": "Veterinary (Modern)",
   "version": "1.3.0",
   "tagline": "A calm, fear-free template for modern vet practices — book online from day one.",
   "description": "A calm, modern veterinary-wellness site — a sage-and-cream palette, a refined serif display and soft, unhurried photography. Installs a working booking flow for fear-free care: real appointment types (wellness, nutrition, telehealth, senior), three vets you book by name plus two calm exam rooms as resources, and a wellness-plan policy. Ships as \"Fauna Veterinary\", a whole-pet, fear-free practice for dogs and cats.",
@@ -23,16 +23,16 @@
     {
       "file": "media/icon.png",
       "kind": "icon",
-      "alt": "sparx — Veterinary (Modern) icon"
+      "alt": "Veterinary (Modern) icon"
     },
     {
       "file": "media/preview.png",
       "kind": "preview",
-      "alt": "sparx — Veterinary (Modern) — home page preview"
+      "alt": "Veterinary (Modern) — home page preview"
     }
   ],
   "author": {
-    "displayName": "sparx"
+    "displayName": "WizeWorks"
   },
   "accent": "#638c6b",
   "sortWeight": 61

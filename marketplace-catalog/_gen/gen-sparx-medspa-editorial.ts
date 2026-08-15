@@ -418,7 +418,7 @@ const CONTACT = [
 // ── The spec ──────────────────────────────────────────────────────────────────
 const SPEC: ServiceSiteSpec = {
   key: 'sparx-medspa-editorial',
-  name: 'sparx — Med Spa (Editorial)',
+  name: 'Med Spa (Editorial)',
   summary:
     'An editorial med-spa site — a champagne-and-gold palette, an antique-gold primary and a healing sage accent under a Fraunces serif, with soft-lit photography carrying calm, boutique-hotel pages. Installs a working booking flow: a real treatment menu (facial, peel, microneedling, IV drip, laser), a free consultation you request, providers you book by name, two treatment rooms and a deposit policy. Ships as "Aésthète", a calm aesthetics clinic.',
   tagline: 'A warm, editorial template for med spas — book online from day one.',

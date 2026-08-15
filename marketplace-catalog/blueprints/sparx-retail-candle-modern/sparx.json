@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "category": "blueprint",
   "slug": "sparx-retail-candle-modern",
-  "name": "sparx — Candle Studio (Modern)",
+  "name": "Candle Studio (Modern)",
   "version": "1.4.0",
   "tagline": "A bright, working storefront for a modern candle studio.",
   "description": "A complete, working shop for a modern, clean candle & home-fragrance studio: a real catalogue of clean-fragrance candles with scent options, a ceramic travel candle, a reed diffuser, a room spray, a refill, a matches set and gift sets, with categories, collections, a bespoke bright PDP and a fully merchandised home page. Fresh, minimalist theme — a pale blush-white ground, a single sage accent, a clean grotesk. Shipped as Lumen.",
@@ -22,16 +22,16 @@
     {
       "file": "media/icon.png",
       "kind": "icon",
-      "alt": "sparx — Candle Studio (Modern) icon"
+      "alt": "Candle Studio (Modern) icon"
     },
     {
       "file": "media/preview.png",
       "kind": "preview",
-      "alt": "sparx — Candle Studio (Modern) — home page preview"
+      "alt": "Candle Studio (Modern) — home page preview"
     }
   ],
   "author": {
-    "displayName": "sparx"
+    "displayName": "WizeWorks"
   },
   "accent": "#2a6643",
   "sortWeight": 84

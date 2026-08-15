@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "category": "blueprint",
   "slug": "sparx-b2b-building-materials",
-  "name": "sparx — Building Materials (B2B / Wholesale)",
+  "name": "Building Materials (B2B / Wholesale)",
   "version": "1.4.0",
   "tagline": "A wholesale yard built for the trade.",
   "description": "A complete, working wholesale yard for a builders’ merchant: a real trade catalogue sold by the pack, pallet and bulk bag — timber & sheet, plasterboard, cement, insulation, fixings, sealant, aggregates and safety — with categories, collections, a bespoke trade PDP (per-pack pricing, volume breaks, net-30, collect or deliver) and a full merchandised home page. Rugged yard theme — warm concrete, timber-bark, safety-ochre accent. Shipped as Yardstock Trade Supplies.",
@@ -22,16 +22,16 @@
     {
       "file": "media/icon.png",
       "kind": "icon",
-      "alt": "sparx — Building Materials (B2B / Wholesale) icon"
+      "alt": "Building Materials (B2B / Wholesale) icon"
     },
     {
       "file": "media/preview.png",
       "kind": "preview",
-      "alt": "sparx — Building Materials (B2B / Wholesale) — home page preview"
+      "alt": "Building Materials (B2B / Wholesale) — home page preview"
     }
   ],
   "author": {
-    "displayName": "sparx"
+    "displayName": "WizeWorks"
   },
   "accent": "#513721",
   "sortWeight": 85

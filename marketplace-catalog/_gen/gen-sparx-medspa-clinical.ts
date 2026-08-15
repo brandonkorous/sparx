@@ -404,7 +404,7 @@ const CONTACT = [
 // ── The spec ──────────────────────────────────────────────────────────────────
 const SPEC: ServiceSiteSpec = {
   key: 'sparx-medspa-clinical',
-  name: 'sparx — Med Spa (Clinical)',
+  name: 'Med Spa (Clinical)',
   summary:
     'A clean, clinical med-spa site — clinical white and pale mint, a calm teal-sage primary and a warm-sand accent, with a modern sans throughout. Installs a working booking flow: a free consultation you approve, plus HydraFacial, peels, microneedling, laser and IV therapy booked to licensed providers across two treatment rooms, with a deposit on treatments. Ships as "Lumen", a results-forward skin clinic.',
   tagline: 'A clinical, results-forward template for med spas — book online from day one.',

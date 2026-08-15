@@ -438,7 +438,7 @@ const CONTACT = [
 // ── The spec ──────────────────────────────────────────────────────────────────
 const SPEC: ServiceSiteSpec = {
   key: 'sparx-petgroom-playful',
-  name: 'sparx — Pet Grooming (Playful)',
+  name: 'Pet Grooming (Playful)',
   summary:
     'A bright, friendly dog-grooming site — a sky-teal primary, a sunny-yellow accent and a warm off-white ground on rounded, cheerful faces. Installs a working booking flow: a real menu priced by dog size (bath & brush, full groom, puppy intro, de-shed, nail trim), three groomers you book by name plus three grooming stations as bookable resources, and a $15 full-groom deposit policy. Ships as "Scrub & Wag".',
   tagline: 'A bright, playful template for dog groomers — book online from day one.',

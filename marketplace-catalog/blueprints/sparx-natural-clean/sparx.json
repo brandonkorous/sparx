@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "category": "blueprint",
   "slug": "sparx-natural-clean",
-  "name": "sparx — Natural Clean",
+  "name": "Natural Clean",
   "version": "1.4.0",
   "tagline": "A warm, honest template for eco housewares and any planet-minded brand.",
   "description": "A calm, oat-tinted storefront for a natural or sustainable brand — a full-bleed hero over color-blocked category tiles and a repeating shoppable-carousel and material-story rhythm that closes on a quiet mission moment, in a warm paper-ground theme. Modelled on the natural/sustainable-clean archetype; shipped as Fernwood Goods.",
@@ -22,16 +22,16 @@
     {
       "file": "media/icon.png",
       "kind": "icon",
-      "alt": "sparx — Natural Clean icon"
+      "alt": "Natural Clean icon"
     },
     {
       "file": "media/preview.png",
       "kind": "preview",
-      "alt": "sparx — Natural Clean — home page preview"
+      "alt": "Natural Clean — home page preview"
     }
   ],
   "author": {
-    "displayName": "sparx"
+    "displayName": "WizeWorks"
   },
   "accent": "#1f201b",
   "sortWeight": 85

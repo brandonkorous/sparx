@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "category": "blueprint",
   "slug": "sparx-retail-wine-shop",
-  "name": "sparx — Natural Wine Shop",
+  "name": "Natural Wine Shop",
   "version": "1.4.0",
   "tagline": "A low-lit, working storefront for a natural-wine bottle shop.",
   "description": "A complete, working shop for a natural-wine bottle shop: a real catalogue of low-intervention bottles — a pét-nat, a skin-contact orange, a chillable red, a mineral white, a dry rosé, a magnum, a mixed six and a non-alc — with categories, collections, a bespoke bottle-shop PDP and a fully merchandised home page. Low-lit cellar theme — deep plum-charcoal ground, warm cream ink, a wine-garnet primary and a brass accent. Shipped as Sediment.",
@@ -22,16 +22,16 @@
     {
       "file": "media/icon.png",
       "kind": "icon",
-      "alt": "sparx — Natural Wine Shop icon"
+      "alt": "Natural Wine Shop icon"
     },
     {
       "file": "media/preview.png",
       "kind": "preview",
-      "alt": "sparx — Natural Wine Shop — home page preview"
+      "alt": "Natural Wine Shop — home page preview"
     }
   ],
   "author": {
-    "displayName": "sparx"
+    "displayName": "WizeWorks"
   },
   "accent": "#f58393",
   "sortWeight": 86

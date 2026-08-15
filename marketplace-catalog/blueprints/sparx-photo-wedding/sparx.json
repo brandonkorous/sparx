@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "category": "blueprint",
   "slug": "sparx-photo-wedding",
-  "name": "sparx — Wedding Photography",
+  "name": "Wedding Photography",
   "version": "1.3.0",
   "tagline": "A warm, film-inspired template for wedding photographers — book consultations online from day one.",
   "description": "An imagery-led wedding & engagement photography site — a warm, film-inspired palette of soft gold, cream and dusty rose over an elegant serif display, with golden-hour photography carrying every page. Installs a working booking flow: free consultations and paid sessions booked online, three photographers you reserve by name with their own hours, and a deposit policy for holding a wedding date. Ships as \"Golden Hour Studio\".",
@@ -23,16 +23,16 @@
     {
       "file": "media/icon.png",
       "kind": "icon",
-      "alt": "sparx — Wedding Photography icon"
+      "alt": "Wedding Photography icon"
     },
     {
       "file": "media/preview.png",
       "kind": "preview",
-      "alt": "sparx — Wedding Photography — home page preview"
+      "alt": "Wedding Photography — home page preview"
     }
   ],
   "author": {
-    "displayName": "sparx"
+    "displayName": "WizeWorks"
   },
   "accent": "#bb8e5d",
   "sortWeight": 60

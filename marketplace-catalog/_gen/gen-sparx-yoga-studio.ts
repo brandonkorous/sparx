@@ -430,7 +430,7 @@ const CONTACT = [
 // ── The spec ──────────────────────────────────────────────────────────────────
 const SPEC: ServiceSiteSpec = {
   key: 'sparx-yoga-studio',
-  name: 'sparx — Yoga Studio',
+  name: 'Yoga Studio',
   summary:
     'A warm, grounded yoga-studio site — a terracotta-and-clay palette over a cream ground, a soft sage accent and humanist type. Installs a live class schedule with capacity: vinyasa, yin, hot, restorative, foundations and prenatal, each a bookable class with a drop-in price, plus four teachers and two studio rooms (including a hot room) as bookable resources with weekly hours. Ships as "Prana", an all-levels studio where you belong wherever you’re starting.',
   tagline: 'A warm, all-levels template for yoga studios — a live class schedule from day one.',

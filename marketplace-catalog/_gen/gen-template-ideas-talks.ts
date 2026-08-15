@@ -726,7 +726,7 @@ const CONTENT = [
 const SPEC: TemplateSiteSpec = {
   slug: 'ideas-talks',
   key: 'sparx-ideas-talks',
-  name: 'sparx — Ideas & Talks',
+  name: 'Ideas & Talks',
   summary:
     'A video-forward home for an ideas-and-talks nonprofit — a big idea-statement hero over a grid of talk cards, a themes browse, a live journal of essays, and a bespoke bylined talk page, in a clean warm-white one-coral theme. Modelled on the talks-hub archetype; shipped as The Commons. Ships a light membership store (an annual membership, an anthology, a notebook) to demonstrate content + commerce together.',
   tagline: 'A talks-hub template for a nonprofit that shares ideas and asks for support.',

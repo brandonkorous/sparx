@@ -848,7 +848,7 @@ const CONTENT = [
 const SPEC: TemplateSiteSpec = {
   slug: 'b2b-medical-supply',
   key: 'sparx-b2b-medical-supply',
-  name: 'sparx — Medical Supply (B2B / Wholesale)',
+  name: 'Medical Supply (B2B / Wholesale)',
   theme: THEME,
   summary:
     'A complete, working wholesale shop for a medical, dental & clinical supplies distributor: a real trade catalogue sold by the case — PPE, consumables, wound care and infection control — with categories, collections, a bespoke trade PDP (per-case pricing, volume breaks, net-30, lot traceability), and a full merchandised home page. Clean clinical theme — crisp cool ground, calm medical-blue, a teal accent. Shipped as Meridian Medical Supplies.',

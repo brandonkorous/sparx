@@ -426,7 +426,7 @@ const CONTACT = [
 // ── The spec ──────────────────────────────────────────────────────────────────
 const SPEC: ServiceSiteSpec = {
   key: 'sparx-accounting-smallbiz',
-  name: 'sparx — Accounting (Small Business)',
+  name: 'Accounting (Small Business)',
   summary:
     'A warm, friendly small-business accounting site — a fresh teal palette, a coral accent and a clean, approachable look. Installs a working booking flow: three accountants you book by name, and a real menu of consultations (a free consult, bookkeeping, payroll, quarterly taxes, new-business setup). Ships as "Ledger & Co.", the everyday bookkeeping & tax practice for freelancers and small businesses.',
   tagline: 'A friendly template for bookkeeping & tax practices — take bookings from day one.',

@@ -851,7 +851,7 @@ const CONTENT = [
 const SPEC: TemplateSiteSpec = {
   slug: 'b2b-print-supply',
   key: 'sparx-b2b-print-supply',
-  name: 'sparx — Print & Sign Supply (B2B / Wholesale)',
+  name: 'Print & Sign Supply (B2B / Wholesale)',
   theme: THEME,
   summary:
     'A complete, working wholesale shop for a print, signage & sublimation trade supplier: a real catalogue sold by the roll, box and case — cast vinyl & HTV, banner & board, eco-solvent & dye-sub ink, and sublimation blanks — with pack quantities, MOQs, categories, collections, a bespoke trade PDP (per-unit pricing, bulk breaks, net-30), and a full merchandised home page. Clean CMYK-adjacent theme — cool paper, press-ink primary, a magenta signal accent. Shipped as Inkyard Trade Supply.',
