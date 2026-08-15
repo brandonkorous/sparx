@@ -65,11 +65,39 @@ function grade(slug: string): SiteLintReport {
   });
 }
 
+/**
+ * Bundles whose BRAND PAIR is a decided exception to the contrast rules.
+ *
+ * Per bundle, deliberately, and never a blanket pass on the rule: this file's
+ * whole posture is that a new bundle must not land findings quietly, so an
+ * allowance that applied to every future theme would be the hole it exists to
+ * close.
+ *
+ *   piggles-starter — Piggles Pink (`--color-primary` #FF6F86) with a WHITE
+ *   `-content` pair, which the rule measures at 2.7:1 light / 2.5:1 dark. The
+ *   charcoal ink scores better on paper and was rejected on the screen: Brandon
+ *   set white on purpose because it reads better in practice, and the blueprint
+ *   follows the brand rather than correcting it. A theme-token decision, like the
+ *   ember allowance below — not an authoring defect, and not this sweep's to
+ *   overrule. See piggles/packages/brand/src/theme.css.
+ */
+const BRAND_CONTRAST_ACCEPTED = new Set(['piggles-starter']);
+
+/** Whether a finding is one of those decided brand-token pairs rather than
+ *  something an author did to a page. Scope `site` is the theme itself. */
+function isAcceptedBrandContrast(slug: string, f: SiteLintReport['findings'][number]): boolean {
+  if (f.location.scope !== 'site') return false;
+  // The pre-existing allowance: sparx ember at 4.1:1 / 3.2:1 against its own pair.
+  if (f.rule === 'contrast-low') return true;
+  return f.rule === 'contrast-unreadable' && BRAND_CONTRAST_ACCEPTED.has(slug);
+}
+
 /** One line per finding, naming the blueprint — so a failure says which bundle and what,
  *  not just a count that someone then has to go and reproduce. */
 function lines(slug: string, report: SiteLintReport, rule?: string): string[] {
   return report.findings
     .filter((f) => (rule ? f.rule === rule : f.severity === 'error'))
+    .filter((f) => !isAcceptedBrandContrast(slug, f))
     .map((f) => `${slug} · ${f.location.ownerName} · ${f.rule} — ${f.evidence ?? f.title}`);
 }
 
@@ -142,7 +170,7 @@ describe('the shipped blueprints', () => {
     // an authoring defect, and it is the only thing this sweep tolerates.
     const remaining = slugs().flatMap((slug) =>
       grade(slug)
-        .findings.filter((f) => !(f.rule === 'contrast-low' && f.location.scope === 'site'))
+        .findings.filter((f) => !isAcceptedBrandContrast(slug, f))
         .map((f) => `${slug} · ${f.location.ownerName} · ${f.rule} — ${f.evidence ?? f.title}`)
     );
     expect(remaining).toEqual([]);

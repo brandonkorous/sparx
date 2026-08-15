@@ -106,7 +106,21 @@ interface PvContentEntry {
  *                                    products whose `categoryHandles` include it
  *  · `cms.<typeKey>`               — the content entries of each type
  */
-function buildSampleHost(spec: TemplateSiteSpec) {
+/**
+ * What the sample host actually needs — a structural subset, so the SHOWCASE
+ * bundles (a captured site, not a spec) can use the same host. `TemplateSiteSpec`
+ * satisfies this by construction; nothing about the host was ever spec-specific.
+ */
+export interface PreviewSource {
+  slug: string;
+  commerce: unknown;
+  assets: unknown;
+  content: unknown;
+  /** The demo business the bound `site.identity.name` resolves to. */
+  brand: { businessName: string };
+}
+
+export function buildSampleHost(spec: PreviewSource) {
   const commerce = spec.commerce as PvCommerce;
   const assets = spec.assets as PvAsset[];
   const content = spec.content as PvContentEntry[];
@@ -322,14 +336,51 @@ export async function writeTemplatePreview(
   theme: Theme,
   scratchDir: string = PREVIEW_DIR
 ): Promise<WriteTemplatePreviewResult> {
-  await fs.mkdir(scratchDir, { recursive: true });
   const site = composeTemplateSite(spec);
-  const pages = site.pages as { name: string; root: Node }[];
-  const host = buildSampleHost(spec);
-  const frameRoot = staticizeHostNodes(
-    (site.frame as { root: Node }).root,
-    spec.brand.businessName
-  ) as Node;
+  return writeSitePreview(
+    {
+      slug: spec.slug,
+      title: `${spec.brand.businessName} — ${spec.name} preview`,
+      businessName: spec.brand.businessName,
+      frameRoot: (site.frame as { root: Node }).root,
+      pages: site.pages as { name: string; root: Node }[],
+      source: spec,
+      theme,
+    },
+    scratchDir
+  );
+}
+
+export interface SitePreviewInput {
+  /** Names the emitted file + the Tailwind scratch dir; must be unique per run. */
+  slug: string;
+  title: string;
+  businessName: string;
+  frameRoot: Node;
+  pages: { name: string; root: Node }[];
+  /** Where bound content resolves from — the bundle's own example records. */
+  source: PreviewSource;
+  theme: Theme;
+}
+
+/**
+ * The renderer proper, over pages that ALREADY EXIST.
+ *
+ * Split out of `writeTemplatePreview` so the showcase bundles can reach it. Those
+ * are a CAPTURED site — frame and pages pulled verbatim from a live tenant — so
+ * there is no spec to compose them from, and before this they had no preview path
+ * at all (which is why their media were hand-made). Everything below the compose
+ * step was already generic; only the input shape was not.
+ */
+export async function writeSitePreview(
+  input: SitePreviewInput,
+  scratchDir: string = PREVIEW_DIR
+): Promise<WriteTemplatePreviewResult> {
+  await fs.mkdir(scratchDir, { recursive: true });
+  const { theme } = input;
+  const pages = input.pages;
+  const host = buildSampleHost(input.source);
+  const frameRoot = staticizeHostNodes(input.frameRoot, input.businessName) as Node;
 
   // The branded chrome once (Home in its real frame), then each remaining page body under a
   // label. Deep-clone each root before placeholderizing so the mutation can't leak.
@@ -352,7 +403,7 @@ export async function writeTemplatePreview(
   }
   const bodyHtml = parts.join('\n');
 
-  const utilCss = compilePreviewCss(spec.slug, bodyHtml, scratchDir);
+  const utilCss = compilePreviewCss(input.slug, bodyHtml, scratchDir);
   const themeCss = buildSilicaThemeCssFromTheme(
     theme as Parameters<typeof buildSilicaThemeCssFromTheme>[0]
   );
@@ -363,7 +414,7 @@ export async function writeTemplatePreview(
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>${spec.brand.businessName} — ${spec.name} preview</title>
+<title>${input.title}</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link rel="stylesheet" href="${fontsHref(heading, body)}" />
@@ -380,7 +431,7 @@ ${bodyHtml}
 </body>
 </html>
 `;
-  const out = join(scratchDir, `preview-${spec.slug}.html`);
+  const out = join(scratchDir, `preview-${input.slug}.html`);
   await fs.writeFile(out, html, 'utf8');
   return { path: out };
 }

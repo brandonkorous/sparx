@@ -1,0 +1,47 @@
+[
+  {
+    "id": "img-notebook",
+    "url": "https://images.unsplash.com/photo-1517842645767-c639042777db?w=1200&q=80",
+    "alt": "A pocket dot-grid notebook on a desk"
+  },
+  {
+    "id": "img-tee",
+    "url": "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=1200&q=80",
+    "alt": "A folded cotton t-shirt"
+  },
+  {
+    "id": "img-mug",
+    "url": "https://images.unsplash.com/photo-1514228742587-6b1558fcca3d?w=1200&q=80",
+    "alt": "A speckled enamel camp mug"
+  },
+  {
+    "id": "img-tote",
+    "url": "https://images.unsplash.com/photo-1544816155-12df9643f363?w=1200&q=80",
+    "alt": "A heavy cotton canvas tote bag"
+  },
+  {
+    "id": "img-cap",
+    "url": "https://images.unsplash.com/photo-1588850561407-ed78c282e89b?w=1200&q=80",
+    "alt": "A packable six-panel cap"
+  },
+  {
+    "id": "img-bottle",
+    "url": "https://images.unsplash.com/photo-1602143407151-7111542de6e8?w=1200&q=80",
+    "alt": "A matte insulated steel water bottle"
+  },
+  {
+    "id": "post-launch",
+    "url": "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=1200&q=80",
+    "alt": "A laptop and notebook on a desk, planning a launch"
+  },
+  {
+    "id": "post-descriptions",
+    "url": "https://images.unsplash.com/photo-1499750310107-5fef28a66643?w=1200&q=80",
+    "alt": "Writing at a laptop"
+  },
+  {
+    "id": "post-regulars",
+    "url": "https://images.unsplash.com/photo-1607083206968-13611e3d76db?w=1200&q=80",
+    "alt": "A shopkeeper handing a package to a customer"
+  }
+]

@@ -1,0 +1,197 @@
+{
+  "categories": [
+    {
+      "handle": "goods",
+      "name": "Goods",
+      "description": "Everyday goods — the whole shop in one place.",
+      "featured": true
+    }
+  ],
+  "collections": [
+    {
+      "handle": "bestsellers",
+      "name": "Bestsellers",
+      "description": "A handful of favorites to start with.",
+      "type": "manual",
+      "featured": true,
+      "productHandles": [
+        "rowan-field-notebook",
+        "rowan-everyday-tee",
+        "rowan-enamel-mug",
+        "rowan-canvas-tote",
+        "rowan-ripstop-cap",
+        "rowan-insulated-bottle"
+      ]
+    }
+  ],
+  "products": [
+    {
+      "handle": "rowan-field-notebook",
+      "title": "Rowan Field Notebook",
+      "description": "A pocket-size dot-grid notebook for lists, sketches, and half-formed ideas. Lay-flat binding, 120 pages of thick cream paper that won’t bleed, and a cover that softens the more you carry it.",
+      "status": "active",
+      "productType": "Paper",
+      "vendor": "Rowan & Rye",
+      "tags": ["notebook", "everyday", "dot-grid", "stationery"],
+      "categoryHandles": ["goods"],
+      "collectionHandles": ["bestsellers"],
+      "seoTitle": "Rowan Field Notebook — pocket dot-grid notebook",
+      "seoDescription": "A pocket-size, lay-flat dot-grid notebook with 120 pages of bleed-resistant cream paper.",
+      "variants": [
+        {
+          "sku": "SPX-NOTEBOOK",
+          "priceCents": 1400,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "img-notebook",
+          "isPrimary": true,
+          "alt": "Rowan Field Notebook"
+        }
+      ]
+    },
+    {
+      "handle": "rowan-everyday-tee",
+      "title": "Rowan Everyday Tee",
+      "description": "The one you reach for first. Mid-weight combed cotton with a relaxed, true-to-size fit and a collar that keeps its shape wash after wash. Built to be worn, not saved for later.",
+      "status": "active",
+      "productType": "Apparel",
+      "vendor": "Rowan & Rye",
+      "tags": ["tee", "cotton", "unisex", "apparel"],
+      "categoryHandles": ["goods"],
+      "collectionHandles": ["bestsellers"],
+      "seoTitle": "Rowan Everyday Tee — mid-weight combed cotton",
+      "seoDescription": "A relaxed-fit, mid-weight combed-cotton tee with a collar that holds its shape.",
+      "variants": [
+        {
+          "sku": "SPX-TEE",
+          "priceCents": 2800,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "img-tee",
+          "isPrimary": true,
+          "alt": "Rowan Everyday Tee"
+        }
+      ]
+    },
+    {
+      "handle": "rowan-enamel-mug",
+      "title": "Rowan Enamel Mug",
+      "description": "A proper camp mug in speckled enamel over steel. Holds twelve ounces, shrugs off drops, and goes from desk to trailhead to campfire without complaint. A little chip only makes it look better.",
+      "status": "active",
+      "productType": "Drinkware",
+      "vendor": "Rowan & Rye",
+      "tags": ["mug", "enamel", "camp", "drinkware"],
+      "categoryHandles": ["goods"],
+      "collectionHandles": ["bestsellers"],
+      "seoTitle": "Rowan Enamel Mug — 12oz speckled camp mug",
+      "seoDescription": "A 12oz speckled enamel-over-steel camp mug built for desk, trail, and campfire.",
+      "variants": [
+        {
+          "sku": "SPX-MUG",
+          "priceCents": 1800,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "img-mug",
+          "isPrimary": true,
+          "alt": "Rowan Enamel Mug"
+        }
+      ]
+    },
+    {
+      "handle": "rowan-canvas-tote",
+      "title": "Rowan Canvas Tote",
+      "description": "Heavy 12oz cotton canvas with real box corners and long shoulder-length handles. Carries a week of groceries or a laptop and lunch, and stands up on its own when you set it down. Machine-washable, gets softer with age.",
+      "status": "active",
+      "productType": "Accessories",
+      "vendor": "Rowan & Rye",
+      "tags": ["tote", "canvas", "everyday", "accessories"],
+      "categoryHandles": ["goods"],
+      "collectionHandles": ["bestsellers"],
+      "seoTitle": "Rowan Canvas Tote — heavy 12oz cotton tote bag",
+      "seoDescription": "A heavy 12oz cotton-canvas tote with box corners and shoulder-length handles.",
+      "variants": [
+        {
+          "sku": "SPX-TOTE",
+          "priceCents": 2200,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "img-tote",
+          "isPrimary": true,
+          "alt": "Rowan Canvas Tote"
+        }
+      ]
+    },
+    {
+      "handle": "rowan-ripstop-cap",
+      "title": "Rowan Ripstop Cap",
+      "description": "A lightweight six-panel cap in packable ripstop, with a curved brim you can bend by hand and an adjustable strap that fits nearly everyone. Folds into a pocket and springs back into shape.",
+      "status": "active",
+      "productType": "Apparel",
+      "vendor": "Rowan & Rye",
+      "tags": ["cap", "adjustable", "ripstop", "apparel"],
+      "categoryHandles": ["goods"],
+      "collectionHandles": ["bestsellers"],
+      "seoTitle": "Rowan Ripstop Cap — packable six-panel cap",
+      "seoDescription": "A lightweight, packable six-panel ripstop cap with a hand-bendable brim and adjustable strap.",
+      "variants": [
+        {
+          "sku": "SPX-CAP",
+          "priceCents": 2600,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "img-cap",
+          "isPrimary": true,
+          "alt": "Rowan Ripstop Cap"
+        }
+      ]
+    },
+    {
+      "handle": "rowan-insulated-bottle",
+      "title": "Rowan Insulated Bottle",
+      "description": "Double-walled stainless steel that keeps cold drinks cold for 24 hours and hot ones hot for 12. A soft matte finish that doesn’t sweat, a leak-proof cap, and a slim profile that fits a standard cup holder. Holds 17 oz.",
+      "status": "active",
+      "productType": "Drinkware",
+      "vendor": "Rowan & Rye",
+      "tags": ["bottle", "insulated", "steel", "drinkware", "everyday"],
+      "categoryHandles": ["goods"],
+      "collectionHandles": ["bestsellers"],
+      "seoTitle": "Rowan Insulated Bottle — 17oz double-walled steel",
+      "seoDescription": "A 17oz double-walled stainless bottle: cold for 24h, hot for 12h, leak-proof, matte finish.",
+      "variants": [
+        {
+          "sku": "SPX-BOTTLE",
+          "priceCents": 3200,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "img-bottle",
+          "isPrimary": true,
+          "alt": "Rowan Insulated Bottle"
+        }
+      ]
+    }
+  ]
+}

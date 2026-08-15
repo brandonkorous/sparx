@@ -1,0 +1,39 @@
+{
+  "schemaVersion": 1,
+  "category": "blueprint",
+  "slug": "piggles-starter",
+  "name": "Universal Starter",
+  "version": "1.0.0",
+  "tagline": "A complete multi-module starter — shop, journal, bookings, and wholesale.",
+  "description": "The complete starter — a faceted shop, a journal, a booking page, and a wholesale page. Install it, make it yours, and launch a polished working site in minutes.",
+  "payload": "blueprint.ts",
+  "brands": ["piggles"],
+  "facets": {
+    "vertical": "retail",
+    "industry": "Universal"
+  },
+  "pricing": {
+    "model": "free",
+    "priceCents": 0
+  },
+  "requires": {
+    "modules": ["builder", "commerce", "cms", "crm", "email"]
+  },
+  "media": [
+    {
+      "file": "media/icon.png",
+      "kind": "icon",
+      "alt": "Universal Starter icon"
+    },
+    {
+      "file": "media/preview.png",
+      "kind": "preview",
+      "alt": "Universal Starter — home page preview"
+    }
+  ],
+  "author": {
+    "displayName": "WizeWorks"
+  },
+  "accent": "#ff6f86",
+  "sortWeight": 100
+}
