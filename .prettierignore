@@ -19,6 +19,21 @@ packages/db/prisma/migrations/**
 # Playwright auth state (regenerated per test run)
 **/playwright/.auth/**
 
+# Delivered art batches. `piggles/images/` is a DROP ZONE, not source: raw PNG /
+# WebP / JPG / .ai from the illustrator, plus the manifest, character map and
+# usage matrix that ship alongside each batch. `packages/mascot/scripts/ingest.mjs`
+# READS this directory; nothing builds from it.
+#
+# It is here because it was blocking pushes. Every new batch lands as ~5
+# unformatted files, and `format:check` scans the whole working tree — so a
+# release could not go out while a delivery was being ingested, for the
+# formatting of a vendor's manifest. Reformatting a delivery also puts our diff
+# noise between us and the thing we were sent.
+#
+# Scoped to the drop zone only. Anything under packages/mascot — the code that
+# reads these — is ordinary source and stays formatted.
+piggles/images/**
+
 # Locally-installed Claude Code skills (untracked, regenerated on install)
 .claude/skills/**
 
