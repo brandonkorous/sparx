@@ -1,0 +1,15 @@
+{
+  "name":"Piggles Mascot System","batch":"03","version":"3.2.0","character":"Piggles","specification":"MASCOT.md v1.1","presentationMode":"branded-canonical","defaultFormat":"webp","sheet":"assets/sheets/piggles-character-sheet.jpg",
+  "assets":[
+    {"id":"piggles-empty","title":"Empty State","category":"system-state","alt":"Piggles looking inside an empty box","png":"assets/png/piggles-empty.png","webp":"assets/webp/piggles-empty.webp"},
+    {"id":"piggles-error","title":"Error","category":"system-state","alt":"Piggles beside an error warning","png":"assets/png/piggles-error.png","webp":"assets/webp/piggles-error.webp"},
+    {"id":"piggles-loading","title":"Loading","category":"system-state","alt":"Piggles with a loading wheel","png":"assets/png/piggles-loading.png","webp":"assets/webp/piggles-loading.webp"},
+    {"id":"piggles-no-results","title":"No Results","category":"search","alt":"Piggles searching an empty tray","png":"assets/png/piggles-no-results.png","webp":"assets/webp/piggles-no-results.webp"},
+    {"id":"piggles-upload","title":"Upload","category":"files","alt":"Piggles uploading a document","png":"assets/png/piggles-upload.png","webp":"assets/webp/piggles-upload.webp"},
+    {"id":"piggles-download","title":"Download","category":"files","alt":"Piggles receiving a downloaded document","png":"assets/png/piggles-download.png","webp":"assets/webp/piggles-download.webp"},
+    {"id":"piggles-security","title":"Security","category":"trust","alt":"Piggles presenting a secure shield","png":"assets/png/piggles-security.png","webp":"assets/webp/piggles-security.webp"},
+    {"id":"piggles-support","title":"Support","category":"help","alt":"Piggles ready to provide support","png":"assets/png/piggles-support.png","webp":"assets/webp/piggles-support.webp"},
+    {"id":"piggles-maintenance","title":"Maintenance","category":"system-state","alt":"Piggles maintaining a gear","png":"assets/png/piggles-maintenance.png","webp":"assets/webp/piggles-maintenance.webp"},
+    {"id":"piggles-announcement","title":"Announcement","category":"communication","alt":"Piggles making an announcement","png":"assets/png/piggles-announcement.png","webp":"assets/webp/piggles-announcement.webp"}
+  ]
+}

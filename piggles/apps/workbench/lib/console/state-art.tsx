@@ -17,13 +17,32 @@
 // told apart by a colour. A character tells them apart by POSE, which carries
 // further and needs no reading.
 //
-// ── WHAT SHE MUST NEVER BECOME ──────────────────────────────────────────────
+// ── SIZE: TWO VALUES, AND WHY IT USED TO BE ONE ─────────────────────────────
 //
-// Small. `sm` is 96px, and that is deliberate at every state: this appears in a
-// pane somebody is trying to work in, and a character filling the region is a
-// mood board rather than a state. The words still carry the meaning — she agrees
-// with them, she never replaces them (DESIGN.md: "she must never be the only
-// indicator of a state").
+// This file used to say 96px at every state, and argued for it: a character
+// filling a pane somebody is trying to work in is a mood board rather than a
+// state. That argument still holds, and it was written when every pose was the
+// FIGURE ALONE — at 96px a whole pig reads perfectly.
+//
+// The 2026-08-15 art changed what a pose is. Eleven of the fifteen app poses are
+// now SCENES: a shop shelf, a service counter, a meeting room with two chairs, a
+// packing bench, a round table with the one prop that says which app this is. At
+// 96px that prop is a smudge — measured, not guessed, on the marketing film,
+// where a calendar and a parcel were indistinguishable at 144px. Which defeats
+// the paragraph below: the whole claim is that a character tells five states
+// apart BY POSE, and a pose nobody can see tells you nothing.
+//
+// So there are two sizes now, and the split is not arbitrary:
+//
+//   • `md` (176px) for empty and first-run. That pane has nothing else in it —
+//     she is not competing with work, she IS the content until there is some.
+//   • `sm` (96px) everywhere else. Those four poses are all figure-only
+//     (magnifier, wrench, spinner), so they read at 96 exactly as before, and
+//     each of them sits over a pane a person is trying to get past.
+//
+// The words still carry the meaning at both sizes — she agrees with them, she
+// never replaces them (DESIGN.md: "she must never be the only indicator of a
+// state").
 //
 // And she is never present for money, tax, payroll, deletion or a capacity
 // block. That is not a rule this file has to remember: `MascotIntent` is a
@@ -32,11 +51,11 @@
 //
 // ── THE PER-APP POSES ───────────────────────────────────────────────────────
 //
-// `mascotForApp` maps a Piggles app to its own empty-state pose — a calendar for
-// Bookings, an invoice for Invoices, boxes for Stock. Most of those are not
-// drawn yet and fall through to a generic pose today; the chains are already
-// correct, so the day that batch lands, fifteen empty states get specific with
-// no edit here and none at any call site.
+// `mascotForApp` maps a Piggles app to its own empty-state pose, and as of the
+// 2026-08-15 art all fifteen are specific — a calendar propped beside a laptop
+// for Bookings, a counter for Customers, a shelf for Stock, a meeting room for
+// My Team. None of them falls through to a generic pose any more, which is why
+// the size above had to move: the specificity only exists if it is visible.
 
 import { MODULE_TO_APP } from '@piggles/config';
 // The pose LOOKUPS come from the package root (no React in it, so it is safe
@@ -56,7 +75,10 @@ export function PigglesStateArt({ state, module }: ProductStateArtProps) {
     // An empty list is an invitation, and the invitation is app-shaped: what is
     // missing from Bookings is not what is missing from Stock.
     const pose = app ? mascotForApp(app).id : resolveIntent('empty').id;
-    return <PigglesMascot pose={pose} size="sm" className="-mb-2" />;
+    // `md`, not `sm` — eleven of the fifteen app poses are scenes now, and the
+    // prop that says WHICH app this is disappears at 96px. See the size note in
+    // the header.
+    return <PigglesMascot pose={pose} size="md" className="-mb-2" />;
   }
 
   if (state === 'no-results') {

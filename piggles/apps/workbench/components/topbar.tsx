@@ -36,6 +36,7 @@ import {
   Check,
   ChevronDown,
   CircleQuestionMark,
+  Cookie,
   Copy,
   CreditCard,
   Globe,
@@ -428,6 +429,21 @@ export function Topbar({
             >
               <CreditCard className="size-4" aria-hidden />
               Your plan and billing
+            </DropdownMenuItem>
+            {/* The way back to the consent decision — a LINK OUT, like the
+                billing item above it and for the same reason. The answer lives
+                on the account, not on this domain, so the screen that can change
+                it is the screen that asked for it. A choice somebody can make
+                once and never revisit is a dark pattern with extra steps, which
+                is why this exists; putting a second editor for it in here would
+                be two places that own one record. */}
+            <DropdownMenuItem
+              onClick={() => {
+                window.location.href = `${accountOrigin}/cookie-choices`;
+              }}
+            >
+              <Cookie className="size-4" aria-hidden />
+              Cookie choices
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem

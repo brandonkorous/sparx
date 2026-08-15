@@ -1,91 +1,15 @@
 {
-  "name": "Piggles Mascot System",
-  "batch": "01",
-  "version": "1.1.0",
-  "character": "Piggles",
-  "specification": "MASCOT.md v1.1",
-  "defaultFormat": "webp",
-  "sheet": "assets/sheets/piggles-character-sheet.jpg",
-  "assets": [
-    {
-      "id": "piggles-mascot-base",
-      "title": "The Helper",
-      "category": "canonical",
-      "alt": "Piggles welcoming the user",
-      "png": "assets/png/piggles-mascot-base.png",
-      "webp": "assets/webp/piggles-mascot-base.webp"
-    },
-    {
-      "id": "piggles-planner",
-      "title": "The Planner",
-      "category": "planning",
-      "alt": "Piggles planning with a clipboard",
-      "png": "assets/png/piggles-planner.png",
-      "webp": "assets/webp/piggles-planner.webp"
-    },
-    {
-      "id": "piggles-analyst",
-      "title": "The Analyst",
-      "category": "analytics",
-      "alt": "Piggles examining a growth chart",
-      "png": "assets/png/piggles-analyst.png",
-      "webp": "assets/webp/piggles-analyst.webp"
-    },
-    {
-      "id": "piggles-communicator",
-      "title": "The Communicator",
-      "category": "communication",
-      "alt": "Piggles ready to communicate",
-      "png": "assets/png/piggles-communicator.png",
-      "webp": "assets/webp/piggles-communicator.webp"
-    },
-    {
-      "id": "piggles-builder",
-      "title": "The Builder",
-      "category": "building",
-      "alt": "Piggles building with a laptop",
-      "png": "assets/png/piggles-builder.png",
-      "webp": "assets/webp/piggles-builder.webp"
-    },
-    {
-      "id": "piggles-protector",
-      "title": "The Protector",
-      "category": "security",
-      "alt": "Piggles protecting the business",
-      "png": "assets/png/piggles-protector.png",
-      "webp": "assets/webp/piggles-protector.webp"
-    },
-    {
-      "id": "piggles-money-minder",
-      "title": "The Money Minder",
-      "category": "finance",
-      "alt": "Piggles watching the numbers",
-      "png": "assets/png/piggles-money-minder.png",
-      "webp": "assets/webp/piggles-money-minder.webp"
-    },
-    {
-      "id": "piggles-organizer",
-      "title": "The Organizer",
-      "category": "organization",
-      "alt": "Piggles organizing a checklist",
-      "png": "assets/png/piggles-organizer.png",
-      "webp": "assets/webp/piggles-organizer.webp"
-    },
-    {
-      "id": "piggles-cheerleader",
-      "title": "The Cheerleader",
-      "category": "success",
-      "alt": "Piggles celebrating a win",
-      "png": "assets/png/piggles-cheerleader.png",
-      "webp": "assets/webp/piggles-cheerleader.webp"
-    },
-    {
-      "id": "piggles-sidekick",
-      "title": "The Sidekick",
-      "category": "companion",
-      "alt": "Piggles sitting by your side",
-      "png": "assets/png/piggles-sidekick.png",
-      "webp": "assets/webp/piggles-sidekick.webp"
-    }
+  "name":"Piggles Mascot System","batch":"01","version":"1.1.0","character":"Piggles","specification":"MASCOT.md v1.1","defaultFormat":"webp","sheet":"assets/sheets/piggles-character-sheet.jpg",
+  "assets":[
+    {"id":"piggles-mascot-base","title":"The Helper","category":"canonical","alt":"Piggles welcoming the user","png":"assets/png/piggles-mascot-base.png","webp":"assets/webp/piggles-mascot-base.webp"},
+    {"id":"piggles-planner","title":"The Planner","category":"planning","alt":"Piggles planning with a clipboard","png":"assets/png/piggles-planner.png","webp":"assets/webp/piggles-planner.webp"},
+    {"id":"piggles-analyst","title":"The Analyst","category":"analytics","alt":"Piggles examining a growth chart","png":"assets/png/piggles-analyst.png","webp":"assets/webp/piggles-analyst.webp"},
+    {"id":"piggles-communicator","title":"The Communicator","category":"communication","alt":"Piggles ready to communicate","png":"assets/png/piggles-communicator.png","webp":"assets/webp/piggles-communicator.webp"},
+    {"id":"piggles-builder","title":"The Builder","category":"building","alt":"Piggles building with a laptop","png":"assets/png/piggles-builder.png","webp":"assets/webp/piggles-builder.webp"},
+    {"id":"piggles-protector","title":"The Protector","category":"security","alt":"Piggles protecting the business","png":"assets/png/piggles-protector.png","webp":"assets/webp/piggles-protector.webp"},
+    {"id":"piggles-money-minder","title":"The Money Minder","category":"finance","alt":"Piggles watching the numbers","png":"assets/png/piggles-money-minder.png","webp":"assets/webp/piggles-money-minder.webp"},
+    {"id":"piggles-organizer","title":"The Organizer","category":"organization","alt":"Piggles organizing a checklist","png":"assets/png/piggles-organizer.png","webp":"assets/webp/piggles-organizer.webp"},
+    {"id":"piggles-cheerleader","title":"The Cheerleader","category":"success","alt":"Piggles celebrating a win","png":"assets/png/piggles-cheerleader.png","webp":"assets/webp/piggles-cheerleader.webp"},
+    {"id":"piggles-sidekick","title":"The Sidekick","category":"companion","alt":"Piggles sitting by your side","png":"assets/png/piggles-sidekick.png","webp":"assets/webp/piggles-sidekick.webp"}
   ]
 }

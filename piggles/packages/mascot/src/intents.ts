@@ -72,39 +72,78 @@ export type MascotIntent =
   // Marketing.
   | 'hero';
 
+// ── RE-MAPPED AGAINST THE 2026-08-15 ART, NOT RENAMED ───────────────────────
+//
+// The five batches were re-delivered with the real brand on them, and the
+// rosters changed rather than the cuts: `wave`, `desk`, `laptop`, `neutral`,
+// `thinking`, `point-left`, `invoice`, `calendar` and `celebrate` no longer
+// exist as pose ids. Every chain below was re-decided by LOOKING at each of the
+// fifty new poses and asking what the situation needs, which is why several of
+// them do not land where a search-and-replace would have put them:
+//
+//   • `welcome` is `welcome-sign` — she waves AND holds a sign with an open door
+//     on it. A bare wave is a greeting; a door is an invitation, and this intent
+//     is the one on the way in.
+//   • `callout` had to FLIP. The old `point-left` is gone and the new
+//     `point-right` extends her arm to the VIEWER'S right, so the thing being
+//     pointed at now has to sit on the right of the artwork. A directional pose
+//     is the one place the art constrains the layout, and getting this backwards
+//     draws attention to empty space.
+//   • `not-found` and `no-results` share `no-results` (magnifier over an empty
+//     tray) on purpose. She looked, and it is not there — which is true of both,
+//     and truer than a shrug. `error` is kept for something that BROKE: the only
+//     unhappy face in the set, and she is holding a wrench while wearing it.
+//   • `tip` is `idea` (lightbulb) rather than a thinking pose. A tip is an offer,
+//     not a hesitation.
+//
+// The chains are mostly single-element now. Under the old roster nine poses of
+// forty-nine existed, so a chain was how a surface asked for art that had not
+// been drawn; today all fifty exist and every intent resolves to the pose it
+// actually wants. A chain still earns its keep where a second choice is
+// genuinely better than nothing — see `sign-in` and `milestone`.
 export const MASCOT_INTENTS: Record<MascotIntent, PoseChain> = {
-  welcome: ['wave'],
-  // The usage matrix offers `laptop` or `desk` for sign-in. `laptop` is the
-  // figure alone and composes against a form column; `desk` is a full scene and
-  // wants the width of a split shell.
-  'sign-in': ['laptop', 'desk'],
-  onboarding: ['wave'],
-  'onboarding-complete': ['celebrate'],
+  welcome: ['welcome-sign'],
+  // `laptop-coffee`, not `laptop-focus`. Both are the same round table; the
+  // difference is where she is looking. `laptop-focus` has her head down and
+  // absorbed, which is a picture of somebody who has not noticed you came in.
+  // `laptop-coffee` looks up, mug in hand, open smile — which is what a door
+  // should do. `mascot-base` is the fallback because a plain wave still reads as
+  // a greeting at any width.
+  'sign-in': ['laptop-coffee', 'mascot-base'],
+  // The setup screens are a short list of things to get through, and she is
+  // holding exactly that: a pen and three ticked boxes.
+  onboarding: ['checklist'],
+  'onboarding-complete': ['cheerleader'],
 
-  success: ['thumbs-up', 'celebrate'],
-  milestone: ['party-hat', 'celebrate'],
+  success: ['thumbs-up'],
+  // A milestone is a business result, so it happens where the business happens:
+  // arms up at the same desk as every other beat, with the chart on the laptop
+  // lid. `cheerleader` is the louder, context-free version for anywhere the desk
+  // would be too specific.
+  milestone: ['desk-celebrate', 'cheerleader'],
 
-  help: ['support', 'thinking'],
-  tip: ['thinking'],
-  // Directional poses are the one case where the pose has to agree with the
-  // layout: `point-left` only works with the thing being pointed at on its left.
-  callout: ['point-left'],
+  help: ['support'],
+  tip: ['idea'],
+  // See the note above: the arm extends to the VIEWER'S RIGHT, so this pose only
+  // works with the thing being pointed at on its right.
+  callout: ['point-right'],
 
-  empty: ['neutral'],
-  'no-results': ['searching', 'thinking'],
+  empty: ['empty'],
+  'no-results': ['no-results'],
   // Nothing scheduled, nothing in the inbox, end of the day — an empty state that
   // is GOOD news rather than an unfinished setup, so she rests rather than waves.
-  quiet: ['sleeping', 'neutral'],
+  // `sidekick` is the one seated pose: cap on, hands down, waiting.
+  quiet: ['sidekick'],
 
-  'not-found': ['404', 'thinking'],
+  'not-found': ['no-results'],
   // A recoverable system fault — an import that failed, a page that would not
   // load. NOT a payment failure and NOT a security event; both are money or
   // trust, and both are plain and calm.
-  'server-error': ['oops', 'concerned', 'thinking'],
-  maintenance: ['maintenance', 'thinking'],
-  loading: ['loading', 'neutral'],
+  'server-error': ['error'],
+  maintenance: ['maintenance'],
+  loading: ['loading'],
 
-  hero: ['desk'],
+  hero: ['laptop-coffee'],
 };
 
 /** The app ids from `@piggles/config`, mirrored rather than imported.
@@ -135,26 +174,51 @@ export type MascotAppId =
  *  in the console, and the one most likely to drift into fifteen people each
  *  picking their favourite.
  *
- *  Every chain here except Bookings and Invoices currently falls through to a
- *  generic pose, because the batch that draws the domain props has not landed.
- *  That is the point of writing them out now: the chains are already correct, and
- *  ingesting the next batch is what makes fifteen empty states specific. */
+ *  ── ALL FIFTEEN ARE SPECIFIC NOW ───────────────────────────────────────────
+ *
+ *  Twelve of these used to fall through to a generic pose, because the art that
+ *  would have made them specific did not exist. It does. Every row below names a
+ *  pose drawn for that job, and none of them falls through.
+ *
+ *  Where the roster offered a choice, the tie-break was WHOSE ACTION the empty
+ *  state is about — the owner's or their customer's:
+ *
+ *    • `stock` is the shop shelf, not the packing bench. Stock is what you have
+ *      left, which is a shelf; `shipping-station` is what you do to an order,
+ *      which belongs to fulfilment rather than to counting.
+ *    • `customers` is the front counter — somebody arriving and being greeted —
+ *      rather than the headset, which is support answering a problem.
+ *    • `get_found` is the magnifier, not the megaphone. Being found is somebody
+ *      else searching and arriving; a megaphone is you shouting, which is what
+ *      the marketing side of it looks like and not what the app is.
+ *    • `site` is the monitor with a page layout on it, NOT the hard hat. A hard
+ *      hat says "under construction" — a cliché, and the wrong claim: the site is
+ *      not a building site and not a separate project, it is a page you look at.
+ *      She is pointing at that page on the screen.
+ *    • `invoices` takes the desk with the calculator on it and `money` takes the
+ *      coin. Both are money and they are not the same money: one is a document
+ *      you send, the other is the position you are in.
+ *
+ *  Ten of the fifteen sit at the same round table (batch 05) or are the figure
+ *  alone (01/02), so the console keeps one visual system across the rail. The
+ *  four that leave it — counter, shelf, meeting room, workbench — do so because
+ *  the SETTING is the meaning, and a desk could not carry it. */
 export const MASCOT_BY_APP: Record<MascotAppId, PoseChain> = {
-  home: ['sunrise', 'neutral'],
-  site: ['site', 'laptop'],
-  content: ['camera', 'laptop'],
-  get_found: ['megaphone', 'thinking'],
-  sell: ['product', 'neutral'],
-  stock: ['stock', 'neutral'],
-  customers: ['customer', 'neutral'],
-  messages: ['message', 'neutral'],
-  bookings: ['calendar'],
-  invoices: ['invoice'],
-  money: ['money', 'invoice'],
-  team: ['high-five', 'neutral'],
-  automations: ['automate', 'neutral'],
-  partners: ['connection', 'neutral'],
-  connections: ['connection', 'laptop'],
+  home: ['laptop-coffee'],
+  site: ['desktop-computer'],
+  content: ['tablet-desk'],
+  get_found: ['analyst'],
+  sell: ['orders-desk'],
+  stock: ['retail-shop'],
+  customers: ['front-counter'],
+  messages: ['email-desk'],
+  bookings: ['calendar-desk'],
+  invoices: ['reports-desk'],
+  money: ['money-minder'],
+  team: ['meeting-table'],
+  automations: ['maintenance'],
+  partners: ['video-call'],
+  connections: ['phone-desk'],
 };
 
 /** First pose in the chain whose artwork exists. Total by construction — the

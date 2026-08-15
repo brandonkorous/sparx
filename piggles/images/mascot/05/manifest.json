@@ -1,0 +1,22 @@
+{
+  "name": "Piggles Mascot System",
+  "batch": "05",
+  "version": "5.0.0",
+  "character": "Piggles",
+  "specification": "MASCOT.md v1.1",
+  "presentationMode": "branded-canonical-tabletop",
+  "defaultFormat": "webp",
+  "sheet": "assets/sheets/piggles-character-sheet.jpg",
+  "assets": [
+    {"id":"piggles-laptop-focus","title":"Laptop Focus","category":"tabletop-work","alt":"Piggles focused on work at a laptop","png":"assets/png/piggles-laptop-focus.png","webp":"assets/webp/piggles-laptop-focus.webp"},
+    {"id":"piggles-laptop-coffee","title":"Laptop Coffee","category":"tabletop-work","alt":"Piggles reviewing a laptop with a mug","png":"assets/png/piggles-laptop-coffee.png","webp":"assets/webp/piggles-laptop-coffee.webp"},
+    {"id":"piggles-video-call","title":"Video Call","category":"communication","alt":"Piggles joining a video call at a laptop","png":"assets/png/piggles-video-call.png","webp":"assets/webp/piggles-video-call.webp"},
+    {"id":"piggles-email-desk","title":"Email Desk","category":"communication","alt":"Piggles handling email at a laptop","png":"assets/png/piggles-email-desk.png","webp":"assets/webp/piggles-email-desk.webp"},
+    {"id":"piggles-reports-desk","title":"Reports Desk","category":"analytics","alt":"Piggles reviewing reports at a laptop","png":"assets/png/piggles-reports-desk.png","webp":"assets/webp/piggles-reports-desk.webp"},
+    {"id":"piggles-calendar-desk","title":"Calendar Desk","category":"scheduling","alt":"Piggles scheduling work at a laptop","png":"assets/png/piggles-calendar-desk.png","webp":"assets/webp/piggles-calendar-desk.webp"},
+    {"id":"piggles-tablet-desk","title":"Tablet Desk","category":"content","alt":"Piggles working with a tablet and stylus","png":"assets/png/piggles-tablet-desk.png","webp":"assets/webp/piggles-tablet-desk.webp"},
+    {"id":"piggles-phone-desk","title":"Phone Desk","category":"communication","alt":"Piggles checking a phone beside a laptop","png":"assets/png/piggles-phone-desk.png","webp":"assets/webp/piggles-phone-desk.webp"},
+    {"id":"piggles-orders-desk","title":"Orders Desk","category":"commerce","alt":"Piggles organizing an order at a laptop","png":"assets/png/piggles-orders-desk.png","webp":"assets/webp/piggles-orders-desk.webp"},
+    {"id":"piggles-desk-celebrate","title":"Desk Celebrate","category":"success","alt":"Piggles celebrating a business win at a laptop","png":"assets/png/piggles-desk-celebrate.png","webp":"assets/webp/piggles-desk-celebrate.webp"}
+  ]
+}

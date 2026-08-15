@@ -2,64 +2,65 @@
 //
 // Source of truth: the batch manifests under piggles/images/mascot/. To change a
 // pose's metadata, edit the manifest and re-run `pnpm --filter @piggles/mascot
-// ingest`. Batches ingested: 01.
+// ingest`. Batches ingested: 01, 02, 03, 04, 05.
 
 /** Every pose whose artwork exists and ships today. */
 export type MascotPoseId =
-  | 'calendar'
-  | 'celebrate'
-  | 'desk'
-  | 'invoice'
-  | 'laptop'
-  | 'neutral'
-  | 'point-left'
-  | 'thinking'
-  | 'wave';
+  | 'analyst'
+  | 'announcement'
+  | 'builder'
+  | 'calendar-desk'
+  | 'chart'
+  | 'checklist'
+  | 'cheerleader'
+  | 'coffee'
+  | 'communicator'
+  | 'desk-celebrate'
+  | 'desk-workspace'
+  | 'desktop-computer'
+  | 'download'
+  | 'email-desk'
+  | 'empty'
+  | 'error'
+  | 'food-truck'
+  | 'front-counter'
+  | 'home-office'
+  | 'idea'
+  | 'laptop-coffee'
+  | 'laptop-focus'
+  | 'loading'
+  | 'mail'
+  | 'maintenance'
+  | 'mascot-base'
+  | 'meeting-table'
+  | 'money-minder'
+  | 'no-results'
+  | 'orders-desk'
+  | 'organizer'
+  | 'package'
+  | 'phone'
+  | 'phone-desk'
+  | 'planner'
+  | 'point-right'
+  | 'protector'
+  | 'reports-desk'
+  | 'retail-shop'
+  | 'salon-station'
+  | 'security'
+  | 'shipping-station'
+  | 'sidekick'
+  | 'support'
+  | 'tablet-desk'
+  | 'thumbs-up'
+  | 'upload'
+  | 'video-call'
+  | 'welcome-sign'
+  | 'workshop';
 
 /** Every pose that is specified but not yet drawn. */
-export type PlannedPoseId =
-  | '404'
-  | 'automate'
-  | 'camera'
-  | 'chart-up'
-  | 'clap'
-  | 'coffee'
-  | 'concerned'
-  | 'confused'
-  | 'connection'
-  | 'customer'
-  | 'email'
-  | 'heart'
-  | 'high-five'
-  | 'late-night'
-  | 'loading'
-  | 'maintenance'
-  | 'megaphone'
-  | 'message'
-  | 'money'
-  | 'oops'
-  | 'package'
-  | 'paint'
-  | 'party-hat'
-  | 'peek-left'
-  | 'peek-right'
-  | 'phone'
-  | 'point-down'
-  | 'point-right'
-  | 'point-up'
-  | 'product'
-  | 'receipt'
-  | 'searching'
-  | 'shield'
-  | 'site'
-  | 'sleeping'
-  | 'stock'
-  | 'store'
-  | 'sunrise'
-  | 'support'
-  | 'thumbs-up';
+export type PlannedPoseId = never;
 
-export type AnyPoseId = MascotPoseId | PlannedPoseId;
+export type AnyPoseId = MascotPoseId;
 
 /** A pose whose artwork exists and ships today. */
 export interface MascotPose {
@@ -86,6 +87,16 @@ export interface MascotPose {
   /** TRUE intrinsic size of the trimmed artwork, not the delivery canvas. */
   width: number;
   height: number;
+  /** Fraction of `height` that the CHARACTER occupies, measured from her own
+   *  pink mass rather than from the frame.
+   *
+   *  This is what makes a named size mean the same thing across poses that are
+   *  framed differently. `builder` is the figure alone at ratio 0.72; a desk
+   *  scene is a table at ratio 1.49. Sized to one WIDTH they put two characters
+   *  on screen at nearly 2x each other. Sized so this fraction lands on the same
+   *  number of pixels, they match — see <PigglesMascot>, which does the
+   *  arithmetic so no call site has to know a pose apart from its id. */
+  subject: number;
 }
 
 /** A pose that is specified but not yet drawn. Naming one in an intent chain is
@@ -99,369 +110,711 @@ export interface PlannedPose {
 }
 
 export const MASCOT_POSES: Record<MascotPoseId, MascotPose> = {
-  calendar: {
-    id: 'calendar',
+  analyst: {
+    id: 'analyst',
     batch: '01',
-    category: 'business',
-    alt: 'Piggles presenting a calendar.',
-    energy: 'helpful',
-    anchor: 'bottom',
-    intent: ['bookings', 'calendar', 'schedule', 'appointments'],
-    src: '/mascot/calendar.webp',
-    width: 1052,
-    height: 1196,
-  },
-  celebrate: {
-    id: 'celebrate',
-    batch: '01',
-    category: 'state',
-    alt: 'Piggles jumping in celebration.',
-    energy: 'high',
-    anchor: 'center',
-    intent: ['success', 'celebrate', 'milestone', 'complete'],
-    src: '/mascot/celebrate.webp',
-    width: 1024,
-    height: 1185,
-  },
-  desk: {
-    id: 'desk',
-    batch: '01',
-    category: 'scene',
-    alt: 'Piggles working at a laptop at a desk with a plant and coffee mug.',
-    energy: 'warm',
-    anchor: 'bottom',
-    intent: ['login', 'hero', 'marketing', 'workspace'],
-    src: '/mascot/desk.webp',
-    width: 1200,
-    height: 683,
-  },
-  invoice: {
-    id: 'invoice',
-    batch: '01',
-    category: 'business',
-    alt: 'Piggles holding and pointing to an invoice.',
-    energy: 'helpful',
-    anchor: 'bottom',
-    intent: ['invoice', 'money', 'billing', 'paid'],
-    src: '/mascot/invoice.webp',
-    width: 1092,
-    height: 1188,
-  },
-  laptop: {
-    id: 'laptop',
-    batch: '01',
-    category: 'work',
-    alt: 'Piggles sitting with a laptop and working.',
-    energy: 'focused',
-    anchor: 'bottom',
-    intent: ['login', 'work', 'workspace', 'productivity'],
-    src: '/mascot/laptop.webp',
-    width: 1127,
-    height: 1083,
-  },
-  neutral: {
-    id: 'neutral',
-    batch: '01',
-    category: 'core',
-    alt: 'Piggles standing and smiling.',
-    energy: 'calm',
-    anchor: 'center',
-    intent: ['default', 'welcome', 'about', 'empty-state'],
-    src: '/mascot/neutral.webp',
-    width: 857,
-    height: 1179,
-  },
-  'point-left': {
-    id: 'point-left',
-    batch: '01',
-    category: 'directional',
-    alt: 'Piggles smiling and pointing to the left.',
+    category: 'analytics',
+    alt: 'Piggles examining a growth chart',
     energy: 'friendly',
     anchor: 'bottom',
-    intent: ['point', 'cta', 'callout', 'guide'],
-    src: '/mascot/point-left.webp',
-    width: 1052,
-    height: 1151,
+    intent: [],
+    src: '/mascot/analyst.webp',
+    width: 787,
+    height: 849,
+    subject: 0.8869,
   },
-  thinking: {
-    id: 'thinking',
-    batch: '01',
-    category: 'state',
-    alt: 'Piggles thinking with one hoof under the chin.',
-    energy: 'thoughtful',
-    anchor: 'bottom',
-    intent: ['thinking', 'help', 'question', 'empty-state'],
-    src: '/mascot/thinking.webp',
-    width: 809,
-    height: 1188,
-  },
-  wave: {
-    id: 'wave',
-    batch: '01',
-    category: 'core',
-    alt: 'Piggles smiling and waving.',
+  announcement: {
+    id: 'announcement',
+    batch: '03',
+    category: 'communication',
+    alt: 'Piggles making an announcement',
     energy: 'friendly',
     anchor: 'bottom',
-    intent: ['welcome', 'hello', 'onboarding', 'success'],
-    src: '/mascot/wave.webp',
-    width: 937,
-    height: 1200,
+    intent: [],
+    src: '/mascot/announcement.webp',
+    width: 961,
+    height: 852,
+    subject: 0.8721,
   },
-};
-
-export const PLANNED_POSES: Record<PlannedPoseId, PlannedPose> = {
-  '404': {
-    id: '404',
-    category: 'system',
-    alt: 'Piggles looking at a simple map/sign.',
-    intent: ['404', 'lost', 'not-found'],
+  builder: {
+    id: 'builder',
+    batch: '01',
+    category: 'building',
+    alt: 'Piggles building with a laptop',
+    energy: 'friendly',
+    anchor: 'bottom',
+    intent: [],
+    src: '/mascot/builder.webp',
+    width: 653,
+    height: 903,
+    subject: 0.8339,
   },
-  automate: {
-    id: 'automate',
-    category: 'work',
-    alt: 'Piggles beside simple connected workflow nodes.',
-    intent: ['automations', 'workflow', 'time-saving'],
+  'calendar-desk': {
+    id: 'calendar-desk',
+    batch: '05',
+    category: 'scheduling',
+    alt: 'Piggles scheduling work at a laptop',
+    energy: 'friendly',
+    anchor: 'bottom',
+    intent: [],
+    src: '/mascot/calendar-desk.webp',
+    width: 1158,
+    height: 778,
+    subject: 0.9075,
   },
-  camera: {
-    id: 'camera',
-    category: 'work',
-    alt: 'Piggles holding a camera.',
-    intent: ['media', 'photos', 'content'],
+  chart: {
+    id: 'chart',
+    batch: '02',
+    category: 'analytics',
+    alt: 'Piggles presenting a growth chart',
+    energy: 'friendly',
+    anchor: 'bottom',
+    intent: [],
+    src: '/mascot/chart.webp',
+    width: 906,
+    height: 791,
+    subject: 0.8571,
   },
-  'chart-up': {
-    id: 'chart-up',
-    category: 'business',
-    alt: 'Piggles pointing at an upward chart.',
-    intent: ['analytics', 'growth', 'reports'],
+  checklist: {
+    id: 'checklist',
+    batch: '02',
+    category: 'productivity',
+    alt: 'Piggles completing a checklist',
+    energy: 'friendly',
+    anchor: 'bottom',
+    intent: [],
+    src: '/mascot/checklist.webp',
+    width: 750,
+    height: 836,
+    subject: 0.86,
   },
-  clap: {
-    id: 'clap',
-    category: 'state',
-    alt: 'Piggles clapping happily.',
-    intent: ['celebrate', 'success', 'milestone'],
+  cheerleader: {
+    id: 'cheerleader',
+    batch: '01',
+    category: 'success',
+    alt: 'Piggles celebrating a win',
+    energy: 'friendly',
+    anchor: 'bottom',
+    intent: [],
+    src: '/mascot/cheerleader.webp',
+    width: 982,
+    height: 852,
+    subject: 0.885,
   },
   coffee: {
     id: 'coffee',
+    batch: '02',
     category: 'lifestyle',
-    alt: 'Piggles holding a coffee mug.',
-    intent: ['break', 'morning', 'welcome'],
+    alt: 'Piggles holding a coffee mug',
+    energy: 'friendly',
+    anchor: 'bottom',
+    intent: [],
+    src: '/mascot/coffee.webp',
+    width: 675,
+    height: 961,
+    subject: 0.8543,
   },
-  concerned: {
-    id: 'concerned',
-    category: 'state',
-    alt: 'Piggles looking concerned but calm.',
-    intent: ['warning', 'attention', 'problem'],
+  communicator: {
+    id: 'communicator',
+    batch: '01',
+    category: 'communication',
+    alt: 'Piggles ready to communicate',
+    energy: 'friendly',
+    anchor: 'bottom',
+    intent: [],
+    src: '/mascot/communicator.webp',
+    width: 808,
+    height: 856,
+    subject: 0.8867,
   },
-  confused: {
-    id: 'confused',
-    category: 'state',
-    alt: 'Piggles looking mildly confused.',
-    intent: ['confused', 'help', 'error-recovery'],
+  'desk-celebrate': {
+    id: 'desk-celebrate',
+    batch: '05',
+    category: 'success',
+    alt: 'Piggles celebrating a business win at a laptop',
+    energy: 'friendly',
+    anchor: 'bottom',
+    intent: [],
+    src: '/mascot/desk-celebrate.webp',
+    width: 1150,
+    height: 836,
+    subject: 0.8959,
   },
-  connection: {
-    id: 'connection',
-    category: 'work',
-    alt: 'Piggles connecting two plugs/blocks.',
-    intent: ['connections', 'integration', 'mcp'],
+  'desk-workspace': {
+    id: 'desk-workspace',
+    batch: '04',
+    category: 'workspace',
+    alt: 'Piggles working at a writing desk',
+    energy: 'friendly',
+    anchor: 'bottom',
+    intent: [],
+    src: '/mascot/desk-workspace.webp',
+    width: 1099,
+    height: 925,
+    subject: 0.613,
   },
-  customer: {
-    id: 'customer',
-    category: 'business',
-    alt: 'Piggles presenting a customer/contact card.',
-    intent: ['customers', 'crm', 'contacts'],
+  'desktop-computer': {
+    id: 'desktop-computer',
+    batch: '04',
+    category: 'workspace',
+    alt: 'Piggles working at a desktop computer',
+    energy: 'friendly',
+    anchor: 'bottom',
+    intent: [],
+    src: '/mascot/desktop-computer.webp',
+    width: 1057,
+    height: 919,
+    subject: 0.8215,
   },
-  email: {
-    id: 'email',
-    category: 'business',
-    alt: 'Piggles holding an envelope.',
-    intent: ['email', 'campaign', 'messages'],
+  download: {
+    id: 'download',
+    batch: '03',
+    category: 'files',
+    alt: 'Piggles receiving a downloaded document',
+    energy: 'friendly',
+    anchor: 'bottom',
+    intent: [],
+    src: '/mascot/download.webp',
+    width: 550,
+    height: 1040,
+    subject: 0.8923,
   },
-  heart: {
-    id: 'heart',
-    category: 'state',
-    alt: 'Piggles holding a heart.',
-    intent: ['love', 'thanks', 'customer'],
+  'email-desk': {
+    id: 'email-desk',
+    batch: '05',
+    category: 'communication',
+    alt: 'Piggles handling email at a laptop',
+    energy: 'friendly',
+    anchor: 'bottom',
+    intent: [],
+    src: '/mascot/email-desk.webp',
+    width: 1158,
+    height: 788,
+    subject: 0.8871,
   },
-  'high-five': {
-    id: 'high-five',
-    category: 'state',
-    alt: 'Piggles offering a high five.',
-    intent: ['success', 'team', 'celebrate'],
+  empty: {
+    id: 'empty',
+    batch: '03',
+    category: 'system-state',
+    alt: 'Piggles looking inside an empty box',
+    energy: 'friendly',
+    anchor: 'bottom',
+    intent: [],
+    src: '/mascot/empty.webp',
+    width: 838,
+    height: 900,
+    subject: 0.8856,
   },
-  'late-night': {
-    id: 'late-night',
-    category: 'lifestyle',
-    alt: 'Piggles working late at a laptop.',
-    intent: ['dark-mode', 'work', 'night'],
+  error: {
+    id: 'error',
+    batch: '03',
+    category: 'system-state',
+    alt: 'Piggles beside an error warning',
+    energy: 'friendly',
+    anchor: 'bottom',
+    intent: [],
+    src: '/mascot/error.webp',
+    width: 997,
+    height: 886,
+    subject: 0.8646,
+  },
+  'food-truck': {
+    id: 'food-truck',
+    batch: '04',
+    category: 'small-business',
+    alt: 'Piggles welcoming customers beside a food truck',
+    energy: 'friendly',
+    anchor: 'bottom',
+    intent: [],
+    src: '/mascot/food-truck.webp',
+    width: 1158,
+    height: 786,
+    subject: 0.8448,
+  },
+  'front-counter': {
+    id: 'front-counter',
+    batch: '04',
+    category: 'commerce',
+    alt: 'Piggles welcoming customers at a service counter',
+    energy: 'friendly',
+    anchor: 'bottom',
+    intent: [],
+    src: '/mascot/front-counter.webp',
+    width: 1084,
+    height: 776,
+    subject: 0.9162,
+  },
+  'home-office': {
+    id: 'home-office',
+    batch: '04',
+    category: 'workspace',
+    alt: 'Piggles working in a compact home office',
+    energy: 'friendly',
+    anchor: 'bottom',
+    intent: [],
+    src: '/mascot/home-office.webp',
+    width: 1065,
+    height: 781,
+    subject: 0.9104,
+  },
+  idea: {
+    id: 'idea',
+    batch: '02',
+    category: 'discovery',
+    alt: 'Piggles having a bright idea',
+    energy: 'friendly',
+    anchor: 'bottom',
+    intent: [],
+    src: '/mascot/idea.webp',
+    width: 695,
+    height: 885,
+    subject: 0.7706,
+  },
+  'laptop-coffee': {
+    id: 'laptop-coffee',
+    batch: '05',
+    category: 'tabletop-work',
+    alt: 'Piggles reviewing a laptop with a mug',
+    energy: 'friendly',
+    anchor: 'bottom',
+    intent: [],
+    src: '/mascot/laptop-coffee.webp',
+    width: 1150,
+    height: 909,
+    subject: 0.8559,
+  },
+  'laptop-focus': {
+    id: 'laptop-focus',
+    batch: '05',
+    category: 'tabletop-work',
+    alt: 'Piggles focused on work at a laptop',
+    energy: 'friendly',
+    anchor: 'bottom',
+    intent: [],
+    src: '/mascot/laptop-focus.webp',
+    width: 1158,
+    height: 789,
+    subject: 0.9189,
   },
   loading: {
     id: 'loading',
-    category: 'system',
-    alt: 'Piggles busily working or jogging in place.',
-    intent: ['loading', 'working', 'processing'],
+    batch: '03',
+    category: 'system-state',
+    alt: 'Piggles with a loading wheel',
+    energy: 'friendly',
+    anchor: 'bottom',
+    intent: [],
+    src: '/mascot/loading.webp',
+    width: 1080,
+    height: 808,
+    subject: 0.8676,
+  },
+  mail: {
+    id: 'mail',
+    batch: '02',
+    category: 'communication',
+    alt: 'Piggles offering an envelope',
+    energy: 'friendly',
+    anchor: 'bottom',
+    intent: [],
+    src: '/mascot/mail.webp',
+    width: 697,
+    height: 960,
+    subject: 0.8979,
   },
   maintenance: {
     id: 'maintenance',
-    category: 'system',
-    alt: 'Piggles with a tiny tool kit.',
-    intent: ['maintenance', 'status', 'downtime'],
+    batch: '03',
+    category: 'system-state',
+    alt: 'Piggles maintaining a gear',
+    energy: 'friendly',
+    anchor: 'bottom',
+    intent: [],
+    src: '/mascot/maintenance.webp',
+    width: 846,
+    height: 877,
+    subject: 0.8643,
   },
-  megaphone: {
-    id: 'megaphone',
-    category: 'work',
-    alt: 'Piggles using a small megaphone.',
-    intent: ['marketing', 'announce', 'campaign'],
+  'mascot-base': {
+    id: 'mascot-base',
+    batch: '01',
+    category: 'canonical',
+    alt: 'Piggles welcoming the user',
+    energy: 'friendly',
+    anchor: 'bottom',
+    intent: [],
+    src: '/mascot/mascot-base.webp',
+    width: 809,
+    height: 804,
+    subject: 0.8806,
   },
-  message: {
-    id: 'message',
-    category: 'business',
-    alt: 'Piggles presenting a message bubble.',
-    intent: ['messages', 'chat', 'reply'],
+  'meeting-table': {
+    id: 'meeting-table',
+    batch: '04',
+    category: 'collaboration',
+    alt: 'Piggles leading a meeting at a conference table',
+    energy: 'friendly',
+    anchor: 'bottom',
+    intent: [],
+    src: '/mascot/meeting-table.webp',
+    width: 1143,
+    height: 877,
+    subject: 0.6534,
   },
-  money: {
-    id: 'money',
-    category: 'business',
-    alt: 'Piggles holding a coin or small stack of coins.',
-    intent: ['money', 'revenue', 'paid'],
+  'money-minder': {
+    id: 'money-minder',
+    batch: '01',
+    category: 'finance',
+    alt: 'Piggles watching the numbers',
+    energy: 'friendly',
+    anchor: 'bottom',
+    intent: [],
+    src: '/mascot/money-minder.webp',
+    width: 773,
+    height: 937,
+    subject: 0.8965,
   },
-  oops: {
-    id: 'oops',
-    category: 'state',
-    alt: 'Piggles reacting to a small mistake.',
-    intent: ['error', 'failed', 'retry'],
+  'no-results': {
+    id: 'no-results',
+    batch: '03',
+    category: 'search',
+    alt: 'Piggles searching an empty tray',
+    energy: 'friendly',
+    anchor: 'bottom',
+    intent: [],
+    src: '/mascot/no-results.webp',
+    width: 976,
+    height: 918,
+    subject: 0.866,
+  },
+  'orders-desk': {
+    id: 'orders-desk',
+    batch: '05',
+    category: 'commerce',
+    alt: 'Piggles organizing an order at a laptop',
+    energy: 'friendly',
+    anchor: 'bottom',
+    intent: [],
+    src: '/mascot/orders-desk.webp',
+    width: 1158,
+    height: 893,
+    subject: 0.8936,
+  },
+  organizer: {
+    id: 'organizer',
+    batch: '01',
+    category: 'organization',
+    alt: 'Piggles organizing a checklist',
+    energy: 'friendly',
+    anchor: 'bottom',
+    intent: [],
+    src: '/mascot/organizer.webp',
+    width: 814,
+    height: 850,
+    subject: 0.86,
   },
   package: {
     id: 'package',
-    category: 'business',
-    alt: 'Piggles holding a package.',
-    intent: ['orders', 'shipping', 'fulfillment'],
-  },
-  paint: {
-    id: 'paint',
-    category: 'work',
-    alt: 'Piggles holding a paint roller or palette.',
-    intent: ['design', 'branding', 'site'],
-  },
-  'party-hat': {
-    id: 'party-hat',
-    category: 'state',
-    alt: 'Piggles wearing a small party hat.',
-    intent: ['milestone', 'birthday', 'celebrate'],
-  },
-  'peek-left': {
-    id: 'peek-left',
-    category: 'directional',
-    alt: 'Piggles peeking in from the left edge.',
-    intent: ['peek', 'callout', 'sidebar'],
-  },
-  'peek-right': {
-    id: 'peek-right',
-    category: 'directional',
-    alt: 'Piggles peeking in from the right edge.',
-    intent: ['peek', 'callout', 'sidebar'],
+    batch: '02',
+    category: 'commerce',
+    alt: 'Piggles carrying a package',
+    energy: 'friendly',
+    anchor: 'bottom',
+    intent: [],
+    src: '/mascot/package.webp',
+    width: 800,
+    height: 892,
+    subject: 0.8587,
   },
   phone: {
     id: 'phone',
-    category: 'work',
-    alt: 'Piggles holding a smartphone.',
-    intent: ['messages', 'mobile', 'call'],
+    batch: '02',
+    category: 'communication',
+    alt: 'Piggles using a phone',
+    energy: 'friendly',
+    anchor: 'bottom',
+    intent: [],
+    src: '/mascot/phone.webp',
+    width: 746,
+    height: 970,
+    subject: 0.8876,
   },
-  'point-down': {
-    id: 'point-down',
-    category: 'directional',
-    alt: 'Piggles pointing downward.',
-    intent: ['point', 'cta', 'scroll'],
+  'phone-desk': {
+    id: 'phone-desk',
+    batch: '05',
+    category: 'communication',
+    alt: 'Piggles checking a phone beside a laptop',
+    energy: 'friendly',
+    anchor: 'bottom',
+    intent: [],
+    src: '/mascot/phone-desk.webp',
+    width: 1104,
+    height: 872,
+    subject: 0.9117,
+  },
+  planner: {
+    id: 'planner',
+    batch: '01',
+    category: 'planning',
+    alt: 'Piggles planning with a clipboard',
+    energy: 'friendly',
+    anchor: 'bottom',
+    intent: [],
+    src: '/mascot/planner.webp',
+    width: 835,
+    height: 831,
+    subject: 0.8833,
   },
   'point-right': {
     id: 'point-right',
-    category: 'directional',
-    alt: 'Piggles pointing to the right.',
-    intent: ['point', 'cta', 'guide'],
+    batch: '02',
+    category: 'guidance',
+    alt: 'Piggles presenting toward the right',
+    energy: 'friendly',
+    anchor: 'bottom',
+    intent: [],
+    src: '/mascot/point-right.webp',
+    width: 1010,
+    height: 953,
+    subject: 0.8573,
   },
-  'point-up': {
-    id: 'point-up',
-    category: 'directional',
-    alt: 'Piggles pointing upward.',
-    intent: ['point', 'callout', 'tip'],
+  protector: {
+    id: 'protector',
+    batch: '01',
+    category: 'security',
+    alt: 'Piggles protecting the business',
+    energy: 'friendly',
+    anchor: 'bottom',
+    intent: [],
+    src: '/mascot/protector.webp',
+    width: 928,
+    height: 931,
+    subject: 0.8894,
   },
-  product: {
-    id: 'product',
-    category: 'business',
-    alt: 'Piggles presenting a product box.',
-    intent: ['products', 'sell', 'catalog'],
+  'reports-desk': {
+    id: 'reports-desk',
+    batch: '05',
+    category: 'analytics',
+    alt: 'Piggles reviewing reports at a laptop',
+    energy: 'friendly',
+    anchor: 'bottom',
+    intent: [],
+    src: '/mascot/reports-desk.webp',
+    width: 1158,
+    height: 832,
+    subject: 0.9087,
   },
-  receipt: {
-    id: 'receipt',
-    category: 'business',
-    alt: 'Piggles holding a receipt.',
-    intent: ['expenses', 'receipt', 'money'],
+  'retail-shop': {
+    id: 'retail-shop',
+    batch: '04',
+    category: 'commerce',
+    alt: 'Piggles beside a small retail display',
+    energy: 'friendly',
+    anchor: 'bottom',
+    intent: [],
+    src: '/mascot/retail-shop.webp',
+    width: 1086,
+    height: 845,
+    subject: 0.7728,
   },
-  searching: {
-    id: 'searching',
-    category: 'system',
-    alt: 'Piggles looking through a magnifying glass.',
-    intent: ['search', 'find', 'empty-state'],
+  'salon-station': {
+    id: 'salon-station',
+    batch: '04',
+    category: 'small-business',
+    alt: 'Piggles beside a salon workstation',
+    energy: 'friendly',
+    anchor: 'bottom',
+    intent: [],
+    src: '/mascot/salon-station.webp',
+    width: 1043,
+    height: 958,
+    subject: 0.858,
   },
-  shield: {
-    id: 'shield',
+  security: {
+    id: 'security',
+    batch: '03',
     category: 'trust',
-    alt: 'Piggles holding a shield.',
-    intent: ['security', 'privacy', 'safe'],
+    alt: 'Piggles presenting a secure shield',
+    energy: 'friendly',
+    anchor: 'bottom',
+    intent: [],
+    src: '/mascot/security.webp',
+    width: 910,
+    height: 895,
+    subject: 0.9095,
   },
-  site: {
-    id: 'site',
-    category: 'business',
-    alt: 'Piggles presenting a web page or browser window.',
-    intent: ['site', 'builder', 'publish'],
+  'shipping-station': {
+    id: 'shipping-station',
+    batch: '04',
+    category: 'operations',
+    alt: 'Piggles packing an order at a shipping station',
+    energy: 'friendly',
+    anchor: 'bottom',
+    intent: [],
+    src: '/mascot/shipping-station.webp',
+    width: 886,
+    height: 1008,
+    subject: 0.8085,
   },
-  sleeping: {
-    id: 'sleeping',
-    category: 'state',
-    alt: 'Piggles sleeping peacefully.',
-    intent: ['empty-state', 'quiet', 'after-hours'],
-  },
-  stock: {
-    id: 'stock',
-    category: 'business',
-    alt: 'Piggles carrying small boxes.',
-    intent: ['inventory', 'stock', 'restock'],
-  },
-  store: {
-    id: 'store',
-    category: 'business',
-    alt: 'Piggles standing beside a small storefront.',
-    intent: ['site', 'store', 'commerce'],
-  },
-  sunrise: {
-    id: 'sunrise',
-    category: 'lifestyle',
-    alt: 'Piggles greeting the morning.',
-    intent: ['morning', 'home', 'daily'],
+  sidekick: {
+    id: 'sidekick',
+    batch: '01',
+    category: 'companion',
+    alt: 'Piggles sitting by your side',
+    energy: 'friendly',
+    anchor: 'bottom',
+    intent: [],
+    src: '/mascot/sidekick.webp',
+    width: 675,
+    height: 910,
+    subject: 0.8352,
   },
   support: {
     id: 'support',
-    category: 'trust',
-    alt: 'Piggles wearing a support headset.',
-    intent: ['support', 'help', 'human'],
+    batch: '03',
+    category: 'help',
+    alt: 'Piggles ready to provide support',
+    energy: 'friendly',
+    anchor: 'bottom',
+    intent: [],
+    src: '/mascot/support.webp',
+    width: 1002,
+    height: 878,
+    subject: 0.836,
+  },
+  'tablet-desk': {
+    id: 'tablet-desk',
+    batch: '05',
+    category: 'content',
+    alt: 'Piggles working with a tablet and stylus',
+    energy: 'friendly',
+    anchor: 'bottom',
+    intent: [],
+    src: '/mascot/tablet-desk.webp',
+    width: 1155,
+    height: 944,
+    subject: 0.8962,
   },
   'thumbs-up': {
     id: 'thumbs-up',
-    category: 'state',
-    alt: 'Piggles giving a thumbs-up style hoof gesture.',
-    intent: ['success', 'approval', 'done'],
+    batch: '02',
+    category: 'success',
+    alt: 'Piggles giving a thumbs up',
+    energy: 'friendly',
+    anchor: 'bottom',
+    intent: [],
+    src: '/mascot/thumbs-up.webp',
+    width: 933,
+    height: 1000,
+    subject: 0.887,
+  },
+  upload: {
+    id: 'upload',
+    batch: '03',
+    category: 'files',
+    alt: 'Piggles uploading a document',
+    energy: 'friendly',
+    anchor: 'bottom',
+    intent: [],
+    src: '/mascot/upload.webp',
+    width: 833,
+    height: 824,
+    subject: 0.875,
+  },
+  'video-call': {
+    id: 'video-call',
+    batch: '05',
+    category: 'communication',
+    alt: 'Piggles joining a video call at a laptop',
+    energy: 'friendly',
+    anchor: 'bottom',
+    intent: [],
+    src: '/mascot/video-call.webp',
+    width: 1158,
+    height: 882,
+    subject: 0.8605,
+  },
+  'welcome-sign': {
+    id: 'welcome-sign',
+    batch: '02',
+    category: 'onboarding',
+    alt: 'Piggles holding a welcome sign',
+    energy: 'friendly',
+    anchor: 'bottom',
+    intent: [],
+    src: '/mascot/welcome-sign.webp',
+    width: 874,
+    height: 790,
+    subject: 0.8734,
+  },
+  workshop: {
+    id: 'workshop',
+    batch: '04',
+    category: 'workspace',
+    alt: 'Piggles beside a compact workbench',
+    energy: 'friendly',
+    anchor: 'bottom',
+    intent: [],
+    src: '/mascot/workshop.webp',
+    width: 1001,
+    height: 737,
+    subject: 0.7829,
   },
 };
 
+export const PLANNED_POSES: Record<PlannedPoseId, PlannedPose> = {};
+
 export const MASCOT_POSE_IDS: readonly MascotPoseId[] = [
-  'calendar',
-  'celebrate',
-  'desk',
-  'invoice',
-  'laptop',
-  'neutral',
-  'point-left',
-  'thinking',
-  'wave',
+  'analyst',
+  'announcement',
+  'builder',
+  'calendar-desk',
+  'chart',
+  'checklist',
+  'cheerleader',
+  'coffee',
+  'communicator',
+  'desk-celebrate',
+  'desk-workspace',
+  'desktop-computer',
+  'download',
+  'email-desk',
+  'empty',
+  'error',
+  'food-truck',
+  'front-counter',
+  'home-office',
+  'idea',
+  'laptop-coffee',
+  'laptop-focus',
+  'loading',
+  'mail',
+  'maintenance',
+  'mascot-base',
+  'meeting-table',
+  'money-minder',
+  'no-results',
+  'orders-desk',
+  'organizer',
+  'package',
+  'phone',
+  'phone-desk',
+  'planner',
+  'point-right',
+  'protector',
+  'reports-desk',
+  'retail-shop',
+  'salon-station',
+  'security',
+  'shipping-station',
+  'sidekick',
+  'support',
+  'tablet-desk',
+  'thumbs-up',
+  'upload',
+  'video-call',
+  'welcome-sign',
+  'workshop',
 ];
 
 export function isAvailable(id: AnyPoseId): id is MascotPoseId {

@@ -1,0 +1,21 @@
+{
+  "name": "Piggles Mascot System",
+  "batch": "02",
+  "version": "2.1.0",
+  "specification": "MASCOT.md v1.1",
+  "character": "Piggles",
+  "defaultFormat": "webp",
+  "sheet": "assets/sheets/piggles-character-sheet.jpg",
+  "assets": [
+    {"id":"piggles-point-right","title":"Point Right","category":"guidance","alt":"Piggles presenting toward the right","png":"assets/png/piggles-point-right.png","webp":"assets/webp/piggles-point-right.webp"},
+    {"id":"piggles-coffee","title":"Coffee","category":"lifestyle","alt":"Piggles holding a coffee mug","png":"assets/png/piggles-coffee.png","webp":"assets/webp/piggles-coffee.webp"},
+    {"id":"piggles-phone","title":"Phone","category":"communication","alt":"Piggles using a phone","png":"assets/png/piggles-phone.png","webp":"assets/webp/piggles-phone.webp"},
+    {"id":"piggles-package","title":"Package","category":"commerce","alt":"Piggles carrying a package","png":"assets/png/piggles-package.png","webp":"assets/webp/piggles-package.webp"},
+    {"id":"piggles-thumbs-up","title":"Thumbs Up","category":"success","alt":"Piggles giving a thumbs up","png":"assets/png/piggles-thumbs-up.png","webp":"assets/webp/piggles-thumbs-up.webp"},
+    {"id":"piggles-checklist","title":"Checklist","category":"productivity","alt":"Piggles completing a checklist","png":"assets/png/piggles-checklist.png","webp":"assets/webp/piggles-checklist.webp"},
+    {"id":"piggles-chart","title":"Chart","category":"analytics","alt":"Piggles presenting a growth chart","png":"assets/png/piggles-chart.png","webp":"assets/webp/piggles-chart.webp"},
+    {"id":"piggles-welcome-sign","title":"Welcome Sign","category":"onboarding","alt":"Piggles holding a welcome sign","png":"assets/png/piggles-welcome-sign.png","webp":"assets/webp/piggles-welcome-sign.webp"},
+    {"id":"piggles-mail","title":"Mail","category":"communication","alt":"Piggles offering an envelope","png":"assets/png/piggles-mail.png","webp":"assets/webp/piggles-mail.webp"},
+    {"id":"piggles-idea","title":"Idea","category":"discovery","alt":"Piggles having a bright idea","png":"assets/png/piggles-idea.png","webp":"assets/webp/piggles-idea.webp"}
+  ]
+}

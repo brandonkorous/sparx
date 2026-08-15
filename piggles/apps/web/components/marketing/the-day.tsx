@@ -52,6 +52,31 @@ function ArrowRight({ className }: { className?: string }) {
 // central claim happening in front of somebody instead of being asserted above
 // a screenshot.
 //
+// ── THE SIX POSES: WHERE THE BEAT HAPPENS, NOT WHERE SHE SITS ───────────────
+//
+//   07:40  Bookings     calendar-desk    a calendar propped beside the laptop
+//   09:05  Customers    front-counter    somebody arriving at a service counter
+//   11:20  Sell & Stock retail-shop      the shelf the count is coming off
+//   13:45  Invoices     reports-desk     a calculator beside the laptop
+//   15:30  My Site      desktop-computer a page layout on a monitor, being shown
+//   17:50  That's it    desk-celebrate   both fists up, back at the desk
+//
+// The first version of this put all six at the same round table, and the reason
+// was real: the page's premise is that the day never leaves the product, so a
+// mascot who never gets up says that in the corner of every frame. Brandon
+// pushed on it and he is right — the reason was real and I over-applied it.
+//
+// What it cost: three of the six beats are not about desk work at all. A
+// customer arriving is a counter. A shelf count moving is a shelf. Building a
+// website is somebody building. Sending all three back to the same table threw
+// away the strongest thing the artwork does, which is TELL YOU WHICH BEAT THIS
+// IS without you reading a word — and at this size a laptop is a laptop, so six
+// laptops read as one picture that never changes.
+//
+// The spine survives in a smaller form and is the actual rule now: the day
+// STARTS and ENDS at the desk (07:40 and 17:50), and the middle goes wherever
+// the work goes. A new beat picks the place its own sentence describes.
+//
 // ── WHY THIS REPLACED THE HERO + THE COLLAGE ────────────────────────────────
 //
 // The page used to depict the workspace TWICE: four cards in the hero, then the
@@ -111,7 +136,7 @@ const BEATS: Beat[] = [
     when: '07:40 · Bookings',
     lights: ['bookings'],
     group: 'people',
-    pose: 'calendar',
+    pose: 'calendar-desk',
     heading: 'It booked itself while you were asleep.',
     body: 'Somebody found your site at half eleven last night and took a place. No email to read, no diary to copy it into.',
     place: 'left-[33%] top-[3%] w-[26%]',
@@ -136,7 +161,7 @@ const BEATS: Beat[] = [
     when: '09:05 · Customers',
     lights: ['customers', 'messages'],
     group: 'people',
-    pose: 'neutral',
+    pose: 'front-counter',
     heading: 'You know who they are before they finish the sentence.',
     body: 'Every order, message and booking they have ever made is on the same card. Not in a separate system you pay separately for.',
     place: 'left-[65%] top-[17%] w-[28%]',
@@ -161,7 +186,7 @@ const BEATS: Beat[] = [
     when: '11:20 · Sell & Stock',
     lights: ['sell', 'stock'],
     group: 'sell',
-    pose: 'thinking',
+    pose: 'retail-shop',
     heading: 'Sell one. The shelf count moves on its own.',
     body: 'You didn’t type it anywhere. Selling and counting are not two products here, so they cannot disagree with each other.',
     place: 'left-[36%] top-[32%] w-[27%]',
@@ -187,7 +212,7 @@ const BEATS: Beat[] = [
     when: '13:45 · Invoices',
     lights: ['invoices'],
     group: 'money',
-    pose: 'invoice',
+    pose: 'reports-desk',
     heading: 'The invoice already knew what the job was.',
     body: 'It was the booking half an hour ago. You added a line and sent it. Nothing was copied from one screen into another.',
     place: 'left-[68%] top-[43%] w-[26%]',
@@ -208,7 +233,7 @@ const BEATS: Beat[] = [
     when: '15:30 · My Site',
     lights: ['site'],
     group: 'web',
-    pose: 'laptop',
+    pose: 'desktop-computer',
     heading: 'Your website is not a different company.',
     body: 'It is the same products, the same prices and the same calendar you have been looking at all day. Change one, it changes everywhere.',
     place: 'left-[34%] top-[63%] w-[25%]',
@@ -233,7 +258,7 @@ const BEATS: Beat[] = [
     when: '17:50 · That’s the day',
     lights: ['money'],
     group: 'money',
-    pose: 'celebrate',
+    pose: 'desk-celebrate',
     // Eight and seven, not six and nine. The rail lights eight apps across the
     // day and a visitor can count both numbers on screen — a claim the page
     // makes with its own furniture has to survive being checked.
@@ -332,19 +357,21 @@ function DeskWindow({ beat, state }: { beat: Beat; state: 'ghost' | 'on' | 'hot'
 }
 
 export function TheDay() {
-  const filmRef = useRef<HTMLDivElement>(null);
+  const deskRef = useRef<HTMLDivElement>(null);
   const stackRef = useRef<HTMLDivElement>(null);
   const noteRefs = useRef<(HTMLDivElement | null)[]>([]);
   const [beat, setBeat] = useState(0);
   const [mins, setMins] = useState(OPENING);
-  const [pinned, setPinned] = useState(true);
+  const [contained, setContained] = useState(true);
 
-  // Pinned is a layout question, so it is answered by the same media query the
-  // stylesheet uses rather than by a width read that can disagree with it.
+  // Which driver runs is a layout question, so it is answered by the same media
+  // query the stylesheet uses rather than by a width read that can disagree with
+  // it. Reduced motion falls back to the page-scrolled version, where nothing
+  // moves except by the reader's own hand.
   useEffect(() => {
     const mq = window.matchMedia('(min-width: 1081px)');
     const motion = window.matchMedia('(prefers-reduced-motion: reduce)');
-    const sync = () => setPinned(mq.matches && !motion.matches);
+    const sync = () => setContained(mq.matches && !motion.matches);
     sync();
     mq.addEventListener('change', sync);
     motion.addEventListener('change', sync);
@@ -354,27 +381,51 @@ export function TheDay() {
     };
   }, []);
 
+  /** Where a scroll position lands: the beat, and the clock on the way into it.
+   *  The clock ramps INTO a beat and then holds at that beat's stated time, so
+   *  the title bar and the sentence beside it never disagree while somebody is
+   *  reading them. */
+  const settle = (p: number) => {
+    const clamped = Math.min(1, Math.max(0, p));
+    setBeat(Math.min(STOPS.length - 1, Math.floor(clamped * STOPS.length)));
+    const f = Math.min(STOPS.length - 0.0001, clamped * STOPS.length);
+    const i = Math.floor(f);
+    const ramp = Math.min(1, (f - i) / 0.3);
+    const from = STOPS[i - 1] ?? STOPS[0]!;
+    setMins(Math.round(from + ramp * (STOPS[i]! - from)));
+  };
+
+  // ── THE DAY SCROLLS INSIDE THE DESK, NOT DOWN THE PAGE ──────────────────────
+  //
+  // This is the fix for a whole family of "waste of space" bugs, and it is worth
+  // being explicit about the cause. The beats used to be driven by the PAGE
+  // scrolling past a 640vh spacer with the window pinned to the viewport. Six
+  // beats therefore cost six screens of page height that contained nothing —
+  // and on a tall display that reservation is enormous (15,522px on a 2,425px
+  // window). Every arrangement of that spacer just moved the emptiness around:
+  // dark mat, blank page ground, or a cavernous desk. The reservation itself was
+  // the bug.
+  //
+  // The desk is its own scrollport now. Its content is one deskful of visuals
+  // plus a spacer, so the day advances by scrolling INSIDE the workspace — which
+  // is also what you would do with the real thing — and the section costs the
+  // page exactly one screen. Scroll chaining does the rest for free: reach the
+  // last beat and the browser hands the scroll back to the page.
+  const onDeskScroll = () => {
+    const desk = deskRef.current;
+    if (!contained || !desk) return;
+    settle(desk.scrollTop / (desk.scrollHeight - desk.clientHeight));
+  };
+
   useEffect(() => {
+    if (contained) {
+      const desk = deskRef.current;
+      if (desk) settle(desk.scrollTop / (desk.scrollHeight - desk.clientHeight));
+      return;
+    }
+    // Small screens: the sentence sitting on the reading line — just under the
+    // window — is the beat you are on, and the page is what scrolls.
     const onScroll = () => {
-      if (pinned) {
-        const film = filmRef.current;
-        if (!film) return;
-        const travel = film.offsetHeight - window.innerHeight;
-        const p = Math.min(1, Math.max(0, -film.getBoundingClientRect().top / travel));
-        const n = Math.min(STOPS.length - 1, Math.floor(p * STOPS.length));
-        setBeat(n);
-        // The clock moves on the way INTO a beat and then holds at that beat's
-        // stated time, so the header and the sentence beside it never disagree
-        // while somebody is reading them.
-        const f = Math.min(STOPS.length - 0.0001, p * STOPS.length);
-        const i = Math.floor(f);
-        const ramp = Math.min(1, (f - i) / 0.3);
-        const from = STOPS[i - 1] ?? STOPS[0]!;
-        setMins(Math.round(from + ramp * (STOPS[i]! - from)));
-        return;
-      }
-      // Small screens: the sentence sitting on the reading line — just under the
-      // pinned window — is the beat you are on.
       const line = window.innerHeight * 0.66;
       let n = 0;
       noteRefs.current.forEach((el, i) => {
@@ -391,20 +442,20 @@ export function TheDay() {
       window.removeEventListener('scroll', onScroll);
       window.removeEventListener('resize', onScroll);
     };
-  }, [pinned]);
+  }, [contained]);
 
   // Small screens only: keep the newest window in view by SCROLLING the column,
   // not by transforming it. A transform would need an inline style; scrollTo is
   // a DOM call and needs none.
   useEffect(() => {
     const stack = stackRef.current;
-    if (pinned || !stack) return;
+    if (contained || !stack) return;
     const target = stack.children[Math.max(0, beat - 1)] as HTMLElement | undefined;
     stack.scrollTo({
       top: beat === 0 || !target ? 0 : target.offsetTop - 12,
       behavior: 'smooth',
     });
-  }, [beat, pinned]);
+  }, [beat, contained]);
 
   const lit = litBy(beat);
   const active = beat > 0 ? BEATS[beat - 1]! : null;
@@ -443,9 +494,26 @@ export function TheDay() {
     </nav>
   );
 
+  // ── THE HERO HAS ITS OWN GROUND ──────────────────────────────────────────────
+  //
+  // It used to have none, which meant it had the DESK's: on a wide screen the
+  // cold open is absolutely positioned inside `.day-desk`, so the page's headline
+  // was painted straight onto the depiction of the software — same warm off-white,
+  // same dot grid, one undifferentiated field from the top of the window to the
+  // bottom. Nothing said where the marketing stopped and the product started.
+  //
+  // `bg-accent bg-soft` is the pale pink wash DESIGN.md §7 sanctions as the one
+  // decorative use of brand colour, and it earns three things at once: the hero
+  // is now a surface rather than an absence, the desk underneath reads as the
+  // product because it is the only thing in the window that ISN'T branded, and
+  // beat 1 becomes a reveal — the pink lifts and the workspace is already there.
+  //
+  // Soft rather than solid `bg-accent`. Solid #FFB3C0 sits close enough to the
+  // primary #FF6F86 that the Start free button would stop being the loudest thing
+  // in the frame, which is the one job a hero CTA has.
   const coldOpen = (
     <div
-      className={`px-4 transition-opacity duration-500 lg:absolute lg:inset-0 lg:grid lg:place-items-center lg:px-[7%] lg:text-center ${
+      className={`rounded-section bg-accent bg-soft px-5 py-9 transition-opacity duration-500 sm:px-8 sm:py-11 lg:absolute lg:inset-0 lg:grid lg:place-items-center lg:rounded-none lg:px-[7%] lg:py-0 lg:text-center ${
         beat === 0 ? 'opacity-100' : 'lg:pointer-events-none lg:opacity-0'
       }`}
     >
@@ -465,10 +533,12 @@ export function TheDay() {
           >
             Start free
           </a>
-          <a
-            className={buttonClasses({ color: 'neutral', variant: 'outline', size: 'xl' })}
-            href="#apps"
-          >
+          {/* NO COLOUR ON THE OUTLINE, and this one string has to be right on two
+              different grounds: on a wide screen the cold open is inside the
+              window's LIGHT island, on a phone it sits on the dark mat. Uncoloured,
+              it resolves to `base-content` and is correct in both. Pinning
+              `neutral` is the 2.52:1 failure close-band.tsx measured. */}
+          <a className={buttonClasses({ variant: 'outline', size: 'xl' })} href="#apps">
             See what&rsquo;s included
           </a>
         </div>
@@ -484,161 +554,273 @@ export function TheDay() {
   );
 
   return (
-    <div ref={filmRef} className="relative lg:h-[640vh]">
-      {/* The ground — a field of the fifteen glyphs in their own group hues.
-          The app icons rather than the mark: a repeated logo is stationery,
-          these are the fifteen things the page is about, so the texture states
-          the claim before a word of it is read.
+    // ── THE FILM IS A DARK ACT WITH A LIT WINDOW IN IT ─────────────────────────
+    //
+    // The window is a picture of the console, and a picture needs a mat. It used
+    // to have none: the desk canvas, the frame around it and the page behind it
+    // were one continuous off-white separated by a hairline, so the thing the
+    // whole page is built around did not read as an object at all.
+    //
+    // Answering that with a third off-white was the wrong instinct — six greys is
+    // not a palette. This is a `data-theme="dark"` ISLAND, the same mechanism
+    // close-band.tsx documents at length, and the whole point of it is that
+    // nothing inside has to be told: the fifteen glyphs in the ground field pick
+    // up the LIFTED dark group hues that theme.css already defines for exactly
+    // this surface, and every ink flips with them.
+    //
+    // `bg-base-300` inside it, because the ladder does not change with the mode —
+    // base-300 is the GROUND in dark exactly as it is in light. What lifts off it
+    // is the window, which carries `data-theme="light"` of its own so the product
+    // keeps looking like the product. That nesting is silica's intended idiom,
+    // and it is what buys the border back: the frame's `border-base-300` hairline
+    // resolves inside the LIGHT island, so it is now a pale edge against a near
+    // black ground instead of a border painted its own background's colour.
+    //
+    // The act ends with the film and the page returns to its own ground for the
+    // trade wall — the dark is one beat, not the site's temperament.
+    <div data-theme="dark" className="bg-base-300 relative lg:bg-transparent">
+      {/* The act costs the page ONE SCREEN, capped. It used to be `640vh` of
+          spacer with the window pinned inside it, which is where every version of
+          the blank rectangle came from — dark mat, empty page ground, cavernous
+          desk. With the day scrolling inside the desk (see `onDeskScroll`) there
+          is nothing left to reserve, so this is just a section, and the trade
+          wall below it starts where it looks like it starts. */}
+      {/* 71rem, not 62: the cap has to carry the mat as well as the demo. The
+          window sits on a `1fr` row, so every pixel of padding added to the band
+          came straight off the depiction — 876px of window became 731. 62rem +
+          the 144px the mat and its gap grew by keeps the window exactly the size
+          it was and spends the difference on the ground around it. */}
+      <div className="grid lg:h-screen lg:max-h-[71rem]">
+        {/* `grid-rows-[1fr_auto]`: the window TAKES the space and the controls sit
+            under it. It used to be a content-height row centred in the band, which
+            is what left a screenful of mat above and below a 730px window on a
+            tall display — the act filled the screen and the depiction did not. */}
+        {/* The padding IS the mat. At 18px the dark was a hairline around the
+            window and the glyph field had nowhere to show; the window is on a
+            `1fr` row, so widening this band is what gives the ground its say
+            above and below the demo without the act growing. */}
+        <div className="bg-base-300 relative grid w-full content-center justify-items-center gap-2.5 overflow-hidden px-2.5 pt-12 pb-12 lg:h-full lg:grid-rows-[1fr_auto] lg:gap-5 lg:px-4 lg:pt-24 lg:pb-20">
+          {/* The ground — a field of the fifteen glyphs in their own group hues.
+              The app icons rather than the mark: a repeated logo is stationery,
+              these are the fifteen things the page is about, so the texture
+              states the claim before a word of it is read.
 
-          It never goes inside the desk. The desk depicts the software, and no
-          real workspace has patterned wallpaper — putting it there would be the
-          one place the picture of the product stops being true.
+              It never goes inside the desk. The desk depicts the software, and no
+              real workspace has patterned wallpaper — putting it there would be
+              the one place the picture of the product stops being true.
 
-          Sticky with its height reclaimed on the stage below, so its range ends
-          exactly where the film does. Pinned any longer and the glyphs sit
-          behind the trade wall's body copy, which reads as clutter. */}
-      <div
-        aria-hidden
-        className="pointer-events-none sticky top-0 z-0 hidden h-screen overflow-hidden opacity-[0.13] lg:block"
-      >
-        <div className="grid grid-cols-[repeat(auto-fill,minmax(9.5rem,1fr))] gap-y-14">
-          {Array.from({ length: 120 }, (_, i) => {
-            const app = APPS[i % APPS.length]!;
-            const Icon = appIcon(app.id);
-            return (
-              <span
-                key={i}
-                data-group={app.group}
-                // Cycled rather than random: a perfect grid reads as wallpaper
-                // and a re-rolled one would crawl on every resize. Five offsets
-                // over fifteen icons never line up, so the field looks scattered
-                // and stays reproducible. Literal class strings — Tailwind scans
-                // this file, and a template would generate nothing.
-                className={`text-module grid place-items-center ${JITTER[i % JITTER.length]}`}
-              >
-                <Icon aria-hidden className={GLYPH[i % GLYPH.length]} strokeWidth={1.7} />
-              </span>
-            );
-          })}
-        </div>
-      </div>
-
-      <div className="z-[1] grid content-center justify-items-center gap-2.5 px-2.5 pt-2.5 pb-4 lg:sticky lg:top-0 lg:-mt-[100vh] lg:h-screen lg:gap-3.5 lg:px-4 lg:pt-4.5 lg:pb-5">
-        {/* On a small screen the hero sits ABOVE the pinned window; it could
-            never fit inside a 58vh desk. */}
-        <div className="w-full lg:hidden">{coldOpen}</div>
-
-        <div className="bg-base-200 rounded-section border-base-300 grid h-[58vh] max-h-[470px] w-full grid-rows-[2.875rem_1fr_auto] overflow-hidden border lg:h-[min(730px,calc(100vh-124px))] lg:max-h-none lg:w-[min(1440px,100%)] lg:grid-cols-[4.375rem_1fr] lg:grid-rows-[3.25rem_1fr]">
-          <div className="bg-base-100 border-base-300 col-span-full flex items-center gap-3.5 border-b px-4.5">
-            <span className="flex gap-1.5" aria-hidden>
-              <i className="bg-base-300 size-2.5 rounded-full" />
-              <i className="bg-base-300 size-2.5 rounded-full" />
-              <i className="bg-base-300 size-2.5 rounded-full" />
-            </span>
-            <span className="truncate text-sm font-semibold">
-              Wildroot Flowers{' '}
-              <span className="hidden font-normal sm:inline">— an example workspace</span>
-            </span>
-            <span className="ml-auto flex items-center gap-2 text-sm whitespace-nowrap">
-              <b className="text-base font-bold tabular-nums">{clockOf(mins)}</b>
-              <span className="font-medium">Thursday</span>
-            </span>
+              Absolutely positioned inside the band now, so its extent IS the
+              band's. It used to be a sticky `h-screen` sibling that the stage
+              pulled back over with `-mt-[100vh]`; with the band no longer a
+              viewport tall, that overlay had nothing left to align to. */}
+          <div
+            aria-hidden
+            // 0.2 rather than 0.13: the field used to sit on an off-white ground,
+            // and it is now on a near-black one carrying the lifted dark hues.
+            // Same apparent weight, different arithmetic.
+            className="pointer-events-none absolute inset-0 hidden overflow-hidden opacity-[0.2] lg:block"
+          >
+            {/* `h-full` + `auto-rows-fr` is what makes the field FILL rather than
+                run out. It was `gap-y-14` over content-height rows, so the grid
+                was as tall as its item count happened to make it — 120 glyphs
+                over ~11 columns is ~11 rows of ~96px, which stops around 1050px
+                and leaves the bottom of a taller mat bare. That is a bug that
+                only appears on SOME screens, which is the worst kind: it looked
+                finished on mine. Rows now take an equal share of the container's
+                height instead, so the count decides DENSITY and the container
+                decides EXTENT — no magic number to re-tune per screen size, and
+                no hundreds of extra icons rendered just to be clipped. */}
+            <div className="grid h-full auto-rows-fr grid-cols-[repeat(auto-fill,minmax(9.5rem,1fr))]">
+              {Array.from({ length: 120 }, (_, i) => {
+                const app = APPS[i % APPS.length]!;
+                const Icon = appIcon(app.id);
+                return (
+                  <span
+                    key={i}
+                    data-group={app.group}
+                    // Cycled rather than random: a perfect grid reads as wallpaper
+                    // and a re-rolled one would crawl on every resize. Five offsets
+                    // over fifteen icons never line up, so the field looks scattered
+                    // and stays reproducible. Literal class strings — Tailwind scans
+                    // this file, and a template would generate nothing.
+                    className={`text-module grid place-items-center ${JITTER[i % JITTER.length]}`}
+                  >
+                    <Icon aria-hidden className={GLYPH[i % GLYPH.length]} strokeWidth={1.7} />
+                  </span>
+                );
+              })}
+            </div>
           </div>
 
-          {railRow}
+          {/* On a small screen the hero sits ABOVE the pinned window; it could
+              never fit inside a 58vh desk. */}
+          <div className="relative w-full lg:hidden">{coldOpen}</div>
 
-          <div className="day-desk relative col-start-1 row-start-2 overflow-hidden lg:col-start-2">
-            <div className="hidden lg:block">{coldOpen}</div>
+          {/* The lit window. `data-theme="light"` is what keeps the depiction
+              honest inside the dark act — the console is a light product, and a
+              band that flipped it dark would be showing software nobody uses.
+              Everything below this line resolves against the light palette
+              regardless of the mat, which is why not one class inside it changed.
 
-            {/* Desktop: the six windows in their fixed places on the desk.
+              `relative` so it paints above the absolutely-positioned field, and
+              `lg:h-full` so it fills its row rather than sitting at a fixed 730px
+              in the middle of one. 730 was the whole problem on a tall display:
+              it is a sensible size for a laptop and a postage stamp on a portrait
+              monitor, and the difference was being paid in blank mat. The desk
+              places its windows by PERCENTAGE, so it just gets roomier. */}
+          <div
+            data-theme="light"
+            className="bg-base-200 rounded-section border-base-300 relative grid h-[58vh] max-h-[470px] w-full grid-rows-[2.875rem_1fr_auto] overflow-hidden border lg:h-full lg:max-h-none lg:w-[min(1440px,100%)] lg:grid-cols-[4.375rem_1fr] lg:grid-rows-[3.25rem_1fr]"
+          >
+            <div className="bg-base-100 border-base-300 col-span-full flex items-center gap-3.5 border-b px-4.5">
+              <span className="flex gap-1.5" aria-hidden>
+                <i className="bg-base-300 size-2.5 rounded-full" />
+                <i className="bg-base-300 size-2.5 rounded-full" />
+                <i className="bg-base-300 size-2.5 rounded-full" />
+              </span>
+              <span className="truncate text-sm font-semibold">
+                Wildroot Flowers{' '}
+                <span className="hidden font-normal sm:inline">— an example workspace</span>
+              </span>
+              <span className="ml-auto flex items-center gap-2 text-sm whitespace-nowrap">
+                <b className="text-base font-bold tabular-nums">{clockOf(mins)}</b>
+                <span className="font-medium">Thursday</span>
+              </span>
+            </div>
+
+            {railRow}
+
+            {/* THE DESK IS THE SCROLLPORT. Everything visible sits in a sticky
+                layer one deskful tall; the spacer underneath it is what there is
+                to scroll through, so the day advances inside the workspace and
+                the page keeps its own scrollbar for the page. `overscroll-auto`
+                is deliberate — reaching the last beat must hand the scroll back
+                to the document rather than trap it. */}
+            <div
+              ref={deskRef}
+              onScroll={onDeskScroll}
+              className="day-desk relative col-start-1 row-start-2 overflow-hidden lg:col-start-2 lg:[scrollbar-width:none] lg:overflow-y-auto lg:overscroll-auto"
+            >
+              <div className="relative lg:sticky lg:top-0 lg:h-full">
+                <div className="hidden lg:block">{coldOpen}</div>
+
+                {/* Desktop: the six windows in their fixed places on the desk.
                 A window that hasn't happened yet is an outline where it will
                 land, so the shape of the whole day is visible from the first
                 beat and filling it up reads as progress. */}
-            <div className={`hidden lg:block ${beat === 0 ? 'lg:opacity-0' : ''}`}>
-              {BEATS.map((b, i) => (
-                <div key={b.when} className={`absolute ${b.place}`}>
-                  <DeskWindow beat={b} state={beat === i + 1 ? 'hot' : beat > i ? 'on' : 'ghost'} />
+                <div className={`hidden lg:block ${beat === 0 ? 'lg:opacity-0' : ''}`}>
+                  {BEATS.map((b, i) => (
+                    <div key={b.when} className={`absolute ${b.place}`}>
+                      <DeskWindow
+                        beat={b}
+                        state={beat === i + 1 ? 'hot' : beat > i ? 'on' : 'ghost'}
+                      />
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
 
-            {/* Small screens: the desk cannot hold a six-window cascade at
+                {/* Small screens: the desk cannot hold a six-window cascade at
                 390px, so they stack in a column and the column scrolls to keep
                 the newest in view — the same accumulation, read vertically. */}
-            <div
-              ref={stackRef}
-              className="grid auto-rows-max gap-3 overflow-hidden p-3 pb-16 lg:hidden"
-            >
-              {BEATS.map((b, i) => (
-                <DeskWindow
-                  key={b.when}
-                  beat={b}
-                  state={beat === i + 1 ? 'hot' : beat > i ? 'on' : 'ghost'}
-                />
-              ))}
-            </div>
+                <div
+                  ref={stackRef}
+                  className="grid auto-rows-max gap-3 overflow-hidden p-3 pb-16 lg:hidden"
+                >
+                  {BEATS.map((b, i) => (
+                    <DeskWindow
+                      key={b.when}
+                      beat={b}
+                      state={beat === i + 1 ? 'hot' : beat > i ? 'on' : 'ghost'}
+                    />
+                  ))}
+                </div>
 
-            {/* Desktop: the sentence sits ON the desk, in the space the windows
+                {/* Desktop: the sentence sits ON the desk, in the space the windows
                 are laid out to leave clear, so it reads as annotation on the
                 software rather than as a caption beside a screenshot. */}
-            {BEATS.map((b, i) => (
-              <div
-                key={b.when}
-                className={`absolute top-[9%] left-[3.4%] hidden w-[28%] min-w-[260px] transition-opacity duration-300 lg:block ${
-                  beat === i + 1 ? 'opacity-100 delay-200' : 'pointer-events-none opacity-0'
-                }`}
-                aria-hidden={beat !== i + 1}
-              >
-                <BeatCopy beat={b} />
-              </div>
-            ))}
+                {BEATS.map((b, i) => (
+                  <div
+                    key={b.when}
+                    className={`absolute top-[9%] left-[3.4%] hidden w-[28%] min-w-[260px] transition-opacity duration-300 lg:block ${
+                      beat === i + 1 ? 'opacity-100 delay-200' : 'pointer-events-none opacity-0'
+                    }`}
+                    aria-hidden={beat !== i + 1}
+                  >
+                    <BeatCopy beat={b} />
+                  </div>
+                ))}
 
-            <div className="pointer-events-none absolute right-2.5 bottom-2 lg:right-auto lg:bottom-[2%] lg:left-[4.5%]">
-              <PigglesMascot
-                key={active?.pose ?? 'wave'}
-                pose={active?.pose ?? 'wave'}
-                size="sm"
-                priority
-                className="w-16 lg:w-36"
-              />
+                {/* SIZED BY THE `size` PROP, NEVER BY A WIDTH CLASS — this is why
+                she used to be blurry.
+
+                It was `size="sm"` with `className="w-16 lg:w-36"`. `size` sets
+                BOTH the Tailwind width and the `sizes` hint that decides which
+                srcset entry the browser downloads; a width class lands last in
+                the class string, so it won the layout while the hint still said
+                96px. The browser fetched a 96px-wide image and CSS stretched it
+                to 144 — a 1.5× upscale on every frame of the film. It is the
+                exact failure @piggles/mascot's header warns about in capital
+                letters: the image looks right and arrives under-resolved.
+
+                `{ base: 'sm', lg: 'md' }` is 96px on a phone and 176px from `lg`,
+                with the hint moving with it. Sharper AND bigger than what was
+                there — and 176 is what these poses need, because they are scenes
+                rather than the figure alone: at 144 the prop that says which beat
+                this is was a smudge. On a phone she stays small on purpose; there
+                the copy carries the beat and she is company, not information. */}
+                <div className="pointer-events-none absolute right-2.5 bottom-2 lg:right-auto lg:bottom-[2%] lg:left-[4.5%]">
+                  <PigglesMascot
+                    key={active?.pose ?? 'laptop-coffee'}
+                    pose={active?.pose ?? 'laptop-coffee'}
+                    size={{ base: 'sm', lg: 'md' }}
+                    priority
+                  />
+                </div>
+              </div>
+
+              {/* The scroll budget, and the ONLY thing in the section that is
+                  taller than what you can see. Six deskfuls for six beats — the
+                  same pacing the page-scrolled version had, now costing the
+                  document nothing. */}
+              <div aria-hidden className="hidden lg:block lg:h-[600%]" />
             </div>
           </div>
-        </div>
 
-        {/* The film's own controls. The hint used to live inside the cold open,
+          {/* The film's own controls. The hint used to live inside the cold open,
             where it vanished the moment the day started — so from beat one there
             was nothing saying how long this goes on for or how to get out of it.
             Six screens of pinned scroll needs both, and the way out has to be on
             screen the whole time rather than only at the start. */}
-        <div className="bg-base-100 border-base-300 rounded-field flex w-full items-center justify-between gap-4 border py-2 pr-2 pl-4 lg:w-[min(1440px,100%)] lg:pl-5">
-          <div className="flex min-w-0 items-center gap-3 text-sm font-semibold lg:text-base">
-            {beat === 0 ? (
-              <>
-                <ArrowDown className="text-primary size-4.5 motion-safe:animate-bounce" />
-                Scroll to run the day
-              </>
-            ) : (
-              <>
-                <span className="flex gap-1.5" aria-hidden>
-                  {BEATS.map((b, i) => (
-                    <i
-                      key={b.when}
-                      data-group={b.group}
-                      className={`h-1.5 w-6.5 rounded-full transition-colors duration-300 ${
-                        i < beat ? 'bg-module' : 'bg-base-300'
-                      }`}
-                    />
-                  ))}
-                </span>
-                <span className="hidden truncate font-bold lg:inline">
-                  {active ? APP_BY_ID[active.lights[0]!]?.label : ''}
-                </span>
-              </>
-            )}
+          <div className="bg-base-100 border-base-300 rounded-field relative flex w-full items-center justify-between gap-4 border py-2 pr-2 pl-4 lg:w-[min(1440px,100%)] lg:pl-5">
+            <div className="flex min-w-0 items-center gap-3 text-sm font-semibold lg:text-base">
+              {beat === 0 ? (
+                <>
+                  <ArrowDown className="text-primary size-4.5 motion-safe:animate-bounce" />
+                  Scroll to run the day
+                </>
+              ) : (
+                <>
+                  <span className="flex gap-1.5" aria-hidden>
+                    {BEATS.map((b, i) => (
+                      <i
+                        key={b.when}
+                        data-group={b.group}
+                        className={`h-1.5 w-6.5 rounded-full transition-colors duration-300 ${
+                          i < beat ? 'bg-module' : 'bg-base-300'
+                        }`}
+                      />
+                    ))}
+                  </span>
+                  <span className="hidden truncate font-bold lg:inline">
+                    {active ? APP_BY_ID[active.lights[0]!]?.label : ''}
+                  </span>
+                </>
+              )}
+            </div>
+            <a className={buttonClasses({ variant: 'outline' })} href="#whoever">
+              Skip the day <ArrowRight className="size-4" />
+            </a>
           </div>
-          <a className={buttonClasses({ color: 'neutral', variant: 'outline' })} href="#whoever">
-            Skip the day <ArrowRight className="size-4" />
-          </a>
         </div>
       </div>
 

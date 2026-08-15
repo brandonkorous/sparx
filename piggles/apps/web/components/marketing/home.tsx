@@ -3,7 +3,6 @@ import { Card, CardBody } from '@wizeworks/silicaui-react';
 import { buttonClasses } from '@wizeworks/silicaui-react/server';
 import { PIGGLES_GROUPS, type PigglesGroup } from '@piggles/brand';
 import { accountUrl, appIcon, appsInGroup, PRODUCT } from '@piggles/config';
-import { PigglesMascot } from '@piggles/mascot/react';
 import { CloseBand } from './close-band';
 import { Faq } from './faq';
 import { GROUP_COPY } from './groups';
@@ -584,7 +583,11 @@ function Questions() {
 
 export function HomePage() {
   return (
-    <div className="space-y-8 pt-4 pb-8 sm:space-y-14">
+    // No top padding: the film is the first child and it is a full-bleed dark
+    // act, so any page ground above it reads as a seam under the header rather
+    // than as spacing. The breathing room around the demo is the mat's own
+    // padding, inside the dark — see the-day.tsx.
+    <div className="space-y-8 pb-8 sm:space-y-14">
       <TheDay />
       <Whoever />
       <TheTurn />
@@ -597,18 +600,25 @@ export function HomePage() {
         heading={`Go and run the business. ${PRODUCT.name} will handle the business software.`}
         primary={{ label: 'Get Piggles', href: accountUrl('signup', 'home-close') }}
         secondary={{ label: 'Talk to a person', href: accountUrl('contact', 'home-close') }}
+        /* `mascot-base` — the plain wave, arm up, nothing in her hands. Two
+           poses were here before it and each was wrong for a different reason,
+           which is most of why this one is right:
+
+             • `welcome-sign` holds a round disc with an open door on it. Legible
+               at 300px; at the size this band gives her it reads as a lollipop
+               STOP sign held out at the reader. Above a button, "halt" is the one
+               gesture that must not be misread.
+             • `point-right` was correct while she stood to the LEFT of the
+               buttons — her arm extends to the viewer's right, so she aimed at
+               them. She is above them now, and that same arm points off the edge
+               of the band at nothing.
+
+           A wave needs no geometry to work and cannot be misread from any
+           position. It is also the right sentence: the band says "go and run the
+           business", which is a send-off, and a send-off is a wave. */
+        mascot="mascot-base"
         note="$49 a month · free for 14 days · no card needed"
       />
-      {/* She closes the page rather than sitting inside the band — the band is
-          two columns of heading and decision, and a third thing in there makes
-          the decision share a row.
-
-          Small, and pulled up tight against the band. At `lg` in the page's own
-          rhythm she left a 300px empty stripe between the last thing said and
-          the footer, which reads as the page having stopped rather than ended. */}
-      <div className="-mt-4 flex justify-center sm:-mt-8">
-        <PigglesMascot pose="celebrate" size={{ base: 'sm', lg: 'md' }} />
-      </div>
     </div>
   );
 }

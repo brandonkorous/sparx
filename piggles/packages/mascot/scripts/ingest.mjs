@@ -49,15 +49,37 @@ const BATCH_ROOT = join(PIGGLES_ROOT, 'images', 'mascot');
 
 /** Batches to ingest, in precedence order — LAST wins a duplicate pose id.
  *
- *  `02` is deliberately absent. Its art is a known-wrong cut (Brandon, 2026-08-14)
- *  and is pending re-delivery; ingesting it would put two visually different
- *  Piggles on the same screen, since it re-cuts four poses 01 already ships
- *  (wave, thinking, celebrate, invoice) in a different framing and with a ground
- *  shadow 01 does not have. Add it back here once it is re-cut — that is the only
- *  edit required, and the poses it adds (coffee, computer, package, phone,
- *  point-right, point-down, thumbs-up) will light up the intent chains in
- *  src/intents.ts that already name them. */
-const ACTIVE_BATCHES = ['01'];
+ *  ── ALL FIVE, AND WHY THAT IS NEW (2026-08-15) ─────────────────────────────
+ *
+ *  Only `01` used to be here: `02` was a known-wrong cut, and the batch that
+ *  shipped it drew a character who was recognisably not the one on the brand
+ *  board. All five were re-delivered wearing the actual brand — the black tee
+ *  with the pink Piggles mark, and the mark again on every prop she holds — so
+ *  the reason for parking `02` is gone and the four batches after it exist.
+ *
+ *  The re-delivery REPLACED the rosters rather than re-cutting them, which is
+ *  the part that could not be handled by flipping a flag. Batch 01 used to key
+ *  its poses `wave`, `desk`, `laptop`, `calendar`, `invoice`, `celebrate`,
+ *  `neutral`, `point-left`, `thinking`, and carry a 40-pose roadmap alongside
+ *  them. It now keys them by ROLE — `mascot-base`, `planner`, `analyst`,
+ *  `communicator`, `builder`, `protector`, `money-minder`, `organizer`,
+ *  `cheerleader`, `sidekick` — and carries no roadmap. Every one of those old
+ *  ids is gone, so `src/intents.ts` and three call sites were re-mapped by hand
+ *  against the actual artwork. Pose ids are still semantic and still permanent
+ *  from here; this was a one-off replacement of the vocabulary, not a re-cut.
+ *
+ *  What each batch is, since the numbers are provenance and say nothing:
+ *
+ *    01  character archetypes — the figure alone, front-on, no ground
+ *    02  the figure holding one prop (envelope, chart, parcel, lightbulb)
+ *    03  system states — empty, error, loading, no-results, maintenance
+ *    04  business settings — a counter, a shop shelf, a meeting table, a bench
+ *    05  one round table, ten activities. A DAY at one desk, which is exactly
+ *        what apps/web's scroll film and the console's empty states both want.
+ *
+ *  Later batches are listed last, so where two draw the same idea the tighter
+ *  cut wins. No id collides across the five today. */
+const ACTIVE_BATCHES = ['01', '02', '03', '04', '05'];
 
 /** Apps that get a copy of the shipped assets. Each Next app serves them from its
  *  own `public/`, which is the one URL shape that works identically in the
@@ -157,6 +179,103 @@ async function boundingBox(file) {
   };
 }
 
+/** Is this pixel Piggles herself, rather than the furniture around her?
+ *
+ *  She is pink and nothing else in the set is: the props are wood, cream, grey,
+ *  black and green. So a saturated red-dominant pixel that is not yellow-shifted
+ *  is her skin — head, ears, snout, arms, trotters — and the black tee between
+ *  them does not need detecting, because it sits INSIDE that vertical span.
+ *
+ *  Deliberately narrow. The pink brand mark printed on the laptop lids, mugs and
+ *  parcels is far more saturated than skin, so the upper bound rejects it, and
+ *  the row percentile in `subjectSpan` throws away whatever leaks through. */
+function isSkin(r, g, b, a) {
+  if (a < 200 || r < 180) return false;
+  const max = Math.max(r, g, b);
+  const min = Math.min(r, g, b);
+  if (max !== r) return false;
+  const saturation = (max - min) / max;
+  if (saturation < 0.14 || saturation > 0.62) return false;
+  // Wood and tan are much yellower than skin — g and b diverge.
+  return Math.abs(g - b) <= 34;
+}
+
+/** What fraction of the artwork's height the CHARACTER occupies.
+ *
+ *  ── WHY THIS IS MEASURED AT ALL ─────────────────────────────────────────────
+ *
+ *  Because sizing a mascot by the width of its image is wrong the moment two
+ *  poses frame her differently, and this set frames her ten ways. Aspect ratios
+ *  here run from 0.72 (`builder`, the figure alone) to 1.49 (`calendar-desk`, a
+ *  table with a laptop and a calendar on it). At one fixed width — 176px, say —
+ *  the pig in `builder` renders 203px tall and the pig in `calendar-desk` 107px.
+ *  Same prop, same slot, and one character is nearly twice the other. On the
+ *  marketing film, where six poses cut one after another in the same corner,
+ *  that reads as the artwork jumping around rather than as six moments.
+ *
+ *  So the catalog records this and the component solves for it: a named size is
+ *  a CHARACTER height, and the image width that produces it is arithmetic.
+ *
+ *  ── THE PERCENTILE ──────────────────────────────────────────────────────────
+ *
+ *  Row extent, not a strict bounding box: the sparsest 1.5% of skin pixels at
+ *  each end is discarded. A hard min/max would let one antialiased pixel of the
+ *  pink mark on a parcel — or a stray highlight — claim a row she is not in, and
+ *  the failure would be silent and small enough to look like a rendering quirk.
+ *  Trimming the tails costs nothing real: her head and her trotters are hundreds
+ *  of pixels wide at those rows. */
+async function subjectSpan(file, box, height) {
+  const { data, info } = await sharp(file)
+    .extract({ left: box.left, top: box.top, width: box.width, height: box.height })
+    .ensureAlpha()
+    .raw()
+    .toBuffer({ resolveWithObject: true });
+
+  const perRow = new Array(info.height).fill(0);
+  let total = 0;
+  for (let y = 0; y < info.height; y++) {
+    for (let x = 0; x < info.width; x++) {
+      const i = (y * info.width + x) * 4;
+      if (isSkin(data[i], data[i + 1], data[i + 2], data[i + 3])) {
+        perRow[y]++;
+        total++;
+      }
+    }
+  }
+
+  // No skin at all means the detector is wrong for this cut, not that she is
+  // absent. Fall back to the whole frame — which is the old behaviour, so the
+  // pose renders as it always did instead of vanishing or filling the screen.
+  if (total === 0) {
+    console.warn(`  ! ${basename(file)}: no skin detected, subject falls back to the full frame`);
+    return 1;
+  }
+
+  const cut = total * 0.015;
+  let acc = 0;
+  let top = 0;
+  let bottom = info.height - 1;
+  for (let y = 0; y < info.height; y++) {
+    acc += perRow[y];
+    if (acc >= cut) {
+      top = y;
+      break;
+    }
+  }
+  acc = 0;
+  for (let y = info.height - 1; y >= 0; y--) {
+    acc += perRow[y];
+    if (acc >= cut) {
+      bottom = y;
+      break;
+    }
+  }
+
+  // Reported against the SHIPPED height, so the component can multiply straight
+  // through without knowing anything about the trim.
+  return Math.round(((bottom - top + 1) / info.height) * height) / height;
+}
+
 async function build(entry) {
   const box = await boundingBox(entry.source);
   const scale = Math.min(1, MAX_EDGE / Math.max(box.width, box.height));
@@ -169,13 +288,31 @@ async function build(entry) {
     .webp(WEBP)
     .toBuffer();
 
-  return { ...entry, width, height, buffer, canvas: box.canvas };
+  const subject = await subjectSpan(entry.source, box, height);
+
+  return { ...entry, width, height, subject, buffer, canvas: box.canvas };
 }
 
 // ── catalog emission ─────────────────────────────────────────────────────────
 
 const quote = (value) => `'${String(value).replace(/'/g, "\\'")}'`;
 const list = (values) => `[${values.map(quote).join(', ')}]`;
+
+/** A TypeScript union of pose ids, or `never` when there are none.
+ *
+ *  The `never` branch is not hypothetical. Every batch delivered from 2026-08-15
+ *  carries only `assets` — no roadmap — so `planned` is empty and the naive form
+ *  emitted `export type PlannedPoseId = ;`, which is a syntax error in a
+ *  GENERATED file nobody reads before `tsc` does. `never` is also the correct
+ *  meaning: no pose is planned-but-undrawn, so nothing inhabits the type, and
+ *  `Record<never, PlannedPose>` is the empty object it should be.
+ *
+ *  `AnyPoseId` drops its `| PlannedPoseId` arm in the same case rather than
+ *  unioning with `never`. The union is a no-op at the type level, but
+ *  `no-redundant-type-constituents` fails on it — and a generated file that does
+ *  not lint is a generated file somebody hand-edits. */
+const unionOf = (poses) =>
+  poses.length ? poses.map((pose) => quote(pose.id)).join(' | ') : 'never';
 
 function emitCatalog(available, planned) {
   const poses = available
@@ -191,6 +328,7 @@ function emitCatalog(available, planned) {
     src: '/mascot/${pose.id}.webp',
     width: ${pose.width},
     height: ${pose.height},
+    subject: ${pose.subject.toFixed(4)},
   },`
     )
     .join('\n');
@@ -206,8 +344,6 @@ function emitCatalog(available, planned) {
     )
     .join('\n');
 
-  const union = (poses) => poses.map((pose) => quote(pose.id)).join(' | ');
-
   return `// GENERATED by scripts/ingest.mjs — do not edit.
 //
 // Source of truth: the batch manifests under piggles/images/mascot/. To change a
@@ -215,12 +351,12 @@ function emitCatalog(available, planned) {
 // ingest\`. Batches ingested: ${ACTIVE_BATCHES.join(', ')}.
 
 /** Every pose whose artwork exists and ships today. */
-export type MascotPoseId = ${union(available)};
+export type MascotPoseId = ${unionOf(available)};
 
 /** Every pose that is specified but not yet drawn. */
-export type PlannedPoseId = ${union(planned)};
+export type PlannedPoseId = ${unionOf(planned)};
 
-export type AnyPoseId = MascotPoseId | PlannedPoseId;
+export type AnyPoseId = ${planned.length ? 'MascotPoseId | PlannedPoseId' : 'MascotPoseId'};
 
 /** A pose whose artwork exists and ships today. */
 export interface MascotPose {
@@ -247,6 +383,16 @@ export interface MascotPose {
   /** TRUE intrinsic size of the trimmed artwork, not the delivery canvas. */
   width: number;
   height: number;
+  /** Fraction of \`height\` that the CHARACTER occupies, measured from her own
+   *  pink mass rather than from the frame.
+   *
+   *  This is what makes a named size mean the same thing across poses that are
+   *  framed differently. \`builder\` is the figure alone at ratio 0.72; a desk
+   *  scene is a table at ratio 1.49. Sized to one WIDTH they put two characters
+   *  on screen at nearly 2x each other. Sized so this fraction lands on the same
+   *  number of pixels, they match — see <PigglesMascot>, which does the
+   *  arithmetic so no call site has to know a pose apart from its id. */
+  subject: number;
 }
 
 /** A pose that is specified but not yet drawn. Naming one in an intent chain is
@@ -267,9 +413,7 @@ export const PLANNED_POSES: Record<PlannedPoseId, PlannedPose> = {
 ${roadmap}
 };
 
-export const MASCOT_POSE_IDS: readonly MascotPoseId[] = [${union(available)
-    .split(' | ')
-    .join(', ')}];
+export const MASCOT_POSE_IDS: readonly MascotPoseId[] = [${list(available.map((pose) => pose.id)).slice(1, -1)}];
 
 export function isAvailable(id: AnyPoseId): id is MascotPoseId {
   return id in MASCOT_POSES;

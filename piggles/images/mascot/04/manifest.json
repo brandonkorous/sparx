@@ -1,0 +1,22 @@
+{
+  "name": "Piggles Mascot System",
+  "batch": "04",
+  "version": "4.0.0",
+  "character": "Piggles",
+  "specification": "MASCOT.md v1.1",
+  "presentationMode": "branded-canonical-settings",
+  "defaultFormat": "webp",
+  "sheet": "assets/sheets/piggles-character-sheet.jpg",
+  "assets": [
+    {"id":"piggles-desk-workspace","title":"Desk Workspace","category":"workspace","alt":"Piggles working at a writing desk","png":"assets/png/piggles-desk-workspace.png","webp":"assets/webp/piggles-desk-workspace.webp"},
+    {"id":"piggles-desktop-computer","title":"Desktop Computer","category":"workspace","alt":"Piggles working at a desktop computer","png":"assets/png/piggles-desktop-computer.png","webp":"assets/webp/piggles-desktop-computer.webp"},
+    {"id":"piggles-front-counter","title":"Front Counter","category":"commerce","alt":"Piggles welcoming customers at a service counter","png":"assets/png/piggles-front-counter.png","webp":"assets/webp/piggles-front-counter.webp"},
+    {"id":"piggles-retail-shop","title":"Retail Shop","category":"commerce","alt":"Piggles beside a small retail display","png":"assets/png/piggles-retail-shop.png","webp":"assets/webp/piggles-retail-shop.webp"},
+    {"id":"piggles-workshop","title":"Workshop","category":"workspace","alt":"Piggles beside a compact workbench","png":"assets/png/piggles-workshop.png","webp":"assets/webp/piggles-workshop.webp"},
+    {"id":"piggles-food-truck","title":"Food Truck","category":"small-business","alt":"Piggles welcoming customers beside a food truck","png":"assets/png/piggles-food-truck.png","webp":"assets/webp/piggles-food-truck.webp"},
+    {"id":"piggles-salon-station","title":"Salon Station","category":"small-business","alt":"Piggles beside a salon workstation","png":"assets/png/piggles-salon-station.png","webp":"assets/webp/piggles-salon-station.webp"},
+    {"id":"piggles-home-office","title":"Home Office","category":"workspace","alt":"Piggles working in a compact home office","png":"assets/png/piggles-home-office.png","webp":"assets/webp/piggles-home-office.webp"},
+    {"id":"piggles-meeting-table","title":"Meeting Table","category":"collaboration","alt":"Piggles leading a meeting at a conference table","png":"assets/png/piggles-meeting-table.png","webp":"assets/webp/piggles-meeting-table.webp"},
+    {"id":"piggles-shipping-station","title":"Shipping Station","category":"operations","alt":"Piggles packing an order at a shipping station","png":"assets/png/piggles-shipping-station.png","webp":"assets/webp/piggles-shipping-station.webp"}
+  ]
+}

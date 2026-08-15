@@ -15,51 +15,137 @@ import { mascotForApp, resolveIntent, type MascotIntent } from '../intents';
 // hole nobody notices in review. `next/image` gives the responsive srcset, AVIF,
 // and lazy loading for free; the typed id gives the compiler.
 //
-// ── SIZE IS A NAMED CHOICE ───────────────────────────────────────────────────
+// ── SIZE IS HOW BIG *SHE* IS, NOT HOW WIDE THE IMAGE IS ──────────────────────
 //
-// Not a free `width`, because the two decisions have to agree: the rendered width
-// and the `sizes` hint that tells the browser which srcset entry to download. Set
-// one and forget the other and you serve a 1200px master into a 96px slot. Four
-// named sizes cover the real placements and keep the mascot at consistent scale
-// across surfaces, which is most of what stops her looking pasted on.
+// This is the one thing in the package worth reading twice, because the obvious
+// implementation is wrong and looks right until two poses sit next to each other.
 //
-// `fill` is the fifth, for the case the fixed widths genuinely cannot express: a
+// A named size used to set the image's WIDTH. That works while every pose frames
+// the character the same way, and the poses do not: `builder` is the figure alone
+// at aspect ratio 0.72, and `calendar-desk` is a table with a laptop and a
+// calendar on it at 1.49. Give both the same 176px width and the pig in one comes
+// out 203px tall and the pig in the other 107px — nearly double, in the same slot,
+// for no reason a viewer can see. On the marketing film, where six poses cut one
+// after another in the same corner, it reads as the artwork lurching about.
+//
+// So `sm | md | lg | xl` are CHARACTER heights, and the image width that produces
+// one is arithmetic:
+//
+//     imageWidth = (characterHeight / pose.subject) × (pose.width / pose.height)
+//
+// `pose.subject` is the fraction of the artwork the character occupies, measured
+// from her own pink mass by the ingest — see catalog.ts. Every pose therefore
+// renders her at the same size and the furniture around her takes whatever room
+// it needs, which is the correct way round: the pig is the subject and the desk
+// is context.
+//
+// `fill` is the fifth, for the case the fixed sizes genuinely cannot express: a
 // bespoke composition where she IS the panel and the column decides her width.
 // It takes `sizes` as a REQUIRED prop rather than defaulting one, because the
 // right answer there depends on the layout and a wrong default is invisible —
 // the image looks correct and quietly downloads four times what it needed.
 //
+// ── WHY A LADDER AND NOT THE EXACT NUMBER ────────────────────────────────────
+//
+// The computed width is a per-pose number, and a per-pose number cannot become a
+// Tailwind class: the class strings must be LITERAL, because Tailwind scans
+// source text. A template like `w-[${n}px]` produces a class nothing generates,
+// and the mascot silently falls back to `max-w-full` and fills whatever column
+// she is in. That is not hypothetical; it is what shipped for an hour. (An inline
+// `style` would dodge it and is banned — piggles/CLAUDE.md.)
+//
+// So the width is quantised onto the ladder below, every rung of it written out
+// so Tailwind emits all of them. The rungs are 8px apart where the mascot
+// actually lands and coarser at the extremes, which keeps the worst rounding
+// under about 5% — a difference nobody can see, against the 90% difference this
+// replaces.
+//
+// Each consuming app still needs `@source
+// '../../../packages/mascot/src/**/*.{ts,tsx}'` in its globals.css, for the same
+// literal-class reason.
+//
 // ── AND SIZE IS OFTEN TWO CHOICES ────────────────────────────────────────────
 //
 // `size={{ base: 'md', lg: 'lg' }}`. A mascot judged on a 1440px screen is
-// routinely oversized on a phone — 288px is a fifth of the desktop column and
-// three quarters of a 390px viewport, which turns a supporting figure into the
-// section. Handling that at the call site means hand-writing `lg:w-72` next to a
-// `sizes` string that still claims 176px, and the mismatch is invisible: the
-// image looks right and arrives under-resolved. So the pair is computed here,
-// from one prop, and stays consistent by construction.
-//
-// The class strings must be LITERAL — Tailwind scans source text, so a template
-// like `lg:${…}` produces a class nothing generates and the mascot silently
-// falls back to `max-w-full`, filling whatever column she is in. That is not
-// hypothetical; it is what shipped for an hour. Each consuming app also needs
-// `@source '../../../packages/mascot/src/**/*.{ts,tsx}'` in its globals.css, for
-// the same reason.
+// routinely oversized on a phone, so the pair is computed here from one prop and
+// the `sizes` hint moves with it. Setting the width at the call site instead is
+// how she ends up blurry: `sizes` keeps claiming the old number, the browser
+// downloads that srcset entry, and CSS stretches it.
 
-const SIZES = {
+/** Named size → how tall PIGGLES HERSELF renders, in CSS pixels.
+ *
+ *  The values are what the old image widths produced for a figure-only pose
+ *  (ratio ~1.0, subject ~0.87), so surfaces that were tuned against those poses
+ *  are unchanged and only the wide scenes move — which is the whole point. */
+const CHARACTER_PX = {
   /** Inline beside a sentence — a tip, a compact empty row. */
-  sm: { width: 'w-24', atLg: 'lg:w-24', px: '96px' },
+  sm: 84,
   /** The default: an empty state inside a card or a panel. */
-  md: { width: 'w-44', atLg: 'lg:w-44', px: '176px' },
+  md: 152,
   /** A full-page empty state, or an onboarding step. */
-  lg: { width: 'w-72', atLg: 'lg:w-72', px: '288px' },
+  lg: 250,
   /** The mascot as the subject: auth split shells, marketing sections. */
-  xl: { width: 'w-112', atLg: 'lg:w-112', px: '448px' },
-  /** She fills her container. Requires an explicit `sizes`. */
-  fill: { width: 'w-full', atLg: 'lg:w-full', px: '' },
+  xl: 390,
 } as const;
 
-export type MascotSize = keyof typeof SIZES;
+interface WidthStep {
+  px: number;
+  base: string;
+  atLg: string;
+}
+
+/** Every width the mascot may render at. LITERAL class strings — see above.
+ *
+ *  Annotated rather than `as const`: the rungs are picked at runtime, so the
+ *  literal types buy nothing and widen the result to the first entry. What has to
+ *  stay literal is the class STRINGS in this source, which Tailwind scans — and
+ *  they do either way. */
+const WIDTH_STEPS: readonly WidthStep[] = [
+  { px: 64, base: 'w-16', atLg: 'lg:w-16' },
+  { px: 72, base: 'w-18', atLg: 'lg:w-18' },
+  { px: 80, base: 'w-20', atLg: 'lg:w-20' },
+  { px: 88, base: 'w-22', atLg: 'lg:w-22' },
+  { px: 96, base: 'w-24', atLg: 'lg:w-24' },
+  { px: 104, base: 'w-26', atLg: 'lg:w-26' },
+  { px: 112, base: 'w-28', atLg: 'lg:w-28' },
+  { px: 120, base: 'w-30', atLg: 'lg:w-30' },
+  { px: 128, base: 'w-32', atLg: 'lg:w-32' },
+  { px: 136, base: 'w-34', atLg: 'lg:w-34' },
+  { px: 144, base: 'w-36', atLg: 'lg:w-36' },
+  { px: 152, base: 'w-38', atLg: 'lg:w-38' },
+  { px: 160, base: 'w-40', atLg: 'lg:w-40' },
+  { px: 176, base: 'w-44', atLg: 'lg:w-44' },
+  { px: 192, base: 'w-48', atLg: 'lg:w-48' },
+  { px: 208, base: 'w-52', atLg: 'lg:w-52' },
+  { px: 224, base: 'w-56', atLg: 'lg:w-56' },
+  { px: 240, base: 'w-60', atLg: 'lg:w-60' },
+  { px: 256, base: 'w-64', atLg: 'lg:w-64' },
+  { px: 272, base: 'w-68', atLg: 'lg:w-68' },
+  { px: 288, base: 'w-72', atLg: 'lg:w-72' },
+  { px: 320, base: 'w-80', atLg: 'lg:w-80' },
+  { px: 352, base: 'w-88', atLg: 'lg:w-88' },
+  { px: 384, base: 'w-96', atLg: 'lg:w-96' },
+  { px: 416, base: 'w-104', atLg: 'lg:w-104' },
+  { px: 448, base: 'w-112', atLg: 'lg:w-112' },
+  { px: 512, base: 'w-128', atLg: 'lg:w-128' },
+  { px: 576, base: 'w-144', atLg: 'lg:w-144' },
+  { px: 640, base: 'w-160', atLg: 'lg:w-160' },
+  { px: 704, base: 'w-176', atLg: 'lg:w-176' },
+];
+
+const FILL_STEP: WidthStep = { px: 0, base: 'w-full', atLg: 'lg:w-full' };
+
+/** The rung whose width renders this pose's character closest to `target`. */
+function stepFor(pose: { width: number; height: number; subject: number }, target: number) {
+  const wanted = (target / pose.subject) * (pose.width / pose.height);
+  let best = WIDTH_STEPS[0]!;
+  for (const step of WIDTH_STEPS) {
+    if (Math.abs(step.px - wanted) < Math.abs(best.px - wanted)) best = step;
+  }
+  return best;
+}
+
+export type MascotSize = keyof typeof CHARACTER_PX | 'fill';
 
 /** Every size but `fill` — the ones that can be paired across a breakpoint.
  *  `fill` cannot: it is already relative to its container at every width. */
@@ -101,8 +187,11 @@ export function PigglesMascot({
 }: PigglesMascotProps) {
   const resolved = pose ? MASCOT_POSES[pose] : intent ? resolveIntent(intent) : mascotForApp(app);
   const spec = typeof size === 'string' ? { base: size, lg: size } : size;
-  const base = SIZES[spec.base];
-  const wide = SIZES[spec.lg];
+
+  // Solved per pose from its own framing, then snapped to a literal rung. `fill`
+  // opts out entirely: there the container decides and `sizes` is required.
+  const base = spec.base === 'fill' ? FILL_STEP : stepFor(resolved, CHARACTER_PX[spec.base]);
+  const wide = spec.lg === 'fill' ? FILL_STEP : stepFor(resolved, CHARACTER_PX[spec.lg]);
 
   return (
     <Image
@@ -115,13 +204,19 @@ export function PigglesMascot({
       // 1024px is Tailwind's `lg`, and it has to be written out because a media
       // query in a `sizes` attribute cannot reference the framework's breakpoint.
       // If the class below ever moves to another breakpoint, this moves with it.
+      //
+      // These are the SAME numbers as the classes below, by construction — which
+      // is the point of computing both here. A `sizes` that disagrees with the
+      // rendered width is invisible: the image looks right and arrives
+      // under-resolved.
       sizes={
-        sizes ?? (spec.base === spec.lg ? base.px : `(min-width: 1024px) ${wide.px}, ${base.px}`)
+        sizes ??
+        (base.px === wide.px ? `${base.px}px` : `(min-width: 1024px) ${wide.px}px, ${base.px}px`)
       }
       priority={priority}
-      // `max-w-full` so the two large sizes still fit a narrow phone rather than
-      // pushing the page sideways.
-      className={`h-auto max-w-full ${base.width} ${wide.atLg} ${className}`}
+      // `max-w-full` so a wide scene at a large size still fits a narrow phone
+      // rather than pushing the page sideways.
+      className={`h-auto max-w-full ${base.base} ${wide.atLg} ${className}`}
     />
   );
 }

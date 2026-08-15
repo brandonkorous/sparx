@@ -1,105 +1,62 @@
-import { Badge } from '@wizeworks/silicaui-react';
 import { PigglesMascot } from '@piggles/mascot/react';
 
-// The mascot at her desk, with two cards from the product floating beside her.
+// Piggles at her desk, under the three claims on the brand panel.
 //
-// ── WHAT THIS IS FOR ────────────────────────────────────────────────────────
+// ── WHAT THIS USED TO BE, AND WHY THE CARDS WENT ────────────────────────────
 //
-// The panel beside the form makes a claim — one place for the whole business —
-// and a claim is worth less than a look. Two cards from two different apps,
-// wearing two different group hues, say "these live together" faster than the
-// line above them can be read, and they show the six-colour system doing its job
-// before anybody has an account to see it in. The pig is the warmth; the cards
-// are the argument.
+// Two small cards floated over the artwork's clear top-left corner — "Bookings ·
+// 6 today" and "Invoices · $1,250 · Paid" — wearing their apps' hues. The idea
+// was that two cards from two different apps say "these live together" faster
+// than the line above them can be read, and show the six-colour system working
+// before anybody has an account to see it in.
 //
-// It is DECORATIVE, and the code says so out loud: the whole block is
-// `aria-hidden`, so the figures in it are never announced as facts to somebody
-// using a screen reader. That matters more than it looks. The platform has a
-// standing rule that a value nobody measured must never render as one, and the
-// only thing keeping these numbers on the right side of it is that they are
-// obviously an illustration on a page where the reader has no account yet. Do
-// not reuse this component anywhere a signed-in person could mistake it for
-// their own business.
+// They were removed on Brandon's call (2026-08-15) and the call is right. The
+// figures were invented, so the cards were a picture of a dashboard nobody has —
+// on the one page where the reader has no account and no way to tell. Everything
+// else on this panel is a claim the product actually keeps; two made-up numbers
+// beside them are the weakest thing on the page and they were sitting in the
+// strongest position on it.
 //
-// ── WHY THE CARDS SIT WHERE THEY SIT, AND WHY THEY ARE SMALL ────────────────
+// The rule that survives them, because it is the reason they never sat over her
+// face: if anything is ever placed on top of this artwork again, SAMPLE THE
+// ALPHA CHANNEL first. On this cut (1150×909) the clear region is the top-left
+// block, x 0–33% and y 0–37%. It moves whenever the pose changes, and guessing
+// does not converge — it took two attempts and a measurement last time.
 //
-// Not by eye. The artwork's alpha channel was sampled on a 12×8 grid to find
-// where it is actually empty, and there is exactly one usable clear region: the
-// top-left quadrant, x 0–42% and y 0–37%, above the laptop lid. At the panel's
-// real width that region is about 222×117 CSS pixels — which is the whole
-// constraint, and the thing eyeballing got wrong twice.
+// ── THE POSE, AND WHY IT IS NOT THE OBVIOUS ONE ─────────────────────────────
 //
-// The first attempt used full-width rows carried over from the version with no
-// artwork behind them. Measured on the page they came out 243px and 285px wide,
-// the second reaching 71% — straight across the pig's face. Cards on this panel
-// have to be SMALL, which is also what the reference does: little floating
-// chips, not list rows.
+// `laptop-coffee`. Two poses could have taken this, and they are the same table
+// at the same distance. The difference is where she is looking:
 //
-// The rules that keep it right:
+//   • `laptop-focus` — head down, both hands on the keyboard, absorbed. A
+//     picture of somebody who has not noticed you walked in.
+//   • `laptop-coffee` — looks up, mug in hand, open smile.
 //
-//   • Nothing may cross x 50%. That is where her head starts, in every row.
-//   • Overlapping her ear or shoulder (x 42–50%) is fine and reads as depth.
-//     Overlapping the FACE never does.
-//   • The two cards may overlap each other. They are meant to look placed, not
-//     laid out.
-//
-// If the artwork is ever re-cut or re-cropped, that region moves and these
-// percentages go stale — the failure being cards over her face again. Re-sample
-// the alpha grid before nudging them; guessing does not converge.
+// This screen is a DOOR. Somebody is deciding whether to put their livelihood on
+// this, or coming back to work they have already started, and this panel is the
+// only warmth on it. The pose that ignores them is the wrong one however good it
+// looks, so the deciding property is her eyeline and not the composition.
 //
 // ── THE ASSET ───────────────────────────────────────────────────────────────
 //
-// The `desk` pose from @piggles/mascot. It was previously a hand-cut copy of the
-// same artwork at `public/piggles-at-desk.png` — identical master (1536×1024,
-// subject box 1502×851), trimmed and resized by hand instead of by the ingest.
-// Two copies of one asset meant a re-cut would have landed in the catalog and
-// silently missed this screen, which is the exact drift the package exists to
-// stop; the hand-cut copy is gone.
+// From @piggles/mascot, never a raw path. There used to be a hand-cut copy of the
+// old artwork at `public/piggles-at-desk.png`, and two copies of one asset meant a
+// re-cut would land in the catalog and silently miss this screen — which is the
+// exact drift the package exists to stop, and exactly what the 2026-08-15
+// re-delivery would have triggered. The hand-cut copy is gone; keep it that way.
 //
-// THE GRID WAS RE-SAMPLED for the swap, as the note above requires. The package
-// trims tighter (1200×683 against the old 1200×720, all of it bottom margin), so
-// the clear region moves — and measured, it does not move enough to matter: the
-// top-left quadrant reads 0% coverage across x 0–42%, y 0–37% in both cuts, and
-// the row at y 38% is if anything CLEARER in the new one (68/62/57 against
-// 90/85/80). The percentages below stand on measurement, not on assumption.
-//
-// The cutout is genuinely transparent: the alpha channel is 52% clear, 48%
-// opaque and only 0.4% in between, and that fraction is edge antialiasing rather
-// than a glow. That is what lets it sit directly on the pink wash. An asset with
-// a baked backdrop would need a plate behind it and would stop being the same
-// design, so keep any replacement cut the same way.
-
-const CARDS: {
-  app: string;
-  label: string;
-  figure: string;
-  /** Only where a status is genuinely the point. A pill on both would turn an
-   *  illustration into a dashboard. */
-  status: string | null;
-  /** Position inside the artwork's clear top-left region. */
-  place: string;
-}[] = [
-  {
-    app: 'bookings',
-    label: 'Bookings',
-    figure: '6 today',
-    status: null,
-    place: 'top-0 left-0 w-[40%]',
-  },
-  {
-    app: 'invoices',
-    label: 'Invoices',
-    figure: '$1,250',
-    status: 'Paid',
-    place: 'top-[16%] left-[10%] w-[38%]',
-  },
-];
+// The cutout is genuinely transparent — no baked backdrop — which is what lets it
+// sit directly on the pink wash. An asset with a plate behind it would stop being
+// the same design, so keep any replacement cut the same way.
 
 export function ProductGlimpse() {
   return (
-    <div aria-hidden className="relative mt-8 hidden sm:block">
+    // `aria-hidden` because she is decoration: the three claims above her carry
+    // the meaning and she agrees with them, which is the standing rule for the
+    // mascot everywhere (DESIGN.md — never the only indicator of anything).
+    <div aria-hidden className="mt-8 hidden sm:block">
       <PigglesMascot
-        pose="desk"
+        pose="laptop-coffee"
         // She IS the panel here — the column decides her width, not one of the
         // four fixed sizes. `sizes` is required with `fill` for that reason:
         // sized by the column, not by the viewport, since the panel is roughly
@@ -107,33 +64,6 @@ export function ProductGlimpse() {
         size="fill"
         sizes="(min-width: 1024px) 38rem, 100vw"
       />
-
-      {CARDS.map((card) => (
-        // `data-app` repoints `--color-module` for this card via the bridge in
-        // @piggles/brand — the same attribute the console's rail uses, so these
-        // read as the apps they name.
-        <div
-          key={card.app}
-          data-app={card.app}
-          className={`rounded-box bg-base-100 border-base-300 absolute flex items-center gap-2 border p-2.5 ${card.place}`}
-        >
-          <span className="bg-module h-7 w-1 shrink-0 rounded-full" />
-          <div className="min-w-0 flex-1">
-            {/* 12px and 14px — the one place in Piggles below the 16px body
-                floor, and legitimately so: DESIGN.md reserves the small sizes
-                for captions, and this whole block is `aria-hidden` decoration
-                rather than text anybody is asked to read. Anything larger does
-                not fit the artwork's clear region without covering her. */}
-            <p className="text-module text-xs font-bold">{card.label}</p>
-            <p className="truncate text-sm font-bold">{card.figure}</p>
-          </div>
-          {card.status ? (
-            <Badge color="success" variant="soft" size="sm">
-              {card.status}
-            </Badge>
-          ) : null}
-        </div>
-      ))}
     </div>
   );
 }

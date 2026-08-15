@@ -1,0 +1,5 @@
+# Piggles Character Bible
+
+Piggles is a nearly circular, natural peach-pink pig with one continuous head-and-body silhouette, a broad soft snout, two small black oval eyes, compact ears, tiny limbs, dark brown cloven hooves, and a small curly tail. Rendering is premium soft clay-like 3D with warm upper-left studio lighting and clean transparent silhouettes. Facial features remain small and stable; avoid eyebrows, hair, long limbs, a separate human-like torso, or oversized expressive eyes.
+
+Although `MASCOT.md` v1.1 permits an unclothed functional UI presentation, Batch 03 intentionally uses the full branded canonical mode in every asset. Piggles always wears the plain charcoal shirt with the official pink snout-bearing Piggles `P` centered and clearly visible on the chest. Adverse states stay reassuring: errors communicate recognition rather than panic; empty and no-results states remain curious and optimistic; loading and maintenance feel active and dependable. Props stay within cream, charcoal, warm gray, and restrained brand pink. Avoid harsh alarm styling, photoreal skin, busy scenes, cropped anatomy, generic replacement logos, and reused compositions.
