@@ -14,7 +14,7 @@
 // The platform's own answer is a Font Awesome glyph toned by state (red for a failure,
 // amber for a filter, the app's hue for a first run). That is a real improvement
 // over five identical grey pictures — but it is still five identical PICTURES
-// told apart by a colour. A character tells them apart by POSE, which carries
+// told apart by a color. A character tells them apart by POSE, which carries
 // further and needs no reading.
 //
 // ── SIZE: TWO VALUES, AND WHY IT USED TO BE ONE ─────────────────────────────
@@ -66,41 +66,41 @@ import { PigglesMascot } from '@piggles/mascot/react';
 import type { ProductStateArtProps } from '@/lib/product';
 
 export function PigglesStateArt({ state, module }: ProductStateArtProps) {
-  // A pane that knows which app it belongs to gets that app's own picture. One
-  // that does not — a cross-cutting surface, a dialog — falls through to the
-  // generic pose for the state, which is still better than a grey glyph.
-  const app = module ? MODULE_TO_APP[module] : undefined;
+    // A pane that knows which app it belongs to gets that app's own picture. One
+    // that does not — a cross-cutting surface, a dialog — falls through to the
+    // generic pose for the state, which is still better than a grey glyph.
+    const app = module ? MODULE_TO_APP[module] : undefined;
 
-  if (state === 'first-run' || state === 'empty') {
-    // An empty list is an invitation, and the invitation is app-shaped: what is
-    // missing from Bookings is not what is missing from Stock.
-    const pose = app ? mascotForApp(app).id : resolveIntent('empty').id;
-    // `md`, not `sm` — eleven of the fifteen app poses are scenes now, and the
-    // prop that says WHICH app this is disappears at 96px. See the size note in
-    // the header.
-    return <PigglesMascot pose={pose} size="md" className="-mb-2" />;
-  }
+    if (state === 'first-run' || state === 'empty') {
+        // An empty list is an invitation, and the invitation is app-shaped: what is
+        // missing from Bookings is not what is missing from Stock.
+        const pose = app ? mascotForApp(app).id : resolveIntent('empty').id;
+        // `md`, not `sm` — eleven of the fifteen app poses are scenes now, and the
+        // prop that says WHICH app this is disappears at 96px. See the size note in
+        // the header.
+        return <PigglesMascot pose={pose} size="md" className="-mb-2" />;
+    }
 
-  if (state === 'no-results') {
-    // Not the same as empty, and the pose is the whole distinction: something IS
-    // here, the filter is hiding it. She is looking for it.
-    return <PigglesMascot intent="no-results" size="sm" className="-mb-2" />;
-  }
+    if (state === 'no-results') {
+        // Not the same as empty, and the pose is the whole distinction: something IS
+        // here, the filter is hiding it. She is looking for it.
+        return <PigglesMascot intent="no-results" size="sm" className="-mb-2" />;
+    }
 
-  if (state === 'unreachable') {
-    // A recoverable system fault — the server did not answer. NOT a payment
-    // failure and NOT a security event; both of those are money or trust, and
-    // both are plain and calm with no character anywhere near them.
-    return <PigglesMascot intent="server-error" size="sm" className="-mb-2" />;
-  }
+    if (state === 'unreachable') {
+        // A recoverable system fault — the server did not answer. NOT a payment
+        // failure and NOT a security event; both of those are money or trust, and
+        // both are plain and calm with no character anywhere near them.
+        return <PigglesMascot intent="server-error" size="sm" className="-mb-2" />;
+    }
 
-  if (state === 'missing') {
-    // The record is gone. Nothing is broken and nothing can be retried, so this
-    // is the lost-and-looking pose rather than the something-went-wrong one.
-    return <PigglesMascot intent="not-found" size="sm" className="-mb-2" />;
-  }
+    if (state === 'missing') {
+        // The record is gone. Nothing is broken and nothing can be retried, so this
+        // is the lost-and-looking pose rather than the something-went-wrong one.
+        return <PigglesMascot intent="not-found" size="sm" className="-mb-2" />;
+    }
 
-  // Waiting. Deliberately the smallest of the lot: this one appears for a second
-  // and then leaves, so it should register and not perform.
-  return <PigglesMascot intent="loading" size="sm" />;
+    // Waiting. Deliberately the smallest of the lot: this one appears for a second
+    // and then leaves, so it should register and not perform.
+    return <PigglesMascot intent="loading" size="sm" />;
 }

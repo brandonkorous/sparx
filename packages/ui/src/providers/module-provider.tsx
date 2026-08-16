@@ -1,47 +1,47 @@
 import * as React from 'react';
 
 export type SparxModule =
-  // Legacy Site Builder color identity (the `/sitebuilder` dashboard surface).
-  // The billable site-building module is now `builder`; `storefront` survives
-  // only to color the legacy surfaces until /sitebuilder folds into /builder.
-  | 'storefront'
-  // The site-building module (docs/40), `/builder` — the billable foundation
-  // module (themes, layouts, pages, domains). Formerly marketed as "Storefront".
-  | 'builder'
-  | 'commerce'
-  | 'cms'
-  | 'crm'
-  | 'email'
-  | 'b2b'
-  | 'invoicing'
-  | 'ai'
-  | 'dropship'
-  | 'inventory'
-  | 'chat'
-  | 'scheduling'
-  // Social (docs/133) — organic posting to Facebook/Instagram/Pinterest. A real
-  // independently-gated module (it owns a dashboard surface), simply priced at $0.
-  | 'social'
-  // Automations, SEO + Finance are platform surfaces (always-on, not separately
-  // billed), but they own a brand color so their pages read in-module. They are
-  // intentionally NOT in moduleManifests — they get no gated sidebar slot.
-  | 'automations'
-  | 'seo'
-  // Finance (docs/109) is the money hub — a peer of Settings, but it owns a hue
-  // so its surfaces pop AND a finance signal embedded in another module (e.g. the
-  // Payouts card on the Commerce overview) reads as finance, not that module.
-  | 'finance'
-  // Staff (docs/149) — the people who do the work. A real billable module with its
-  // own surfaces, and a hue of its own so a staff signal embedded in another
-  // module (the technician on a job, the person a booking is assigned to) reads as
-  // staff rather than as that module.
-  | 'staff'
-  // Partner Portal (docs/114 §B.7) — a first-class platform area (the Finance
-  // pattern), NOT a module: no manifest, no billing. It owns a violet hue so the
-  // whole portal + any partner signal (a referral badge, a commission tile) reads
-  // as "partner" wherever it surfaces.
-  | 'partner'
-  | 'platform';
+    // Legacy Site Builder color identity (the `/sitebuilder` dashboard surface).
+    // The billable site-building module is now `builder`; `storefront` survives
+    // only to color the legacy surfaces until /sitebuilder folds into /builder.
+    | 'storefront'
+    // The site-building module (docs/40), `/builder` — the billable foundation
+    // module (themes, layouts, pages, domains). Formerly marketed as "Storefront".
+    | 'builder'
+    | 'commerce'
+    | 'cms'
+    | 'crm'
+    | 'email'
+    | 'b2b'
+    | 'invoicing'
+    | 'ai'
+    | 'dropship'
+    | 'inventory'
+    | 'chat'
+    | 'scheduling'
+    // Social (docs/133) — organic posting to Facebook/Instagram/Pinterest. A real
+    // independently-gated module (it owns a dashboard surface), simply priced at $0.
+    | 'social'
+    // Automations, SEO + Finance are platform surfaces (always-on, not separately
+    // billed), but they own a brand color so their pages read in-module. They are
+    // intentionally NOT in moduleManifests — they get no gated sidebar slot.
+    | 'automations'
+    | 'seo'
+    // Finance (docs/109) is the money hub — a peer of Settings, but it owns a hue
+    // so its surfaces pop AND a finance signal embedded in another module (e.g. the
+    // Payouts card on the Commerce overview) reads as finance, not that module.
+    | 'finance'
+    // Staff (docs/149) — the people who do the work. A real billable module with its
+    // own surfaces, and a hue of its own so a staff signal embedded in another
+    // module (the technician on a job, the person a booking is assigned to) reads as
+    // staff rather than as that module.
+    | 'staff'
+    // Partner Portal (docs/114 §B.7) — a first-class platform area (the Finance
+    // pattern), NOT a module: no manifest, no billing. It owns a violet hue so the
+    // whole portal + any partner signal (a referral badge, a commission tile) reads
+    // as "partner" wherever it surfaces.
+    | 'partner'
+    | 'platform';
 
 /**
  * Paints a subtree with a module's identity: everything inside resolves
@@ -51,7 +51,7 @@ export type SparxModule =
  * It renders **one attribute** and nothing else. The mapping from
  * `data-module="commerce"` to `--color-module` / `--color-module-content` lives
  * in `@sparx/brand/theme.css` (the "module bridge" block), beside the tokens it
- * maps — so this file knows a module's NAME and never its colour.
+ * maps — so this file knows a module's NAME and never its color.
  *
  * ## Why it used to be bigger, and what that cost
  *
@@ -93,21 +93,21 @@ export type SparxModule =
  * genuinely do land on identical results.
  */
 export function ModuleProvider({
-  module,
-  children,
-  className,
-  style,
+    module,
+    children,
+    className,
+    style,
 }: {
-  module: SparxModule;
-  children: React.ReactNode;
-  className?: string;
-  /** Layout only. It is NOT a hook for colour — the hue comes from the
-   *  attribute, and an inline style here is what caused the bug above. */
-  style?: React.CSSProperties;
+    module: SparxModule;
+    children: React.ReactNode;
+    className?: string;
+    /** Layout only. It is NOT a hook for color — the hue comes from the
+     *  attribute, and an inline style here is what caused the bug above. */
+    style?: React.CSSProperties;
 }) {
-  return (
-    <div data-module={module} className={className} style={style}>
-      {children}
-    </div>
-  );
+    return (
+        <div data-module={module} className={className} style={style}>
+            {children}
+        </div>
+    );
 }

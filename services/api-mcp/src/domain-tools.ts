@@ -217,7 +217,9 @@ const purchaseDomainTool = {
     //    verification, not self-signed here.
     let dnsConfigured = false;
     try {
-      const dnsRecords = buildSparxDnsRecords();
+      // The TENANT's zone — these CNAMEs are what their domain will point at,
+      // and a customer must never be handed another brand's ingress hostname.
+      const dnsRecords = buildSparxDnsRecords(await tenantZoneFor(ctx.tenantId));
       await registrar.configureDNS(input.domain, dnsRecords);
       dnsConfigured = true;
     } catch {
@@ -301,3 +303,23 @@ export const domainMcpTools = [
   suggestDomainsTool,
   purchaseDomainTool,
 ];
+
+/** Which zone this tenant's free subdomain sits in — read off the host they
+ *  already have rather than assumed, so no shared code branches on brand.
+ *  Mirrors services/api-rest's `tenantZone`; null when they have none, and the
+ *  record builder then falls back to the deployment default. */
+async function tenantZoneFor(tenantId: string): Promise<string | null> {
+  const rows = await prisma.domain.findMany({
+    where: { tenantId, type: 'subdomain' },
+    select: { host: true },
+  });
+  const zones = (process.env.SPARX_ZONE_DOMAINS ?? process.env.SPARX_ZONE_DOMAIN ?? 'sparx.zone')
+    .split(',')
+    .map((z) => z.trim().toLowerCase())
+    .filter(Boolean);
+  for (const { host } of rows) {
+    const zone = zones.find((z) => host === z || host.endsWith(`.${z}`));
+    if (zone) return zone;
+  }
+  return null;
+}

@@ -12,6 +12,7 @@
 
 import type { HostNode, Node, Theme } from '@wizeworks/silicaui-html';
 import type { PaletteGroup } from '@wizeworks/silicaui-builder/react';
+import type { EmailColorDefaults, EmailPaletteItem } from '@wizeworks/silicaui-builder/email';
 import type { ReactNode } from 'react';
 import type { DocumentKind, DocumentRef } from '../documents/types';
 import type { AddressableNode } from '../tree/walk';
@@ -37,6 +38,24 @@ export interface InspectorContext {
   isRoot: boolean;
 }
 
+/** Resolving what an email canvas draws, against the app's own sample recipient. */
+export interface EmailPreviewHost {
+  /** A bound node's value — `data: { kind: 'value', ref }` on the node. */
+  resolveBinding?: (ref: string, attr?: string) => string | undefined;
+
+  /**
+   * An inline `{{…}}` merge tag whose body is not a bare dotted path —
+   * `{{customer.firstName ?? "there"}}`, a formatter, an ESP's own grammar.
+   *
+   * The expression language belongs to the app, never to the engine: the engine
+   * hands over whatever is between the braces, trimmed, and does nothing else
+   * with it. Wire this to the SAME evaluator the send uses, or the canvas and
+   * the inbox will disagree about what a fallback means — and a fallback is
+   * exactly what stops a nameless customer reading "Hi  — thanks".
+   */
+  resolveExpression?: (expr: string) => string | undefined;
+}
+
 /** What the app adds to — and takes out of — the Insert palette for one document. */
 export interface CatalogScope {
   /** Groups to offer beyond silica's own catalog. */
@@ -49,7 +68,7 @@ export interface StudioHost {
   /**
    * The theme a site wears before anyone opens the theme builder — the app
    * derives it from the tenant's brand. Required, because the alternative is a
-   * canvas that paints a business's site in someone else's colours until they
+   * canvas that paints a business's site in someone else's colors until they
    * notice.
    */
   fallbackTheme: Theme;
@@ -64,6 +83,26 @@ export interface StudioHost {
    * is still one pane away in the document it belongs to.
    */
   catalog?: (kind: DocumentKind) => CatalogScope;
+
+  /**
+   * Ready-made email blocks offered ON TOP of silica's own eight primitives — a
+   * summary card, a callout, a CTA an author drops in one move.
+   *
+   * A separate seam from `catalog` because it is a separate vocabulary: an email
+   * block is an `EmailNode`, and offering one in the site palette (or a section
+   * in the email palette) would produce a node the other document cannot hold.
+   */
+  emailCatalog?: () => EmailPaletteItem[];
+
+  /**
+   * The literal colours a NEW email block is seeded with.
+   *
+   * Literal, because email HTML cannot ship CSS custom properties — every colour
+   * in a sent email is frozen at the moment it is authored. Supplying the
+   * tenant's own resolved palette here is what makes a fresh button land on
+   * brand instead of on silica's neutral grey.
+   */
+  emailColors?: EmailColorDefaults;
 
   /**
    * Draw a pinned functional core — a cart, a checkout, the brand mark — on the
@@ -91,6 +130,16 @@ export interface StudioHost {
   resolveBinding?: (ref: string, attr?: string) => string | undefined;
 
   /**
+   * How an EMAIL canvas resolves what it draws.
+   *
+   * Its own pair, not the site's `resolveBinding`, because they read different
+   * sample data: `customer.firstName` means the recipient of this email, and
+   * resolving it against the site's preview root would print a plausible wrong
+   * name — the failure that looks exactly like a correct one.
+   */
+  emailPreview?: EmailPreviewHost;
+
+  /**
    * Extra sections for the inspector's Settings tab, for the things the app knows
    * about that the engine cannot — a page's address and search wording, a product
    * pin, a per-module editor.
@@ -98,8 +147,12 @@ export interface StudioHost {
    * The context carries WHICH document, and whether this is its root, because the
    * most useful panel of all belongs to the document rather than to any node in it:
    * an author who selects the page itself expects to find its address there.
+   *
+   * `node` is undefined on an EMAIL document. Email's node vocabulary is not the
+   * site's — an `EmailNode` is not addressable in the site's sense — so an email
+   * pane asks only for the document-level panel, with `isRoot` true.
    */
-  inspectorPanels?: (node: AddressableNode, ctx: InspectorContext) => ReactNode;
+  inspectorPanels?: (node: AddressableNode | undefined, ctx: InspectorContext) => ReactNode;
 
   /** Mint an id for a newly inserted node. Defaults to the engine's own. */
   makeId?: () => string;

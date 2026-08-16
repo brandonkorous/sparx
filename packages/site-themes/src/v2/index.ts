@@ -6,7 +6,7 @@
 //
 // `css.ts` (the `--st-*` emitter, plus its derived space scale, shadow set and
 // legacy aliases) and `legacy.ts` (the v1→v2 bridge that fed it) are DELETED. They
-// emitted a parallel token vocabulary for the same values, which made tenant colour
+// emitted a parallel token vocabulary for the same values, which made tenant color
 // have two sources of truth — reconciled by stylesheet order, so an applied theme
 // could silently keep the previous palette. Do not add another emitter here: a
 // second vocabulary is the bug, whichever way it points.

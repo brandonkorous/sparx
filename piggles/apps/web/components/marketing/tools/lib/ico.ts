@@ -22,47 +22,47 @@
  */
 
 export interface IcoEntry {
-  size: number;
-  png: ArrayBuffer;
+    size: number;
+    png: ArrayBuffer;
 }
 
 export function buildIco(entries: IcoEntry[]): Blob {
-  if (entries.length === 0) throw new Error('An .ico needs at least one image in it.');
+    if (entries.length === 0) throw new Error('An .ico needs at least one image in it.');
 
-  const HEADER = 6;
-  const RECORD = 16;
-  const directorySize = HEADER + RECORD * entries.length;
+    const HEADER = 6;
+    const RECORD = 16;
+    const directorySize = HEADER + RECORD * entries.length;
 
-  const total = directorySize + entries.reduce((sum, e) => sum + e.png.byteLength, 0);
-  const buffer = new ArrayBuffer(total);
-  const view = new DataView(buffer);
-  const bytes = new Uint8Array(buffer);
+    const total = directorySize + entries.reduce((sum, e) => sum + e.png.byteLength, 0);
+    const buffer = new ArrayBuffer(total);
+    const view = new DataView(buffer);
+    const bytes = new Uint8Array(buffer);
 
-  // Header: reserved, type 1 (icon), how many images.
-  view.setUint16(0, 0, true);
-  view.setUint16(2, 1, true);
-  view.setUint16(4, entries.length, true);
+    // Header: reserved, type 1 (icon), how many images.
+    view.setUint16(0, 0, true);
+    view.setUint16(2, 1, true);
+    view.setUint16(4, entries.length, true);
 
-  let offset = directorySize;
-  entries.forEach((entry, i) => {
-    const at = HEADER + i * RECORD;
+    let offset = directorySize;
+    entries.forEach((entry, i) => {
+        const at = HEADER + i * RECORD;
 
-    // Width and height are single bytes, and 256 does not fit in one — the
-    // format's answer is that ZERO MEANS 256. Writing 256 here truncates to 0
-    // by accident and happens to work, which is the sort of thing that stops
-    // working the day somebody adds a bounds check.
-    view.setUint8(at, entry.size >= 256 ? 0 : entry.size);
-    view.setUint8(at + 1, entry.size >= 256 ? 0 : entry.size);
-    view.setUint8(at + 2, 0); // palette colours — 0 for anything truecolour
-    view.setUint8(at + 3, 0); // reserved
-    view.setUint16(at + 4, 1, true); // colour planes
-    view.setUint16(at + 6, 32, true); // bits per pixel
-    view.setUint32(at + 8, entry.png.byteLength, true);
-    view.setUint32(at + 12, offset, true);
+        // Width and height are single bytes, and 256 does not fit in one — the
+        // format's answer is that ZERO MEANS 256. Writing 256 here truncates to 0
+        // by accident and happens to work, which is the sort of thing that stops
+        // working the day somebody adds a bounds check.
+        view.setUint8(at, entry.size >= 256 ? 0 : entry.size);
+        view.setUint8(at + 1, entry.size >= 256 ? 0 : entry.size);
+        view.setUint8(at + 2, 0); // palette colors — 0 for anything truecolor
+        view.setUint8(at + 3, 0); // reserved
+        view.setUint16(at + 4, 1, true); // color planes
+        view.setUint16(at + 6, 32, true); // bits per pixel
+        view.setUint32(at + 8, entry.png.byteLength, true);
+        view.setUint32(at + 12, offset, true);
 
-    bytes.set(new Uint8Array(entry.png), offset);
-    offset += entry.png.byteLength;
-  });
+        bytes.set(new Uint8Array(entry.png), offset);
+        offset += entry.png.byteLength;
+    });
 
-  return new Blob([buffer], { type: 'image/x-icon' });
+    return new Blob([buffer], { type: 'image/x-icon' });
 }

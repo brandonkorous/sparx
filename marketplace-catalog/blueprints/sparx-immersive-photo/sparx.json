@@ -1,38 +1,44 @@
 {
-  "schemaVersion": 1,
-  "category": "blueprint",
-  "slug": "sparx-immersive-photo",
-  "name": "Immersive Photo",
-  "version": "1.4.0",
-  "tagline": "A dark, image-led template for a journal that photographs and sells prints.",
-  "description": "An immersive, photo-led journal on a near-black cinematic ground where the photography carries all the colour — a full-bleed photo cover, a photo-forward feed, a chaptered photo-essay band, and a bespoke photo-forward article reader, lit by one luminous solar-amber accent. Modelled on the immersive-photojournalism archetype; shipped as Wayfarer, a travel & photography journal. Ships a light store (fine-art prints, field gear, a photobook) to demonstrate content + commerce together.",
-  "payload": "blueprint.ts",
-  "facets": {
-    "vertical": "content",
-    "industry": "Travel & photography"
-  },
-  "pricing": {
-    "model": "free",
-    "priceCents": 0
-  },
-  "requires": {
-    "modules": ["builder", "commerce", "cms", "crm", "email"]
-  },
-  "media": [
-    {
-      "file": "media/icon.png",
-      "kind": "icon",
-      "alt": "Immersive Photo icon"
+    "schemaVersion": 1,
+    "category": "blueprint",
+    "slug": "sparx-immersive-photo",
+    "name": "Immersive Photo",
+    "version": "1.4.0",
+    "tagline": "A dark, image-led template for a journal that photographs and sells prints.",
+    "description": "An immersive, photo-led journal on a near-black cinematic ground where the photography carries all the color — a full-bleed photo cover, a photo-forward feed, a chaptered photo-essay band, and a bespoke photo-forward article reader, lit by one luminous solar-amber accent. Modelled on the immersive-photojournalism archetype; shipped as Wayfarer, a travel & photography journal. Ships a light store (fine-art prints, field gear, a photobook) to demonstrate content + commerce together.",
+    "payload": "blueprint.ts",
+    "facets": {
+        "vertical": "content",
+        "industry": "Travel & photography"
     },
-    {
-      "file": "media/preview.png",
-      "kind": "preview",
-      "alt": "Immersive Photo — home page preview"
-    }
-  ],
-  "author": {
-    "displayName": "WizeWorks"
-  },
-  "accent": "#e7b643",
-  "sortWeight": 100
+    "pricing": {
+        "model": "free",
+        "priceCents": 0
+    },
+    "requires": {
+        "modules": [
+            "builder",
+            "commerce",
+            "cms",
+            "crm",
+            "email"
+        ]
+    },
+    "media": [
+        {
+            "file": "media/icon.png",
+            "kind": "icon",
+            "alt": "Immersive Photo icon"
+        },
+        {
+            "file": "media/preview.png",
+            "kind": "preview",
+            "alt": "Immersive Photo — home page preview"
+        }
+    ],
+    "author": {
+        "displayName": "WizeWorks"
+    },
+    "accent": "#e7b643",
+    "sortWeight": 100
 }

@@ -11,7 +11,7 @@
  * WHAT BELONGS HERE: rules and safelists a SURFACE needs, expressed entirely in
  * tokens, so they mean the right thing under either brand's token values.
  *
- * WHAT DOES NOT: anything naming a brand — the `@plugin` colour list, the theme
+ * WHAT DOES NOT: anything naming a brand — the `@plugin` color list, the theme
  * import, the heading font, the mascot keyframes. Those stay in each app's own
  * globals.css, which is the file that knows which brand it is.
  *
@@ -143,7 +143,7 @@
 /* ── The application shell is not a scrolling document ───────────────────────
    Panes own their own scrolling; the page itself never scrolls. Both shells are
    fixed-viewport applications, so this is a property of the workbench rather
-   than of either brand. Colour comes from tokens, so each brand paints its own
+   than of either brand. Color comes from tokens, so each brand paints its own
    canvas without this file naming one. */
 html,
 body {
@@ -177,12 +177,12 @@ body {
   color: var(--color-base-content);
 }
 
-/* ── An uncoloured form control follows the MODULE, not the brand ────────────
+/* ── An uncolored form control follows the MODULE, not the brand ────────────
  *
  * Every silica field resolves its focus ring as
  * `var(--<family>-accent, var(--color-primary))`. In sparx `--color-primary` is
  * Ember #e04631 — the wordmark's red-orange — so a control with no `color` prop
- * focused in what reads, at a glance, as the danger colour: the field says "you
+ * focused in what reads, at a glance, as the danger color: the field says "you
  * got that wrong" about content that is perfectly fine. A scan of the CRM
  * surfaces alone found 52 of 207 controls in that state across 15 files, and the
  * per-field fix is a prop nobody can be relied on to remember on the 53rd.

@@ -1,613 +1,737 @@
 {
-  "categories": [
-    {
-      "handle": "timber-sheet",
-      "name": "Timber & sheet",
-      "description": "Structural timber, carcassing and sheet boards.",
-      "featured": true
-    },
-    {
-      "handle": "building-cement",
-      "name": "Building & cement",
-      "description": "Plasterboard, cement, insulation and aggregates.",
-      "featured": true
-    },
-    {
-      "handle": "fixings",
-      "name": "Fixings",
-      "description": "Screws, sealants and site consumables.",
-      "featured": true
-    },
-    {
-      "handle": "safety",
-      "name": "Safety",
-      "description": "Hi-vis, workwear and site PPE.",
-      "featured": true
-    }
-  ],
-  "collections": [
-    {
-      "handle": "trade-favourites",
-      "name": "Trade favourites",
-      "description": "The lines that leave the yard the fastest.",
-      "type": "manual",
-      "featured": true,
-      "productHandles": [
-        "cls-studwork-timber",
-        "plasterboard-pallet",
-        "general-purpose-cement",
-        "multipurpose-wood-screws"
-      ]
-    },
-    {
-      "handle": "new-lines",
-      "name": "New lines",
-      "description": "Just added to the yard.",
-      "type": "manual",
-      "featured": true,
-      "productHandles": ["pir-insulation-board", "trade-silicone-sealant", "first-fix-bundle"]
-    },
-    {
-      "handle": "site-essentials",
-      "name": "Site essentials",
-      "description": "What no site runs without.",
-      "type": "manual",
-      "featured": false,
-      "productHandles": [
-        "cls-studwork-timber",
-        "osb3-sheathing-board",
-        "plasterboard-pallet",
-        "multipurpose-wood-screws",
-        "general-purpose-cement",
-        "hi-vis-vest-box"
-      ]
-    },
-    {
-      "handle": "groundworks",
-      "name": "Groundworks",
-      "description": "Aggregates and cement for the base.",
-      "type": "manual",
-      "featured": false,
-      "productHandles": ["mot-type-1-bulk-bag", "general-purpose-cement"]
-    },
-    {
-      "handle": "first-fix",
-      "name": "First-fix",
-      "description": "Timber and fixings to set out from empty.",
-      "type": "manual",
-      "featured": false,
-      "productHandles": ["cls-studwork-timber", "multipurpose-wood-screws", "first-fix-bundle"]
-    },
-    {
-      "handle": "safety-workwear",
-      "name": "Safety & workwear",
-      "description": "Kit the crew and the site gate.",
-      "type": "manual",
-      "featured": false,
-      "productHandles": ["hi-vis-vest-box"]
-    }
-  ],
-  "products": [
-    {
-      "handle": "cls-studwork-timber",
-      "title": "C16 CLS Studwork Timber, 63×38mm — Pack of 20",
-      "description": "Kiln-dried, planed C16 CLS studwork with eased edges — the everyday stud for partitions, stud walls and carcassing. A banded pack of 20 lengths. MOQ 1 pack. In 2.4m that’s around £2.90 a length; take it by the pack and the pallet drops it further.",
-      "status": "active",
-      "productType": "Timber",
-      "vendor": "Yardstock Trade Supplies",
-      "tags": ["timber", "cls", "studwork", "carcassing", "c16"],
-      "categoryHandles": ["timber-sheet"],
-      "collectionHandles": ["trade-favourites", "site-essentials", "first-fix"],
-      "seoTitle": "C16 CLS Studwork Timber 63×38mm, Pack of 20 | Yardstock",
-      "seoDescription": "Kiln-dried planed C16 CLS studwork, 63×38mm, banded pack of 20 lengths. 2.4m or 3.0m, sold by the pack.",
-      "options": [
+    "categories": [
         {
-          "name": "Length",
-          "displayType": "dropdown",
-          "values": [
-            {
-              "value": "2.4m"
-            },
-            {
-              "value": "3.0m"
-            }
-          ]
-        }
-      ],
-      "variants": [
-        {
-          "sku": "YRD-TMB-CLS-24",
-          "priceCents": 5800,
-          "isDefault": true,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Length": "2.4m"
-          }
+            "handle": "timber-sheet",
+            "name": "Timber & sheet",
+            "description": "Structural timber, carcassing and sheet boards.",
+            "featured": true
         },
         {
-          "sku": "YRD-TMB-CLS-30",
-          "priceCents": 7200,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Length": "3.0m"
-          }
-        }
-      ],
-      "images": [
-        {
-          "assetId": "prod-cls",
-          "isPrimary": true,
-          "alt": "A banded pack of C16 CLS studwork timber"
-        }
-      ]
-    },
-    {
-      "handle": "osb3-sheathing-board",
-      "title": "OSB3 Sheathing Board, 2400×1200 — Pack of 10",
-      "description": "Load-bearing OSB3 for use in humid conditions — sheathing, flooring, hoarding and site boards. Full 2400×1200 sheets in a banded pack of 10. MOQ 1 pack. Pick 11mm for hoarding and lining or 18mm where it carries a load.",
-      "status": "active",
-      "productType": "Sheet material",
-      "vendor": "Yardstock Trade Supplies",
-      "tags": ["sheet", "osb", "osb3", "boards", "structural"],
-      "categoryHandles": ["timber-sheet"],
-      "collectionHandles": ["trade-favourites", "site-essentials"],
-      "seoTitle": "OSB3 Sheathing Board 2400×1200, Pack of 10 | Yardstock",
-      "seoDescription": "Load-bearing OSB3 boards, full 2400×1200 sheets, pack of 10. 11mm or 18mm, sold by the pack.",
-      "options": [
-        {
-          "name": "Thickness",
-          "displayType": "dropdown",
-          "values": [
-            {
-              "value": "11mm"
-            },
-            {
-              "value": "18mm"
-            }
-          ]
-        }
-      ],
-      "variants": [
-        {
-          "sku": "YRD-SHT-OSB-11",
-          "priceCents": 13500,
-          "isDefault": true,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Thickness": "11mm"
-          }
+            "handle": "building-cement",
+            "name": "Building & cement",
+            "description": "Plasterboard, cement, insulation and aggregates.",
+            "featured": true
         },
         {
-          "sku": "YRD-SHT-OSB-18",
-          "priceCents": 18500,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Thickness": "18mm"
-          }
-        }
-      ],
-      "images": [
-        {
-          "assetId": "prod-osb",
-          "isPrimary": true,
-          "alt": "A stack of OSB3 sheathing boards"
-        }
-      ]
-    },
-    {
-      "handle": "plasterboard-pallet",
-      "title": "Standard Plasterboard, 2400×1200 — Pallet of 50",
-      "description": "Tapered-edge standard wallboard for dry-lining walls and ceilings, 2400×1200 sheets on a shrink-wrapped pallet of 50. MOQ 1 pallet — the way a board job is bought. Choose 9.5mm for ceilings or 12.5mm for walls and better acoustics.",
-      "status": "active",
-      "productType": "Plasterboard",
-      "vendor": "Yardstock Trade Supplies",
-      "tags": ["plasterboard", "drylining", "boards", "wallboard"],
-      "categoryHandles": ["building-cement"],
-      "collectionHandles": ["trade-favourites", "site-essentials"],
-      "seoTitle": "Standard Plasterboard 2400×1200, Pallet of 50 | Yardstock",
-      "seoDescription": "Tapered-edge standard plasterboard, 2400×1200, pallet of 50. 9.5mm or 12.5mm, sold by the pallet.",
-      "options": [
-        {
-          "name": "Thickness",
-          "displayType": "dropdown",
-          "values": [
-            {
-              "value": "9.5mm"
-            },
-            {
-              "value": "12.5mm"
-            }
-          ]
-        }
-      ],
-      "variants": [
-        {
-          "sku": "YRD-BRD-PB-95",
-          "priceCents": 28000,
-          "isDefault": true,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Thickness": "9.5mm"
-          }
+            "handle": "fixings",
+            "name": "Fixings",
+            "description": "Screws, sealants and site consumables.",
+            "featured": true
         },
         {
-          "sku": "YRD-BRD-PB-125",
-          "priceCents": 31000,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Thickness": "12.5mm"
-          }
+            "handle": "safety",
+            "name": "Safety",
+            "description": "Hi-vis, workwear and site PPE.",
+            "featured": true
         }
-      ],
-      "images": [
+    ],
+    "collections": [
         {
-          "assetId": "prod-plasterboard",
-          "isPrimary": true,
-          "alt": "A pallet of standard plasterboard sheets"
-        }
-      ]
-    },
-    {
-      "handle": "general-purpose-cement",
-      "title": "General-Purpose Cement, 25kg — Pallet of 56",
-      "description": "CEM II general-purpose cement in 25kg bags for concrete, mortar and render — a shrink-wrapped, weather-hooded pallet of 56 bags. MOQ 1 pallet. Buy it by the pallet and keep the mixer fed for the whole pour without a second run to the yard.",
-      "status": "active",
-      "productType": "Cement",
-      "vendor": "Yardstock Trade Supplies",
-      "tags": ["cement", "cem-ii", "concrete", "mortar", "bulk"],
-      "categoryHandles": ["building-cement"],
-      "collectionHandles": ["trade-favourites", "groundworks", "site-essentials"],
-      "seoTitle": "General-Purpose Cement 25kg, Pallet of 56 | Yardstock",
-      "seoDescription": "CEM II general-purpose cement, 25kg bags, weather-hooded pallet of 56. For concrete, mortar and render.",
-      "variants": [
-        {
-          "sku": "YRD-CEM-GP-25",
-          "priceCents": 24500,
-          "isDefault": true,
-          "inventoryPolicy": "continue"
-        }
-      ],
-      "images": [
-        {
-          "assetId": "prod-cement",
-          "isPrimary": true,
-          "alt": "General-Purpose Cement, 25kg — Pallet of 56"
-        }
-      ]
-    },
-    {
-      "handle": "pir-insulation-board",
-      "title": "PIR Insulation Board, 2400×1200 — Pack of 8",
-      "description": "Foil-faced PIR rigid insulation for floors, walls and roofs — high performance for its thickness, easy to cut and fit. Full 2400×1200 boards in a pack of 8. MOQ 1 pack. Spec the thickness your U-value calls for; thicker boards ship in smaller packs.",
-      "status": "active",
-      "productType": "Insulation",
-      "vendor": "Yardstock Trade Supplies",
-      "tags": ["insulation", "pir", "rigid", "thermal", "boards"],
-      "categoryHandles": ["building-cement"],
-      "collectionHandles": ["new-lines", "site-essentials"],
-      "seoTitle": "PIR Insulation Board 2400×1200, Pack of 8 | Yardstock",
-      "seoDescription": "Foil-faced PIR rigid insulation, 2400×1200 boards, pack of 8. 25mm to 100mm, sold by the pack.",
-      "options": [
-        {
-          "name": "Thickness",
-          "displayType": "dropdown",
-          "values": [
-            {
-              "value": "25mm"
-            },
-            {
-              "value": "50mm"
-            },
-            {
-              "value": "75mm"
-            },
-            {
-              "value": "100mm"
-            }
-          ]
-        }
-      ],
-      "variants": [
-        {
-          "sku": "YRD-INS-PIR-25",
-          "priceCents": 12000,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Thickness": "25mm"
-          }
+            "handle": "trade-favourites",
+            "name": "Trade favourites",
+            "description": "The lines that leave the yard the fastest.",
+            "type": "manual",
+            "featured": true,
+            "productHandles": [
+                "cls-studwork-timber",
+                "plasterboard-pallet",
+                "general-purpose-cement",
+                "multipurpose-wood-screws"
+            ]
         },
         {
-          "sku": "YRD-INS-PIR-50",
-          "priceCents": 22000,
-          "isDefault": true,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Thickness": "50mm"
-          }
+            "handle": "new-lines",
+            "name": "New lines",
+            "description": "Just added to the yard.",
+            "type": "manual",
+            "featured": true,
+            "productHandles": [
+                "pir-insulation-board",
+                "trade-silicone-sealant",
+                "first-fix-bundle"
+            ]
         },
         {
-          "sku": "YRD-INS-PIR-75",
-          "priceCents": 31000,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Thickness": "75mm"
-          }
+            "handle": "site-essentials",
+            "name": "Site essentials",
+            "description": "What no site runs without.",
+            "type": "manual",
+            "featured": false,
+            "productHandles": [
+                "cls-studwork-timber",
+                "osb3-sheathing-board",
+                "plasterboard-pallet",
+                "multipurpose-wood-screws",
+                "general-purpose-cement",
+                "hi-vis-vest-box"
+            ]
         },
         {
-          "sku": "YRD-INS-PIR-100",
-          "priceCents": 39500,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Thickness": "100mm"
-          }
-        }
-      ],
-      "images": [
-        {
-          "assetId": "prod-pir",
-          "isPrimary": true,
-          "alt": "A pack of foil-faced PIR insulation boards"
-        }
-      ]
-    },
-    {
-      "handle": "multipurpose-wood-screws",
-      "title": "Multi-Purpose Wood Screws — Tub of 200",
-      "description": "Yellow-zinc pozi countersunk wood screws with a cutting thread that drives fast and rarely splits — the tub that lives in every van. 200 to a resealable tub. MOQ 5 tubs (a box). Pick the gauge and length your first-fix runs on.",
-      "status": "active",
-      "productType": "Fixings",
-      "vendor": "Yardstock Trade Supplies",
-      "tags": ["fixings", "screws", "wood-screws", "first-fix"],
-      "categoryHandles": ["fixings"],
-      "collectionHandles": ["trade-favourites", "first-fix", "site-essentials"],
-      "seoTitle": "Multi-Purpose Wood Screws, Tub of 200 | Yardstock",
-      "seoDescription": "Yellow-zinc pozi countersunk wood screws, cutting thread, tub of 200. 4.0×50 to 5.0×100mm.",
-      "options": [
-        {
-          "name": "Size",
-          "displayType": "dropdown",
-          "values": [
-            {
-              "value": "4.0×50mm"
-            },
-            {
-              "value": "5.0×80mm"
-            },
-            {
-              "value": "5.0×100mm"
-            }
-          ]
-        }
-      ],
-      "variants": [
-        {
-          "sku": "YRD-FIX-SCR-4050",
-          "priceCents": 1100,
-          "isDefault": true,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Size": "4.0×50mm"
-          }
+            "handle": "groundworks",
+            "name": "Groundworks",
+            "description": "Aggregates and cement for the base.",
+            "type": "manual",
+            "featured": false,
+            "productHandles": [
+                "mot-type-1-bulk-bag",
+                "general-purpose-cement"
+            ]
         },
         {
-          "sku": "YRD-FIX-SCR-5080",
-          "priceCents": 1400,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Size": "5.0×80mm"
-          }
+            "handle": "first-fix",
+            "name": "First-fix",
+            "description": "Timber and fixings to set out from empty.",
+            "type": "manual",
+            "featured": false,
+            "productHandles": [
+                "cls-studwork-timber",
+                "multipurpose-wood-screws",
+                "first-fix-bundle"
+            ]
         },
         {
-          "sku": "YRD-FIX-SCR-50100",
-          "priceCents": 1700,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Size": "5.0×100mm"
-          }
+            "handle": "safety-workwear",
+            "name": "Safety & workwear",
+            "description": "Kit the crew and the site gate.",
+            "type": "manual",
+            "featured": false,
+            "productHandles": [
+                "hi-vis-vest-box"
+            ]
         }
-      ],
-      "images": [
+    ],
+    "products": [
         {
-          "assetId": "prod-screws",
-          "isPrimary": true,
-          "alt": "A tub of multi-purpose wood screws"
-        }
-      ]
-    },
-    {
-      "handle": "trade-silicone-sealant",
-      "title": "Trade Silicone Sealant, 300ml — Case of 24",
-      "description": "Low-modulus neutral-cure silicone for sanitary, glazing and general sealing — mould-resistant, over-paintable on the neutral grades, and it tools clean. A case of 24 standard cartridges. MOQ 1 case. Choose the colour the job needs.",
-      "status": "active",
-      "productType": "Sealant",
-      "vendor": "Yardstock Trade Supplies",
-      "tags": ["sealant", "silicone", "cartridge", "fixings"],
-      "categoryHandles": ["fixings"],
-      "collectionHandles": ["site-essentials", "new-lines"],
-      "seoTitle": "Trade Silicone Sealant 300ml, Case of 24 | Yardstock",
-      "seoDescription": "Low-modulus neutral-cure silicone sealant, 300ml cartridges, case of 24. Clear, white, grey or brown.",
-      "options": [
-        {
-          "name": "Colour",
-          "displayType": "dropdown",
-          "values": [
-            {
-              "value": "Clear"
-            },
-            {
-              "value": "White"
-            },
-            {
-              "value": "Grey"
-            },
-            {
-              "value": "Brown"
-            }
-          ]
-        }
-      ],
-      "variants": [
-        {
-          "sku": "YRD-FIX-SIL-CL",
-          "priceCents": 4200,
-          "isDefault": true,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Colour": "Clear"
-          }
+            "handle": "cls-studwork-timber",
+            "title": "C16 CLS Studwork Timber, 63×38mm — Pack of 20",
+            "description": "Kiln-dried, planed C16 CLS studwork with eased edges — the everyday stud for partitions, stud walls and carcassing. A banded pack of 20 lengths. MOQ 1 pack. In 2.4m that’s around £2.90 a length; take it by the pack and the pallet drops it further.",
+            "status": "active",
+            "productType": "Timber",
+            "vendor": "Yardstock Trade Supplies",
+            "tags": [
+                "timber",
+                "cls",
+                "studwork",
+                "carcassing",
+                "c16"
+            ],
+            "categoryHandles": [
+                "timber-sheet"
+            ],
+            "collectionHandles": [
+                "trade-favourites",
+                "site-essentials",
+                "first-fix"
+            ],
+            "seoTitle": "C16 CLS Studwork Timber 63×38mm, Pack of 20 | Yardstock",
+            "seoDescription": "Kiln-dried planed C16 CLS studwork, 63×38mm, banded pack of 20 lengths. 2.4m or 3.0m, sold by the pack.",
+            "options": [
+                {
+                    "name": "Length",
+                    "displayType": "dropdown",
+                    "values": [
+                        {
+                            "value": "2.4m"
+                        },
+                        {
+                            "value": "3.0m"
+                        }
+                    ]
+                }
+            ],
+            "variants": [
+                {
+                    "sku": "YRD-TMB-CLS-24",
+                    "priceCents": 5800,
+                    "isDefault": true,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Length": "2.4m"
+                    }
+                },
+                {
+                    "sku": "YRD-TMB-CLS-30",
+                    "priceCents": 7200,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Length": "3.0m"
+                    }
+                }
+            ],
+            "images": [
+                {
+                    "assetId": "prod-cls",
+                    "isPrimary": true,
+                    "alt": "A banded pack of C16 CLS studwork timber"
+                }
+            ]
         },
         {
-          "sku": "YRD-FIX-SIL-WH",
-          "priceCents": 4200,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Colour": "White"
-          }
+            "handle": "osb3-sheathing-board",
+            "title": "OSB3 Sheathing Board, 2400×1200 — Pack of 10",
+            "description": "Load-bearing OSB3 for use in humid conditions — sheathing, flooring, hoarding and site boards. Full 2400×1200 sheets in a banded pack of 10. MOQ 1 pack. Pick 11mm for hoarding and lining or 18mm where it carries a load.",
+            "status": "active",
+            "productType": "Sheet material",
+            "vendor": "Yardstock Trade Supplies",
+            "tags": [
+                "sheet",
+                "osb",
+                "osb3",
+                "boards",
+                "structural"
+            ],
+            "categoryHandles": [
+                "timber-sheet"
+            ],
+            "collectionHandles": [
+                "trade-favourites",
+                "site-essentials"
+            ],
+            "seoTitle": "OSB3 Sheathing Board 2400×1200, Pack of 10 | Yardstock",
+            "seoDescription": "Load-bearing OSB3 boards, full 2400×1200 sheets, pack of 10. 11mm or 18mm, sold by the pack.",
+            "options": [
+                {
+                    "name": "Thickness",
+                    "displayType": "dropdown",
+                    "values": [
+                        {
+                            "value": "11mm"
+                        },
+                        {
+                            "value": "18mm"
+                        }
+                    ]
+                }
+            ],
+            "variants": [
+                {
+                    "sku": "YRD-SHT-OSB-11",
+                    "priceCents": 13500,
+                    "isDefault": true,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Thickness": "11mm"
+                    }
+                },
+                {
+                    "sku": "YRD-SHT-OSB-18",
+                    "priceCents": 18500,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Thickness": "18mm"
+                    }
+                }
+            ],
+            "images": [
+                {
+                    "assetId": "prod-osb",
+                    "isPrimary": true,
+                    "alt": "A stack of OSB3 sheathing boards"
+                }
+            ]
         },
         {
-          "sku": "YRD-FIX-SIL-GR",
-          "priceCents": 4400,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Colour": "Grey"
-          }
+            "handle": "plasterboard-pallet",
+            "title": "Standard Plasterboard, 2400×1200 — Pallet of 50",
+            "description": "Tapered-edge standard wallboard for dry-lining walls and ceilings, 2400×1200 sheets on a shrink-wrapped pallet of 50. MOQ 1 pallet — the way a board job is bought. Choose 9.5mm for ceilings or 12.5mm for walls and better acoustics.",
+            "status": "active",
+            "productType": "Plasterboard",
+            "vendor": "Yardstock Trade Supplies",
+            "tags": [
+                "plasterboard",
+                "drylining",
+                "boards",
+                "wallboard"
+            ],
+            "categoryHandles": [
+                "building-cement"
+            ],
+            "collectionHandles": [
+                "trade-favourites",
+                "site-essentials"
+            ],
+            "seoTitle": "Standard Plasterboard 2400×1200, Pallet of 50 | Yardstock",
+            "seoDescription": "Tapered-edge standard plasterboard, 2400×1200, pallet of 50. 9.5mm or 12.5mm, sold by the pallet.",
+            "options": [
+                {
+                    "name": "Thickness",
+                    "displayType": "dropdown",
+                    "values": [
+                        {
+                            "value": "9.5mm"
+                        },
+                        {
+                            "value": "12.5mm"
+                        }
+                    ]
+                }
+            ],
+            "variants": [
+                {
+                    "sku": "YRD-BRD-PB-95",
+                    "priceCents": 28000,
+                    "isDefault": true,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Thickness": "9.5mm"
+                    }
+                },
+                {
+                    "sku": "YRD-BRD-PB-125",
+                    "priceCents": 31000,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Thickness": "12.5mm"
+                    }
+                }
+            ],
+            "images": [
+                {
+                    "assetId": "prod-plasterboard",
+                    "isPrimary": true,
+                    "alt": "A pallet of standard plasterboard sheets"
+                }
+            ]
         },
         {
-          "sku": "YRD-FIX-SIL-BR",
-          "priceCents": 4400,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Colour": "Brown"
-          }
-        }
-      ],
-      "images": [
-        {
-          "assetId": "prod-sealant",
-          "isPrimary": true,
-          "alt": "A case of trade silicone sealant cartridges"
-        }
-      ]
-    },
-    {
-      "handle": "mot-type-1-bulk-bag",
-      "title": "MOT Type 1 Sub-Base — Bulk Bag (850kg)",
-      "description": "Crushed limestone MOT Type 1 to the DfT specification — the go-to compactable sub-base under drives, paths, slabs and foundations. A handled bulk bag of roughly 850kg. MOQ 1 bag. Order by the bag and we’ll crane it off where you need it.",
-      "status": "active",
-      "productType": "Aggregates",
-      "vendor": "Yardstock Trade Supplies",
-      "tags": ["aggregates", "mot-type-1", "sub-base", "groundworks", "bulk"],
-      "categoryHandles": ["building-cement"],
-      "collectionHandles": ["groundworks", "site-essentials"],
-      "seoTitle": "MOT Type 1 Sub-Base, Bulk Bag 850kg | Yardstock",
-      "seoDescription": "Crushed limestone MOT Type 1 sub-base to DfT spec, handled bulk bag ~850kg. Compactable, for drives and slabs.",
-      "variants": [
-        {
-          "sku": "YRD-AGG-MOT1-BB",
-          "priceCents": 6800,
-          "isDefault": true,
-          "inventoryPolicy": "continue"
-        }
-      ],
-      "images": [
-        {
-          "assetId": "prod-aggregate",
-          "isPrimary": true,
-          "alt": "MOT Type 1 Sub-Base — Bulk Bag (850kg)"
-        }
-      ]
-    },
-    {
-      "handle": "hi-vis-vest-box",
-      "title": "Hi-Vis Safety Vest — Box of 10",
-      "description": "EN ISO 20471 Class 2 hi-vis waistcoats with a full-length hook-and-loop front and reflective banding — the site vest a visitor, a labourer and a subbie all need on day one. A box of 10. MOQ 2 boxes. Keep a size run on the rack by the gate.",
-      "status": "active",
-      "productType": "Safety",
-      "vendor": "Yardstock Trade Supplies",
-      "tags": ["safety", "ppe", "hi-vis", "workwear", "en20471"],
-      "categoryHandles": ["safety"],
-      "collectionHandles": ["safety-workwear", "site-essentials"],
-      "seoTitle": "Hi-Vis Safety Vest, Box of 10 | Yardstock",
-      "seoDescription": "EN ISO 20471 Class 2 hi-vis waistcoats, reflective banding, box of 10. M, L or XL.",
-      "options": [
-        {
-          "name": "Size",
-          "displayType": "dropdown",
-          "values": [
-            {
-              "value": "Medium"
-            },
-            {
-              "value": "Large"
-            },
-            {
-              "value": "X-Large"
-            }
-          ]
-        }
-      ],
-      "variants": [
-        {
-          "sku": "YRD-SAF-HV-M",
-          "priceCents": 5500,
-          "isDefault": true,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Size": "Medium"
-          }
+            "handle": "general-purpose-cement",
+            "title": "General-Purpose Cement, 25kg — Pallet of 56",
+            "description": "CEM II general-purpose cement in 25kg bags for concrete, mortar and render — a shrink-wrapped, weather-hooded pallet of 56 bags. MOQ 1 pallet. Buy it by the pallet and keep the mixer fed for the whole pour without a second run to the yard.",
+            "status": "active",
+            "productType": "Cement",
+            "vendor": "Yardstock Trade Supplies",
+            "tags": [
+                "cement",
+                "cem-ii",
+                "concrete",
+                "mortar",
+                "bulk"
+            ],
+            "categoryHandles": [
+                "building-cement"
+            ],
+            "collectionHandles": [
+                "trade-favourites",
+                "groundworks",
+                "site-essentials"
+            ],
+            "seoTitle": "General-Purpose Cement 25kg, Pallet of 56 | Yardstock",
+            "seoDescription": "CEM II general-purpose cement, 25kg bags, weather-hooded pallet of 56. For concrete, mortar and render.",
+            "variants": [
+                {
+                    "sku": "YRD-CEM-GP-25",
+                    "priceCents": 24500,
+                    "isDefault": true,
+                    "inventoryPolicy": "continue"
+                }
+            ],
+            "images": [
+                {
+                    "assetId": "prod-cement",
+                    "isPrimary": true,
+                    "alt": "General-Purpose Cement, 25kg — Pallet of 56"
+                }
+            ]
         },
         {
-          "sku": "YRD-SAF-HV-L",
-          "priceCents": 5500,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Size": "Large"
-          }
+            "handle": "pir-insulation-board",
+            "title": "PIR Insulation Board, 2400×1200 — Pack of 8",
+            "description": "Foil-faced PIR rigid insulation for floors, walls and roofs — high performance for its thickness, easy to cut and fit. Full 2400×1200 boards in a pack of 8. MOQ 1 pack. Spec the thickness your U-value calls for; thicker boards ship in smaller packs.",
+            "status": "active",
+            "productType": "Insulation",
+            "vendor": "Yardstock Trade Supplies",
+            "tags": [
+                "insulation",
+                "pir",
+                "rigid",
+                "thermal",
+                "boards"
+            ],
+            "categoryHandles": [
+                "building-cement"
+            ],
+            "collectionHandles": [
+                "new-lines",
+                "site-essentials"
+            ],
+            "seoTitle": "PIR Insulation Board 2400×1200, Pack of 8 | Yardstock",
+            "seoDescription": "Foil-faced PIR rigid insulation, 2400×1200 boards, pack of 8. 25mm to 100mm, sold by the pack.",
+            "options": [
+                {
+                    "name": "Thickness",
+                    "displayType": "dropdown",
+                    "values": [
+                        {
+                            "value": "25mm"
+                        },
+                        {
+                            "value": "50mm"
+                        },
+                        {
+                            "value": "75mm"
+                        },
+                        {
+                            "value": "100mm"
+                        }
+                    ]
+                }
+            ],
+            "variants": [
+                {
+                    "sku": "YRD-INS-PIR-25",
+                    "priceCents": 12000,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Thickness": "25mm"
+                    }
+                },
+                {
+                    "sku": "YRD-INS-PIR-50",
+                    "priceCents": 22000,
+                    "isDefault": true,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Thickness": "50mm"
+                    }
+                },
+                {
+                    "sku": "YRD-INS-PIR-75",
+                    "priceCents": 31000,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Thickness": "75mm"
+                    }
+                },
+                {
+                    "sku": "YRD-INS-PIR-100",
+                    "priceCents": 39500,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Thickness": "100mm"
+                    }
+                }
+            ],
+            "images": [
+                {
+                    "assetId": "prod-pir",
+                    "isPrimary": true,
+                    "alt": "A pack of foil-faced PIR insulation boards"
+                }
+            ]
         },
         {
-          "sku": "YRD-SAF-HV-XL",
-          "priceCents": 5800,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Size": "X-Large"
-          }
-        }
-      ],
-      "images": [
+            "handle": "multipurpose-wood-screws",
+            "title": "Multi-Purpose Wood Screws — Tub of 200",
+            "description": "Yellow-zinc pozi countersunk wood screws with a cutting thread that drives fast and rarely splits — the tub that lives in every van. 200 to a resealable tub. MOQ 5 tubs (a box). Pick the gauge and length your first-fix runs on.",
+            "status": "active",
+            "productType": "Fixings",
+            "vendor": "Yardstock Trade Supplies",
+            "tags": [
+                "fixings",
+                "screws",
+                "wood-screws",
+                "first-fix"
+            ],
+            "categoryHandles": [
+                "fixings"
+            ],
+            "collectionHandles": [
+                "trade-favourites",
+                "first-fix",
+                "site-essentials"
+            ],
+            "seoTitle": "Multi-Purpose Wood Screws, Tub of 200 | Yardstock",
+            "seoDescription": "Yellow-zinc pozi countersunk wood screws, cutting thread, tub of 200. 4.0×50 to 5.0×100mm.",
+            "options": [
+                {
+                    "name": "Size",
+                    "displayType": "dropdown",
+                    "values": [
+                        {
+                            "value": "4.0×50mm"
+                        },
+                        {
+                            "value": "5.0×80mm"
+                        },
+                        {
+                            "value": "5.0×100mm"
+                        }
+                    ]
+                }
+            ],
+            "variants": [
+                {
+                    "sku": "YRD-FIX-SCR-4050",
+                    "priceCents": 1100,
+                    "isDefault": true,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Size": "4.0×50mm"
+                    }
+                },
+                {
+                    "sku": "YRD-FIX-SCR-5080",
+                    "priceCents": 1400,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Size": "5.0×80mm"
+                    }
+                },
+                {
+                    "sku": "YRD-FIX-SCR-50100",
+                    "priceCents": 1700,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Size": "5.0×100mm"
+                    }
+                }
+            ],
+            "images": [
+                {
+                    "assetId": "prod-screws",
+                    "isPrimary": true,
+                    "alt": "A tub of multi-purpose wood screws"
+                }
+            ]
+        },
         {
-          "assetId": "prod-hivis",
-          "isPrimary": true,
-          "alt": "A box of hi-vis safety vests"
-        }
-      ]
-    },
-    {
-      "handle": "first-fix-bundle",
-      "title": "First-Fix Timber & Fixings Bundle",
-      "description": "A curated bundle for starting a stud job from empty — a pack of CLS studwork, a tub of wood screws, a case of grab-and-fix sealant and a box of collated nails, packed together and priced below the sum of the packs. MOQ 1 bundle. The fastest way to load the van for a first-fix.",
-      "status": "active",
-      "productType": "Bundle",
-      "vendor": "Yardstock Trade Supplies",
-      "tags": ["bundle", "first-fix", "timber", "fixings", "kit"],
-      "categoryHandles": ["timber-sheet"],
-      "collectionHandles": ["new-lines", "first-fix", "trade-favourites"],
-      "seoTitle": "First-Fix Timber & Fixings Bundle | Yardstock",
-      "seoDescription": "A curated first-fix bundle — CLS studwork, wood screws, sealant and collated nails, priced below the sum.",
-      "variants": [
+            "handle": "trade-silicone-sealant",
+            "title": "Trade Silicone Sealant, 300ml — Case of 24",
+            "description": "Low-modulus neutral-cure silicone for sanitary, glazing and general sealing — mould-resistant, over-paintable on the neutral grades, and it tools clean. A case of 24 standard cartridges. MOQ 1 case. Choose the color the job needs.",
+            "status": "active",
+            "productType": "Sealant",
+            "vendor": "Yardstock Trade Supplies",
+            "tags": [
+                "sealant",
+                "silicone",
+                "cartridge",
+                "fixings"
+            ],
+            "categoryHandles": [
+                "fixings"
+            ],
+            "collectionHandles": [
+                "site-essentials",
+                "new-lines"
+            ],
+            "seoTitle": "Trade Silicone Sealant 300ml, Case of 24 | Yardstock",
+            "seoDescription": "Low-modulus neutral-cure silicone sealant, 300ml cartridges, case of 24. Clear, white, grey or brown.",
+            "options": [
+                {
+                    "name": "Color",
+                    "displayType": "dropdown",
+                    "values": [
+                        {
+                            "value": "Clear"
+                        },
+                        {
+                            "value": "White"
+                        },
+                        {
+                            "value": "Grey"
+                        },
+                        {
+                            "value": "Brown"
+                        }
+                    ]
+                }
+            ],
+            "variants": [
+                {
+                    "sku": "YRD-FIX-SIL-CL",
+                    "priceCents": 4200,
+                    "isDefault": true,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Clear"
+                    }
+                },
+                {
+                    "sku": "YRD-FIX-SIL-WH",
+                    "priceCents": 4200,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "White"
+                    }
+                },
+                {
+                    "sku": "YRD-FIX-SIL-GR",
+                    "priceCents": 4400,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Grey"
+                    }
+                },
+                {
+                    "sku": "YRD-FIX-SIL-BR",
+                    "priceCents": 4400,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Brown"
+                    }
+                }
+            ],
+            "images": [
+                {
+                    "assetId": "prod-sealant",
+                    "isPrimary": true,
+                    "alt": "A case of trade silicone sealant cartridges"
+                }
+            ]
+        },
         {
-          "sku": "YRD-KIT-FIRSTFIX",
-          "priceCents": 16500,
-          "isDefault": true,
-          "inventoryPolicy": "continue"
-        }
-      ],
-      "images": [
+            "handle": "mot-type-1-bulk-bag",
+            "title": "MOT Type 1 Sub-Base — Bulk Bag (850kg)",
+            "description": "Crushed limestone MOT Type 1 to the DfT specification — the go-to compactable sub-base under drives, paths, slabs and foundations. A handled bulk bag of roughly 850kg. MOQ 1 bag. Order by the bag and we’ll crane it off where you need it.",
+            "status": "active",
+            "productType": "Aggregates",
+            "vendor": "Yardstock Trade Supplies",
+            "tags": [
+                "aggregates",
+                "mot-type-1",
+                "sub-base",
+                "groundworks",
+                "bulk"
+            ],
+            "categoryHandles": [
+                "building-cement"
+            ],
+            "collectionHandles": [
+                "groundworks",
+                "site-essentials"
+            ],
+            "seoTitle": "MOT Type 1 Sub-Base, Bulk Bag 850kg | Yardstock",
+            "seoDescription": "Crushed limestone MOT Type 1 sub-base to DfT spec, handled bulk bag ~850kg. Compactable, for drives and slabs.",
+            "variants": [
+                {
+                    "sku": "YRD-AGG-MOT1-BB",
+                    "priceCents": 6800,
+                    "isDefault": true,
+                    "inventoryPolicy": "continue"
+                }
+            ],
+            "images": [
+                {
+                    "assetId": "prod-aggregate",
+                    "isPrimary": true,
+                    "alt": "MOT Type 1 Sub-Base — Bulk Bag (850kg)"
+                }
+            ]
+        },
         {
-          "assetId": "prod-firstfix",
-          "isPrimary": true,
-          "alt": "First-Fix Timber & Fixings Bundle"
+            "handle": "hi-vis-vest-box",
+            "title": "Hi-Vis Safety Vest — Box of 10",
+            "description": "EN ISO 20471 Class 2 hi-vis waistcoats with a full-length hook-and-loop front and reflective banding — the site vest a visitor, a labourer and a subbie all need on day one. A box of 10. MOQ 2 boxes. Keep a size run on the rack by the gate.",
+            "status": "active",
+            "productType": "Safety",
+            "vendor": "Yardstock Trade Supplies",
+            "tags": [
+                "safety",
+                "ppe",
+                "hi-vis",
+                "workwear",
+                "en20471"
+            ],
+            "categoryHandles": [
+                "safety"
+            ],
+            "collectionHandles": [
+                "safety-workwear",
+                "site-essentials"
+            ],
+            "seoTitle": "Hi-Vis Safety Vest, Box of 10 | Yardstock",
+            "seoDescription": "EN ISO 20471 Class 2 hi-vis waistcoats, reflective banding, box of 10. M, L or XL.",
+            "options": [
+                {
+                    "name": "Size",
+                    "displayType": "dropdown",
+                    "values": [
+                        {
+                            "value": "Medium"
+                        },
+                        {
+                            "value": "Large"
+                        },
+                        {
+                            "value": "X-Large"
+                        }
+                    ]
+                }
+            ],
+            "variants": [
+                {
+                    "sku": "YRD-SAF-HV-M",
+                    "priceCents": 5500,
+                    "isDefault": true,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Size": "Medium"
+                    }
+                },
+                {
+                    "sku": "YRD-SAF-HV-L",
+                    "priceCents": 5500,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Size": "Large"
+                    }
+                },
+                {
+                    "sku": "YRD-SAF-HV-XL",
+                    "priceCents": 5800,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Size": "X-Large"
+                    }
+                }
+            ],
+            "images": [
+                {
+                    "assetId": "prod-hivis",
+                    "isPrimary": true,
+                    "alt": "A box of hi-vis safety vests"
+                }
+            ]
+        },
+        {
+            "handle": "first-fix-bundle",
+            "title": "First-Fix Timber & Fixings Bundle",
+            "description": "A curated bundle for starting a stud job from empty — a pack of CLS studwork, a tub of wood screws, a case of grab-and-fix sealant and a box of collated nails, packed together and priced below the sum of the packs. MOQ 1 bundle. The fastest way to load the van for a first-fix.",
+            "status": "active",
+            "productType": "Bundle",
+            "vendor": "Yardstock Trade Supplies",
+            "tags": [
+                "bundle",
+                "first-fix",
+                "timber",
+                "fixings",
+                "kit"
+            ],
+            "categoryHandles": [
+                "timber-sheet"
+            ],
+            "collectionHandles": [
+                "new-lines",
+                "first-fix",
+                "trade-favourites"
+            ],
+            "seoTitle": "First-Fix Timber & Fixings Bundle | Yardstock",
+            "seoDescription": "A curated first-fix bundle — CLS studwork, wood screws, sealant and collated nails, priced below the sum.",
+            "variants": [
+                {
+                    "sku": "YRD-KIT-FIRSTFIX",
+                    "priceCents": 16500,
+                    "isDefault": true,
+                    "inventoryPolicy": "continue"
+                }
+            ],
+            "images": [
+                {
+                    "assetId": "prod-firstfix",
+                    "isPrimary": true,
+                    "alt": "First-Fix Timber & Fixings Bundle"
+                }
+            ]
         }
-      ]
-    }
-  ]
+    ]
 }

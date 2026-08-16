@@ -1,6 +1,12 @@
 import * as React from 'react';
 import { PlatformEmailLayout } from './_layout';
-import { EmailCodeBlock, EmailDisplayHeading, EmailFinePrint, EmailParagraph } from '../components';
+import {
+  EmailCodeBlock,
+  EmailDisplayHeading,
+  EmailFinePrint,
+  EmailParagraph,
+  usePlatformName,
+} from '../components';
 
 export interface LoginOtpEmailProps {
   /** The one-time numeric code. */
@@ -10,10 +16,11 @@ export interface LoginOtpEmailProps {
 }
 
 export function LoginOtpEmail({ code, expiresInMinutes = 5 }: LoginOtpEmailProps) {
+  const platform = usePlatformName();
   return (
     <PlatformEmailLayout
-      preview="Your sparx sign-in code"
-      footerReason="You're receiving this because a sign-in code was requested for your sparx account."
+      preview={`Your ${platform} sign-in code`}
+      footerReason={`You're receiving this because a sign-in code was requested for your ${platform} account.`}
     >
       <EmailDisplayHeading>Your sign-in code</EmailDisplayHeading>
       <EmailParagraph>
@@ -29,4 +36,4 @@ export function LoginOtpEmail({ code, expiresInMinutes = 5 }: LoginOtpEmailProps
   );
 }
 
-export const loginOtpSubject = 'Your sparx sign-in code';
+export const loginOtpSubject = (platform: string) => `Your ${platform} sign-in code`;

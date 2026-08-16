@@ -31,34 +31,34 @@ export type RedirectStatusCode = 301 | 302 | 307 | 308;
  *  site whose address this fires on, or `null` for a rule shared across every
  *  site the business runs. */
 export interface Redirect {
-  id: string;
-  property_id: string | null;
-  from_path: string;
-  to_path: string;
-  status_code: RedirectStatusCode;
-  hit_count: number;
-  created_at: string;
+    id: string;
+    property_id: string | null;
+    from_path: string;
+    to_path: string;
+    status_code: RedirectStatusCode;
+    hit_count: number;
+    created_at: string;
 }
 
 /** What POST /v1/redirects/bulk reports back: how many rules went in, and every
  *  row it turned away with the reason (a duplicate, a loop, its own reflection).
  *  `row` is the index into the array that was SENT, not the source line. */
 export interface BulkImportResult {
-  inserted: number;
-  skipped: { row: number; reason: string }[];
+    inserted: number;
+    skipped: { row: number; reason: string }[];
 }
 
 /* ── The query-key tree ─────────────────────────────────────────────────── */
 
 export interface RedirectQuery {
-  take: number;
-  skip: number;
+    take: number;
+    skip: number;
 }
 
 export const redirectKeys = {
-  all: ['cms', 'redirects'] as const,
-  lists: () => [...redirectKeys.all, 'list'] as const,
-  list: (query: RedirectQuery) => [...redirectKeys.lists(), query] as const,
+    all: ['cms', 'redirects'] as const,
+    lists: () => [...redirectKeys.all, 'list'] as const,
+    list: (query: RedirectQuery) => [...redirectKeys.lists(), query] as const,
 };
 
 /* ── Reads ──────────────────────────────────────────────────────────────── */
@@ -70,13 +70,13 @@ export const redirectKeys = {
  * by the old address, which is how someone hunts for "the rule on /old-pricing".
  */
 export function useRedirects(query: RedirectQuery) {
-  return useQuery({
-    queryKey: redirectKeys.list(query),
-    queryFn: () => api.list<Redirect>('/v1/redirects', { take: query.take, skip: query.skip }),
-    // Keeps the current window on screen while the next page loads, so paging
-    // never blinks the table out to an empty state and back.
-    placeholderData: (previous) => previous,
-  });
+    return useQuery({
+        queryKey: redirectKeys.list(query),
+        queryFn: () => api.list<Redirect>('/v1/redirects', { take: query.take, skip: query.skip }),
+        // Keeps the current window on screen while the next page loads, so paging
+        // never blinks the table out to an empty state and back.
+        placeholderData: (previous) => previous,
+    });
 }
 
 /* ── Invalidation ───────────────────────────────────────────────────────── */
@@ -84,56 +84,56 @@ export function useRedirects(query: RedirectQuery) {
 /** The one way anything here says "that changed": refresh every list window.
  *  There are no detail panes to touch — a redirect has no editable surface. */
 function useInvalidateRedirects() {
-  const queryClient = useQueryClient();
-  return () => {
-    void queryClient.invalidateQueries({ queryKey: redirectKeys.lists() });
-  };
+    const queryClient = useQueryClient();
+    return () => {
+        void queryClient.invalidateQueries({ queryKey: redirectKeys.lists() });
+    };
 }
 
 /* ── Writes ─────────────────────────────────────────────────────────────── */
 
 export interface CreateRedirectInput {
-  from_path: string;
-  to_path: string;
-  status_code: RedirectStatusCode;
+    from_path: string;
+    to_path: string;
+    status_code: RedirectStatusCode;
 }
 
 /** Add one redirect. `property_id` is deliberately omitted so the server lands
  *  it on the site being worked in — the same default the bulk import uses. */
 export function useCreateRedirect() {
-  const invalidate = useInvalidateRedirects();
-  return useMutation({
-    mutationFn: (input: CreateRedirectInput) => api.post<Redirect>('/v1/redirects', input),
-    onSuccess: () => {
-      invalidate();
-    },
-  });
+    const invalidate = useInvalidateRedirects();
+    return useMutation({
+        mutationFn: (input: CreateRedirectInput) => api.post<Redirect>('/v1/redirects', input),
+        onSuccess: () => {
+            invalidate();
+        },
+    });
 }
 
 /** Import a batch. Partial success is normal and expected: the server inserts
  *  what it can and reports the rest as `skipped` with a reason, so the caller
  *  shows which rows still need attention rather than failing the whole import. */
 export function useBulkCreateRedirects() {
-  const invalidate = useInvalidateRedirects();
-  return useMutation({
-    mutationFn: (rows: CreateRedirectInput[]) =>
-      api.post<BulkImportResult>('/v1/redirects/bulk', { rows }),
-    onSuccess: () => {
-      invalidate();
-    },
-  });
+    const invalidate = useInvalidateRedirects();
+    return useMutation({
+        mutationFn: (rows: CreateRedirectInput[]) =>
+            api.post<BulkImportResult>('/v1/redirects/bulk', { rows }),
+        onSuccess: () => {
+            invalidate();
+        },
+    });
 }
 
 /** Remove a redirect. The old link goes back to being a dead end, so this is
  *  guarded by a confirm at the call site. */
 export function useDeleteRedirect() {
-  const invalidate = useInvalidateRedirects();
-  return useMutation({
-    mutationFn: (id: string) => api.delete(`/v1/redirects/${id}`),
-    onSuccess: () => {
-      invalidate();
-    },
-  });
+    const invalidate = useInvalidateRedirects();
+    return useMutation({
+        mutationFn: (id: string) => api.delete(`/v1/redirects/${id}`),
+        onSuccess: () => {
+            invalidate();
+        },
+    });
 }
 
 /* ── Saying what a redirect type means ──────────────────────────────────── */
@@ -141,12 +141,12 @@ export function useDeleteRedirect() {
 export type Tone = 'success' | 'warning' | 'error' | 'info' | 'neutral';
 
 export interface RedirectTypeMeta {
-  /** The word an owner would use, not the number. */
-  label: string;
-  /** The colour that word wears on a `<Badge>`. */
-  tone: Tone;
-  /** One plain sentence on what choosing this actually does. */
-  detail: string;
+    /** The word an owner would use, not the number. */
+    label: string;
+    /** The color that word wears on a `<Badge>`. */
+    tone: Tone;
+    /** One plain sentence on what choosing this actually does. */
+    detail: string;
 }
 
 /**
@@ -159,42 +159,42 @@ export interface RedirectTypeMeta {
  * fold into Permanent/Temporary.
  */
 export function redirectTypeMeta(code: number): RedirectTypeMeta {
-  switch (code) {
-    case 302:
-      return {
-        label: 'Temporary',
-        tone: 'warning',
-        detail:
-          'A short-term move. Search engines keep the old address on file and expect it back, so use this while a page is briefly away.',
-      };
-    case 307:
-      return {
-        label: 'Temporary',
-        tone: 'warning',
-        detail:
-          'A short-term move that keeps the request exactly as it was — for form and checkout paths that are briefly away.',
-      };
-    case 308:
-      return {
-        label: 'Permanent',
-        tone: 'info',
-        detail:
-          'A permanent move that keeps the request exactly as it was — for form and checkout paths that have moved for good.',
-      };
-    case 301:
-      return {
-        label: 'Permanent',
-        tone: 'info',
-        detail:
-          'The old address has moved for good. Search engines update to the new one and pass on its standing.',
-      };
-    default:
-      return {
-        label: `Code ${String(code)}`,
-        tone: 'neutral',
-        detail: 'An uncommon redirect type set up elsewhere.',
-      };
-  }
+    switch (code) {
+        case 302:
+            return {
+                label: 'Temporary',
+                tone: 'warning',
+                detail:
+                    'A short-term move. Search engines keep the old address on file and expect it back, so use this while a page is briefly away.',
+            };
+        case 307:
+            return {
+                label: 'Temporary',
+                tone: 'warning',
+                detail:
+                    'A short-term move that keeps the request exactly as it was — for form and checkout paths that are briefly away.',
+            };
+        case 308:
+            return {
+                label: 'Permanent',
+                tone: 'info',
+                detail:
+                    'A permanent move that keeps the request exactly as it was — for form and checkout paths that have moved for good.',
+            };
+        case 301:
+            return {
+                label: 'Permanent',
+                tone: 'info',
+                detail:
+                    'The old address has moved for good. Search engines update to the new one and pass on its standing.',
+            };
+        default:
+            return {
+                label: `Code ${String(code)}`,
+                tone: 'neutral',
+                detail: 'An uncommon redirect type set up elsewhere.',
+            };
+    }
 }
 
 /* ── Errors ─────────────────────────────────────────────────────────────── */
@@ -207,20 +207,20 @@ export function redirectTypeMeta(code: number): RedirectTypeMeta {
  * caller's wording.
  */
 export function redirectErrorMessage(error: unknown, fallback: string): string {
-  if (error instanceof ApiError && error.status >= 400 && error.status < 500) {
-    return error.message;
-  }
-  return fallback;
+    if (error instanceof ApiError && error.status >= 400 && error.status < 500) {
+        return error.message;
+    }
+    return fallback;
 }
 
 /* ── Formatting + paths ─────────────────────────────────────────────────── */
 
 /** Medium date, or an em dash for nothing. */
 export function formatDate(value: string | null | undefined): string {
-  if (!value) return '—';
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return '—';
-  return date.toLocaleDateString(undefined, { dateStyle: 'medium' });
+    if (!value) return '—';
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return '—';
+    return date.toLocaleDateString(undefined, { dateStyle: 'medium' });
 }
 
 /**
@@ -233,28 +233,28 @@ export function formatDate(value: string | null | undefined): string {
  * address.
  */
 export function normalizePath(value: string): string {
-  const trimmed = value.trim();
-  if (trimmed === '') return '';
-  if (trimmed.includes('://')) return trimmed;
-  return trimmed.startsWith('/') ? trimmed : `/${trimmed}`;
+    const trimmed = value.trim();
+    if (trimmed === '') return '';
+    if (trimmed.includes('://')) return trimmed;
+    return trimmed.startsWith('/') ? trimmed : `/${trimmed}`;
 }
 
 /** One parsed line of a pasted import, ready to preview before it is sent. */
 export interface ParsedRedirectRow {
-  /** 1-based line number in the pasted text, for pointing at the problem. */
-  line: number;
-  from: string;
-  to: string;
-  statusCode: RedirectStatusCode;
-  /** Why this row cannot be sent, or null when it is good to go. */
-  error: string | null;
+    /** 1-based line number in the pasted text, for pointing at the problem. */
+    line: number;
+    from: string;
+    to: string;
+    statusCode: RedirectStatusCode;
+    /** Why this row cannot be sent, or null when it is good to go. */
+    error: string | null;
 }
 
 /** Read a type hint from a third column: a word or a raw code, else Permanent. */
 function statusFromHint(hint: string | undefined): RedirectStatusCode {
-  const value = (hint ?? '').trim().toLowerCase();
-  if (value === 'temporary' || value === 'temp' || value === '302' || value === '307') return 302;
-  return 301;
+    const value = (hint ?? '').trim().toLowerCase();
+    if (value === 'temporary' || value === 'temp' || value === '302' || value === '307') return 302;
+    return 301;
 }
 
 /**
@@ -268,46 +268,46 @@ function statusFromHint(hint: string | undefined): RedirectStatusCode {
  * paste are caught locally rather than bounced one-by-one by the server.
  */
 export function parseRedirectRows(text: string): ParsedRedirectRow[] {
-  const rows: ParsedRedirectRow[] = [];
-  const seen = new Map<string, number>();
-  const lines = text.split(/\r?\n/);
+    const rows: ParsedRedirectRow[] = [];
+    const seen = new Map<string, number>();
+    const lines = text.split(/\r?\n/);
 
-  for (let i = 0; i < lines.length; i++) {
-    const raw = lines[i] ?? '';
-    if (raw.trim() === '') continue;
+    for (let i = 0; i < lines.length; i++) {
+        const raw = lines[i] ?? '';
+        if (raw.trim() === '') continue;
 
-    // Prefer a tab or comma; fall back to an arrow, then to plain whitespace, so
-    // "old → new", "old,new" and "old   new" all read the same way.
-    const parts = raw.includes('\t')
-      ? raw.split('\t')
-      : raw.includes(',')
-        ? raw.split(',')
-        : raw.includes('→') || raw.includes('->')
-          ? raw.split(/→|->/)
-          : raw.trim().split(/\s+/);
+        // Prefer a tab or comma; fall back to an arrow, then to plain whitespace, so
+        // "old → new", "old,new" and "old   new" all read the same way.
+        const parts = raw.includes('\t')
+            ? raw.split('\t')
+            : raw.includes(',')
+                ? raw.split(',')
+                : raw.includes('→') || raw.includes('->')
+                    ? raw.split(/→|->/)
+                    : raw.trim().split(/\s+/);
 
-    const from = normalizePath(parts[0] ?? '');
-    const to = normalizePath(parts[1] ?? '');
-    const statusCode = statusFromHint(parts[2]);
+        const from = normalizePath(parts[0] ?? '');
+        const to = normalizePath(parts[1] ?? '');
+        const statusCode = statusFromHint(parts[2]);
 
-    let error: string | null = null;
-    if (from === '' || to === '') {
-      error = 'Give both an old address and where it should go.';
-    } else if (!from.startsWith('/') || !to.startsWith('/')) {
-      error = 'Both addresses must be a path on your site, starting with a slash.';
-    } else if (from === to) {
-      error = 'The old and new addresses are the same.';
-    } else {
-      const earlier = seen.get(from);
-      if (earlier) {
-        error = `Same old address as line ${String(earlier)} — only the first will be kept.`;
-      } else {
-        seen.set(from, i + 1);
-      }
+        let error: string | null = null;
+        if (from === '' || to === '') {
+            error = 'Give both an old address and where it should go.';
+        } else if (!from.startsWith('/') || !to.startsWith('/')) {
+            error = 'Both addresses must be a path on your site, starting with a slash.';
+        } else if (from === to) {
+            error = 'The old and new addresses are the same.';
+        } else {
+            const earlier = seen.get(from);
+            if (earlier) {
+                error = `Same old address as line ${String(earlier)} — only the first will be kept.`;
+            } else {
+                seen.set(from, i + 1);
+            }
+        }
+
+        rows.push({ line: i + 1, from, to, statusCode, error });
     }
 
-    rows.push({ line: i + 1, from, to, statusCode, error });
-  }
-
-  return rows;
+    return rows;
 }

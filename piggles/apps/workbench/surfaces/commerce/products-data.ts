@@ -31,7 +31,7 @@
 //
 // ── Options and variants are related, not one blob ───────────────────────
 //
-// A product's OPTIONS are the axes it is sold along (Size, Colour) and its
+// A product's OPTIONS are the axes it is sold along (Size, Color) and its
 // VARIANTS are the sellable points in that space. They are separate resources
 // on the server, separate query keys here, and separate tabs in the UI — an
 // edit to the axes has a blast radius (removing a value destroys the SKUs
@@ -66,10 +66,10 @@ import { getTokenState } from '../../lib/api/token';
 // is a consumer). Imported under the commerce names the facet has always used and
 // re-exported below, so there is ONE definition of each row that cannot drift.
 import type {
-  StockLevel as ProductStockLevel,
-  StockHold as StockReservation,
-  StockMovement,
-  StockLocation,
+    StockLevel as ProductStockLevel,
+    StockHold as StockReservation,
+    StockMovement,
+    StockLocation,
 } from '../inventory/data';
 
 /* ── Shapes: the product itself ─────────────────────────────────────────── */
@@ -80,84 +80,84 @@ export type ProductStatus = 'draft' | 'active' | 'archived';
 
 /** A row in the catalog list. Names only what the list actually reads. */
 export interface ProductRow {
-  id: string;
-  title: string;
-  handle: string;
-  status: ProductStatus;
-  vendor: string | null;
-  productType: string | null;
-  variantCount: number;
-  priceMinCents: number | null;
-  priceMaxCents: number | null;
-  imageUrl: string | null;
-  tags: string[];
-  updatedAt: string;
+    id: string;
+    title: string;
+    handle: string;
+    status: ProductStatus;
+    vendor: string | null;
+    productType: string | null;
+    variantCount: number;
+    priceMinCents: number | null;
+    priceMaxCents: number | null;
+    imageUrl: string | null;
+    tags: string[];
+    updatedAt: string;
 }
 
 /** One product in full, as the detail pane edits it. */
 export interface Product {
-  id: string;
-  title: string;
-  handle: string;
-  description: string | null;
-  status: ProductStatus;
-  productType: string | null;
-  /** The typed product TYPE this product's `attributes` are governed by (docs/143),
-   *  or null for an untyped product. Distinct from `productType` (the free-text
-   *  merchandising label): this is the schema link. */
-  productTypeKey: string | null;
-  /** The typed, schema-validated attribute bag — keyed by the type's field keys.
-   *  Empty on an untyped product. Edited on the Attributes tab. */
-  attributes: Record<string, unknown>;
-  vendor: string | null;
-  tags: string[];
-  fulfillmentType: string;
-  weightGrams: number | null;
-  lengthMm: number | null;
-  widthMm: number | null;
-  heightMm: number | null;
-  hazmatClass: string;
-  requiresShipping: boolean;
-  taxClass: string | null;
-  originCountry: string | null;
-  hsCode: string | null;
-  seoTitle: string | null;
-  seoDescription: string | null;
-  ogImageId: string | null;
-  defaultWarehouseId: string | null;
-  priceMinCents: number | null;
-  priceMaxCents: number | null;
-  inStock: boolean;
-  averageRating: number | null;
-  reviewCount: number;
-  variantCount: number;
-  /** How many option AXES this product has. Zero means a single unnamed
-   *  version; anything else means the variant set is derived from the lattice
-   *  and must not be added to by hand. */
-  optionCount: number;
-  categoryIds: string[];
-  /** Every collection this product is in, however it got there. Almost nothing
-   *  should read this — `collectionMemberships` says WHY, and the why is what
-   *  decides whether a person is allowed to change it. */
-  collectionIds: string[];
-  /**
-   * Why this product is in each of its collections.
-   *
-   * `manual` means a person put it there and a person can take it out.
-   * `rule` means the collection's own rule matched this product — the indexer
-   * recomputes that membership, so it is not the product's to edit, and
-   * re-saving it as a manual pin would freeze the product into the collection
-   * forever. See "Where shoppers find it" in product-overview.tsx.
-   */
-  collectionMemberships: { collectionId: string; addedBy: 'manual' | 'rule' }[];
-  /** sparx.market opt-in — read by the Channels facet. */
-  marketListed: boolean;
-  marketCategory: string | null;
-  /** Sites this product is shown on. EMPTY means every site — the default. */
-  propertyIds: string[];
-  createdAt: string;
-  updatedAt: string;
-  publishedAt: string | null;
+    id: string;
+    title: string;
+    handle: string;
+    description: string | null;
+    status: ProductStatus;
+    productType: string | null;
+    /** The typed product TYPE this product's `attributes` are governed by (docs/143),
+     *  or null for an untyped product. Distinct from `productType` (the free-text
+     *  merchandising label): this is the schema link. */
+    productTypeKey: string | null;
+    /** The typed, schema-validated attribute bag — keyed by the type's field keys.
+     *  Empty on an untyped product. Edited on the Attributes tab. */
+    attributes: Record<string, unknown>;
+    vendor: string | null;
+    tags: string[];
+    fulfillmentType: string;
+    weightGrams: number | null;
+    lengthMm: number | null;
+    widthMm: number | null;
+    heightMm: number | null;
+    hazmatClass: string;
+    requiresShipping: boolean;
+    taxClass: string | null;
+    originCountry: string | null;
+    hsCode: string | null;
+    seoTitle: string | null;
+    seoDescription: string | null;
+    ogImageId: string | null;
+    defaultWarehouseId: string | null;
+    priceMinCents: number | null;
+    priceMaxCents: number | null;
+    inStock: boolean;
+    averageRating: number | null;
+    reviewCount: number;
+    variantCount: number;
+    /** How many option AXES this product has. Zero means a single unnamed
+     *  version; anything else means the variant set is derived from the lattice
+     *  and must not be added to by hand. */
+    optionCount: number;
+    categoryIds: string[];
+    /** Every collection this product is in, however it got there. Almost nothing
+     *  should read this — `collectionMemberships` says WHY, and the why is what
+     *  decides whether a person is allowed to change it. */
+    collectionIds: string[];
+    /**
+     * Why this product is in each of its collections.
+     *
+     * `manual` means a person put it there and a person can take it out.
+     * `rule` means the collection's own rule matched this product — the indexer
+     * recomputes that membership, so it is not the product's to edit, and
+     * re-saving it as a manual pin would freeze the product into the collection
+     * forever. See "Where shoppers find it" in product-overview.tsx.
+     */
+    collectionMemberships: { collectionId: string; addedBy: 'manual' | 'rule' }[];
+    /** sparx.market opt-in — read by the Channels facet. */
+    marketListed: boolean;
+    marketCategory: string | null;
+    /** Sites this product is shown on. EMPTY means every site — the default. */
+    propertyIds: string[];
+    createdAt: string;
+    updatedAt: string;
+    publishedAt: string | null;
 }
 
 /* ── Shapes: the option lattice (the AXES) ──────────────────────────────── */
@@ -167,76 +167,76 @@ export interface Product {
 export type OptionDisplayType = 'dropdown' | 'swatch' | 'image_swatch' | 'radio' | 'segmented';
 
 export interface ProductOptionValue {
-  id: string;
-  optionId: string;
-  value: string;
-  /** `#RRGGBB`, set by the operator through a colour control. Stored data, not
-   *  a design token — this is the colour of the THING being sold. */
-  swatchHex: string | null;
-  swatchImageId: string | null;
-  position: number;
+    id: string;
+    optionId: string;
+    value: string;
+    /** `#RRGGBB`, set by the operator through a color control. Stored data, not
+     *  a design token — this is the color of the THING being sold. */
+    swatchHex: string | null;
+    swatchImageId: string | null;
+    position: number;
 }
 
 export interface ProductOption {
-  id: string;
-  productId: string;
-  name: string;
-  displayType: OptionDisplayType;
-  position: number;
-  values: ProductOptionValue[];
+    id: string;
+    productId: string;
+    name: string;
+    displayType: OptionDisplayType;
+    position: number;
+    values: ProductOptionValue[];
 }
 
 /* ── Shapes: variants (the POINTS in that space) ────────────────────────── */
 
 export interface Variant {
-  id: string;
-  productId: string;
-  sku: string;
-  barcode: string | null;
-  title: string | null;
-  priceCents: number;
-  compareAtPriceCents: number | null;
-  costCents: number | null;
-  currency: string;
-  weightGrams: number | null;
-  lengthMm: number | null;
-  widthMm: number | null;
-  heightMm: number | null;
-  /** What happens when stock runs out: `deny` blocks the sale, `continue`
-   *  allows a backorder. */
-  inventoryPolicy: string;
-  requiresShipping: boolean;
-  /** Overrides the product's own fulfilment type when set. */
-  fulfillmentType: string | null;
-  dropshipSourceId: string | null;
-  /** Set when the price is derived from a markup rule rather than typed. A
-   *  variant bound to a rule must not be repriced by hand without saying so. */
-  markupRuleId: string | null;
-  isDefault: boolean;
-  position: number;
-  /** Where this variant sits in the lattice — one option-value id per axis.
-   *  Empty on a product with no options. */
-  optionValueIds: string[];
-  imageCount: number;
-  createdAt: string;
-  updatedAt: string;
-  deletedAt: string | null;
+    id: string;
+    productId: string;
+    sku: string;
+    barcode: string | null;
+    title: string | null;
+    priceCents: number;
+    compareAtPriceCents: number | null;
+    costCents: number | null;
+    currency: string;
+    weightGrams: number | null;
+    lengthMm: number | null;
+    widthMm: number | null;
+    heightMm: number | null;
+    /** What happens when stock runs out: `deny` blocks the sale, `continue`
+     *  allows a backorder. */
+    inventoryPolicy: string;
+    requiresShipping: boolean;
+    /** Overrides the product's own fulfilment type when set. */
+    fulfillmentType: string | null;
+    dropshipSourceId: string | null;
+    /** Set when the price is derived from a markup rule rather than typed. A
+     *  variant bound to a rule must not be repriced by hand without saying so. */
+    markupRuleId: string | null;
+    isDefault: boolean;
+    position: number;
+    /** Where this variant sits in the lattice — one option-value id per axis.
+     *  Empty on a product with no options. */
+    optionValueIds: string[];
+    imageCount: number;
+    createdAt: string;
+    updatedAt: string;
+    deletedAt: string | null;
 }
 
 /* ── Shapes: media ──────────────────────────────────────────────────────── */
 
 export interface ProductImage {
-  id: string;
-  /** The specific variant this image belongs to, or null for a product-level
-   *  image shown for every variant. */
-  variantId: string | null;
-  mediaAssetId: string;
-  position: number;
-  /** The product's hero image — the one lists, cards and search show. */
-  isPrimary: boolean;
-  alt: string | null;
-  /** Option values this image is pinned to, e.g. "show when Colour = Red". */
-  optionValueIds: string[];
+    id: string;
+    /** The specific variant this image belongs to, or null for a product-level
+     *  image shown for every variant. */
+    variantId: string | null;
+    mediaAssetId: string;
+    position: number;
+    /** The product's hero image — the one lists, cards and search show. */
+    isPrimary: boolean;
+    alt: string | null;
+    /** Option values this image is pinned to, e.g. "show when Color = Red". */
+    optionValueIds: string[];
 }
 
 /**
@@ -249,49 +249,49 @@ export interface ProductImage {
  * `useMediaAssets`.
  */
 export interface MediaAsset {
-  id: string;
-  filename: string;
-  mimeType: string;
-  width: number | null;
-  height: number | null;
-  /** The alt text stored on the FILE. A `ProductImage.alt` overrides it here. */
-  altText: string | null;
-  /** A URL that will actually render, or null while the file is still being
-   *  processed (or, in production, if only the private original exists). */
-  url: string | null;
-  /**
-   * Whether `url` may be handed to Next's image optimizer.
-   *
-   * NOT a performance hint — a correctness guard. `next/image` THROWS on a host
-   * that is not in `images.remotePatterns`, and a thrown error in an `<img>`
-   * takes the whole pane down. A media asset's URL is NOT guaranteed to be on
-   * our own media host: a blueprint installs hot-linked stock photos and a
-   * dropship supplier's catalogue import keeps the supplier's own CDN URL, and
-   * both are stored verbatim as the asset key (see `serializeAsset` in
-   * services/api-rest/src/routes/v1/media/assets.ts). No static allow-list can
-   * cover "whatever CDN this merchant's supplier uses".
-   *
-   * So callers pass `unoptimized={!asset.canOptimize}`, which bypasses the
-   * loader and the host check entirely. Ours get optimized; a stranger's render
-   * as a plain image instead of crashing the tab.
-   */
-  canOptimize: boolean;
-  /** `uploading` while the transcoder is still working, then `ready` or `failed`. */
-  status: string;
+    id: string;
+    filename: string;
+    mimeType: string;
+    width: number | null;
+    height: number | null;
+    /** The alt text stored on the FILE. A `ProductImage.alt` overrides it here. */
+    altText: string | null;
+    /** A URL that will actually render, or null while the file is still being
+     *  processed (or, in production, if only the private original exists). */
+    url: string | null;
+    /**
+     * Whether `url` may be handed to Next's image optimizer.
+     *
+     * NOT a performance hint — a correctness guard. `next/image` THROWS on a host
+     * that is not in `images.remotePatterns`, and a thrown error in an `<img>`
+     * takes the whole pane down. A media asset's URL is NOT guaranteed to be on
+     * our own media host: a blueprint installs hot-linked stock photos and a
+     * dropship supplier's catalogue import keeps the supplier's own CDN URL, and
+     * both are stored verbatim as the asset key (see `serializeAsset` in
+     * services/api-rest/src/routes/v1/media/assets.ts). No static allow-list can
+     * cover "whatever CDN this merchant's supplier uses".
+     *
+     * So callers pass `unoptimized={!asset.canOptimize}`, which bypasses the
+     * loader and the host check entirely. Ours get optimized; a stranger's render
+     * as a plain image instead of crashing the tab.
+     */
+    canOptimize: boolean;
+    /** `uploading` while the transcoder is still working, then `ready` or `failed`. */
+    status: string;
 }
 
 /** The media API is snake_case and returns every transcoded size; panes want one
  *  camelCase row with one URL. Kept here so no surface ever parses this shape. */
 interface MediaAssetWire {
-  id: string;
-  original_filename: string;
-  mime_type: string;
-  width: number | null;
-  height: number | null;
-  alt_text: string | null;
-  status: string;
-  original_url: string | null;
-  variants: { id: string; format: string; width: number; height: number; url: string }[];
+    id: string;
+    original_filename: string;
+    mime_type: string;
+    width: number | null;
+    height: number | null;
+    alt_text: string | null;
+    status: string;
+    original_url: string | null;
+    variants: { id: string; format: string; width: number; height: number; url: string }[];
 }
 
 /**
@@ -303,9 +303,9 @@ interface MediaAssetWire {
  * is public in local development and private in production, hence nullable).
  */
 function thumbnailUrl(wire: MediaAssetWire): string | null {
-  const sorted = [...wire.variants].sort((a, b) => a.width - b.width);
-  const big = sorted.find((variant) => variant.width >= 320);
-  return big?.url ?? sorted.at(-1)?.url ?? wire.original_url;
+    const sorted = [...wire.variants].sort((a, b) => a.width - b.width);
+    const big = sorted.find((variant) => variant.width >= 320);
+    return big?.url ?? sorted.at(-1)?.url ?? wire.original_url;
 }
 
 /**
@@ -318,27 +318,27 @@ function thumbnailUrl(wire: MediaAssetWire): string | null {
  * disagree, the optimizer throws, so they are written to be read together.
  */
 function isOwnMediaUrl(url: string | null): boolean {
-  if (!url) return false;
-  try {
-    return new URL(url, 'http://localhost').pathname.startsWith('/v1/public/media/');
-  } catch {
-    return false;
-  }
+    if (!url) return false;
+    try {
+        return new URL(url, 'http://localhost').pathname.startsWith('/v1/public/media/');
+    } catch {
+        return false;
+    }
 }
 
 function toMediaAsset(wire: MediaAssetWire): MediaAsset {
-  const url = thumbnailUrl(wire);
-  return {
-    id: wire.id,
-    filename: wire.original_filename,
-    mimeType: wire.mime_type,
-    width: wire.width,
-    height: wire.height,
-    altText: wire.alt_text,
-    url,
-    canOptimize: isOwnMediaUrl(url),
-    status: wire.status,
-  };
+    const url = thumbnailUrl(wire);
+    return {
+        id: wire.id,
+        filename: wire.original_filename,
+        mimeType: wire.mime_type,
+        width: wire.width,
+        height: wire.height,
+        altText: wire.alt_text,
+        url,
+        canOptimize: isOwnMediaUrl(url),
+        status: wire.status,
+    };
 }
 
 /* ── Shapes: pricing ────────────────────────────────────────────────────── */
@@ -351,12 +351,12 @@ function toMediaAsset(wire: MediaAssetWire): MediaAsset {
  * or sets both. The product Pricing tab only ever writes the variant kind.
  */
 export interface BulkPriceTier {
-  id: string;
-  variantId: string | null;
-  priceListId: string | null;
-  /** The quantity at which this price starts applying. */
-  minQuantity: number;
-  unitPriceCents: number;
+    id: string;
+    variantId: string | null;
+    priceListId: string | null;
+    /** The quantity at which this price starts applying. */
+    minQuantity: number;
+    unitPriceCents: number;
 }
 
 /**
@@ -375,17 +375,17 @@ export interface BulkPriceTier {
  * written. `minQuantity` is the count at which the price starts applying.
  */
 export interface ProductPriceListEntry {
-  id: string;
-  priceListId: string;
-  priceListName: string;
-  priceListStatus: string;
-  currency: string;
-  variantId: string;
-  variantSku: string;
-  fixedPriceCents: number | null;
-  percentOffList: number | null;
-  minQuantity: number;
-  maxQuantity: number | null;
+    id: string;
+    priceListId: string;
+    priceListName: string;
+    priceListStatus: string;
+    currency: string;
+    variantId: string;
+    variantSku: string;
+    fixedPriceCents: number | null;
+    percentOffList: number | null;
+    minQuantity: number;
+    maxQuantity: number | null;
 }
 
 /**
@@ -397,24 +397,24 @@ export interface ProductPriceListEntry {
  * rule is the rules surface's job, not a product's.
  */
 export interface MarkupRule {
-  id: string;
-  name: string;
-  /** How the price is derived — `percent`, `multiplier`, `fixed`, `bands`, … */
-  method: string;
-  /** The number `method` uses. Null for band-based rules, whose value varies. */
-  value: number | null;
-  /** Which cost it marks up — `last_cost`, `avg_cost`, `supplier_cost`, … */
-  costBasis: string;
-  isActive: boolean;
-  /** How many variants across the whole catalog are priced by this rule. */
-  boundVariantCount: number;
+    id: string;
+    name: string;
+    /** How the price is derived — `percent`, `multiplier`, `fixed`, `bands`, … */
+    method: string;
+    /** The number `method` uses. Null for band-based rules, whose value varies. */
+    value: number | null;
+    /** Which cost it marks up — `last_cost`, `avg_cost`, `supplier_cost`, … */
+    costBasis: string;
+    isActive: boolean;
+    /** How many variants across the whole catalog are priced by this rule. */
+    boundVariantCount: number;
 }
 
 /** A supplier this business buys from. Named here only to turn a variant's
  *  `dropshipSourceId` into a name someone recognises. */
 export interface DropshipSupplier {
-  id: string;
-  name: string;
+    id: string;
+    name: string;
 }
 
 /* ── Shapes: stock (owned by the inventory module) ──────────────────────── */
@@ -431,10 +431,10 @@ export type { ProductStockLevel, StockReservation, StockMovement, StockLocation 
  *  platform baseline with whatever this business already uses, so these are never
  *  empty and never a closed list. */
 export interface ProductFacets {
-  productTypes: string[];
-  vendors: string[];
-  tags: string[];
-  taxClasses: string[];
+    productTypes: string[];
+    vendors: string[];
+    tags: string[];
+    taxClasses: string[];
 }
 
 /* ── The query-key contract ─────────────────────────────────────────────── */
@@ -447,59 +447,59 @@ export interface ProductFacets {
  * ad-hoc key.
  */
 export type ProductFacetKey =
-  | 'options'
-  | 'variants'
-  | 'media'
-  /** Quantity-break tiers for every variant of this product, in one read. */
-  | 'bulk-tiers'
-  /** Trade (price-list) prices for this product, across every list, in one read. */
-  | 'price-list-entries'
-  | 'translations'
-  | 'inventory'
-  | 'fitment'
-  | 'configurator'
-  | 'b2b-pricing'
-  | 'reviews'
-  | 'channels'
-  | 'dropship'
-  | 'subscriptions';
+    | 'options'
+    | 'variants'
+    | 'media'
+    /** Quantity-break tiers for every variant of this product, in one read. */
+    | 'bulk-tiers'
+    /** Trade (price-list) prices for this product, across every list, in one read. */
+    | 'price-list-entries'
+    | 'translations'
+    | 'inventory'
+    | 'fitment'
+    | 'configurator'
+    | 'b2b-pricing'
+    | 'reviews'
+    | 'channels'
+    | 'dropship'
+    | 'subscriptions';
 
 export const productKeys = {
-  all: ['commerce', 'products'] as const,
-  lists: () => [...productKeys.all, 'list'] as const,
-  list: (query: ProductQuery) => [...productKeys.lists(), query] as const,
-  facets: () => [...productKeys.all, 'facets'] as const,
-  detail: (id: string) => [...productKeys.all, id] as const,
-  facet: (id: string, facet: ProductFacetKey) => [...productKeys.all, id, facet] as const,
-  /**
-   * The FILES behind a set of product images.
-   *
-   * Deliberately NOT under `detail(id)`: the same photo can be on two products,
-   * and the media library is not a facet of any one of them. Keying on the id
-   * set means two panes showing overlapping galleries share nothing they should
-   * not, and a product whose image set is unchanged does not refetch its files
-   * because something else about the product moved. Sorted so the same set in a
-   * different order is the same key.
-   */
-  mediaAssets: (ids: string[]) =>
-    [...productKeys.all, 'media-assets', [...ids].sort().join(',')] as const,
-  /** Markup rules — tenant-wide, not per product, so they sit beside the other
-   *  lookup lists rather than under a product id. */
-  markupRules: () => [...productKeys.all, 'markup-rules'] as const,
-  /** Connected dropship suppliers, for naming who prices a sourced variant. */
-  suppliers: () => [...productKeys.all, 'dropship-suppliers'] as const,
-  /**
-   * A facet that genuinely reads TWO endpoints.
-   *
-   * Reviews and questions are one PANE but two resources with two moderation
-   * verbs, so folding them into one query would mean answering a question
-   * refetches every review. It nests UNDER the facet key rather than beside it,
-   * so `invalidate(id, 'reviews')` still catches both halves and no caller has
-   * to know the facet was split. Use it only for that case — a facet with one
-   * endpoint uses `facet()`.
-   */
-  facetPart: (id: string, facet: ProductFacetKey, part: string) =>
-    [...productKeys.facet(id, facet), part] as const,
+    all: ['commerce', 'products'] as const,
+    lists: () => [...productKeys.all, 'list'] as const,
+    list: (query: ProductQuery) => [...productKeys.lists(), query] as const,
+    facets: () => [...productKeys.all, 'facets'] as const,
+    detail: (id: string) => [...productKeys.all, id] as const,
+    facet: (id: string, facet: ProductFacetKey) => [...productKeys.all, id, facet] as const,
+    /**
+     * The FILES behind a set of product images.
+     *
+     * Deliberately NOT under `detail(id)`: the same photo can be on two products,
+     * and the media library is not a facet of any one of them. Keying on the id
+     * set means two panes showing overlapping galleries share nothing they should
+     * not, and a product whose image set is unchanged does not refetch its files
+     * because something else about the product moved. Sorted so the same set in a
+     * different order is the same key.
+     */
+    mediaAssets: (ids: string[]) =>
+        [...productKeys.all, 'media-assets', [...ids].sort().join(',')] as const,
+    /** Markup rules — tenant-wide, not per product, so they sit beside the other
+     *  lookup lists rather than under a product id. */
+    markupRules: () => [...productKeys.all, 'markup-rules'] as const,
+    /** Connected dropship suppliers, for naming who prices a sourced variant. */
+    suppliers: () => [...productKeys.all, 'dropship-suppliers'] as const,
+    /**
+     * A facet that genuinely reads TWO endpoints.
+     *
+     * Reviews and questions are one PANE but two resources with two moderation
+     * verbs, so folding them into one query would mean answering a question
+     * refetches every review. It nests UNDER the facet key rather than beside it,
+     * so `invalidate(id, 'reviews')` still catches both halves and no caller has
+     * to know the facet was split. Use it only for that case — a facet with one
+     * endpoint uses `facet()`.
+     */
+    facetPart: (id: string, facet: ProductFacetKey, part: string) =>
+        [...productKeys.facet(id, facet), part] as const,
 };
 
 /** Retained for callers that only need the root prefix. */
@@ -515,13 +515,13 @@ export const PRODUCTS_KEY = productKeys.all;
  * exist.
  */
 const DERIVED_FACETS: Partial<Record<ProductFacetKey, ProductFacetKey[]>> = {
-  // The server rebinds variants when the lattice is replaced, and media
-  // pinned to an option value loses its binding with it.
-  options: ['variants', 'media'],
-  // A new variant needs a stock row; a retired one stops having one. Media is
-  // per-variant too, and quantity-break tiers hang off a variant — retiring one
-  // takes its tiers out of the list the Pricing tab is showing.
-  variants: ['inventory', 'media', 'bulk-tiers'],
+    // The server rebinds variants when the lattice is replaced, and media
+    // pinned to an option value loses its binding with it.
+    options: ['variants', 'media'],
+    // A new variant needs a stock row; a retired one stops having one. Media is
+    // per-variant too, and quantity-break tiers hang off a variant — retiring one
+    // takes its tiers out of the list the Pricing tab is showing.
+    variants: ['inventory', 'media', 'bulk-tiers'],
 };
 
 /* ── Queries ────────────────────────────────────────────────────────────── */
@@ -533,33 +533,33 @@ export type ProductSortKey = 'updatedAt' | 'title' | 'priceMinCents';
 export type SortDirection = 'asc' | 'desc';
 
 export interface ProductQuery {
-  q?: string;
-  status?: ProductStatus;
-  /** Include retired products. The server hides them unless asked. */
-  includeArchived?: boolean;
-  sortBy: ProductSortKey;
-  order: SortDirection;
-  take: number;
-  skip: number;
+    q?: string;
+    status?: ProductStatus;
+    /** Include retired products. The server hides them unless asked. */
+    includeArchived?: boolean;
+    sortBy: ProductSortKey;
+    order: SortDirection;
+    take: number;
+    skip: number;
 }
 
 export function useProducts(query: ProductQuery) {
-  return useQuery({
-    queryKey: productKeys.list(query),
-    queryFn: () =>
-      api.list<ProductRow>('/v1/commerce/products', {
-        ...(query.q ? { q: query.q } : {}),
-        ...(query.status ? { status: query.status } : {}),
-        ...(query.includeArchived ? { include_archived: true } : {}),
-        sort_by: query.sortBy,
-        order: query.order,
-        take: query.take,
-        skip: query.skip,
-      }),
-    // Keeps the current window on screen while the next one loads, so paging and
-    // re-sorting don't blink the table out to an empty state and back.
-    placeholderData: (previous) => previous,
-  });
+    return useQuery({
+        queryKey: productKeys.list(query),
+        queryFn: () =>
+            api.list<ProductRow>('/v1/commerce/products', {
+                ...(query.q ? { q: query.q } : {}),
+                ...(query.status ? { status: query.status } : {}),
+                ...(query.includeArchived ? { include_archived: true } : {}),
+                sort_by: query.sortBy,
+                order: query.order,
+                take: query.take,
+                skip: query.skip,
+            }),
+        // Keeps the current window on screen while the next one loads, so paging and
+        // re-sorting don't blink the table out to an empty state and back.
+        placeholderData: (previous) => previous,
+    });
 }
 
 /**
@@ -570,23 +570,23 @@ export function useProducts(query: ProductQuery) {
  * retried into a generic failure — see `isNotFound` in product-scope.tsx.
  */
 export function useProduct(id: string) {
-  return useQuery({
-    queryKey: productKeys.detail(id),
-    queryFn: () => api.get<Product>(`/v1/commerce/products/${id}`),
-    // 'new' is the detail pane before the product exists — nothing to fetch.
-    enabled: id !== 'new',
-    retry: (failureCount, error) =>
-      error instanceof ApiError && error.status === 404 ? false : failureCount < 2,
-  });
+    return useQuery({
+        queryKey: productKeys.detail(id),
+        queryFn: () => api.get<Product>(`/v1/commerce/products/${id}`),
+        // 'new' is the detail pane before the product exists — nothing to fetch.
+        enabled: id !== 'new',
+        retry: (failureCount, error) =>
+            error instanceof ApiError && error.status === 404 ? false : failureCount < 2,
+    });
 }
 
 /** The AXES this product is sold along. Separate from variants deliberately. */
 export function useProductOptions(productId: string) {
-  return useQuery({
-    queryKey: productKeys.facet(productId, 'options'),
-    queryFn: () => api.get<ProductOption[]>(`/v1/commerce/products/${productId}/variants/options`),
-    enabled: productId !== 'new',
-  });
+    return useQuery({
+        queryKey: productKeys.facet(productId, 'options'),
+        queryFn: () => api.get<ProductOption[]>(`/v1/commerce/products/${productId}/variants/options`),
+        enabled: productId !== 'new',
+    });
 }
 
 /**
@@ -602,26 +602,26 @@ export function useProductOptions(productId: string) {
  * by a row the operator cannot otherwise see.
  */
 export function useProductVariants(productId: string, includeArchived = false) {
-  return useQuery({
-    queryKey: includeArchived
-      ? ([...productKeys.facet(productId, 'variants'), 'archived'] as const)
-      : productKeys.facet(productId, 'variants'),
-    queryFn: () =>
-      api.get<Variant[]>(
-        `/v1/commerce/products/${productId}/variants`,
-        includeArchived ? { include_archived: true } : undefined
-      ),
-    enabled: productId !== 'new',
-  });
+    return useQuery({
+        queryKey: includeArchived
+            ? ([...productKeys.facet(productId, 'variants'), 'archived'] as const)
+            : productKeys.facet(productId, 'variants'),
+        queryFn: () =>
+            api.get<Variant[]>(
+                `/v1/commerce/products/${productId}/variants`,
+                includeArchived ? { include_archived: true } : undefined
+            ),
+        enabled: productId !== 'new',
+    });
 }
 
 /** Every image on the product, product-level and per-variant, in one call. */
 export function useProductMedia(productId: string) {
-  return useQuery({
-    queryKey: productKeys.facet(productId, 'media'),
-    queryFn: () => api.get<ProductImage[]>(`/v1/commerce/products/${productId}/images`),
-    enabled: productId !== 'new',
-  });
+    return useQuery({
+        queryKey: productKeys.facet(productId, 'media'),
+        queryFn: () => api.get<ProductImage[]>(`/v1/commerce/products/${productId}/images`),
+        enabled: productId !== 'new',
+    });
 }
 
 /**
@@ -637,12 +637,12 @@ export function useProductMedia(productId: string) {
  * pane, never a loop.
  */
 export function useProductStock(productId: string) {
-  return useQuery({
-    queryKey: productKeys.facet(productId, 'inventory'),
-    queryFn: () =>
-      api.list<ProductStockLevel>('/v1/inventory', { product_id: productId, take: 200 }),
-    enabled: productId !== 'new',
-  });
+    return useQuery({
+        queryKey: productKeys.facet(productId, 'inventory'),
+        queryFn: () =>
+            api.list<ProductStockLevel>('/v1/inventory', { product_id: productId, take: 200 }),
+        enabled: productId !== 'new',
+    });
 }
 
 /**
@@ -657,18 +657,18 @@ export function useProductStock(productId: string) {
  * gallery re-render after a reorder costs nothing.
  */
 export function useMediaAssets(ids: string[]) {
-  return useQuery({
-    queryKey: productKeys.mediaAssets(ids),
-    queryFn: async () => {
-      const { items } = await api.list<MediaAssetWire>('/v1/media/assets', {
-        ids: ids.join(','),
-        take: Math.min(ids.length, 250),
-      });
-      return items.map(toMediaAsset);
-    },
-    enabled: ids.length > 0,
-    staleTime: 5 * 60_000,
-  });
+    return useQuery({
+        queryKey: productKeys.mediaAssets(ids),
+        queryFn: async () => {
+            const { items } = await api.list<MediaAssetWire>('/v1/media/assets', {
+                ids: ids.join(','),
+                take: Math.min(ids.length, 250),
+            });
+            return items.map(toMediaAsset);
+        },
+        enabled: ids.length > 0,
+        staleTime: 5 * 60_000,
+    });
 }
 
 /**
@@ -678,11 +678,11 @@ export function useMediaAssets(ids: string[]) {
  * not a client-side sieve over the tenant's whole tier table.
  */
 export function useProductBulkTiers(productId: string) {
-  return useQuery({
-    queryKey: productKeys.facet(productId, 'bulk-tiers'),
-    queryFn: () => api.get<BulkPriceTier[]>('/v1/commerce/bulk-tiers', { product_id: productId }),
-    enabled: productId !== 'new',
-  });
+    return useQuery({
+        queryKey: productKeys.facet(productId, 'bulk-tiers'),
+        queryFn: () => api.get<BulkPriceTier[]>('/v1/commerce/bulk-tiers', { product_id: productId }),
+        enabled: productId !== 'new',
+    });
 }
 
 /**
@@ -702,23 +702,23 @@ export function useProductBulkTiers(productId: string) {
  * other facet.
  */
 export function useProductPriceListEntries(productId: string) {
-  return useQuery({
-    queryKey: productKeys.facet(productId, 'price-list-entries'),
-    queryFn: () =>
-      api.get<ProductPriceListEntry[]>(`/v1/commerce/products/${productId}/price-list-entries`),
-    enabled: productId !== 'new',
-  });
+    return useQuery({
+        queryKey: productKeys.facet(productId, 'price-list-entries'),
+        queryFn: () =>
+            api.get<ProductPriceListEntry[]>(`/v1/commerce/products/${productId}/price-list-entries`),
+        enabled: productId !== 'new',
+    });
 }
 
 /** Every pricing rule this business has written. Tenant-wide and short — the
  *  Pricing tab reads it only to name the rule a variant is bound to and to offer
  *  the list when binding one. */
 export function useMarkupRules() {
-  return useQuery({
-    queryKey: productKeys.markupRules(),
-    queryFn: () => api.get<MarkupRule[]>('/v1/markup-rules'),
-    staleTime: 5 * 60_000,
-  });
+    return useQuery({
+        queryKey: productKeys.markupRules(),
+        queryFn: () => api.get<MarkupRule[]>('/v1/markup-rules'),
+        staleTime: 5 * 60_000,
+    });
 }
 
 /**
@@ -733,26 +733,26 @@ export function useMarkupRules() {
  * three times.
  */
 export function useDropshipSuppliers() {
-  return useQuery({
-    queryKey: productKeys.suppliers(),
-    queryFn: () =>
-      api
-        .list<DropshipSupplier>('/v1/dropship/suppliers', { take: 250 })
-        .then((page) => page.items)
-        .catch(() => [] as DropshipSupplier[]),
-    staleTime: 5 * 60_000,
-    retry: false,
-  });
+    return useQuery({
+        queryKey: productKeys.suppliers(),
+        queryFn: () =>
+            api
+                .list<DropshipSupplier>('/v1/dropship/suppliers', { take: 250 })
+                .then((page) => page.items)
+                .catch(() => [] as DropshipSupplier[]),
+        staleTime: 5 * 60_000,
+        retry: false,
+    });
 }
 
 /** Long-lived: these are suggestion lists, not live state, and re-fetching them
  *  per keystroke of a lookup would be absurd. */
 export function useProductFacets() {
-  return useQuery({
-    queryKey: productKeys.facets(),
-    queryFn: () => api.get<ProductFacets>('/v1/commerce/products/facets'),
-    staleTime: 5 * 60_000,
-  });
+    return useQuery({
+        queryKey: productKeys.facets(),
+        queryFn: () => api.get<ProductFacets>('/v1/commerce/products/facets'),
+        staleTime: 5 * 60_000,
+    });
 }
 
 /* ── Invalidation ───────────────────────────────────────────────────────── */
@@ -767,19 +767,19 @@ export function useProductFacets() {
  * exactly the part that gets forgotten.
  */
 export function useInvalidateProduct() {
-  const queryClient = useQueryClient();
+    const queryClient = useQueryClient();
 
-  return (productId?: string, facet?: ProductFacetKey) => {
-    // A list row shows title, status, price range and variant count, so almost
-    // any write moves it.
-    void queryClient.invalidateQueries({ queryKey: productKeys.lists() });
-    if (!productId) return;
-    void queryClient.invalidateQueries({ queryKey: productKeys.detail(productId) });
-    if (!facet) return;
-    for (const derived of DERIVED_FACETS[facet] ?? []) {
-      void queryClient.invalidateQueries({ queryKey: productKeys.facet(productId, derived) });
-    }
-  };
+    return (productId?: string, facet?: ProductFacetKey) => {
+        // A list row shows title, status, price range and variant count, so almost
+        // any write moves it.
+        void queryClient.invalidateQueries({ queryKey: productKeys.lists() });
+        if (!productId) return;
+        void queryClient.invalidateQueries({ queryKey: productKeys.detail(productId) });
+        if (!facet) return;
+        for (const derived of DERIVED_FACETS[facet] ?? []) {
+            void queryClient.invalidateQueries({ queryKey: productKeys.facet(productId, derived) });
+        }
+    };
 }
 
 /* ── Mutations: the product ─────────────────────────────────────────────── */
@@ -788,11 +788,11 @@ export function useInvalidateProduct() {
  *  price column, because the first variant is created with it — a product nobody
  *  can buy is not a product anyone meant to make. */
 export interface NewProduct {
-  title: string;
-  handle?: string;
-  status: ProductStatus;
-  priceCents: number;
-  sku: string;
+    title: string;
+    handle?: string;
+    status: ProductStatus;
+    priceCents: number;
+    sku: string;
 }
 
 /**
@@ -805,172 +805,172 @@ export interface NewProduct {
  * second one.
  */
 export class VariantAfterCreateError extends Error {
-  constructor(
-    readonly productId: string,
-    /** The failure the price call actually returned — carried so the caller can
-     *  show the server's own sentence rather than this class's summary. Named
-     *  `reason` rather than `cause`, which is a member of Error itself. */
-    readonly reason: unknown
-  ) {
-    super('The product was added, but its price could not be saved.');
-    this.name = 'VariantAfterCreateError';
-  }
+    constructor(
+        readonly productId: string,
+        /** The failure the price call actually returned — carried so the caller can
+         *  show the server's own sentence rather than this class's summary. Named
+         *  `reason` rather than `cause`, which is a member of Error itself. */
+        readonly reason: unknown
+    ) {
+        super('The product was added, but its price could not be saved.');
+        this.name = 'VariantAfterCreateError';
+    }
 }
 
 export function useCreateProduct() {
-  const invalidate = useInvalidateProduct();
-  return useMutation({
-    mutationFn: async (input: NewProduct) => {
-      const created = await api.post<{ id: string; handle: string }>('/v1/commerce/products', {
-        title: input.title,
-        ...(input.handle ? { handle: input.handle } : {}),
-        status: input.status,
-      });
-      try {
-        await api.post(`/v1/commerce/products/${created.id}/variants`, {
-          sku: input.sku,
-          priceCents: input.priceCents,
-          isDefault: true,
-        });
-      } catch (error) {
-        throw new VariantAfterCreateError(created.id, error);
-      }
-      return created;
-    },
-    onSuccess: (created) => {
-      invalidate(created.id, 'variants');
-    },
-    onError: (error) => {
-      // A half-created product still changed the catalog, so the list must not
-      // keep showing the world as it was before.
-      if (error instanceof VariantAfterCreateError) invalidate(error.productId, 'variants');
-    },
-  });
+    const invalidate = useInvalidateProduct();
+    return useMutation({
+        mutationFn: async (input: NewProduct) => {
+            const created = await api.post<{ id: string; handle: string }>('/v1/commerce/products', {
+                title: input.title,
+                ...(input.handle ? { handle: input.handle } : {}),
+                status: input.status,
+            });
+            try {
+                await api.post(`/v1/commerce/products/${created.id}/variants`, {
+                    sku: input.sku,
+                    priceCents: input.priceCents,
+                    isDefault: true,
+                });
+            } catch (error) {
+                throw new VariantAfterCreateError(created.id, error);
+            }
+            return created;
+        },
+        onSuccess: (created) => {
+            invalidate(created.id, 'variants');
+        },
+        onError: (error) => {
+            // A half-created product still changed the catalog, so the list must not
+            // keep showing the world as it was before.
+            if (error instanceof VariantAfterCreateError) invalidate(error.productId, 'variants');
+        },
+    });
 }
 
 /** Everything the detail pane's tabs write to the product record itself.
  *  Partial: an omitted field is left alone by the server, and `null` clears one. */
 export interface ProductPatch {
-  title?: string;
-  handle?: string;
-  description?: string | null;
-  productType?: string | null;
-  /** The typed product-type link (docs/143). `null` clears the type AND wipes the
-   *  attribute bag server-side; a key sets/keeps it and re-validates `attributes`. */
-  productTypeKey?: string | null;
-  /** The typed attribute bag, validated against the type's schema (422 on
-   *  mismatch). Only meaningful when a `productTypeKey` is set. */
-  attributes?: Record<string, unknown>;
-  vendor?: string | null;
-  tags?: string[];
-  taxClass?: string | null;
-  originCountry?: string | null;
-  hsCode?: string | null;
-  requiresShipping?: boolean;
-  seoTitle?: string | null;
-  seoDescription?: string | null;
-  ogImageId?: string | null;
-  propertyIds?: string[];
-  categoryIds?: string[];
-  collectionIds?: string[];
+    title?: string;
+    handle?: string;
+    description?: string | null;
+    productType?: string | null;
+    /** The typed product-type link (docs/143). `null` clears the type AND wipes the
+     *  attribute bag server-side; a key sets/keeps it and re-validates `attributes`. */
+    productTypeKey?: string | null;
+    /** The typed attribute bag, validated against the type's schema (422 on
+     *  mismatch). Only meaningful when a `productTypeKey` is set. */
+    attributes?: Record<string, unknown>;
+    vendor?: string | null;
+    tags?: string[];
+    taxClass?: string | null;
+    originCountry?: string | null;
+    hsCode?: string | null;
+    requiresShipping?: boolean;
+    seoTitle?: string | null;
+    seoDescription?: string | null;
+    ogImageId?: string | null;
+    propertyIds?: string[];
+    categoryIds?: string[];
+    collectionIds?: string[];
 }
 
 export function useUpdateProduct(id: string) {
-  const invalidate = useInvalidateProduct();
-  return useMutation({
-    mutationFn: (patch: ProductPatch) => api.patch<Product>(`/v1/commerce/products/${id}`, patch),
-    onSuccess: () => {
-      invalidate(id);
-    },
-  });
+    const invalidate = useInvalidateProduct();
+    return useMutation({
+        mutationFn: (patch: ProductPatch) => api.patch<Product>(`/v1/commerce/products/${id}`, patch),
+        onSuccess: () => {
+            invalidate(id);
+        },
+    });
 }
 
 /** Put it on sale, or take it off sale. Two endpoints rather than a status PATCH
  *  because publishing also refreshes the search + sitemap snapshots server-side. */
 export function usePublishProduct(id: string) {
-  const invalidate = useInvalidateProduct();
-  return useMutation({
-    mutationFn: (published: boolean) =>
-      api.post(`/v1/commerce/products/${id}/${published ? 'publish' : 'unpublish'}`),
-    onSuccess: () => {
-      invalidate(id);
-    },
-  });
+    const invalidate = useInvalidateProduct();
+    return useMutation({
+        mutationFn: (published: boolean) =>
+            api.post(`/v1/commerce/products/${id}/${published ? 'publish' : 'unpublish'}`),
+        onSuccess: () => {
+            invalidate(id);
+        },
+    });
 }
 
 /** Retire it without losing it. Archived products keep their order history and
  *  can be brought back. */
 export function useArchiveProduct(id: string) {
-  const invalidate = useInvalidateProduct();
-  return useMutation({
-    mutationFn: (archived: boolean) =>
-      api.post(`/v1/commerce/products/${id}/${archived ? 'archive' : 'restore'}`),
-    onSuccess: () => {
-      invalidate(id);
-    },
-  });
+    const invalidate = useInvalidateProduct();
+    return useMutation({
+        mutationFn: (archived: boolean) =>
+            api.post(`/v1/commerce/products/${id}/${archived ? 'archive' : 'restore'}`),
+        onSuccess: () => {
+            invalidate(id);
+        },
+    });
 }
 
 export function useDeleteProduct(id: string) {
-  const invalidate = useInvalidateProduct();
-  return useMutation({
-    mutationFn: () => api.delete(`/v1/commerce/products/${id}`),
-    onSuccess: () => {
-      invalidate();
-    },
-  });
+    const invalidate = useInvalidateProduct();
+    return useMutation({
+        mutationFn: () => api.delete(`/v1/commerce/products/${id}`),
+        onSuccess: () => {
+            invalidate();
+        },
+    });
 }
 
 /* ── Mutations: variants ────────────────────────────────────────────────── */
 
 export interface NewVariant {
-  sku: string;
-  priceCents: number;
-  compareAtPriceCents?: number | null;
-  costCents?: number | null;
-  /** Where in the lattice this variant sits — one option-value id per axis.
-   *  Required on a product WITH options; the server rejects a set that does not
-   *  span every axis exactly once. Omit only on an option-less product. */
-  optionValueIds?: string[];
-  isDefault?: boolean;
+    sku: string;
+    priceCents: number;
+    compareAtPriceCents?: number | null;
+    costCents?: number | null;
+    /** Where in the lattice this variant sits — one option-value id per axis.
+     *  Required on a product WITH options; the server rejects a set that does not
+     *  span every axis exactly once. Omit only on an option-less product. */
+    optionValueIds?: string[];
+    isDefault?: boolean;
 }
 
 export function useCreateVariant(productId: string) {
-  const invalidate = useInvalidateProduct();
-  return useMutation({
-    mutationFn: (input: NewVariant) =>
-      api.post<{ id: string; sku: string }>(`/v1/commerce/products/${productId}/variants`, {
-        sku: input.sku,
-        priceCents: input.priceCents,
-        ...(input.compareAtPriceCents != null
-          ? { compareAtPriceCents: input.compareAtPriceCents }
-          : {}),
-        ...(input.costCents != null ? { costCents: input.costCents } : {}),
-        ...(input.optionValueIds ? { optionValueIds: input.optionValueIds } : {}),
-        ...(input.isDefault ? { isDefault: true } : {}),
-      }),
-    onSuccess: () => {
-      invalidate(productId, 'variants');
-    },
-  });
+    const invalidate = useInvalidateProduct();
+    return useMutation({
+        mutationFn: (input: NewVariant) =>
+            api.post<{ id: string; sku: string }>(`/v1/commerce/products/${productId}/variants`, {
+                sku: input.sku,
+                priceCents: input.priceCents,
+                ...(input.compareAtPriceCents != null
+                    ? { compareAtPriceCents: input.compareAtPriceCents }
+                    : {}),
+                ...(input.costCents != null ? { costCents: input.costCents } : {}),
+                ...(input.optionValueIds ? { optionValueIds: input.optionValueIds } : {}),
+                ...(input.isDefault ? { isDefault: true } : {}),
+            }),
+        onSuccess: () => {
+            invalidate(productId, 'variants');
+        },
+    });
 }
 
 /** Everything on a variant except its code, which has its own endpoint. */
 export interface VariantPatch {
-  title?: string | null;
-  barcode?: string | null;
-  priceCents?: number;
-  compareAtPriceCents?: number | null;
-  costCents?: number | null;
-  weight?: number | null;
-  /** All three or none — the server rejects a partial set. `null` clears them.
-   *  There is no way to remove ONE measurement and keep the others. */
-  dimensions?: { lengthMm: number; widthMm: number; heightMm: number } | null;
-  inventoryPolicy?: string;
-  requiresShipping?: boolean;
-  fulfillmentType?: string | null;
-  dropshipSourceId?: string | null;
-  position?: number;
+    title?: string | null;
+    barcode?: string | null;
+    priceCents?: number;
+    compareAtPriceCents?: number | null;
+    costCents?: number | null;
+    weight?: number | null;
+    /** All three or none — the server rejects a partial set. `null` clears them.
+     *  There is no way to remove ONE measurement and keep the others. */
+    dimensions?: { lengthMm: number; widthMm: number; heightMm: number } | null;
+    inventoryPolicy?: string;
+    requiresShipping?: boolean;
+    fulfillmentType?: string | null;
+    dropshipSourceId?: string | null;
+    position?: number;
 }
 
 /**
@@ -983,68 +983,68 @@ export interface VariantPatch {
  * the operator sees the real problem instead of a half-saved row.
  */
 export function useUpdateVariant(productId: string) {
-  const invalidate = useInvalidateProduct();
-  return useMutation({
-    mutationFn: async (input: { id: string; sku?: string; patch: VariantPatch }) => {
-      if (input.sku) {
-        await api.post(`/v1/commerce/variants/${input.id}/rename-sku`, { sku: input.sku });
-      }
-      await api.patch(`/v1/commerce/variants/${input.id}`, input.patch);
-    },
-    onSuccess: () => {
-      invalidate(productId, 'variants');
-    },
-  });
+    const invalidate = useInvalidateProduct();
+    return useMutation({
+        mutationFn: async (input: { id: string; sku?: string; patch: VariantPatch }) => {
+            if (input.sku) {
+                await api.post(`/v1/commerce/variants/${input.id}/rename-sku`, { sku: input.sku });
+            }
+            await api.patch(`/v1/commerce/variants/${input.id}`, input.patch);
+        },
+        onSuccess: () => {
+            invalidate(productId, 'variants');
+        },
+    });
 }
 
 /** Retire one variant. Archived, never deleted — a variant is referenced by every
  *  order that ever contained it. */
 export function useArchiveVariant(productId: string) {
-  const invalidate = useInvalidateProduct();
-  return useMutation({
-    mutationFn: (variantId: string) => api.post(`/v1/commerce/variants/${variantId}/archive`),
-    onSuccess: () => {
-      invalidate(productId, 'variants');
-    },
-  });
+    const invalidate = useInvalidateProduct();
+    return useMutation({
+        mutationFn: (variantId: string) => api.post(`/v1/commerce/variants/${variantId}/archive`),
+        onSuccess: () => {
+            invalidate(productId, 'variants');
+        },
+    });
 }
 
 export function useSetDefaultVariant(productId: string) {
-  const invalidate = useInvalidateProduct();
-  return useMutation({
-    mutationFn: (variantId: string) => api.post(`/v1/commerce/variants/${variantId}/default`),
-    onSuccess: () => {
-      invalidate(productId, 'variants');
-    },
-  });
+    const invalidate = useInvalidateProduct();
+    return useMutation({
+        mutationFn: (variantId: string) => api.post(`/v1/commerce/variants/${variantId}/default`),
+        onSuccess: () => {
+            invalidate(productId, 'variants');
+        },
+    });
 }
 
 /** Bring a retired variant back. Pairs with `useArchiveVariant` — read the
  *  archived rows with `useProductVariants(id, true)`. */
 export function useRestoreVariant(productId: string) {
-  const invalidate = useInvalidateProduct();
-  return useMutation({
-    mutationFn: (variantId: string) => api.post(`/v1/commerce/variants/${variantId}/restore`),
-    onSuccess: () => {
-      invalidate(productId, 'variants');
-    },
-  });
+    const invalidate = useInvalidateProduct();
+    return useMutation({
+        mutationFn: (variantId: string) => api.post(`/v1/commerce/variants/${variantId}/restore`),
+        onSuccess: () => {
+            invalidate(productId, 'variants');
+        },
+    });
 }
 
 /* ── Mutations: the option lattice ──────────────────────────────────────── */
 
 export interface OptionValueInput {
-  value: string;
-  swatchHex?: string;
-  swatchImageId?: string;
-  position: number;
+    value: string;
+    swatchHex?: string;
+    swatchImageId?: string;
+    position: number;
 }
 
 export interface OptionInput {
-  name: string;
-  displayType: OptionDisplayType;
-  position: number;
-  values: OptionValueInput[];
+    name: string;
+    displayType: OptionDisplayType;
+    position: number;
+    values: OptionValueInput[];
 }
 
 /**
@@ -1059,14 +1059,14 @@ export interface OptionInput {
  * in this file that must never be issued without a confirm naming what is lost.
  */
 export function useSetProductOptions(productId: string) {
-  const invalidate = useInvalidateProduct();
-  return useMutation({
-    mutationFn: (options: OptionInput[]) =>
-      api.post(`/v1/commerce/products/${productId}/variants/options`, { options }),
-    onSuccess: () => {
-      invalidate(productId, 'options');
-    },
-  });
+    const invalidate = useInvalidateProduct();
+    return useMutation({
+        mutationFn: (options: OptionInput[]) =>
+            api.post(`/v1/commerce/products/${productId}/variants/options`, { options }),
+        onSuccess: () => {
+            invalidate(productId, 'options');
+        },
+    });
 }
 
 /**
@@ -1079,10 +1079,10 @@ export function useSetProductOptions(productId: string) {
  * names per product and unique value texts per option, case-insensitively.
  */
 export interface LatticeCoordinate {
-  /** The option's name, e.g. `Colour`. */
-  option: string;
-  /** The value's text, e.g. `Racing green`. */
-  value: string;
+    /** The option's name, e.g. `Color`. */
+    option: string;
+    /** The value's text, e.g. `Racing green`. */
+    value: string;
 }
 
 /**
@@ -1094,13 +1094,13 @@ export interface LatticeCoordinate {
  * than firing a destructive write and describing the wreckage afterwards.
  */
 export interface LatticePlan {
-  /** The axes as they should be after the save. Empty removes them all. */
-  options: OptionInput[];
-  /** Variants that keep a place in the new grid, and where. */
-  place: { variantId: string; coordinate: LatticeCoordinate[] }[];
-  /** Variants whose place no longer exists. Retired, never deleted — every order
-   *  that ever contained one still points at it. */
-  retire: string[];
+    /** The axes as they should be after the save. Empty removes them all. */
+    options: OptionInput[];
+    /** Variants that keep a place in the new grid, and where. */
+    place: { variantId: string; coordinate: LatticeCoordinate[] }[];
+    /** Variants whose place no longer exists. Retired, never deleted — every order
+     *  that ever contained one still points at it. */
+    retire: string[];
 }
 
 /**
@@ -1113,20 +1113,20 @@ export interface LatticePlan {
  * generic failure that implies nothing happened.
  */
 export class LatticeRebindError extends Error {
-  constructor(
-    /** The ids that are now unbound, so the caller can name their codes. */
-    readonly variantIds: string[],
-    readonly reason: unknown
-  ) {
-    super('The choices were saved, but some versions could not be put back on the grid.');
-    this.name = 'LatticeRebindError';
-  }
+    constructor(
+        /** The ids that are now unbound, so the caller can name their codes. */
+        readonly variantIds: string[],
+        readonly reason: unknown
+    ) {
+        super('The choices were saved, but some versions could not be put back on the grid.');
+        this.name = 'LatticeRebindError';
+    }
 }
 
 function coordinateKey(option: string, value: string): string {
-  // NUL as the separator so an option literally named "Size|Colour" cannot
-  // collide with a two-part key.
-  return `${option.trim().toLowerCase()}\u0000${value.trim().toLowerCase()}`;
+    // NUL as the separator so an option literally named "Size|Color" cannot
+    // collide with a two-part key.
+    return `${option.trim().toLowerCase()}\u0000${value.trim().toLowerCase()}`;
 }
 
 /**
@@ -1148,81 +1148,81 @@ function coordinateKey(option: string, value: string): string {
  * lattice and match by name, which is the server's own answer guessed at.
  */
 export function useSaveProductLattice(productId: string) {
-  const invalidate = useInvalidateProduct();
-  return useMutation({
-    mutationFn: async (plan: LatticePlan) => {
-      const created = await api.post<ProductOption[]>(
-        `/v1/commerce/products/${productId}/variants/options`,
-        { options: plan.options }
-      );
+    const invalidate = useInvalidateProduct();
+    return useMutation({
+        mutationFn: async (plan: LatticePlan) => {
+            const created = await api.post<ProductOption[]>(
+                `/v1/commerce/products/${productId}/variants/options`,
+                { options: plan.options }
+            );
 
-      const valueIds = new Map<string, string>();
-      for (const option of created) {
-        for (const value of option.values) {
-          valueIds.set(coordinateKey(option.name, value.value), value.id);
-        }
-      }
+            const valueIds = new Map<string, string>();
+            for (const option of created) {
+                for (const value of option.values) {
+                    valueIds.set(coordinateKey(option.name, value.value), value.id);
+                }
+            }
 
-      const unbound: string[] = [];
-      let firstFailure: unknown = null;
+            const unbound: string[] = [];
+            let firstFailure: unknown = null;
 
-      await Promise.all(
-        plan.place.map(async (placement) => {
-          const ids = placement.coordinate.map((point) =>
-            valueIds.get(coordinateKey(point.option, point.value))
-          );
-          // A coordinate the server did not mint means the plan was computed
-          // against a lattice that has since moved. Better to leave the variant
-          // unbound and SAY so than to place it somewhere nobody asked for.
-          if (ids.some((id) => id === undefined)) {
-            unbound.push(placement.variantId);
-            return;
-          }
-          try {
-            await api.post('/v1/commerce/variants/assign-options', {
-              variantId: placement.variantId,
-              optionValueIds: ids,
-            });
-          } catch (error) {
-            unbound.push(placement.variantId);
-            firstFailure ??= error;
-          }
-        })
-      );
+            await Promise.all(
+                plan.place.map(async (placement) => {
+                    const ids = placement.coordinate.map((point) =>
+                        valueIds.get(coordinateKey(point.option, point.value))
+                    );
+                    // A coordinate the server did not mint means the plan was computed
+                    // against a lattice that has since moved. Better to leave the variant
+                    // unbound and SAY so than to place it somewhere nobody asked for.
+                    if (ids.some((id) => id === undefined)) {
+                        unbound.push(placement.variantId);
+                        return;
+                    }
+                    try {
+                        await api.post('/v1/commerce/variants/assign-options', {
+                            variantId: placement.variantId,
+                            optionValueIds: ids,
+                        });
+                    } catch (error) {
+                        unbound.push(placement.variantId);
+                        firstFailure ??= error;
+                    }
+                })
+            );
 
-      // Retiring runs even when a rebind failed: those versions have no place in
-      // the new grid either way, and leaving them live would show sellable rows
-      // sitting on choices that no longer exist.
-      await Promise.all(
-        plan.retire.map((variantId) =>
-          api.post(`/v1/commerce/variants/${variantId}/archive`).catch(() => undefined)
-        )
-      );
+            // Retiring runs even when a rebind failed: those versions have no place in
+            // the new grid either way, and leaving them live would show sellable rows
+            // sitting on choices that no longer exist.
+            await Promise.all(
+                plan.retire.map((variantId) =>
+                    api.post(`/v1/commerce/variants/${variantId}/archive`).catch(() => undefined)
+                )
+            );
 
-      if (unbound.length > 0) throw new LatticeRebindError(unbound, firstFailure);
-      return created;
-    },
-    onSuccess: () => {
-      invalidate(productId, 'options');
-    },
-    onError: () => {
-      // The axes DID change even on the failure path, so the tab must not go on
-      // rendering the world as it was before.
-      invalidate(productId, 'options');
-    },
-  });
+            if (unbound.length > 0) throw new LatticeRebindError(unbound, firstFailure);
+            return created;
+        },
+        onSuccess: () => {
+            invalidate(productId, 'options');
+        },
+        onError: () => {
+            // The axes DID change even on the failure path, so the tab must not go on
+            // rendering the world as it was before.
+            invalidate(productId, 'options');
+        },
+    });
 }
 
 /** Places one variant at a point in the lattice. */
 export function useAssignVariantOptions(productId: string) {
-  const invalidate = useInvalidateProduct();
-  return useMutation({
-    mutationFn: (input: { variantId: string; optionValueIds: string[] }) =>
-      api.post('/v1/commerce/variants/assign-options', input),
-    onSuccess: () => {
-      invalidate(productId, 'variants');
-    },
-  });
+    const invalidate = useInvalidateProduct();
+    return useMutation({
+        mutationFn: (input: { variantId: string; optionValueIds: string[] }) =>
+            api.post('/v1/commerce/variants/assign-options', input),
+        onSuccess: () => {
+            invalidate(productId, 'variants');
+        },
+    });
 }
 
 /* ── Mutations: media ───────────────────────────────────────────────────── */
@@ -1247,67 +1247,67 @@ export function useAssignVariantOptions(productId: string) {
  * product.
  */
 export function useUploadMedia() {
-  return useMutation({
-    mutationFn: async (file: File) => {
-      const created = await api.post<{
-        asset: { id: string };
-        upload: { url: string; method: string; headers: Record<string, string> };
-      }>('/v1/media/uploads', {
-        filename: file.name,
-        mime_type: file.type,
-        byte_size: file.size,
-        // Everything uploaded here is a product image — files it into the picker's
-        // "Product" auto-group (docs/49).
-        source: 'product',
-      });
+    return useMutation({
+        mutationFn: async (file: File) => {
+            const created = await api.post<{
+                asset: { id: string };
+                upload: { url: string; method: string; headers: Record<string, string> };
+            }>('/v1/media/uploads', {
+                filename: file.name,
+                mime_type: file.type,
+                byte_size: file.size,
+                // Everything uploaded here is a product image — files it into the picker's
+                // "Product" auto-group (docs/49).
+                source: 'product',
+            });
 
-      const { apiUrl } = await getTokenState();
-      const target = created.upload.url.startsWith('/')
-        ? `${apiUrl.replace(/\/$/, '')}${created.upload.url}`
-        : created.upload.url;
+            const { apiUrl } = await getTokenState();
+            const target = created.upload.url.startsWith('/')
+                ? `${apiUrl.replace(/\/$/, '')}${created.upload.url}`
+                : created.upload.url;
 
-      const response = await fetch(target, {
-        method: created.upload.method,
-        headers: created.upload.headers,
-        body: file,
-      });
-      if (!response.ok) {
-        throw new Error(`The file could not be uploaded (${String(response.status)}).`);
-      }
+            const response = await fetch(target, {
+                method: created.upload.method,
+                headers: created.upload.headers,
+                body: file,
+            });
+            if (!response.ok) {
+                throw new Error(`The file could not be uploaded (${String(response.status)}).`);
+            }
 
-      await api.post(`/v1/media/uploads/${created.asset.id}/complete`);
-      return created.asset.id;
-    },
-  });
+            await api.post(`/v1/media/uploads/${created.asset.id}/complete`);
+            return created.asset.id;
+        },
+    });
 }
 
 export interface NewProductImage {
-  mediaAssetId: string;
-  /** The version this photo is OF, or omitted for one shown for every version. */
-  variantId?: string | null;
-  /** Where it sits in the gallery. */
-  position: number;
-  alt?: string | null;
-  /** Show it only when the shopper's choices include all of these. */
-  optionValueIds?: string[];
+    mediaAssetId: string;
+    /** The version this photo is OF, or omitted for one shown for every version. */
+    variantId?: string | null;
+    /** Where it sits in the gallery. */
+    position: number;
+    alt?: string | null;
+    /** Show it only when the shopper's choices include all of these. */
+    optionValueIds?: string[];
 }
 
 export function useAddProductImage(productId: string) {
-  const invalidate = useInvalidateProduct();
-  return useMutation({
-    mutationFn: (input: NewProductImage) =>
-      api.post<{ id: string }>('/v1/commerce/variants/images', {
-        productId,
-        ...(input.variantId ? { variantId: input.variantId } : {}),
-        mediaAssetId: input.mediaAssetId,
-        position: input.position,
-        ...(input.alt ? { alt: input.alt } : {}),
-        ...(input.optionValueIds?.length ? { optionValueIds: input.optionValueIds } : {}),
-      }),
-    onSuccess: () => {
-      invalidate(productId, 'media');
-    },
-  });
+    const invalidate = useInvalidateProduct();
+    return useMutation({
+        mutationFn: (input: NewProductImage) =>
+            api.post<{ id: string }>('/v1/commerce/variants/images', {
+                productId,
+                ...(input.variantId ? { variantId: input.variantId } : {}),
+                mediaAssetId: input.mediaAssetId,
+                position: input.position,
+                ...(input.alt ? { alt: input.alt } : {}),
+                ...(input.optionValueIds?.length ? { optionValueIds: input.optionValueIds } : {}),
+            }),
+        onSuccess: () => {
+            invalidate(productId, 'media');
+        },
+    });
 }
 
 /**
@@ -1317,8 +1317,8 @@ export function useAddProductImage(productId: string) {
  * This is the write behind `VariantImageOptionValue`, which had schema, service
  * and a live endpoint but no interface anywhere until the Media tab. The
  * storefront shows an image whose pinned set is a SUBSET of what the shopper has
- * chosen — so pinning to `Colour: Red` alone shows on every red version, while
- * pinning to `Colour: Red` AND `Size: L` shows only once both are picked.
+ * chosen — so pinning to `Color: Red` alone shows on every red version, while
+ * pinning to `Color: Red` AND `Size: L` shows only once both are picked.
  *
  * `variantId` and `optionValueIds` are authoritative — omitting one CLEARS it,
  * which is why the tab always sends the complete intended binding rather than a
@@ -1326,55 +1326,55 @@ export function useAddProductImage(productId: string) {
  * to clear it. (It was write-once at upload time until this tab needed it.)
  */
 export function useSetImageBindings(productId: string) {
-  const invalidate = useInvalidateProduct();
-  return useMutation({
-    mutationFn: (input: {
-      variantImageId: string;
-      variantId: string | null;
-      optionValueIds: string[];
-      alt?: string | null;
-    }) => api.put('/v1/commerce/variant-image-bindings', input),
-    onSuccess: () => {
-      invalidate(productId, 'media');
-    },
-  });
+    const invalidate = useInvalidateProduct();
+    return useMutation({
+        mutationFn: (input: {
+            variantImageId: string;
+            variantId: string | null;
+            optionValueIds: string[];
+            alt?: string | null;
+        }) => api.put('/v1/commerce/variant-image-bindings', input),
+        onSuccess: () => {
+            invalidate(productId, 'media');
+        },
+    });
 }
 
 /** Sets the gallery order. Takes the WHOLE ordered list, so positions come out
  *  dense and unambiguous — see the endpoint's own note. */
 export function useReorderProductImages(productId: string) {
-  const invalidate = useInvalidateProduct();
-  return useMutation({
-    mutationFn: (imageIds: string[]) =>
-      api.put(`/v1/commerce/products/${productId}/image-order`, { imageIds }),
-    onSuccess: () => {
-      invalidate(productId, 'media');
-    },
-  });
+    const invalidate = useInvalidateProduct();
+    return useMutation({
+        mutationFn: (imageIds: string[]) =>
+            api.put(`/v1/commerce/products/${productId}/image-order`, { imageIds }),
+        onSuccess: () => {
+            invalidate(productId, 'media');
+        },
+    });
 }
 
 /** Makes one photo the product's main one — the one lists, cards and search
  *  results show. The server clears the previous hero in the same transaction. */
 export function useSetPrimaryImage(productId: string) {
-  const invalidate = useInvalidateProduct();
-  return useMutation({
-    mutationFn: (imageId: string) => api.post(`/v1/commerce/variant-images/${imageId}/primary`),
-    onSuccess: () => {
-      invalidate(productId, 'media');
-    },
-  });
+    const invalidate = useInvalidateProduct();
+    return useMutation({
+        mutationFn: (imageId: string) => api.post(`/v1/commerce/variant-images/${imageId}/primary`),
+        onSuccess: () => {
+            invalidate(productId, 'media');
+        },
+    });
 }
 
 /** Takes a photo off this product. The FILE stays in the media library — this
  *  removes the binding, not the upload. */
 export function useRemoveProductImage(productId: string) {
-  const invalidate = useInvalidateProduct();
-  return useMutation({
-    mutationFn: (imageId: string) => api.delete(`/v1/commerce/variant-images/${imageId}`),
-    onSuccess: () => {
-      invalidate(productId, 'media');
-    },
-  });
+    const invalidate = useInvalidateProduct();
+    return useMutation({
+        mutationFn: (imageId: string) => api.delete(`/v1/commerce/variant-images/${imageId}`),
+        onSuccess: () => {
+            invalidate(productId, 'media');
+        },
+    });
 }
 
 /* ── Mutations: pricing ─────────────────────────────────────────────────── */
@@ -1388,50 +1388,50 @@ export function useRemoveProductImage(productId: string) {
 /** Prices this variant by a rule from now on. `priceCents` becomes DERIVED —
  *  the server recomputes it immediately and again whenever the cost moves. */
 export function useBindVariantMarkup(productId: string) {
-  const invalidate = useInvalidateProduct();
-  return useMutation({
-    mutationFn: (input: { variantId: string; ruleId: string }) =>
-      api.put(`/v1/commerce/variants/${input.variantId}/markup`, { ruleId: input.ruleId }),
-    onSuccess: () => {
-      invalidate(productId, 'variants');
-    },
-  });
+    const invalidate = useInvalidateProduct();
+    return useMutation({
+        mutationFn: (input: { variantId: string; ruleId: string }) =>
+            api.put(`/v1/commerce/variants/${input.variantId}/markup`, { ruleId: input.ruleId }),
+        onSuccess: () => {
+            invalidate(productId, 'variants');
+        },
+    });
 }
 
 /** Detaches a variant from its rule. The price it has now is KEPT and becomes a
  *  typed one — unbinding never resets anything to zero. */
 export function useUnbindVariantMarkup(productId: string) {
-  const invalidate = useInvalidateProduct();
-  return useMutation({
-    mutationFn: (variantId: string) => api.delete(`/v1/commerce/variants/${variantId}/markup`),
-    onSuccess: () => {
-      invalidate(productId, 'variants');
-    },
-  });
+    const invalidate = useInvalidateProduct();
+    return useMutation({
+        mutationFn: (variantId: string) => api.delete(`/v1/commerce/variants/${variantId}/markup`),
+        onSuccess: () => {
+            invalidate(productId, 'variants');
+        },
+    });
 }
 
 export function useCreateBulkTier(productId: string) {
-  const invalidate = useInvalidateProduct();
-  return useMutation({
-    mutationFn: (input: { variantId: string; minQuantity: number; unitPriceCents: number }) =>
-      api.post<{ id: string }>('/v1/commerce/bulk-tiers', input),
-    onSuccess: () => {
-      invalidate(productId, 'bulk-tiers');
-    },
-  });
+    const invalidate = useInvalidateProduct();
+    return useMutation({
+        mutationFn: (input: { variantId: string; minQuantity: number; unitPriceCents: number }) =>
+            api.post<{ id: string }>('/v1/commerce/bulk-tiers', input),
+        onSuccess: () => {
+            invalidate(productId, 'bulk-tiers');
+        },
+    });
 }
 
 /** There is no update endpoint for a tier — the server only creates and deletes
  *  them. Changing one is therefore delete-then-create, which the Pricing tab does
  *  explicitly rather than pretending an edit happened. */
 export function useDeleteBulkTier(productId: string) {
-  const invalidate = useInvalidateProduct();
-  return useMutation({
-    mutationFn: (tierId: string) => api.delete(`/v1/commerce/bulk-tiers/${tierId}`),
-    onSuccess: () => {
-      invalidate(productId, 'bulk-tiers');
-    },
-  });
+    const invalidate = useInvalidateProduct();
+    return useMutation({
+        mutationFn: (tierId: string) => api.delete(`/v1/commerce/bulk-tiers/${tierId}`),
+        onSuccess: () => {
+            invalidate(productId, 'bulk-tiers');
+        },
+    });
 }
 
 /* ── Errors ─────────────────────────────────────────────────────────────── */
@@ -1443,13 +1443,13 @@ export function useDeleteBulkTier(productId: string) {
  * code. A 5xx carries no such sentence, so it falls back to the caller's wording.
  */
 export function productErrorMessage(error: unknown, fallback: string): string {
-  if (error instanceof VariantAfterCreateError) {
-    return productErrorMessage(error.reason, fallback);
-  }
-  if (error instanceof ApiError && error.status >= 400 && error.status < 500) {
-    return error.message;
-  }
-  return fallback;
+    if (error instanceof VariantAfterCreateError) {
+        return productErrorMessage(error.reason, fallback);
+    }
+    if (error instanceof ApiError && error.status >= 400 && error.status < 500) {
+        return error.message;
+    }
+    return fallback;
 }
 
 /* ── Saying what a state means ──────────────────────────────────────────── */
@@ -1463,87 +1463,87 @@ export type Tone = 'success' | 'warning' | 'danger' | 'info' | 'neutral';
  * true of the thing: whether a shopper can find it and buy it today.
  */
 export function productState(product: {
-  status: ProductStatus;
-  variantCount?: number;
-  priceMinCents?: number | null;
+    status: ProductStatus;
+    variantCount?: number;
+    priceMinCents?: number | null;
 }): { label: string; tone: Tone; detail: string } {
-  if (product.status === 'archived') {
-    return {
-      label: 'Retired',
-      tone: 'neutral',
-      detail:
-        'This product is off your website and cannot be bought. Past orders containing it are unaffected, and you can put it back on sale at any time.',
-    };
-  }
-  if (product.status === 'active') {
-    // On sale but priceless is a real state the platform allows, and it is the
-    // one worth shouting about: the product is live and nobody can buy it.
-    if (product.variantCount === 0 || product.priceMinCents == null) {
-      return {
-        label: 'No price set',
-        tone: 'warning',
-        detail:
-          'This product is meant to be on sale, but it has no price, so nobody can buy it. Set one on the Variants tab to fix that.',
-      };
+    if (product.status === 'archived') {
+        return {
+            label: 'Retired',
+            tone: 'neutral',
+            detail:
+                'This product is off your website and cannot be bought. Past orders containing it are unaffected, and you can put it back on sale at any time.',
+        };
+    }
+    if (product.status === 'active') {
+        // On sale but priceless is a real state the platform allows, and it is the
+        // one worth shouting about: the product is live and nobody can buy it.
+        if (product.variantCount === 0 || product.priceMinCents == null) {
+            return {
+                label: 'No price set',
+                tone: 'warning',
+                detail:
+                    'This product is meant to be on sale, but it has no price, so nobody can buy it. Set one on the Variants tab to fix that.',
+            };
+        }
+        return {
+            label: 'On sale',
+            tone: 'success',
+            detail: 'Shoppers can find this product on your website and buy it.',
+        };
     }
     return {
-      label: 'On sale',
-      tone: 'success',
-      detail: 'Shoppers can find this product on your website and buy it.',
+        label: 'Not on sale',
+        tone: 'info',
+        detail:
+            'This is saved but hidden — nobody can see it on your website yet. Put it on sale when you are ready.',
     };
-  }
-  return {
-    label: 'Not on sale',
-    tone: 'info',
-    detail:
-      'This is saved but hidden — nobody can see it on your website yet. Put it on sale when you are ready.',
-  };
 }
 
 /* ── Formatting ─────────────────────────────────────────────────────────── */
 
 export function formatCents(cents: number, currency = 'USD'): string {
-  return new Intl.NumberFormat(undefined, { style: 'currency', currency }).format(cents / 100);
+    return new Intl.NumberFormat(undefined, { style: 'currency', currency }).format(cents / 100);
 }
 
 /** What a product costs, in one phrase. A product whose variants differ in price
  *  has a RANGE, and collapsing it to the lowest number tells a half-truth on the
  *  one screen where the number matters. */
 export function priceLabel(product: {
-  priceMinCents: number | null;
-  priceMaxCents: number | null;
+    priceMinCents: number | null;
+    priceMaxCents: number | null;
 }): string {
-  const { priceMinCents: min, priceMaxCents: max } = product;
-  if (min == null) return 'No price';
-  if (max == null || max === min) return formatCents(min);
-  return `${formatCents(min)} – ${formatCents(max)}`;
+    const { priceMinCents: min, priceMaxCents: max } = product;
+    if (min == null) return 'No price';
+    if (max == null || max === min) return formatCents(min);
+    return `${formatCents(min)} – ${formatCents(max)}`;
 }
 
 /** A handle is the part of a web address that identifies this product, so it is
  *  lowercase, digits and hyphens — matching what api-rest derives from a title. */
 export function slugifyHandle(value: string): string {
-  return value
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '')
-    .slice(0, 127);
+    return value
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-+|-+$/g, '')
+        .slice(0, 127);
 }
 
 /** A first product code, derived from the title, so nobody has to invent one to
  *  get started. Stays fully editable — a business with its own coding scheme
  *  types theirs over the top. */
 export function suggestSku(title: string): string {
-  const base = title
-    .toUpperCase()
-    .replace(/[^A-Z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '')
-    .slice(0, 20);
-  return base === '' ? '' : `${base}-1`;
+    const base = title
+        .toUpperCase()
+        .replace(/[^A-Z0-9]+/g, '-')
+        .replace(/^-+|-+$/g, '')
+        .slice(0, 20);
+    return base === '' ? '' : `${base}-1`;
 }
 
 export function formatDate(value: string | null | undefined): string {
-  if (!value) return '—';
-  return new Date(value).toLocaleDateString(undefined, { dateStyle: 'medium' });
+    if (!value) return '—';
+    return new Date(value).toLocaleDateString(undefined, { dateStyle: 'medium' });
 }
 
 /* ══════════════════════════════════════════════════════════════════════════
@@ -1566,25 +1566,25 @@ export function formatDate(value: string | null | undefined): string {
  * and it can only be given by knowing Portland exists.
  */
 export function useStockLocations() {
-  return useQuery({
-    queryKey: ['inventory', 'locations'] as const,
-    queryFn: () => api.list<StockLocation>('/v1/inventory/locations', { take: 250 }),
-    staleTime: 5 * 60_000,
-  });
+    return useQuery({
+        queryKey: ['inventory', 'locations'] as const,
+        queryFn: () => api.list<StockLocation>('/v1/inventory/locations', { take: 250 }),
+        staleTime: 5 * 60_000,
+    });
 }
 
 /** Every hold against this product's stock, all variants, ONE request. */
 export function useProductReservations(productId: string) {
-  return useQuery({
-    queryKey: [...productKeys.facet(productId, 'inventory'), 'reservations'] as const,
-    queryFn: () =>
-      api.list<StockReservation>('/v1/inventory/reservations', {
-        product_id: productId,
-        status: 'active',
-        take: 100,
-      }),
-    enabled: productId !== 'new',
-  });
+    return useQuery({
+        queryKey: [...productKeys.facet(productId, 'inventory'), 'reservations'] as const,
+        queryFn: () =>
+            api.list<StockReservation>('/v1/inventory/reservations', {
+                product_id: productId,
+                status: 'active',
+                take: 100,
+            }),
+        enabled: productId !== 'new',
+    });
 }
 
 /**
@@ -1595,12 +1595,12 @@ export function useProductReservations(productId: string) {
  * a list that is not the newest 50 of the product.
  */
 export function useProductMovements(productId: string) {
-  return useQuery({
-    queryKey: [...productKeys.facet(productId, 'inventory'), 'movements'] as const,
-    queryFn: () =>
-      api.list<StockMovement>('/v1/inventory/movements', { product_id: productId, take: 50 }),
-    enabled: productId !== 'new',
-  });
+    return useQuery({
+        queryKey: [...productKeys.facet(productId, 'inventory'), 'movements'] as const,
+        queryFn: () =>
+            api.list<StockMovement>('/v1/inventory/movements', { product_id: productId, take: 50 }),
+        enabled: productId !== 'new',
+    });
 }
 
 /**
@@ -1613,49 +1613,49 @@ export function useProductMovements(productId: string) {
  * so a sale landing mid-count cannot be overwritten.
  */
 export function useSetStockCount(productId: string) {
-  const invalidate = useInvalidateProduct();
-  return useMutation({
-    mutationFn: (input: {
-      variantId: string;
-      warehouseId: string;
-      onHand: number;
-      note?: string;
-    }) =>
-      api.patch<{ onHand: number; available: number }>(`/v1/inventory/${input.variantId}`, {
-        warehouseId: input.warehouseId,
-        onHand: input.onHand,
-        reason: 'recount',
-        ...(input.note ? { note: input.note } : {}),
-      }),
-    onSuccess: () => {
-      invalidate(productId, 'inventory');
-    },
-  });
+    const invalidate = useInvalidateProduct();
+    return useMutation({
+        mutationFn: (input: {
+            variantId: string;
+            warehouseId: string;
+            onHand: number;
+            note?: string;
+        }) =>
+            api.patch<{ onHand: number; available: number }>(`/v1/inventory/${input.variantId}`, {
+                warehouseId: input.warehouseId,
+                onHand: input.onHand,
+                reason: 'recount',
+                ...(input.note ? { note: input.note } : {}),
+            }),
+        onSuccess: () => {
+            invalidate(productId, 'inventory');
+        },
+    });
 }
 
 /** When to reorder this variant at this place, how many to get, and how long it
  *  takes to arrive. */
 export function useSetReorderPolicy(productId: string) {
-  const invalidate = useInvalidateProduct();
-  return useMutation({
-    mutationFn: (input: {
-      variantId: string;
-      warehouseId: string;
-      reorderPoint: number;
-      reorderQuantity: number;
-      leadTimeDays?: number;
-    }) =>
-      api.post('/v1/inventory/reorder-policy', {
-        variantId: input.variantId,
-        warehouseId: input.warehouseId,
-        reorderPoint: input.reorderPoint,
-        reorderQuantity: input.reorderQuantity,
-        ...(input.leadTimeDays != null ? { leadTimeDays: input.leadTimeDays } : {}),
-      }),
-    onSuccess: () => {
-      invalidate(productId, 'inventory');
-    },
-  });
+    const invalidate = useInvalidateProduct();
+    return useMutation({
+        mutationFn: (input: {
+            variantId: string;
+            warehouseId: string;
+            reorderPoint: number;
+            reorderQuantity: number;
+            leadTimeDays?: number;
+        }) =>
+            api.post('/v1/inventory/reorder-policy', {
+                variantId: input.variantId,
+                warehouseId: input.warehouseId,
+                reorderPoint: input.reorderPoint,
+                reorderQuantity: input.reorderQuantity,
+                ...(input.leadTimeDays != null ? { leadTimeDays: input.leadTimeDays } : {}),
+            }),
+        onSuccess: () => {
+            invalidate(productId, 'inventory');
+        },
+    });
 }
 
 /* ── Fitment ────────────────────────────────────────────────────────────── */
@@ -1668,69 +1668,69 @@ export function useSetReorderPolicy(productId: string) {
  * rather than picked from a tree — "1999 to 2007", "up to 12,000 lb".
  */
 export interface FitmentDimension {
-  key: string;
-  label: string;
-  kind: 'level' | 'range';
-  /** A hint for the range widget: `year`, `lb`, `mm`. */
-  unit?: string;
+    key: string;
+    label: string;
+    kind: 'level' | 'range';
+    /** A hint for the range widget: `year`, `lb`, `mm`. */
+    unit?: string;
 }
 
 /** A kind of thing products can fit — "Vehicles", "Printers", "Tractors". */
 export interface FitmentDomain {
-  id: string;
-  slug: string;
-  displayName: string;
-  description: string | null;
-  iconKey: string | null;
-  dimensions: FitmentDimension[];
-  position: number;
-  /** How many top-level entries it has, e.g. "4 makes". */
-  rootCount: number;
+    id: string;
+    slug: string;
+    displayName: string;
+    description: string | null;
+    iconKey: string | null;
+    dimensions: FitmentDimension[];
+    position: number;
+    /** How many top-level entries it has, e.g. "4 makes". */
+    rootCount: number;
 }
 
 /** One value in a domain's tree. `childCount` is what drives the drill-down
  *  affordance — zero means this is as deep as it goes. */
 export interface FitmentNode {
-  id: string;
-  domainId: string;
-  parentId: string | null;
-  dimensionKey: string;
-  name: string;
-  slug: string;
-  depth: number;
-  position: number;
-  childCount: number;
+    id: string;
+    domainId: string;
+    parentId: string | null;
+    dimensionKey: string;
+    name: string;
+    slug: string;
+    depth: number;
+    position: number;
+    childCount: number;
 }
 
 export interface ProductFitmentRange {
-  dimensionKey: string;
-  min: number | null;
-  max: number | null;
+    dimensionKey: string;
+    min: number | null;
+    max: number | null;
 }
 
 /** One "this product fits that" rule. */
 export interface ProductFitment {
-  id: string;
-  productId: string;
-  domainId: string;
-  domainSlug: string;
-  /** Null means the WHOLE domain — "fits every vehicle". */
-  nodeId: string | null;
-  nodeName: string | null;
-  /** Ancestors including itself, root first: ["Ford","F-250","6.7L"]. */
-  nodePath: string[];
-  ranges: ProductFitmentRange[];
-  notes: string | null;
+    id: string;
+    productId: string;
+    domainId: string;
+    domainSlug: string;
+    /** Null means the WHOLE domain — "fits every vehicle". */
+    nodeId: string | null;
+    nodeName: string | null;
+    /** Ancestors including itself, root first: ["Ford","F-250","6.7L"]. */
+    nodePath: string[];
+    ranges: ProductFitmentRange[];
+    notes: string | null;
 }
 
 /** The kinds of thing this business records compatibility against. Long-lived —
  *  a domain is installed once and then used for years. */
 export function useFitmentDomains() {
-  return useQuery({
-    queryKey: ['commerce', 'fitment', 'domains'] as const,
-    queryFn: () => api.get<FitmentDomain[]>('/v1/commerce/fitment/domains'),
-    staleTime: 5 * 60_000,
-  });
+    return useQuery({
+        queryKey: ['commerce', 'fitment', 'domains'] as const,
+        queryFn: () => api.get<FitmentDomain[]>('/v1/commerce/fitment/domains'),
+        staleTime: 5 * 60_000,
+    });
 }
 
 /**
@@ -1743,32 +1743,32 @@ export function useFitmentDomains() {
  * is instant and re-walking a branch costs nothing.
  */
 export function useFitmentNodes(domainId: string | null, parentId: string | null) {
-  return useQuery({
-    queryKey: ['commerce', 'fitment', 'nodes', domainId ?? '', parentId ?? 'root'] as const,
-    queryFn: () =>
-      api.get<FitmentNode[]>(`/v1/commerce/fitment/domains/${domainId ?? ''}/nodes`, {
-        ...(parentId ? { parentId } : {}),
-      }),
-    enabled: domainId !== null,
-    staleTime: 5 * 60_000,
-  });
+    return useQuery({
+        queryKey: ['commerce', 'fitment', 'nodes', domainId ?? '', parentId ?? 'root'] as const,
+        queryFn: () =>
+            api.get<FitmentNode[]>(`/v1/commerce/fitment/domains/${domainId ?? ''}/nodes`, {
+                ...(parentId ? { parentId } : {}),
+            }),
+        enabled: domainId !== null,
+        staleTime: 5 * 60_000,
+    });
 }
 
 /** Everything this product is recorded as fitting. */
 export function useProductFitment(productId: string) {
-  return useQuery({
-    queryKey: productKeys.facet(productId, 'fitment'),
-    queryFn: () => api.get<ProductFitment[]>(`/v1/commerce/products/${productId}/fitment`),
-    enabled: productId !== 'new',
-  });
+    return useQuery({
+        queryKey: productKeys.facet(productId, 'fitment'),
+        queryFn: () => api.get<ProductFitment[]>(`/v1/commerce/products/${productId}/fitment`),
+        enabled: productId !== 'new',
+    });
 }
 
 /** What one rule looks like on the way IN. */
 export interface ProductFitmentInput {
-  domainId: string;
-  nodeId: string | null;
-  ranges: ProductFitmentRange[];
-  notes?: string | null;
+    domainId: string;
+    nodeId: string | null;
+    ranges: ProductFitmentRange[];
+    notes?: string | null;
 }
 
 /**
@@ -1781,21 +1781,21 @@ export interface ProductFitmentInput {
  * row as it is added.
  */
 export function useSaveProductFitment(productId: string) {
-  const invalidate = useInvalidateProduct();
-  return useMutation({
-    mutationFn: (fitments: ProductFitmentInput[]) =>
-      api.put(`/v1/commerce/products/${productId}/fitment`, {
-        fitments: fitments.map((f) => ({
-          domainId: f.domainId,
-          nodeId: f.nodeId,
-          ranges: f.ranges,
-          ...(f.notes ? { notes: f.notes } : {}),
-        })),
-      }),
-    onSuccess: () => {
-      invalidate(productId, 'fitment');
-    },
-  });
+    const invalidate = useInvalidateProduct();
+    return useMutation({
+        mutationFn: (fitments: ProductFitmentInput[]) =>
+            api.put(`/v1/commerce/products/${productId}/fitment`, {
+                fitments: fitments.map((f) => ({
+                    domainId: f.domainId,
+                    nodeId: f.nodeId,
+                    ranges: f.ranges,
+                    ...(f.notes ? { notes: f.notes } : {}),
+                })),
+            }),
+        onSuccess: () => {
+            invalidate(productId, 'fitment');
+        },
+    });
 }
 
 /**
@@ -1807,160 +1807,160 @@ export function useSaveProductFitment(productId: string) {
  * that stops matching.
  */
 export function useDeleteProductFitment(productId: string) {
-  const invalidate = useInvalidateProduct();
-  return useMutation({
-    mutationFn: (fitmentId: string) => api.delete(`/v1/commerce/fitment/${fitmentId}`),
-    onSuccess: () => {
-      invalidate(productId, 'fitment');
-    },
-  });
+    const invalidate = useInvalidateProduct();
+    return useMutation({
+        mutationFn: (fitmentId: string) => api.delete(`/v1/commerce/fitment/${fitmentId}`),
+        onSuccess: () => {
+            invalidate(productId, 'fitment');
+        },
+    });
 }
 
 /* ── Configurator ───────────────────────────────────────────────────────── */
 
 /** How a shopper is asked one question. */
 export type ConfiguratorOptionType =
-  | 'single_choice'
-  | 'multi_choice'
-  | 'toggle'
-  | 'quantity'
-  | 'text'
-  | 'color_swatch'
-  | 'image_picker';
+    | 'single_choice'
+    | 'multi_choice'
+    | 'toggle'
+    | 'quantity'
+    | 'text'
+    | 'color_swatch'
+    | 'image_picker';
 
 /** One answer someone can give. */
 export interface ConfiguratorChoice {
-  key: string;
-  label: string;
-  /** Choosing this sells a different version of the product instead. */
-  variantId?: string;
-  addOnVariantId?: string;
-  /** What choosing this adds to (or takes off) the price. */
-  priceDeltaCents?: number;
-  swatchHex?: string;
-  position: number;
+    key: string;
+    label: string;
+    /** Choosing this sells a different version of the product instead. */
+    variantId?: string;
+    addOnVariantId?: string;
+    /** What choosing this adds to (or takes off) the price. */
+    priceDeltaCents?: number;
+    swatchHex?: string;
+    position: number;
 }
 
 /** One question in the build. */
 export interface ConfiguratorOption {
-  key: string;
-  label: string;
-  helpText?: string;
-  type: ConfiguratorOptionType;
-  required: boolean;
-  minSelections?: number;
-  maxSelections?: number;
-  defaultChoiceKeys: string[];
-  groupHeader?: string;
-  position: number;
-  choices: ConfiguratorChoice[];
+    key: string;
+    label: string;
+    helpText?: string;
+    type: ConfiguratorOptionType;
+    required: boolean;
+    minSelections?: number;
+    maxSelections?: number;
+    defaultChoiceKeys: string[];
+    groupHeader?: string;
+    position: number;
+    choices: ConfiguratorChoice[];
 }
 
 export interface ConfiguratorCondition {
-  optionKey: string;
-  op: 'in' | 'not_in' | 'gt' | 'lt' | 'eq';
-  value: string | number | string[];
+    optionKey: string;
+    op: 'in' | 'not_in' | 'gt' | 'lt' | 'eq';
+    value: string | number | string[];
 }
 
 export type ConfiguratorAction =
-  | { kind: 'require'; optionKey: string }
-  | { kind: 'hide'; optionKey: string }
-  | { kind: 'show_only_choices'; optionKey: string; choiceKeys: string[] }
-  | { kind: 'price_adjust'; deltaCents: number; label?: string }
-  | { kind: 'add_addon'; variantId: string; quantity: number }
-  | { kind: 'error'; message: string };
+    | { kind: 'require'; optionKey: string }
+    | { kind: 'hide'; optionKey: string }
+    | { kind: 'show_only_choices'; optionKey: string; choiceKeys: string[] }
+    | { kind: 'price_adjust'; deltaCents: number; label?: string }
+    | { kind: 'add_addon'; variantId: string; quantity: number }
+    | { kind: 'error'; message: string };
 
 /** "When they pick this, do that." */
 export interface ConfiguratorRule {
-  name: string;
-  match: 'all' | 'any';
-  conditions: ConfiguratorCondition[];
-  actions: ConfiguratorAction[];
-  priority: number;
+    name: string;
+    match: 'all' | 'any';
+    conditions: ConfiguratorCondition[];
+    actions: ConfiguratorAction[];
+    priority: number;
 }
 
 export interface ConfiguratorAddOn {
-  variantId: string;
-  variantSku: string | null;
-  productTitle: string | null;
-  defaultIncluded: boolean;
-  priceOverrideCents?: number;
+    variantId: string;
+    variantSku: string | null;
+    productTitle: string | null;
+    defaultIncluded: boolean;
+    priceOverrideCents?: number;
 }
 
 export interface ConfiguratorTemplateRow {
-  id: string;
-  productId: string;
-  productTitle: string;
-  name: string;
-  description: string | null;
-  /** `draft` | `active` | `archived`. */
-  status: string;
-  optionCount: number;
-  ruleCount: number;
-  addOnCount: number;
-  updatedAt: string;
+    id: string;
+    productId: string;
+    productTitle: string;
+    name: string;
+    description: string | null;
+    /** `draft` | `active` | `archived`. */
+    status: string;
+    optionCount: number;
+    ruleCount: number;
+    addOnCount: number;
+    updatedAt: string;
 }
 
 export interface ConfiguratorTemplate extends ConfiguratorTemplateRow {
-  layout: { steps?: { key: string; label: string; optionKeys: string[] }[] } | null;
-  options: ConfiguratorOption[];
-  rules: ConfiguratorRule[];
-  addOns: ConfiguratorAddOn[];
+    layout: { steps?: { key: string; label: string; optionKeys: string[] }[] } | null;
+    options: ConfiguratorOption[];
+    rules: ConfiguratorRule[];
+    addOns: ConfiguratorAddOn[];
 }
 
 /** One component of a bundle. */
 export interface BundleComponent {
-  id: string;
-  variantId: string;
-  variantSku: string;
-  productTitle: string;
-  defaultQuantity: number;
-  isRequired: boolean;
-  isSwappable: boolean;
-  swappableProductId: string | null;
-  position: number;
+    id: string;
+    variantId: string;
+    variantSku: string;
+    productTitle: string;
+    defaultQuantity: number;
+    isRequired: boolean;
+    isSwappable: boolean;
+    swappableProductId: string | null;
+    position: number;
 }
 
 export interface Bundle {
-  id: string;
-  bundleProductId: string;
-  bundleProductTitle: string;
-  /** `sum_of_components` | `fixed` | `percent_off_sum`. */
-  pricingMode: string;
-  fixedPriceCents: number | null;
-  percentOffSum: number | null;
-  /** `decrement_components` | `decrement_bundle_sku`. */
-  inventoryMode: string;
-  componentCount: number;
-  updatedAt: string;
+    id: string;
+    bundleProductId: string;
+    bundleProductTitle: string;
+    /** `sum_of_components` | `fixed` | `percent_off_sum`. */
+    pricingMode: string;
+    fixedPriceCents: number | null;
+    percentOffSum: number | null;
+    /** `decrement_components` | `decrement_bundle_sku`. */
+    inventoryMode: string;
+    componentCount: number;
+    updatedAt: string;
 }
 
 export interface BundleDetail extends Bundle {
-  components: BundleComponent[];
+    components: BundleComponent[];
 }
 
 /** The builds set up on this product. */
 export function useProductTemplates(productId: string) {
-  return useQuery({
-    queryKey: productKeys.facet(productId, 'configurator'),
-    queryFn: () =>
-      api.get<ConfiguratorTemplateRow[]>(
-        `/v1/commerce/products/${productId}/configurator-templates`
-      ),
-    enabled: productId !== 'new',
-  });
+    return useQuery({
+        queryKey: productKeys.facet(productId, 'configurator'),
+        queryFn: () =>
+            api.get<ConfiguratorTemplateRow[]>(
+                `/v1/commerce/products/${productId}/configurator-templates`
+            ),
+        enabled: productId !== 'new',
+    });
 }
 
 /** One build in full — its questions, its rules, its extras. Keyed on the
  *  template rather than the product, so two panes looking at the same build
  *  share one fetch. */
 export function useConfiguratorTemplate(templateId: string | null) {
-  return useQuery({
-    queryKey: ['commerce', 'configurator-templates', templateId ?? ''] as const,
-    queryFn: () =>
-      api.get<ConfiguratorTemplate>(`/v1/commerce/configurator-templates/${templateId ?? ''}`),
-    enabled: templateId !== null,
-  });
+    return useQuery({
+        queryKey: ['commerce', 'configurator-templates', templateId ?? ''] as const,
+        queryFn: () =>
+            api.get<ConfiguratorTemplate>(`/v1/commerce/configurator-templates/${templateId ?? ''}`),
+        enabled: templateId !== null,
+    });
 }
 
 /**
@@ -1971,85 +1971,85 @@ export function useConfiguratorTemplate(templateId: string | null) {
  * page.
  */
 export function useProductBundles(productId: string) {
-  return useQuery({
-    queryKey: [...productKeys.facet(productId, 'configurator'), 'bundles'] as const,
-    queryFn: () => api.list<Bundle>('/v1/commerce/bundles', { product_id: productId, take: 50 }),
-    enabled: productId !== 'new',
-  });
+    return useQuery({
+        queryKey: [...productKeys.facet(productId, 'configurator'), 'bundles'] as const,
+        queryFn: () => api.list<Bundle>('/v1/commerce/bundles', { product_id: productId, take: 50 }),
+        enabled: productId !== 'new',
+    });
 }
 
 export function useBundleDetail(bundleId: string | null) {
-  return useQuery({
-    queryKey: ['commerce', 'bundles', bundleId ?? ''] as const,
-    queryFn: () => api.get<BundleDetail>(`/v1/commerce/bundles/${bundleId ?? ''}`),
-    enabled: bundleId !== null,
-  });
+    return useQuery({
+        queryKey: ['commerce', 'bundles', bundleId ?? ''] as const,
+        queryFn: () => api.get<BundleDetail>(`/v1/commerce/bundles/${bundleId ?? ''}`),
+        enabled: bundleId !== null,
+    });
 }
 
 /** What a template write sends. Options are replaced wholesale — the server has
  *  no add-one-question endpoint. */
 export interface ConfiguratorTemplatePatch {
-  name?: string;
-  description?: string | null;
-  status?: 'draft' | 'active' | 'archived';
-  options?: ConfiguratorOption[];
-  rules?: ConfiguratorRule[];
+    name?: string;
+    description?: string | null;
+    status?: 'draft' | 'active' | 'archived';
+    options?: ConfiguratorOption[];
+    rules?: ConfiguratorRule[];
 }
 
 export function useCreateConfiguratorTemplate(productId: string) {
-  const invalidate = useInvalidateProduct();
-  return useMutation({
-    mutationFn: (input: { name: string; options: ConfiguratorOption[] }) =>
-      api.post<{ id: string }>('/v1/commerce/configurator-templates', {
-        productId,
-        name: input.name,
-        options: input.options,
-      }),
-    onSuccess: () => {
-      invalidate(productId, 'configurator');
-    },
-  });
+    const invalidate = useInvalidateProduct();
+    return useMutation({
+        mutationFn: (input: { name: string; options: ConfiguratorOption[] }) =>
+            api.post<{ id: string }>('/v1/commerce/configurator-templates', {
+                productId,
+                name: input.name,
+                options: input.options,
+            }),
+        onSuccess: () => {
+            invalidate(productId, 'configurator');
+        },
+    });
 }
 
 export function useUpdateConfiguratorTemplate(productId: string, templateId: string) {
-  const invalidate = useInvalidateProduct();
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: (patch: ConfiguratorTemplatePatch) =>
-      api.patch(`/v1/commerce/configurator-templates/${templateId}`, patch),
-    onSuccess: () => {
-      // The template's own key is not under `detail(productId)` — it is keyed on
-      // the template so two panes share it — so the coarse product invalidate
-      // does not reach it and it has to be named.
-      void queryClient.invalidateQueries({
-        queryKey: ['commerce', 'configurator-templates', templateId],
-      });
-      invalidate(productId, 'configurator');
-    },
-  });
+    const invalidate = useInvalidateProduct();
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: (patch: ConfiguratorTemplatePatch) =>
+            api.patch(`/v1/commerce/configurator-templates/${templateId}`, patch),
+        onSuccess: () => {
+            // The template's own key is not under `detail(productId)` — it is keyed on
+            // the template so two panes share it — so the coarse product invalidate
+            // does not reach it and it has to be named.
+            void queryClient.invalidateQueries({
+                queryKey: ['commerce', 'configurator-templates', templateId],
+            });
+            invalidate(productId, 'configurator');
+        },
+    });
 }
 
 export function useDeleteConfiguratorTemplate(productId: string) {
-  const invalidate = useInvalidateProduct();
-  return useMutation({
-    mutationFn: (templateId: string) =>
-      api.delete(`/v1/commerce/configurator-templates/${templateId}`),
-    onSuccess: () => {
-      invalidate(productId, 'configurator');
-    },
-  });
+    const invalidate = useInvalidateProduct();
+    return useMutation({
+        mutationFn: (templateId: string) =>
+            api.delete(`/v1/commerce/configurator-templates/${templateId}`),
+        onSuccess: () => {
+            invalidate(productId, 'configurator');
+        },
+    });
 }
 
 /** What the storefront would hand back for a set of choices. */
 export interface ConfiguratorPreview {
-  templateId: string;
-  resolvedVariantId: string | null;
-  resolvedSku: string;
-  addOnLines: { variantId: string; quantity: number; unitPriceCents: number; label?: string }[];
-  basePriceCents: number;
-  totalAdjustmentCents: number;
-  /** Rules that refused this combination, in the wording the shopper would see. */
-  errors: string[];
+    templateId: string;
+    resolvedVariantId: string | null;
+    resolvedSku: string;
+    addOnLines: { variantId: string; quantity: number; unitPriceCents: number; label?: string }[];
+    basePriceCents: number;
+    totalAdjustmentCents: number;
+    /** Rules that refused this combination, in the wording the shopper would see. */
+    errors: string[];
 }
 
 /**
@@ -2060,12 +2060,12 @@ export interface ConfiguratorPreview {
  * mount, and caching one arbitrary combination would be pointless.
  */
 export function useConfiguratorPreview() {
-  return useMutation({
-    mutationFn: (input: {
-      templateId: string;
-      selections: Record<string, string | string[] | number | boolean>;
-    }) => api.post<ConfiguratorPreview>('/v1/commerce/configurator/preview', input),
-  });
+    return useMutation({
+        mutationFn: (input: {
+            templateId: string;
+            selections: Record<string, string | string[] | number | boolean>;
+        }) => api.post<ConfiguratorPreview>('/v1/commerce/configurator/preview', input),
+    });
 }
 
 /* ── Trade pricing (B2B) ────────────────────────────────────────────────── */
@@ -2074,75 +2074,75 @@ export function useConfiguratorPreview() {
  *  waterfall server-side (account override → contract price → tier override →
  *  the tier's blanket discount), which is why they are read together. */
 export interface TradePricingTier {
-  id: string;
-  name: string;
-  description: string | null;
-  discountType: string;
-  discountValue: number;
-  /** `all` means this tier's blanket discount already applies to this product
-   *  without anyone listing it — the difference between "nothing set up" and
-   *  "trade customers already pay less here". */
-  productScope: string;
-  minOrderCents: number;
-  accountCount: number;
+    id: string;
+    name: string;
+    description: string | null;
+    discountType: string;
+    discountValue: number;
+    /** `all` means this tier's blanket discount already applies to this product
+     *  without anyone listing it — the difference between "nothing set up" and
+     *  "trade customers already pay less here". */
+    productScope: string;
+    minOrderCents: number;
+    accountCount: number;
 }
 
 export interface TradeTierOverride {
-  id: string;
-  tierId: string;
-  tierName: string;
-  /** A soft-deleted tier keeps its overrides but resolves to list price. */
-  tierDeleted: boolean;
-  variantId: string | null;
-  priceCents: number | null;
-  discountPercentage: number | null;
-  notes: string | null;
+    id: string;
+    tierId: string;
+    tierName: string;
+    /** A soft-deleted tier keeps its overrides but resolves to list price. */
+    tierDeleted: boolean;
+    variantId: string | null;
+    priceCents: number | null;
+    discountPercentage: number | null;
+    notes: string | null;
 }
 
 export interface TradeAccountOverride {
-  id: string;
-  accountId: string;
-  accountName: string;
-  accountStatus: string;
-  variantId: string | null;
-  priceCents: number | null;
-  discountPercentage: number | null;
-  minOrderQty: number | null;
-  maxOrderQty: number | null;
-  notes: string | null;
+    id: string;
+    accountId: string;
+    accountName: string;
+    accountStatus: string;
+    variantId: string | null;
+    priceCents: number | null;
+    discountPercentage: number | null;
+    minOrderQty: number | null;
+    maxOrderQty: number | null;
+    notes: string | null;
 }
 
 /** A price agreed with one business for a fixed period. Beats a tier, loses to
  *  an account override. */
 export interface TradeContractPrice {
-  id: string;
-  accountId: string;
-  accountName: string;
-  variantId: string;
-  priceCents: number;
-  validFrom: string;
-  validTo: string | null;
-  /** Decided server-side — a browser clock a day out must not be the thing that
-   *  declares an agreement expired. */
-  active: boolean;
-  notes: string | null;
+    id: string;
+    accountId: string;
+    accountName: string;
+    variantId: string;
+    priceCents: number;
+    validFrom: string;
+    validTo: string | null;
+    /** Decided server-side — a browser clock a day out must not be the thing that
+     *  declares an agreement expired. */
+    active: boolean;
+    notes: string | null;
 }
 
 export interface TradePricingVariant {
-  id: string;
-  sku: string;
-  title: string | null;
-  priceCents: number;
-  costCents: number | null;
-  currency: string;
+    id: string;
+    sku: string;
+    title: string | null;
+    priceCents: number;
+    costCents: number | null;
+    currency: string;
 }
 
 export interface TradePricing {
-  variants: TradePricingVariant[];
-  tiers: TradePricingTier[];
-  tierOverrides: TradeTierOverride[];
-  accountOverrides: TradeAccountOverride[];
-  contractPrices: TradeContractPrice[];
+    variants: TradePricingVariant[];
+    tiers: TradePricingTier[];
+    tierOverrides: TradeTierOverride[];
+    accountOverrides: TradeAccountOverride[];
+    contractPrices: TradeContractPrice[];
 }
 
 /**
@@ -2155,70 +2155,70 @@ export interface TradePricing {
  * at the top of this file.
  */
 export function useTradePricing(productId: string) {
-  return useQuery({
-    queryKey: productKeys.facet(productId, 'b2b-pricing'),
-    queryFn: () => api.get<TradePricing>('/v1/b2b/product-pricing', { product_id: productId }),
-    enabled: productId !== 'new',
-  });
+    return useQuery({
+        queryKey: productKeys.facet(productId, 'b2b-pricing'),
+        queryFn: () => api.get<TradePricing>('/v1/b2b/product-pricing', { product_id: productId }),
+        enabled: productId !== 'new',
+    });
 }
 
 /** Add a fixed price or a percentage off for one tier on one variant. */
 export function useAddTierOverride(productId: string) {
-  const invalidate = useInvalidateProduct();
-  return useMutation({
-    mutationFn: (input: {
-      tierId: string;
-      variantId: string;
-      priceCents?: number;
-      discountPercentage?: number;
-      notes?: string;
-    }) =>
-      api.post(`/v1/b2b/pricing-tiers/${input.tierId}/overrides`, {
-        variantId: input.variantId,
-        // The server enforces EXACTLY one of these two, so an undefined key
-        // must be absent rather than present-and-undefined.
-        ...(input.priceCents !== undefined ? { priceCents: input.priceCents } : {}),
-        ...(input.discountPercentage !== undefined
-          ? { discountPercentage: input.discountPercentage }
-          : {}),
-        ...(input.notes ? { notes: input.notes } : {}),
-      }),
-    onSuccess: () => {
-      invalidate(productId, 'b2b-pricing');
-    },
-  });
+    const invalidate = useInvalidateProduct();
+    return useMutation({
+        mutationFn: (input: {
+            tierId: string;
+            variantId: string;
+            priceCents?: number;
+            discountPercentage?: number;
+            notes?: string;
+        }) =>
+            api.post(`/v1/b2b/pricing-tiers/${input.tierId}/overrides`, {
+                variantId: input.variantId,
+                // The server enforces EXACTLY one of these two, so an undefined key
+                // must be absent rather than present-and-undefined.
+                ...(input.priceCents !== undefined ? { priceCents: input.priceCents } : {}),
+                ...(input.discountPercentage !== undefined
+                    ? { discountPercentage: input.discountPercentage }
+                    : {}),
+                ...(input.notes ? { notes: input.notes } : {}),
+            }),
+        onSuccess: () => {
+            invalidate(productId, 'b2b-pricing');
+        },
+    });
 }
 
 export function useRemoveTierOverride(productId: string) {
-  const invalidate = useInvalidateProduct();
-  return useMutation({
-    mutationFn: (input: { tierId: string; overrideId: string }) =>
-      api.delete(`/v1/b2b/pricing-tiers/${input.tierId}/overrides/${input.overrideId}`),
-    onSuccess: () => {
-      invalidate(productId, 'b2b-pricing');
-    },
-  });
+    const invalidate = useInvalidateProduct();
+    return useMutation({
+        mutationFn: (input: { tierId: string; overrideId: string }) =>
+            api.delete(`/v1/b2b/pricing-tiers/${input.tierId}/overrides/${input.overrideId}`),
+        onSuccess: () => {
+            invalidate(productId, 'b2b-pricing');
+        },
+    });
 }
 
 export function useRemoveAccountOverride(productId: string) {
-  const invalidate = useInvalidateProduct();
-  return useMutation({
-    mutationFn: (input: { accountId: string; overrideId: string }) =>
-      api.delete(`/v1/b2b/accounts/${input.accountId}/overrides/${input.overrideId}`),
-    onSuccess: () => {
-      invalidate(productId, 'b2b-pricing');
-    },
-  });
+    const invalidate = useInvalidateProduct();
+    return useMutation({
+        mutationFn: (input: { accountId: string; overrideId: string }) =>
+            api.delete(`/v1/b2b/accounts/${input.accountId}/overrides/${input.overrideId}`),
+        onSuccess: () => {
+            invalidate(productId, 'b2b-pricing');
+        },
+    });
 }
 
 export function useRemoveContractPrice(productId: string) {
-  const invalidate = useInvalidateProduct();
-  return useMutation({
-    mutationFn: (id: string) => api.delete(`/v1/commerce/contract-prices/${id}`),
-    onSuccess: () => {
-      invalidate(productId, 'b2b-pricing');
-    },
-  });
+    const invalidate = useInvalidateProduct();
+    return useMutation({
+        mutationFn: (id: string) => api.delete(`/v1/commerce/contract-prices/${id}`),
+        onSuccess: () => {
+            invalidate(productId, 'b2b-pricing');
+        },
+    });
 }
 
 /**
@@ -2229,14 +2229,14 @@ export function useRemoveContractPrice(productId: string) {
  * carries neither number, which the stored shape permits.
  */
 export function tradeRulePriceCents(
-  rule: { priceCents: number | null; discountPercentage: number | null },
-  listCents: number
+    rule: { priceCents: number | null; discountPercentage: number | null },
+    listCents: number
 ): number | null {
-  if (rule.priceCents !== null) return rule.priceCents;
-  if (rule.discountPercentage !== null) {
-    return Math.round(listCents * (1 - rule.discountPercentage / 100));
-  }
-  return null;
+    if (rule.priceCents !== null) return rule.priceCents;
+    if (rule.discountPercentage !== null) {
+        return Math.round(listCents * (1 - rule.discountPercentage / 100));
+    }
+    return null;
 }
 
 /* ── Reviews & questions ────────────────────────────────────────────────── */
@@ -2244,167 +2244,167 @@ export function tradeRulePriceCents(
 export type ReviewStatus = 'pending' | 'approved' | 'rejected' | 'flagged';
 
 export interface ProductReview {
-  id: string;
-  productId: string;
-  variantId: string | null;
-  customerId: string | null;
-  orderId: string | null;
-  rating: number;
-  title: string;
-  body: string;
-  displayName: string | null;
-  status: ReviewStatus;
-  /** The reviewer actually bought it — the most useful thing on the row. */
-  verifiedPurchase: boolean;
-  helpfulCount: number;
-  unhelpfulCount: number;
-  response: string | null;
-  respondedAt: string | null;
-  mediaAssetIds: string[];
-  createdAt: string;
+    id: string;
+    productId: string;
+    variantId: string | null;
+    customerId: string | null;
+    orderId: string | null;
+    rating: number;
+    title: string;
+    body: string;
+    displayName: string | null;
+    status: ReviewStatus;
+    /** The reviewer actually bought it — the most useful thing on the row. */
+    verifiedPurchase: boolean;
+    helpfulCount: number;
+    unhelpfulCount: number;
+    response: string | null;
+    respondedAt: string | null;
+    mediaAssetIds: string[];
+    createdAt: string;
 }
 
 export interface ProductQuestionAnswer {
-  id: string;
-  questionId: string;
-  body: string;
-  /** Written by the business rather than another shopper. */
-  isOfficial: boolean;
-  authorCustomerId: string | null;
-  authorUserId: string | null;
-  helpfulCount: number;
-  createdAt: string;
+    id: string;
+    questionId: string;
+    body: string;
+    /** Written by the business rather than another shopper. */
+    isOfficial: boolean;
+    authorCustomerId: string | null;
+    authorUserId: string | null;
+    helpfulCount: number;
+    createdAt: string;
 }
 
 export interface ProductQuestion {
-  id: string;
-  productId: string;
-  customerId: string | null;
-  displayName: string | null;
-  body: string;
-  status: string;
-  helpfulCount: number;
-  createdAt: string;
-  answers: ProductQuestionAnswer[];
+    id: string;
+    productId: string;
+    customerId: string | null;
+    displayName: string | null;
+    body: string;
+    status: string;
+    helpfulCount: number;
+    createdAt: string;
+    answers: ProductQuestionAnswer[];
 }
 
 export interface ProductReviewPage {
-  items: ProductReview[];
-  total: number;
-  /** The mean of APPROVED reviews only — what the storefront shows. */
-  averageRating: number;
+    items: ProductReview[];
+    total: number;
+    /** The mean of APPROVED reviews only — what the storefront shows. */
+    averageRating: number;
 }
 
 /** Every review on this product, including the ones awaiting moderation. */
 export function useProductReviews(productId: string) {
-  return useQuery({
-    queryKey: productKeys.facetPart(productId, 'reviews', 'reviews'),
-    queryFn: () =>
-      api.get<ProductReviewPage>(`/v1/commerce/products/${productId}/reviews`, {
-        take: 100,
-      }),
-    enabled: productId !== 'new',
-  });
+    return useQuery({
+        queryKey: productKeys.facetPart(productId, 'reviews', 'reviews'),
+        queryFn: () =>
+            api.get<ProductReviewPage>(`/v1/commerce/products/${productId}/reviews`, {
+                take: 100,
+            }),
+        enabled: productId !== 'new',
+    });
 }
 
 /** Questions asked on this product's page, each with its answers. */
 export function useProductQuestions(productId: string) {
-  return useQuery({
-    queryKey: productKeys.facetPart(productId, 'reviews', 'questions'),
-    queryFn: () =>
-      api.get<ProductQuestion[]>(`/v1/commerce/products/${productId}/questions`, { take: 100 }),
-    enabled: productId !== 'new',
-  });
+    return useQuery({
+        queryKey: productKeys.facetPart(productId, 'reviews', 'questions'),
+        queryFn: () =>
+            api.get<ProductQuestion[]>(`/v1/commerce/products/${productId}/questions`, { take: 100 }),
+        enabled: productId !== 'new',
+    });
 }
 
 export function useModerateReview(productId: string) {
-  const invalidate = useInvalidateProduct();
-  return useMutation({
-    mutationFn: (input: { id: string; status: 'approved' | 'rejected' | 'flagged' }) =>
-      api.post(`/v1/commerce/reviews/${input.id}/moderate`, { status: input.status }),
-    // Publishing or hiding a review moves the product's own averageRating and
-    // reviewCount, so the coarse product invalidate is doing real work here.
-    onSuccess: () => {
-      invalidate(productId, 'reviews');
-    },
-  });
+    const invalidate = useInvalidateProduct();
+    return useMutation({
+        mutationFn: (input: { id: string; status: 'approved' | 'rejected' | 'flagged' }) =>
+            api.post(`/v1/commerce/reviews/${input.id}/moderate`, { status: input.status }),
+        // Publishing or hiding a review moves the product's own averageRating and
+        // reviewCount, so the coarse product invalidate is doing real work here.
+        onSuccess: () => {
+            invalidate(productId, 'reviews');
+        },
+    });
 }
 
 export function useRespondToReview(productId: string) {
-  const invalidate = useInvalidateProduct();
-  return useMutation({
-    mutationFn: (input: { id: string; response: string }) =>
-      api.post(`/v1/commerce/reviews/${input.id}/respond`, { response: input.response }),
-    onSuccess: () => {
-      invalidate(productId, 'reviews');
-    },
-  });
+    const invalidate = useInvalidateProduct();
+    return useMutation({
+        mutationFn: (input: { id: string; response: string }) =>
+            api.post(`/v1/commerce/reviews/${input.id}/respond`, { response: input.response }),
+        onSuccess: () => {
+            invalidate(productId, 'reviews');
+        },
+    });
 }
 
 export function useDeleteReview(productId: string) {
-  const invalidate = useInvalidateProduct();
-  return useMutation({
-    mutationFn: (id: string) => api.delete(`/v1/commerce/reviews/${id}`),
-    onSuccess: () => {
-      invalidate(productId, 'reviews');
-    },
-  });
+    const invalidate = useInvalidateProduct();
+    return useMutation({
+        mutationFn: (id: string) => api.delete(`/v1/commerce/reviews/${id}`),
+        onSuccess: () => {
+            invalidate(productId, 'reviews');
+        },
+    });
 }
 
 export function useModerateQuestion(productId: string) {
-  const invalidate = useInvalidateProduct();
-  return useMutation({
-    mutationFn: (input: { id: string; status: 'published' | 'rejected' }) =>
-      api.post(`/v1/commerce/questions/${input.id}/moderate`, { status: input.status }),
-    onSuccess: () => {
-      invalidate(productId, 'reviews');
-    },
-  });
+    const invalidate = useInvalidateProduct();
+    return useMutation({
+        mutationFn: (input: { id: string; status: 'published' | 'rejected' }) =>
+            api.post(`/v1/commerce/questions/${input.id}/moderate`, { status: input.status }),
+        onSuccess: () => {
+            invalidate(productId, 'reviews');
+        },
+    });
 }
 
 export function useAnswerQuestion(productId: string) {
-  const invalidate = useInvalidateProduct();
-  return useMutation({
-    mutationFn: (input: { id: string; body: string }) =>
-      api.post(`/v1/commerce/questions/${input.id}/answer`, {
-        body: input.body,
-        // An answer written here is the BUSINESS speaking, which is what earns
-        // it the official badge on the storefront.
-        isOfficial: true,
-      }),
-    onSuccess: () => {
-      invalidate(productId, 'reviews');
-    },
-  });
+    const invalidate = useInvalidateProduct();
+    return useMutation({
+        mutationFn: (input: { id: string; body: string }) =>
+            api.post(`/v1/commerce/questions/${input.id}/answer`, {
+                body: input.body,
+                // An answer written here is the BUSINESS speaking, which is what earns
+                // it the official badge on the storefront.
+                isOfficial: true,
+            }),
+        onSuccess: () => {
+            invalidate(productId, 'reviews');
+        },
+    });
 }
 
 /** How a review's state reads to someone who does not know the stored words. */
 export function reviewState(status: string): { label: string; tone: Tone } {
-  switch (status) {
-    case 'approved':
-      return { label: 'Published', tone: 'success' };
-    case 'pending':
-      return { label: 'Waiting for you', tone: 'warning' };
-    case 'flagged':
-      return { label: 'Reported', tone: 'danger' };
-    case 'rejected':
-      return { label: 'Hidden', tone: 'neutral' };
-    default:
-      return { label: status, tone: 'neutral' };
-  }
+    switch (status) {
+        case 'approved':
+            return { label: 'Published', tone: 'success' };
+        case 'pending':
+            return { label: 'Waiting for you', tone: 'warning' };
+        case 'flagged':
+            return { label: 'Reported', tone: 'danger' };
+        case 'rejected':
+            return { label: 'Hidden', tone: 'neutral' };
+        default:
+            return { label: status, tone: 'neutral' };
+    }
 }
 
 export function questionState(status: string): { label: string; tone: Tone } {
-  switch (status) {
-    case 'published':
-      return { label: 'Published', tone: 'success' };
-    case 'pending':
-      return { label: 'Waiting for you', tone: 'warning' };
-    case 'rejected':
-      return { label: 'Hidden', tone: 'neutral' };
-    default:
-      return { label: status, tone: 'neutral' };
-  }
+    switch (status) {
+        case 'published':
+            return { label: 'Published', tone: 'success' };
+        case 'pending':
+            return { label: 'Waiting for you', tone: 'warning' };
+        case 'rejected':
+            return { label: 'Hidden', tone: 'neutral' };
+        default:
+            return { label: status, tone: 'neutral' };
+    }
 }
 
 /* ── Where it sells (channels + sparx.market) ───────────────────────────── */
@@ -2412,127 +2412,127 @@ export function questionState(status: string): { label: string; tone: Tone } {
 /** One variant listed on one outside shop. Variant-grain, because that is what
  *  an external listing actually maps to. */
 export interface ChannelListing {
-  id: string;
-  channel: string;
-  /** The shop's real name — never render the stored slug at a person. */
-  channelName: string;
-  connectionId: string;
-  connectionStatus: string;
-  shopName: string | null;
-  variantId: string;
-  variantSku: string;
-  variantTitle: string | null;
-  externalProductId: string | null;
-  externalVariantId: string | null;
-  externalSku: string | null;
-  syncEnabled: boolean;
-  lastSyncedAt: string | null;
-  syncError: string | null;
+    id: string;
+    channel: string;
+    /** The shop's real name — never render the stored slug at a person. */
+    channelName: string;
+    connectionId: string;
+    connectionStatus: string;
+    shopName: string | null;
+    variantId: string;
+    variantSku: string;
+    variantTitle: string | null;
+    externalProductId: string | null;
+    externalVariantId: string | null;
+    externalSku: string | null;
+    syncEnabled: boolean;
+    lastSyncedAt: string | null;
+    syncError: string | null;
 }
 
 export function useChannelListings(productId: string) {
-  return useQuery({
-    queryKey: productKeys.facet(productId, 'channels'),
-    queryFn: () => api.get<ChannelListing[]>('/v1/channels/mappings', { product_id: productId }),
-    enabled: productId !== 'new',
-  });
+    return useQuery({
+        queryKey: productKeys.facet(productId, 'channels'),
+        queryFn: () => api.get<ChannelListing[]>('/v1/channels/mappings', { product_id: productId }),
+        enabled: productId !== 'new',
+    });
 }
 
 /** Pause or resume pushing price + stock to one outside listing. */
 export function useSetListingSync(productId: string) {
-  const invalidate = useInvalidateProduct();
-  return useMutation({
-    mutationFn: (input: { id: string; syncEnabled: boolean }) =>
-      api.patch(`/v1/channels/mappings/${input.id}`, { syncEnabled: input.syncEnabled }),
-    onSuccess: () => {
-      invalidate(productId, 'channels');
-    },
-  });
+    const invalidate = useInvalidateProduct();
+    return useMutation({
+        mutationFn: (input: { id: string; syncEnabled: boolean }) =>
+            api.patch(`/v1/channels/mappings/${input.id}`, { syncEnabled: input.syncEnabled }),
+        onSuccess: () => {
+            invalidate(productId, 'channels');
+        },
+    });
 }
 
 /** Forget the link between this variant and an outside listing. Does NOT take
  *  the listing down on the other shop — the copy at the call site must say so. */
 export function useUnlinkListing(productId: string) {
-  const invalidate = useInvalidateProduct();
-  return useMutation({
-    mutationFn: (id: string) => api.delete(`/v1/channels/mappings/${id}`),
-    onSuccess: () => {
-      invalidate(productId, 'channels');
-    },
-  });
+    const invalidate = useInvalidateProduct();
+    return useMutation({
+        mutationFn: (id: string) => api.delete(`/v1/channels/mappings/${id}`),
+        onSuccess: () => {
+            invalidate(productId, 'channels');
+        },
+    });
 }
 
 /** The sparx.market opt-in. It lives on the PRODUCT record, so writing it
  *  refreshes the product rather than a facet of its own. */
 export function useSetMarketListing(productId: string) {
-  const invalidate = useInvalidateProduct();
-  return useMutation({
-    mutationFn: (input: { listed: boolean; category?: string }) =>
-      api.put(`/v1/market/products/${productId}`, {
-        listed: input.listed,
-        ...(input.category ? { category: input.category } : {}),
-      }),
-    onSuccess: () => {
-      invalidate(productId);
-    },
-  });
+    const invalidate = useInvalidateProduct();
+    return useMutation({
+        mutationFn: (input: { listed: boolean; category?: string }) =>
+            api.put(`/v1/market/products/${productId}`, {
+                listed: input.listed,
+                ...(input.category ? { category: input.category } : {}),
+            }),
+        onSuccess: () => {
+            invalidate(productId);
+        },
+    });
 }
 
 /* ── Dropshipping ───────────────────────────────────────────────────────── */
 
 export interface DropshipLink {
-  id: string;
-  status: string;
-  supplierSku: string;
-  createdAt: string;
-  supplier: {
     id: string;
-    name: string;
-    type: string;
     status: string;
-    /** The connection was removed but the link survived — this product is
-     *  orphaned, and saying so is the whole reason the flag is carried. */
-    disconnected: boolean;
-    lastSyncAt: string | null;
-  };
-  source: {
-    id: string;
-    supplierProductId: string;
-    title: string;
-    costPriceCents: number;
-    msrpCents: number | null;
-    variantCount: number;
-    importedAt: string;
-    updatedAt: string;
-  };
+    supplierSku: string;
+    createdAt: string;
+    supplier: {
+        id: string;
+        name: string;
+        type: string;
+        status: string;
+        /** The connection was removed but the link survived — this product is
+         *  orphaned, and saying so is the whole reason the flag is carried. */
+        disconnected: boolean;
+        lastSyncAt: string | null;
+    };
+    source: {
+        id: string;
+        supplierProductId: string;
+        title: string;
+        costPriceCents: number;
+        msrpCents: number | null;
+        variantCount: number;
+        importedAt: string;
+        updatedAt: string;
+    };
 }
 
 export interface ProductDropshipVariant {
-  id: string;
-  sku: string;
-  title: string | null;
-  priceCents: number;
-  costCents: number | null;
-  currency: string;
-  /** Sourcing is variant-grain even though the LINK is product-grain. */
-  dropshipSourceId: string | null;
+    id: string;
+    sku: string;
+    title: string | null;
+    priceCents: number;
+    costCents: number | null;
+    currency: string;
+    /** Sourcing is variant-grain even though the LINK is product-grain. */
+    dropshipSourceId: string | null;
 }
 
 export interface ProductDropship {
-  /** Stamped on the product by the importer. Can disagree with `links` when a
-   *  link was removed by hand, which is exactly why both are reported. */
-  stampedSupplierId: string | null;
-  links: DropshipLink[];
-  variants: ProductDropshipVariant[];
+    /** Stamped on the product by the importer. Can disagree with `links` when a
+     *  link was removed by hand, which is exactly why both are reported. */
+    stampedSupplierId: string | null;
+    links: DropshipLink[];
+    variants: ProductDropshipVariant[];
 }
 
 export function useProductDropship(productId: string) {
-  return useQuery({
-    queryKey: productKeys.facet(productId, 'dropship'),
-    queryFn: () =>
-      api.get<ProductDropship>('/v1/dropship/product-links', { product_id: productId }),
-    enabled: productId !== 'new',
-  });
+    return useQuery({
+        queryKey: productKeys.facet(productId, 'dropship'),
+        queryFn: () =>
+            api.get<ProductDropship>('/v1/dropship/product-links', { product_id: productId }),
+        enabled: productId !== 'new',
+    });
 }
 
 /**
@@ -2542,94 +2542,94 @@ export function useProductDropship(productId: string) {
  * direction the import actually runs.
  */
 export function useReimportFromSupplier(productId: string) {
-  const invalidate = useInvalidateProduct();
-  return useMutation({
-    mutationFn: (input: { supplierId: string; sourceId: string }) =>
-      api.post(`/v1/dropship/suppliers/${input.supplierId}/catalog/${input.sourceId}/reimport`, {}),
-    onSuccess: () => {
-      // A reimport rewrites the title, description, images and prices, so it
-      // moves far more than the dropship facet alone.
-      invalidate(productId, 'dropship');
-      invalidate(productId, 'variants');
-    },
-  });
+    const invalidate = useInvalidateProduct();
+    return useMutation({
+        mutationFn: (input: { supplierId: string; sourceId: string }) =>
+            api.post(`/v1/dropship/suppliers/${input.supplierId}/catalog/${input.sourceId}/reimport`, {}),
+        onSuccess: () => {
+            // A reimport rewrites the title, description, images and prices, so it
+            // moves far more than the dropship facet alone.
+            invalidate(productId, 'dropship');
+            invalidate(productId, 'variants');
+        },
+    });
 }
 
 /* ── Subscriptions ──────────────────────────────────────────────────────── */
 
 export interface ProductSubscriber {
-  id: string;
-  customerId: string;
-  customerName: string | null;
-  status: string;
-  nextOccurrenceAt: string | null;
-  itemCount: number;
-  /** THIS product's share of the subscription's monthly value, not the whole
-   *  subscription's — a $200/mo box holding one $5 item counts $5 here. */
-  monthlyRecurringRevenueCents: number;
-  currency: string;
-  providerSlug: string;
-  lines: { variantId: string; variantSku: string | null; quantity: number }[];
+    id: string;
+    customerId: string;
+    customerName: string | null;
+    status: string;
+    nextOccurrenceAt: string | null;
+    itemCount: number;
+    /** THIS product's share of the subscription's monthly value, not the whole
+     *  subscription's — a $200/mo box holding one $5 item counts $5 here. */
+    monthlyRecurringRevenueCents: number;
+    currency: string;
+    providerSlug: string;
+    lines: { variantId: string; variantSku: string | null; quantity: number }[];
 }
 
 export interface ProductSubscriptions {
-  counts: { active: number; paused: number; cancelled: number; pastDue: number };
-  monthlyRecurringRevenueCents: number;
-  currency: string | null;
-  unitsPerMonth: number;
-  subscriptions: ProductSubscriber[];
-  /** `subscription` means this product is SET UP to be sold on a repeating
-   *  schedule. Carried so "set up, but nobody has subscribed yet" is
-   *  distinguishable from "not a repeat product at all" — the common case. */
-  fulfillmentType: string;
+    counts: { active: number; paused: number; cancelled: number; pastDue: number };
+    monthlyRecurringRevenueCents: number;
+    currency: string | null;
+    unitsPerMonth: number;
+    subscriptions: ProductSubscriber[];
+    /** `subscription` means this product is SET UP to be sold on a repeating
+     *  schedule. Carried so "set up, but nobody has subscribed yet" is
+     *  distinguishable from "not a repeat product at all" — the common case. */
+    fulfillmentType: string;
 }
 
 export function useProductSubscriptions(productId: string) {
-  return useQuery({
-    queryKey: productKeys.facet(productId, 'subscriptions'),
-    queryFn: () =>
-      api.get<ProductSubscriptions>(`/v1/commerce/products/${productId}/subscriptions`),
-    enabled: productId !== 'new',
-  });
+    return useQuery({
+        queryKey: productKeys.facet(productId, 'subscriptions'),
+        queryFn: () =>
+            api.get<ProductSubscriptions>(`/v1/commerce/products/${productId}/subscriptions`),
+        enabled: productId !== 'new',
+    });
 }
 
 export function subscriptionState(status: string): { label: string; tone: Tone } {
-  switch (status) {
-    case 'active':
-      return { label: 'Running', tone: 'success' };
-    case 'trialing':
-      return { label: 'On trial', tone: 'info' };
-    case 'paused':
-      return { label: 'Paused', tone: 'warning' };
-    case 'past_due':
-      return { label: 'Payment failed', tone: 'danger' };
-    case 'cancelled':
-      return { label: 'Stopped', tone: 'neutral' };
-    default:
-      return { label: status, tone: 'neutral' };
-  }
+    switch (status) {
+        case 'active':
+            return { label: 'Running', tone: 'success' };
+        case 'trialing':
+            return { label: 'On trial', tone: 'info' };
+        case 'paused':
+            return { label: 'Paused', tone: 'warning' };
+        case 'past_due':
+            return { label: 'Payment failed', tone: 'danger' };
+        case 'cancelled':
+            return { label: 'Stopped', tone: 'neutral' };
+        default:
+            return { label: status, tone: 'neutral' };
+    }
 }
 
 /* ── Translations ───────────────────────────────────────────────────────── */
 
 export interface ProductTranslation {
-  id: string;
-  productId: string;
-  locale: string;
-  title: string;
-  description: string | null;
-  seoTitle: string | null;
-  seoDescription: string | null;
-  createdAt: string;
-  updatedAt: string;
+    id: string;
+    productId: string;
+    locale: string;
+    title: string;
+    description: string | null;
+    seoTitle: string | null;
+    seoDescription: string | null;
+    createdAt: string;
+    updatedAt: string;
 }
 
 export function useProductTranslations(productId: string) {
-  return useQuery({
-    queryKey: productKeys.facet(productId, 'translations'),
-    queryFn: () => api.get<ProductTranslation[]>(`/v1/commerce/products/${productId}/translations`),
-    enabled: productId !== 'new',
-  });
+    return useQuery({
+        queryKey: productKeys.facet(productId, 'translations'),
+        queryFn: () => api.get<ProductTranslation[]>(`/v1/commerce/products/${productId}/translations`),
+        enabled: productId !== 'new',
+    });
 }
 
 /**
@@ -2642,39 +2642,39 @@ export function useProductTranslations(productId: string) {
  * a partial.
  */
 export function useSaveTranslation(productId: string) {
-  const invalidate = useInvalidateProduct();
-  return useMutation({
-    mutationFn: (input: {
-      locale: string;
-      title: string;
-      description: string | null;
-      seoTitle: string | null;
-      seoDescription: string | null;
-    }) =>
-      api.put<ProductTranslation>(
-        `/v1/commerce/products/${productId}/translations/${encodeURIComponent(input.locale)}`,
-        {
-          title: input.title,
-          description: input.description,
-          seoTitle: input.seoTitle,
-          seoDescription: input.seoDescription,
-        }
-      ),
-    onSuccess: () => {
-      invalidate(productId, 'translations');
-    },
-  });
+    const invalidate = useInvalidateProduct();
+    return useMutation({
+        mutationFn: (input: {
+            locale: string;
+            title: string;
+            description: string | null;
+            seoTitle: string | null;
+            seoDescription: string | null;
+        }) =>
+            api.put<ProductTranslation>(
+                `/v1/commerce/products/${productId}/translations/${encodeURIComponent(input.locale)}`,
+                {
+                    title: input.title,
+                    description: input.description,
+                    seoTitle: input.seoTitle,
+                    seoDescription: input.seoDescription,
+                }
+            ),
+        onSuccess: () => {
+            invalidate(productId, 'translations');
+        },
+    });
 }
 
 export function useDeleteTranslation(productId: string) {
-  const invalidate = useInvalidateProduct();
-  return useMutation({
-    mutationFn: (locale: string) =>
-      api.delete(`/v1/commerce/products/${productId}/translations/${encodeURIComponent(locale)}`),
-    onSuccess: () => {
-      invalidate(productId, 'translations');
-    },
-  });
+    const invalidate = useInvalidateProduct();
+    return useMutation({
+        mutationFn: (locale: string) =>
+            api.delete(`/v1/commerce/products/${productId}/translations/${encodeURIComponent(locale)}`),
+        onSuccess: () => {
+            invalidate(productId, 'translations');
+        },
+    });
 }
 
 /**
@@ -2687,33 +2687,33 @@ export function useDeleteTranslation(productId: string) {
  * the language twice with the operator's edit apparently lost.
  */
 export function canonicalLocale(raw: string): string {
-  const parts = raw.trim().replace(/_/g, '-').split('-').filter(Boolean);
-  return parts
-    .map((part, index) => {
-      if (index === 0) return part.toLowerCase();
-      // A four-letter subtag is a SCRIPT (Hans, Cyrl) and is Titlecase; two or
-      // three characters in a later position is a REGION and is uppercase.
-      if (part.length === 4) return part.charAt(0).toUpperCase() + part.slice(1).toLowerCase();
-      if (part.length === 2 || part.length === 3) return part.toUpperCase();
-      return part.toLowerCase();
-    })
-    .join('-');
+    const parts = raw.trim().replace(/_/g, '-').split('-').filter(Boolean);
+    return parts
+        .map((part, index) => {
+            if (index === 0) return part.toLowerCase();
+            // A four-letter subtag is a SCRIPT (Hans, Cyrl) and is Titlecase; two or
+            // three characters in a later position is a REGION and is uppercase.
+            if (part.length === 4) return part.charAt(0).toUpperCase() + part.slice(1).toLowerCase();
+            if (part.length === 2 || part.length === 3) return part.toUpperCase();
+            return part.toLowerCase();
+        })
+        .join('-');
 }
 
 /** A language tag in the reader's own language ("Spanish (Mexico)"), falling
  *  back to the tag itself when the browser has no name for it. */
 export function localeName(locale: string): string {
-  try {
-    return new Intl.DisplayNames(undefined, { type: 'language' }).of(locale) ?? locale;
-  } catch {
-    return locale;
-  }
+    try {
+        return new Intl.DisplayNames(undefined, { type: 'language' }).of(locale) ?? locale;
+    } catch {
+        return locale;
+    }
 }
 
 /** Would the server accept this tag? Mirrors the BCP-47 shape the Locale schema
  *  enforces, so the pane can refuse it before spending a round trip. */
 export function isValidLocale(raw: string): boolean {
-  return /^[a-z]{2,3}(-[A-Z][a-z]{3})?(-([A-Z]{2}|\d{3}))?$/.test(canonicalLocale(raw));
+    return /^[a-z]{2,3}(-[A-Z][a-z]{3})?(-([A-Z]{2}|\d{3}))?$/.test(canonicalLocale(raw));
 }
 
 /* ══════════════════════════════════════════════════════════════════════════
@@ -2737,30 +2737,30 @@ export function isValidLocale(raw: string): boolean {
 /** One category as the server nests it. The tree can be deep; this app never
  *  renders it as a tree (see `flattenCategories`). */
 export interface CategoryNode {
-  id: string;
-  name: string;
-  handle: string;
-  parentId: string | null;
-  /** Dot-joined handles, root first — the server's materialized path. */
-  path: string;
-  depth: number;
-  featured: boolean;
-  productCount: number;
-  children: CategoryNode[];
+    id: string;
+    name: string;
+    handle: string;
+    parentId: string | null;
+    /** Dot-joined handles, root first — the server's materialized path. */
+    path: string;
+    depth: number;
+    featured: boolean;
+    productCount: number;
+    children: CategoryNode[];
 }
 
 /** A category flattened into something pickable: its own name plus the names of
  *  everything above it, so "Cookware" is legible as
  *  "Outdoor › Camping › Cookware" without drawing a tree. */
 export interface CategoryChoice {
-  id: string;
-  name: string;
-  /** Ancestor names, root first, INCLUDING this one. */
-  trail: string[];
-  productCount: number;
-  /** Whether the category is flagged featured. Carried through so the category
-   *  LIST can badge it; the parent picker simply ignores it. */
-  featured: boolean;
+    id: string;
+    name: string;
+    /** Ancestor names, root first, INCLUDING this one. */
+    trail: string[];
+    productCount: number;
+    /** Whether the category is flagged featured. Carried through so the category
+     *  LIST can badge it; the parent picker simply ignores it. */
+    featured: boolean;
 }
 
 /**
@@ -2773,32 +2773,32 @@ export interface CategoryChoice {
  * browser over a list already in hand rather than as a round trip per keystroke.
  */
 export function useCategoryTree() {
-  return useQuery({
-    queryKey: ['commerce', 'categories', 'tree'] as const,
-    queryFn: () => api.get<CategoryNode[]>('/v1/commerce/categories'),
-    staleTime: 5 * 60_000,
-  });
+    return useQuery({
+        queryKey: ['commerce', 'categories', 'tree'] as const,
+        queryFn: () => api.get<CategoryNode[]>('/v1/commerce/categories'),
+        staleTime: 5 * 60_000,
+    });
 }
 
 /** Depth-first, parents before children, so the flat list still reads in tree
  *  order. Tolerates an orphan (the server surfaces one as a root). */
 export function flattenCategories(nodes: CategoryNode[] | undefined): CategoryChoice[] {
-  const out: CategoryChoice[] = [];
-  const walk = (list: CategoryNode[], trail: string[]) => {
-    for (const node of list) {
-      const here = [...trail, node.name];
-      out.push({
-        id: node.id,
-        name: node.name,
-        trail: here,
-        productCount: node.productCount,
-        featured: node.featured,
-      });
-      walk(node.children, here);
-    }
-  };
-  walk(nodes ?? [], []);
-  return out;
+    const out: CategoryChoice[] = [];
+    const walk = (list: CategoryNode[], trail: string[]) => {
+        for (const node of list) {
+            const here = [...trail, node.name];
+            out.push({
+                id: node.id,
+                name: node.name,
+                trail: here,
+                productCount: node.productCount,
+                featured: node.featured,
+            });
+            walk(node.children, here);
+        }
+    };
+    walk(nodes ?? [], []);
+    return out;
 }
 
 /** How a collection decides what is in it. `manual` is a hand-picked list;
@@ -2806,11 +2806,11 @@ export function flattenCategories(nodes: CategoryNode[] | undefined): CategoryCh
 export type CollectionKind = 'manual' | 'rules';
 
 export interface CollectionChoice {
-  id: string;
-  name: string;
-  handle: string;
-  type: CollectionKind;
-  productCount: number;
+    id: string;
+    name: string;
+    handle: string;
+    type: CollectionKind;
+    productCount: number;
 }
 
 /**
@@ -2822,14 +2822,14 @@ export interface CollectionChoice {
  * honest failure is a full list or nothing.
  */
 export function useCollections() {
-  return useQuery({
-    queryKey: ['commerce', 'collections', 'all'] as const,
-    queryFn: () =>
-      api
-        .list<CollectionChoice>('/v1/commerce/collections', { take: 250 })
-        .then((page) => page.items),
-    staleTime: 5 * 60_000,
-  });
+    return useQuery({
+        queryKey: ['commerce', 'collections', 'all'] as const,
+        queryFn: () =>
+            api
+                .list<CollectionChoice>('/v1/commerce/collections', { take: 250 })
+                .then((page) => page.items),
+        staleTime: 5 * 60_000,
+    });
 }
 
 /**
@@ -2846,23 +2846,23 @@ export function useCollections() {
  * a person would never see happen.
  */
 export function splitMemberships(
-  memberships: { collectionId: string; addedBy: 'manual' | 'rule' }[],
-  collections: CollectionChoice[] | undefined
+    memberships: { collectionId: string; addedBy: 'manual' | 'rule' }[],
+    collections: CollectionChoice[] | undefined
 ): { chosen: CollectionChoice[]; automatic: CollectionChoice[]; unknownIds: string[] } {
-  const byId = new Map((collections ?? []).map((c) => [c.id, c]));
-  const chosen: CollectionChoice[] = [];
-  const automatic: CollectionChoice[] = [];
-  const unknownIds: string[] = [];
-  for (const membership of memberships) {
-    const collection = byId.get(membership.collectionId);
-    if (!collection) {
-      unknownIds.push(membership.collectionId);
-      continue;
+    const byId = new Map((collections ?? []).map((c) => [c.id, c]));
+    const chosen: CollectionChoice[] = [];
+    const automatic: CollectionChoice[] = [];
+    const unknownIds: string[] = [];
+    for (const membership of memberships) {
+        const collection = byId.get(membership.collectionId);
+        if (!collection) {
+            unknownIds.push(membership.collectionId);
+            continue;
+        }
+        (membership.addedBy === 'rule' ? automatic : chosen).push(collection);
     }
-    (membership.addedBy === 'rule' ? automatic : chosen).push(collection);
-  }
-  const byName = (a: CollectionChoice, b: CollectionChoice) => a.name.localeCompare(b.name);
-  chosen.sort(byName);
-  automatic.sort(byName);
-  return { chosen, automatic, unknownIds };
+    const byName = (a: CollectionChoice, b: CollectionChoice) => a.name.localeCompare(b.name);
+    chosen.sort(byName);
+    automatic.sort(byName);
+    return { chosen, automatic, unknownIds };
 }

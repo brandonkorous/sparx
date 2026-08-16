@@ -1,402 +1,427 @@
 [
-  {
-    "typeKey": "blog_post",
-    "slug": "twelve-hours-in-the-atacama",
-    "status": "published",
-    "authorSlug": "lena-ross",
-    "categories": ["Travel"],
-    "tags": ["Expedition", "Landscape"],
-    "body": {
-      "title": "Twelve hours in the Atacama, chasing the last light",
-      "excerpt": "The driest desert on Earth turns to colour for a few minutes at dusk. We drove four hours for those minutes, and stayed for the sky that came after.",
-      "featuredImage": {
-        "$asset": "post-atacama"
-      },
-      "body": {
-        "type": "doc",
-        "content": [
-          {
-            "type": "paragraph",
-            "content": [
-              {
-                "type": "text",
-                "text": "You do not go to the Atacama for the middle of the day. From ten until four it is flat, white, and merciless — a moonscape that a camera flattens further. You go for the two hours at each end, and you plan the whole trip around them."
-              }
-            ]
-          },
-          {
-            "type": "heading",
-            "attrs": {
-              "level": 2
+    {
+        "typeKey": "blog_post",
+        "slug": "twelve-hours-in-the-atacama",
+        "status": "published",
+        "authorSlug": "lena-ross",
+        "categories": [
+            "Travel"
+        ],
+        "tags": [
+            "Expedition",
+            "Landscape"
+        ],
+        "body": {
+            "title": "Twelve hours in the Atacama, chasing the last light",
+            "excerpt": "The driest desert on Earth turns to color for a few minutes at dusk. We drove four hours for those minutes, and stayed for the sky that came after.",
+            "featuredImage": {
+                "$asset": "post-atacama"
             },
-            "content": [
-              {
-                "type": "text",
-                "text": "The drive out"
-              }
-            ]
-          },
-          {
-            "type": "paragraph",
-            "content": [
-              {
-                "type": "text",
-                "text": "It is four hours from the nearest town to the salt flat we wanted, most of it on a road that is a road only by agreement. We left at two to have light to spare, and spent the drive watching the mountains change colour in the mirror as the sun came round behind them."
-              }
-            ]
-          },
-          {
-            "type": "heading",
-            "attrs": {
-              "level": 2
+            "body": {
+                "type": "doc",
+                "content": [
+                    {
+                        "type": "paragraph",
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "You do not go to the Atacama for the middle of the day. From ten until four it is flat, white, and merciless — a moonscape that a camera flattens further. You go for the two hours at each end, and you plan the whole trip around them."
+                            }
+                        ]
+                    },
+                    {
+                        "type": "heading",
+                        "attrs": {
+                            "level": 2
+                        },
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "The drive out"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "paragraph",
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "It is four hours from the nearest town to the salt flat we wanted, most of it on a road that is a road only by agreement. We left at two to have light to spare, and spent the drive watching the mountains change color in the mirror as the sun came round behind them."
+                            }
+                        ]
+                    },
+                    {
+                        "type": "heading",
+                        "attrs": {
+                            "level": 2
+                        },
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "The minute it all turns"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "paragraph",
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "For about a minute at dusk the whole range goes from blue to a gold you do not believe until you have stood in it. That minute is the picture on the cover, and it is why the trip existed. Everything before it was logistics; everything after was a gift."
+                            }
+                        ]
+                    },
+                    {
+                        "type": "paragraph",
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "Then the sun was gone and the real reason to stay arrived: a sky with no town for a hundred miles to dim it, so thick with stars it took a while to find the constellations under all the ones you never usually see."
+                            }
+                        ]
+                    }
+                ]
+            }
+        }
+    },
+    {
+        "typeKey": "blog_post",
+        "slug": "the-last-glaciers-of-the-rockies",
+        "status": "published",
+        "authorSlug": "caleb-mora",
+        "categories": [
+            "Nature"
+        ],
+        "tags": [
+            "Conservation",
+            "Landscape"
+        ],
+        "body": {
+            "title": "The last glaciers of the Rockies",
+            "excerpt": "The ice that named these valleys is nearly gone. We walked up to photograph what is left, and to record a shape the map will soon have to change.",
+            "featuredImage": {
+                "$asset": "post-glacier"
             },
-            "content": [
-              {
-                "type": "text",
-                "text": "The minute it all turns"
-              }
-            ]
-          },
-          {
-            "type": "paragraph",
-            "content": [
-              {
-                "type": "text",
-                "text": "For about a minute at dusk the whole range goes from blue to a gold you do not believe until you have stood in it. That minute is the picture on the cover, and it is why the trip existed. Everything before it was logistics; everything after was a gift."
-              }
-            ]
-          },
-          {
-            "type": "paragraph",
-            "content": [
-              {
-                "type": "text",
-                "text": "Then the sun was gone and the real reason to stay arrived: a sky with no town for a hundred miles to dim it, so thick with stars it took a while to find the constellations under all the ones you never usually see."
-              }
-            ]
-          }
-        ]
-      }
+            "body": {
+                "type": "doc",
+                "content": [
+                    {
+                        "type": "paragraph",
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "A glacier does not disappear all at once. It thins, it retreats up its own valley, it leaves a bathtub ring of bare rock where it used to reach — and then one summer the last of it is just a field of dirty ice too small to move, and the word on the map stops being true."
+                            }
+                        ]
+                    },
+                    {
+                        "type": "heading",
+                        "attrs": {
+                            "level": 2
+                        },
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "What the valley remembers"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "paragraph",
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "You can read the whole retreat from the valley floor. The trees stop at the line the ice held a century ago; the rock above it is still raw. Between the two is the story of a warming told in stripes, and it is faster than the stripes suggest."
+                            }
+                        ]
+                    },
+                    {
+                        "type": "heading",
+                        "attrs": {
+                            "level": 2
+                        },
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "Why photograph it"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "paragraph",
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "There is an argument that photographing a vanishing thing beautifully lets people mourn it instead of fighting for it. I take the other side: you protect what you have looked at properly, and most people will never stand here. So we bring it back, at the size it deserves, while it is still a glacier and not a memory."
+                            }
+                        ]
+                    },
+                    {
+                        "type": "paragraph",
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "We will walk up again next year, from the same spot, and photograph what the summer left. That is the whole method — return, compare, and refuse to look away."
+                            }
+                        ]
+                    }
+                ]
+            }
+        }
+    },
+    {
+        "typeKey": "blog_post",
+        "slug": "what-the-ice-cores-remember",
+        "status": "published",
+        "authorSlug": "sofia-nadeau",
+        "categories": [
+            "Science"
+        ],
+        "tags": [
+            "Conservation",
+            "Night sky"
+        ],
+        "body": {
+            "title": "What the ice cores remember",
+            "excerpt": "A cylinder of ice pulled from two miles down holds a diary of the air going back eight hundred thousand years. We visited the lab that reads it.",
+            "featuredImage": {
+                "$asset": "post-ice-cores"
+            },
+            "body": {
+                "type": "doc",
+                "content": [
+                    {
+                        "type": "paragraph",
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "When snow falls on an ice sheet it never fully melts; it packs down under the snow of the next year, and the next, trapping a little bubble of the air it fell through. Drill down far enough and you are pulling up a straw of frozen time, one year to a layer, with the atmosphere sealed inside."
+                            }
+                        ]
+                    },
+                    {
+                        "type": "heading",
+                        "attrs": {
+                            "level": 2
+                        },
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "Reading a bubble of old air"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "paragraph",
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "In a cold room kept at twenty below, technicians cut a core into sections and crush them under vacuum to let the ancient air out, then measure what was in it. Carbon dioxide, methane, the isotopes that stand in for temperature — a full weather report from a year before there were people to file one."
+                            }
+                        ]
+                    },
+                    {
+                        "type": "heading",
+                        "attrs": {
+                            "level": 2
+                        },
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "Why it matters now"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "paragraph",
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "The record is what lets anyone say today’s numbers are unusual. For eight hundred thousand years the carbon dioxide stayed inside a band; in the last two centuries it left the band entirely. The ice does not argue; it simply remembers, and the remembering is the evidence."
+                            }
+                        ]
+                    },
+                    {
+                        "type": "paragraph",
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "The cores are photographed under polarised light before they are destroyed to be read — which is how a chart of the deep past also turns out to be quietly, strangely beautiful."
+                            }
+                        ]
+                    }
+                ]
+            }
+        }
+    },
+    {
+        "typeKey": "blog_post",
+        "slug": "shooting-the-milky-way-frame-by-frame",
+        "status": "published",
+        "authorSlug": "sofia-nadeau",
+        "categories": [
+            "Photography"
+        ],
+        "tags": [
+            "Night sky",
+            "Craft"
+        ],
+        "body": {
+            "title": "Shooting the Milky Way, frame by frame",
+            "excerpt": "A clear, dark sky and a bit of patience will get you a photograph of the galaxy you live in. Here is the craft, without the mystique.",
+            "featuredImage": {
+                "$asset": "post-milky-way"
+            },
+            "body": {
+                "type": "doc",
+                "content": [
+                    {
+                        "type": "paragraph",
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "People assume astrophotography needs a telescope and a mountain. The core of it needs neither — a camera that shoots raw, the widest fast lens you own, a tripod, and a sky far enough from a town that you can see the band of the Milky Way with your own eyes. Everything else is technique."
+                            }
+                        ]
+                    },
+                    {
+                        "type": "heading",
+                        "attrs": {
+                            "level": 2
+                        },
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "The exposure, plainly"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "paragraph",
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "Open the lens as wide as it goes, push the sensitivity up until the sky is bright but not grainy, and hold the shutter open just long enough that the stars stay points and do not smear into little arcs. On a wide lens that is around twenty seconds. Focus by hand on the brightest star, and check the back of the camera at full zoom before you trust it."
+                            }
+                        ]
+                    },
+                    {
+                        "type": "heading",
+                        "attrs": {
+                            "level": 2
+                        },
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "Then do it a lot"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "paragraph",
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "The single frame is the lesson; the good picture is usually many frames stacked, so the stars stay sharp and the noise averages away. But learn it one exposure at a time, in the cold, getting the focus wrong and fixing it, until the settings are muscle memory and you can spend the night looking up instead of down at a screen."
+                            }
+                        ]
+                    },
+                    {
+                        "type": "paragraph",
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "The reward is disproportionate. An hour of fiddling in the dark gives you a photograph of a hundred billion stars, most of which set before the exposure ended."
+                            }
+                        ]
+                    }
+                ]
+            }
+        }
+    },
+    {
+        "typeKey": "blog_post",
+        "slug": "the-slow-road-through-kyushu",
+        "status": "published",
+        "authorSlug": "lena-ross",
+        "categories": [
+            "Travel"
+        ],
+        "tags": [
+            "Expedition",
+            "Portrait"
+        ],
+        "body": {
+            "title": "The slow road through Kyushu",
+            "excerpt": "We gave ourselves two weeks to cross an island you can drive in a day, and let every small road we were not planning to take decide the trip.",
+            "featuredImage": {
+                "$asset": "post-kyushu"
+            },
+            "body": {
+                "type": "doc",
+                "content": [
+                    {
+                        "type": "paragraph",
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "The fast way across Kyushu is an expressway and an afternoon. We took two weeks and the small roads, on a rule we make ourselves keep: when a turning looks interesting, take it, and do not look up where it goes until you are already committed."
+                            }
+                        ]
+                    },
+                    {
+                        "type": "heading",
+                        "attrs": {
+                            "level": 2
+                        },
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "What the detours gave us"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "paragraph",
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "A terraced hillside of rice going gold, worked by a man who has farmed it for sixty years and photographed his hands more willingly than his face. A hot spring at the end of a valley with one inn and no phone signal. A festival we walked into by accident and left three hours later, full of food no one would let us pay for."
+                            }
+                        ]
+                    },
+                    {
+                        "type": "heading",
+                        "attrs": {
+                            "level": 2
+                        },
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "The case for going slowly"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "paragraph",
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "You cannot photograph a place you are driving through at speed; you can only photograph the idea of it you arrived with. Slowness is not a luxury in this work — it is the method. The picture is always down the road you almost did not take, talking to the person you almost did not stop for."
+                            }
+                        ]
+                    },
+                    {
+                        "type": "paragraph",
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "We came back with fewer landmarks than a fast trip would have and far more of the island itself, which was the whole point."
+                            }
+                        ]
+                    }
+                ]
+            }
+        }
     }
-  },
-  {
-    "typeKey": "blog_post",
-    "slug": "the-last-glaciers-of-the-rockies",
-    "status": "published",
-    "authorSlug": "caleb-mora",
-    "categories": ["Nature"],
-    "tags": ["Conservation", "Landscape"],
-    "body": {
-      "title": "The last glaciers of the Rockies",
-      "excerpt": "The ice that named these valleys is nearly gone. We walked up to photograph what is left, and to record a shape the map will soon have to change.",
-      "featuredImage": {
-        "$asset": "post-glacier"
-      },
-      "body": {
-        "type": "doc",
-        "content": [
-          {
-            "type": "paragraph",
-            "content": [
-              {
-                "type": "text",
-                "text": "A glacier does not disappear all at once. It thins, it retreats up its own valley, it leaves a bathtub ring of bare rock where it used to reach — and then one summer the last of it is just a field of dirty ice too small to move, and the word on the map stops being true."
-              }
-            ]
-          },
-          {
-            "type": "heading",
-            "attrs": {
-              "level": 2
-            },
-            "content": [
-              {
-                "type": "text",
-                "text": "What the valley remembers"
-              }
-            ]
-          },
-          {
-            "type": "paragraph",
-            "content": [
-              {
-                "type": "text",
-                "text": "You can read the whole retreat from the valley floor. The trees stop at the line the ice held a century ago; the rock above it is still raw. Between the two is the story of a warming told in stripes, and it is faster than the stripes suggest."
-              }
-            ]
-          },
-          {
-            "type": "heading",
-            "attrs": {
-              "level": 2
-            },
-            "content": [
-              {
-                "type": "text",
-                "text": "Why photograph it"
-              }
-            ]
-          },
-          {
-            "type": "paragraph",
-            "content": [
-              {
-                "type": "text",
-                "text": "There is an argument that photographing a vanishing thing beautifully lets people mourn it instead of fighting for it. I take the other side: you protect what you have looked at properly, and most people will never stand here. So we bring it back, at the size it deserves, while it is still a glacier and not a memory."
-              }
-            ]
-          },
-          {
-            "type": "paragraph",
-            "content": [
-              {
-                "type": "text",
-                "text": "We will walk up again next year, from the same spot, and photograph what the summer left. That is the whole method — return, compare, and refuse to look away."
-              }
-            ]
-          }
-        ]
-      }
-    }
-  },
-  {
-    "typeKey": "blog_post",
-    "slug": "what-the-ice-cores-remember",
-    "status": "published",
-    "authorSlug": "sofia-nadeau",
-    "categories": ["Science"],
-    "tags": ["Conservation", "Night sky"],
-    "body": {
-      "title": "What the ice cores remember",
-      "excerpt": "A cylinder of ice pulled from two miles down holds a diary of the air going back eight hundred thousand years. We visited the lab that reads it.",
-      "featuredImage": {
-        "$asset": "post-ice-cores"
-      },
-      "body": {
-        "type": "doc",
-        "content": [
-          {
-            "type": "paragraph",
-            "content": [
-              {
-                "type": "text",
-                "text": "When snow falls on an ice sheet it never fully melts; it packs down under the snow of the next year, and the next, trapping a little bubble of the air it fell through. Drill down far enough and you are pulling up a straw of frozen time, one year to a layer, with the atmosphere sealed inside."
-              }
-            ]
-          },
-          {
-            "type": "heading",
-            "attrs": {
-              "level": 2
-            },
-            "content": [
-              {
-                "type": "text",
-                "text": "Reading a bubble of old air"
-              }
-            ]
-          },
-          {
-            "type": "paragraph",
-            "content": [
-              {
-                "type": "text",
-                "text": "In a cold room kept at twenty below, technicians cut a core into sections and crush them under vacuum to let the ancient air out, then measure what was in it. Carbon dioxide, methane, the isotopes that stand in for temperature — a full weather report from a year before there were people to file one."
-              }
-            ]
-          },
-          {
-            "type": "heading",
-            "attrs": {
-              "level": 2
-            },
-            "content": [
-              {
-                "type": "text",
-                "text": "Why it matters now"
-              }
-            ]
-          },
-          {
-            "type": "paragraph",
-            "content": [
-              {
-                "type": "text",
-                "text": "The record is what lets anyone say today’s numbers are unusual. For eight hundred thousand years the carbon dioxide stayed inside a band; in the last two centuries it left the band entirely. The ice does not argue; it simply remembers, and the remembering is the evidence."
-              }
-            ]
-          },
-          {
-            "type": "paragraph",
-            "content": [
-              {
-                "type": "text",
-                "text": "The cores are photographed under polarised light before they are destroyed to be read — which is how a chart of the deep past also turns out to be quietly, strangely beautiful."
-              }
-            ]
-          }
-        ]
-      }
-    }
-  },
-  {
-    "typeKey": "blog_post",
-    "slug": "shooting-the-milky-way-frame-by-frame",
-    "status": "published",
-    "authorSlug": "sofia-nadeau",
-    "categories": ["Photography"],
-    "tags": ["Night sky", "Craft"],
-    "body": {
-      "title": "Shooting the Milky Way, frame by frame",
-      "excerpt": "A clear, dark sky and a bit of patience will get you a photograph of the galaxy you live in. Here is the craft, without the mystique.",
-      "featuredImage": {
-        "$asset": "post-milky-way"
-      },
-      "body": {
-        "type": "doc",
-        "content": [
-          {
-            "type": "paragraph",
-            "content": [
-              {
-                "type": "text",
-                "text": "People assume astrophotography needs a telescope and a mountain. The core of it needs neither — a camera that shoots raw, the widest fast lens you own, a tripod, and a sky far enough from a town that you can see the band of the Milky Way with your own eyes. Everything else is technique."
-              }
-            ]
-          },
-          {
-            "type": "heading",
-            "attrs": {
-              "level": 2
-            },
-            "content": [
-              {
-                "type": "text",
-                "text": "The exposure, plainly"
-              }
-            ]
-          },
-          {
-            "type": "paragraph",
-            "content": [
-              {
-                "type": "text",
-                "text": "Open the lens as wide as it goes, push the sensitivity up until the sky is bright but not grainy, and hold the shutter open just long enough that the stars stay points and do not smear into little arcs. On a wide lens that is around twenty seconds. Focus by hand on the brightest star, and check the back of the camera at full zoom before you trust it."
-              }
-            ]
-          },
-          {
-            "type": "heading",
-            "attrs": {
-              "level": 2
-            },
-            "content": [
-              {
-                "type": "text",
-                "text": "Then do it a lot"
-              }
-            ]
-          },
-          {
-            "type": "paragraph",
-            "content": [
-              {
-                "type": "text",
-                "text": "The single frame is the lesson; the good picture is usually many frames stacked, so the stars stay sharp and the noise averages away. But learn it one exposure at a time, in the cold, getting the focus wrong and fixing it, until the settings are muscle memory and you can spend the night looking up instead of down at a screen."
-              }
-            ]
-          },
-          {
-            "type": "paragraph",
-            "content": [
-              {
-                "type": "text",
-                "text": "The reward is disproportionate. An hour of fiddling in the dark gives you a photograph of a hundred billion stars, most of which set before the exposure ended."
-              }
-            ]
-          }
-        ]
-      }
-    }
-  },
-  {
-    "typeKey": "blog_post",
-    "slug": "the-slow-road-through-kyushu",
-    "status": "published",
-    "authorSlug": "lena-ross",
-    "categories": ["Travel"],
-    "tags": ["Expedition", "Portrait"],
-    "body": {
-      "title": "The slow road through Kyushu",
-      "excerpt": "We gave ourselves two weeks to cross an island you can drive in a day, and let every small road we were not planning to take decide the trip.",
-      "featuredImage": {
-        "$asset": "post-kyushu"
-      },
-      "body": {
-        "type": "doc",
-        "content": [
-          {
-            "type": "paragraph",
-            "content": [
-              {
-                "type": "text",
-                "text": "The fast way across Kyushu is an expressway and an afternoon. We took two weeks and the small roads, on a rule we make ourselves keep: when a turning looks interesting, take it, and do not look up where it goes until you are already committed."
-              }
-            ]
-          },
-          {
-            "type": "heading",
-            "attrs": {
-              "level": 2
-            },
-            "content": [
-              {
-                "type": "text",
-                "text": "What the detours gave us"
-              }
-            ]
-          },
-          {
-            "type": "paragraph",
-            "content": [
-              {
-                "type": "text",
-                "text": "A terraced hillside of rice going gold, worked by a man who has farmed it for sixty years and photographed his hands more willingly than his face. A hot spring at the end of a valley with one inn and no phone signal. A festival we walked into by accident and left three hours later, full of food no one would let us pay for."
-              }
-            ]
-          },
-          {
-            "type": "heading",
-            "attrs": {
-              "level": 2
-            },
-            "content": [
-              {
-                "type": "text",
-                "text": "The case for going slowly"
-              }
-            ]
-          },
-          {
-            "type": "paragraph",
-            "content": [
-              {
-                "type": "text",
-                "text": "You cannot photograph a place you are driving through at speed; you can only photograph the idea of it you arrived with. Slowness is not a luxury in this work — it is the method. The picture is always down the road you almost did not take, talking to the person you almost did not stop for."
-              }
-            ]
-          },
-          {
-            "type": "paragraph",
-            "content": [
-              {
-                "type": "text",
-                "text": "We came back with fewer landmarks than a fast trip would have and far more of the island itself, which was the whole point."
-              }
-            ]
-          }
-        ]
-      }
-    }
-  }
 ]

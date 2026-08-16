@@ -81,6 +81,15 @@ data:
   # "this brand has published none" and omits the reply-to entirely, which is the
   # honest outcome. Do not substitute a guess.
   PIGGLES_SUPPORT_EMAIL: support@meetpiggles.com
+  # The brand's public home — the legal line at the foot of every platform email.
+  SPARX_BRAND_URL: https://sparx.works
+  PIGGLES_BRAND_URL: https://meetpiggles.com
+  # Trailing characters of the name set in the accent color where it is used as a
+  # wordmark: sparx is "spar" + an Ember "x". Unset → the name is set plainly.
+  SPARX_BRAND_ACCENT_CHARS: '1'
+  # The zone a NEW tenant of this brand is minted in (vs SPARX_ZONE_DOMAINS, the
+  # zones this deployment serves).
+  PIGGLES_ZONE_DOMAIN: piggles.site
 
   NEXT_PUBLIC_API_URL: https://api.sparx.works
   NEXT_PUBLIC_MARKETING_URL: https://sparx.works

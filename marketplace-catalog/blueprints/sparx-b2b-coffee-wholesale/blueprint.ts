@@ -14,69 +14,69 @@ import assets from './assets.json' with { type: 'json' };
 import emails from './emails.json' with { type: 'json' };
 
 const blueprint = {
-  key: 'sparx-b2b-coffee-wholesale',
-  version: '1.4.0',
-  name: 'sparx — Coffee Roaster (Wholesale)',
-  summary:
-    'A complete, working wholesale shop for a trade coffee roaster: beans by the 1kg and 5kg bag, filter and capsule programs, syrups, disposables, a commercial grinder, a trade sampler and a weekly standing order — with categories, collections, a buyer-framed PDP (trade pricing, standing orders, net-30) and a merchandised home page. Industrial roastery theme — cool graphite ground, deep espresso, burnt copper. Shipped as Foundry Coffee Trade.',
-  vertical: 'b2b',
-  preview: 'media/preview.png',
-  requiresModules: ['builder', 'commerce', 'cms', 'crm', 'email'],
+    key: 'sparx-b2b-coffee-wholesale',
+    version: '1.4.0',
+    name: 'sparx — Coffee Roaster (Wholesale)',
+    summary:
+        'A complete, working wholesale shop for a trade coffee roaster: beans by the 1kg and 5kg bag, filter and capsule programs, syrups, disposables, a commercial grinder, a trade sampler and a weekly standing order — with categories, collections, a buyer-framed PDP (trade pricing, standing orders, net-30) and a merchandised home page. Industrial roastery theme — cool graphite ground, deep espresso, burnt copper. Shipped as Foundry Coffee Trade.',
+    vertical: 'b2b',
+    preview: 'media/preview.png',
+    requiresModules: ['builder', 'commerce', 'cms', 'crm', 'email'],
 
-  // Identity only (business name + tagline + fonts + the theme's hex colours). The look
-  // itself rides site.theme + the theme decl below; the installing tenant rebrands the name.
-  brand: {
-    businessName: 'Foundry Coffee Trade',
-    tagline: 'The roaster behind your counter.',
-    colors: {
-      primary: '#41261a',
-      primaryForeground: '#fff6f3',
-      accent: '#a14400',
-      secondary: '#404f5d',
-    },
-    fonts: {
-      heading: 'Space Grotesk',
-      body: 'Inter',
-    },
-  },
-
-  // The provisioned SiteTheme the installer creates + applies — the bespoke template
-  // look as a tenant-editable saved theme (base preset = the template's own theme key,
-  // plus its brand snapshot).
-  theme: {
-    name: 'b2b-coffee-wholesale',
-    basePresetKey: 'b2b-coffee-wholesale',
-    presentation: {
-      v: 2,
-      containerWidth: '1152px',
-    },
+    // Identity only (business name + tagline + fonts + the theme's hex colors). The look
+    // itself rides site.theme + the theme decl below; the installing tenant rebrands the name.
     brand: {
-      colorPrimary: '#41261a',
-      colorAccent: '#a14400',
-      colorSecondary: '#404f5d',
-      fontHeading: 'Space Grotesk',
-      fontBody: 'Inter',
-      tokens: {},
+        businessName: 'Foundry Coffee Trade',
+        tagline: 'The roaster behind your counter.',
+        colors: {
+            primary: '#41261a',
+            primaryForeground: '#fff6f3',
+            accent: '#a14400',
+            secondary: '#404f5d',
+        },
+        fonts: {
+            heading: 'Space Grotesk',
+            body: 'Inter',
+        },
     },
-    apply: true,
-  },
 
-  assets,
-  contentTypes: [],
-  authors,
-  content,
-  commerce,
+    // The provisioned SiteTheme the installer creates + applies — the bespoke template
+    // look as a tenant-editable saved theme (base preset = the template's own theme key,
+    // plus its brand snapshot).
+    theme: {
+        name: 'b2b-coffee-wholesale',
+        basePresetKey: 'b2b-coffee-wholesale',
+        presentation: {
+            v: 2,
+            containerWidth: '1152px',
+        },
+        brand: {
+            colorPrimary: '#41261a',
+            colorAccent: '#a14400',
+            colorSecondary: '#404f5d',
+            fontHeading: 'Space Grotesk',
+            fontBody: 'Inter',
+            tokens: {},
+        },
+        apply: true,
+    },
 
-  // A shop's brand-voiced MARKETING starters (a welcome + a win-back), tokenized so a fork
-  // re-themes to the tenant and installed as DRAFTS — the platform's keyed transactional
-  // defaults (order/shipping/dunning) are separate and never duplicated here. Content
-  // templates ship an empty set.
-  emails,
-  sequences: [],
+    assets,
+    contentTypes: [],
+    authors,
+    content,
+    commerce,
 
-  // The composed distinct site (frame + a template-specific home + standard commerce/
-  // cms/about/contact pages + the /journal index), in the bespoke theme, fully stamped.
-  site,
+    // A shop's brand-voiced MARKETING starters (a welcome + a win-back), tokenized so a fork
+    // re-themes to the tenant and installed as DRAFTS — the platform's keyed transactional
+    // defaults (order/shipping/dunning) are separate and never duplicated here. Content
+    // templates ship an empty set.
+    emails,
+    sequences: [],
+
+    // The composed distinct site (frame + a template-specific home + standard commerce/
+    // cms/about/contact pages + the /journal index), in the bespoke theme, fully stamped.
+    site,
 };
 
 export default blueprint;

@@ -15,35 +15,35 @@
 /** Every concept the product has two names for. Keys are the platform's
  *  vocabulary; values are what a Piggles customer sees. */
 export const LEXICON = {
-  // ── Surfaces ──────────────────────────────────────────────────────────────
-  workbench: 'Home',
-  site: 'My Site',
-  cms: 'Content',
-  seo: 'Get Found',
-  commerce: 'Sell',
-  selling: 'Sell',
-  inventory: 'Stock',
-  crm: 'Customers',
-  email: 'Messages',
-  scheduling: 'Bookings',
-  invoicing: 'Invoices',
-  finance: 'Money',
-  team: 'My Team',
-  staff: 'My Team',
-  integrations: 'Connections',
-  automations: 'Automations',
-  partners: 'Partners',
+    // ── Surfaces ──────────────────────────────────────────────────────────────
+    workbench: 'Home',
+    site: 'My Site',
+    cms: 'Content',
+    seo: 'Get Found',
+    commerce: 'Sell',
+    selling: 'Sell',
+    inventory: 'Stock',
+    crm: 'Customers',
+    email: 'Messages',
+    scheduling: 'Bookings',
+    invoicing: 'Invoices',
+    finance: 'Money',
+    team: 'My Team',
+    staff: 'My Team',
+    integrations: 'Connections',
+    automations: 'Automations',
+    partners: 'Partners',
 
-  // ── Structure ─────────────────────────────────────────────────────────────
-  module: 'App',
-  modules: 'Apps',
-  enable_module: 'Add app',
-  tenant: 'Business',
-  property: 'Site',
-  mdi: 'Workspace',
-  rbac: 'Access',
-  role: 'Role',
-  permission: 'What they can do',
+    // ── Structure ─────────────────────────────────────────────────────────────
+    module: 'App',
+    modules: 'Apps',
+    enable_module: 'Add app',
+    tenant: 'Business',
+    property: 'Site',
+    mdi: 'Workspace',
+    rbac: 'Access',
+    role: 'Role',
+    permission: 'What they can do',
 } as const satisfies Record<string, string>;
 
 export type LexiconKey = keyof typeof LEXICON;
@@ -76,26 +76,26 @@ export type LexiconKey = keyof typeof LEXICON;
  *     activity from writing to a customer.
  */
 export const MODULE_TERMS = {
-  platform: 'Home',
-  builder: 'My Site',
-  storefront: 'Online store',
-  cms: 'Content',
-  seo: 'Get Found',
-  social: 'Social',
-  commerce: 'Sell',
-  inventory: 'Stock',
-  dropship: 'Dropshipping',
-  b2b: 'Wholesale',
-  crm: 'Customers',
-  chat: 'Chats',
-  email: 'Messages',
-  scheduling: 'Bookings',
-  invoicing: 'Invoices',
-  finance: 'Money',
-  staff: 'My Team',
-  automations: 'Automations',
-  ai: 'Connections',
-  partner: 'Partners',
+    platform: 'Home',
+    builder: 'My Site',
+    storefront: 'Online store',
+    cms: 'Content',
+    seo: 'Get Found',
+    social: 'Social',
+    commerce: 'Sell',
+    inventory: 'Stock',
+    dropship: 'Dropshipping',
+    b2b: 'Wholesale',
+    crm: 'Customers',
+    chat: 'Chats',
+    email: 'Messages',
+    scheduling: 'Bookings',
+    invoicing: 'Invoices',
+    finance: 'Money',
+    staff: 'My Team',
+    automations: 'Automations',
+    ai: 'Connections',
+    partner: 'Partners',
 } as const satisfies Record<string, string>;
 
 export type ModuleTermKey = keyof typeof MODULE_TERMS;
@@ -103,7 +103,7 @@ export type ModuleTermKey = keyof typeof MODULE_TERMS;
 /**
  * What to call each app GROUP where one has to be named.
  *
- * The group keys are colour families — `web`, `run` — and a colour family is not
+ * The group keys are color families — `web`, `run` — and a color family is not
  * a place anybody goes. These are the same rule as the rest of the lexicon: name
  * it by what you are doing there.
  *
@@ -111,22 +111,22 @@ export type ModuleTermKey = keyof typeof MODULE_TERMS;
  * row is an eyebrow (root CLAUDE.md RULE #2) — a one-app group renders bare.
  */
 export const GROUP_TERMS = {
-  web: 'Your website',
-  sell: 'Selling',
-  people: 'Who you deal with',
-  money: 'Getting paid',
-  run: 'Running the place',
+    web: 'Your website',
+    sell: 'Selling',
+    people: 'Who you deal with',
+    money: 'Getting paid',
+    run: 'Running the place',
 } as const satisfies Record<string, string>;
 
 /** What Piggles calls a group, or `undefined` for one that must render bare. */
 export const groupTerm = (group: string): string | undefined =>
-  (GROUP_TERMS as Record<string, string | undefined>)[group];
+    (GROUP_TERMS as Record<string, string | undefined>)[group];
 
 /** What Piggles calls a module, or `undefined` for one it has no name for —
  *  which lets a caller fall through to the platform's own label rather than
  *  rendering a blank where a new module appeared. */
 export const moduleTerm = (module: string): string | undefined =>
-  (MODULE_TERMS as Record<string, string | undefined>)[module];
+    (MODULE_TERMS as Record<string, string | undefined>)[module];
 
 /** Look up a customer-facing term.
  *
@@ -142,8 +142,8 @@ export const term = (key: LexiconKey): string => LEXICON[key];
  *  `priceBook` only surfaces at all in advanced pricing detail; in ordinary
  *  copy the concept simply does not appear. */
 export const CONTEXTUAL_TERMS = {
-  collection: ['Content type', 'List'],
-  priceBook: ['Pricing'],
+    collection: ['Content type', 'List'],
+    priceBook: ['Pricing'],
 } as const;
 
 /** Words that must never reach a customer outside an explicitly advanced or
@@ -153,16 +153,16 @@ export const CONTEXTUAL_TERMS = {
  *  grep for these. The SEO satellite sites are the deliberate exception: their
  *  whole job is ranking for the category vocabulary and translating it. */
 export const BANNED_IN_PRODUCT_COPY = [
-  'CMS',
-  'CRM',
-  'headless',
-  'MDI',
-  'RBAC',
-  'tenant',
-  'module',
-  'collection',
-  'price book',
-  'GraphQL',
-  'webhook',
-  'API key',
+    'CMS',
+    'CRM',
+    'headless',
+    'MDI',
+    'RBAC',
+    'tenant',
+    'module',
+    'collection',
+    'price book',
+    'GraphQL',
+    'webhook',
+    'API key',
 ] as const;

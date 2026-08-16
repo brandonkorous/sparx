@@ -61,14 +61,14 @@ The flip never happened, so the storefront ships **two** concrete token payloads
 
 ### 1.1 The two concrete failures
 
-**A. Colour is a source-order race.** [globals.css:89-111](../../apps/site/app/globals.css#L89-L111)
+**A. Color is a source-order race.** [globals.css:89-111](../../apps/site/app/globals.css#L89-L111)
 is an **unlayered** `:root` block — the same weight as the injected `silicaThemeCss` `:root`. Whether
 the authored theme or the legacy brand compile wins depends on whether the app stylesheet `<link>` or
 the inline `<style>` lands last in `<head>`. That is the "switched theme, kept the old primary"
 symptom.
 
 That block's own comment says it exists because `@sparx/ui/tokens.css` sets brand `--color-*` in an
-unlayered `:root`. **That is no longer true** — the silicaui migration removed the colour half of
+unlayered `:root`. **That is no longer true** — the silicaui migration removed the color half of
 `packages/ui/src/tokens.css` (it now only _reads_ `--color-module*`). The block is obsolete and is now
 purely the thing that beats the tenant's real theme.
 
@@ -107,7 +107,7 @@ entirely on `--st-*`. That made "is every served site silica-active?" a load-bea
 [silica.ts:212-235](../../apps/site/lib/silica.ts#L212-L235) argued yes — `getPublishedSilicaFrame`
 falls back to the code starter frame, "so the storefront ALWAYS wears silica chrome".
 
-Rather than rest on it, the gate was **removed**: the theme, the web fonts and the accent colour all
+Rather than rest on it, the gate was **removed**: the theme, the web fonts and the accent color all
 resolve from `silicaFrame.theme ?? BASE_SILICA_THEME` unconditionally. There is no branch left to get
 wrong and no page that can render unthemed. Don't reintroduce the gate.
 
@@ -132,8 +132,8 @@ wrong and no page that can render unthemed. Don't reintroduce the gate.
 
 - [x] Delete the obsolete unlayered `:root` block in
       [globals.css](../../apps/site/app/globals.css). The stated reason for it
-      (`@sparx/ui/tokens.css` asserting brand colours unlayered) no longer holds. **This is the fix
-      for failure A** — colour now has exactly ONE unlayered declaration on the storefront, the
+      (`@sparx/ui/tokens.css` asserting brand colors unlayered) no longer holds. **This is the fix
+      for failure A** — color now has exactly ONE unlayered declaration on the storefront, the
       injected theme.
 - [x] Point `--font-heading` / `--font-body` in [globals.css](../../apps/site/app/globals.css) at
       `--font-sans` instead of `--st-font-*`. **This is the fix for failure B.** Also dropped the
@@ -155,7 +155,7 @@ wrong and no page that can render unthemed. Don't reintroduce the gate.
       `apps/site/lib/theme.ts`. `silicaThemeCss` is now emitted **unconditionally** rather than gated
       on `silicaActive` — with the legacy payload gone, gating would mean a page rendering unthemed,
       and resolving `silicaFrame.theme ?? BASE_SILICA_THEME` everywhere removes the branch entirely.
-- [x] Replace the `@theme` colour registrations in [globals.css](../../apps/site/app/globals.css)
+- [x] Replace the `@theme` color registrations in [globals.css](../../apps/site/app/globals.css)
       with an `@import` of [base-theme.css](../../packages/silica-catalog/src/base-theme.css) — a CSS
       projection of `BASE_SILICA_THEME`, kept honest by
       [base-theme.css.test.ts](../../packages/silica-catalog/src/base-theme.css.test.ts) (fails on any
@@ -247,7 +247,7 @@ rewrites them in place. It is family-aware — `st-c-primary` is `btn-primary` o
 token, preserving Tailwind utilities and `bx-*` behaviour classes verbatim. Idempotent: it only ever
 consumes `st-` tokens and emits none.
 
-Two colours have no silica counterpart and are handled explicitly: `surface` is dropped (on a button
+Two colors have no silica counterpart and are handled explicitly: `surface` is dropped (on a button
 `st-v-glass` → `glass` is what actually produced that look), while `danger` and `highlight` carry
 through because both ARE registered with the plugin in each app's `globals.css`.
 
@@ -313,7 +313,7 @@ Green across every touched package — typecheck + lint on `builder-render`, `bu
    [20270131000000_silica_class_vocabulary](../../packages/db/prisma/migrations/20270131000000_silica_class_vocabulary/migration.sql)
    is pushed to `main` and the DB Migrate workflow picks it up. Until then, prod tenant content saved
    before 2026-07-31 renders its buttons unstyled. New stamps are already clean.
-2. **One inline style awaiting Brandon's call** — the colour swatch in
+2. **One inline style awaiting Brandon's call** — the color swatch in
    [commerce.tsx](../../packages/builder-render/src/commerce.tsx): `style={{ background:
 val.swatchHex }}`. The hex is the merchant's own product-option value from the database, so no
    token can express it, but it is the only inline style left in the render path.

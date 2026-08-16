@@ -7,7 +7,7 @@
 //
 // They no longer bind to CSS. `TOKEN_CSS_VARS` / `tokensToCssVars` / `tokensToCss`
 // used to project each key onto `--st-*` custom properties (and dual-write a
-// `--color-*` twin), which is precisely what gave tenant colour two sources of truth
+// `--color-*` twin), which is precisely what gave tenant color two sources of truth
 // on the storefront — see docs/implementation/st-token-retirement.md. Rendering now
 // goes through the v2 engine's silica emitter (`v2/silica-css.ts`), which speaks
 // silicaui's own `--color-*` vocabulary. Do not add a CSS projection back here.
@@ -17,38 +17,38 @@
 // in compile.ts).
 
 export type ThemeTokenKey =
-  | 'colorPrimary'
-  | 'colorPrimaryForeground'
-  | 'colorAccent'
-  | 'colorBackground'
-  | 'colorForeground'
-  | 'colorMuted'
-  | 'colorBorder'
-  | 'fontHeading'
-  | 'fontBody'
-  | 'radiusBase'
-  | 'containerWidth';
+    | 'colorPrimary'
+    | 'colorPrimaryForeground'
+    | 'colorAccent'
+    | 'colorBackground'
+    | 'colorForeground'
+    | 'colorMuted'
+    | 'colorBorder'
+    | 'fontHeading'
+    | 'fontBody'
+    | 'radiusBase'
+    | 'containerWidth';
 
 export type ThemeTokens = Record<ThemeTokenKey, string>;
 
 export const TOKEN_KEYS: readonly ThemeTokenKey[] = [
-  'colorPrimary',
-  'colorPrimaryForeground',
-  'colorAccent',
-  'colorBackground',
-  'colorForeground',
-  'colorMuted',
-  'colorBorder',
-  'fontHeading',
-  'fontBody',
-  'radiusBase',
-  'containerWidth',
+    'colorPrimary',
+    'colorPrimaryForeground',
+    'colorAccent',
+    'colorBackground',
+    'colorForeground',
+    'colorMuted',
+    'colorBorder',
+    'fontHeading',
+    'fontBody',
+    'radiusBase',
+    'containerWidth',
 ] as const;
 
 // Named container widths → the CSS max-width they compile to.
 export const CONTAINER_WIDTHS: Record<string, string> = {
-  narrow: '52rem',
-  medium: '72rem',
-  wide: '90rem',
-  full: '100%',
+    narrow: '52rem',
+    medium: '72rem',
+    wide: '90rem',
+    full: '100%',
 };

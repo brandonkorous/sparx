@@ -29,15 +29,15 @@
 //     recurses now. See `attr-binding.ts`.
 
 import {
-  action,
-  atom,
-  behave,
-  bind,
-  el,
-  part,
-  repeat,
-  type ElementNode,
-  type Node,
+    action,
+    atom,
+    behave,
+    bind,
+    el,
+    part,
+    repeat,
+    type ElementNode,
+    type Node,
 } from '@wizeworks/silicaui-html';
 
 import { bindAttr } from './attr-binding';
@@ -63,40 +63,40 @@ import { PLACEHOLDER_IMAGE } from './placeholder';
 // marker — the union includes `OutletNode`, which cannot. Widening here would force a
 // cast at every marker call site for no gain.
 function productCardNode(extraClass = ''): ElementNode {
-  const base =
-    'card bg-base-100 border border-base-300 rounded-box overflow-hidden block hover:border-primary';
-  return bindAttr(
-    el('a', extraClass ? `${base} ${extraClass}` : base, {
-      children: [
-        bind(
-          atom('Image', 'aspect-square w-full object-cover', {
-            src: PLACEHOLDER_IMAGE,
-            alt: 'Product image',
-          }),
-          'image'
-        ),
-        // `gap-2`, not the half-step `gap-1.5`: the declared vocabulary has no half
-        // steps, so `gap-1.5` compiles only while this file is @source-scanned and
-        // emits nothing once the class is living in a tenant's stored tree.
-        el('div', 'flex flex-col gap-2 p-4', {
-          children: [
-            bind(el('h3', 'font-semibold text-base-content', { text: 'Product name' }), 'title'),
-            // INK, not the brand role. `text-primary` here was pale-on-pale on three
-            // shipped themes — `petal` (1.6:1), `workshop` (2.0:1), `salon` (1.5:1) —
-            // because those themes deliberately carry a BRIGHT primary that holds dark
-            // ink ("a pale rose primary carrying DARK ink", says petal's own comment).
-            // Primary is a FILL colour on them, and the price is the one number on this
-            // card a shopper has to be able to read. Weight and scale carry the emphasis;
-            // the card's brand identity rides its Add-to-cart button, which is a
-            // `btn-primary` fill and therefore legible by construction.
-            bind(el('p', 'text-lg font-bold text-base-content', { text: '$0.00' }), 'price'),
-          ],
+    const base =
+        'card bg-base-100 border border-base-300 rounded-box overflow-hidden block hover:border-primary';
+    return bindAttr(
+        el('a', extraClass ? `${base} ${extraClass}` : base, {
+            children: [
+                bind(
+                    atom('Image', 'aspect-square w-full object-cover', {
+                        src: PLACEHOLDER_IMAGE,
+                        alt: 'Product image',
+                    }),
+                    'image'
+                ),
+                // `gap-2`, not the half-step `gap-1.5`: the declared vocabulary has no half
+                // steps, so `gap-1.5` compiles only while this file is @source-scanned and
+                // emits nothing once the class is living in a tenant's stored tree.
+                el('div', 'flex flex-col gap-2 p-4', {
+                    children: [
+                        bind(el('h3', 'font-semibold text-base-content', { text: 'Product name' }), 'title'),
+                        // INK, not the brand role. `text-primary` here was pale-on-pale on three
+                        // shipped themes — `petal` (1.6:1), `workshop` (2.0:1), `salon` (1.5:1) —
+                        // because those themes deliberately carry a BRIGHT primary that holds dark
+                        // ink ("a pale rose primary carrying DARK ink", says petal's own comment).
+                        // Primary is a FILL color on them, and the price is the one number on this
+                        // card a shopper has to be able to read. Weight and scale carry the emphasis;
+                        // the card's brand identity rides its Add-to-cart button, which is a
+                        // `btn-primary` fill and therefore legible by construction.
+                        bind(el('p', 'text-lg font-bold text-base-content', { text: '$0.00' }), 'price'),
+                    ],
+                }),
+            ],
         }),
-      ],
-    }),
-    'href',
-    'url'
-  );
+        'href',
+        'url'
+    );
 }
 
 /** A single product card — image, name, price. Bind it to one product (an entity
@@ -104,7 +104,7 @@ function productCardNode(extraClass = ''): ElementNode {
  *  Products block repeats; select it in the editor and "Save as component" to fork a
  *  custom card, then swap it into the block. */
 export function productCard(): Node {
-  return productCardNode();
+    return productCardNode();
 }
 
 /** Which product source a Products block binds. `commerce.product` is the whole
@@ -113,11 +113,11 @@ export function productCard(): Node {
  *  product), or a specific category (`commerce.category.<collectionHandle>`). The
  *  editor's data-source picker repoints this per instance (docs/122). */
 export type ProductsSource =
-  | 'commerce.product'
-  | 'commerce.featured'
-  | 'commerce.new'
-  | 'commerce.related'
-  | `commerce.category.${string}`;
+    | 'commerce.product'
+    | 'commerce.featured'
+    | 'commerce.new'
+    | 'commerce.related'
+    | `commerce.category.${string}`;
 
 /** grid = a responsive multi-column grid (a shop/catalog page); rail = a horizontal
  *  snap-scrolling strip (a featured/cross-sell rail); carousel = that same strip with
@@ -127,9 +127,9 @@ export type ProductsSource =
 export type ProductsLayout = 'grid' | 'rail' | 'carousel';
 
 export interface ProductsBlockOptions {
-  source?: ProductsSource;
-  layout?: ProductsLayout;
-  heading?: string;
+    source?: ProductsSource;
+    layout?: ProductsLayout;
+    heading?: string;
 }
 
 // Literal container trees per layout — the authoring contract (§5) requires every
@@ -137,14 +137,14 @@ export interface ProductsBlockOptions {
 // computed/concatenated class string would ship un-generated utilities. So each
 // layout is its own literal node rather than a templated class.
 function gridContainer() {
-  return el('div', 'grid grid-cols-2 gap-6 @2xl:grid-cols-3 @4xl:grid-cols-4', {
-    children: [productCardNode()],
-  });
+    return el('div', 'grid grid-cols-2 gap-6 @2xl:grid-cols-3 @4xl:grid-cols-4', {
+        children: [productCardNode()],
+    });
 }
 function railContainer() {
-  return el('div', 'flex snap-x gap-6 overflow-x-auto pb-4', {
-    children: [productCardNode('w-64 shrink-0 snap-start')],
-  });
+    return el('div', 'flex snap-x gap-6 overflow-x-auto pb-4', {
+        children: [productCardNode('w-64 shrink-0 snap-start')],
+    });
 }
 
 /**
@@ -169,26 +169,26 @@ function railContainer() {
  * the edge looks like a grid that happens not to fit.
  */
 function carouselTrack() {
-  return part(
-    // `carousel` / `carousel-item` are the PLUGIN'S OWN component classes, not utilities.
-    // This started as `flex snap-x snap-mandatory overflow-x-auto scroll-smooth`, which is
-    // `.carousel` re-implemented by hand — the exact thing RULE #1 exists to stop. The real
-    // class also hides the scrollbar chrome (`scrollbar-width: none` + the webkit
-    // pseudo-element), which no combination of sanctioned utilities can express, and which
-    // a carousel needs: a raw scrollbar under a strip that already has Previous and Next is
-    // two competing controls for one job. Touch and trackpad swipe still work — only the
-    // chrome goes.
-    //
-    // `carousel-item` carries `flex-shrink: 0` + `scroll-snap-align: start`, so the slide
-    // only needs its per-view WIDTH. `pb-4` is gone with the scrollbar it was reserving
-    // room for.
-    el('div', 'carousel gap-6', {
-      children: [
-        part(productCardNode('carousel-item basis-full @2xl:basis-1/3 @4xl:basis-1/4'), 'slide'),
-      ],
-    }),
-    'track'
-  );
+    return part(
+        // `carousel` / `carousel-item` are the PLUGIN'S OWN component classes, not utilities.
+        // This started as `flex snap-x snap-mandatory overflow-x-auto scroll-smooth`, which is
+        // `.carousel` re-implemented by hand — the exact thing RULE #1 exists to stop. The real
+        // class also hides the scrollbar chrome (`scrollbar-width: none` + the webkit
+        // pseudo-element), which no combination of sanctioned utilities can express, and which
+        // a carousel needs: a raw scrollbar under a strip that already has Previous and Next is
+        // two competing controls for one job. Touch and trackpad swipe still work — only the
+        // chrome goes.
+        //
+        // `carousel-item` carries `flex-shrink: 0` + `scroll-snap-align: start`, so the slide
+        // only needs its per-view WIDTH. `pb-4` is gone with the scrollbar it was reserving
+        // room for.
+        el('div', 'carousel gap-6', {
+            children: [
+                part(productCardNode('carousel-item basis-full @2xl:basis-1/3 @4xl:basis-1/4'), 'slide'),
+            ],
+        }),
+        'track'
+    );
 }
 
 /**
@@ -210,13 +210,13 @@ function carouselTrack() {
  * PLP), where the HTML default of `submit` would navigate away on the first Next click.
  */
 function carouselControl(role: 'prev' | 'next', label: string, icon: 'arrow-left' | 'arrow-right') {
-  return part(
-    el('button', 'btn btn-circle btn-sm btn-neutral btn-outline', {
-      attrs: { type: 'button', 'aria-label': label },
-      children: [atom('Icon', 'size-4', { name: icon })],
-    }),
-    role
-  );
+    return part(
+        el('button', 'btn btn-circle btn-sm btn-neutral btn-outline', {
+            attrs: { type: 'button', 'aria-label': label },
+            children: [atom('Icon', 'size-4', { name: icon })],
+        }),
+        role
+    );
 }
 
 /** THE configurable product listing — one block, prop-driven. It repeats the reusable
@@ -226,57 +226,57 @@ function carouselControl(role: 'prev' | 'next', label: string, icon: 'arrow-left
  *  and `featuredProducts` below are just this block with preset literal options, kept
  *  so existing pages and the starter/blueprints resolve unchanged. */
 export function productsBlock(opts: ProductsBlockOptions = {}): Node {
-  const { source = 'commerce.product', layout = 'grid', heading = 'Products' } = opts;
+    const { source = 'commerce.product', layout = 'grid', heading = 'Products' } = opts;
 
-  // A carousel is a different SHAPE, not a different container class: the heading shares
-  // a row with the controls, and the whole section carries the behavior. Handled first so
-  // the grid/rail path below stays the simple thing it was.
-  if (layout === 'carousel') {
-    return behave(
-      el('section', 'bg-base-100 @container px-6 py-12', {
-        children: [
-          // Controls sit BESIDE the heading rather than floating over the cards. Overlaying
-          // them would need absolute positioning and a scrim to stay legible against
-          // whatever product photo happens to be underneath — a shadow by another name, and
-          // a control whose contrast depends on the tenant's imagery is one that will be
-          // unreadable on someone's site. In the header row it is legible by construction.
-          el('div', 'mb-8 flex items-center justify-between gap-6', {
-            children: [
-              el('h2', 'text-2xl font-semibold text-base-content', { text: heading }),
-              el('div', 'flex gap-2', {
+    // A carousel is a different SHAPE, not a different container class: the heading shares
+    // a row with the controls, and the whole section carries the behavior. Handled first so
+    // the grid/rail path below stays the simple thing it was.
+    if (layout === 'carousel') {
+        return behave(
+            el('section', 'bg-base-100 @container px-6 py-12', {
                 children: [
-                  carouselControl('prev', 'Previous products', 'arrow-left'),
-                  carouselControl('next', 'Next products', 'arrow-right'),
+                    // Controls sit BESIDE the heading rather than floating over the cards. Overlaying
+                    // them would need absolute positioning and a scrim to stay legible against
+                    // whatever product photo happens to be underneath — a shadow by another name, and
+                    // a control whose contrast depends on the tenant's imagery is one that will be
+                    // unreadable on someone's site. In the header row it is legible by construction.
+                    el('div', 'mb-8 flex items-center justify-between gap-6', {
+                        children: [
+                            el('h2', 'text-2xl font-semibold text-base-content', { text: heading }),
+                            el('div', 'flex gap-2', {
+                                children: [
+                                    carouselControl('prev', 'Previous products', 'arrow-left'),
+                                    carouselControl('next', 'Next products', 'arrow-right'),
+                                ],
+                            }),
+                        ],
+                    }),
+                    repeat(carouselTrack(), source),
                 ],
-              }),
-            ],
-          }),
-          repeat(carouselTrack(), source),
-        ],
-      }),
-      { type: 'carousel' }
-    );
-  }
+            }),
+            { type: 'carousel' }
+        );
+    }
 
-  const children: Node[] = [
-    el('h2', 'mb-8 text-2xl font-semibold text-base-content', { text: heading }),
-    repeat(layout === 'rail' ? railContainer() : gridContainer(), source),
-  ];
-  // A GRID over the whole catalog gets page links under it, because that grid is the
-  // one that runs out of room: it shows 24 records and the catalog has more. A RAIL is
-  // a curation — "Featured", "New in" — and a Next button under a curated strip is a
-  // curation that forgot it was one, so it gets nothing.
-  //
-  // Safe to include unconditionally on a grid: the core renders NOTHING unless the
-  // route actually paginated something and there is more than one page. An author who
-  // repoints this block at `commerce.featured` is left with an invisible node, not a
-  // broken pager. And it has to be added HERE rather than retrofitted, because a
-  // stamped tree freezes at publish (docs/122) — a block inserted today is the only
-  // one this can ever reach.
-  if (layout === 'grid' && source === 'commerce.product') {
-    children.push(hostCore(HOST_KEYS.sitePagination, 'pt-4'));
-  }
-  return el('section', 'bg-base-100 @container px-6 py-12', { children });
+    const children: Node[] = [
+        el('h2', 'mb-8 text-2xl font-semibold text-base-content', { text: heading }),
+        repeat(layout === 'rail' ? railContainer() : gridContainer(), source),
+    ];
+    // A GRID over the whole catalog gets page links under it, because that grid is the
+    // one that runs out of room: it shows 24 records and the catalog has more. A RAIL is
+    // a curation — "Featured", "New in" — and a Next button under a curated strip is a
+    // curation that forgot it was one, so it gets nothing.
+    //
+    // Safe to include unconditionally on a grid: the core renders NOTHING unless the
+    // route actually paginated something and there is more than one page. An author who
+    // repoints this block at `commerce.featured` is left with an invisible node, not a
+    // broken pager. And it has to be added HERE rather than retrofitted, because a
+    // stamped tree freezes at publish (docs/122) — a block inserted today is the only
+    // one this can ever reach.
+    if (layout === 'grid' && source === 'commerce.product') {
+        children.push(hostCore(HOST_KEYS.sitePagination, 'pt-4'));
+    }
+    return el('section', 'bg-base-100 @container px-6 py-12', { children });
 }
 
 /** A HEADLESS product carousel — the same `track` + Previous/Next the carousel
@@ -286,30 +286,30 @@ export function productsBlock(opts: ProductsBlockOptions = {}): Node {
  *  that supplies its own padding. Same `carousel` behavior + `carousel`/`carousel-item` classes,
  *  so it hydrates and scrolls identically; only the surrounding section + `<h2>` are dropped. */
 export function productCarousel(source: ProductsSource = 'commerce.product'): Node {
-  return behave(
-    el('div', 'flex flex-col gap-6', {
-      children: [
-        el('div', 'flex items-center justify-end gap-2', {
-          children: [
-            carouselControl('prev', 'Previous products', 'arrow-left'),
-            carouselControl('next', 'Next products', 'arrow-right'),
-          ],
+    return behave(
+        el('div', 'flex flex-col gap-6', {
+            children: [
+                el('div', 'flex items-center justify-end gap-2', {
+                    children: [
+                        carouselControl('prev', 'Previous products', 'arrow-left'),
+                        carouselControl('next', 'Next products', 'arrow-right'),
+                    ],
+                }),
+                repeat(carouselTrack(), source),
+            ],
         }),
-        repeat(carouselTrack(), source),
-      ],
-    }),
-    { type: 'carousel' }
-  );
+        { type: 'carousel' }
+    );
 }
 
 /** A responsive grid over the whole catalog — the shop-all page. A preset of
  *  `productsBlock`. */
 export function productGrid(): Node {
-  return productsBlock({
-    source: 'commerce.product',
-    layout: 'grid',
-    heading: 'Shop our products',
-  });
+    return productsBlock({
+        source: 'commerce.product',
+        layout: 'grid',
+        heading: 'Shop our products',
+    });
 }
 
 /** A horizontal, snap-scrolling rail of FEATURED products — a preset of
@@ -317,7 +317,7 @@ export function productGrid(): Node {
  *  capped to a handful, newest-few fallback, current product excluded on a PDP). A
  *  curated few, never the entire catalog. */
 export function featuredProducts(): Node {
-  return productsBlock({ source: 'commerce.featured', layout: 'rail', heading: 'Featured' });
+    return productsBlock({ source: 'commerce.featured', layout: 'rail', heading: 'Featured' });
 }
 
 /** A CAROUSEL of featured products — the same bounded source as `featuredProducts`, shown
@@ -327,7 +327,7 @@ export function featuredProducts(): Node {
  *  to reach it". An author who wants a different count sets `limit` on the repeat in the
  *  editor — the block deliberately hard-codes neither. */
 export function featuredCarousel(): Node {
-  return productsBlock({ source: 'commerce.featured', layout: 'carousel', heading: 'Featured' });
+    return productsBlock({ source: 'commerce.featured', layout: 'carousel', heading: 'Featured' });
 }
 
 /** The Add-to-cart FORM — the buy box's interactive half.
@@ -351,28 +351,28 @@ export function featuredCarousel(): Node {
  *  attribute is inert on a hidden input and `checkValidity()` would pass anyway —
  *  the storefront's `onAction` is what refuses to add an empty variant. */
 export function addToCartForm(): Node {
-  return action(
-    behave(
-      el('form', 'mt-2 flex flex-col gap-3', {
-        children: [
-          bind(el('input', '', { attrs: { type: 'hidden', name: 'variantId' } }), 'variantId'),
-          // The quantity control nests INSIDE its label, so the pair needs no `id`
-          // — a page with two buy boxes would otherwise emit a duplicate id.
-          el('label', 'flex items-center gap-3 text-base text-base-content', {
-            children: [
-              el('span', 'font-medium', { text: 'Quantity' }),
-              el('input', 'input w-24', {
-                attrs: { type: 'number', name: 'quantity', value: '1', min: '1', step: '1' },
-              }),
-            ],
-          }),
-          atom('Button', 'btn btn-primary btn-lg', { type: 'submit' }, ['Add to cart']),
-        ],
-      }),
-      { type: 'form' }
-    ),
-    'add-to-cart'
-  );
+    return action(
+        behave(
+            el('form', 'mt-2 flex flex-col gap-3', {
+                children: [
+                    bind(el('input', '', { attrs: { type: 'hidden', name: 'variantId' } }), 'variantId'),
+                    // The quantity control nests INSIDE its label, so the pair needs no `id`
+                    // — a page with two buy boxes would otherwise emit a duplicate id.
+                    el('label', 'flex items-center gap-3 text-base text-base-content', {
+                        children: [
+                            el('span', 'font-medium', { text: 'Quantity' }),
+                            el('input', 'input w-24', {
+                                attrs: { type: 'number', name: 'quantity', value: '1', min: '1', step: '1' },
+                            }),
+                        ],
+                    }),
+                    atom('Button', 'btn btn-primary btn-lg', { type: 'submit' }, ['Add to cart']),
+                ],
+            }),
+            { type: 'form' }
+        ),
+        'add-to-cart'
+    );
 }
 
 /** The product-detail buy box — gallery, title, price (+ compare-at strikethrough),
@@ -390,170 +390,170 @@ export function addToCartForm(): Node {
  * whatever ITS type defines.
  */
 export function productAttributes(): Node {
-  return visibleWhen(
-    el('div', 'mt-2 flex flex-col gap-5', {
-      children: [
-        repeat(
-          el('div', 'flex flex-col gap-2 border-t border-base-300 pt-4', {
+    return visibleWhen(
+        el('div', 'mt-2 flex flex-col gap-5', {
             children: [
-              bind(
-                el('h2', 'text-sm font-semibold uppercase tracking-wide text-base-content', {
-                  text: 'Section',
-                }),
-                'label'
-              ),
-              // Scalar value — dropped for a repeater section (its `value` is '').
-              visibleWhen(
-                bind(
-                  el('div', 'text-base leading-relaxed text-base-content', { text: '' }),
-                  'value'
+                repeat(
+                    el('div', 'flex flex-col gap-2 border-t border-base-300 pt-4', {
+                        children: [
+                            bind(
+                                el('h2', 'text-sm font-semibold uppercase tracking-wide text-base-content', {
+                                    text: 'Section',
+                                }),
+                                'label'
+                            ),
+                            // Scalar value — dropped for a repeater section (its `value` is '').
+                            visibleWhen(
+                                bind(
+                                    el('div', 'text-base leading-relaxed text-base-content', { text: '' }),
+                                    'value'
+                                ),
+                                'value'
+                            ),
+                            // Repeater rows — an empty list for a scalar section, so this renders nothing there.
+                            repeat(
+                                el(
+                                    'div',
+                                    'flex items-baseline justify-between gap-4 border-b border-base-200 pb-1',
+                                    {
+                                        children: [
+                                            bind(
+                                                el('span', 'text-base font-medium text-base-content', { text: '' }),
+                                                'label'
+                                            ),
+                                            bind(el('span', 'text-base text-base-content', { text: '' }), 'value'),
+                                        ],
+                                    }
+                                ),
+                                'items'
+                            ),
+                        ],
+                    }),
+                    'attributeSections'
                 ),
-                'value'
-              ),
-              // Repeater rows — an empty list for a scalar section, so this renders nothing there.
-              repeat(
-                el(
-                  'div',
-                  'flex items-baseline justify-between gap-4 border-b border-base-200 pb-1',
-                  {
-                    children: [
-                      bind(
-                        el('span', 'text-base font-medium text-base-content', { text: '' }),
-                        'label'
-                      ),
-                      bind(el('span', 'text-base text-base-content', { text: '' }), 'value'),
-                    ],
-                  }
-                ),
-                'items'
-              ),
             ],
-          }),
-          'attributeSections'
-        ),
-      ],
-    }),
-    'attributeSections'
-  );
+        }),
+        'attributeSections'
+    );
 }
 
 /** The shipping/returns trust line — LINKS the site's real legal pages instead of reprinting
  *  a policy the default template can't know (docs/143). `/shipping-policy` + `/returns-policy`
  *  are the canonical legal slugs. */
 export function productPolicyLinks(): Node {
-  const link = (href: string, text: string): Node =>
-    bindAttrHref(el('a', 'underline underline-offset-4', { text }), href);
-  return el(
-    'div',
-    'flex flex-wrap items-center gap-x-6 gap-y-2 border-t border-base-300 pt-4 text-sm text-base-content',
-    {
-      children: [
-        link('/shipping-policy', 'Shipping & delivery'),
-        link('/returns-policy', 'Returns & refunds'),
-      ],
-    }
-  );
+    const link = (href: string, text: string): Node =>
+        bindAttrHref(el('a', 'underline underline-offset-4', { text }), href);
+    return el(
+        'div',
+        'flex flex-wrap items-center gap-x-6 gap-y-2 border-t border-base-300 pt-4 text-sm text-base-content',
+        {
+            children: [
+                link('/shipping-policy', 'Shipping & delivery'),
+                link('/returns-policy', 'Returns & refunds'),
+            ],
+        }
+    );
 }
 
 // A static href on an anchor — the same shape `bindAttr` writes, but for a literal URL
 // (no binding). Kept local so the policy links stay a two-liner.
 function bindAttrHref(anchor: ElementNode, href: string): Node {
-  anchor.attrs = { ...(anchor.attrs ?? {}), href };
-  return anchor;
+    anchor.attrs = { ...(anchor.attrs ?? {}), href };
+    return anchor;
 }
 
 /** A real low-stock badge — bound to the routed product's inventory, shown ONLY when stock is
  *  genuinely at/below its reorder point (`visibleWhen('lowStock')`). Honest scarcity, never
  *  fabricated; renders nothing when stock is healthy. */
 export function productStockBadge(): Node {
-  return visibleWhen(
-    el(
-      'span',
-      'inline-flex w-fit items-center gap-2 rounded-field bg-warning px-3 py-1 text-xs font-semibold uppercase tracking-wide text-warning-content',
-      {
-        text: 'Low stock',
-      }
-    ),
-    'lowStock'
-  );
+    return visibleWhen(
+        el(
+            'span',
+            'inline-flex w-fit items-center gap-2 rounded-field bg-warning px-3 py-1 text-xs font-semibold uppercase tracking-wide text-warning-content',
+            {
+                text: 'Low stock',
+            }
+        ),
+        'lowStock'
+    );
 }
 
 export function buyBox(): Node {
-  return repeat(
-    // A self-contained SECTION so the buy box stands alone — dropped as a bare block,
-    // or shown standalone in the marketplace preview — instead of relying on a page to
-    // wrap it. `px-6 py-12` are its own margins (without them the image and Add-to-cart
-    // button butt against the edge); `mx-auto max-w-5xl` caps it so the half-width image
-    // is a sane ~500px, not full-bleed.
-    //
-    // CONTAINER-QUERY TRAP: `@container` marks an element as a query container for its
-    // DESCENDANTS, but a `@2xl:` class on that SAME element resolves against the nearest
-    // ANCESTOR container. So the container is the SECTION and `@2xl:grid-cols-2` lives on
-    // the grid INSIDE it — the grid measures the section it was given, never the window.
-    el('section', 'bg-base-100 @container px-6 py-12', {
-      children: [
-        el('div', 'mx-auto grid w-full max-w-5xl gap-8 @2xl:grid-cols-2', {
-          children: [
-            bind(
-              atom('Image', 'aspect-square w-full rounded-box object-cover', {
-                src: PLACEHOLDER_IMAGE,
-                alt: 'Product image',
-              }),
-              'image'
-            ),
-            // `justify-center` vertically centers the details beside the tall product
-            // image, so a short product (title + price + one line) sits balanced rather
-            // than packed at the top with a void beneath the Add-to-cart button.
-            el('div', 'flex flex-col justify-center gap-4', {
-              children: [
-                bind(
-                  el('h1', 'text-3xl font-bold text-base-content', { text: 'Product name' }),
-                  'title'
-                ),
-                el('div', 'flex items-baseline gap-3', {
-                  children: [
-                    // Ink, not the brand role — same reason as the card price above, and
-                    // the same three themes failed here too. This is the price a shopper
-                    // commits money against.
-                    bind(
-                      el('span', 'text-2xl font-bold text-base-content', { text: '$0.00' }),
-                      'price'
-                    ),
-                    // The was-price strikethrough, shown ONLY on an actual sale. It used
-                    // to be a bare value bind, which meant a product with no
-                    // `compareAtPrice` still rendered `<span class="line-through">` —
-                    // empty, but a real flex item, so every non-sale product page carried
-                    // a stray `gap-3` after the price. The wrapper is what carries the
-                    // condition (one `data` per node), so the inner span still fills.
-                    visibleWhen(
-                      el('span', 'text-lg text-base-content line-through', {
-                        children: [bind(el('span', '', { text: '' }), 'compareAtPrice')],
-                      }),
-                      'compareAtPrice'
-                    ),
-                  ],
+    return repeat(
+        // A self-contained SECTION so the buy box stands alone — dropped as a bare block,
+        // or shown standalone in the marketplace preview — instead of relying on a page to
+        // wrap it. `px-6 py-12` are its own margins (without them the image and Add-to-cart
+        // button butt against the edge); `mx-auto max-w-5xl` caps it so the half-width image
+        // is a sane ~500px, not full-bleed.
+        //
+        // CONTAINER-QUERY TRAP: `@container` marks an element as a query container for its
+        // DESCENDANTS, but a `@2xl:` class on that SAME element resolves against the nearest
+        // ANCESTOR container. So the container is the SECTION and `@2xl:grid-cols-2` lives on
+        // the grid INSIDE it — the grid measures the section it was given, never the window.
+        el('section', 'bg-base-100 @container px-6 py-12', {
+            children: [
+                el('div', 'mx-auto grid w-full max-w-5xl gap-8 @2xl:grid-cols-2', {
+                    children: [
+                        bind(
+                            atom('Image', 'aspect-square w-full rounded-box object-cover', {
+                                src: PLACEHOLDER_IMAGE,
+                                alt: 'Product image',
+                            }),
+                            'image'
+                        ),
+                        // `justify-center` vertically centers the details beside the tall product
+                        // image, so a short product (title + price + one line) sits balanced rather
+                        // than packed at the top with a void beneath the Add-to-cart button.
+                        el('div', 'flex flex-col justify-center gap-4', {
+                            children: [
+                                bind(
+                                    el('h1', 'text-3xl font-bold text-base-content', { text: 'Product name' }),
+                                    'title'
+                                ),
+                                el('div', 'flex items-baseline gap-3', {
+                                    children: [
+                                        // Ink, not the brand role — same reason as the card price above, and
+                                        // the same three themes failed here too. This is the price a shopper
+                                        // commits money against.
+                                        bind(
+                                            el('span', 'text-2xl font-bold text-base-content', { text: '$0.00' }),
+                                            'price'
+                                        ),
+                                        // The was-price strikethrough, shown ONLY on an actual sale. It used
+                                        // to be a bare value bind, which meant a product with no
+                                        // `compareAtPrice` still rendered `<span class="line-through">` —
+                                        // empty, but a real flex item, so every non-sale product page carried
+                                        // a stray `gap-3` after the price. The wrapper is what carries the
+                                        // condition (one `data` per node), so the inner span still fills.
+                                        visibleWhen(
+                                            el('span', 'text-lg text-base-content line-through', {
+                                                children: [bind(el('span', '', { text: '' }), 'compareAtPrice')],
+                                            }),
+                                            'compareAtPrice'
+                                        ),
+                                    ],
+                                }),
+                                // Honest low-stock signal (docs/143) — self-hides when stock is healthy.
+                                productStockBadge(),
+                                bind(
+                                    el('div', 'text-base-content', { text: 'Product description.' }),
+                                    'description'
+                                ),
+                                addToCartForm(),
+                                // The product's OWN typed attributes (docs/143) — the auto-render floor, so a
+                                // typed product shows real fabric/care/specs on the DEFAULT page with no
+                                // bespoke authoring; an untyped product shows nothing.
+                                productAttributes(),
+                                // Shipping & returns — LINKS the site's real legal pages, never reprinted copy.
+                                productPolicyLinks(),
+                            ],
+                        }),
+                    ],
                 }),
-                // Honest low-stock signal (docs/143) — self-hides when stock is healthy.
-                productStockBadge(),
-                bind(
-                  el('div', 'text-base-content', { text: 'Product description.' }),
-                  'description'
-                ),
-                addToCartForm(),
-                // The product's OWN typed attributes (docs/143) — the auto-render floor, so a
-                // typed product shows real fabric/care/specs on the DEFAULT page with no
-                // bespoke authoring; an untyped product shows nothing.
-                productAttributes(),
-                // Shipping & returns — LINKS the site's real legal pages, never reprinted copy.
-                productPolicyLinks(),
-              ],
-            }),
-          ],
+            ],
         }),
-      ],
-    }),
-    'product'
-  );
+        'product'
+    );
 }
 
 /** The full product-detail PAGE body — the buy box above a "related" rail. This is
@@ -564,14 +564,14 @@ export function buyBox(): Node {
  *  page's record scope drives it. `featuredProducts` (a `commerce.product` repeat) is
  *  the cross-sell strip. */
 export function productDetailPage(): Node {
-  return el('div', 'flex flex-col', {
-    children: [
-      // `buyBox()` is a self-contained section now (its own padding + `max-w-5xl`), so the
-      // page simply stacks it above the cross-sell rail — no extra wrapper.
-      buyBox(),
-      featuredProducts(),
-    ],
-  });
+    return el('div', 'flex flex-col', {
+        children: [
+            // `buyBox()` is a self-contained section now (its own padding + `max-w-5xl`), so the
+            // page simply stacks it above the cross-sell rail — no extra wrapper.
+            buyBox(),
+            featuredProducts(),
+        ],
+    });
 }
 
 /** The full collection-detail PAGE body (docs/122 + docs/127 §8) — the `commerce.collection`
@@ -585,7 +585,7 @@ export function productDetailPage(): Node {
  *  heading — the core renders its own header. The route mounts `<CollectionDetail>` at the
  *  host node with the collection handle. */
 export function collectionDetailPage(): Node {
-  return functionalShell(HOST_KEYS.commerceCollectionDetail);
+    return functionalShell(HOST_KEYS.commerceCollectionDetail);
 }
 
 /** The full category-detail PAGE body (docs/122) — the `commerce.category` record
@@ -596,7 +596,7 @@ export function collectionDetailPage(): Node {
  *  tenant surrounds/restyles but can't delete. No shell heading — the core renders its own
  *  header. The route mounts `<CategoryDetail>` at the host node with the category handle. */
 export function categoryDetailPage(): Node {
-  return functionalShell(HOST_KEYS.commerceCategoryDetail);
+    return functionalShell(HOST_KEYS.commerceCategoryDetail);
 }
 
 /** A centered header band for a collection / category landing page. Binds its
@@ -617,32 +617,32 @@ export function categoryDetailPage(): Node {
  *  carry record binds, which is why this one is plain text the tenant edits in the
  *  studio rather than a bind that can fail to nothing. */
 export function shopHeader(): Node {
-  return el('section', 'bg-base-100 @container px-6 pt-12 pb-4', {
-    children: [
-      el('div', 'mx-auto w-full max-w-6xl', {
+    return el('section', 'bg-base-100 @container px-6 pt-12 pb-4', {
         children: [
-          el('h1', 'text-4xl font-bold tracking-tight text-base-content @2xl:text-5xl', {
-            text: 'Shop',
-          }),
-          el('p', 'mt-4 max-w-2xl text-lg leading-relaxed text-base-content', {
-            text: 'Everything we currently have available.',
-          }),
+            el('div', 'mx-auto w-full max-w-6xl', {
+                children: [
+                    el('h1', 'text-4xl font-bold tracking-tight text-base-content @2xl:text-5xl', {
+                        text: 'Shop',
+                    }),
+                    el('p', 'mt-4 max-w-2xl text-lg leading-relaxed text-base-content', {
+                        text: 'Everything we currently have available.',
+                    }),
+                ],
+            }),
         ],
-      }),
-    ],
-  });
+    });
 }
 
 export function collectionHeader(): Node {
-  return el('section', 'bg-base-100 @container px-6 py-12 text-center', {
-    children: [
-      bind(el('h1', 'text-4xl font-bold text-base-content', { text: 'Collection' }), 'title'),
-      bind(
-        el('p', 'mx-auto mt-3 max-w-2xl text-lg text-base-content', {
-          text: 'Collection description.',
-        }),
-        'description'
-      ),
-    ],
-  });
+    return el('section', 'bg-base-100 @container px-6 py-12 text-center', {
+        children: [
+            bind(el('h1', 'text-4xl font-bold text-base-content', { text: 'Collection' }), 'title'),
+            bind(
+                el('p', 'mx-auto mt-3 max-w-2xl text-lg text-base-content', {
+                    text: 'Collection description.',
+                }),
+                'description'
+            ),
+        ],
+    });
 }

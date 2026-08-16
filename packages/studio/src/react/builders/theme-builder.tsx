@@ -3,8 +3,8 @@
 // The theme builder — one pane, one theme document.
 //
 // A theme is tenant-wide and reusable across sites, so this pane is not editing
-// "this site's colours"; it is editing a thing the site WEARS. Every layout and
-// page pane open beside it resolves through the same store, so a colour change
+// "this site's colors"; it is editing a thing the site WEARS. Every layout and
+// page pane open beside it resolves through the same store, so a color change
 // here repaints those canvases as it is made — no save, no reload, no socket.
 //
 // The whole control set is driven by silica's own vocabulary (`SEMANTIC_ROLES`,
@@ -15,7 +15,7 @@
 // LIGHT AND DARK ARE EDITED SEPARATELY, and the switch says which you are on. A
 // theme's `dark` map is a delta the author wrote to escape the light value; a
 // control that wrote both would silently undo that the first time anyone nudged a
-// colour.
+// color.
 
 import { useCallback, useMemo, useState } from 'react';
 import {
@@ -45,7 +45,7 @@ import { ThemePreview } from './theme-preview';
 
 type Mode = 'light' | 'dark';
 
-/** One non-colour token, as the builder renders it. silica declares
+/** One non-color token, as the builder renders it. silica declares
  *  `SCALAR_TOKENS` as a tuple of literals — precise for a lookup, unusable for a
  *  list — so this is the shape they all share. */
 interface ScalarToken {
@@ -57,11 +57,11 @@ interface ScalarToken {
   options?: readonly { label: string; value: string }[];
 }
 
-/** Every colour a theme declares, in the order an author thinks about them. */
+/** Every color a theme declares, in the order an author thinks about them. */
 const COLOR_GROUPS: { label: string; tokens: string[]; hint: string }[] = [
   {
     label: 'Your brand',
-    hint: 'The colours people will recognise as yours.',
+    hint: 'The colors people will recognise as yours.',
     tokens: ['--color-primary', '--color-secondary', '--color-accent'],
   },
   {
@@ -76,14 +76,14 @@ const COLOR_GROUPS: { label: string; tokens: string[]; hint: string }[] = [
   },
   {
     label: 'Everything else',
-    hint: 'A quiet colour for things that are just there.',
+    hint: 'A quiet color for things that are just there.',
     tokens: ['--color-neutral'],
   },
 ];
 
 const TOKEN_LABELS: Record<string, string> = {
-  '--color-primary': 'Main colour',
-  '--color-secondary': 'Second colour',
+  '--color-primary': 'Main color',
+  '--color-secondary': 'Second color',
   '--color-accent': 'Highlight',
   '--color-neutral': 'Neutral',
   '--color-info': 'Information',
@@ -93,7 +93,7 @@ const TOKEN_LABELS: Record<string, string> = {
   '--color-base-100': 'Page background',
   '--color-base-200': 'Raised background',
   '--color-base-300': 'Sunken background',
-  '--color-base-content': 'Text colour',
+  '--color-base-content': 'Text color',
 };
 
 const SCALAR_GROUP_LABELS: Record<string, string> = {
@@ -177,7 +177,7 @@ export function ThemeBuilder({
 
           {mode === 'dark' ? (
             <p className="text-base-content bg-base-200 mb-4 rounded p-2 text-sm">
-              Anything you leave alone here uses its daytime colour.
+              Anything you leave alone here uses its daytime color.
             </p>
           ) : null}
 
@@ -268,12 +268,12 @@ export function ThemeBuilder({
 }
 
 /**
- * One colour, with the thing nobody checks by eye: whether text on it can be read.
+ * One color, with the thing nobody checks by eye: whether text on it can be read.
  *
  * silica derives each role's ink automatically, and `deriveContent` reports when
  * the best available answer still fails AA. Surfacing that here is the difference
- * between a theme editor and a colour picker — a mid-tone, high-chroma brand
- * colour has NO legible ink, and the author needs to know that while they are
+ * between a theme editor and a color picker — a mid-tone, high-chroma brand
+ * color has NO legible ink, and the author needs to know that while they are
  * choosing it rather than after a customer cannot read the button.
  */
 function ColorField({
@@ -320,7 +320,7 @@ function contrastWarning(
   }
 
   if (token.startsWith('--color-base-')) {
-    // Both sides have to parse before there is anything to measure. A colour the
+    // Both sides have to parse before there is anything to measure. A color the
     // author is halfway through typing is not a contrast failure.
     const background = parseColor(value);
     const foreground = ink ? parseColor(ink) : undefined;
@@ -335,5 +335,5 @@ function contrastWarning(
   if (!derived) return undefined;
   return derived.passesAA
     ? undefined
-    : 'No black or white text reads clearly on this colour. Try making it darker or lighter.';
+    : 'No black or white text reads clearly on this color. Try making it darker or lighter.';
 }

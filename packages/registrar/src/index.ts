@@ -182,10 +182,30 @@ export const DEFAULT_TLDS = [
 // SPF permerror that fails authentication outright. The old SPF/DKIM/DMARC/MX
 // set here pointed at decommissioned Postal infra.
 
-/** The canonical sparx WEB DNS record set for a purchased domain (docs/24 §3). */
-export function buildSparxDnsRecords(): DnsRecord[] {
+/**
+ * The canonical WEB DNS record set for a purchased domain (docs/24 §3).
+ *
+ * `zoneDomain` is the TENANT's zone — this is what a customer is told to point
+ * their own domain at, and it must wear their brand's name, not another
+ * company's. Both records were the literal `customers.sparx.zone`, so a Piggles
+ * customer buying a domain had it pointed at sparx's ingress. Same address
+ * either way, which is exactly why nothing broke and nobody noticed.
+ *
+ * Absent → the deployment's default zone, which is right for the brand that
+ * deployment was set up for and is all there was before there were two.
+ */
+export function buildSparxDnsRecords(zoneDomain?: string | null): DnsRecord[] {
+  const target = `customers.${zoneDomain?.trim() || DEFAULT_ZONE_DOMAIN}`;
   return [
-    { type: 'CNAME', name: '@', data: 'customers.sparx.zone', ttl: 600 },
-    { type: 'CNAME', name: 'www', data: 'customers.sparx.zone', ttl: 600 },
+    { type: 'CNAME', name: '@', data: target, ttl: 600 },
+    { type: 'CNAME', name: 'www', data: target, ttl: 600 },
   ];
 }
+
+/** The zone this deployment mints subdomains in when no brand says otherwise.
+ *  The FIRST entry of `SPARX_ZONE_DOMAINS`, matching services/api-rest's own
+ *  reading of it, so the two cannot drift. */
+const DEFAULT_ZONE_DOMAIN =
+  (process.env.SPARX_ZONE_DOMAINS ?? process.env.SPARX_ZONE_DOMAIN ?? 'sparx.zone')
+    .split(',')[0]
+    ?.trim() || 'sparx.zone';

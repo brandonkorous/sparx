@@ -1,12 +1,17 @@
 import type { AttributionSnapshot } from '@sparx/attribution';
 import type { Prisma } from '@prisma/client';
+import { currentPlatformBrand, platformBrandIdentity } from '@wizeworks/brand-core';
 import { randomFriendlySlug } from './friendly-slug';
 
 // Tenant provisioning shared by every account-creation path: email/password
 // sign-up (signUpMerchant) and — once wired — the Google OAuth user-creation
 // hook. Keeping it here means there is ONE place that knows a tenant is born
-// with a primary property + its `<slug>.sparx.zone` subdomain, so both paths
+// with a primary property + its free `<slug>.<zone>` subdomain, so both paths
 // stay in lockstep and the onboarding wizard always has a tenant to refine.
+//
+// Which zone, and which brand, are resolved in that order: what the caller
+// passed, then what the brand publishes, then the deployment default. Both used
+// to end at a literal naming one brand.
 
 /** First-party acquisition attribution read at signup (docs/80 §6.1 / L-PLAT). */
 export interface SignUpAcquisition {
@@ -124,7 +129,11 @@ export async function provisionTenant(
       email: input.email,
       subscriptionStatus: 'trialing',
       trialEndsAt,
-      platformBrand: input.platformBrand ?? 'sparx',
+      // Falls back to the brand THIS PROCESS serves, not to a literal. Each
+      // brand's account app is its own deployment, so a signup that names no
+      // brand belongs to whichever one took it — and a Google signup cannot
+      // name one, because the hook runs before the tenant exists to carry it.
+      platformBrand: input.platformBrand ?? currentPlatformBrand(),
       // Attribution (docs/80 §8.3) — written once. Denormalized channel/source/
       // campaign drive the acquisition report; the full snapshots ride along for
       // model recompute.
@@ -161,7 +170,15 @@ export async function provisionTenant(
       isPrimary: true,
     },
   });
-  const zone = input.zoneDomain ?? process.env.SPARX_ZONE_DOMAIN ?? 'sparx.zone';
+  // The caller's zone, else the brand's own, else the deployment default. The
+  // literal used to be the last word, so a Piggles tenant provisioned by any
+  // path that did not pass `zoneDomain` — Google signup, an invited owner — got
+  // a site on another company's domain.
+  const zone =
+    input.zoneDomain ??
+    platformBrandIdentity(input.platformBrand ?? currentPlatformBrand()).zoneDomain ??
+    process.env.SPARX_ZONE_DOMAIN ??
+    'sparx.zone';
   await tx.domain.create({
     data: {
       tenantId: tenant.id,

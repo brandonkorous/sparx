@@ -19,6 +19,7 @@ import { PaneWaiting } from '../../components/pane-waiting';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import { useStudioBinding } from '../../lib/studio/provider';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
+import { OpenHistory, OpenPreview } from './open-history';
 import { PiecesList } from './pieces-list';
 import { usePieceDocument, type PieceDocumentState } from './use-piece-document';
 
@@ -55,15 +56,17 @@ export function PiecePaneSurface({ ctx }: { ctx: SurfaceContext }) {
 
   return (
     <DocumentProvider store={state.store}>
-      <PiecePaneBody state={state} onTitle={(title) => ctx.setTitle(title)} />
+      <PiecePaneBody ctx={ctx} state={state} onTitle={(title) => ctx.setTitle(title)} />
     </DocumentProvider>
   );
 }
 
 function PiecePaneBody({
+  ctx,
   state,
   onTitle,
 }: {
+  ctx: SurfaceContext;
   state: PieceDocumentState;
   onTitle: (title: string) => void;
 }) {
@@ -79,6 +82,8 @@ function PiecePaneBody({
     <TreeBuilder
       toolbar={
         <>
+          <OpenPreview ctx={ctx} />
+          <OpenHistory ctx={ctx} />
           {/* Where the master lives is a real consequence, not a label: editing a
               shared piece changes it on every site this business owns. */}
           <Badge color={state.shared ? 'info' : 'primary'} variant="soft">

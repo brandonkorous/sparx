@@ -58,8 +58,15 @@ export function InsteadOf() {
         </ul>
 
         {/* The one calm object, against ten of theirs. Navy rather than the
-              brand pink: the section above this one is a full pink band. */}
-        <div className="bg-secondary text-secondary-content rounded-box flex flex-col justify-center p-8 text-center sm:p-10">
+              brand pink: the section above this one is a full pink band.
+
+              A theme ISLAND, not `bg-secondary` — that token is dark only in the
+              light theme (#d7dbe3 in dark), so with a theme toggle on the site
+              this panel turned pale under a 9xl pink $49. */}
+        <div
+          data-theme="dark"
+          className="bg-base-200 rounded-box flex flex-col justify-center p-8 text-center sm:p-10"
+        >
           <p className="text-xl font-bold sm:text-2xl">All of it, replaced, for</p>
           <p className="font-heading text-primary text-8xl leading-none font-black lg:text-9xl">
             $49

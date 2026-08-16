@@ -1,6 +1,6 @@
 # Piggles builders — tasks
 
-**Version:** 1.3
+**Version:** 1.4
 **Author:** Brandon Korous
 **Last Updated:** 2026-08-16
 
@@ -86,7 +86,7 @@ still unproven is how it FEELS in a browser, which is task 9.4.
 
 - [x] 3.1 Pane shell + registry entry (`builder.theme`, "Look & feel"), and the
       session provider it binds to, mounted ABOVE the dock in both shells
-- [x] 3.2 Token editing — every colour, radius, control-size, depth, focus and
+- [x] 3.2 Token editing — every color, radius, control-size, depth, focus and
       motion token silica declares, driven off `SEMANTIC_ROLES` / `SURFACE_TOKENS`
       / `SCALAR_TOKENS` rather than a hand-written list, with live contrast
       warnings and a real-component preview
@@ -212,12 +212,44 @@ still unproven is how it FEELS in a browser, which is task 9.4.
 
 ## Phase 7 — email builder pane
 
-- [ ] 7.1 Own session; `EmailDoc` + its op set
-- [ ] 7.2 Canvas, palette, inspector for the email node vocabulary
-- [ ] 7.3 Subject + preheader as document fields
-- [ ] 7.4 Merge tags resolving against sample data on canvas, incl. `?? fallback`
-- [ ] 7.5 Save · publish · history per email
-- [ ] 7.6 Email switcher — one pane per email, opened from the list
+- [x] 7.1 Own session document, own undo, own op set. `EmailTreeOp` is a SEPARATE
+      union from `TreeOp`, not a dialect of one: an email node has no class, no tag
+      and no attributes, and its children arrays are typed per kind — so one
+      `email.patch` covers every visual decision, and its inverse is the previous
+      value of exactly the keys it wrote. `isEmailTreeOp` is a listed set rather
+      than a prefix match, because `email.setSubject` is a FIELD op sharing the
+      prefix and routing it into the tree applier would silently stop renames working
+- [x] 7.1b Structure is adjudicated by silica's own `canHold`, never a second local
+      answer. Drops CLIMB (`resolveEmailDrop`): in a closed vocabulary half the
+      aimed drops are illegal, so a drag that ends with nothing happening reads as a
+      broken editor rather than as a rule. A band aimed at a line of copy lands
+      above that line's section
+- [x] 7.2 Canvas, palette, layers and inspector for the whole email vocabulary — all
+      thirteen kinds, every field on each. Authored values reach the canvas as a
+      real stylesheet scoped by attribute, never a `style` prop. `lineHeight` is a
+      PX count (the projector emits it as one); written unitless a 16px line draws
+      24 lines tall
+- [x] 7.3 Subject + preheader are DOCUMENT fields, edited in the Inspector with
+      nothing selected — so changing the subject marks the pane unsaved, undoes with
+      ⌘Z, and saves with the words. The email's own name is there too
+- [x] 7.4 Merge tags resolve on canvas against EMAIL sample data, through the
+      platform's own evaluator — the same one the send uses, so `?? "there"` reads
+      the same on screen as in the inbox. Its own host seam (`emailPreview`), never
+      the site canvas's: on an email `customer.firstName` means the recipient, and
+      resolving it against the site's preview root prints a plausible WRONG name.
+      An unrecognised tag stays exactly as authored — blanking it would make a typo
+      look like a value that happened to be empty
+- [x] 7.5 Save · publish per email. Publish saves first: publishing a draft the
+      server has not seen would send the PREVIOUS email and report success. History
+      is Phase 8.2, like every other document's
+- [x] 7.6 One pane per email, opened from the list, with open-alongside per row.
+      Delete (behind `useConfirm`, and it says when the email is live) and
+      make-this-site's-own are on the ROW, not in the pane: both are decisions about
+      the catalog, not things you do while designing
+- [x] 7.7 The picture browser reaches the studio at last — `pickAsset` is wired on
+      the host, so every image field in EVERY builder offers the business's own
+      library instead of asking for a web address. It was only ever wired into the
+      old email editor; the site builder's image field had been a bare URL box
 
 ## Phase 8 — lifecycle panes
 
@@ -239,7 +271,7 @@ still unproven is how it FEELS in a browser, which is task 9.4.
       brand-derived fallback theme), `host-cores.tsx` (what a live region looks like
       on a canvas), `preview-data.ts` (the sample-data root), and the query hooks in
       `data.ts` that the studio reuses. They MOVE to `lib/studio/`. Deleting the
-      directory wholesale would take the canvas's colours, its brand mark and its
+      directory wholesale would take the canvas's colors, its brand mark and its
       sample data with it
 - [ ] 9.3 Every new file inside piggles RULE #0.5 — no file over 250 lines, no
       method over 50

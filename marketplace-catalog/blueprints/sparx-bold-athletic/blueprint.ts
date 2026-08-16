@@ -14,69 +14,69 @@ import assets from './assets.json' with { type: 'json' };
 import emails from './emails.json' with { type: 'json' };
 
 const blueprint = {
-  key: 'sparx-bold-athletic',
-  version: '1.4.0',
-  name: 'sparx — Bold Athletic',
-  summary:
-    'A bold-athletic DTC storefront for a performance apparel label — a confident full-bleed hero over a drop-culture rhythm of shoppable carousels, a signature power-tiles grid and a ride-shot strip, in a dark mono `velodrome` theme with one hi-vis accent. Modelled on the bold-athletic DTC archetype; shipped as Threshold, an endurance cycling-apparel label.',
-  vertical: 'retail',
-  preview: 'media/preview.png',
-  requiresModules: ['builder', 'commerce', 'cms', 'crm', 'email'],
+    key: 'sparx-bold-athletic',
+    version: '1.4.0',
+    name: 'sparx — Bold Athletic',
+    summary:
+        'A bold-athletic DTC storefront for a performance apparel label — a confident full-bleed hero over a drop-culture rhythm of shoppable carousels, a signature power-tiles grid and a ride-shot strip, in a dark mono `velodrome` theme with one hi-vis accent. Modelled on the bold-athletic DTC archetype; shipped as Threshold, an endurance cycling-apparel label.',
+    vertical: 'retail',
+    preview: 'media/preview.png',
+    requiresModules: ['builder', 'commerce', 'cms', 'crm', 'email'],
 
-  // Identity only (business name + tagline + fonts + the theme's hex colours). The look
-  // itself rides site.theme + the theme decl below; the installing tenant rebrands the name.
-  brand: {
-    businessName: 'Threshold',
-    tagline: 'Kit built for the long road.',
-    colors: {
-      primary: '#101114',
-      primaryForeground: '#f7f8fd',
-      accent: '#cdf450',
-      secondary: '#4b4d53',
-    },
-    fonts: {
-      heading: 'Oswald',
-      body: 'Inter',
-    },
-  },
-
-  // The provisioned SiteTheme the installer creates + applies — the bespoke template
-  // look as a tenant-editable saved theme (base preset = the template's own theme key,
-  // plus its brand snapshot).
-  theme: {
-    name: 'bold-athletic',
-    basePresetKey: 'bold-athletic',
-    presentation: {
-      v: 2,
-      containerWidth: '1152px',
-    },
+    // Identity only (business name + tagline + fonts + the theme's hex colors). The look
+    // itself rides site.theme + the theme decl below; the installing tenant rebrands the name.
     brand: {
-      colorPrimary: '#101114',
-      colorAccent: '#cdf450',
-      colorSecondary: '#4b4d53',
-      fontHeading: 'Oswald',
-      fontBody: 'Inter',
-      tokens: {},
+        businessName: 'Threshold',
+        tagline: 'Kit built for the long road.',
+        colors: {
+            primary: '#101114',
+            primaryForeground: '#f7f8fd',
+            accent: '#cdf450',
+            secondary: '#4b4d53',
+        },
+        fonts: {
+            heading: 'Oswald',
+            body: 'Inter',
+        },
     },
-    apply: true,
-  },
 
-  assets,
-  contentTypes: [],
-  authors,
-  content,
-  commerce,
+    // The provisioned SiteTheme the installer creates + applies — the bespoke template
+    // look as a tenant-editable saved theme (base preset = the template's own theme key,
+    // plus its brand snapshot).
+    theme: {
+        name: 'bold-athletic',
+        basePresetKey: 'bold-athletic',
+        presentation: {
+            v: 2,
+            containerWidth: '1152px',
+        },
+        brand: {
+            colorPrimary: '#101114',
+            colorAccent: '#cdf450',
+            colorSecondary: '#4b4d53',
+            fontHeading: 'Oswald',
+            fontBody: 'Inter',
+            tokens: {},
+        },
+        apply: true,
+    },
 
-  // A shop's brand-voiced MARKETING starters (a welcome + a win-back), tokenized so a fork
-  // re-themes to the tenant and installed as DRAFTS — the platform's keyed transactional
-  // defaults (order/shipping/dunning) are separate and never duplicated here. Content
-  // templates ship an empty set.
-  emails,
-  sequences: [],
+    assets,
+    contentTypes: [],
+    authors,
+    content,
+    commerce,
 
-  // The composed distinct site (frame + a template-specific home + standard commerce/
-  // cms/about/contact pages + the /journal index), in the bespoke theme, fully stamped.
-  site,
+    // A shop's brand-voiced MARKETING starters (a welcome + a win-back), tokenized so a fork
+    // re-themes to the tenant and installed as DRAFTS — the platform's keyed transactional
+    // defaults (order/shipping/dunning) are separate and never duplicated here. Content
+    // templates ship an empty set.
+    emails,
+    sequences: [],
+
+    // The composed distinct site (frame + a template-specific home + standard commerce/
+    // cms/about/contact pages + the /journal index), in the bespoke theme, fully stamped.
+    site,
 };
 
 export default blueprint;

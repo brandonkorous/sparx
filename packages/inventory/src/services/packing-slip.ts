@@ -2,7 +2,7 @@
 //
 // Same build path as `purchase-order-document.ts`: a pure renderer plus a
 // tenant-scoped loader, producing a self-contained print-styled HTML sheet with
-// concrete colour and font values so the artifact opens anywhere, including on a
+// concrete color and font values so the artifact opens anywhere, including on a
 // bench PC that has never heard of our stylesheet. The house rules about tokens
 // and silicaui govern SCREENS; this is a print artefact and a browser printing it
 // resolves no CSS variables of ours.
@@ -30,118 +30,117 @@ import type { ServiceContext } from '../errors';
 // ─── Render data ───────────────────────────────────────────────────────────────
 
 export interface PackingSlipBrand {
-  businessName?: string;
-  addressLines?: string[];
-  logoUrl?: string;
-  primary?: string;
-  foreground?: string;
-  muted?: string;
-  border?: string;
-  fontHeading?: string;
-  fontBody?: string;
-  /** Printed at the foot — returns policy, a thank-you, a support address. */
-  footerNote?: string;
+    businessName?: string;
+    addressLines?: string[];
+    logoUrl?: string;
+    primary?: string;
+    foreground?: string;
+    muted?: string;
+    border?: string;
+    fontHeading?: string;
+    fontBody?: string;
+    /** Printed at the foot — returns policy, a thank-you, a support address. */
+    footerNote?: string;
 }
 
 export interface PackingSlipLine {
-  description: string;
-  sku: string | null;
-  quantity: number;
-  /** True when every unit in the box was confirmed by a scan. */
-  verified: boolean;
+    description: string;
+    sku: string | null;
+    quantity: number;
+    /** True when every unit in the box was confirmed by a scan. */
+    verified: boolean;
 }
 
 export interface PackingSlipData {
-  packageNumber: string;
-  orderNumber: string;
-  orderedAt: string | null;
-  packedAt: string | null;
-  /** "Box 2 of 3" — omitted when there is only one. */
-  boxIndex: number;
-  boxCount: number;
-  shipTo: { name: string; lines: string[] };
-  customerNote: string | null;
-  lines: PackingSlipLine[];
-  /** Ordered but in another box, or not yet packed at all. */
-  toFollow: { description: string; sku: string | null; quantity: number }[];
-  weightGrams: number | null;
+    packageNumber: string;
+    orderNumber: string;
+    orderedAt: string | null;
+    packedAt: string | null;
+    /** "Box 2 of 3" — omitted when there is only one. */
+    boxIndex: number;
+    boxCount: number;
+    shipTo: { name: string; lines: string[] };
+    customerNote: string | null;
+    lines: PackingSlipLine[];
+    /** Ordered but in another box, or not yet packed at all. */
+    toFollow: { description: string; sku: string | null; quantity: number }[];
+    weightGrams: number | null;
 }
 
 const DEFAULT_BRAND = {
-  businessName: 'Packing slip',
-  primary: '#0F766E',
-  foreground: '#111827',
-  muted: '#F3F4F6',
-  border: '#E5E7EB',
-  fontHeading: "'Geist', system-ui, -apple-system, Segoe UI, sans-serif",
-  fontBody: "'Geist', system-ui, -apple-system, Segoe UI, sans-serif",
+    businessName: 'Packing slip',
+    primary: '#0F766E',
+    foreground: '#111827',
+    muted: '#F3F4F6',
+    border: '#E5E7EB',
+    fontHeading: "'Geist', system-ui, -apple-system, Segoe UI, sans-serif",
+    fontBody: "'Geist', system-ui, -apple-system, Segoe UI, sans-serif",
 };
 
 // ─── Formatting ────────────────────────────────────────────────────────────────
 
 function escapeHtml(value: string): string {
-  return value
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#39;');
+    return value
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
 }
 
 const esc = escapeHtml;
 
 function formatDate(iso: string | null): string {
-  if (!iso) return '';
-  const d = new Date(iso);
-  if (Number.isNaN(d.getTime())) return '';
-  return d.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+    if (!iso) return '';
+    const d = new Date(iso);
+    if (Number.isNaN(d.getTime())) return '';
+    return d.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
 }
 
 /** The first candidate that actually says something. */
 function firstNonEmpty(...values: (string | null | undefined)[]): string | null {
-  for (const value of values) {
-    const trimmed = value?.trim();
-    if (trimmed) return trimmed;
-  }
-  return null;
+    for (const value of values) {
+        const trimmed = value?.trim();
+        if (trimmed) return trimmed;
+    }
+    return null;
 }
 
 function formatWeight(grams: number | null): string {
-  if (grams === null || grams <= 0) return '';
-  if (grams < 1000) return `${grams} g`;
-  return `${(grams / 1000).toFixed(2)} kg`;
+    if (grams === null || grams <= 0) return '';
+    if (grams < 1000) return `${grams} g`;
+    return `${(grams / 1000).toFixed(2)} kg`;
 }
 
 // ─── Renderer (pure) ───────────────────────────────────────────────────────────
 
 export function renderPackingSlipHtml(data: PackingSlipData, brand: PackingSlipBrand = {}): string {
-  const b = { ...DEFAULT_BRAND, ...brand };
+    const b = { ...DEFAULT_BRAND, ...brand };
 
-  const meta: string[] = [
-    `<div><span>Order</span><strong>${esc(data.orderNumber)}</strong></div>`,
-    `<div><span>Box</span>${esc(data.packageNumber)}</div>`,
-  ];
-  if (data.boxCount > 1) {
-    meta.push(`<div><span>Of</span>Box ${data.boxIndex} of ${data.boxCount}</div>`);
-  }
-  if (data.orderedAt)
-    meta.push(`<div><span>Ordered</span>${esc(formatDate(data.orderedAt))}</div>`);
-  if (data.packedAt) meta.push(`<div><span>Packed</span>${esc(formatDate(data.packedAt))}</div>`);
-  const weight = formatWeight(data.weightGrams);
-  if (weight) meta.push(`<div><span>Weight</span>${esc(weight)}</div>`);
+    const meta: string[] = [
+        `<div><span>Order</span><strong>${esc(data.orderNumber)}</strong></div>`,
+        `<div><span>Box</span>${esc(data.packageNumber)}</div>`,
+    ];
+    if (data.boxCount > 1) {
+        meta.push(`<div><span>Of</span>Box ${data.boxIndex} of ${data.boxCount}</div>`);
+    }
+    if (data.orderedAt)
+        meta.push(`<div><span>Ordered</span>${esc(formatDate(data.orderedAt))}</div>`);
+    if (data.packedAt) meta.push(`<div><span>Packed</span>${esc(formatDate(data.packedAt))}</div>`);
+    const weight = formatWeight(data.weightGrams);
+    if (weight) meta.push(`<div><span>Weight</span>${esc(weight)}</div>`);
 
-  const body = `
+    const body = `
     <header class="masthead">
       <div class="seller">
-        ${
-          b.logoUrl
+        ${b.logoUrl
             ? `<img class="logo" src="${esc(b.logoUrl)}" alt="${esc(b.businessName)}" />`
             : `<div class="logo-wordmark">${esc(b.businessName)}</div>`
         }
         ${(b.addressLines ?? [])
-          .filter((l) => l.trim().length > 0)
-          .map((l) => `<div>${esc(l)}</div>`)
-          .join('')}
+            .filter((l) => l.trim().length > 0)
+            .map((l) => `<div>${esc(l)}</div>`)
+            .join('')}
       </div>
       <div class="doc-head">
         <div class="doc-title">Packing slip</div>
@@ -153,22 +152,21 @@ export function renderPackingSlipHtml(data: PackingSlipData, brand: PackingSlipB
         <div class="party-heading">Deliver to</div>
         ${data.shipTo.name ? `<div class="party-name">${esc(data.shipTo.name)}</div>` : ''}
         ${data.shipTo.lines
-          .filter((l) => l.trim().length > 0)
-          .map((l) => `<div>${esc(l)}</div>`)
-          .join('')}
+            .filter((l) => l.trim().length > 0)
+            .map((l) => `<div>${esc(l)}</div>`)
+            .join('')}
       </div>
     </div>
     ${lineTable(data)}
     ${toFollowTable(data)}
-    ${
-      data.customerNote
-        ? `<section class="notes"><h2>Note</h2><p>${esc(data.customerNote)}</p></section>`
-        : ''
-    }
+    ${data.customerNote
+            ? `<section class="notes"><h2>Note</h2><p>${esc(data.customerNote)}</p></section>`
+            : ''
+        }
     ${b.footerNote ? `<section class="notes"><p>${esc(b.footerNote)}</p></section>` : ''}
     <div class="footer">${esc(b.businessName)} &middot; ${esc(data.orderNumber)}</div>`;
 
-  return `<!DOCTYPE html>
+    return `<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="utf-8" />
@@ -181,12 +179,12 @@ export function renderPackingSlipHtml(data: PackingSlipData, brand: PackingSlipB
 }
 
 function lineTable(data: PackingSlipData): string {
-  const rows =
-    data.lines.length === 0
-      ? `<tr><td class="empty" colspan="3">Nothing in this box.</td></tr>`
-      : data.lines
-          .map(
-            (l) => `<tr>
+    const rows =
+        data.lines.length === 0
+            ? `<tr><td class="empty" colspan="3">Nothing in this box.</td></tr>`
+            : data.lines
+                .map(
+                    (l) => `<tr>
               <td class="num">${l.quantity}</td>
               <td>
                 <div class="line-desc">${esc(l.description)}</div>
@@ -194,9 +192,9 @@ function lineTable(data: PackingSlipData): string {
               </td>
               <td class="check">${l.verified ? '&#10003;' : ''}</td>
             </tr>`
-          )
-          .join('');
-  return `<table class="lines">
+                )
+                .join('');
+    return `<table class="lines">
     <thead><tr>
       <th class="num">Qty</th><th>Item</th><th class="check" title="Scanned at the bench">&#10003;</th>
     </tr></thead>
@@ -206,26 +204,26 @@ function lineTable(data: PackingSlipData): string {
 
 /** What is not in this box. Four lines of paper that prevent a support ticket. */
 function toFollowTable(data: PackingSlipData): string {
-  if (data.toFollow.length === 0) return '';
-  const rows = data.toFollow
-    .map(
-      (l) => `<tr>
+    if (data.toFollow.length === 0) return '';
+    const rows = data.toFollow
+        .map(
+            (l) => `<tr>
         <td class="num">${l.quantity}</td>
         <td>
           <div class="line-desc">${esc(l.description)}</div>
           ${l.sku ? `<span class="line-sku">${esc(l.sku)}</span>` : ''}
         </td>
       </tr>`
-    )
-    .join('');
-  return `<section class="follow">
+        )
+        .join('');
+    return `<section class="follow">
     <h2>Also in this order — sent separately</h2>
     <table class="lines"><tbody>${rows}</tbody></table>
   </section>`;
 }
 
 function styles(b: typeof DEFAULT_BRAND & PackingSlipBrand): string {
-  return `
+    return `
   :root { color-scheme: light; }
   * { box-sizing: border-box; }
   body { margin: 0; padding: 32px; font-family: ${b.fontBody}; font-size: 14px;
@@ -276,77 +274,77 @@ function styles(b: typeof DEFAULT_BRAND & PackingSlipBrand): string {
 // ─── Loader (tenant-scoped) ────────────────────────────────────────────────────
 
 export async function buildPackingSlipHtml(
-  ctx: ServiceContext,
-  packageId: string,
-  brand: PackingSlipBrand = {}
+    ctx: ServiceContext,
+    packageId: string,
+    brand: PackingSlipBrand = {}
 ): Promise<string> {
-  const data = await withTenant(ctx, (tx) => loadPackingSlipData(tx, ctx.tenantId, packageId));
-  return renderPackingSlipHtml(data, brand);
+    const data = await withTenant(ctx, (tx) => loadPackingSlipData(tx, ctx.tenantId, packageId));
+    return renderPackingSlipHtml(data, brand);
 }
 
 interface AddressSnapshot {
-  name?: string;
-  firstName?: string;
-  lastName?: string;
-  company?: string;
-  line1?: string;
-  line2?: string;
-  city?: string;
-  region?: string;
-  postalCode?: string;
-  country?: string;
-  phone?: string;
+    name?: string;
+    firstName?: string;
+    lastName?: string;
+    company?: string;
+    line1?: string;
+    line2?: string;
+    city?: string;
+    region?: string;
+    postalCode?: string;
+    country?: string;
+    phone?: string;
 }
 
 async function loadPackingSlipData(
-  tx: TxClient,
-  tenantId: string,
-  packageId: string
+    tx: TxClient,
+    tenantId: string,
+    packageId: string
 ): Promise<PackingSlipData> {
-  const box = await tx.shipmentPackage.findFirst({
-    where: { id: packageId, tenantId },
-    select: {
-      id: true,
-      number: true,
-      orderId: true,
-      packedAt: true,
-      weightGrams: true,
-      createdAt: true,
-    },
-  });
-  if (!box) throw new InventoryNotFoundError('ShipmentPackage', packageId);
+    const box = await tx.shipmentPackage.findFirst({
+        where: { id: packageId, tenantId },
+        select: {
+            id: true,
+            number: true,
+            orderId: true,
+            packedAt: true,
+            weightGrams: true,
+            createdAt: true,
+        },
+    });
+    if (!box) throw new InventoryNotFoundError('ShipmentPackage', packageId);
 
-  const order = await tx.order.findFirst({
-    where: { id: box.orderId },
-    select: {
-      orderNumber: true,
-      placedAt: true,
-      shippingAddress: true,
-      customerNote: true,
-      // `companyName` is the SCALAR on Customer; `company` is the relation to the
-      // Company row and selecting it would hand a whole object to a string field.
-      customer: { select: { firstName: true, lastName: true, companyName: true } },
-    },
-  });
-  if (!order) throw new InventoryNotFoundError('Order', box.orderId);
+    const order = await tx.order.findFirst({
+        where: { id: box.orderId },
+        select: {
+            orderNumber: true,
+            placedAt: true,
+            shippingAddress: true,
+            customerNote: true,
+            // `companyName` is the SCALAR on Customer; `company` is the relation to the
+            // Company row and selecting it would hand a whole object to a string field.
+            customer: { select: { firstName: true, lastName: true, companyName: true } },
+        },
+    });
+    if (!order) throw new InventoryNotFoundError('Order', box.orderId);
 
-  const siblings = await tx.shipmentPackage.findMany({
-    where: { orderId: box.orderId, tenantId, status: { not: 'cancelled' } },
-    orderBy: { createdAt: 'asc' },
-    select: { id: true },
-  });
-  const boxIndex = Math.max(1, siblings.findIndex((s) => s.id === packageId) + 1);
+    const siblings = await tx.shipmentPackage.findMany({
+        where: { orderId: box.orderId, tenantId, status: { not: 'cancelled' } },
+        orderBy: { createdAt: 'asc' },
+        select: { id: true },
+    });
+    const boxIndex = Math.max(1, siblings.findIndex((s) => s.id === packageId) + 1);
 
-  const rows = await tx.$queryRaw<
-    {
-      description: string;
-      sku: string | null;
-      inThisBox: number;
-      scanned: number;
-      ordered: number;
-      packedElsewhere: number;
-    }[]
-  >`
+    const rows = await tx.$queryRaw<
+        {
+            description: string;
+            sku: string | null;
+            inThisBox: number;
+            scanned: number;
+            ordered: number;
+            packedElsewhere: number;
+        }[]
+    >`
     SELECT oi.name                           AS "description",
            NULLIF(oi.sku, '')                AS "sku",
            COALESCE(mine.quantity, 0)        AS "inThisBox",
@@ -369,53 +367,53 @@ async function loadPackingSlipData(
      ORDER BY oi.created_at ASC
   `;
 
-  const address = (order.shippingAddress ?? null) as AddressSnapshot | null;
-  // The snapshot on the order wins over the customer record: the address block on
-  // a box has to say who the box was addressed to at the time, not who the
-  // customer has since become. `??` is not enough — the snapshot's name fields are
-  // routinely PRESENT and empty — so each candidate is tested for content.
-  const recipient =
-    firstNonEmpty(
-      address?.name,
-      [address?.firstName, address?.lastName].filter(Boolean).join(' '),
-      [order.customer?.firstName, order.customer?.lastName].filter(Boolean).join(' '),
-      order.customer?.companyName
-    ) ?? '';
+    const address = (order.shippingAddress ?? null) as AddressSnapshot | null;
+    // The snapshot on the order wins over the customer record: the address block on
+    // a box has to say who the box was addressed to at the time, not who the
+    // customer has since become. `??` is not enough — the snapshot's name fields are
+    // routinely PRESENT and empty — so each candidate is tested for content.
+    const recipient =
+        firstNonEmpty(
+            address?.name,
+            [address?.firstName, address?.lastName].filter(Boolean).join(' '),
+            [order.customer?.firstName, order.customer?.lastName].filter(Boolean).join(' '),
+            order.customer?.companyName
+        ) ?? '';
 
-  return {
-    packageNumber: box.number,
-    orderNumber: order.orderNumber,
-    orderedAt: order.placedAt?.toISOString() ?? null,
-    packedAt: box.packedAt?.toISOString() ?? null,
-    boxIndex,
-    boxCount: Math.max(1, siblings.length),
-    shipTo: {
-      name: recipient,
-      lines: [
-        address?.company ?? '',
-        address?.line1 ?? '',
-        address?.line2 ?? '',
-        [address?.city, address?.region, address?.postalCode].filter(Boolean).join(', '),
-        address?.country ?? '',
-        address?.phone ?? '',
-      ],
-    },
-    customerNote: order.customerNote,
-    lines: rows
-      .filter((r) => r.inThisBox > 0)
-      .map((r) => ({
-        description: r.description,
-        sku: r.sku,
-        quantity: r.inThisBox,
-        verified: r.scanned >= r.inThisBox,
-      })),
-    toFollow: rows
-      .map((r) => ({
-        description: r.description,
-        sku: r.sku,
-        quantity: r.ordered - r.packedElsewhere - r.inThisBox,
-      }))
-      .filter((r) => r.quantity > 0),
-    weightGrams: box.weightGrams,
-  };
+    return {
+        packageNumber: box.number,
+        orderNumber: order.orderNumber,
+        orderedAt: order.placedAt?.toISOString() ?? null,
+        packedAt: box.packedAt?.toISOString() ?? null,
+        boxIndex,
+        boxCount: Math.max(1, siblings.length),
+        shipTo: {
+            name: recipient,
+            lines: [
+                address?.company ?? '',
+                address?.line1 ?? '',
+                address?.line2 ?? '',
+                [address?.city, address?.region, address?.postalCode].filter(Boolean).join(', '),
+                address?.country ?? '',
+                address?.phone ?? '',
+            ],
+        },
+        customerNote: order.customerNote,
+        lines: rows
+            .filter((r) => r.inThisBox > 0)
+            .map((r) => ({
+                description: r.description,
+                sku: r.sku,
+                quantity: r.inThisBox,
+                verified: r.scanned >= r.inThisBox,
+            })),
+        toFollow: rows
+            .map((r) => ({
+                description: r.description,
+                sku: r.sku,
+                quantity: r.ordered - r.packedElsewhere - r.inThisBox,
+            }))
+            .filter((r) => r.quantity > 0),
+        weightGrams: box.weightGrams,
+    };
 }

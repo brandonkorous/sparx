@@ -10,7 +10,7 @@
    plugin emits silica's semantic component classes (`.btn`, `.card`, `.navbar`,
    `.badge`, the universal `soft` treatment, …) that a published silica page/frame
    wears, reading the per-tenant `--color-*` theme the layout injects (docs/118 §1.0).
-   That theme is now the ONLY source of tenant colour — the parallel `--st-*` bridge
+   That theme is now the ONLY source of tenant color — the parallel `--st-*` bridge
    this file used to declare is retired (docs/implementation/st-token-retirement.md).
    `highlight` = sparx's Nth attention hue; `error` = silica's built-in status name
    (paired with `danger`, which is what sparx's `statusTone()` emits). */
@@ -75,11 +75,11 @@
    An unlayered `:root` block re-asserted the whole brand+base set onto `--st-*`,
    added because `@sparx/ui/tokens.css` once set the dashboard brand `--color-*` in
    an unlayered `:root` that beat the layered `@theme`. The silicaui migration
-   removed the colour half of that file (it now only READS `--color-module*`), so the
+   removed the color half of that file (it now only READS `--color-module*`), so the
    reason expired — and the block became the bug: being unlayered, it sat at exactly
    the same weight as the per-tenant `<style>` the layout injects, making "does the
    tenant's theme or the legacy compile win?" a stylesheet source-order race. That is
-   what made an applied theme silently keep the previous primary. Colour now has ONE
+   what made an applied theme silently keep the previous primary. Color now has ONE
    unlayered declaration on the storefront: the injected theme.
    Detail: docs/implementation/st-token-retirement.md §1. */
 

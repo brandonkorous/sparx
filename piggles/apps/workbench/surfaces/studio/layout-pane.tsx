@@ -20,6 +20,7 @@ import { PaneWaiting } from '../../components/pane-waiting';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import { useStudioBinding } from '../../lib/studio/provider';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
+import { OpenHistory, OpenPreview } from './open-history';
 import { SaveAsPiece } from './save-as-piece';
 import { useLayoutDocument, type LayoutDocumentState } from './use-layout-document';
 
@@ -33,15 +34,17 @@ export function LayoutPaneSurface({ ctx }: { ctx: SurfaceContext }) {
 
   return (
     <DocumentProvider store={state.store}>
-      <LayoutPaneBody state={state} onTitle={(title) => ctx.setTitle(title)} />
+      <LayoutPaneBody ctx={ctx} state={state} onTitle={(title) => ctx.setTitle(title)} />
     </DocumentProvider>
   );
 }
 
 function LayoutPaneBody({
+  ctx,
   state,
   onTitle,
 }: {
+  ctx: SurfaceContext;
   state: LayoutDocumentState;
   onTitle: (title: string) => void;
 }) {
@@ -62,7 +65,7 @@ function LayoutPaneBody({
 
   return (
     <TreeBuilder
-      toolbar={<LayoutActions state={state} unsaved={unsaved} />}
+      toolbar={<LayoutActions ctx={ctx} state={state} unsaved={unsaved} />}
       statusBar={
         <LayoutStatus
           dirty={unsaved}
@@ -75,9 +78,19 @@ function LayoutPaneBody({
   );
 }
 
-function LayoutActions({ state, unsaved }: { state: LayoutDocumentState; unsaved: boolean }) {
+function LayoutActions({
+  ctx,
+  state,
+  unsaved,
+}: {
+  ctx: SurfaceContext;
+  state: LayoutDocumentState;
+  unsaved: boolean;
+}) {
   return (
     <>
+      <OpenPreview ctx={ctx} />
+      <OpenHistory ctx={ctx} />
       <SaveAsPiece />
       <Button
         size="sm"

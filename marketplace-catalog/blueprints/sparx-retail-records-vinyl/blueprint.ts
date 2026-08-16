@@ -14,69 +14,69 @@ import assets from './assets.json' with { type: 'json' };
 import emails from './emails.json' with { type: 'json' };
 
 const blueprint = {
-  key: 'sparx-retail-records-vinyl',
-  version: '1.4.0',
-  name: 'sparx — Record Shop (Vinyl)',
-  summary:
-    'A complete, working shop for an independent record store: a real catalogue of vinyl LPs across genres, a turntable, a slipmat, a record-cleaning kit, a tote and a monthly Wax Club subscription, with categories, collections, a bespoke crate-digger PDP and a full merchandised home page. Moody dark theme — near-black ground, hot-magenta primary, electric-cyan accent; the album covers carry the colour. Shipped as Third Side Records.',
-  vertical: 'retail',
-  preview: 'media/preview.png',
-  requiresModules: ['builder', 'commerce', 'cms', 'crm', 'email'],
+    key: 'sparx-retail-records-vinyl',
+    version: '1.4.0',
+    name: 'sparx — Record Shop (Vinyl)',
+    summary:
+        'A complete, working shop for an independent record store: a real catalogue of vinyl LPs across genres, a turntable, a slipmat, a record-cleaning kit, a tote and a monthly Wax Club subscription, with categories, collections, a bespoke crate-digger PDP and a full merchandised home page. Moody dark theme — near-black ground, hot-magenta primary, electric-cyan accent; the album covers carry the color. Shipped as Third Side Records.',
+    vertical: 'retail',
+    preview: 'media/preview.png',
+    requiresModules: ['builder', 'commerce', 'cms', 'crm', 'email'],
 
-  // Identity only (business name + tagline + fonts + the theme's hex colours). The look
-  // itself rides site.theme + the theme decl below; the installing tenant rebrands the name.
-  brand: {
-    businessName: 'Third Side Records',
-    tagline: 'We still believe in the album.',
-    colors: {
-      primary: '#f45fb0',
-      primaryForeground: '#12080c',
-      accent: '#2ad7d7',
-      secondary: '#c3a5c9',
-    },
-    fonts: {
-      heading: 'Syne',
-      body: 'Inter',
-    },
-  },
-
-  // The provisioned SiteTheme the installer creates + applies — the bespoke template
-  // look as a tenant-editable saved theme (base preset = the template's own theme key,
-  // plus its brand snapshot).
-  theme: {
-    name: 'retail-records-vinyl',
-    basePresetKey: 'retail-records-vinyl',
-    presentation: {
-      v: 2,
-      containerWidth: '1152px',
-    },
+    // Identity only (business name + tagline + fonts + the theme's hex colors). The look
+    // itself rides site.theme + the theme decl below; the installing tenant rebrands the name.
     brand: {
-      colorPrimary: '#f45fb0',
-      colorAccent: '#2ad7d7',
-      colorSecondary: '#c3a5c9',
-      fontHeading: 'Syne',
-      fontBody: 'Inter',
-      tokens: {},
+        businessName: 'Third Side Records',
+        tagline: 'We still believe in the album.',
+        colors: {
+            primary: '#f45fb0',
+            primaryForeground: '#12080c',
+            accent: '#2ad7d7',
+            secondary: '#c3a5c9',
+        },
+        fonts: {
+            heading: 'Syne',
+            body: 'Inter',
+        },
     },
-    apply: true,
-  },
 
-  assets,
-  contentTypes: [],
-  authors,
-  content,
-  commerce,
+    // The provisioned SiteTheme the installer creates + applies — the bespoke template
+    // look as a tenant-editable saved theme (base preset = the template's own theme key,
+    // plus its brand snapshot).
+    theme: {
+        name: 'retail-records-vinyl',
+        basePresetKey: 'retail-records-vinyl',
+        presentation: {
+            v: 2,
+            containerWidth: '1152px',
+        },
+        brand: {
+            colorPrimary: '#f45fb0',
+            colorAccent: '#2ad7d7',
+            colorSecondary: '#c3a5c9',
+            fontHeading: 'Syne',
+            fontBody: 'Inter',
+            tokens: {},
+        },
+        apply: true,
+    },
 
-  // A shop's brand-voiced MARKETING starters (a welcome + a win-back), tokenized so a fork
-  // re-themes to the tenant and installed as DRAFTS — the platform's keyed transactional
-  // defaults (order/shipping/dunning) are separate and never duplicated here. Content
-  // templates ship an empty set.
-  emails,
-  sequences: [],
+    assets,
+    contentTypes: [],
+    authors,
+    content,
+    commerce,
 
-  // The composed distinct site (frame + a template-specific home + standard commerce/
-  // cms/about/contact pages + the /journal index), in the bespoke theme, fully stamped.
-  site,
+    // A shop's brand-voiced MARKETING starters (a welcome + a win-back), tokenized so a fork
+    // re-themes to the tenant and installed as DRAFTS — the platform's keyed transactional
+    // defaults (order/shipping/dunning) are separate and never duplicated here. Content
+    // templates ship an empty set.
+    emails,
+    sequences: [],
+
+    // The composed distinct site (frame + a template-specific home + standard commerce/
+    // cms/about/contact pages + the /journal index), in the bespoke theme, fully stamped.
+    site,
 };
 
 export default blueprint;

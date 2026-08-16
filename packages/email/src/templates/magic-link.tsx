@@ -6,6 +6,7 @@ import {
   EmailFallbackLink,
   EmailFinePrint,
   EmailParagraph,
+  usePlatformName,
 } from '../components';
 
 export interface MagicLinkEmailProps {
@@ -16,17 +17,18 @@ export interface MagicLinkEmailProps {
 }
 
 export function MagicLinkEmail({ magicUrl, expiresInMinutes = 15 }: MagicLinkEmailProps) {
+  const platform = usePlatformName();
   return (
     <PlatformEmailLayout
-      preview="Your sparx sign-in link"
-      footerReason="You're receiving this because a sign-in link was requested for your sparx account."
+      preview={`Your ${platform} sign-in link`}
+      footerReason={`You're receiving this because a sign-in link was requested for your ${platform} account.`}
     >
-      <EmailDisplayHeading>Sign in to sparx</EmailDisplayHeading>
+      <EmailDisplayHeading>Sign in to {platform}</EmailDisplayHeading>
       <EmailParagraph>
         Use the button below to sign in. No password needed — this link is all it takes. It expires
         in {expiresInMinutes} minutes and works once.
       </EmailParagraph>
-      <EmailActionButton href={magicUrl}>Sign in to sparx</EmailActionButton>
+      <EmailActionButton href={magicUrl}>Sign in to {platform}</EmailActionButton>
       <EmailFallbackLink url={magicUrl} />
       <EmailFinePrint>
         If you didn&apos;t try to sign in, you can safely ignore this email — no one can sign in
@@ -36,4 +38,4 @@ export function MagicLinkEmail({ magicUrl, expiresInMinutes = 15 }: MagicLinkEma
   );
 }
 
-export const magicLinkSubject = 'Your sparx sign-in link';
+export const magicLinkSubject = (platform: string) => `Your ${platform} sign-in link`;

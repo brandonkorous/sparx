@@ -5,6 +5,7 @@ import {
   EmailAmountHero,
   EmailDisplayHeading,
   EmailParagraph,
+  usePlatform,
   type Tone,
 } from '../components';
 
@@ -114,6 +115,7 @@ function copyFor(p: SubscriptionUpdateEmailProps): Copy {
 }
 
 export function SubscriptionUpdateEmail(props: SubscriptionUpdateEmailProps) {
+  const platform = usePlatform();
   const c = copyFor(props);
   const ghost = props.kind !== 'paused';
   const caption =
@@ -126,9 +128,9 @@ export function SubscriptionUpdateEmail(props: SubscriptionUpdateEmailProps) {
   return (
     <PlatformEmailLayout
       preview={c.heading}
-      mastheadRight="billing@sparx.email"
+      mastheadRight={platform.billingEmail ?? undefined}
       footerLinks={[{ label: 'Billing settings', href: props.manageUrl }]}
-      footerReason="You're receiving this because your sparx subscription status changed."
+      footerReason={`You're receiving this because your ${platform.name} subscription status changed.`}
     >
       <EmailDisplayHeading>{c.heading}</EmailDisplayHeading>
       <EmailParagraph>
@@ -155,19 +157,20 @@ export function SubscriptionUpdateEmail(props: SubscriptionUpdateEmailProps) {
 
 export function subscriptionUpdateSubject(
   kind: SubscriptionUpdateKind,
-  planLabel?: string
+  planLabel: string | undefined,
+  platform: string
 ): string {
   switch (kind) {
     case 'started':
-      return 'Your sparx plan is active';
+      return `Your ${platform} plan is active`;
     case 'canceled':
-      return 'Your sparx subscription is canceled';
+      return `Your ${platform} subscription is canceled`;
     case 'plan-changed':
-      return planLabel ? `You're now on the ${planLabel}` : 'Your sparx plan changed';
+      return planLabel ? `You're now on the ${planLabel}` : `Your ${platform} plan changed`;
     case 'paused':
-      return 'Your sparx subscription is paused';
+      return `Your ${platform} subscription is paused`;
     case 'resumed':
     default:
-      return 'Your sparx subscription is active again';
+      return `Your ${platform} subscription is active again`;
   }
 }

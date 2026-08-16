@@ -13,62 +13,62 @@ import { Heading, Text } from '@wizeworks/silicaui-react';
 
 /** One legend row: the glyph facsimile + what that control does. */
 function HelpRow({ glyph, children }: { glyph: ReactNode; children: ReactNode }): ReactNode {
-  return (
-    <li className="flex items-start gap-3">
-      <span className="mt-0.5 shrink-0">{glyph}</span>
-      <Text className="text-sm leading-snug">{children}</Text>
-    </li>
-  );
+    return (
+        <li className="flex items-start gap-3">
+            <span className="mt-0.5 shrink-0">{glyph}</span>
+            <Text className="text-sm leading-snug">{children}</Text>
+        </li>
+    );
 }
 
 export function StoryHelp(): ReactNode {
-  return (
-    <aside className="bg-base-100 border-base-300 flex flex-col gap-4 rounded-xl border p-6 @[48rem]:p-8">
-      <div className="flex flex-col gap-1">
-        <Heading level={3} className="text-base font-semibold">
-          Ways to shape your story
-        </Heading>
-        <Text className="text-sm">
-          There’s no wrong answer — it’s your story, not a form. Change anything, add as much as you
-          like, and your plan on the right keeps pace.
-        </Text>
-      </div>
+    return (
+        <aside className="bg-base-100 border-base-300 flex flex-col gap-4 rounded-xl border p-6 @[48rem]:p-8">
+            <div className="flex flex-col gap-1">
+                <Heading level={3} className="text-base font-semibold">
+                    Ways to shape your story
+                </Heading>
+                <Text className="text-sm">
+                    There’s no wrong answer — it’s your story, not a form. Change anything, add as much as you
+                    like, and your plan on the right keeps pace.
+                </Text>
+            </div>
 
-      <ul className="flex flex-col gap-3">
-        <HelpRow
-          glyph={
-            <span className="border-base-300 inline-flex items-center gap-0.5 rounded-full border px-2 py-0.5 text-xs font-medium">
-              phrase
-              <ChevronDown size={12} strokeWidth={2.4} aria-hidden />
-            </span>
-          }
-        >
-          <span className="font-medium">Tap any coloured phrase</span> to swap it — pick a different
-          business, who it’s for, or how customers buy.
-        </HelpRow>
+            <ul className="flex flex-col gap-3">
+                <HelpRow
+                    glyph={
+                        <span className="border-base-300 inline-flex items-center gap-0.5 rounded-full border px-2 py-0.5 text-xs font-medium">
+                            phrase
+                            <ChevronDown size={12} strokeWidth={2.4} aria-hidden />
+                        </span>
+                    }
+                >
+                    <span className="font-medium">Tap any colored phrase</span> to swap it — pick a different
+                    business, who it’s for, or how customers buy.
+                </HelpRow>
 
-        <HelpRow
-          glyph={
-            <span className="border-module text-module inline-flex size-6 items-center justify-center rounded-full border border-dashed">
-              <Plus size={13} strokeWidth={2.4} aria-hidden />
-            </span>
-          }
-        >
-          <span className="font-medium">Tap a dashed +</span> to add another way people buy, or
-          another thing you do — each one switches on the module it needs.
-        </HelpRow>
+                <HelpRow
+                    glyph={
+                        <span className="border-module text-module inline-flex size-6 items-center justify-center rounded-full border border-dashed">
+                            <Plus size={13} strokeWidth={2.4} aria-hidden />
+                        </span>
+                    }
+                >
+                    <span className="font-medium">Tap a dashed +</span> to add another way people buy, or
+                    another thing you do — each one switches on the module it needs.
+                </HelpRow>
 
-        <HelpRow
-          glyph={
-            <span className="bg-base-200 inline-flex size-6 items-center justify-center rounded-full">
-              <X size={12} strokeWidth={2.6} aria-hidden />
-            </span>
-          }
-        >
-          <span className="font-medium">Remove anything with its ✕</span> — your story only carries
-          what you actually do, and dropping it drops that module from your plan.
-        </HelpRow>
-      </ul>
-    </aside>
-  );
+                <HelpRow
+                    glyph={
+                        <span className="bg-base-200 inline-flex size-6 items-center justify-center rounded-full">
+                            <X size={12} strokeWidth={2.6} aria-hidden />
+                        </span>
+                    }
+                >
+                    <span className="font-medium">Remove anything with its ✕</span> — your story only carries
+                    what you actually do, and dropping it drops that module from your plan.
+                </HelpRow>
+            </ul>
+        </aside>
+    );
 }

@@ -66,12 +66,12 @@ model FinanceExpenseCategory {
   // cost_of_sale | labor | operating. CHECK-constrained in the migration.
   kind String @default("operating") @db.VarChar(20)
 
-  // Owner-facing colour for charts. Null = the rollup assigns one by kind, so a
+  // Owner-facing color for charts. Null = the rollup assigns one by kind, so a
   // tenant who never opens settings still gets a legible breakdown.
   color String? @db.VarChar(7)
 
   // Seeded by the module install. A system category cannot be deleted (a deriver
-  // targets it by slug) but CAN be renamed and recoloured — the owner's vocabulary
+  // targets it by slug) but CAN be renamed and recolored — the owner's vocabulary
   // wins over ours everywhere it is only a label.
   isSystem Boolean @default(false) @map("is_system")
 

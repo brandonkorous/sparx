@@ -22,13 +22,13 @@ import { useMemo, useState } from 'react';
 import { PaneEmpty } from '../../components/pane-empty';
 import { PaneWaiting } from '../../components/pane-waiting';
 import {
-  Badge,
-  Button,
-  Card,
-  EmptyState,
-  Heading,
-  SearchInput,
-  Text,
+    Badge,
+    Button,
+    Card,
+    EmptyState,
+    Heading,
+    SearchInput,
+    Text,
 } from '@wizeworks/silicaui-react';
 import { faPaperPlane, faPlus, faServer } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
@@ -62,256 +62,255 @@ import { GROUPS, useSocialBoard } from './board';
  * actually want to go look at the live thing.
  */
 function PostTile({
-  post,
-  assetsById,
-  avatarByTargetId,
-  catalogMap,
-  onOpen,
+    post,
+    assetsById,
+    avatarByTargetId,
+    catalogMap,
+    onOpen,
 }: {
-  post: Post;
-  assetsById: Map<string, MediaAsset>;
-  avatarByTargetId: Map<string, string | null>;
-  catalogMap: Map<string, CatalogEntry>;
-  onOpen: (event: { shiftKey: boolean; altKey: boolean }) => void;
+    post: Post;
+    assetsById: Map<string, MediaAsset>;
+    avatarByTargetId: Map<string, string | null>;
+    catalogMap: Map<string, CatalogEntry>;
+    onOpen: (event: { shiftKey: boolean; altKey: boolean }) => void;
 }) {
-  const meta = postStatusMeta(post.status);
+    const meta = postStatusMeta(post.status);
 
-  return (
-    <li className="border-base-300 bg-base-100 hover:border-module flex flex-col overflow-hidden rounded-lg border transition-colors">
-      <button
-        type="button"
-        className="flex flex-1 cursor-pointer flex-col text-left"
-        onClick={onOpen}
-        // The words in full, since the tile only shows the first two lines of them.
-        title={excerpt(post.body, 300)}
-      >
-        <PostCover post={post} assetsById={assetsById} />
+    return (
+        <li className="border-base-300 bg-base-100 hover:border-module flex flex-col overflow-hidden rounded-lg border transition-colors">
+            <button
+                type="button"
+                className="flex flex-1 cursor-pointer flex-col text-left"
+                onClick={onOpen}
+                // The words in full, since the tile only shows the first two lines of them.
+                title={excerpt(post.body, 300)}
+            >
+                <PostCover post={post} assetsById={assetsById} />
 
-        <span className="flex flex-1 flex-col gap-1.5 p-2.5">
-          {/* Still 16px — a tile is small, but this is the post's own words and the
+                <span className="flex flex-1 flex-col gap-1.5 p-2.5">
+                    {/* Still 16px — a tile is small, but this is the post's own words and the
               base font floor is not negotiable for something meant to be read. Two
               lines rather than three: cards in a row share the tallest one's height,
               so every extra line is paid for by all of them. */}
-          <span className="line-clamp-2 text-base font-medium break-words">
-            {excerpt(post.body, 120)}
-          </span>
+                    <span className="line-clamp-2 text-base font-medium break-words">
+                        {excerpt(post.body, 120)}
+                    </span>
 
-          <Text className="text-sm">{whenLine(post)}</Text>
+                    <Text className="text-sm">{whenLine(post)}</Text>
 
-          {/* `mt-auto` pins this to the bottom edge, so the state of every tile in a
+                    {/* `mt-auto` pins this to the bottom edge, so the state of every tile in a
               row lines up however long their words ran. */}
-          <span className="mt-auto flex flex-wrap items-center gap-x-2 gap-y-1">
-            <Badge color={meta.tone} variant="soft" size="sm">
-              {meta.label}
-            </Badge>
-            <DestinationAvatars
-              targets={post.targets}
-              avatarByTargetId={avatarByTargetId}
-              catalogMap={catalogMap}
-              max={3}
-            />
-          </span>
-        </span>
-      </button>
-    </li>
-  );
+                    <span className="mt-auto flex flex-wrap items-center gap-x-2 gap-y-1">
+                        <Badge color={meta.tone} variant="soft" size="sm">
+                            {meta.label}
+                        </Badge>
+                        <DestinationAvatars
+                            targets={post.targets}
+                            avatarByTargetId={avatarByTargetId}
+                            catalogMap={catalogMap}
+                            max={3}
+                        />
+                    </span>
+                </span>
+            </button>
+        </li>
+    );
 }
 
 /* ── Pipeline overview strip (glance + filter) ────────────────────────────── */
 
 function PipelineStrip({
-  counts,
-  activeFilter,
-  onPick,
+    counts,
+    activeFilter,
+    onPick,
 }: {
-  counts: Record<string, number>;
-  activeFilter: string | null;
-  onPick: (key: string) => void;
+    counts: Record<string, number>;
+    activeFilter: string | null;
+    onPick: (key: string) => void;
 }) {
-  return (
-    <div className="grid grid-cols-2 gap-3 @xl:grid-cols-4">
-      {GROUPS.map((group) => {
-        const count = counts[group.key] ?? 0;
-        const active = activeFilter === group.key;
-        // "Needs a look" earns a warning number when it is non-empty — the one stage
-        // that wants attention. The rest carry their weight in scale, not colour.
-        const emphatic = group.key === 'review' && count > 0;
-        return (
-          <button
-            key={group.key}
-            type="button"
-            aria-pressed={active}
-            onClick={() => {
-              onPick(group.key);
-            }}
-            className={`flex flex-col gap-0.5 rounded-xl border p-3 text-left transition-colors ${
-              active
-                ? 'border-module bg-module bg-soft'
-                : 'border-base-300 hover:border-module bg-base-100'
-            }`}
-          >
-            <span
-              className={`text-2xl font-semibold tabular-nums ${emphatic ? 'text-warning' : ''}`}
-            >
-              {count}
-            </span>
-            <span className="text-sm">{group.title}</span>
-          </button>
-        );
-      })}
-    </div>
-  );
+    return (
+        <div className="grid grid-cols-2 gap-3 @xl:grid-cols-4">
+            {GROUPS.map((group) => {
+                const count = counts[group.key] ?? 0;
+                const active = activeFilter === group.key;
+                // "Needs a look" earns a warning number when it is non-empty — the one stage
+                // that wants attention. The rest carry their weight in scale, not color.
+                const emphatic = group.key === 'review' && count > 0;
+                return (
+                    <button
+                        key={group.key}
+                        type="button"
+                        aria-pressed={active}
+                        onClick={() => {
+                            onPick(group.key);
+                        }}
+                        className={`flex flex-col gap-0.5 rounded-xl border p-3 text-left transition-colors ${active
+                                ? 'border-module bg-module bg-soft'
+                                : 'border-base-300 hover:border-module bg-base-100'
+                            }`}
+                    >
+                        <span
+                            className={`text-2xl font-semibold tabular-nums ${emphatic ? 'text-warning' : ''}`}
+                        >
+                            {count}
+                        </span>
+                        <span className="text-sm">{group.title}</span>
+                    </button>
+                );
+            })}
+        </div>
+    );
 }
 
 /* ── The surface ──────────────────────────────────────────────────────────── */
 
 export function SocialQueueSurface({ ctx }: { ctx: SurfaceContext }) {
-  const board = useSocialBoard(ctx);
-  const { posts, canWrite, all, assetsById, avatarByTargetId, catalogMap, counts } = board;
-  const [search, setSearch] = useState('');
-  const [filter, setFilter] = useState<string | null>(null);
+    const board = useSocialBoard(ctx);
+    const { posts, canWrite, all, assetsById, avatarByTargetId, catalogMap, counts } = board;
+    const [search, setSearch] = useState('');
+    const [filter, setFilter] = useState<string | null>(null);
 
-  const needle = search.trim().toLowerCase();
-  const matches = useMemo(
-    () => (needle ? all.filter((post) => post.body.toLowerCase().includes(needle)) : all),
-    [all, needle]
-  );
-
-  const grouped = useMemo(() => {
-    return GROUPS.filter((group) => !filter || group.key === filter)
-      .map((group) => ({
-        group,
-        posts: matches.filter((post) => group.statuses.includes(post.status)),
-      }))
-      .filter((section) => section.posts.length > 0);
-  }, [matches, filter]);
-
-  const pickFilter = (key: string) => {
-    setFilter((current) => (current === key ? null : key));
-  };
-
-  if (posts.isError) {
-    return (
-      <div className={PANE_SHELL}>
-        <Card className="min-h-0 flex-1 items-center justify-center">
-          <PaneEmpty
-            icon={<Icon glyph={faServer} className="size-6" aria-hidden />}
-            title="Could not load your posts"
-            description={socialErrorMessage(
-              posts.error,
-              'This is a problem reaching the server. Nothing about your posts has changed.'
-            )}
-            actions={
-              <Button
-                size="sm"
-                color="module"
-                onClick={() => {
-                  void posts.refetch();
-                }}
-              >
-                Try again
-              </Button>
-            }
-          />
-        </Card>
-      </div>
+    const needle = search.trim().toLowerCase();
+    const matches = useMemo(
+        () => (needle ? all.filter((post) => post.body.toLowerCase().includes(needle)) : all),
+        [all, needle]
     );
-  }
 
-  return (
-    <div className={PANE_SHELL}>
-      <PaneToolbar label="Posts list controls" wrap>
-        <div className="max-w-xs min-w-0 flex-1">
-          <SearchInput
-            size="sm"
-            aria-label="Search posts"
-            placeholder="Search posts…"
-            value={search}
-            onValueChange={setSearch}
-          />
-        </div>
-        {canWrite ? (
-          <Button
-            color="module"
-            size="sm"
-            className="ml-auto shrink-0 whitespace-nowrap"
-            title="Write a new post — hold Shift to open alongside, Alt for a new window"
-            onClick={(event) => {
-              board.openNew(event);
-            }}
-          >
-            <Icon glyph={faPlus} className="size-4" aria-hidden />
-            New post
-          </Button>
-        ) : null}
-        <RefreshButton
-          className={canWrite ? undefined : 'ml-auto'}
-          isFetching={posts.isFetching}
-          updatedAt={posts.data ? posts.dataUpdatedAt : undefined}
-          onRefresh={() => {
-            void posts.refetch();
-          }}
-        />
-      </PaneToolbar>
+    const grouped = useMemo(() => {
+        return GROUPS.filter((group) => !filter || group.key === filter)
+            .map((group) => ({
+                group,
+                posts: matches.filter((post) => group.statuses.includes(post.status)),
+            }))
+            .filter((section) => section.posts.length > 0);
+    }, [matches, filter]);
 
-      <div className="min-h-0 flex-1 overflow-y-auto">
-        {posts.isPending ? (
-          <PaneWaiting />
-        ) : all.length === 0 ? (
-          <Card className="min-h-0 flex-1 items-center justify-center">
-            <PaneEmpty
-              icon={<Icon glyph={faPaperPlane} className="size-6" aria-hidden />}
-              title="No posts yet"
-              description="Write a post once and send it to every account you have connected. Drafts, scheduled posts and everything you have already sent will show up here."
-              actions={
-                canWrite ? (
-                  <Button
-                    color="module"
-                    size="sm"
-                    onClick={(event) => {
-                      board.openNew(event);
+    const pickFilter = (key: string) => {
+        setFilter((current) => (current === key ? null : key));
+    };
+
+    if (posts.isError) {
+        return (
+            <div className={PANE_SHELL}>
+                <Card className="min-h-0 flex-1 items-center justify-center">
+                    <PaneEmpty
+                        icon={<Icon glyph={faServer} className="size-6" aria-hidden />}
+                        title="Could not load your posts"
+                        description={socialErrorMessage(
+                            posts.error,
+                            'This is a problem reaching the server. Nothing about your posts has changed.'
+                        )}
+                        actions={
+                            <Button
+                                size="sm"
+                                color="module"
+                                onClick={() => {
+                                    void posts.refetch();
+                                }}
+                            >
+                                Try again
+                            </Button>
+                        }
+                    />
+                </Card>
+            </div>
+        );
+    }
+
+    return (
+        <div className={PANE_SHELL}>
+            <PaneToolbar label="Posts list controls" wrap>
+                <div className="max-w-xs min-w-0 flex-1">
+                    <SearchInput
+                        size="sm"
+                        aria-label="Search posts"
+                        placeholder="Search posts…"
+                        value={search}
+                        onValueChange={setSearch}
+                    />
+                </div>
+                {canWrite ? (
+                    <Button
+                        color="module"
+                        size="sm"
+                        className="ml-auto shrink-0 whitespace-nowrap"
+                        title="Write a new post — hold Shift to open alongside, Alt for a new window"
+                        onClick={(event) => {
+                            board.openNew(event);
+                        }}
+                    >
+                        <Icon glyph={faPlus} className="size-4" aria-hidden />
+                        New post
+                    </Button>
+                ) : null}
+                <RefreshButton
+                    className={canWrite ? undefined : 'ml-auto'}
+                    isFetching={posts.isFetching}
+                    updatedAt={posts.data ? posts.dataUpdatedAt : undefined}
+                    onRefresh={() => {
+                        void posts.refetch();
                     }}
-                  >
-                    <Icon glyph={faPlus} className="size-4" aria-hidden />
-                    New post
-                  </Button>
-                ) : undefined
-              }
-            />
-          </Card>
-        ) : (
-          // Full width, not a centred reading column — same reasoning as the calendar.
-          // A card grid earns every pixel by fitting another column; a 72rem cap spent
-          // the rest of a wide pane on empty gutters.
-          <div className="flex w-full flex-col gap-4 p-4">
-            <PipelineStrip counts={counts} activeFilter={filter} onPick={pickFilter} />
+                />
+            </PaneToolbar>
 
-            {matches.length === 0 ? (
-              <EmptyState
-                icon={<Icon glyph={faPaperPlane} className="size-6" aria-hidden />}
-                title="No posts match that"
-                description="Try different words, or clear the search to see them all."
-              />
-            ) : grouped.length === 0 ? (
-              <EmptyState
-                icon={<Icon glyph={faPaperPlane} className="size-6" aria-hidden />}
-                title="Nothing in this stage"
-                description="No posts are at this stage right now. Tap the stage again to see everything."
-              />
-            ) : (
-              grouped.map(({ group, posts: groupPosts }) => (
-                // The stage heading is a plain header now, not a card wrapping the
-                // posts: cards inside a card gave every group a second border and made
-                // the posts read as rows of a table again.
-                <section key={group.key} className="flex flex-col gap-3">
-                  <header className="flex items-center gap-2">
-                    <Heading level={2} className="text-base font-semibold">
-                      {group.title}
-                    </Heading>
-                    <div className="flex-1" />
-                    <Text className="text-sm">{groupPosts.length}</Text>
-                  </header>
-                  {/* `auto-fill` + a minimum tile width, rather than a table of column
+            <div className="min-h-0 flex-1 overflow-y-auto">
+                {posts.isPending ? (
+                    <PaneWaiting />
+                ) : all.length === 0 ? (
+                    <Card className="min-h-0 flex-1 items-center justify-center">
+                        <PaneEmpty
+                            icon={<Icon glyph={faPaperPlane} className="size-6" aria-hidden />}
+                            title="No posts yet"
+                            description="Write a post once and send it to every account you have connected. Drafts, scheduled posts and everything you have already sent will show up here."
+                            actions={
+                                canWrite ? (
+                                    <Button
+                                        color="module"
+                                        size="sm"
+                                        onClick={(event) => {
+                                            board.openNew(event);
+                                        }}
+                                    >
+                                        <Icon glyph={faPlus} className="size-4" aria-hidden />
+                                        New post
+                                    </Button>
+                                ) : undefined
+                            }
+                        />
+                    </Card>
+                ) : (
+                    // Full width, not a centred reading column — same reasoning as the calendar.
+                    // A card grid earns every pixel by fitting another column; a 72rem cap spent
+                    // the rest of a wide pane on empty gutters.
+                    <div className="flex w-full flex-col gap-4 p-4">
+                        <PipelineStrip counts={counts} activeFilter={filter} onPick={pickFilter} />
+
+                        {matches.length === 0 ? (
+                            <EmptyState
+                                icon={<Icon glyph={faPaperPlane} className="size-6" aria-hidden />}
+                                title="No posts match that"
+                                description="Try different words, or clear the search to see them all."
+                            />
+                        ) : grouped.length === 0 ? (
+                            <EmptyState
+                                icon={<Icon glyph={faPaperPlane} className="size-6" aria-hidden />}
+                                title="Nothing in this stage"
+                                description="No posts are at this stage right now. Tap the stage again to see everything."
+                            />
+                        ) : (
+                            grouped.map(({ group, posts: groupPosts }) => (
+                                // The stage heading is a plain header now, not a card wrapping the
+                                // posts: cards inside a card gave every group a second border and made
+                                // the posts read as rows of a table again.
+                                <section key={group.key} className="flex flex-col gap-3">
+                                    <header className="flex items-center gap-2">
+                                        <Heading level={2} className="text-base font-semibold">
+                                            {group.title}
+                                        </Heading>
+                                        <div className="flex-1" />
+                                        <Text className="text-sm">{groupPosts.length}</Text>
+                                    </header>
+                                    {/* `auto-fill` + a minimum tile width, rather than a table of column
                       counts at container breakpoints. The grid then answers "how many
                       fit?" continuously at every pane width instead of at four chosen
                       ones, which is the right question for a gallery and means nothing
@@ -322,32 +321,32 @@ export function SocialQueueSurface({ ctx }: { ctx: SurfaceContext }) {
                       two half-pane-wide tiles. Empty tracks are the correct look here.
                       `items-stretch` (the default) is load-bearing — it is what makes
                       every tile in a row share the tallest one's height. */}
-                  <ul className="grid grid-cols-[repeat(auto-fill,minmax(13rem,1fr))] gap-2.5">
-                    {groupPosts.map((post) => (
-                      <PostTile
-                        key={post.id}
-                        post={post}
-                        assetsById={assetsById}
-                        avatarByTargetId={avatarByTargetId}
-                        catalogMap={catalogMap}
-                        onOpen={(event) => {
-                          board.openPost(post, event);
-                        }}
-                      />
-                    ))}
-                  </ul>
-                </section>
-              ))
-            )}
-          </div>
-        )}
-      </div>
+                                    <ul className="grid grid-cols-[repeat(auto-fill,minmax(13rem,1fr))] gap-2.5">
+                                        {groupPosts.map((post) => (
+                                            <PostTile
+                                                key={post.id}
+                                                post={post}
+                                                assetsById={assetsById}
+                                                avatarByTargetId={avatarByTargetId}
+                                                catalogMap={catalogMap}
+                                                onOpen={(event) => {
+                                                    board.openPost(post, event);
+                                                }}
+                                            />
+                                        ))}
+                                    </ul>
+                                </section>
+                            ))
+                        )}
+                    </div>
+                )}
+            </div>
 
-      <p className="shrink-0 px-1 text-xs">
-        Click a post to open it · Shift-click to open alongside · Alt-click for a new window
-      </p>
-    </div>
-  );
+            <p className="shrink-0 px-1 text-xs">
+                Click a post to open it · Shift-click to open alongside · Alt-click for a new window
+            </p>
+        </div>
+    );
 }
 
 export default SocialQueueSurface;

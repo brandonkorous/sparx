@@ -80,7 +80,7 @@ describe('the theme → layout → page chain', () => {
 
     session
       .store({ kind: 'theme', id: 'theme-1' })
-      ?.apply('Recolour', [
+      ?.apply('Recolor', [
         { kind: 'theme.setToken', mode: 'light', token: '--color-primary', value: '#00A0A0' },
       ]);
 

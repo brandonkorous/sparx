@@ -12,7 +12,7 @@ lexicon, pricing) are in [CLAUDE.md](CLAUDE.md).
 Canonical values come from the approved identity board,
 [config/brand.tokens.json](docs/initial/config/brand.tokens.json).
 
-**Do not compute colour. The palette is Brandon's.** The numbers recorded in this
+**Do not compute color. The palette is Brandon's.** The numbers recorded in this
 file are history — a note of why a token landed where it did — not a standing
 instruction to re-derive them. Contrast ratios, ΔE separation screens and
 "measured, not eyeballed" checks are **only** to be run when Brandon asks for
@@ -94,9 +94,9 @@ full on day one, and six color families give it a spine that sparx does not need
 go and derive one.
 
 **Money is lime-700, not a money-green.** At `#15803D` it measured ΔE 7.3 against
-`success` — the Money app and a success badge would have been the same colour.
+`success` — the Money app and a success badge would have been the same color.
 
-**Nav order should follow the groups.** Colour grouping only pays off when grouped
+**Nav order should follow the groups.** Color grouping only pays off when grouped
 items are adjacent; [config/apps.yaml](docs/initial/config/apps.yaml) currently
 interleaves Content and Get Found (100, 110) away from My Site (20). Reorder so
 each group is contiguous.
@@ -106,10 +106,10 @@ each group is contiguous.
 Light: `success` `#14804A` · `info` `#2563EB` · `warning` `#F3B61F` · `error` /
 `danger` `#C93838`. Dark re-tunes each for its canvas.
 
-**Every destructive colour is checked against the brand pink, not just against its
+**Every destructive color is checked against the brand pink, not just against its
 own ink.** The dark `error` was specified as `#F06B6B`, which measures ΔE 14.3
 against the dark pink `#FF7C91` — a Delete button and the brand reading as one
-colour. It is `#EF4444`: ΔE 32.2, still 4.98:1 on its ink. Every lighter rose fails
+color. It is `#EF4444`: ΔE 32.2, still 4.98:1 on its ink. Every lighter rose fails
 this test, so do not reach for one.
 
 Status is resolved with `statusTone()` and rendered `<Badge color={statusTone(s)}
@@ -145,7 +145,7 @@ putting `data-group="sell"` on an ancestor and asking for `color="module"`. That
 sixteen real choices. `SilicaColor` is `… | (string & {})`, so the editor offers a
 handful and TypeScript catches nothing; pick from this list, not from autocomplete.
 
-**The rule is one sentence: the component takes the colour of what it is ABOUT.**
+**The rule is one sentence: the component takes the color of what it is ABOUT.**
 Not of its position in the layout, not of how important it feels.
 
 | What the element is about                      | `color`                                 |
@@ -166,13 +166,13 @@ defines it as a low-emphasis supporting **surface**, not a second call to action
 Four things this is load-bearing about:
 
 1. **Pink means one thing.** `primary` is the signup CTA and nothing else on the
-   marketing site wears it. A "read more" in pink spends the one colour a visitor
+   marketing site wears it. A "read more" in pink spends the one color a visitor
    has learned to read as _start_.
 2. **The palette file already told us.** `--color-neutral` `#52454F` is annotated
    in `theme.css` as _"the inverse utility surface (dark bands, `btn-neutral`,
    tooltips)"_ — chrome. Putting it on a call to action is using a chrome token as
    an action token, and the annotation saying so was sitting there the whole time.
-3. **The second-of-a-pair takes NO colour.** Uncoloured `outline` resolves to
+3. **The second-of-a-pair takes NO color.** Uncolored `outline` resolves to
    `base-content`, which the surface has already resolved — including inside a
    `data-theme="dark"` island, where a pinned `neutral` measures 2.52:1 and is very
    nearly invisible. Measured and recorded at the top of
@@ -184,7 +184,7 @@ Four things this is load-bearing about:
 
 Worked examples now in the tree: the home page's FAQ offers two links and they are
 `success` (the price) and `info` (how your data is handled) rather than two
-identical greys — the colour tells you which is which before the label is read.
+identical greys — the color tells you which is which before the label is read.
 [tool-ladder.tsx](apps/web/components/marketing/tools/tool-ladder.tsx) has done the
 `color="module"` version of this all along, which is the precedent that should have
 been followed everywhere.
@@ -217,7 +217,7 @@ Measured on the closing band of meetpiggles.com, ink against the band behind it:
 
 | Ink                   | On `bg-secondary` (utility) | Inside `data-theme="dark"` |
 | --------------------- | --------------------------- | -------------------------- |
-| uncoloured `outline`  | 1.06:1                      | **14.77:1**                |
+| uncolored `outline`   | 1.06:1                      | **14.77:1**                |
 | `primary` + `outline` | —                           | 6.56:1                     |
 | `neutral` + `outline` | 1.4:1                       | 2.52:1                     |
 | `accent` + `outline`  | —                           | 2.44:1                     |
@@ -225,7 +225,7 @@ Measured on the closing band of meetpiggles.com, ink against the band behind it:
 Two rules fall out of that table:
 
 1. **A secondary button on a dark band asks for `outline` and does not name a
-   color.** Uncoloured, it resolves to `base-content`, which the island has
+   color.** Uncolored, it resolves to `base-content`, which the island has
    already flipped; pin a color and you have pinned a value that stops following
    the surface.
 2. **`neutral` is not usable as ink on a dark ground in this palette** — it fails

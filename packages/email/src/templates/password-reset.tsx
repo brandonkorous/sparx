@@ -6,6 +6,7 @@ import {
   EmailFallbackLink,
   EmailFinePrint,
   EmailParagraph,
+  usePlatformName,
 } from '../components';
 
 export interface PasswordResetEmailProps {
@@ -27,18 +28,19 @@ export function PasswordResetEmail({
   intro,
   outro,
 }: PasswordResetEmailProps) {
+  const platform = usePlatformName();
   return (
     <PlatformEmailLayout
-      preview="Set your sparx password"
-      footerReason="You're receiving this because a password reset was requested for your sparx account."
+      preview={`Set your ${platform} password`}
+      footerReason={`You're receiving this because a password reset was requested for your ${platform} account.`}
     >
       <EmailDisplayHeading>Set your password</EmailDisplayHeading>
       <EmailParagraph>{name ? `Hi ${name},` : 'Hi there,'}</EmailParagraph>
       {intro ? <EmailParagraph>{intro}</EmailParagraph> : null}
       <EmailParagraph>
-        Use the button below to set a password for your sparx account — whether you&apos;re choosing
-        one for the first time or replacing an old one. The link expires in {expiresInMinutes}{' '}
-        minutes.
+        Use the button below to set a password for your {platform} account — whether you&apos;re
+        choosing one for the first time or replacing an old one. The link expires in{' '}
+        {expiresInMinutes} minutes.
       </EmailParagraph>
       <EmailActionButton href={resetUrl}>Set password</EmailActionButton>
       {outro ? <EmailParagraph>{outro}</EmailParagraph> : null}
@@ -50,4 +52,4 @@ export function PasswordResetEmail({
   );
 }
 
-export const passwordResetSubject = 'Set your sparx password';
+export const passwordResetSubject = (platform: string) => `Set your ${platform} password`;

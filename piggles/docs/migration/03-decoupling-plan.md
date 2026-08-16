@@ -111,14 +111,14 @@ carries a `mypiggles.com` accept URL. Add a unit test that asserts it.
 Extract the **contract** into `@wizeworks/brand-core`; leave the **values** in
 `@sparx/brand`, which moves to `sparx/packages/` in A4.
 
-| Goes to `brand-core`                                                                    | Stays sparx's                        |
-| --------------------------------------------------------------------------------------- | ------------------------------------ |
-| Which semantic colours are registered, and that each is a `--color-x` / `-content` pair | Every colour value                   |
-| The module list, and that each owns a `--color-module-<name>` pair                      | The module hue wheel                 |
-| `data-theme` / `data-module` vocabulary + the `--color-module` indirection              | Radius, type and density values      |
-| Shape/type token _names_ (`--radius-box`, `--font-sans`, …)                             | Marks, wordmark, mascot geometry     |
-| `statusTone()`'s vocabulary                                                             | `theme.css`                          |
-| `silica-gaps.css`, `toast.css` (from A1.5)                                              | `mascot.css` motion, if sparx-shaped |
+| Goes to `brand-core`                                                                   | Stays sparx's                        |
+| -------------------------------------------------------------------------------------- | ------------------------------------ |
+| Which semantic colors are registered, and that each is a `--color-x` / `-content` pair | Every color value                    |
+| The module list, and that each owns a `--color-module-<name>` pair                     | The module hue wheel                 |
+| `data-theme` / `data-module` vocabulary + the `--color-module` indirection             | Radius, type and density values      |
+| Shape/type token _names_ (`--radius-box`, `--font-sans`, …)                            | Marks, wordmark, mascot geometry     |
+| `statusTone()`'s vocabulary                                                            | `theme.css`                          |
+| `silica-gaps.css`, `toast.css` (from A1.5)                                             | `mascot.css` motion, if sparx-shaped |
 
 `@piggles/brand` then implements the same contract. This is the split
 [wizeworks/CLAUDE.md](../../../wizeworks/CLAUDE.md) already specifies — read it

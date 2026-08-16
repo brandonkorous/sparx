@@ -38,7 +38,7 @@ export interface ResolveOptions {
   /**
    * The theme to use when the site wears none — derived from the tenant's brand by
    * the app, never by this package. A site whose author has never opened the theme
-   * builder still renders in its own colours, exactly as the storefront does.
+   * builder still renders in its own colors, exactly as the storefront does.
    */
   fallbackTheme: Theme;
 }

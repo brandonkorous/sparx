@@ -97,7 +97,7 @@ function ArrowRight({ className }: { className?: string }) {
 //
 // Every hue comes from `data-group`, which repoints `--color-module` for that
 // subtree (@piggles/brand theme.css), so the windows and rail wear their app's
-// colour through `text-module` / `bg-module` / `border-module` rather than
+// color through `text-module` / `bg-module` / `border-module` rather than
 // through a `--hue` variable set at the call site. Window positions are Tailwind
 // arbitrary values in literal class strings — Tailwind scans this file, so they
 // generate. The only bespoke CSS is `.day-desk`'s dot grid, which is a
@@ -508,7 +508,7 @@ export function TheDay() {
   // bottom. Nothing said where the marketing stopped and the product started.
   //
   // `bg-accent bg-soft` is the pale pink wash DESIGN.md §7 sanctions as the one
-  // decorative use of brand colour, and it earns three things at once: the hero
+  // decorative use of brand color, and it earns three things at once: the hero
   // is now a surface rather than an absence, the desk underneath reads as the
   // product because it is the only thing in the window that ISN'T branded, and
   // beat 1 becomes a reveal — the pink lifts and the workspace is already there.
@@ -538,9 +538,9 @@ export function TheDay() {
           >
             Start free
           </a>
-          {/* NO COLOUR ON THE OUTLINE, and this one string has to be right on two
+          {/* NO COLOR ON THE OUTLINE, and this one string has to be right on two
               different grounds: on a wide screen the cold open is inside the
-              window's LIGHT island, on a phone it sits on the dark mat. Uncoloured,
+              window's LIGHT island, on a phone it sits on the dark mat. Uncolored,
               it resolves to `base-content` and is correct in both. Pinning
               `neutral` is the 2.52:1 failure close-band.tsx measured. */}
           <a className={buttonClasses({ variant: 'outline', size: 'xl' })} href="#apps">
@@ -579,7 +579,7 @@ export function TheDay() {
     // keeps looking like the product. That nesting is silica's intended idiom,
     // and it is what buys the border back: the frame's `border-base-300` hairline
     // resolves inside the LIGHT island, so it is now a pale edge against a near
-    // black ground instead of a border painted its own background's colour.
+    // black ground instead of a border painted its own background's color.
     //
     // The act ends with the film and the page returns to its own ground for the
     // trade wall — the dark is one beat, not the site's temperament.

@@ -21,7 +21,7 @@
 // The canvas is the workbench's recessed base-200 with the tiled spark watermark —
 // the SAME surface the auth screen the tenant just came from uses — so signing up
 // and setting up read as one continuous space. The header and each flow's panels are
-// base-100 surfaces lifted onto it, separated by edge and colour, never a shadow.
+// base-100 surfaces lifted onto it, separated by edge and color, never a shadow.
 
 import { useState } from 'react';
 import { ModuleScope } from '../../components/module-scope';
@@ -34,47 +34,47 @@ import { ClassicWizard } from './wizard/wizard';
 import { StoryFlow } from './story/story-flow';
 
 export function OnboardingGate({ onFinished }: { onFinished?: () => void }) {
-  const { data: state } = useOnboarding();
-  const actions = useOnboardingActions();
-  // Seed the flow from the persisted state once; the switch drives it from there.
-  const [flow, setFlow] = useState<OnboardingFlow>(() => resolveOnboardingFlow(state));
+    const { data: state } = useOnboarding();
+    const actions = useOnboardingActions();
+    // Seed the flow from the persisted state once; the switch drives it from there.
+    const [flow, setFlow] = useState<OnboardingFlow>(() => resolveOnboardingFlow(state));
 
-  function switchTo(next: OnboardingFlow): void {
-    setFlow(next);
-    // Best-effort: record the explicit choice so a reload resumes the same front
-    // end. A failed write only means the default rule decides next time.
-    void actions.switchFlow(next);
-  }
+    function switchTo(next: OnboardingFlow): void {
+        setFlow(next);
+        // Best-effort: record the explicit choice so a reload resumes the same front
+        // end. A failed write only means the default rule decides next time.
+        void actions.switchFlow(next);
+    }
 
-  return (
-    <ModuleScope
-      module="builder"
-      className="bg-base-200 relative flex h-dvh w-full flex-col overflow-hidden"
-    >
-      <SparkField />
-      {/* The header + flow ride above the watermark; the opaque base-100 surfaces
+    return (
+        <ModuleScope
+            module="builder"
+            className="bg-base-200 relative flex h-dvh w-full flex-col overflow-hidden"
+        >
+            <SparkField />
+            {/* The header + flow ride above the watermark; the opaque base-100 surfaces
           within them occlude it wherever they sit. The StoryModelProvider wraps BOTH
           editors so the ONE shared story survives switching between them in place. */}
-      <div className="relative z-10 flex min-h-0 flex-1 flex-col">
-        <OnboardingHeader />
-        <StoryModelProvider>
-          {flow === 'story' ? (
-            <StoryFlow
-              onSwitchToClassic={() => {
-                switchTo('classic');
-              }}
-              onFinished={() => onFinished?.()}
-            />
-          ) : (
-            <ClassicWizard
-              onSwitchToStory={() => {
-                switchTo('story');
-              }}
-              onFinished={() => onFinished?.()}
-            />
-          )}
-        </StoryModelProvider>
-      </div>
-    </ModuleScope>
-  );
+            <div className="relative z-10 flex min-h-0 flex-1 flex-col">
+                <OnboardingHeader />
+                <StoryModelProvider>
+                    {flow === 'story' ? (
+                        <StoryFlow
+                            onSwitchToClassic={() => {
+                                switchTo('classic');
+                            }}
+                            onFinished={() => onFinished?.()}
+                        />
+                    ) : (
+                        <ClassicWizard
+                            onSwitchToStory={() => {
+                                switchTo('story');
+                            }}
+                            onFinished={() => onFinished?.()}
+                        />
+                    )}
+                </StoryModelProvider>
+            </div>
+        </ModuleScope>
+    );
 }

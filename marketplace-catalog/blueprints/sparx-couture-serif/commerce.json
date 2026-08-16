@@ -1,858 +1,982 @@
 {
-  "categories": [
-    {
-      "handle": "rings",
-      "name": "Rings",
-      "description": "Signets, bands and stacking rings.",
-      "featured": true
-    },
-    {
-      "handle": "necklaces",
-      "name": "Necklaces",
-      "description": "Pendants and chains in fine gold.",
-      "featured": true
-    },
-    {
-      "handle": "earrings",
-      "name": "Earrings",
-      "description": "Hoops, studs and drops.",
-      "featured": true
-    },
-    {
-      "handle": "bracelets",
-      "name": "Bracelets",
-      "description": "Cuffs and line bracelets.",
-      "featured": false
-    },
-    {
-      "handle": "fragrance",
-      "name": "Fragrance",
-      "description": "The house eaux de parfum.",
-      "featured": true
-    }
-  ],
-  "collections": [
-    {
-      "handle": "new-arrivals",
-      "name": "New Arrivals",
-      "description": "The latest from the atelier.",
-      "type": "manual",
-      "featured": true,
-      "productHandles": [
-        "astrid-signet-ring",
-        "colette-tennis-bracelet",
-        "lune-pendant-necklace",
-        "no3-black-rose-oud",
-        "the-four-eaux-discovery-set"
-      ]
-    },
-    {
-      "handle": "high-jewellery",
-      "name": "High Jewellery",
-      "description": "The pieces we make a few of a year.",
-      "type": "manual",
-      "featured": false,
-      "productHandles": [
-        "colette-tennis-bracelet",
-        "odette-pave-band",
-        "vesper-drop-earrings",
-        "astrid-signet-ring"
-      ]
-    },
-    {
-      "handle": "everyday-fine",
-      "name": "Everyday Fine",
-      "description": "Fine gold and silver for every day.",
-      "type": "manual",
-      "featured": false,
-      "productHandles": ["lune-pendant-necklace", "margaux-hoop-earrings", "celeste-cuff"]
-    },
-    {
-      "handle": "fragrance",
-      "name": "Fragrance",
-      "description": "The four house eaux and the discovery set.",
-      "type": "manual",
-      "featured": false,
-      "productHandles": [
-        "no1-fig-neroli",
-        "no2-iris-ambrette",
-        "no3-black-rose-oud",
-        "no4-bergamot-vetiver",
-        "the-four-eaux-discovery-set"
-      ]
-    },
-    {
-      "handle": "the-gift-edit",
-      "name": "The Gift Edit",
-      "description": "A short list, chosen to give.",
-      "type": "manual",
-      "featured": false,
-      "productHandles": ["odette-pave-band", "the-four-eaux-discovery-set", "margaux-hoop-earrings"]
-    }
-  ],
-  "products": [
-    {
-      "handle": "astrid-signet-ring",
-      "title": "Astrid Signet Ring",
-      "description": "A weighty signet turned and finished by hand in solid 18k gold, its face left plain for you or engraved to your own mark. A modern heirloom made to be worn every day and handed on.",
-      "status": "active",
-      "productType": "Rings",
-      "vendor": "Vérane",
-      "tags": ["ring", "signet", "gold", "fine-jewellery"],
-      "categoryHandles": ["rings"],
-      "collectionHandles": ["new-arrivals", "high-jewellery"],
-      "seoTitle": "Astrid Signet Ring — solid 18k gold signet",
-      "seoDescription": "A hand-finished solid 18k gold signet ring, plain or engraved to your mark.",
-      "productTypeKey": "apparel",
-      "attributes": {
-        "fabric": "Turned from a solid billet of 18k gold and finished entirely by hand — no plating, no hollow core. The face is left broad and flat to take a seal or a monogram, the shoulders rounded so it sits close to the finger without ever catching.",
-        "fit": "A substantial, weighted everyday ring, sized true to a standard band; the broad face wears equally on the little finger or the ring finger. Between sizes, size up so a signet turns freely.",
-        "care": "Gold takes a scratch and polishes straight back — a soft cloth keeps the face bright between wears, and the atelier will re-polish the piece and re-cut an engraving for as long as you own it.",
-        "materials": [
-          {
-            "name": "18k yellow gold",
-            "percent": "75%"
-          },
-          {
-            "name": "Fine alloy",
-            "percent": "25%"
-          }
-        ],
-        "origin": "Made in France"
-      },
-      "options": [
+    "categories": [
         {
-          "name": "Metal",
-          "displayType": "swatch",
-          "values": [
-            {
-              "value": "Yellow gold"
-            },
-            {
-              "value": "Rose gold"
-            }
-          ]
-        }
-      ],
-      "variants": [
-        {
-          "sku": "VER-ASTRID-YG",
-          "priceCents": 145000,
-          "isDefault": true,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Metal": "Yellow gold"
-          }
+            "handle": "rings",
+            "name": "Rings",
+            "description": "Signets, bands and stacking rings.",
+            "featured": true
         },
         {
-          "sku": "VER-ASTRID-RG",
-          "priceCents": 145000,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Metal": "Rose gold"
-          }
-        }
-      ],
-      "images": [
-        {
-          "assetId": "astrid-signet-ring",
-          "isPrimary": true,
-          "alt": "The Astrid Signet Ring"
-        }
-      ]
-    },
-    {
-      "handle": "colette-tennis-bracelet",
-      "title": "Colette Tennis Bracelet",
-      "description": "An unbroken line of hand-set white diamonds on an 18k gold rail, each stone chosen to match its neighbour for cut and colour. The clasp is worked to sit flat and disappear.",
-      "status": "active",
-      "productType": "Bracelets",
-      "vendor": "Vérane",
-      "tags": ["bracelet", "diamond", "gold", "high-jewellery"],
-      "categoryHandles": ["bracelets"],
-      "collectionHandles": ["new-arrivals", "high-jewellery"],
-      "seoTitle": "Colette Tennis Bracelet — white-diamond line bracelet",
-      "seoDescription": "An 18k gold tennis bracelet of hand-matched white diamonds with a flat, hidden clasp.",
-      "productTypeKey": "apparel",
-      "attributes": {
-        "fabric": "An unbroken line of hand-matched white diamonds, each grain-set into an articulated 18k gold rail that flexes with the wrist. The box clasp is worked flush and fitted with a safety catch, so it sits flat and all but disappears.",
-        "fit": "Cut to drape rather than grip; we size each bracelet to the wrist on commission, with a half-link either way for the season. The clasp doubles with a hidden figure-eight for security.",
-        "care": "Rinse in warm water with a soft brush to keep the stones lively, and store it apart from harder pieces so nothing marks the gold. Every setting is checked and re-tightened by the atelier for the life of the bracelet.",
-        "materials": [
-          {
-            "name": "18k gold rail",
-            "percent": "62%"
-          },
-          {
-            "name": "White diamonds",
-            "percent": "38%"
-          }
-        ],
-        "origin": "Made in France"
-      },
-      "variants": [
-        {
-          "sku": "VER-COLETTE",
-          "priceCents": 680000,
-          "isDefault": true,
-          "inventoryPolicy": "continue"
-        }
-      ],
-      "images": [
-        {
-          "assetId": "colette-tennis-bracelet",
-          "isPrimary": true,
-          "alt": "The Colette Tennis Bracelet"
-        }
-      ]
-    },
-    {
-      "handle": "vesper-drop-earrings",
-      "title": "Vesper Drop Earrings",
-      "description": "A pair of long drops pairing polished onyx with warm 18k gold — quiet by day, and exactly enough after dark. Weighted so they hang true and sit close to the jaw.",
-      "status": "active",
-      "productType": "Earrings",
-      "vendor": "Vérane",
-      "tags": ["earrings", "onyx", "gold", "fine-jewellery"],
-      "categoryHandles": ["earrings"],
-      "collectionHandles": ["high-jewellery"],
-      "seoTitle": "Vesper Drop Earrings — onyx and 18k gold drops",
-      "seoDescription": "A pair of onyx-and-gold drop earrings, weighted to hang true against the jaw.",
-      "productTypeKey": "apparel",
-      "attributes": {
-        "fabric": "Polished onyx drops hung from warm 18k gold, weighted low so they fall true and sit close to the jaw. Posts and backs are solid gold; the join is pivoted so each drop swings a little as you move.",
-        "fit": "Long enough to read after dark, light enough to wear through dinner; for pierced ears, with a secure friction back. They sit just below the lobe, against the line of the jaw.",
-        "care": "Wipe the gold and the stone with a dry, soft cloth; onyx dislikes solvents and perfume, so dress and scent first and put these on last. The atelier re-polishes the gold and re-seats a loosened stone whenever needed.",
-        "materials": [
-          {
-            "name": "18k gold",
-            "percent": "70%"
-          },
-          {
-            "name": "Onyx",
-            "percent": "30%"
-          }
-        ],
-        "origin": "Made in France"
-      },
-      "variants": [
-        {
-          "sku": "VER-VESPER",
-          "priceCents": 115000,
-          "isDefault": true,
-          "inventoryPolicy": "continue"
-        }
-      ],
-      "images": [
-        {
-          "assetId": "vesper-drop-earrings",
-          "isPrimary": true,
-          "alt": "The Vesper Drop Earrings"
-        }
-      ]
-    },
-    {
-      "handle": "lune-pendant-necklace",
-      "title": "Lune Pendant Necklace",
-      "description": "A single 18k gold disc on a fine chain, brushed on one face and polished on the other so it catches the light as you move. Chosen in two lengths to sit at the collarbone or below.",
-      "status": "active",
-      "productType": "Necklaces",
-      "vendor": "Vérane",
-      "tags": ["necklace", "pendant", "gold", "everyday"],
-      "categoryHandles": ["necklaces"],
-      "collectionHandles": ["new-arrivals", "everyday-fine"],
-      "seoTitle": "Lune Pendant Necklace — 18k gold disc pendant",
-      "seoDescription": "A brushed-and-polished 18k gold disc pendant on a fine chain, in two lengths.",
-      "productTypeKey": "apparel",
-      "attributes": {
-        "fabric": "A single 18k gold disc, brushed on one face and mirror-polished on the other so it catches the light differently as it turns, hung from a fine cable chain on a discreet spring clasp.",
-        "fit": "Offered in two lengths, to sit at the collarbone or just below; the disc lies flat against the skin and layers cleanly under a heavier chain.",
-        "care": "A soft cloth brings the polished face back after wear; keep it clasped and hung so the fine chain never knots. Gold does not tarnish, so it asks for little more than the occasional wipe.",
-        "materials": [
-          {
-            "name": "18k gold",
-            "percent": "100%"
-          }
-        ],
-        "origin": "Made in France"
-      },
-      "options": [
-        {
-          "name": "Chain length",
-          "displayType": "dropdown",
-          "values": [
-            {
-              "value": "40cm"
-            },
-            {
-              "value": "45cm"
-            }
-          ]
-        }
-      ],
-      "variants": [
-        {
-          "sku": "VER-LUNE-40",
-          "priceCents": 98000,
-          "isDefault": true,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Chain length": "40cm"
-          }
+            "handle": "necklaces",
+            "name": "Necklaces",
+            "description": "Pendants and chains in fine gold.",
+            "featured": true
         },
         {
-          "sku": "VER-LUNE-45",
-          "priceCents": 102000,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Chain length": "45cm"
-          }
-        }
-      ],
-      "images": [
-        {
-          "assetId": "lune-pendant-necklace",
-          "isPrimary": true,
-          "alt": "The Lune Pendant Necklace"
-        }
-      ]
-    },
-    {
-      "handle": "odette-pave-band",
-      "title": "Odette Pavé Band",
-      "description": "A slim platinum band set edge to edge with pavé diamonds, low enough to stack or to wear alone. Each stone is grain-set by hand so the line reads as one bright ribbon.",
-      "status": "active",
-      "productType": "Rings",
-      "vendor": "Vérane",
-      "tags": ["ring", "band", "platinum", "diamond", "high-jewellery"],
-      "categoryHandles": ["rings"],
-      "collectionHandles": ["high-jewellery", "the-gift-edit"],
-      "seoTitle": "Odette Pavé Band — platinum pavé-diamond band",
-      "seoDescription": "A slim platinum band grain-set edge to edge with pavé diamonds.",
-      "productTypeKey": "apparel",
-      "attributes": {
-        "fabric": "A slim platinum band grain-set edge to edge with pavé diamonds, each stone raised by hand so the line reads as one continuous ribbon of light. Platinum for its weight, and for the way it refuses to wear thin.",
-        "fit": "Low enough in profile to stack or to wear alone; sized true, and best sized precisely — a fully-set band cannot be resized without lifting and re-setting the stones.",
-        "care": "Warm water and a soft brush behind the stones keeps the pavé bright — hand cream and dust dull it faster than anything. The atelier checks every grain and re-tightens the setting for life.",
-        "materials": [
-          {
-            "name": "Platinum",
-            "percent": "85%"
-          },
-          {
-            "name": "Pavé diamonds",
-            "percent": "15%"
-          }
-        ],
-        "origin": "Made in France"
-      },
-      "options": [
-        {
-          "name": "Ring size",
-          "displayType": "dropdown",
-          "values": [
-            {
-              "value": "52"
-            },
-            {
-              "value": "54"
-            }
-          ]
-        }
-      ],
-      "variants": [
-        {
-          "sku": "VER-ODETTE-52",
-          "priceCents": 240000,
-          "isDefault": true,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Ring size": "52"
-          }
+            "handle": "earrings",
+            "name": "Earrings",
+            "description": "Hoops, studs and drops.",
+            "featured": true
         },
         {
-          "sku": "VER-ODETTE-54",
-          "priceCents": 240000,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Ring size": "54"
-          }
-        }
-      ],
-      "images": [
-        {
-          "assetId": "odette-pave-band",
-          "isPrimary": true,
-          "alt": "The Odette Pavé Band"
-        }
-      ]
-    },
-    {
-      "handle": "margaux-hoop-earrings",
-      "title": "Margaux Hoop Earrings",
-      "description": "A pair of mid-weight hoops in brushed 18k gold, sized to clear the earlobe and turn without catching. The everyday hoop, made properly — solid, not hollow, and balanced to stay put.",
-      "status": "active",
-      "productType": "Earrings",
-      "vendor": "Vérane",
-      "tags": ["earrings", "hoop", "gold", "everyday"],
-      "categoryHandles": ["earrings"],
-      "collectionHandles": ["everyday-fine"],
-      "seoTitle": "Margaux Hoop Earrings — brushed 18k gold hoops",
-      "seoDescription": "A pair of solid brushed-gold hoop earrings, balanced to sit and turn cleanly.",
-      "productTypeKey": "apparel",
-      "attributes": {
-        "fabric": "Solid 18k gold hoops — not hollow tube — brushed to a soft matte that hides the marks of daily wear, on a hinged click closure that seats with a positive snap.",
-        "fit": "A mid-weight, mid-size hoop, sized to clear the lobe and turn without catching, and balanced so it hangs level rather than tipping forward. For pierced ears.",
-        "care": "The brushed finish is forgiving — a dry cloth is usually enough, and the atelier can re-brush or re-polish the surface to your preference. Store the pair clasped so the hinge stays true.",
-        "materials": [
-          {
-            "name": "18k gold",
-            "percent": "100%"
-          }
-        ],
-        "origin": "Made in France"
-      },
-      "variants": [
-        {
-          "sku": "VER-MARGAUX",
-          "priceCents": 72000,
-          "isDefault": true,
-          "inventoryPolicy": "continue"
-        }
-      ],
-      "images": [
-        {
-          "assetId": "margaux-hoop-earrings",
-          "isPrimary": true,
-          "alt": "The Margaux Hoop Earrings"
-        }
-      ]
-    },
-    {
-      "handle": "celeste-cuff",
-      "title": "Céleste Cuff",
-      "description": "A single-piece cuff in high-polished silver, formed to sit close and open just enough to slip on. Substantial without weight, and made to take a lifetime of small marks into a soft patina.",
-      "status": "active",
-      "productType": "Bracelets",
-      "vendor": "Vérane",
-      "tags": ["bracelet", "cuff", "silver", "everyday"],
-      "categoryHandles": ["bracelets"],
-      "collectionHandles": ["everyday-fine"],
-      "seoTitle": "Céleste Cuff — high-polished silver cuff",
-      "seoDescription": "A single-piece high-polished silver cuff, formed to sit close and slip on.",
-      "productTypeKey": "apparel",
-      "attributes": {
-        "fabric": "Formed from a single piece of high-polished sterling silver, shaped to sit close to the wrist with an opening just wide enough to slip on. Substantial in the hand without the dead weight of a solid bangle.",
-        "fit": "An open cuff that eases on over the wrist bone and can be gently adjusted by hand; offered in three sizes to sit snug rather than loose. Wear it high on the forearm or low at the wrist.",
-        "care": "Silver lives — worn often it stays bright; left in a drawer it softens to a patina you can either keep or lift with a silver cloth. The atelier will re-polish it back to a mirror whenever you like.",
-        "materials": [
-          {
-            "name": "Sterling silver",
-            "percent": "92.5%"
-          },
-          {
-            "name": "Fine copper",
-            "percent": "7.5%"
-          }
-        ],
-        "origin": "Made in Italy"
-      },
-      "options": [
-        {
-          "name": "Size",
-          "displayType": "dropdown",
-          "values": [
-            {
-              "value": "Small"
-            },
-            {
-              "value": "Medium"
-            },
-            {
-              "value": "Large"
-            }
-          ]
-        }
-      ],
-      "variants": [
-        {
-          "sku": "VER-CELESTE-S",
-          "priceCents": 89000,
-          "isDefault": true,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Size": "Small"
-          }
+            "handle": "bracelets",
+            "name": "Bracelets",
+            "description": "Cuffs and line bracelets.",
+            "featured": false
         },
         {
-          "sku": "VER-CELESTE-M",
-          "priceCents": 89000,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Size": "Medium"
-          }
+            "handle": "fragrance",
+            "name": "Fragrance",
+            "description": "The house eaux de parfum.",
+            "featured": true
+        }
+    ],
+    "collections": [
+        {
+            "handle": "new-arrivals",
+            "name": "New Arrivals",
+            "description": "The latest from the atelier.",
+            "type": "manual",
+            "featured": true,
+            "productHandles": [
+                "astrid-signet-ring",
+                "colette-tennis-bracelet",
+                "lune-pendant-necklace",
+                "no3-black-rose-oud",
+                "the-four-eaux-discovery-set"
+            ]
         },
         {
-          "sku": "VER-CELESTE-L",
-          "priceCents": 89000,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Size": "Large"
-          }
-        }
-      ],
-      "images": [
+            "handle": "high-jewellery",
+            "name": "High Jewellery",
+            "description": "The pieces we make a few of a year.",
+            "type": "manual",
+            "featured": false,
+            "productHandles": [
+                "colette-tennis-bracelet",
+                "odette-pave-band",
+                "vesper-drop-earrings",
+                "astrid-signet-ring"
+            ]
+        },
         {
-          "assetId": "celeste-cuff",
-          "isPrimary": true,
-          "alt": "The Céleste Cuff"
-        }
-      ]
-    },
-    {
-      "handle": "no1-fig-neroli",
-      "title": "Nº1 Fig & Neroli",
-      "description": "The house’s opening scent — green fig softened by neroli and a warm cedar base. Bright at first, then quiet and skin-close for hours. An eau de parfum, composed in small batches.",
-      "status": "active",
-      "productType": "Fragrance",
-      "vendor": "Vérane",
-      "tags": ["fragrance", "eau-de-parfum", "fig", "neroli"],
-      "categoryHandles": ["fragrance"],
-      "collectionHandles": ["fragrance"],
-      "seoTitle": "Nº1 Fig & Neroli — eau de parfum",
-      "seoDescription": "A green fig and neroli eau de parfum on a warm cedar base, in 50ml and 100ml.",
-      "productTypeKey": "apparel",
-      "attributes": {
-        "fabric": "An eau de parfum built on green fig, softened with neroli and set on a warm cedar base — composed in small batches and left to marry before it is bottled. Bright at the top, quiet and skin-close as it settles.",
-        "fit": "Wears soft and close rather than loud; a pulse at the wrist and the throat carries through a day. Brightest in the first hour, then a warm second skin.",
-        "care": "Keep it out of heat, direct sun and steam — a closed drawer or its own box, never a bathroom shelf, which is the one place a fine fragrance turns. Composed from natural materials, it settles and deepens a little with age rather than fading.",
-        "materials": [
-          {
-            "name": "Alcohol base",
-            "percent": "82%"
-          },
-          {
-            "name": "Fig & neroli accord",
-            "percent": "14%"
-          },
-          {
-            "name": "Cedar & musk",
-            "percent": "4%"
-          }
-        ],
-        "origin": "Made in Grasse, France"
-      },
-      "options": [
+            "handle": "everyday-fine",
+            "name": "Everyday Fine",
+            "description": "Fine gold and silver for every day.",
+            "type": "manual",
+            "featured": false,
+            "productHandles": [
+                "lune-pendant-necklace",
+                "margaux-hoop-earrings",
+                "celeste-cuff"
+            ]
+        },
         {
-          "name": "Size",
-          "displayType": "dropdown",
-          "values": [
-            {
-              "value": "50ml"
+            "handle": "fragrance",
+            "name": "Fragrance",
+            "description": "The four house eaux and the discovery set.",
+            "type": "manual",
+            "featured": false,
+            "productHandles": [
+                "no1-fig-neroli",
+                "no2-iris-ambrette",
+                "no3-black-rose-oud",
+                "no4-bergamot-vetiver",
+                "the-four-eaux-discovery-set"
+            ]
+        },
+        {
+            "handle": "the-gift-edit",
+            "name": "The Gift Edit",
+            "description": "A short list, chosen to give.",
+            "type": "manual",
+            "featured": false,
+            "productHandles": [
+                "odette-pave-band",
+                "the-four-eaux-discovery-set",
+                "margaux-hoop-earrings"
+            ]
+        }
+    ],
+    "products": [
+        {
+            "handle": "astrid-signet-ring",
+            "title": "Astrid Signet Ring",
+            "description": "A weighty signet turned and finished by hand in solid 18k gold, its face left plain for you or engraved to your own mark. A modern heirloom made to be worn every day and handed on.",
+            "status": "active",
+            "productType": "Rings",
+            "vendor": "Vérane",
+            "tags": [
+                "ring",
+                "signet",
+                "gold",
+                "fine-jewellery"
+            ],
+            "categoryHandles": [
+                "rings"
+            ],
+            "collectionHandles": [
+                "new-arrivals",
+                "high-jewellery"
+            ],
+            "seoTitle": "Astrid Signet Ring — solid 18k gold signet",
+            "seoDescription": "A hand-finished solid 18k gold signet ring, plain or engraved to your mark.",
+            "productTypeKey": "apparel",
+            "attributes": {
+                "fabric": "Turned from a solid billet of 18k gold and finished entirely by hand — no plating, no hollow core. The face is left broad and flat to take a seal or a monogram, the shoulders rounded so it sits close to the finger without ever catching.",
+                "fit": "A substantial, weighted everyday ring, sized true to a standard band; the broad face wears equally on the little finger or the ring finger. Between sizes, size up so a signet turns freely.",
+                "care": "Gold takes a scratch and polishes straight back — a soft cloth keeps the face bright between wears, and the atelier will re-polish the piece and re-cut an engraving for as long as you own it.",
+                "materials": [
+                    {
+                        "name": "18k yellow gold",
+                        "percent": "75%"
+                    },
+                    {
+                        "name": "Fine alloy",
+                        "percent": "25%"
+                    }
+                ],
+                "origin": "Made in France"
             },
-            {
-              "value": "100ml"
-            }
-          ]
-        }
-      ],
-      "variants": [
-        {
-          "sku": "VER-NO1-50",
-          "priceCents": 18000,
-          "isDefault": true,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Size": "50ml"
-          }
+            "options": [
+                {
+                    "name": "Metal",
+                    "displayType": "swatch",
+                    "values": [
+                        {
+                            "value": "Yellow gold"
+                        },
+                        {
+                            "value": "Rose gold"
+                        }
+                    ]
+                }
+            ],
+            "variants": [
+                {
+                    "sku": "VER-ASTRID-YG",
+                    "priceCents": 145000,
+                    "isDefault": true,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Metal": "Yellow gold"
+                    }
+                },
+                {
+                    "sku": "VER-ASTRID-RG",
+                    "priceCents": 145000,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Metal": "Rose gold"
+                    }
+                }
+            ],
+            "images": [
+                {
+                    "assetId": "astrid-signet-ring",
+                    "isPrimary": true,
+                    "alt": "The Astrid Signet Ring"
+                }
+            ]
         },
         {
-          "sku": "VER-NO1-100",
-          "priceCents": 26000,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Size": "100ml"
-          }
-        }
-      ],
-      "images": [
-        {
-          "assetId": "no1-fig-neroli",
-          "isPrimary": true,
-          "alt": "Nº1 Fig & Neroli eau de parfum"
-        }
-      ]
-    },
-    {
-      "handle": "no2-iris-ambrette",
-      "title": "Nº2 Iris & Ambrette",
-      "description": "Powdery iris drawn out with ambrette seed and a breath of musk — soft, cool and quietly expensive. The house’s most-worn scent, and the hardest to name on someone else.",
-      "status": "active",
-      "productType": "Fragrance",
-      "vendor": "Vérane",
-      "tags": ["fragrance", "eau-de-parfum", "iris", "musk"],
-      "categoryHandles": ["fragrance"],
-      "collectionHandles": ["fragrance"],
-      "seoTitle": "Nº2 Iris & Ambrette — eau de parfum",
-      "seoDescription": "A powdery iris and ambrette-seed eau de parfum with a soft musk, in 50ml and 100ml.",
-      "productTypeKey": "apparel",
-      "attributes": {
-        "fabric": "An eau de parfum that draws powdery iris out with ambrette seed and a breath of musk — cool, soft and quietly expensive. The most-worn scent in the house, and the hardest to place on someone else.",
-        "fit": "Sits close to the skin and stays soft all day — never a scent that fills a room. A single application at the pulse points lasts, and it layers well over Nº1.",
-        "care": "Keep it out of heat, direct sun and steam — a closed drawer or its own box, never a bathroom shelf, which is the one place a fine fragrance turns. Composed from natural materials, it settles and deepens a little with age rather than fading.",
-        "materials": [
-          {
-            "name": "Alcohol base",
-            "percent": "81%"
-          },
-          {
-            "name": "Iris & ambrette accord",
-            "percent": "15%"
-          },
-          {
-            "name": "Musk",
-            "percent": "4%"
-          }
-        ],
-        "origin": "Made in Grasse, France"
-      },
-      "options": [
-        {
-          "name": "Size",
-          "displayType": "dropdown",
-          "values": [
-            {
-              "value": "50ml"
+            "handle": "colette-tennis-bracelet",
+            "title": "Colette Tennis Bracelet",
+            "description": "An unbroken line of hand-set white diamonds on an 18k gold rail, each stone chosen to match its neighbour for cut and color. The clasp is worked to sit flat and disappear.",
+            "status": "active",
+            "productType": "Bracelets",
+            "vendor": "Vérane",
+            "tags": [
+                "bracelet",
+                "diamond",
+                "gold",
+                "high-jewellery"
+            ],
+            "categoryHandles": [
+                "bracelets"
+            ],
+            "collectionHandles": [
+                "new-arrivals",
+                "high-jewellery"
+            ],
+            "seoTitle": "Colette Tennis Bracelet — white-diamond line bracelet",
+            "seoDescription": "An 18k gold tennis bracelet of hand-matched white diamonds with a flat, hidden clasp.",
+            "productTypeKey": "apparel",
+            "attributes": {
+                "fabric": "An unbroken line of hand-matched white diamonds, each grain-set into an articulated 18k gold rail that flexes with the wrist. The box clasp is worked flush and fitted with a safety catch, so it sits flat and all but disappears.",
+                "fit": "Cut to drape rather than grip; we size each bracelet to the wrist on commission, with a half-link either way for the season. The clasp doubles with a hidden figure-eight for security.",
+                "care": "Rinse in warm water with a soft brush to keep the stones lively, and store it apart from harder pieces so nothing marks the gold. Every setting is checked and re-tightened by the atelier for the life of the bracelet.",
+                "materials": [
+                    {
+                        "name": "18k gold rail",
+                        "percent": "62%"
+                    },
+                    {
+                        "name": "White diamonds",
+                        "percent": "38%"
+                    }
+                ],
+                "origin": "Made in France"
             },
-            {
-              "value": "100ml"
-            }
-          ]
-        }
-      ],
-      "variants": [
-        {
-          "sku": "VER-NO2-50",
-          "priceCents": 18000,
-          "isDefault": true,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Size": "50ml"
-          }
+            "variants": [
+                {
+                    "sku": "VER-COLETTE",
+                    "priceCents": 680000,
+                    "isDefault": true,
+                    "inventoryPolicy": "continue"
+                }
+            ],
+            "images": [
+                {
+                    "assetId": "colette-tennis-bracelet",
+                    "isPrimary": true,
+                    "alt": "The Colette Tennis Bracelet"
+                }
+            ]
         },
         {
-          "sku": "VER-NO2-100",
-          "priceCents": 26000,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Size": "100ml"
-          }
-        }
-      ],
-      "images": [
-        {
-          "assetId": "no2-iris-ambrette",
-          "isPrimary": true,
-          "alt": "Nº2 Iris & Ambrette eau de parfum"
-        }
-      ]
-    },
-    {
-      "handle": "no3-black-rose-oud",
-      "title": "Nº3 Black Rose & Oud",
-      "description": "The evening scent — dark rose over real oud and a resinous amber. Warm, dense and made to be noticed at close range. The one the atelier is asked about most.",
-      "status": "active",
-      "productType": "Fragrance",
-      "vendor": "Vérane",
-      "tags": ["fragrance", "eau-de-parfum", "rose", "oud"],
-      "categoryHandles": ["fragrance"],
-      "collectionHandles": ["fragrance", "new-arrivals"],
-      "seoTitle": "Nº3 Black Rose & Oud — eau de parfum",
-      "seoDescription": "A dark-rose and oud eau de parfum on a resinous amber base, in 50ml and 100ml.",
-      "productTypeKey": "apparel",
-      "attributes": {
-        "fabric": "The evening eau — a dark rose laid over real oud and a resinous amber, composed at a higher concentration so it holds warm and dense at close range. The scent the atelier is asked about most.",
-        "fit": "Made to be noticed at close range rather than across a room; a little carries a long way. One pulse at the throat is plenty for an evening.",
-        "care": "Keep it out of heat, direct sun and steam — a closed drawer or its own box, never a bathroom shelf, which is the one place a fine fragrance turns. Composed from natural materials, it settles and deepens a little with age rather than fading.",
-        "materials": [
-          {
-            "name": "Alcohol base",
-            "percent": "78%"
-          },
-          {
-            "name": "Rose & oud accord",
-            "percent": "18%"
-          },
-          {
-            "name": "Amber",
-            "percent": "4%"
-          }
-        ],
-        "origin": "Made in Grasse, France"
-      },
-      "options": [
-        {
-          "name": "Size",
-          "displayType": "dropdown",
-          "values": [
-            {
-              "value": "50ml"
+            "handle": "vesper-drop-earrings",
+            "title": "Vesper Drop Earrings",
+            "description": "A pair of long drops pairing polished onyx with warm 18k gold — quiet by day, and exactly enough after dark. Weighted so they hang true and sit close to the jaw.",
+            "status": "active",
+            "productType": "Earrings",
+            "vendor": "Vérane",
+            "tags": [
+                "earrings",
+                "onyx",
+                "gold",
+                "fine-jewellery"
+            ],
+            "categoryHandles": [
+                "earrings"
+            ],
+            "collectionHandles": [
+                "high-jewellery"
+            ],
+            "seoTitle": "Vesper Drop Earrings — onyx and 18k gold drops",
+            "seoDescription": "A pair of onyx-and-gold drop earrings, weighted to hang true against the jaw.",
+            "productTypeKey": "apparel",
+            "attributes": {
+                "fabric": "Polished onyx drops hung from warm 18k gold, weighted low so they fall true and sit close to the jaw. Posts and backs are solid gold; the join is pivoted so each drop swings a little as you move.",
+                "fit": "Long enough to read after dark, light enough to wear through dinner; for pierced ears, with a secure friction back. They sit just below the lobe, against the line of the jaw.",
+                "care": "Wipe the gold and the stone with a dry, soft cloth; onyx dislikes solvents and perfume, so dress and scent first and put these on last. The atelier re-polishes the gold and re-seats a loosened stone whenever needed.",
+                "materials": [
+                    {
+                        "name": "18k gold",
+                        "percent": "70%"
+                    },
+                    {
+                        "name": "Onyx",
+                        "percent": "30%"
+                    }
+                ],
+                "origin": "Made in France"
             },
-            {
-              "value": "100ml"
-            }
-          ]
-        }
-      ],
-      "variants": [
-        {
-          "sku": "VER-NO3-50",
-          "priceCents": 18000,
-          "isDefault": true,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Size": "50ml"
-          }
+            "variants": [
+                {
+                    "sku": "VER-VESPER",
+                    "priceCents": 115000,
+                    "isDefault": true,
+                    "inventoryPolicy": "continue"
+                }
+            ],
+            "images": [
+                {
+                    "assetId": "vesper-drop-earrings",
+                    "isPrimary": true,
+                    "alt": "The Vesper Drop Earrings"
+                }
+            ]
         },
         {
-          "sku": "VER-NO3-100",
-          "priceCents": 26000,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Size": "100ml"
-          }
-        }
-      ],
-      "images": [
-        {
-          "assetId": "no3-black-rose-oud",
-          "isPrimary": true,
-          "alt": "Nº3 Black Rose & Oud eau de parfum"
-        }
-      ]
-    },
-    {
-      "handle": "no4-bergamot-vetiver",
-      "title": "Nº4 Bergamot & Vetiver",
-      "description": "Cool bergamot over smoky vetiver and a clean woody dry-down — the house’s sharpest, most unisex scent. Crisp in the morning, and still there, softened, by evening.",
-      "status": "active",
-      "productType": "Fragrance",
-      "vendor": "Vérane",
-      "tags": ["fragrance", "eau-de-parfum", "bergamot", "vetiver"],
-      "categoryHandles": ["fragrance"],
-      "collectionHandles": ["fragrance"],
-      "seoTitle": "Nº4 Bergamot & Vetiver — eau de parfum",
-      "seoDescription": "A bergamot and smoky-vetiver eau de parfum with a clean woody dry-down, in 50ml and 100ml.",
-      "productTypeKey": "apparel",
-      "attributes": {
-        "fabric": "Cool bergamot over smoky vetiver on a clean woody dry-down — the sharpest and most unisex of the four. Crisp on application, and still there, softened, by evening.",
-        "fit": "The most versatile of the eaux — bright enough for the morning, settled enough for the night, and easy on close company. A pulse at each wrist carries the day.",
-        "care": "Keep it out of heat, direct sun and steam — a closed drawer or its own box, never a bathroom shelf, which is the one place a fine fragrance turns. Composed from natural materials, it settles and deepens a little with age rather than fading.",
-        "materials": [
-          {
-            "name": "Alcohol base",
-            "percent": "83%"
-          },
-          {
-            "name": "Bergamot & vetiver accord",
-            "percent": "13%"
-          },
-          {
-            "name": "Woods",
-            "percent": "4%"
-          }
-        ],
-        "origin": "Made in Grasse, France"
-      },
-      "options": [
-        {
-          "name": "Size",
-          "displayType": "dropdown",
-          "values": [
-            {
-              "value": "50ml"
+            "handle": "lune-pendant-necklace",
+            "title": "Lune Pendant Necklace",
+            "description": "A single 18k gold disc on a fine chain, brushed on one face and polished on the other so it catches the light as you move. Chosen in two lengths to sit at the collarbone or below.",
+            "status": "active",
+            "productType": "Necklaces",
+            "vendor": "Vérane",
+            "tags": [
+                "necklace",
+                "pendant",
+                "gold",
+                "everyday"
+            ],
+            "categoryHandles": [
+                "necklaces"
+            ],
+            "collectionHandles": [
+                "new-arrivals",
+                "everyday-fine"
+            ],
+            "seoTitle": "Lune Pendant Necklace — 18k gold disc pendant",
+            "seoDescription": "A brushed-and-polished 18k gold disc pendant on a fine chain, in two lengths.",
+            "productTypeKey": "apparel",
+            "attributes": {
+                "fabric": "A single 18k gold disc, brushed on one face and mirror-polished on the other so it catches the light differently as it turns, hung from a fine cable chain on a discreet spring clasp.",
+                "fit": "Offered in two lengths, to sit at the collarbone or just below; the disc lies flat against the skin and layers cleanly under a heavier chain.",
+                "care": "A soft cloth brings the polished face back after wear; keep it clasped and hung so the fine chain never knots. Gold does not tarnish, so it asks for little more than the occasional wipe.",
+                "materials": [
+                    {
+                        "name": "18k gold",
+                        "percent": "100%"
+                    }
+                ],
+                "origin": "Made in France"
             },
-            {
-              "value": "100ml"
-            }
-          ]
-        }
-      ],
-      "variants": [
-        {
-          "sku": "VER-NO4-50",
-          "priceCents": 18000,
-          "isDefault": true,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Size": "50ml"
-          }
+            "options": [
+                {
+                    "name": "Chain length",
+                    "displayType": "dropdown",
+                    "values": [
+                        {
+                            "value": "40cm"
+                        },
+                        {
+                            "value": "45cm"
+                        }
+                    ]
+                }
+            ],
+            "variants": [
+                {
+                    "sku": "VER-LUNE-40",
+                    "priceCents": 98000,
+                    "isDefault": true,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Chain length": "40cm"
+                    }
+                },
+                {
+                    "sku": "VER-LUNE-45",
+                    "priceCents": 102000,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Chain length": "45cm"
+                    }
+                }
+            ],
+            "images": [
+                {
+                    "assetId": "lune-pendant-necklace",
+                    "isPrimary": true,
+                    "alt": "The Lune Pendant Necklace"
+                }
+            ]
         },
         {
-          "sku": "VER-NO4-100",
-          "priceCents": 26000,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Size": "100ml"
-          }
-        }
-      ],
-      "images": [
+            "handle": "odette-pave-band",
+            "title": "Odette Pavé Band",
+            "description": "A slim platinum band set edge to edge with pavé diamonds, low enough to stack or to wear alone. Each stone is grain-set by hand so the line reads as one bright ribbon.",
+            "status": "active",
+            "productType": "Rings",
+            "vendor": "Vérane",
+            "tags": [
+                "ring",
+                "band",
+                "platinum",
+                "diamond",
+                "high-jewellery"
+            ],
+            "categoryHandles": [
+                "rings"
+            ],
+            "collectionHandles": [
+                "high-jewellery",
+                "the-gift-edit"
+            ],
+            "seoTitle": "Odette Pavé Band — platinum pavé-diamond band",
+            "seoDescription": "A slim platinum band grain-set edge to edge with pavé diamonds.",
+            "productTypeKey": "apparel",
+            "attributes": {
+                "fabric": "A slim platinum band grain-set edge to edge with pavé diamonds, each stone raised by hand so the line reads as one continuous ribbon of light. Platinum for its weight, and for the way it refuses to wear thin.",
+                "fit": "Low enough in profile to stack or to wear alone; sized true, and best sized precisely — a fully-set band cannot be resized without lifting and re-setting the stones.",
+                "care": "Warm water and a soft brush behind the stones keeps the pavé bright — hand cream and dust dull it faster than anything. The atelier checks every grain and re-tightens the setting for life.",
+                "materials": [
+                    {
+                        "name": "Platinum",
+                        "percent": "85%"
+                    },
+                    {
+                        "name": "Pavé diamonds",
+                        "percent": "15%"
+                    }
+                ],
+                "origin": "Made in France"
+            },
+            "options": [
+                {
+                    "name": "Ring size",
+                    "displayType": "dropdown",
+                    "values": [
+                        {
+                            "value": "52"
+                        },
+                        {
+                            "value": "54"
+                        }
+                    ]
+                }
+            ],
+            "variants": [
+                {
+                    "sku": "VER-ODETTE-52",
+                    "priceCents": 240000,
+                    "isDefault": true,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Ring size": "52"
+                    }
+                },
+                {
+                    "sku": "VER-ODETTE-54",
+                    "priceCents": 240000,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Ring size": "54"
+                    }
+                }
+            ],
+            "images": [
+                {
+                    "assetId": "odette-pave-band",
+                    "isPrimary": true,
+                    "alt": "The Odette Pavé Band"
+                }
+            ]
+        },
         {
-          "assetId": "no4-bergamot-vetiver",
-          "isPrimary": true,
-          "alt": "Nº4 Bergamot & Vetiver eau de parfum"
-        }
-      ]
-    },
-    {
-      "handle": "the-four-eaux-discovery-set",
-      "title": "The Four Eaux — Discovery Set",
-      "description": "All four house scents in 2ml travel vials, boxed together — the honest way to find yours before committing to a bottle. The set’s value is redeemable against any full-size eau.",
-      "status": "active",
-      "productType": "Fragrance",
-      "vendor": "Vérane",
-      "tags": ["fragrance", "discovery-set", "gift", "sampler"],
-      "categoryHandles": ["fragrance"],
-      "collectionHandles": ["fragrance", "new-arrivals", "the-gift-edit"],
-      "seoTitle": "The Four Eaux — Vérane fragrance discovery set",
-      "seoDescription": "All four Vérane eaux de parfum in 2ml vials, redeemable against a full-size bottle.",
-      "productTypeKey": "apparel",
-      "attributes": {
-        "fabric": "All four house eaux — Nº1 through Nº4 — decanted into 2ml travel vials and boxed together, drawn from the same small batches as the full bottles. The honest way to live with each scent before choosing.",
-        "fit": "A week with a single vial tells you far more than any note list; wear one at a time, on skin, across a full day. Its value is redeemable against any full-size bottle.",
-        "care": "Keep it out of heat, direct sun and steam — a closed drawer or its own box, never a bathroom shelf, which is the one place a fine fragrance turns. Composed from natural materials, it settles and deepens a little with age rather than fading.",
-        "materials": [
-          {
-            "name": "Alcohol base",
-            "percent": "80%"
-          },
-          {
-            "name": "The four house accords",
-            "percent": "18%"
-          },
-          {
-            "name": "Musk & wood bases",
-            "percent": "2%"
-          }
-        ],
-        "origin": "Made in Grasse, France"
-      },
-      "variants": [
+            "handle": "margaux-hoop-earrings",
+            "title": "Margaux Hoop Earrings",
+            "description": "A pair of mid-weight hoops in brushed 18k gold, sized to clear the earlobe and turn without catching. The everyday hoop, made properly — solid, not hollow, and balanced to stay put.",
+            "status": "active",
+            "productType": "Earrings",
+            "vendor": "Vérane",
+            "tags": [
+                "earrings",
+                "hoop",
+                "gold",
+                "everyday"
+            ],
+            "categoryHandles": [
+                "earrings"
+            ],
+            "collectionHandles": [
+                "everyday-fine"
+            ],
+            "seoTitle": "Margaux Hoop Earrings — brushed 18k gold hoops",
+            "seoDescription": "A pair of solid brushed-gold hoop earrings, balanced to sit and turn cleanly.",
+            "productTypeKey": "apparel",
+            "attributes": {
+                "fabric": "Solid 18k gold hoops — not hollow tube — brushed to a soft matte that hides the marks of daily wear, on a hinged click closure that seats with a positive snap.",
+                "fit": "A mid-weight, mid-size hoop, sized to clear the lobe and turn without catching, and balanced so it hangs level rather than tipping forward. For pierced ears.",
+                "care": "The brushed finish is forgiving — a dry cloth is usually enough, and the atelier can re-brush or re-polish the surface to your preference. Store the pair clasped so the hinge stays true.",
+                "materials": [
+                    {
+                        "name": "18k gold",
+                        "percent": "100%"
+                    }
+                ],
+                "origin": "Made in France"
+            },
+            "variants": [
+                {
+                    "sku": "VER-MARGAUX",
+                    "priceCents": 72000,
+                    "isDefault": true,
+                    "inventoryPolicy": "continue"
+                }
+            ],
+            "images": [
+                {
+                    "assetId": "margaux-hoop-earrings",
+                    "isPrimary": true,
+                    "alt": "The Margaux Hoop Earrings"
+                }
+            ]
+        },
         {
-          "sku": "VER-DISCOVERY",
-          "priceCents": 9500,
-          "isDefault": true,
-          "inventoryPolicy": "continue"
-        }
-      ],
-      "images": [
+            "handle": "celeste-cuff",
+            "title": "Céleste Cuff",
+            "description": "A single-piece cuff in high-polished silver, formed to sit close and open just enough to slip on. Substantial without weight, and made to take a lifetime of small marks into a soft patina.",
+            "status": "active",
+            "productType": "Bracelets",
+            "vendor": "Vérane",
+            "tags": [
+                "bracelet",
+                "cuff",
+                "silver",
+                "everyday"
+            ],
+            "categoryHandles": [
+                "bracelets"
+            ],
+            "collectionHandles": [
+                "everyday-fine"
+            ],
+            "seoTitle": "Céleste Cuff — high-polished silver cuff",
+            "seoDescription": "A single-piece high-polished silver cuff, formed to sit close and slip on.",
+            "productTypeKey": "apparel",
+            "attributes": {
+                "fabric": "Formed from a single piece of high-polished sterling silver, shaped to sit close to the wrist with an opening just wide enough to slip on. Substantial in the hand without the dead weight of a solid bangle.",
+                "fit": "An open cuff that eases on over the wrist bone and can be gently adjusted by hand; offered in three sizes to sit snug rather than loose. Wear it high on the forearm or low at the wrist.",
+                "care": "Silver lives — worn often it stays bright; left in a drawer it softens to a patina you can either keep or lift with a silver cloth. The atelier will re-polish it back to a mirror whenever you like.",
+                "materials": [
+                    {
+                        "name": "Sterling silver",
+                        "percent": "92.5%"
+                    },
+                    {
+                        "name": "Fine copper",
+                        "percent": "7.5%"
+                    }
+                ],
+                "origin": "Made in Italy"
+            },
+            "options": [
+                {
+                    "name": "Size",
+                    "displayType": "dropdown",
+                    "values": [
+                        {
+                            "value": "Small"
+                        },
+                        {
+                            "value": "Medium"
+                        },
+                        {
+                            "value": "Large"
+                        }
+                    ]
+                }
+            ],
+            "variants": [
+                {
+                    "sku": "VER-CELESTE-S",
+                    "priceCents": 89000,
+                    "isDefault": true,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Size": "Small"
+                    }
+                },
+                {
+                    "sku": "VER-CELESTE-M",
+                    "priceCents": 89000,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Size": "Medium"
+                    }
+                },
+                {
+                    "sku": "VER-CELESTE-L",
+                    "priceCents": 89000,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Size": "Large"
+                    }
+                }
+            ],
+            "images": [
+                {
+                    "assetId": "celeste-cuff",
+                    "isPrimary": true,
+                    "alt": "The Céleste Cuff"
+                }
+            ]
+        },
         {
-          "assetId": "discovery-set",
-          "isPrimary": true,
-          "alt": "The Four Eaux Discovery Set"
+            "handle": "no1-fig-neroli",
+            "title": "Nº1 Fig & Neroli",
+            "description": "The house’s opening scent — green fig softened by neroli and a warm cedar base. Bright at first, then quiet and skin-close for hours. An eau de parfum, composed in small batches.",
+            "status": "active",
+            "productType": "Fragrance",
+            "vendor": "Vérane",
+            "tags": [
+                "fragrance",
+                "eau-de-parfum",
+                "fig",
+                "neroli"
+            ],
+            "categoryHandles": [
+                "fragrance"
+            ],
+            "collectionHandles": [
+                "fragrance"
+            ],
+            "seoTitle": "Nº1 Fig & Neroli — eau de parfum",
+            "seoDescription": "A green fig and neroli eau de parfum on a warm cedar base, in 50ml and 100ml.",
+            "productTypeKey": "apparel",
+            "attributes": {
+                "fabric": "An eau de parfum built on green fig, softened with neroli and set on a warm cedar base — composed in small batches and left to marry before it is bottled. Bright at the top, quiet and skin-close as it settles.",
+                "fit": "Wears soft and close rather than loud; a pulse at the wrist and the throat carries through a day. Brightest in the first hour, then a warm second skin.",
+                "care": "Keep it out of heat, direct sun and steam — a closed drawer or its own box, never a bathroom shelf, which is the one place a fine fragrance turns. Composed from natural materials, it settles and deepens a little with age rather than fading.",
+                "materials": [
+                    {
+                        "name": "Alcohol base",
+                        "percent": "82%"
+                    },
+                    {
+                        "name": "Fig & neroli accord",
+                        "percent": "14%"
+                    },
+                    {
+                        "name": "Cedar & musk",
+                        "percent": "4%"
+                    }
+                ],
+                "origin": "Made in Grasse, France"
+            },
+            "options": [
+                {
+                    "name": "Size",
+                    "displayType": "dropdown",
+                    "values": [
+                        {
+                            "value": "50ml"
+                        },
+                        {
+                            "value": "100ml"
+                        }
+                    ]
+                }
+            ],
+            "variants": [
+                {
+                    "sku": "VER-NO1-50",
+                    "priceCents": 18000,
+                    "isDefault": true,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Size": "50ml"
+                    }
+                },
+                {
+                    "sku": "VER-NO1-100",
+                    "priceCents": 26000,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Size": "100ml"
+                    }
+                }
+            ],
+            "images": [
+                {
+                    "assetId": "no1-fig-neroli",
+                    "isPrimary": true,
+                    "alt": "Nº1 Fig & Neroli eau de parfum"
+                }
+            ]
+        },
+        {
+            "handle": "no2-iris-ambrette",
+            "title": "Nº2 Iris & Ambrette",
+            "description": "Powdery iris drawn out with ambrette seed and a breath of musk — soft, cool and quietly expensive. The house’s most-worn scent, and the hardest to name on someone else.",
+            "status": "active",
+            "productType": "Fragrance",
+            "vendor": "Vérane",
+            "tags": [
+                "fragrance",
+                "eau-de-parfum",
+                "iris",
+                "musk"
+            ],
+            "categoryHandles": [
+                "fragrance"
+            ],
+            "collectionHandles": [
+                "fragrance"
+            ],
+            "seoTitle": "Nº2 Iris & Ambrette — eau de parfum",
+            "seoDescription": "A powdery iris and ambrette-seed eau de parfum with a soft musk, in 50ml and 100ml.",
+            "productTypeKey": "apparel",
+            "attributes": {
+                "fabric": "An eau de parfum that draws powdery iris out with ambrette seed and a breath of musk — cool, soft and quietly expensive. The most-worn scent in the house, and the hardest to place on someone else.",
+                "fit": "Sits close to the skin and stays soft all day — never a scent that fills a room. A single application at the pulse points lasts, and it layers well over Nº1.",
+                "care": "Keep it out of heat, direct sun and steam — a closed drawer or its own box, never a bathroom shelf, which is the one place a fine fragrance turns. Composed from natural materials, it settles and deepens a little with age rather than fading.",
+                "materials": [
+                    {
+                        "name": "Alcohol base",
+                        "percent": "81%"
+                    },
+                    {
+                        "name": "Iris & ambrette accord",
+                        "percent": "15%"
+                    },
+                    {
+                        "name": "Musk",
+                        "percent": "4%"
+                    }
+                ],
+                "origin": "Made in Grasse, France"
+            },
+            "options": [
+                {
+                    "name": "Size",
+                    "displayType": "dropdown",
+                    "values": [
+                        {
+                            "value": "50ml"
+                        },
+                        {
+                            "value": "100ml"
+                        }
+                    ]
+                }
+            ],
+            "variants": [
+                {
+                    "sku": "VER-NO2-50",
+                    "priceCents": 18000,
+                    "isDefault": true,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Size": "50ml"
+                    }
+                },
+                {
+                    "sku": "VER-NO2-100",
+                    "priceCents": 26000,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Size": "100ml"
+                    }
+                }
+            ],
+            "images": [
+                {
+                    "assetId": "no2-iris-ambrette",
+                    "isPrimary": true,
+                    "alt": "Nº2 Iris & Ambrette eau de parfum"
+                }
+            ]
+        },
+        {
+            "handle": "no3-black-rose-oud",
+            "title": "Nº3 Black Rose & Oud",
+            "description": "The evening scent — dark rose over real oud and a resinous amber. Warm, dense and made to be noticed at close range. The one the atelier is asked about most.",
+            "status": "active",
+            "productType": "Fragrance",
+            "vendor": "Vérane",
+            "tags": [
+                "fragrance",
+                "eau-de-parfum",
+                "rose",
+                "oud"
+            ],
+            "categoryHandles": [
+                "fragrance"
+            ],
+            "collectionHandles": [
+                "fragrance",
+                "new-arrivals"
+            ],
+            "seoTitle": "Nº3 Black Rose & Oud — eau de parfum",
+            "seoDescription": "A dark-rose and oud eau de parfum on a resinous amber base, in 50ml and 100ml.",
+            "productTypeKey": "apparel",
+            "attributes": {
+                "fabric": "The evening eau — a dark rose laid over real oud and a resinous amber, composed at a higher concentration so it holds warm and dense at close range. The scent the atelier is asked about most.",
+                "fit": "Made to be noticed at close range rather than across a room; a little carries a long way. One pulse at the throat is plenty for an evening.",
+                "care": "Keep it out of heat, direct sun and steam — a closed drawer or its own box, never a bathroom shelf, which is the one place a fine fragrance turns. Composed from natural materials, it settles and deepens a little with age rather than fading.",
+                "materials": [
+                    {
+                        "name": "Alcohol base",
+                        "percent": "78%"
+                    },
+                    {
+                        "name": "Rose & oud accord",
+                        "percent": "18%"
+                    },
+                    {
+                        "name": "Amber",
+                        "percent": "4%"
+                    }
+                ],
+                "origin": "Made in Grasse, France"
+            },
+            "options": [
+                {
+                    "name": "Size",
+                    "displayType": "dropdown",
+                    "values": [
+                        {
+                            "value": "50ml"
+                        },
+                        {
+                            "value": "100ml"
+                        }
+                    ]
+                }
+            ],
+            "variants": [
+                {
+                    "sku": "VER-NO3-50",
+                    "priceCents": 18000,
+                    "isDefault": true,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Size": "50ml"
+                    }
+                },
+                {
+                    "sku": "VER-NO3-100",
+                    "priceCents": 26000,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Size": "100ml"
+                    }
+                }
+            ],
+            "images": [
+                {
+                    "assetId": "no3-black-rose-oud",
+                    "isPrimary": true,
+                    "alt": "Nº3 Black Rose & Oud eau de parfum"
+                }
+            ]
+        },
+        {
+            "handle": "no4-bergamot-vetiver",
+            "title": "Nº4 Bergamot & Vetiver",
+            "description": "Cool bergamot over smoky vetiver and a clean woody dry-down — the house’s sharpest, most unisex scent. Crisp in the morning, and still there, softened, by evening.",
+            "status": "active",
+            "productType": "Fragrance",
+            "vendor": "Vérane",
+            "tags": [
+                "fragrance",
+                "eau-de-parfum",
+                "bergamot",
+                "vetiver"
+            ],
+            "categoryHandles": [
+                "fragrance"
+            ],
+            "collectionHandles": [
+                "fragrance"
+            ],
+            "seoTitle": "Nº4 Bergamot & Vetiver — eau de parfum",
+            "seoDescription": "A bergamot and smoky-vetiver eau de parfum with a clean woody dry-down, in 50ml and 100ml.",
+            "productTypeKey": "apparel",
+            "attributes": {
+                "fabric": "Cool bergamot over smoky vetiver on a clean woody dry-down — the sharpest and most unisex of the four. Crisp on application, and still there, softened, by evening.",
+                "fit": "The most versatile of the eaux — bright enough for the morning, settled enough for the night, and easy on close company. A pulse at each wrist carries the day.",
+                "care": "Keep it out of heat, direct sun and steam — a closed drawer or its own box, never a bathroom shelf, which is the one place a fine fragrance turns. Composed from natural materials, it settles and deepens a little with age rather than fading.",
+                "materials": [
+                    {
+                        "name": "Alcohol base",
+                        "percent": "83%"
+                    },
+                    {
+                        "name": "Bergamot & vetiver accord",
+                        "percent": "13%"
+                    },
+                    {
+                        "name": "Woods",
+                        "percent": "4%"
+                    }
+                ],
+                "origin": "Made in Grasse, France"
+            },
+            "options": [
+                {
+                    "name": "Size",
+                    "displayType": "dropdown",
+                    "values": [
+                        {
+                            "value": "50ml"
+                        },
+                        {
+                            "value": "100ml"
+                        }
+                    ]
+                }
+            ],
+            "variants": [
+                {
+                    "sku": "VER-NO4-50",
+                    "priceCents": 18000,
+                    "isDefault": true,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Size": "50ml"
+                    }
+                },
+                {
+                    "sku": "VER-NO4-100",
+                    "priceCents": 26000,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Size": "100ml"
+                    }
+                }
+            ],
+            "images": [
+                {
+                    "assetId": "no4-bergamot-vetiver",
+                    "isPrimary": true,
+                    "alt": "Nº4 Bergamot & Vetiver eau de parfum"
+                }
+            ]
+        },
+        {
+            "handle": "the-four-eaux-discovery-set",
+            "title": "The Four Eaux — Discovery Set",
+            "description": "All four house scents in 2ml travel vials, boxed together — the honest way to find yours before committing to a bottle. The set’s value is redeemable against any full-size eau.",
+            "status": "active",
+            "productType": "Fragrance",
+            "vendor": "Vérane",
+            "tags": [
+                "fragrance",
+                "discovery-set",
+                "gift",
+                "sampler"
+            ],
+            "categoryHandles": [
+                "fragrance"
+            ],
+            "collectionHandles": [
+                "fragrance",
+                "new-arrivals",
+                "the-gift-edit"
+            ],
+            "seoTitle": "The Four Eaux — Vérane fragrance discovery set",
+            "seoDescription": "All four Vérane eaux de parfum in 2ml vials, redeemable against a full-size bottle.",
+            "productTypeKey": "apparel",
+            "attributes": {
+                "fabric": "All four house eaux — Nº1 through Nº4 — decanted into 2ml travel vials and boxed together, drawn from the same small batches as the full bottles. The honest way to live with each scent before choosing.",
+                "fit": "A week with a single vial tells you far more than any note list; wear one at a time, on skin, across a full day. Its value is redeemable against any full-size bottle.",
+                "care": "Keep it out of heat, direct sun and steam — a closed drawer or its own box, never a bathroom shelf, which is the one place a fine fragrance turns. Composed from natural materials, it settles and deepens a little with age rather than fading.",
+                "materials": [
+                    {
+                        "name": "Alcohol base",
+                        "percent": "80%"
+                    },
+                    {
+                        "name": "The four house accords",
+                        "percent": "18%"
+                    },
+                    {
+                        "name": "Musk & wood bases",
+                        "percent": "2%"
+                    }
+                ],
+                "origin": "Made in Grasse, France"
+            },
+            "variants": [
+                {
+                    "sku": "VER-DISCOVERY",
+                    "priceCents": 9500,
+                    "isDefault": true,
+                    "inventoryPolicy": "continue"
+                }
+            ],
+            "images": [
+                {
+                    "assetId": "discovery-set",
+                    "isPrimary": true,
+                    "alt": "The Four Eaux Discovery Set"
+                }
+            ]
         }
-      ]
-    }
-  ]
+    ]
 }

@@ -18,7 +18,7 @@
 -- driven by `node.type` → the silica family, then applied token by token:
 --
 --   st-<family-base>          → <family>            (the base class)
---   st-c-<colour>             → <family>-<colour>
+--   st-c-<color>             → <family>-<color>
 --   st-v-solid                → dropped             (silica's default emits nothing)
 --   st-v-soft|outline|ghost|link → <family>-<same>
 --   st-v-dashed               → <family>-dash       (silica's spelling)
@@ -26,7 +26,7 @@
 --   st-fv-*                   → dropped             (silica fields have one look)
 --   st-<base>--sz-<step>      → <family>-<step>
 --
--- Two colours have no silica counterpart and are handled deliberately:
+-- Two colors have no silica counterpart and are handled deliberately:
 --   · `surface` — the light-glass slot. Dropped; on a button `st-v-glass` already
 --     became `glass`, which is what actually produced that look.
 --   · `highlight` / `danger` — both ARE registered with the plugin in each app's
@@ -147,7 +147,7 @@ BEGIN
     -- An eyebrow is a RULE #2 violation and the component no longer offers one.
     ELSIF tok = 'st-text--eyebrow' THEN mapped := NULL;
 
-    -- Colour.
+    -- Color.
     ELSIF tok LIKE 'st-c-%' THEN
       suffix := substring(tok from 6);
       IF suffix = 'surface' THEN

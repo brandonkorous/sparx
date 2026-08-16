@@ -40,89 +40,89 @@ import { api } from '../../lib/api/client';
 
 /** Booking counts in the window, split by the status a booking ended up in. */
 export interface SchedulingReportTotals {
-  all: number;
-  requested: number;
-  confirmed: number;
-  inProgress: number;
-  completed: number;
-  cancelled: number;
-  noShow: number;
+    all: number;
+    requested: number;
+    confirmed: number;
+    inProgress: number;
+    completed: number;
+    cancelled: number;
+    noShow: number;
 }
 
 /** One row of the "what people book you for most" ranking. */
 export interface TopService {
-  serviceId: string;
-  name: string;
-  count: number;
+    serviceId: string;
+    name: string;
+    count: number;
 }
 
 /** How full the diary ran over the window. `null` on the report when a business
  *  has no opening hours set (no capacity to divide by). */
 export interface Utilisation {
-  /** Booked minutes ÷ available minutes as an integer 0–100, capped at 100. */
-  pct: number;
-  /** Minutes of booked appointments that consumed the diary in the window. */
-  bookedMinutes: number;
-  /** Open opening-hours minutes over the window, minus one-off closures. */
-  availableMinutes: number;
+    /** Booked minutes ÷ available minutes as an integer 0–100, capped at 100. */
+    pct: number;
+    /** Minutes of booked appointments that consumed the diary in the window. */
+    bookedMinutes: number;
+    /** Open opening-hours minutes over the window, minus one-off closures. */
+    availableMinutes: number;
 }
 
 /** One weekday bucket of the "busiest days" histogram. `weekday` is Monday-first
  *  (0 = Monday … 6 = Sunday); the array always carries all 7, zeros included. */
 export interface WeekdayBucket {
-  weekday: number;
-  count: number;
+    weekday: number;
+    count: number;
 }
 
 /** One hour-of-day bucket of the "busiest hours" histogram. `hour` is 0–23 in
  *  the booking's local time; the array always carries all 24, zeros included. */
 export interface HourBucket {
-  hour: number;
-  count: number;
+    hour: number;
+    count: number;
 }
 
 export interface SchedulingReport {
-  from: string;
-  to: string;
-  totals: SchedulingReportTotals;
-  /** no_show / (completed + no_show), 0–100. Zero when nothing has finished. */
-  noShowRatePct: number;
-  /** Sum of the service price of completed bookings in the window, in cents.
-   *  NB the endpoint returns no currency — see `formatMoney` below. */
-  revenueCents: number;
-  /** Future, non-terminal bookings — the load on the books right now, which does
-   *  NOT depend on the reporting window. */
-  upcomingCount: number;
-  /** How full the diary ran, or `null` when no opening hours are configured. */
-  utilisation: Utilisation | null;
-  /** Bookings by weekday (Monday-first) — always 7 buckets. */
-  byWeekday: WeekdayBucket[];
-  /** Bookings by hour of day (0–23) — always 24 buckets. */
-  byHour: HourBucket[];
-  topServices: TopService[];
+    from: string;
+    to: string;
+    totals: SchedulingReportTotals;
+    /** no_show / (completed + no_show), 0–100. Zero when nothing has finished. */
+    noShowRatePct: number;
+    /** Sum of the service price of completed bookings in the window, in cents.
+     *  NB the endpoint returns no currency — see `formatMoney` below. */
+    revenueCents: number;
+    /** Future, non-terminal bookings — the load on the books right now, which does
+     *  NOT depend on the reporting window. */
+    upcomingCount: number;
+    /** How full the diary ran, or `null` when no opening hours are configured. */
+    utilisation: Utilisation | null;
+    /** Bookings by weekday (Monday-first) — always 7 buckets. */
+    byWeekday: WeekdayBucket[];
+    /** Bookings by hour of day (0–23) — always 24 buckets. */
+    byHour: HourBucket[];
+    topServices: TopService[];
 }
 
 /* ── The reporting window ───────────────────────────────────────────────── */
 
 export interface ReportRange {
-  from: string;
-  to: string;
-  /** The preset that produced this window, carried so callers can label it. */
-  days: number;
+    from: string;
+    to: string;
+    /** The preset that produced this window, carried so callers can label it. */
+    days: number;
 }
 
 export interface RangePreset {
-  days: number;
-  label: string;
+    days: number;
+    label: string;
 }
 
 /** The windows on offer. Kept short and rolling — "the last N days" is how an
  *  owner thinks about how trade is going, not calendar months. */
 export const RANGE_PRESETS: readonly RangePreset[] = [
-  { days: 7, label: 'Last 7 days' },
-  { days: 30, label: 'Last 30 days' },
-  { days: 90, label: 'Last 3 months' },
-  { days: 365, label: 'Last 12 months' },
+    { days: 7, label: 'Last 7 days' },
+    { days: 30, label: 'Last 30 days' },
+    { days: 90, label: 'Last 3 months' },
+    { days: 365, label: 'Last 12 months' },
 ];
 
 const DAY_MS = 24 * 60 * 60 * 1000;
@@ -134,41 +134,41 @@ const DAY_MS = 24 * 60 * 60 * 1000;
  * every render would mint a fresh `to` each time and refetch forever.
  */
 export function rangeForDays(days: number): ReportRange {
-  const to = new Date();
-  const from = new Date(to.getTime() - days * DAY_MS);
-  return { from: from.toISOString(), to: to.toISOString(), days };
+    const to = new Date();
+    const from = new Date(to.getTime() - days * DAY_MS);
+    return { from: from.toISOString(), to: to.toISOString(), days };
 }
 
 /* ── Query keys ─────────────────────────────────────────────────────────── */
 
 export const reportKeys = {
-  all: ['scheduling', 'reports'] as const,
-  range: (range: ReportRange) => [...reportKeys.all, { from: range.from, to: range.to }] as const,
+    all: ['scheduling', 'reports'] as const,
+    range: (range: ReportRange) => [...reportKeys.all, { from: range.from, to: range.to }] as const,
 };
 
 /* ── The read ───────────────────────────────────────────────────────────── */
 
 export function useSchedulingReport(range: ReportRange) {
-  return useQuery({
-    queryKey: reportKeys.range(range),
-    queryFn: () =>
-      api.get<SchedulingReport>('/v1/scheduling/reports', { from: range.from, to: range.to }),
-    // Keeps the previous window on screen while a new one loads, so switching
-    // period doesn't blink the whole surface out to a spinner and back.
-    placeholderData: (previous) => previous,
-    // A 4xx here (module off, bad range) is an answer, not a blip — retrying it
-    // three times just delays saying so. A 5xx is worth a couple of goes.
-    retry: (failureCount, error) =>
-      error instanceof ApiError && error.status >= 400 && error.status < 500
-        ? false
-        : failureCount < 2,
-  });
+    return useQuery({
+        queryKey: reportKeys.range(range),
+        queryFn: () =>
+            api.get<SchedulingReport>('/v1/scheduling/reports', { from: range.from, to: range.to }),
+        // Keeps the previous window on screen while a new one loads, so switching
+        // period doesn't blink the whole surface out to a spinner and back.
+        placeholderData: (previous) => previous,
+        // A 4xx here (module off, bad range) is an answer, not a blip — retrying it
+        // three times just delays saying so. A 5xx is worth a couple of goes.
+        retry: (failureCount, error) =>
+            error instanceof ApiError && error.status >= 400 && error.status < 500
+                ? false
+                : failureCount < 2,
+    });
 }
 
 /** True when the scheduling module is switched off for this account — a
  *  different thing from "the server broke", and it wants different words. */
 export function isModuleDisabled(error: unknown): boolean {
-  return error instanceof ApiError && error.code === 'MODULE_DISABLED';
+    return error instanceof ApiError && error.code === 'MODULE_DISABLED';
 }
 
 /* ── Saying what the numbers mean ───────────────────────────────────────── */
@@ -176,7 +176,7 @@ export function isModuleDisabled(error: unknown): boolean {
 const NUMBER = new Intl.NumberFormat();
 
 export function formatCount(value: number): string {
-  return NUMBER.format(value);
+    return NUMBER.format(value);
 }
 
 /**
@@ -188,11 +188,11 @@ export function formatCount(value: number): string {
  * a limitation of the endpoint, noted rather than hidden.
  */
 export function formatMoney(cents: number, currency = 'USD'): string {
-  return new Intl.NumberFormat(undefined, { style: 'currency', currency }).format(cents / 100);
+    return new Intl.NumberFormat(undefined, { style: 'currency', currency }).format(cents / 100);
 }
 
 export function plural(count: number, one: string, many: string): string {
-  return `${NUMBER.format(count)} ${count === 1 ? one : many}`;
+    return `${NUMBER.format(count)} ${count === 1 ? one : many}`;
 }
 
 /** Short weekday labels, Monday-first — indexed by `WeekdayBucket.weekday`. */
@@ -205,9 +205,9 @@ export const WEEKDAY_LABELS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'] 
  * not "15:00". Only whole hours occur here, so no minutes.
  */
 export function formatHour(hour: number): string {
-  const period = hour < 12 ? 'am' : 'pm';
-  const twelve = hour % 12 === 0 ? 12 : hour % 12;
-  return `${twelve}${period}`;
+    const period = hour < 12 ? 'am' : 'pm';
+    const twelve = hour % 12 === 0 ? 12 : hour % 12;
+    return `${twelve}${period}`;
 }
 
 /**
@@ -217,10 +217,10 @@ export function formatHour(hour: number): string {
  * the raw booked/available figures read as hours unless they're under one.
  */
 export function formatHours(minutes: number): string {
-  if (minutes < 60) return plural(minutes, 'min', 'mins');
-  const hours = minutes / 60;
-  const rounded = Math.round(hours * 10) / 10;
-  return `${NUMBER.format(rounded)} ${rounded === 1 ? 'hr' : 'hrs'}`;
+    if (minutes < 60) return plural(minutes, 'min', 'mins');
+    const hours = minutes / 60;
+    const rounded = Math.round(hours * 10) / 10;
+    return `${NUMBER.format(rounded)} ${rounded === 1 ? 'hr' : 'hrs'}`;
 }
 
 export type NoShowTone = 'success' | 'warning' | 'danger';
@@ -230,10 +230,10 @@ export type NoShowTone = 'success' | 'warning' | 'danger';
  *
  * A few missed appointments are unavoidable; a growing share is a business
  * problem (lost time that can't be resold), so the thresholds escalate the
- * colour rather than treating every rate the same.
+ * color rather than treating every rate the same.
  */
 export function noShowTone(pct: number): NoShowTone {
-  if (pct >= 15) return 'danger';
-  if (pct >= 5) return 'warning';
-  return 'success';
+    if (pct >= 15) return 'danger';
+    if (pct >= 5) return 'warning';
+    return 'success';
 }

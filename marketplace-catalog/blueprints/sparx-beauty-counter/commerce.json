@@ -1,1800 +1,1983 @@
 {
-  "categories": [
-    {
-      "handle": "face",
-      "name": "Face",
-      "description": "Foundation, concealer, powder, primer and setting spray.",
-      "featured": true
-    },
-    {
-      "handle": "cheek",
-      "name": "Cheek",
-      "description": "Cream blush and contour for a lit, sculpted face.",
-      "featured": true
-    },
-    {
-      "handle": "lip",
-      "name": "Lip",
-      "description": "Liquid lipstick, lip oil and liner — a shade for every day.",
-      "featured": true
-    },
-    {
-      "handle": "eye",
-      "name": "Eye",
-      "description": "Palettes, mascara, brow and liner.",
-      "featured": true
-    },
-    {
-      "handle": "tools",
-      "name": "Tools",
-      "description": "The brushes to put it all on.",
-      "featured": false
-    }
-  ],
-  "collections": [
-    {
-      "handle": "best-sellers",
-      "name": "Best Sellers",
-      "description": "The shades and formulas that keep selling out and coming back.",
-      "type": "manual",
-      "featured": true,
-      "productHandles": [
-        "second-skin-luminous-foundation",
-        "under-eye-brightening-concealer",
-        "lock-it-setting-spray",
-        "sunlit-cream-blush",
-        "velvet-matte-liquid-lip",
-        "bloom-eyeshadow-palette",
-        "featherweight-mascara"
-      ]
-    },
-    {
-      "handle": "new-in",
-      "name": "New In",
-      "description": "The latest shades and formulas to land.",
-      "type": "manual",
-      "featured": false,
-      "productHandles": [
-        "second-skin-luminous-foundation",
-        "cloud-set-loose-powder",
-        "soft-focus-blurring-primer",
-        "sunlit-cream-blush",
-        "velvet-matte-liquid-lip",
-        "glass-shine-lip-oil",
-        "bloom-eyeshadow-palette",
-        "skinny-gel-eyeliner"
-      ]
-    },
-    {
-      "handle": "the-edit",
-      "name": "The Edit",
-      "description": "The full face the team is wearing right now, start to finish.",
-      "type": "manual",
-      "featured": false,
-      "productHandles": [
-        "second-skin-luminous-foundation",
-        "under-eye-brightening-concealer",
-        "sunlit-cream-blush",
-        "sculpt-contour-stick",
-        "velvet-matte-liquid-lip",
-        "precision-lip-liner",
-        "bloom-eyeshadow-palette",
-        "brow-sculpt-pomade"
-      ]
-    },
-    {
-      "handle": "gift-sets",
-      "name": "Gift Sets",
-      "description": "The easy way in — curated together, ready to give.",
-      "type": "manual",
-      "featured": false,
-      "productHandles": [
-        "glass-shine-lip-oil",
-        "bloom-eyeshadow-palette",
-        "buffing-foundation-brush"
-      ]
-    },
-    {
-      "handle": "vegan-favourites",
-      "name": "Vegan Favourites",
-      "description": "The fully vegan pieces our wearers reach for again and again.",
-      "type": "manual",
-      "featured": false,
-      "productHandles": [
-        "sunlit-cream-blush",
-        "velvet-matte-liquid-lip",
-        "featherweight-mascara",
-        "buffing-foundation-brush"
-      ]
-    }
-  ],
-  "products": [
-    {
-      "handle": "second-skin-luminous-foundation",
-      "title": "Second Skin Luminous Foundation",
-      "description": "A medium-buildable liquid foundation that reads like skin, not makeup — a soft luminous finish, breathable wear, and twenty-four shades built across every undertone so yours actually disappears. Swatch along the jaw and it vanishes.",
-      "status": "active",
-      "productType": "Foundation",
-      "vendor": "Maeve",
-      "tags": ["face", "foundation", "luminous", "vegan", "bestseller"],
-      "categoryHandles": ["face"],
-      "collectionHandles": ["best-sellers", "new-in", "the-edit"],
-      "seoTitle": "Second Skin Luminous Foundation — 24-shade liquid foundation",
-      "seoDescription": "A luminous, medium-buildable liquid foundation in 24 inclusive shades across every undertone.",
-      "productTypeKey": "cosmetics",
-      "attributes": {
-        "keyIngredients": "Sodium hyaluronate and squalane hold water in the skin for a soft, luminous finish, while light-diffusing spherical pigments blur without masking. Glycerin keeps it comfortable through a long wear.",
-        "howToUse": "Shake, then apply one to two pumps with a damp sponge or the Buffing Foundation Brush, working from the centre of the face outward. Build only where you want more coverage, and set the T-zone with Cloud Set powder if you tend to shine.",
-        "skinType": ["all"],
-        "volume": "30 ml / 1.0 fl oz",
-        "fullIngredients": "Aqua, Cyclopentasiloxane, Glycerin, Dimethicone, PEG-10 Dimethicone, Squalane, Sodium Hyaluronate, Tocopheryl Acetate, Phenoxyethanol, Titanium Dioxide (CI 77891), Iron Oxides (CI 77491, CI 77492, CI 77499)."
-      },
-      "options": [
+    "categories": [
         {
-          "name": "Shade",
-          "displayType": "swatch",
-          "values": [
-            {
-              "value": "Porcelain 01"
-            },
-            {
-              "value": "Ivory 02"
-            },
-            {
-              "value": "Shell 03"
-            },
-            {
-              "value": "Buff 04"
-            },
-            {
-              "value": "Nude 05"
-            },
-            {
-              "value": "Sand 06"
-            },
-            {
-              "value": "Beige 07"
-            },
-            {
-              "value": "Natural 08"
-            },
-            {
-              "value": "Golden 09"
-            },
-            {
-              "value": "Honey 10"
-            },
-            {
-              "value": "Caramel 11"
-            },
-            {
-              "value": "Amber 12"
-            },
-            {
-              "value": "Toffee 13"
-            },
-            {
-              "value": "Pecan 14"
-            },
-            {
-              "value": "Chestnut 15"
-            },
-            {
-              "value": "Walnut 16"
-            },
-            {
-              "value": "Cocoa 17"
-            },
-            {
-              "value": "Mocha 18"
-            },
-            {
-              "value": "Espresso 19"
-            },
-            {
-              "value": "Truffle 20"
-            },
-            {
-              "value": "Ebony 21"
-            },
-            {
-              "value": "Deep 22"
-            },
-            {
-              "value": "Rich 23"
-            },
-            {
-              "value": "Onyx 24"
-            }
-          ]
+            "handle": "face",
+            "name": "Face",
+            "description": "Foundation, concealer, powder, primer and setting spray.",
+            "featured": true
+        },
+        {
+            "handle": "cheek",
+            "name": "Cheek",
+            "description": "Cream blush and contour for a lit, sculpted face.",
+            "featured": true
+        },
+        {
+            "handle": "lip",
+            "name": "Lip",
+            "description": "Liquid lipstick, lip oil and liner — a shade for every day.",
+            "featured": true
+        },
+        {
+            "handle": "eye",
+            "name": "Eye",
+            "description": "Palettes, mascara, brow and liner.",
+            "featured": true
+        },
+        {
+            "handle": "tools",
+            "name": "Tools",
+            "description": "The brushes to put it all on.",
+            "featured": false
         }
-      ],
-      "variants": [
+    ],
+    "collections": [
         {
-          "sku": "MV-FND-01",
-          "priceCents": 4200,
-          "isDefault": true,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Shade": "Porcelain 01"
-          }
+            "handle": "best-sellers",
+            "name": "Best Sellers",
+            "description": "The shades and formulas that keep selling out and coming back.",
+            "type": "manual",
+            "featured": true,
+            "productHandles": [
+                "second-skin-luminous-foundation",
+                "under-eye-brightening-concealer",
+                "lock-it-setting-spray",
+                "sunlit-cream-blush",
+                "velvet-matte-liquid-lip",
+                "bloom-eyeshadow-palette",
+                "featherweight-mascara"
+            ]
         },
         {
-          "sku": "MV-FND-02",
-          "priceCents": 4200,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Shade": "Ivory 02"
-          }
+            "handle": "new-in",
+            "name": "New In",
+            "description": "The latest shades and formulas to land.",
+            "type": "manual",
+            "featured": false,
+            "productHandles": [
+                "second-skin-luminous-foundation",
+                "cloud-set-loose-powder",
+                "soft-focus-blurring-primer",
+                "sunlit-cream-blush",
+                "velvet-matte-liquid-lip",
+                "glass-shine-lip-oil",
+                "bloom-eyeshadow-palette",
+                "skinny-gel-eyeliner"
+            ]
         },
         {
-          "sku": "MV-FND-03",
-          "priceCents": 4200,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Shade": "Shell 03"
-          }
+            "handle": "the-edit",
+            "name": "The Edit",
+            "description": "The full face the team is wearing right now, start to finish.",
+            "type": "manual",
+            "featured": false,
+            "productHandles": [
+                "second-skin-luminous-foundation",
+                "under-eye-brightening-concealer",
+                "sunlit-cream-blush",
+                "sculpt-contour-stick",
+                "velvet-matte-liquid-lip",
+                "precision-lip-liner",
+                "bloom-eyeshadow-palette",
+                "brow-sculpt-pomade"
+            ]
         },
         {
-          "sku": "MV-FND-04",
-          "priceCents": 4200,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Shade": "Buff 04"
-          }
+            "handle": "gift-sets",
+            "name": "Gift Sets",
+            "description": "The easy way in — curated together, ready to give.",
+            "type": "manual",
+            "featured": false,
+            "productHandles": [
+                "glass-shine-lip-oil",
+                "bloom-eyeshadow-palette",
+                "buffing-foundation-brush"
+            ]
         },
         {
-          "sku": "MV-FND-05",
-          "priceCents": 4200,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Shade": "Nude 05"
-          }
-        },
-        {
-          "sku": "MV-FND-06",
-          "priceCents": 4200,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Shade": "Sand 06"
-          }
-        },
-        {
-          "sku": "MV-FND-07",
-          "priceCents": 4200,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Shade": "Beige 07"
-          }
-        },
-        {
-          "sku": "MV-FND-08",
-          "priceCents": 4200,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Shade": "Natural 08"
-          }
-        },
-        {
-          "sku": "MV-FND-09",
-          "priceCents": 4200,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Shade": "Golden 09"
-          }
-        },
-        {
-          "sku": "MV-FND-10",
-          "priceCents": 4200,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Shade": "Honey 10"
-          }
-        },
-        {
-          "sku": "MV-FND-11",
-          "priceCents": 4200,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Shade": "Caramel 11"
-          }
-        },
-        {
-          "sku": "MV-FND-12",
-          "priceCents": 4200,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Shade": "Amber 12"
-          }
-        },
-        {
-          "sku": "MV-FND-13",
-          "priceCents": 4200,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Shade": "Toffee 13"
-          }
-        },
-        {
-          "sku": "MV-FND-14",
-          "priceCents": 4200,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Shade": "Pecan 14"
-          }
-        },
-        {
-          "sku": "MV-FND-15",
-          "priceCents": 4200,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Shade": "Chestnut 15"
-          }
-        },
-        {
-          "sku": "MV-FND-16",
-          "priceCents": 4200,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Shade": "Walnut 16"
-          }
-        },
-        {
-          "sku": "MV-FND-17",
-          "priceCents": 4200,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Shade": "Cocoa 17"
-          }
-        },
-        {
-          "sku": "MV-FND-18",
-          "priceCents": 4200,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Shade": "Mocha 18"
-          }
-        },
-        {
-          "sku": "MV-FND-19",
-          "priceCents": 4200,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Shade": "Espresso 19"
-          }
-        },
-        {
-          "sku": "MV-FND-20",
-          "priceCents": 4200,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Shade": "Truffle 20"
-          }
-        },
-        {
-          "sku": "MV-FND-21",
-          "priceCents": 4200,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Shade": "Ebony 21"
-          }
-        },
-        {
-          "sku": "MV-FND-22",
-          "priceCents": 4200,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Shade": "Deep 22"
-          }
-        },
-        {
-          "sku": "MV-FND-23",
-          "priceCents": 4200,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Shade": "Rich 23"
-          }
-        },
-        {
-          "sku": "MV-FND-24",
-          "priceCents": 4200,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Shade": "Onyx 24"
-          }
+            "handle": "vegan-favourites",
+            "name": "Vegan Favourites",
+            "description": "The fully vegan pieces our wearers reach for again and again.",
+            "type": "manual",
+            "featured": false,
+            "productHandles": [
+                "sunlit-cream-blush",
+                "velvet-matte-liquid-lip",
+                "featherweight-mascara",
+                "buffing-foundation-brush"
+            ]
         }
-      ],
-      "images": [
+    ],
+    "products": [
         {
-          "assetId": "second-skin-foundation",
-          "isPrimary": true,
-          "alt": "Second Skin Luminous Foundation"
+            "handle": "second-skin-luminous-foundation",
+            "title": "Second Skin Luminous Foundation",
+            "description": "A medium-buildable liquid foundation that reads like skin, not makeup — a soft luminous finish, breathable wear, and twenty-four shades built across every undertone so yours actually disappears. Swatch along the jaw and it vanishes.",
+            "status": "active",
+            "productType": "Foundation",
+            "vendor": "Maeve",
+            "tags": [
+                "face",
+                "foundation",
+                "luminous",
+                "vegan",
+                "bestseller"
+            ],
+            "categoryHandles": [
+                "face"
+            ],
+            "collectionHandles": [
+                "best-sellers",
+                "new-in",
+                "the-edit"
+            ],
+            "seoTitle": "Second Skin Luminous Foundation — 24-shade liquid foundation",
+            "seoDescription": "A luminous, medium-buildable liquid foundation in 24 inclusive shades across every undertone.",
+            "productTypeKey": "cosmetics",
+            "attributes": {
+                "keyIngredients": "Sodium hyaluronate and squalane hold water in the skin for a soft, luminous finish, while light-diffusing spherical pigments blur without masking. Glycerin keeps it comfortable through a long wear.",
+                "howToUse": "Shake, then apply one to two pumps with a damp sponge or the Buffing Foundation Brush, working from the centre of the face outward. Build only where you want more coverage, and set the T-zone with Cloud Set powder if you tend to shine.",
+                "skinType": [
+                    "all"
+                ],
+                "volume": "30 ml / 1.0 fl oz",
+                "fullIngredients": "Aqua, Cyclopentasiloxane, Glycerin, Dimethicone, PEG-10 Dimethicone, Squalane, Sodium Hyaluronate, Tocopheryl Acetate, Phenoxyethanol, Titanium Dioxide (CI 77891), Iron Oxides (CI 77491, CI 77492, CI 77499)."
+            },
+            "options": [
+                {
+                    "name": "Shade",
+                    "displayType": "swatch",
+                    "values": [
+                        {
+                            "value": "Porcelain 01"
+                        },
+                        {
+                            "value": "Ivory 02"
+                        },
+                        {
+                            "value": "Shell 03"
+                        },
+                        {
+                            "value": "Buff 04"
+                        },
+                        {
+                            "value": "Nude 05"
+                        },
+                        {
+                            "value": "Sand 06"
+                        },
+                        {
+                            "value": "Beige 07"
+                        },
+                        {
+                            "value": "Natural 08"
+                        },
+                        {
+                            "value": "Golden 09"
+                        },
+                        {
+                            "value": "Honey 10"
+                        },
+                        {
+                            "value": "Caramel 11"
+                        },
+                        {
+                            "value": "Amber 12"
+                        },
+                        {
+                            "value": "Toffee 13"
+                        },
+                        {
+                            "value": "Pecan 14"
+                        },
+                        {
+                            "value": "Chestnut 15"
+                        },
+                        {
+                            "value": "Walnut 16"
+                        },
+                        {
+                            "value": "Cocoa 17"
+                        },
+                        {
+                            "value": "Mocha 18"
+                        },
+                        {
+                            "value": "Espresso 19"
+                        },
+                        {
+                            "value": "Truffle 20"
+                        },
+                        {
+                            "value": "Ebony 21"
+                        },
+                        {
+                            "value": "Deep 22"
+                        },
+                        {
+                            "value": "Rich 23"
+                        },
+                        {
+                            "value": "Onyx 24"
+                        }
+                    ]
+                }
+            ],
+            "variants": [
+                {
+                    "sku": "MV-FND-01",
+                    "priceCents": 4200,
+                    "isDefault": true,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Shade": "Porcelain 01"
+                    }
+                },
+                {
+                    "sku": "MV-FND-02",
+                    "priceCents": 4200,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Shade": "Ivory 02"
+                    }
+                },
+                {
+                    "sku": "MV-FND-03",
+                    "priceCents": 4200,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Shade": "Shell 03"
+                    }
+                },
+                {
+                    "sku": "MV-FND-04",
+                    "priceCents": 4200,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Shade": "Buff 04"
+                    }
+                },
+                {
+                    "sku": "MV-FND-05",
+                    "priceCents": 4200,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Shade": "Nude 05"
+                    }
+                },
+                {
+                    "sku": "MV-FND-06",
+                    "priceCents": 4200,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Shade": "Sand 06"
+                    }
+                },
+                {
+                    "sku": "MV-FND-07",
+                    "priceCents": 4200,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Shade": "Beige 07"
+                    }
+                },
+                {
+                    "sku": "MV-FND-08",
+                    "priceCents": 4200,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Shade": "Natural 08"
+                    }
+                },
+                {
+                    "sku": "MV-FND-09",
+                    "priceCents": 4200,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Shade": "Golden 09"
+                    }
+                },
+                {
+                    "sku": "MV-FND-10",
+                    "priceCents": 4200,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Shade": "Honey 10"
+                    }
+                },
+                {
+                    "sku": "MV-FND-11",
+                    "priceCents": 4200,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Shade": "Caramel 11"
+                    }
+                },
+                {
+                    "sku": "MV-FND-12",
+                    "priceCents": 4200,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Shade": "Amber 12"
+                    }
+                },
+                {
+                    "sku": "MV-FND-13",
+                    "priceCents": 4200,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Shade": "Toffee 13"
+                    }
+                },
+                {
+                    "sku": "MV-FND-14",
+                    "priceCents": 4200,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Shade": "Pecan 14"
+                    }
+                },
+                {
+                    "sku": "MV-FND-15",
+                    "priceCents": 4200,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Shade": "Chestnut 15"
+                    }
+                },
+                {
+                    "sku": "MV-FND-16",
+                    "priceCents": 4200,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Shade": "Walnut 16"
+                    }
+                },
+                {
+                    "sku": "MV-FND-17",
+                    "priceCents": 4200,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Shade": "Cocoa 17"
+                    }
+                },
+                {
+                    "sku": "MV-FND-18",
+                    "priceCents": 4200,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Shade": "Mocha 18"
+                    }
+                },
+                {
+                    "sku": "MV-FND-19",
+                    "priceCents": 4200,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Shade": "Espresso 19"
+                    }
+                },
+                {
+                    "sku": "MV-FND-20",
+                    "priceCents": 4200,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Shade": "Truffle 20"
+                    }
+                },
+                {
+                    "sku": "MV-FND-21",
+                    "priceCents": 4200,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Shade": "Ebony 21"
+                    }
+                },
+                {
+                    "sku": "MV-FND-22",
+                    "priceCents": 4200,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Shade": "Deep 22"
+                    }
+                },
+                {
+                    "sku": "MV-FND-23",
+                    "priceCents": 4200,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Shade": "Rich 23"
+                    }
+                },
+                {
+                    "sku": "MV-FND-24",
+                    "priceCents": 4200,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Shade": "Onyx 24"
+                    }
+                }
+            ],
+            "images": [
+                {
+                    "assetId": "second-skin-foundation",
+                    "isPrimary": true,
+                    "alt": "Second Skin Luminous Foundation"
+                }
+            ]
+        },
+        {
+            "handle": "under-eye-brightening-concealer",
+            "title": "Under-Eye Brightening Concealer",
+            "description": "A creamy, crease-resistant concealer that lifts the under-eye and covers where you need it, without cakeing into fine lines. Eight shades to match — or go one lighter to brighten.",
+            "status": "active",
+            "productType": "Concealer",
+            "vendor": "Maeve",
+            "tags": [
+                "face",
+                "concealer",
+                "vegan"
+            ],
+            "categoryHandles": [
+                "face"
+            ],
+            "collectionHandles": [
+                "best-sellers",
+                "the-edit"
+            ],
+            "seoTitle": "Under-Eye Brightening Concealer — crease-resistant concealer",
+            "seoDescription": "A creamy, crease-resistant brightening concealer in eight matchable shades.",
+            "productTypeKey": "cosmetics",
+            "attributes": {
+                "keyIngredients": "Light-reflecting pigments lift shadow under the eye, caffeine helps de-puff, and a peptide plus vitamin E keep the creamy base from settling into fine lines through the day.",
+                "howToUse": "Dot a little onto the under-eye and any spots you want to cover, then tap out with a fingertip or a small brush — never drag. Match your shade, or go one lighter under the eye to brighten. Press with Cloud Set powder to lock it.",
+                "skinType": [
+                    "all"
+                ],
+                "volume": "6 ml / 0.2 fl oz",
+                "fullIngredients": "Aqua, Dimethicone, Glycerin, Isododecane, Caffeine, Palmitoyl Tripeptide-1, Tocopheryl Acetate, Mica, Phenoxyethanol, Titanium Dioxide (CI 77891), Iron Oxides (CI 77491, CI 77492, CI 77499)."
+            },
+            "options": [
+                {
+                    "name": "Shade",
+                    "displayType": "swatch",
+                    "values": [
+                        {
+                            "value": "Fair"
+                        },
+                        {
+                            "value": "Light"
+                        },
+                        {
+                            "value": "Light-Medium"
+                        },
+                        {
+                            "value": "Medium"
+                        },
+                        {
+                            "value": "Tan"
+                        },
+                        {
+                            "value": "Deep"
+                        },
+                        {
+                            "value": "Rich"
+                        },
+                        {
+                            "value": "Espresso"
+                        }
+                    ]
+                }
+            ],
+            "variants": [
+                {
+                    "sku": "MV-CNC-01",
+                    "priceCents": 2600,
+                    "isDefault": true,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Shade": "Fair"
+                    }
+                },
+                {
+                    "sku": "MV-CNC-02",
+                    "priceCents": 2600,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Shade": "Light"
+                    }
+                },
+                {
+                    "sku": "MV-CNC-03",
+                    "priceCents": 2600,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Shade": "Light-Medium"
+                    }
+                },
+                {
+                    "sku": "MV-CNC-04",
+                    "priceCents": 2600,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Shade": "Medium"
+                    }
+                },
+                {
+                    "sku": "MV-CNC-05",
+                    "priceCents": 2600,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Shade": "Tan"
+                    }
+                },
+                {
+                    "sku": "MV-CNC-06",
+                    "priceCents": 2600,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Shade": "Deep"
+                    }
+                },
+                {
+                    "sku": "MV-CNC-07",
+                    "priceCents": 2600,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Shade": "Rich"
+                    }
+                },
+                {
+                    "sku": "MV-CNC-08",
+                    "priceCents": 2600,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Shade": "Espresso"
+                    }
+                }
+            ],
+            "images": [
+                {
+                    "assetId": "brightening-concealer",
+                    "isPrimary": true,
+                    "alt": "Under-Eye Brightening Concealer"
+                }
+            ]
+        },
+        {
+            "handle": "cloud-set-loose-powder",
+            "title": "Cloud Set Loose Powder",
+            "description": "A finely milled loose powder that sets your base soft-matte and blurs without flattening the glow. Press it under the eyes to lock concealer, dust it over the T-zone, and skip the midday shine.",
+            "status": "active",
+            "productType": "Setting powder",
+            "vendor": "Maeve",
+            "tags": [
+                "face",
+                "powder",
+                "setting",
+                "vegan"
+            ],
+            "categoryHandles": [
+                "face"
+            ],
+            "collectionHandles": [
+                "new-in"
+            ],
+            "seoTitle": "Cloud Set Loose Powder — soft-matte setting powder",
+            "seoDescription": "A finely milled loose setting powder that blurs and sets without flattening the glow.",
+            "productTypeKey": "cosmetics",
+            "attributes": {
+                "keyIngredients": "Micro-fine silica and rice starch soak up excess oil and soft-blur pores, while boron nitride scatters light so skin sets matte without going flat or chalky.",
+                "howToUse": "Load a fluffy brush or the puff, tap off the excess, and press — do not sweep — into the under-eye and T-zone to lock concealer and foundation. A little is plenty; build only where you shine.",
+                "skinType": [
+                    "combination",
+                    "oily"
+                ],
+                "volume": "8 g / 0.28 oz",
+                "fullIngredients": "Silica, Oryza Sativa (Rice) Starch, Mica, Zinc Stearate, Boron Nitride, Dimethicone, Tocopheryl Acetate, Titanium Dioxide (CI 77891), Iron Oxides (CI 77492, CI 77499)."
+            },
+            "options": [
+                {
+                    "name": "Shade",
+                    "displayType": "swatch",
+                    "values": [
+                        {
+                            "value": "Translucent"
+                        },
+                        {
+                            "value": "Fair"
+                        },
+                        {
+                            "value": "Medium"
+                        },
+                        {
+                            "value": "Deep"
+                        }
+                    ]
+                }
+            ],
+            "variants": [
+                {
+                    "sku": "MV-PWD-01",
+                    "priceCents": 3000,
+                    "isDefault": true,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Shade": "Translucent"
+                    }
+                },
+                {
+                    "sku": "MV-PWD-02",
+                    "priceCents": 3000,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Shade": "Fair"
+                    }
+                },
+                {
+                    "sku": "MV-PWD-03",
+                    "priceCents": 3000,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Shade": "Medium"
+                    }
+                },
+                {
+                    "sku": "MV-PWD-04",
+                    "priceCents": 3000,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Shade": "Deep"
+                    }
+                }
+            ],
+            "images": [
+                {
+                    "assetId": "cloud-set-powder",
+                    "isPrimary": true,
+                    "alt": "Cloud Set Loose Powder"
+                }
+            ]
+        },
+        {
+            "handle": "soft-focus-blurring-primer",
+            "title": "Soft Focus Blurring Primer",
+            "description": "A silky, weightless primer that grips makeup and softens the look of pores and texture, so your foundation goes on smoother and stays put longer. One universal formula — goes under everything.",
+            "status": "active",
+            "productType": "Primer",
+            "vendor": "Maeve",
+            "tags": [
+                "face",
+                "primer",
+                "vegan"
+            ],
+            "categoryHandles": [
+                "face"
+            ],
+            "collectionHandles": [
+                "new-in"
+            ],
+            "seoTitle": "Soft Focus Blurring Primer — pore-blurring makeup primer",
+            "seoDescription": "A weightless blurring primer that grips makeup and softens the look of pores and texture.",
+            "productTypeKey": "cosmetics",
+            "attributes": {
+                "keyIngredients": "A silky silica-and-blurring-polymer base fills the look of pores and fine texture so makeup sits smoother, while niacinamide works over time to refine the skin underneath.",
+                "howToUse": "After moisturiser, smooth a pea-sized amount over clean skin — concentrating on the centre of the face where pores show most — and let it set for a moment before foundation. Wear it alone on a no-makeup day, too.",
+                "skinType": [
+                    "all"
+                ],
+                "volume": "30 ml / 1.0 fl oz",
+                "fullIngredients": "Aqua, Dimethicone, Silica, Cyclopentasiloxane, Niacinamide, Glycerin, Dimethicone/Vinyl Dimethicone Crosspolymer, Tocopheryl Acetate, Phenoxyethanol."
+            },
+            "variants": [
+                {
+                    "sku": "MV-PRM-01",
+                    "priceCents": 3200,
+                    "isDefault": true,
+                    "inventoryPolicy": "continue"
+                }
+            ],
+            "images": [
+                {
+                    "assetId": "soft-focus-primer",
+                    "isPrimary": true,
+                    "alt": "Soft Focus Blurring Primer"
+                }
+            ]
+        },
+        {
+            "handle": "lock-it-setting-spray",
+            "title": "Lock-It Setting Spray",
+            "description": "A fine-mist setting spray that melts powder into skin and holds a full face through heat, long days and longer nights. A few spritzes and everything stays exactly where you put it.",
+            "status": "active",
+            "productType": "Setting spray",
+            "vendor": "Maeve",
+            "tags": [
+                "face",
+                "setting-spray",
+                "vegan"
+            ],
+            "categoryHandles": [
+                "face"
+            ],
+            "collectionHandles": [
+                "best-sellers"
+            ],
+            "seoTitle": "Lock-It Setting Spray — long-wear makeup setting spray",
+            "seoDescription": "A fine-mist setting spray that melts powder into skin and holds a full face all day.",
+            "productTypeKey": "cosmetics",
+            "attributes": {
+                "keyIngredients": "Flexible film-forming polymers lock makeup in place through heat and long days, while aloe and glycerin melt any powdery edge back into skin for a fresh, second-skin finish.",
+                "howToUse": "Hold six inches from the face, close your eyes, and mist twice in an X and a T once the full look is on. Let it dry down without touching. A quick spritz mid-day revives a tired base, too.",
+                "skinType": [
+                    "all"
+                ],
+                "volume": "100 ml / 3.4 fl oz",
+                "fullIngredients": "Aqua, Alcohol Denat., Glycerin, VP/VA Copolymer, Aloe Barbadensis Leaf Juice, Panthenol, Sodium Hyaluronate, Phenoxyethanol."
+            },
+            "variants": [
+                {
+                    "sku": "MV-SPR-01",
+                    "priceCents": 2800,
+                    "isDefault": true,
+                    "inventoryPolicy": "continue"
+                }
+            ],
+            "images": [
+                {
+                    "assetId": "lock-it-setting-spray",
+                    "isPrimary": true,
+                    "alt": "Lock-It Setting Spray"
+                }
+            ]
+        },
+        {
+            "handle": "sunlit-cream-blush",
+            "title": "Sunlit Cream Blush",
+            "description": "A blendable cream blush that melts into skin for a lit-from-within flush — tap it high on the cheek with a fingertip and it looks like your own color, only better. Eight shades from soft peach to deep berry.",
+            "status": "active",
+            "productType": "Blush",
+            "vendor": "Maeve",
+            "tags": [
+                "cheek",
+                "blush",
+                "cream",
+                "vegan",
+                "bestseller"
+            ],
+            "categoryHandles": [
+                "cheek"
+            ],
+            "collectionHandles": [
+                "best-sellers",
+                "new-in",
+                "the-edit",
+                "vegan-favourites"
+            ],
+            "seoTitle": "Sunlit Cream Blush — dewy cream blush in 8 shades",
+            "seoDescription": "A blendable cream blush for a lit-from-within flush, in eight shades from peach to berry.",
+            "productTypeKey": "cosmetics",
+            "attributes": {
+                "keyIngredients": "A jojoba-ester and vitamin-E balm carries buildable pigment that melts into skin for a dewy, lit-from-within flush — no powdery cake, no hard line where it lands.",
+                "howToUse": "Tap one or two dots high on the cheeks with a fingertip and blend up toward the temple while the balm is still slippery. Layer for more color; a touch on the lips ties the look together.",
+                "skinType": [
+                    "dry",
+                    "normal"
+                ],
+                "volume": "5 g / 0.17 oz",
+                "fullIngredients": "Caprylic/Capric Triglyceride, Hydrogenated Polyisobutene, Ozokerite, Jojoba Esters, Tocopheryl Acetate, Mica, Titanium Dioxide (CI 77891), Iron Oxides (CI 77491), Red 7 Lake (CI 15850)."
+            },
+            "options": [
+                {
+                    "name": "Shade",
+                    "displayType": "swatch",
+                    "values": [
+                        {
+                            "value": "Peach"
+                        },
+                        {
+                            "value": "Apricot"
+                        },
+                        {
+                            "value": "Rose"
+                        },
+                        {
+                            "value": "Coral"
+                        },
+                        {
+                            "value": "Berry"
+                        },
+                        {
+                            "value": "Plum"
+                        },
+                        {
+                            "value": "Mauve"
+                        },
+                        {
+                            "value": "Terracotta"
+                        }
+                    ]
+                }
+            ],
+            "variants": [
+                {
+                    "sku": "MV-BLS-01",
+                    "priceCents": 2400,
+                    "isDefault": true,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Shade": "Peach"
+                    }
+                },
+                {
+                    "sku": "MV-BLS-02",
+                    "priceCents": 2400,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Shade": "Apricot"
+                    }
+                },
+                {
+                    "sku": "MV-BLS-03",
+                    "priceCents": 2400,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Shade": "Rose"
+                    }
+                },
+                {
+                    "sku": "MV-BLS-04",
+                    "priceCents": 2400,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Shade": "Coral"
+                    }
+                },
+                {
+                    "sku": "MV-BLS-05",
+                    "priceCents": 2400,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Shade": "Berry"
+                    }
+                },
+                {
+                    "sku": "MV-BLS-06",
+                    "priceCents": 2400,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Shade": "Plum"
+                    }
+                },
+                {
+                    "sku": "MV-BLS-07",
+                    "priceCents": 2400,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Shade": "Mauve"
+                    }
+                },
+                {
+                    "sku": "MV-BLS-08",
+                    "priceCents": 2400,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Shade": "Terracotta"
+                    }
+                }
+            ],
+            "images": [
+                {
+                    "assetId": "sunlit-cream-blush",
+                    "isPrimary": true,
+                    "alt": "Sunlit Cream Blush"
+                }
+            ]
+        },
+        {
+            "handle": "sculpt-contour-stick",
+            "title": "Sculpt Contour Stick",
+            "description": "A creamy contour stick with a soft, shadowy finish that defines without a muddy line — draw where the light would not reach, then blend with a finger or a brush. Six shades to suit fair to deep.",
+            "status": "active",
+            "productType": "Contour",
+            "vendor": "Maeve",
+            "tags": [
+                "cheek",
+                "contour",
+                "cream",
+                "vegan"
+            ],
+            "categoryHandles": [
+                "cheek"
+            ],
+            "collectionHandles": [
+                "the-edit"
+            ],
+            "seoTitle": "Sculpt Contour Stick — cream contour stick in 6 shades",
+            "seoDescription": "A creamy contour stick with a soft, shadowy finish that defines without a muddy line.",
+            "productTypeKey": "cosmetics",
+            "attributes": {
+                "keyIngredients": "Cool-toned pigments read like a real shadow rather than a stripe of bronzer, in a shea-and-jojoba stick that stays creamy enough to blend seamlessly before it sets.",
+                "howToUse": "Draw a light line where the light would not naturally reach — under the cheekbone, along the hairline, either side of the nose — then blend up and back with a finger or a brush until the edge disappears.",
+                "skinType": [
+                    "dry",
+                    "normal"
+                ],
+                "volume": "6 g / 0.21 oz",
+                "fullIngredients": "Caprylic/Capric Triglyceride, Ozokerite, Butyrospermum Parkii (Shea) Butter, Simmondsia Chinensis (Jojoba) Seed Oil, Tocopheryl Acetate, Titanium Dioxide (CI 77891), Iron Oxides (CI 77491, CI 77492, CI 77499)."
+            },
+            "options": [
+                {
+                    "name": "Shade",
+                    "displayType": "swatch",
+                    "values": [
+                        {
+                            "value": "Light"
+                        },
+                        {
+                            "value": "Medium"
+                        },
+                        {
+                            "value": "Tan"
+                        },
+                        {
+                            "value": "Deep"
+                        },
+                        {
+                            "value": "Rich"
+                        },
+                        {
+                            "value": "Espresso"
+                        }
+                    ]
+                }
+            ],
+            "variants": [
+                {
+                    "sku": "MV-CTR-01",
+                    "priceCents": 2600,
+                    "isDefault": true,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Shade": "Light"
+                    }
+                },
+                {
+                    "sku": "MV-CTR-02",
+                    "priceCents": 2600,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Shade": "Medium"
+                    }
+                },
+                {
+                    "sku": "MV-CTR-03",
+                    "priceCents": 2600,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Shade": "Tan"
+                    }
+                },
+                {
+                    "sku": "MV-CTR-04",
+                    "priceCents": 2600,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Shade": "Deep"
+                    }
+                },
+                {
+                    "sku": "MV-CTR-05",
+                    "priceCents": 2600,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Shade": "Rich"
+                    }
+                },
+                {
+                    "sku": "MV-CTR-06",
+                    "priceCents": 2600,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Shade": "Espresso"
+                    }
+                }
+            ],
+            "images": [
+                {
+                    "assetId": "sculpt-contour-stick",
+                    "isPrimary": true,
+                    "alt": "Sculpt Contour Stick"
+                }
+            ]
+        },
+        {
+            "handle": "velvet-matte-liquid-lip",
+            "title": "Velvet Matte Liquid Lip",
+            "description": "A full-pigment liquid lipstick that sets to a comfortable velvet matte and stays through coffee, lunch and the walk home. One coat means it, and sixteen shades run from your-lips-but-better to a proper berry.",
+            "status": "active",
+            "productType": "Lipstick",
+            "vendor": "Maeve",
+            "tags": [
+                "lip",
+                "lipstick",
+                "matte",
+                "vegan",
+                "bestseller"
+            ],
+            "categoryHandles": [
+                "lip"
+            ],
+            "collectionHandles": [
+                "best-sellers",
+                "new-in",
+                "the-edit",
+                "vegan-favourites"
+            ],
+            "seoTitle": "Velvet Matte Liquid Lip — long-wear liquid lipstick in 16 shades",
+            "seoDescription": "A full-pigment liquid lipstick that sets to a comfortable velvet matte, in 16 shades.",
+            "productTypeKey": "cosmetics",
+            "attributes": {
+                "keyIngredients": "Full-coverage pigments in a lightweight silicone base set to a transfer-resistant velvet matte, with vitamin E to keep it comfortable so it never feels like it is drying your lips out.",
+                "howToUse": "Outline the cupid’s bow first, then fill from the centre out in one thin coat and press your lips together — it is full pigment, so a second coat only slides. Line first with Precision Lip Liner for the longest wear.",
+                "skinType": [
+                    "all"
+                ],
+                "volume": "4 ml / 0.14 fl oz",
+                "fullIngredients": "Dimethicone, Trimethylsiloxysilicate, Isododecane, Disteardimonium Hectorite, Tocopheryl Acetate, Silica, Iron Oxides (CI 77491), Red 7 Lake (CI 15850), Red 28 Lake (CI 45410)."
+            },
+            "options": [
+                {
+                    "name": "Shade",
+                    "displayType": "swatch",
+                    "values": [
+                        {
+                            "value": "Bare"
+                        },
+                        {
+                            "value": "Blush"
+                        },
+                        {
+                            "value": "Rosewood"
+                        },
+                        {
+                            "value": "Nude Pink"
+                        },
+                        {
+                            "value": "Brick"
+                        },
+                        {
+                            "value": "Terracotta"
+                        },
+                        {
+                            "value": "Coral"
+                        },
+                        {
+                            "value": "Poppy"
+                        },
+                        {
+                            "value": "Cherry"
+                        },
+                        {
+                            "value": "Ruby"
+                        },
+                        {
+                            "value": "Wine"
+                        },
+                        {
+                            "value": "Berry"
+                        },
+                        {
+                            "value": "Plum"
+                        },
+                        {
+                            "value": "Mauve"
+                        },
+                        {
+                            "value": "Fig"
+                        },
+                        {
+                            "value": "Chocolate"
+                        }
+                    ]
+                }
+            ],
+            "variants": [
+                {
+                    "sku": "MV-LIP-01",
+                    "priceCents": 2200,
+                    "isDefault": true,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Shade": "Bare"
+                    }
+                },
+                {
+                    "sku": "MV-LIP-02",
+                    "priceCents": 2200,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Shade": "Blush"
+                    }
+                },
+                {
+                    "sku": "MV-LIP-03",
+                    "priceCents": 2200,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Shade": "Rosewood"
+                    }
+                },
+                {
+                    "sku": "MV-LIP-04",
+                    "priceCents": 2200,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Shade": "Nude Pink"
+                    }
+                },
+                {
+                    "sku": "MV-LIP-05",
+                    "priceCents": 2200,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Shade": "Brick"
+                    }
+                },
+                {
+                    "sku": "MV-LIP-06",
+                    "priceCents": 2200,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Shade": "Terracotta"
+                    }
+                },
+                {
+                    "sku": "MV-LIP-07",
+                    "priceCents": 2200,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Shade": "Coral"
+                    }
+                },
+                {
+                    "sku": "MV-LIP-08",
+                    "priceCents": 2200,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Shade": "Poppy"
+                    }
+                },
+                {
+                    "sku": "MV-LIP-09",
+                    "priceCents": 2200,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Shade": "Cherry"
+                    }
+                },
+                {
+                    "sku": "MV-LIP-10",
+                    "priceCents": 2200,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Shade": "Ruby"
+                    }
+                },
+                {
+                    "sku": "MV-LIP-11",
+                    "priceCents": 2200,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Shade": "Wine"
+                    }
+                },
+                {
+                    "sku": "MV-LIP-12",
+                    "priceCents": 2200,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Shade": "Berry"
+                    }
+                },
+                {
+                    "sku": "MV-LIP-13",
+                    "priceCents": 2200,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Shade": "Plum"
+                    }
+                },
+                {
+                    "sku": "MV-LIP-14",
+                    "priceCents": 2200,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Shade": "Mauve"
+                    }
+                },
+                {
+                    "sku": "MV-LIP-15",
+                    "priceCents": 2200,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Shade": "Fig"
+                    }
+                },
+                {
+                    "sku": "MV-LIP-16",
+                    "priceCents": 2200,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Shade": "Chocolate"
+                    }
+                }
+            ],
+            "images": [
+                {
+                    "assetId": "velvet-matte-liquid-lip",
+                    "isPrimary": true,
+                    "alt": "Velvet Matte Liquid Lip"
+                }
+            ]
+        },
+        {
+            "handle": "glass-shine-lip-oil",
+            "title": "Glass Shine Lip Oil",
+            "description": "A cushiony lip oil that leaves a glass-clear shine and a wash of color while it conditions — no stickiness, no tightness, just a lip that looks like it means it. Wear it alone or over the matte.",
+            "status": "active",
+            "productType": "Lip oil",
+            "vendor": "Maeve",
+            "tags": [
+                "lip",
+                "lip-oil",
+                "gloss",
+                "vegan"
+            ],
+            "categoryHandles": [
+                "lip"
+            ],
+            "collectionHandles": [
+                "new-in",
+                "gift-sets"
+            ],
+            "seoTitle": "Glass Shine Lip Oil — conditioning tinted lip oil",
+            "seoDescription": "A cushiony lip oil with a glass-clear shine and a wash of color, in eight tints.",
+            "productTypeKey": "cosmetics",
+            "attributes": {
+                "keyIngredients": "Jojoba oil and squalane cushion and condition while sodium hyaluronate draws in water, so lips look plumper and glass-shiny with a sheer wash of color — never tacky or sticky.",
+                "howToUse": "Sweep the doe-foot wand across bare lips for everyday shine, or press a little over the centre of a matte lip to make it look fuller. Reapply whenever lips feel dry — it doubles as a treatment.",
+                "skinType": [
+                    "all"
+                ],
+                "volume": "5 ml / 0.17 fl oz",
+                "fullIngredients": "Hydrogenated Polyisobutene, Simmondsia Chinensis (Jojoba) Seed Oil, Squalane, Silica Dimethyl Silylate, Tocopheryl Acetate, Sodium Hyaluronate, Red 7 Lake (CI 15850)."
+            },
+            "options": [
+                {
+                    "name": "Shade",
+                    "displayType": "swatch",
+                    "values": [
+                        {
+                            "value": "Clear"
+                        },
+                        {
+                            "value": "Pink Sheen"
+                        },
+                        {
+                            "value": "Peach"
+                        },
+                        {
+                            "value": "Rose"
+                        },
+                        {
+                            "value": "Berry Tint"
+                        },
+                        {
+                            "value": "Cherry Tint"
+                        },
+                        {
+                            "value": "Mauve"
+                        },
+                        {
+                            "value": "Bronze"
+                        }
+                    ]
+                }
+            ],
+            "variants": [
+                {
+                    "sku": "MV-OIL-01",
+                    "priceCents": 2000,
+                    "isDefault": true,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Shade": "Clear"
+                    }
+                },
+                {
+                    "sku": "MV-OIL-02",
+                    "priceCents": 2000,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Shade": "Pink Sheen"
+                    }
+                },
+                {
+                    "sku": "MV-OIL-03",
+                    "priceCents": 2000,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Shade": "Peach"
+                    }
+                },
+                {
+                    "sku": "MV-OIL-04",
+                    "priceCents": 2000,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Shade": "Rose"
+                    }
+                },
+                {
+                    "sku": "MV-OIL-05",
+                    "priceCents": 2000,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Shade": "Berry Tint"
+                    }
+                },
+                {
+                    "sku": "MV-OIL-06",
+                    "priceCents": 2000,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Shade": "Cherry Tint"
+                    }
+                },
+                {
+                    "sku": "MV-OIL-07",
+                    "priceCents": 2000,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Shade": "Mauve"
+                    }
+                },
+                {
+                    "sku": "MV-OIL-08",
+                    "priceCents": 2000,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Shade": "Bronze"
+                    }
+                }
+            ],
+            "images": [
+                {
+                    "assetId": "glass-shine-lip-oil",
+                    "isPrimary": true,
+                    "alt": "Glass Shine Lip Oil"
+                }
+            ]
+        },
+        {
+            "handle": "precision-lip-liner",
+            "title": "Precision Lip Liner",
+            "description": "A retractable lip liner with a fine, creamy tip that draws a clean edge and fills the whole lip to make color last. Ten shades built to match the liquid lip, or to define on their own.",
+            "status": "active",
+            "productType": "Lip liner",
+            "vendor": "Maeve",
+            "tags": [
+                "lip",
+                "lip-liner",
+                "vegan"
+            ],
+            "categoryHandles": [
+                "lip"
+            ],
+            "collectionHandles": [
+                "the-edit"
+            ],
+            "seoTitle": "Precision Lip Liner — retractable creamy lip liner in 10 shades",
+            "seoDescription": "A retractable lip liner with a fine, creamy tip, in ten shades to match the liquid lip.",
+            "productTypeKey": "cosmetics",
+            "attributes": {
+                "keyIngredients": "A creamy wax-and-oil core glides without dragging and grips color in place, with vitamin E so the fine tip stays smooth to the last of the twist-up.",
+                "howToUse": "Trace the natural lip line, then fill the whole lip in rather than just the border — a fully lined lip gives lipstick something to hold, so color fades evenly instead of leaving a ring. Wear alone for a soft stain.",
+                "skinType": [
+                    "all"
+                ],
+                "volume": "0.3 g / 0.01 oz",
+                "fullIngredients": "Caprylic/Capric Triglyceride, Hydrogenated Vegetable Oil, Candelilla Wax, Tocopheryl Acetate, Titanium Dioxide (CI 77891), Iron Oxides (CI 77491, CI 77499), Red 7 Lake (CI 15850)."
+            },
+            "options": [
+                {
+                    "name": "Shade",
+                    "displayType": "swatch",
+                    "values": [
+                        {
+                            "value": "Bare"
+                        },
+                        {
+                            "value": "Blush"
+                        },
+                        {
+                            "value": "Rosewood"
+                        },
+                        {
+                            "value": "Brick"
+                        },
+                        {
+                            "value": "Terracotta"
+                        },
+                        {
+                            "value": "Ruby"
+                        },
+                        {
+                            "value": "Wine"
+                        },
+                        {
+                            "value": "Berry"
+                        },
+                        {
+                            "value": "Plum"
+                        },
+                        {
+                            "value": "Chocolate"
+                        }
+                    ]
+                }
+            ],
+            "variants": [
+                {
+                    "sku": "MV-LNR-01",
+                    "priceCents": 1600,
+                    "isDefault": true,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Shade": "Bare"
+                    }
+                },
+                {
+                    "sku": "MV-LNR-02",
+                    "priceCents": 1600,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Shade": "Blush"
+                    }
+                },
+                {
+                    "sku": "MV-LNR-03",
+                    "priceCents": 1600,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Shade": "Rosewood"
+                    }
+                },
+                {
+                    "sku": "MV-LNR-04",
+                    "priceCents": 1600,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Shade": "Brick"
+                    }
+                },
+                {
+                    "sku": "MV-LNR-05",
+                    "priceCents": 1600,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Shade": "Terracotta"
+                    }
+                },
+                {
+                    "sku": "MV-LNR-06",
+                    "priceCents": 1600,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Shade": "Ruby"
+                    }
+                },
+                {
+                    "sku": "MV-LNR-07",
+                    "priceCents": 1600,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Shade": "Wine"
+                    }
+                },
+                {
+                    "sku": "MV-LNR-08",
+                    "priceCents": 1600,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Shade": "Berry"
+                    }
+                },
+                {
+                    "sku": "MV-LNR-09",
+                    "priceCents": 1600,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Shade": "Plum"
+                    }
+                },
+                {
+                    "sku": "MV-LNR-10",
+                    "priceCents": 1600,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Shade": "Chocolate"
+                    }
+                }
+            ],
+            "images": [
+                {
+                    "assetId": "precision-lip-liner",
+                    "isPrimary": true,
+                    "alt": "Precision Lip Liner"
+                }
+            ]
+        },
+        {
+            "handle": "bloom-eyeshadow-palette",
+            "title": "Bloom 9-Pan Eyeshadow Palette",
+            "description": "A nine-pan palette that does a whole eye on its own — soft mattes, a satin wash and one true shimmer, blendable and low-fallout. Three edits: Warm, Cool and Rose, each a full look from day to night.",
+            "status": "active",
+            "productType": "Eyeshadow palette",
+            "vendor": "Maeve",
+            "tags": [
+                "eye",
+                "eyeshadow",
+                "palette",
+                "vegan",
+                "bestseller"
+            ],
+            "categoryHandles": [
+                "eye"
+            ],
+            "collectionHandles": [
+                "best-sellers",
+                "new-in",
+                "the-edit",
+                "gift-sets"
+            ],
+            "seoTitle": "Bloom 9-Pan Eyeshadow Palette — Warm, Cool & Rose",
+            "seoDescription": "A blendable nine-pan eyeshadow palette in three edits: Warm, Cool and Rose.",
+            "productTypeKey": "cosmetics",
+            "attributes": {
+                "keyIngredients": "Finely milled pressed pigments blend soft and stay put with low fallout; the single shimmer is bound in a silicone slip for a smooth, foil-able finish rather than a scatter of glitter.",
+                "howToUse": "Sweep the lightest matte over the whole lid, deepen the outer corner and crease with the mid-tones, and press the shimmer onto the centre of the lid with a fingertip. Every pan works together, so you cannot go wrong.",
+                "skinType": [
+                    "all"
+                ],
+                "volume": "9 g / 0.32 oz (9 x 1 g)",
+                "fullIngredients": "Talc, Mica, Caprylic/Capric Triglyceride, Zinc Stearate, Dimethicone, Tocopheryl Acetate, Titanium Dioxide (CI 77891), Iron Oxides (CI 77491, CI 77492, CI 77499), Tin Oxide."
+            },
+            "options": [
+                {
+                    "name": "Palette",
+                    "displayType": "swatch",
+                    "values": [
+                        {
+                            "value": "Warm"
+                        },
+                        {
+                            "value": "Cool"
+                        },
+                        {
+                            "value": "Rose"
+                        }
+                    ]
+                }
+            ],
+            "variants": [
+                {
+                    "sku": "MV-PAL-WRM",
+                    "priceCents": 3800,
+                    "isDefault": true,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Palette": "Warm"
+                    }
+                },
+                {
+                    "sku": "MV-PAL-COL",
+                    "priceCents": 3800,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Palette": "Cool"
+                    }
+                },
+                {
+                    "sku": "MV-PAL-ROS",
+                    "priceCents": 3800,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Palette": "Rose"
+                    }
+                }
+            ],
+            "images": [
+                {
+                    "assetId": "bloom-eyeshadow-palette",
+                    "isPrimary": true,
+                    "alt": "Bloom 9-Pan Eyeshadow Palette"
+                }
+            ]
+        },
+        {
+            "handle": "featherweight-mascara",
+            "title": "Featherweight Mascara",
+            "description": "A lengthening mascara that separates and lifts every lash without the clump or the flake — a tapered brush reaches the corners, and it wears all day then washes off with warm water. Black or Brown.",
+            "status": "active",
+            "productType": "Mascara",
+            "vendor": "Maeve",
+            "tags": [
+                "eye",
+                "mascara",
+                "vegan",
+                "bestseller"
+            ],
+            "categoryHandles": [
+                "eye"
+            ],
+            "collectionHandles": [
+                "best-sellers",
+                "vegan-favourites"
+            ],
+            "seoTitle": "Featherweight Mascara — lengthening clump-free mascara",
+            "seoDescription": "A lengthening mascara that separates and lifts without clumping, in Black or Brown.",
+            "productTypeKey": "cosmetics",
+            "attributes": {
+                "keyIngredients": "Flexible film-forming polymers and carnauba wax coat and lengthen each lash without weighing it down, and provitamin B5 conditions — so it holds a curl all day, then slides off with warm water.",
+                "howToUse": "Wiggle the tapered brush from root to tip, rolling upward to separate and lift; a second coat while the first is still wet builds length without a clump. Reach the inner and outer corners with the brush tip.",
+                "skinType": [
+                    "all",
+                    "sensitive"
+                ],
+                "volume": "9 ml / 0.3 fl oz",
+                "fullIngredients": "Aqua, Synthetic Beeswax, Copernicia Cerifera (Carnauba) Wax, Acacia Senegal Gum, Panthenol, Butylene Glycol, Stearic Acid, Phenoxyethanol, Iron Oxides (CI 77499)."
+            },
+            "options": [
+                {
+                    "name": "Shade",
+                    "displayType": "swatch",
+                    "values": [
+                        {
+                            "value": "Black"
+                        },
+                        {
+                            "value": "Brown"
+                        }
+                    ]
+                }
+            ],
+            "variants": [
+                {
+                    "sku": "MV-MSC-BLK",
+                    "priceCents": 2400,
+                    "isDefault": true,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Shade": "Black"
+                    }
+                },
+                {
+                    "sku": "MV-MSC-BRN",
+                    "priceCents": 2400,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Shade": "Brown"
+                    }
+                }
+            ],
+            "images": [
+                {
+                    "assetId": "featherweight-mascara",
+                    "isPrimary": true,
+                    "alt": "Featherweight Mascara"
+                }
+            ]
+        },
+        {
+            "handle": "brow-sculpt-pomade",
+            "title": "Brow Sculpt Pomade",
+            "description": "A waterproof brow pomade that shapes, fills and holds a natural-looking brow all day — a little goes a long way, and the spoolie end blends out any hard edge. Six shades from soft blonde to ebony.",
+            "status": "active",
+            "productType": "Brow",
+            "vendor": "Maeve",
+            "tags": [
+                "eye",
+                "brow",
+                "vegan"
+            ],
+            "categoryHandles": [
+                "eye"
+            ],
+            "collectionHandles": [
+                "the-edit"
+            ],
+            "seoTitle": "Brow Sculpt Pomade — waterproof brow pomade in 6 shades",
+            "seoDescription": "A waterproof brow pomade that shapes, fills and holds a natural brow, in six shades.",
+            "productTypeKey": "cosmetics",
+            "attributes": {
+                "keyIngredients": "A waterproof wax-and-pigment cream shapes and fills with hair-like strokes, then sets to hold unruly brows in place through heat and humidity without stiffness or flaking.",
+                "howToUse": "Pick up a tiny amount on an angled brush and draw short, feathery strokes through sparse spots and along the tail, following the direction of the hair. Blend the front up with the spoolie end so it never looks blocky.",
+                "skinType": [
+                    "all"
+                ],
+                "volume": "4 g / 0.14 oz",
+                "fullIngredients": "Aqua, Cyclopentasiloxane, Synthetic Wax, Trimethylsiloxysilicate, Copernicia Cerifera (Carnauba) Wax, Phenoxyethanol, Iron Oxides (CI 77491, CI 77492, CI 77499)."
+            },
+            "options": [
+                {
+                    "name": "Shade",
+                    "displayType": "swatch",
+                    "values": [
+                        {
+                            "value": "Taupe"
+                        },
+                        {
+                            "value": "Soft Blonde"
+                        },
+                        {
+                            "value": "Auburn"
+                        },
+                        {
+                            "value": "Medium Brown"
+                        },
+                        {
+                            "value": "Dark Brown"
+                        },
+                        {
+                            "value": "Ebony"
+                        }
+                    ]
+                }
+            ],
+            "variants": [
+                {
+                    "sku": "MV-BRW-01",
+                    "priceCents": 2000,
+                    "isDefault": true,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Shade": "Taupe"
+                    }
+                },
+                {
+                    "sku": "MV-BRW-02",
+                    "priceCents": 2000,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Shade": "Soft Blonde"
+                    }
+                },
+                {
+                    "sku": "MV-BRW-03",
+                    "priceCents": 2000,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Shade": "Auburn"
+                    }
+                },
+                {
+                    "sku": "MV-BRW-04",
+                    "priceCents": 2000,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Shade": "Medium Brown"
+                    }
+                },
+                {
+                    "sku": "MV-BRW-05",
+                    "priceCents": 2000,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Shade": "Dark Brown"
+                    }
+                },
+                {
+                    "sku": "MV-BRW-06",
+                    "priceCents": 2000,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Shade": "Ebony"
+                    }
+                }
+            ],
+            "images": [
+                {
+                    "assetId": "brow-sculpt-pomade",
+                    "isPrimary": true,
+                    "alt": "Brow Sculpt Pomade"
+                }
+            ]
+        },
+        {
+            "handle": "skinny-gel-eyeliner",
+            "title": "Skinny Gel Eyeliner",
+            "description": "A retractable gel liner with a fine tip that draws a crisp line or a soft smudge and sets waterproof in seconds. Six shades — a true black for the sharp days, and colors for when you want a little more.",
+            "status": "active",
+            "productType": "Eyeliner",
+            "vendor": "Maeve",
+            "tags": [
+                "eye",
+                "eyeliner",
+                "gel",
+                "vegan"
+            ],
+            "categoryHandles": [
+                "eye"
+            ],
+            "collectionHandles": [
+                "new-in"
+            ],
+            "seoTitle": "Skinny Gel Eyeliner — waterproof retractable gel liner",
+            "seoDescription": "A retractable waterproof gel eyeliner with a fine tip, in six shades.",
+            "productTypeKey": "cosmetics",
+            "attributes": {
+                "keyIngredients": "A creamy gel-wax core lays down opaque color in one pass and sets waterproof within seconds, so a line stays crisp — or a smoke stays soft — through a long day and warm weather.",
+                "howToUse": "For a clean line, draw along the upper lash line from inner to outer corner and flick the tail while the gel is still workable. For a smoky eye, trace it close to the lashes and smudge with a brush before it sets.",
+                "skinType": [
+                    "all",
+                    "sensitive"
+                ],
+                "volume": "0.4 g / 0.014 oz",
+                "fullIngredients": "Aqua, Cyclopentasiloxane, Synthetic Beeswax, Trimethylsiloxysilicate, Butylene Glycol, Copernicia Cerifera (Carnauba) Wax, Phenoxyethanol, Iron Oxides (CI 77499), Ultramarines (CI 77007)."
+            },
+            "options": [
+                {
+                    "name": "Shade",
+                    "displayType": "swatch",
+                    "values": [
+                        {
+                            "value": "Black"
+                        },
+                        {
+                            "value": "Espresso"
+                        },
+                        {
+                            "value": "Bronze"
+                        },
+                        {
+                            "value": "Plum"
+                        },
+                        {
+                            "value": "Forest"
+                        },
+                        {
+                            "value": "Navy"
+                        }
+                    ]
+                }
+            ],
+            "variants": [
+                {
+                    "sku": "MV-EYL-01",
+                    "priceCents": 1800,
+                    "isDefault": true,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Shade": "Black"
+                    }
+                },
+                {
+                    "sku": "MV-EYL-02",
+                    "priceCents": 1800,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Shade": "Espresso"
+                    }
+                },
+                {
+                    "sku": "MV-EYL-03",
+                    "priceCents": 1800,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Shade": "Bronze"
+                    }
+                },
+                {
+                    "sku": "MV-EYL-04",
+                    "priceCents": 1800,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Shade": "Plum"
+                    }
+                },
+                {
+                    "sku": "MV-EYL-05",
+                    "priceCents": 1800,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Shade": "Forest"
+                    }
+                },
+                {
+                    "sku": "MV-EYL-06",
+                    "priceCents": 1800,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Shade": "Navy"
+                    }
+                }
+            ],
+            "images": [
+                {
+                    "assetId": "skinny-gel-eyeliner",
+                    "isPrimary": true,
+                    "alt": "Skinny Gel Eyeliner"
+                }
+            ]
+        },
+        {
+            "handle": "buffing-foundation-brush",
+            "title": "The Buffing Foundation Brush",
+            "description": "A dense, domed brush of soft synthetic fibres that buffs liquid and cream foundation into skin for a seamless, streak-free finish. Balanced in the hand, quick to wash, and built to last years.",
+            "status": "active",
+            "productType": "Brush",
+            "vendor": "Maeve",
+            "tags": [
+                "tools",
+                "brush",
+                "vegan"
+            ],
+            "categoryHandles": [
+                "tools"
+            ],
+            "collectionHandles": [
+                "gift-sets",
+                "vegan-favourites"
+            ],
+            "seoTitle": "The Buffing Foundation Brush — dense synthetic foundation brush",
+            "seoDescription": "A dense, domed synthetic brush that buffs liquid and cream foundation to a seamless finish.",
+            "productTypeKey": "cosmetics",
+            "attributes": {
+                "keyIngredients": "Dense, soft synthetic Taklon fibres — cruelty-free and non-absorbent, so they buff liquid and cream foundation into skin rather than drinking it up, for a streak-free, second-skin finish.",
+                "howToUse": "Dot foundation onto the face, then buff in small circles with the domed head and finish with light downward strokes to lay the fibres flat. Wash weekly with a gentle soap, reshape the head, and dry bristles-down.",
+                "skinType": [
+                    "all"
+                ],
+                "volume": "Domed head, 16 cm balanced handle",
+                "fullIngredients": "Soft synthetic Taklon fibres, a matte anodised-aluminium ferrule, and an FSC-certified birch handle. Cruelty-free and vegan by construction."
+            },
+            "variants": [
+                {
+                    "sku": "MV-BSH-01",
+                    "priceCents": 2800,
+                    "isDefault": true,
+                    "inventoryPolicy": "continue"
+                }
+            ],
+            "images": [
+                {
+                    "assetId": "buffing-foundation-brush",
+                    "isPrimary": true,
+                    "alt": "The Buffing Foundation Brush"
+                }
+            ]
         }
-      ]
-    },
-    {
-      "handle": "under-eye-brightening-concealer",
-      "title": "Under-Eye Brightening Concealer",
-      "description": "A creamy, crease-resistant concealer that lifts the under-eye and covers where you need it, without cakeing into fine lines. Eight shades to match — or go one lighter to brighten.",
-      "status": "active",
-      "productType": "Concealer",
-      "vendor": "Maeve",
-      "tags": ["face", "concealer", "vegan"],
-      "categoryHandles": ["face"],
-      "collectionHandles": ["best-sellers", "the-edit"],
-      "seoTitle": "Under-Eye Brightening Concealer — crease-resistant concealer",
-      "seoDescription": "A creamy, crease-resistant brightening concealer in eight matchable shades.",
-      "productTypeKey": "cosmetics",
-      "attributes": {
-        "keyIngredients": "Light-reflecting pigments lift shadow under the eye, caffeine helps de-puff, and a peptide plus vitamin E keep the creamy base from settling into fine lines through the day.",
-        "howToUse": "Dot a little onto the under-eye and any spots you want to cover, then tap out with a fingertip or a small brush — never drag. Match your shade, or go one lighter under the eye to brighten. Press with Cloud Set powder to lock it.",
-        "skinType": ["all"],
-        "volume": "6 ml / 0.2 fl oz",
-        "fullIngredients": "Aqua, Dimethicone, Glycerin, Isododecane, Caffeine, Palmitoyl Tripeptide-1, Tocopheryl Acetate, Mica, Phenoxyethanol, Titanium Dioxide (CI 77891), Iron Oxides (CI 77491, CI 77492, CI 77499)."
-      },
-      "options": [
-        {
-          "name": "Shade",
-          "displayType": "swatch",
-          "values": [
-            {
-              "value": "Fair"
-            },
-            {
-              "value": "Light"
-            },
-            {
-              "value": "Light-Medium"
-            },
-            {
-              "value": "Medium"
-            },
-            {
-              "value": "Tan"
-            },
-            {
-              "value": "Deep"
-            },
-            {
-              "value": "Rich"
-            },
-            {
-              "value": "Espresso"
-            }
-          ]
-        }
-      ],
-      "variants": [
-        {
-          "sku": "MV-CNC-01",
-          "priceCents": 2600,
-          "isDefault": true,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Shade": "Fair"
-          }
-        },
-        {
-          "sku": "MV-CNC-02",
-          "priceCents": 2600,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Shade": "Light"
-          }
-        },
-        {
-          "sku": "MV-CNC-03",
-          "priceCents": 2600,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Shade": "Light-Medium"
-          }
-        },
-        {
-          "sku": "MV-CNC-04",
-          "priceCents": 2600,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Shade": "Medium"
-          }
-        },
-        {
-          "sku": "MV-CNC-05",
-          "priceCents": 2600,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Shade": "Tan"
-          }
-        },
-        {
-          "sku": "MV-CNC-06",
-          "priceCents": 2600,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Shade": "Deep"
-          }
-        },
-        {
-          "sku": "MV-CNC-07",
-          "priceCents": 2600,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Shade": "Rich"
-          }
-        },
-        {
-          "sku": "MV-CNC-08",
-          "priceCents": 2600,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Shade": "Espresso"
-          }
-        }
-      ],
-      "images": [
-        {
-          "assetId": "brightening-concealer",
-          "isPrimary": true,
-          "alt": "Under-Eye Brightening Concealer"
-        }
-      ]
-    },
-    {
-      "handle": "cloud-set-loose-powder",
-      "title": "Cloud Set Loose Powder",
-      "description": "A finely milled loose powder that sets your base soft-matte and blurs without flattening the glow. Press it under the eyes to lock concealer, dust it over the T-zone, and skip the midday shine.",
-      "status": "active",
-      "productType": "Setting powder",
-      "vendor": "Maeve",
-      "tags": ["face", "powder", "setting", "vegan"],
-      "categoryHandles": ["face"],
-      "collectionHandles": ["new-in"],
-      "seoTitle": "Cloud Set Loose Powder — soft-matte setting powder",
-      "seoDescription": "A finely milled loose setting powder that blurs and sets without flattening the glow.",
-      "productTypeKey": "cosmetics",
-      "attributes": {
-        "keyIngredients": "Micro-fine silica and rice starch soak up excess oil and soft-blur pores, while boron nitride scatters light so skin sets matte without going flat or chalky.",
-        "howToUse": "Load a fluffy brush or the puff, tap off the excess, and press — do not sweep — into the under-eye and T-zone to lock concealer and foundation. A little is plenty; build only where you shine.",
-        "skinType": ["combination", "oily"],
-        "volume": "8 g / 0.28 oz",
-        "fullIngredients": "Silica, Oryza Sativa (Rice) Starch, Mica, Zinc Stearate, Boron Nitride, Dimethicone, Tocopheryl Acetate, Titanium Dioxide (CI 77891), Iron Oxides (CI 77492, CI 77499)."
-      },
-      "options": [
-        {
-          "name": "Shade",
-          "displayType": "swatch",
-          "values": [
-            {
-              "value": "Translucent"
-            },
-            {
-              "value": "Fair"
-            },
-            {
-              "value": "Medium"
-            },
-            {
-              "value": "Deep"
-            }
-          ]
-        }
-      ],
-      "variants": [
-        {
-          "sku": "MV-PWD-01",
-          "priceCents": 3000,
-          "isDefault": true,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Shade": "Translucent"
-          }
-        },
-        {
-          "sku": "MV-PWD-02",
-          "priceCents": 3000,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Shade": "Fair"
-          }
-        },
-        {
-          "sku": "MV-PWD-03",
-          "priceCents": 3000,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Shade": "Medium"
-          }
-        },
-        {
-          "sku": "MV-PWD-04",
-          "priceCents": 3000,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Shade": "Deep"
-          }
-        }
-      ],
-      "images": [
-        {
-          "assetId": "cloud-set-powder",
-          "isPrimary": true,
-          "alt": "Cloud Set Loose Powder"
-        }
-      ]
-    },
-    {
-      "handle": "soft-focus-blurring-primer",
-      "title": "Soft Focus Blurring Primer",
-      "description": "A silky, weightless primer that grips makeup and softens the look of pores and texture, so your foundation goes on smoother and stays put longer. One universal formula — goes under everything.",
-      "status": "active",
-      "productType": "Primer",
-      "vendor": "Maeve",
-      "tags": ["face", "primer", "vegan"],
-      "categoryHandles": ["face"],
-      "collectionHandles": ["new-in"],
-      "seoTitle": "Soft Focus Blurring Primer — pore-blurring makeup primer",
-      "seoDescription": "A weightless blurring primer that grips makeup and softens the look of pores and texture.",
-      "productTypeKey": "cosmetics",
-      "attributes": {
-        "keyIngredients": "A silky silica-and-blurring-polymer base fills the look of pores and fine texture so makeup sits smoother, while niacinamide works over time to refine the skin underneath.",
-        "howToUse": "After moisturiser, smooth a pea-sized amount over clean skin — concentrating on the centre of the face where pores show most — and let it set for a moment before foundation. Wear it alone on a no-makeup day, too.",
-        "skinType": ["all"],
-        "volume": "30 ml / 1.0 fl oz",
-        "fullIngredients": "Aqua, Dimethicone, Silica, Cyclopentasiloxane, Niacinamide, Glycerin, Dimethicone/Vinyl Dimethicone Crosspolymer, Tocopheryl Acetate, Phenoxyethanol."
-      },
-      "variants": [
-        {
-          "sku": "MV-PRM-01",
-          "priceCents": 3200,
-          "isDefault": true,
-          "inventoryPolicy": "continue"
-        }
-      ],
-      "images": [
-        {
-          "assetId": "soft-focus-primer",
-          "isPrimary": true,
-          "alt": "Soft Focus Blurring Primer"
-        }
-      ]
-    },
-    {
-      "handle": "lock-it-setting-spray",
-      "title": "Lock-It Setting Spray",
-      "description": "A fine-mist setting spray that melts powder into skin and holds a full face through heat, long days and longer nights. A few spritzes and everything stays exactly where you put it.",
-      "status": "active",
-      "productType": "Setting spray",
-      "vendor": "Maeve",
-      "tags": ["face", "setting-spray", "vegan"],
-      "categoryHandles": ["face"],
-      "collectionHandles": ["best-sellers"],
-      "seoTitle": "Lock-It Setting Spray — long-wear makeup setting spray",
-      "seoDescription": "A fine-mist setting spray that melts powder into skin and holds a full face all day.",
-      "productTypeKey": "cosmetics",
-      "attributes": {
-        "keyIngredients": "Flexible film-forming polymers lock makeup in place through heat and long days, while aloe and glycerin melt any powdery edge back into skin for a fresh, second-skin finish.",
-        "howToUse": "Hold six inches from the face, close your eyes, and mist twice in an X and a T once the full look is on. Let it dry down without touching. A quick spritz mid-day revives a tired base, too.",
-        "skinType": ["all"],
-        "volume": "100 ml / 3.4 fl oz",
-        "fullIngredients": "Aqua, Alcohol Denat., Glycerin, VP/VA Copolymer, Aloe Barbadensis Leaf Juice, Panthenol, Sodium Hyaluronate, Phenoxyethanol."
-      },
-      "variants": [
-        {
-          "sku": "MV-SPR-01",
-          "priceCents": 2800,
-          "isDefault": true,
-          "inventoryPolicy": "continue"
-        }
-      ],
-      "images": [
-        {
-          "assetId": "lock-it-setting-spray",
-          "isPrimary": true,
-          "alt": "Lock-It Setting Spray"
-        }
-      ]
-    },
-    {
-      "handle": "sunlit-cream-blush",
-      "title": "Sunlit Cream Blush",
-      "description": "A blendable cream blush that melts into skin for a lit-from-within flush — tap it high on the cheek with a fingertip and it looks like your own colour, only better. Eight shades from soft peach to deep berry.",
-      "status": "active",
-      "productType": "Blush",
-      "vendor": "Maeve",
-      "tags": ["cheek", "blush", "cream", "vegan", "bestseller"],
-      "categoryHandles": ["cheek"],
-      "collectionHandles": ["best-sellers", "new-in", "the-edit", "vegan-favourites"],
-      "seoTitle": "Sunlit Cream Blush — dewy cream blush in 8 shades",
-      "seoDescription": "A blendable cream blush for a lit-from-within flush, in eight shades from peach to berry.",
-      "productTypeKey": "cosmetics",
-      "attributes": {
-        "keyIngredients": "A jojoba-ester and vitamin-E balm carries buildable pigment that melts into skin for a dewy, lit-from-within flush — no powdery cake, no hard line where it lands.",
-        "howToUse": "Tap one or two dots high on the cheeks with a fingertip and blend up toward the temple while the balm is still slippery. Layer for more colour; a touch on the lips ties the look together.",
-        "skinType": ["dry", "normal"],
-        "volume": "5 g / 0.17 oz",
-        "fullIngredients": "Caprylic/Capric Triglyceride, Hydrogenated Polyisobutene, Ozokerite, Jojoba Esters, Tocopheryl Acetate, Mica, Titanium Dioxide (CI 77891), Iron Oxides (CI 77491), Red 7 Lake (CI 15850)."
-      },
-      "options": [
-        {
-          "name": "Shade",
-          "displayType": "swatch",
-          "values": [
-            {
-              "value": "Peach"
-            },
-            {
-              "value": "Apricot"
-            },
-            {
-              "value": "Rose"
-            },
-            {
-              "value": "Coral"
-            },
-            {
-              "value": "Berry"
-            },
-            {
-              "value": "Plum"
-            },
-            {
-              "value": "Mauve"
-            },
-            {
-              "value": "Terracotta"
-            }
-          ]
-        }
-      ],
-      "variants": [
-        {
-          "sku": "MV-BLS-01",
-          "priceCents": 2400,
-          "isDefault": true,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Shade": "Peach"
-          }
-        },
-        {
-          "sku": "MV-BLS-02",
-          "priceCents": 2400,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Shade": "Apricot"
-          }
-        },
-        {
-          "sku": "MV-BLS-03",
-          "priceCents": 2400,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Shade": "Rose"
-          }
-        },
-        {
-          "sku": "MV-BLS-04",
-          "priceCents": 2400,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Shade": "Coral"
-          }
-        },
-        {
-          "sku": "MV-BLS-05",
-          "priceCents": 2400,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Shade": "Berry"
-          }
-        },
-        {
-          "sku": "MV-BLS-06",
-          "priceCents": 2400,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Shade": "Plum"
-          }
-        },
-        {
-          "sku": "MV-BLS-07",
-          "priceCents": 2400,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Shade": "Mauve"
-          }
-        },
-        {
-          "sku": "MV-BLS-08",
-          "priceCents": 2400,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Shade": "Terracotta"
-          }
-        }
-      ],
-      "images": [
-        {
-          "assetId": "sunlit-cream-blush",
-          "isPrimary": true,
-          "alt": "Sunlit Cream Blush"
-        }
-      ]
-    },
-    {
-      "handle": "sculpt-contour-stick",
-      "title": "Sculpt Contour Stick",
-      "description": "A creamy contour stick with a soft, shadowy finish that defines without a muddy line — draw where the light would not reach, then blend with a finger or a brush. Six shades to suit fair to deep.",
-      "status": "active",
-      "productType": "Contour",
-      "vendor": "Maeve",
-      "tags": ["cheek", "contour", "cream", "vegan"],
-      "categoryHandles": ["cheek"],
-      "collectionHandles": ["the-edit"],
-      "seoTitle": "Sculpt Contour Stick — cream contour stick in 6 shades",
-      "seoDescription": "A creamy contour stick with a soft, shadowy finish that defines without a muddy line.",
-      "productTypeKey": "cosmetics",
-      "attributes": {
-        "keyIngredients": "Cool-toned pigments read like a real shadow rather than a stripe of bronzer, in a shea-and-jojoba stick that stays creamy enough to blend seamlessly before it sets.",
-        "howToUse": "Draw a light line where the light would not naturally reach — under the cheekbone, along the hairline, either side of the nose — then blend up and back with a finger or a brush until the edge disappears.",
-        "skinType": ["dry", "normal"],
-        "volume": "6 g / 0.21 oz",
-        "fullIngredients": "Caprylic/Capric Triglyceride, Ozokerite, Butyrospermum Parkii (Shea) Butter, Simmondsia Chinensis (Jojoba) Seed Oil, Tocopheryl Acetate, Titanium Dioxide (CI 77891), Iron Oxides (CI 77491, CI 77492, CI 77499)."
-      },
-      "options": [
-        {
-          "name": "Shade",
-          "displayType": "swatch",
-          "values": [
-            {
-              "value": "Light"
-            },
-            {
-              "value": "Medium"
-            },
-            {
-              "value": "Tan"
-            },
-            {
-              "value": "Deep"
-            },
-            {
-              "value": "Rich"
-            },
-            {
-              "value": "Espresso"
-            }
-          ]
-        }
-      ],
-      "variants": [
-        {
-          "sku": "MV-CTR-01",
-          "priceCents": 2600,
-          "isDefault": true,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Shade": "Light"
-          }
-        },
-        {
-          "sku": "MV-CTR-02",
-          "priceCents": 2600,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Shade": "Medium"
-          }
-        },
-        {
-          "sku": "MV-CTR-03",
-          "priceCents": 2600,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Shade": "Tan"
-          }
-        },
-        {
-          "sku": "MV-CTR-04",
-          "priceCents": 2600,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Shade": "Deep"
-          }
-        },
-        {
-          "sku": "MV-CTR-05",
-          "priceCents": 2600,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Shade": "Rich"
-          }
-        },
-        {
-          "sku": "MV-CTR-06",
-          "priceCents": 2600,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Shade": "Espresso"
-          }
-        }
-      ],
-      "images": [
-        {
-          "assetId": "sculpt-contour-stick",
-          "isPrimary": true,
-          "alt": "Sculpt Contour Stick"
-        }
-      ]
-    },
-    {
-      "handle": "velvet-matte-liquid-lip",
-      "title": "Velvet Matte Liquid Lip",
-      "description": "A full-pigment liquid lipstick that sets to a comfortable velvet matte and stays through coffee, lunch and the walk home. One coat means it, and sixteen shades run from your-lips-but-better to a proper berry.",
-      "status": "active",
-      "productType": "Lipstick",
-      "vendor": "Maeve",
-      "tags": ["lip", "lipstick", "matte", "vegan", "bestseller"],
-      "categoryHandles": ["lip"],
-      "collectionHandles": ["best-sellers", "new-in", "the-edit", "vegan-favourites"],
-      "seoTitle": "Velvet Matte Liquid Lip — long-wear liquid lipstick in 16 shades",
-      "seoDescription": "A full-pigment liquid lipstick that sets to a comfortable velvet matte, in 16 shades.",
-      "productTypeKey": "cosmetics",
-      "attributes": {
-        "keyIngredients": "Full-coverage pigments in a lightweight silicone base set to a transfer-resistant velvet matte, with vitamin E to keep it comfortable so it never feels like it is drying your lips out.",
-        "howToUse": "Outline the cupid’s bow first, then fill from the centre out in one thin coat and press your lips together — it is full pigment, so a second coat only slides. Line first with Precision Lip Liner for the longest wear.",
-        "skinType": ["all"],
-        "volume": "4 ml / 0.14 fl oz",
-        "fullIngredients": "Dimethicone, Trimethylsiloxysilicate, Isododecane, Disteardimonium Hectorite, Tocopheryl Acetate, Silica, Iron Oxides (CI 77491), Red 7 Lake (CI 15850), Red 28 Lake (CI 45410)."
-      },
-      "options": [
-        {
-          "name": "Shade",
-          "displayType": "swatch",
-          "values": [
-            {
-              "value": "Bare"
-            },
-            {
-              "value": "Blush"
-            },
-            {
-              "value": "Rosewood"
-            },
-            {
-              "value": "Nude Pink"
-            },
-            {
-              "value": "Brick"
-            },
-            {
-              "value": "Terracotta"
-            },
-            {
-              "value": "Coral"
-            },
-            {
-              "value": "Poppy"
-            },
-            {
-              "value": "Cherry"
-            },
-            {
-              "value": "Ruby"
-            },
-            {
-              "value": "Wine"
-            },
-            {
-              "value": "Berry"
-            },
-            {
-              "value": "Plum"
-            },
-            {
-              "value": "Mauve"
-            },
-            {
-              "value": "Fig"
-            },
-            {
-              "value": "Chocolate"
-            }
-          ]
-        }
-      ],
-      "variants": [
-        {
-          "sku": "MV-LIP-01",
-          "priceCents": 2200,
-          "isDefault": true,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Shade": "Bare"
-          }
-        },
-        {
-          "sku": "MV-LIP-02",
-          "priceCents": 2200,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Shade": "Blush"
-          }
-        },
-        {
-          "sku": "MV-LIP-03",
-          "priceCents": 2200,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Shade": "Rosewood"
-          }
-        },
-        {
-          "sku": "MV-LIP-04",
-          "priceCents": 2200,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Shade": "Nude Pink"
-          }
-        },
-        {
-          "sku": "MV-LIP-05",
-          "priceCents": 2200,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Shade": "Brick"
-          }
-        },
-        {
-          "sku": "MV-LIP-06",
-          "priceCents": 2200,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Shade": "Terracotta"
-          }
-        },
-        {
-          "sku": "MV-LIP-07",
-          "priceCents": 2200,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Shade": "Coral"
-          }
-        },
-        {
-          "sku": "MV-LIP-08",
-          "priceCents": 2200,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Shade": "Poppy"
-          }
-        },
-        {
-          "sku": "MV-LIP-09",
-          "priceCents": 2200,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Shade": "Cherry"
-          }
-        },
-        {
-          "sku": "MV-LIP-10",
-          "priceCents": 2200,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Shade": "Ruby"
-          }
-        },
-        {
-          "sku": "MV-LIP-11",
-          "priceCents": 2200,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Shade": "Wine"
-          }
-        },
-        {
-          "sku": "MV-LIP-12",
-          "priceCents": 2200,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Shade": "Berry"
-          }
-        },
-        {
-          "sku": "MV-LIP-13",
-          "priceCents": 2200,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Shade": "Plum"
-          }
-        },
-        {
-          "sku": "MV-LIP-14",
-          "priceCents": 2200,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Shade": "Mauve"
-          }
-        },
-        {
-          "sku": "MV-LIP-15",
-          "priceCents": 2200,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Shade": "Fig"
-          }
-        },
-        {
-          "sku": "MV-LIP-16",
-          "priceCents": 2200,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Shade": "Chocolate"
-          }
-        }
-      ],
-      "images": [
-        {
-          "assetId": "velvet-matte-liquid-lip",
-          "isPrimary": true,
-          "alt": "Velvet Matte Liquid Lip"
-        }
-      ]
-    },
-    {
-      "handle": "glass-shine-lip-oil",
-      "title": "Glass Shine Lip Oil",
-      "description": "A cushiony lip oil that leaves a glass-clear shine and a wash of colour while it conditions — no stickiness, no tightness, just a lip that looks like it means it. Wear it alone or over the matte.",
-      "status": "active",
-      "productType": "Lip oil",
-      "vendor": "Maeve",
-      "tags": ["lip", "lip-oil", "gloss", "vegan"],
-      "categoryHandles": ["lip"],
-      "collectionHandles": ["new-in", "gift-sets"],
-      "seoTitle": "Glass Shine Lip Oil — conditioning tinted lip oil",
-      "seoDescription": "A cushiony lip oil with a glass-clear shine and a wash of colour, in eight tints.",
-      "productTypeKey": "cosmetics",
-      "attributes": {
-        "keyIngredients": "Jojoba oil and squalane cushion and condition while sodium hyaluronate draws in water, so lips look plumper and glass-shiny with a sheer wash of colour — never tacky or sticky.",
-        "howToUse": "Sweep the doe-foot wand across bare lips for everyday shine, or press a little over the centre of a matte lip to make it look fuller. Reapply whenever lips feel dry — it doubles as a treatment.",
-        "skinType": ["all"],
-        "volume": "5 ml / 0.17 fl oz",
-        "fullIngredients": "Hydrogenated Polyisobutene, Simmondsia Chinensis (Jojoba) Seed Oil, Squalane, Silica Dimethyl Silylate, Tocopheryl Acetate, Sodium Hyaluronate, Red 7 Lake (CI 15850)."
-      },
-      "options": [
-        {
-          "name": "Shade",
-          "displayType": "swatch",
-          "values": [
-            {
-              "value": "Clear"
-            },
-            {
-              "value": "Pink Sheen"
-            },
-            {
-              "value": "Peach"
-            },
-            {
-              "value": "Rose"
-            },
-            {
-              "value": "Berry Tint"
-            },
-            {
-              "value": "Cherry Tint"
-            },
-            {
-              "value": "Mauve"
-            },
-            {
-              "value": "Bronze"
-            }
-          ]
-        }
-      ],
-      "variants": [
-        {
-          "sku": "MV-OIL-01",
-          "priceCents": 2000,
-          "isDefault": true,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Shade": "Clear"
-          }
-        },
-        {
-          "sku": "MV-OIL-02",
-          "priceCents": 2000,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Shade": "Pink Sheen"
-          }
-        },
-        {
-          "sku": "MV-OIL-03",
-          "priceCents": 2000,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Shade": "Peach"
-          }
-        },
-        {
-          "sku": "MV-OIL-04",
-          "priceCents": 2000,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Shade": "Rose"
-          }
-        },
-        {
-          "sku": "MV-OIL-05",
-          "priceCents": 2000,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Shade": "Berry Tint"
-          }
-        },
-        {
-          "sku": "MV-OIL-06",
-          "priceCents": 2000,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Shade": "Cherry Tint"
-          }
-        },
-        {
-          "sku": "MV-OIL-07",
-          "priceCents": 2000,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Shade": "Mauve"
-          }
-        },
-        {
-          "sku": "MV-OIL-08",
-          "priceCents": 2000,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Shade": "Bronze"
-          }
-        }
-      ],
-      "images": [
-        {
-          "assetId": "glass-shine-lip-oil",
-          "isPrimary": true,
-          "alt": "Glass Shine Lip Oil"
-        }
-      ]
-    },
-    {
-      "handle": "precision-lip-liner",
-      "title": "Precision Lip Liner",
-      "description": "A retractable lip liner with a fine, creamy tip that draws a clean edge and fills the whole lip to make colour last. Ten shades built to match the liquid lip, or to define on their own.",
-      "status": "active",
-      "productType": "Lip liner",
-      "vendor": "Maeve",
-      "tags": ["lip", "lip-liner", "vegan"],
-      "categoryHandles": ["lip"],
-      "collectionHandles": ["the-edit"],
-      "seoTitle": "Precision Lip Liner — retractable creamy lip liner in 10 shades",
-      "seoDescription": "A retractable lip liner with a fine, creamy tip, in ten shades to match the liquid lip.",
-      "productTypeKey": "cosmetics",
-      "attributes": {
-        "keyIngredients": "A creamy wax-and-oil core glides without dragging and grips colour in place, with vitamin E so the fine tip stays smooth to the last of the twist-up.",
-        "howToUse": "Trace the natural lip line, then fill the whole lip in rather than just the border — a fully lined lip gives lipstick something to hold, so colour fades evenly instead of leaving a ring. Wear alone for a soft stain.",
-        "skinType": ["all"],
-        "volume": "0.3 g / 0.01 oz",
-        "fullIngredients": "Caprylic/Capric Triglyceride, Hydrogenated Vegetable Oil, Candelilla Wax, Tocopheryl Acetate, Titanium Dioxide (CI 77891), Iron Oxides (CI 77491, CI 77499), Red 7 Lake (CI 15850)."
-      },
-      "options": [
-        {
-          "name": "Shade",
-          "displayType": "swatch",
-          "values": [
-            {
-              "value": "Bare"
-            },
-            {
-              "value": "Blush"
-            },
-            {
-              "value": "Rosewood"
-            },
-            {
-              "value": "Brick"
-            },
-            {
-              "value": "Terracotta"
-            },
-            {
-              "value": "Ruby"
-            },
-            {
-              "value": "Wine"
-            },
-            {
-              "value": "Berry"
-            },
-            {
-              "value": "Plum"
-            },
-            {
-              "value": "Chocolate"
-            }
-          ]
-        }
-      ],
-      "variants": [
-        {
-          "sku": "MV-LNR-01",
-          "priceCents": 1600,
-          "isDefault": true,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Shade": "Bare"
-          }
-        },
-        {
-          "sku": "MV-LNR-02",
-          "priceCents": 1600,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Shade": "Blush"
-          }
-        },
-        {
-          "sku": "MV-LNR-03",
-          "priceCents": 1600,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Shade": "Rosewood"
-          }
-        },
-        {
-          "sku": "MV-LNR-04",
-          "priceCents": 1600,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Shade": "Brick"
-          }
-        },
-        {
-          "sku": "MV-LNR-05",
-          "priceCents": 1600,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Shade": "Terracotta"
-          }
-        },
-        {
-          "sku": "MV-LNR-06",
-          "priceCents": 1600,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Shade": "Ruby"
-          }
-        },
-        {
-          "sku": "MV-LNR-07",
-          "priceCents": 1600,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Shade": "Wine"
-          }
-        },
-        {
-          "sku": "MV-LNR-08",
-          "priceCents": 1600,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Shade": "Berry"
-          }
-        },
-        {
-          "sku": "MV-LNR-09",
-          "priceCents": 1600,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Shade": "Plum"
-          }
-        },
-        {
-          "sku": "MV-LNR-10",
-          "priceCents": 1600,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Shade": "Chocolate"
-          }
-        }
-      ],
-      "images": [
-        {
-          "assetId": "precision-lip-liner",
-          "isPrimary": true,
-          "alt": "Precision Lip Liner"
-        }
-      ]
-    },
-    {
-      "handle": "bloom-eyeshadow-palette",
-      "title": "Bloom 9-Pan Eyeshadow Palette",
-      "description": "A nine-pan palette that does a whole eye on its own — soft mattes, a satin wash and one true shimmer, blendable and low-fallout. Three edits: Warm, Cool and Rose, each a full look from day to night.",
-      "status": "active",
-      "productType": "Eyeshadow palette",
-      "vendor": "Maeve",
-      "tags": ["eye", "eyeshadow", "palette", "vegan", "bestseller"],
-      "categoryHandles": ["eye"],
-      "collectionHandles": ["best-sellers", "new-in", "the-edit", "gift-sets"],
-      "seoTitle": "Bloom 9-Pan Eyeshadow Palette — Warm, Cool & Rose",
-      "seoDescription": "A blendable nine-pan eyeshadow palette in three edits: Warm, Cool and Rose.",
-      "productTypeKey": "cosmetics",
-      "attributes": {
-        "keyIngredients": "Finely milled pressed pigments blend soft and stay put with low fallout; the single shimmer is bound in a silicone slip for a smooth, foil-able finish rather than a scatter of glitter.",
-        "howToUse": "Sweep the lightest matte over the whole lid, deepen the outer corner and crease with the mid-tones, and press the shimmer onto the centre of the lid with a fingertip. Every pan works together, so you cannot go wrong.",
-        "skinType": ["all"],
-        "volume": "9 g / 0.32 oz (9 x 1 g)",
-        "fullIngredients": "Talc, Mica, Caprylic/Capric Triglyceride, Zinc Stearate, Dimethicone, Tocopheryl Acetate, Titanium Dioxide (CI 77891), Iron Oxides (CI 77491, CI 77492, CI 77499), Tin Oxide."
-      },
-      "options": [
-        {
-          "name": "Palette",
-          "displayType": "swatch",
-          "values": [
-            {
-              "value": "Warm"
-            },
-            {
-              "value": "Cool"
-            },
-            {
-              "value": "Rose"
-            }
-          ]
-        }
-      ],
-      "variants": [
-        {
-          "sku": "MV-PAL-WRM",
-          "priceCents": 3800,
-          "isDefault": true,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Palette": "Warm"
-          }
-        },
-        {
-          "sku": "MV-PAL-COL",
-          "priceCents": 3800,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Palette": "Cool"
-          }
-        },
-        {
-          "sku": "MV-PAL-ROS",
-          "priceCents": 3800,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Palette": "Rose"
-          }
-        }
-      ],
-      "images": [
-        {
-          "assetId": "bloom-eyeshadow-palette",
-          "isPrimary": true,
-          "alt": "Bloom 9-Pan Eyeshadow Palette"
-        }
-      ]
-    },
-    {
-      "handle": "featherweight-mascara",
-      "title": "Featherweight Mascara",
-      "description": "A lengthening mascara that separates and lifts every lash without the clump or the flake — a tapered brush reaches the corners, and it wears all day then washes off with warm water. Black or Brown.",
-      "status": "active",
-      "productType": "Mascara",
-      "vendor": "Maeve",
-      "tags": ["eye", "mascara", "vegan", "bestseller"],
-      "categoryHandles": ["eye"],
-      "collectionHandles": ["best-sellers", "vegan-favourites"],
-      "seoTitle": "Featherweight Mascara — lengthening clump-free mascara",
-      "seoDescription": "A lengthening mascara that separates and lifts without clumping, in Black or Brown.",
-      "productTypeKey": "cosmetics",
-      "attributes": {
-        "keyIngredients": "Flexible film-forming polymers and carnauba wax coat and lengthen each lash without weighing it down, and provitamin B5 conditions — so it holds a curl all day, then slides off with warm water.",
-        "howToUse": "Wiggle the tapered brush from root to tip, rolling upward to separate and lift; a second coat while the first is still wet builds length without a clump. Reach the inner and outer corners with the brush tip.",
-        "skinType": ["all", "sensitive"],
-        "volume": "9 ml / 0.3 fl oz",
-        "fullIngredients": "Aqua, Synthetic Beeswax, Copernicia Cerifera (Carnauba) Wax, Acacia Senegal Gum, Panthenol, Butylene Glycol, Stearic Acid, Phenoxyethanol, Iron Oxides (CI 77499)."
-      },
-      "options": [
-        {
-          "name": "Shade",
-          "displayType": "swatch",
-          "values": [
-            {
-              "value": "Black"
-            },
-            {
-              "value": "Brown"
-            }
-          ]
-        }
-      ],
-      "variants": [
-        {
-          "sku": "MV-MSC-BLK",
-          "priceCents": 2400,
-          "isDefault": true,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Shade": "Black"
-          }
-        },
-        {
-          "sku": "MV-MSC-BRN",
-          "priceCents": 2400,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Shade": "Brown"
-          }
-        }
-      ],
-      "images": [
-        {
-          "assetId": "featherweight-mascara",
-          "isPrimary": true,
-          "alt": "Featherweight Mascara"
-        }
-      ]
-    },
-    {
-      "handle": "brow-sculpt-pomade",
-      "title": "Brow Sculpt Pomade",
-      "description": "A waterproof brow pomade that shapes, fills and holds a natural-looking brow all day — a little goes a long way, and the spoolie end blends out any hard edge. Six shades from soft blonde to ebony.",
-      "status": "active",
-      "productType": "Brow",
-      "vendor": "Maeve",
-      "tags": ["eye", "brow", "vegan"],
-      "categoryHandles": ["eye"],
-      "collectionHandles": ["the-edit"],
-      "seoTitle": "Brow Sculpt Pomade — waterproof brow pomade in 6 shades",
-      "seoDescription": "A waterproof brow pomade that shapes, fills and holds a natural brow, in six shades.",
-      "productTypeKey": "cosmetics",
-      "attributes": {
-        "keyIngredients": "A waterproof wax-and-pigment cream shapes and fills with hair-like strokes, then sets to hold unruly brows in place through heat and humidity without stiffness or flaking.",
-        "howToUse": "Pick up a tiny amount on an angled brush and draw short, feathery strokes through sparse spots and along the tail, following the direction of the hair. Blend the front up with the spoolie end so it never looks blocky.",
-        "skinType": ["all"],
-        "volume": "4 g / 0.14 oz",
-        "fullIngredients": "Aqua, Cyclopentasiloxane, Synthetic Wax, Trimethylsiloxysilicate, Copernicia Cerifera (Carnauba) Wax, Phenoxyethanol, Iron Oxides (CI 77491, CI 77492, CI 77499)."
-      },
-      "options": [
-        {
-          "name": "Shade",
-          "displayType": "swatch",
-          "values": [
-            {
-              "value": "Taupe"
-            },
-            {
-              "value": "Soft Blonde"
-            },
-            {
-              "value": "Auburn"
-            },
-            {
-              "value": "Medium Brown"
-            },
-            {
-              "value": "Dark Brown"
-            },
-            {
-              "value": "Ebony"
-            }
-          ]
-        }
-      ],
-      "variants": [
-        {
-          "sku": "MV-BRW-01",
-          "priceCents": 2000,
-          "isDefault": true,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Shade": "Taupe"
-          }
-        },
-        {
-          "sku": "MV-BRW-02",
-          "priceCents": 2000,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Shade": "Soft Blonde"
-          }
-        },
-        {
-          "sku": "MV-BRW-03",
-          "priceCents": 2000,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Shade": "Auburn"
-          }
-        },
-        {
-          "sku": "MV-BRW-04",
-          "priceCents": 2000,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Shade": "Medium Brown"
-          }
-        },
-        {
-          "sku": "MV-BRW-05",
-          "priceCents": 2000,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Shade": "Dark Brown"
-          }
-        },
-        {
-          "sku": "MV-BRW-06",
-          "priceCents": 2000,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Shade": "Ebony"
-          }
-        }
-      ],
-      "images": [
-        {
-          "assetId": "brow-sculpt-pomade",
-          "isPrimary": true,
-          "alt": "Brow Sculpt Pomade"
-        }
-      ]
-    },
-    {
-      "handle": "skinny-gel-eyeliner",
-      "title": "Skinny Gel Eyeliner",
-      "description": "A retractable gel liner with a fine tip that draws a crisp line or a soft smudge and sets waterproof in seconds. Six shades — a true black for the sharp days, and colours for when you want a little more.",
-      "status": "active",
-      "productType": "Eyeliner",
-      "vendor": "Maeve",
-      "tags": ["eye", "eyeliner", "gel", "vegan"],
-      "categoryHandles": ["eye"],
-      "collectionHandles": ["new-in"],
-      "seoTitle": "Skinny Gel Eyeliner — waterproof retractable gel liner",
-      "seoDescription": "A retractable waterproof gel eyeliner with a fine tip, in six shades.",
-      "productTypeKey": "cosmetics",
-      "attributes": {
-        "keyIngredients": "A creamy gel-wax core lays down opaque colour in one pass and sets waterproof within seconds, so a line stays crisp — or a smoke stays soft — through a long day and warm weather.",
-        "howToUse": "For a clean line, draw along the upper lash line from inner to outer corner and flick the tail while the gel is still workable. For a smoky eye, trace it close to the lashes and smudge with a brush before it sets.",
-        "skinType": ["all", "sensitive"],
-        "volume": "0.4 g / 0.014 oz",
-        "fullIngredients": "Aqua, Cyclopentasiloxane, Synthetic Beeswax, Trimethylsiloxysilicate, Butylene Glycol, Copernicia Cerifera (Carnauba) Wax, Phenoxyethanol, Iron Oxides (CI 77499), Ultramarines (CI 77007)."
-      },
-      "options": [
-        {
-          "name": "Shade",
-          "displayType": "swatch",
-          "values": [
-            {
-              "value": "Black"
-            },
-            {
-              "value": "Espresso"
-            },
-            {
-              "value": "Bronze"
-            },
-            {
-              "value": "Plum"
-            },
-            {
-              "value": "Forest"
-            },
-            {
-              "value": "Navy"
-            }
-          ]
-        }
-      ],
-      "variants": [
-        {
-          "sku": "MV-EYL-01",
-          "priceCents": 1800,
-          "isDefault": true,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Shade": "Black"
-          }
-        },
-        {
-          "sku": "MV-EYL-02",
-          "priceCents": 1800,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Shade": "Espresso"
-          }
-        },
-        {
-          "sku": "MV-EYL-03",
-          "priceCents": 1800,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Shade": "Bronze"
-          }
-        },
-        {
-          "sku": "MV-EYL-04",
-          "priceCents": 1800,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Shade": "Plum"
-          }
-        },
-        {
-          "sku": "MV-EYL-05",
-          "priceCents": 1800,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Shade": "Forest"
-          }
-        },
-        {
-          "sku": "MV-EYL-06",
-          "priceCents": 1800,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Shade": "Navy"
-          }
-        }
-      ],
-      "images": [
-        {
-          "assetId": "skinny-gel-eyeliner",
-          "isPrimary": true,
-          "alt": "Skinny Gel Eyeliner"
-        }
-      ]
-    },
-    {
-      "handle": "buffing-foundation-brush",
-      "title": "The Buffing Foundation Brush",
-      "description": "A dense, domed brush of soft synthetic fibres that buffs liquid and cream foundation into skin for a seamless, streak-free finish. Balanced in the hand, quick to wash, and built to last years.",
-      "status": "active",
-      "productType": "Brush",
-      "vendor": "Maeve",
-      "tags": ["tools", "brush", "vegan"],
-      "categoryHandles": ["tools"],
-      "collectionHandles": ["gift-sets", "vegan-favourites"],
-      "seoTitle": "The Buffing Foundation Brush — dense synthetic foundation brush",
-      "seoDescription": "A dense, domed synthetic brush that buffs liquid and cream foundation to a seamless finish.",
-      "productTypeKey": "cosmetics",
-      "attributes": {
-        "keyIngredients": "Dense, soft synthetic Taklon fibres — cruelty-free and non-absorbent, so they buff liquid and cream foundation into skin rather than drinking it up, for a streak-free, second-skin finish.",
-        "howToUse": "Dot foundation onto the face, then buff in small circles with the domed head and finish with light downward strokes to lay the fibres flat. Wash weekly with a gentle soap, reshape the head, and dry bristles-down.",
-        "skinType": ["all"],
-        "volume": "Domed head, 16 cm balanced handle",
-        "fullIngredients": "Soft synthetic Taklon fibres, a matte anodised-aluminium ferrule, and an FSC-certified birch handle. Cruelty-free and vegan by construction."
-      },
-      "variants": [
-        {
-          "sku": "MV-BSH-01",
-          "priceCents": 2800,
-          "isDefault": true,
-          "inventoryPolicy": "continue"
-        }
-      ],
-      "images": [
-        {
-          "assetId": "buffing-foundation-brush",
-          "isPrimary": true,
-          "alt": "The Buffing Foundation Brush"
-        }
-      ]
-    }
-  ]
+    ]
 }

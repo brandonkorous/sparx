@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Img } from '@react-email/components';
-import { useBrand } from './brand';
+import { useBrand, usePlatform } from './brand';
 
 // EmailWordmark — the email header brand mark (docs/52 §1). Now an author-editable
 // node (`email_wordmark`) at the top of the body tree rather than fixed frame
@@ -9,15 +9,45 @@ import { useBrand } from './brand';
 //   • 'lockup' (default) — the logo AND the store name side by side: the brand
 //     lockup, parity with the site header's <Wordmark> (packages/site-ui),
 //   • 'logo'             — the logo alone (for logos that already bake in the name),
-//   • 'name'             — the store/site name alone (the "spar<x>" mark when the
-//                          brand is the sparx fallback).
+//   • 'name'             — the store/site name alone (the SENDING PRODUCT's mark
+//                          when the tenant has supplied no name of their own).
 // Each treatment DEGRADES gracefully when its part is missing (logo with no logo →
-// name; lockup with only one part → that part; neither → the sparx default).
+// name; lockup with only one part → that part; neither → the platform wordmark).
 //
 // Mail clients strip <style> blocks and don't honour CSS variables, so every value
 // is inlined; brand colors/fonts come from the BrandContext.
 
 export type WordmarkTreatment = 'lockup' | 'logo' | 'name';
+
+/**
+ * The SENDING PRODUCT's name set as a wordmark: the last `accentChars`
+ * characters in `accentColor`, the rest in `inkColor`. 0 → set plainly.
+ *
+ * Both frames wrote this out as the literal JSX `spar<span>x</span>` — the
+ * platform masthead and the tenant frame's own fallback — so an email from
+ * either one carried one company's mark whoever it was going to. One component
+ * now, because two copies of a brand mark is two places to leak from.
+ */
+export function PlatformWordmark({
+  inkColor,
+  accentColor,
+  style,
+}: {
+  inkColor: string;
+  accentColor: string;
+  style: React.CSSProperties;
+}) {
+  const { name, accentChars = 0 } = usePlatform();
+  const split = Math.min(Math.max(accentChars, 0), name.length);
+  const stem = split > 0 ? name.slice(0, name.length - split) : name;
+  const tail = split > 0 ? name.slice(name.length - split) : '';
+  return (
+    <span style={{ ...style, color: inkColor }}>
+      {stem}
+      {tail ? <span style={{ color: accentColor }}>{tail}</span> : null}
+    </span>
+  );
+}
 
 export interface EmailWordmarkProps {
   /** Logo height + name font scale from this px size. Default 22. */
@@ -64,9 +94,7 @@ export function EmailWordmark({
   const nameNode = hasName ? (
     <span style={nameStyle}>{brand.siteName}</span>
   ) : (
-    <span style={nameStyle}>
-      spar<span style={{ color: brand.primary }}>x</span>
-    </span>
+    <PlatformWordmark inkColor={brand.foreground} accentColor={brand.primary} style={nameStyle} />
   );
 
   return (

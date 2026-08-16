@@ -12,7 +12,7 @@
 // not move.
 //
 // The vocabulary is deliberately short. These are the decisions a business owner
-// makes about their own page — how big, how much room, what colour, how round —
+// makes about their own page — how big, how much room, what color, how round —
 // not the whole of Tailwind. Anything else is reachable through the raw field.
 
 import type { AddressableNode } from '../../tree/walk';
@@ -26,7 +26,7 @@ export interface ControlGroup {
   key: string;
   label: string;
   options: ControlOption[];
-  /** Render as colour swatches rather than text chips. */
+  /** Render as color swatches rather than text chips. */
   swatches?: boolean;
   /** Limit the control to the nodes it means anything for. */
   when?: (node: AddressableNode) => boolean;
@@ -106,13 +106,13 @@ export const CONTROL_SECTIONS: ControlSection[] = [
       },
       {
         key: 'text-color',
-        label: 'Colour',
+        label: 'Color',
         swatches: true,
         when: isTextual,
         // silica's own role names (`error`, not `danger`) — these are the roles a
         // bare silica theme is guaranteed to define, and a tenant theme is often
         // exactly that. A role the theme has never heard of resolves to nothing and
-        // the text silently loses its colour.
+        // the text silently loses its color.
         options: [
           { value: 'text-base-content', label: 'Default' },
           { value: 'text-primary', label: 'Primary' },

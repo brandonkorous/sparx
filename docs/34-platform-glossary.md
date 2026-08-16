@@ -59,7 +59,7 @@ Three rules fall out of this and are **binding**:
    every surface) reads it. **Amendment (2026-06-04, [49 §3](archive/49-multi-site-per-tenant.md)):** the
    tenant brand is the **default**, and a tenant running **more than one site** may set an
    _optional, presentation-only_ **per-site override** (`Property.brand_override`: display name +
-   theme colours + logo). This deliberately softens the original "overridable by none" — multi-brand
+   theme colors + logo). This deliberately softens the original "overridable by none" — multi-brand
    multi-site requires it. The override is a partial; any unset field inherits the tenant brand, so
    single-site tenants are unaffected. You do **not** need a site to have a brand; the
    dependency runs the other way.

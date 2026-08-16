@@ -14,69 +14,69 @@ import assets from './assets.json' with { type: 'json' };
 import emails from './emails.json' with { type: 'json' };
 
 const blueprint = {
-  key: 'sparx-brand-newsroom',
-  version: '1.4.0',
-  name: 'sparx — Brand Newsroom',
-  summary:
-    'A first-party brand newsroom for a product studio — a big latest-release feature over a live launch feed, a release-notes changelog, a spotlight drop, and a bound store carousel, on a true-dark ground with one electric-violet accent. Modelled on the brand-community-newsroom archetype; shipped as Launch Notes. Ships a light studio store (merch) to demonstrate content + commerce together.',
-  vertical: 'content',
-  preview: 'media/preview.png',
-  requiresModules: ['builder', 'commerce', 'cms', 'crm', 'email'],
+    key: 'sparx-brand-newsroom',
+    version: '1.4.0',
+    name: 'sparx — Brand Newsroom',
+    summary:
+        'A first-party brand newsroom for a product studio — a big latest-release feature over a live launch feed, a release-notes changelog, a spotlight drop, and a bound store carousel, on a true-dark ground with one electric-violet accent. Modelled on the brand-community-newsroom archetype; shipped as Launch Notes. Ships a light studio store (merch) to demonstrate content + commerce together.',
+    vertical: 'content',
+    preview: 'media/preview.png',
+    requiresModules: ['builder', 'commerce', 'cms', 'crm', 'email'],
 
-  // Identity only (business name + tagline + fonts + the theme's hex colours). The look
-  // itself rides site.theme + the theme decl below; the installing tenant rebrands the name.
-  brand: {
-    businessName: 'Launch Notes',
-    tagline: 'Everything we ship, and why.',
-    colors: {
-      primary: '#926df9',
-      primaryForeground: '#0b0a13',
-      accent: '#9778f5',
-      secondary: '#aba8bd',
-    },
-    fonts: {
-      heading: 'Space Grotesk',
-      body: 'Inter',
-    },
-  },
-
-  // The provisioned SiteTheme the installer creates + applies — the bespoke template
-  // look as a tenant-editable saved theme (base preset = the template's own theme key,
-  // plus its brand snapshot).
-  theme: {
-    name: 'brand-newsroom',
-    basePresetKey: 'brand-newsroom',
-    presentation: {
-      v: 2,
-      containerWidth: '1152px',
-    },
+    // Identity only (business name + tagline + fonts + the theme's hex colors). The look
+    // itself rides site.theme + the theme decl below; the installing tenant rebrands the name.
     brand: {
-      colorPrimary: '#926df9',
-      colorAccent: '#9778f5',
-      colorSecondary: '#aba8bd',
-      fontHeading: 'Space Grotesk',
-      fontBody: 'Inter',
-      tokens: {},
+        businessName: 'Launch Notes',
+        tagline: 'Everything we ship, and why.',
+        colors: {
+            primary: '#926df9',
+            primaryForeground: '#0b0a13',
+            accent: '#9778f5',
+            secondary: '#aba8bd',
+        },
+        fonts: {
+            heading: 'Space Grotesk',
+            body: 'Inter',
+        },
     },
-    apply: true,
-  },
 
-  assets,
-  contentTypes: [],
-  authors,
-  content,
-  commerce,
+    // The provisioned SiteTheme the installer creates + applies — the bespoke template
+    // look as a tenant-editable saved theme (base preset = the template's own theme key,
+    // plus its brand snapshot).
+    theme: {
+        name: 'brand-newsroom',
+        basePresetKey: 'brand-newsroom',
+        presentation: {
+            v: 2,
+            containerWidth: '1152px',
+        },
+        brand: {
+            colorPrimary: '#926df9',
+            colorAccent: '#9778f5',
+            colorSecondary: '#aba8bd',
+            fontHeading: 'Space Grotesk',
+            fontBody: 'Inter',
+            tokens: {},
+        },
+        apply: true,
+    },
 
-  // A shop's brand-voiced MARKETING starters (a welcome + a win-back), tokenized so a fork
-  // re-themes to the tenant and installed as DRAFTS — the platform's keyed transactional
-  // defaults (order/shipping/dunning) are separate and never duplicated here. Content
-  // templates ship an empty set.
-  emails,
-  sequences: [],
+    assets,
+    contentTypes: [],
+    authors,
+    content,
+    commerce,
 
-  // The composed distinct site (frame + a template-specific home + standard commerce/
-  // cms/about/contact pages + the /journal index), in the bespoke theme, fully stamped.
-  site,
+    // A shop's brand-voiced MARKETING starters (a welcome + a win-back), tokenized so a fork
+    // re-themes to the tenant and installed as DRAFTS — the platform's keyed transactional
+    // defaults (order/shipping/dunning) are separate and never duplicated here. Content
+    // templates ship an empty set.
+    emails,
+    sequences: [],
+
+    // The composed distinct site (frame + a template-specific home + standard commerce/
+    // cms/about/contact pages + the /journal index), in the bespoke theme, fully stamped.
+    site,
 };
 
 export default blueprint;

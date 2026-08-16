@@ -36,31 +36,31 @@ import { shareableAddressForPane } from '../lib/workbench/address';
  * for the same pane — which they would, eventually, as two implementations.
  */
 export function usePaneLink(paneId: string | null): string | null {
-  const { controller } = useWorkbench();
-  const siteSlug = useActiveSiteSlug();
-  if (!paneId) return null;
-  return shareableAddressForPane(controller.getDescriptor(paneId), siteSlug);
+    const { controller } = useWorkbench();
+    const siteSlug = useActiveSiteSlug();
+    if (!paneId) return null;
+    return shareableAddressForPane(controller.getDescriptor(paneId), siteSlug);
 }
 
 export function useCopyLink(): (link: string) => Promise<boolean> {
-  const toast = useToast();
-  return async (link: string) => {
-    try {
-      await navigator.clipboard.writeText(link);
-      return true;
-    } catch {
-      // Clipboard access can be refused — an insecure context, a hardened
-      // profile, a browser that wants a fresher user gesture than a menu click.
-      // Showing the link is the fallback that still gets the job done: it can be
-      // selected out of the toast by hand.
-      toast.add({
-        title: 'Could not copy that link',
-        description: link,
-        type: 'error',
-      });
-      return false;
-    }
-  };
+    const toast = useToast();
+    return async (link: string) => {
+        try {
+            await navigator.clipboard.writeText(link);
+            return true;
+        } catch {
+            // Clipboard access can be refused — an insecure context, a hardened
+            // profile, a browser that wants a fresher user gesture than a menu click.
+            // Showing the link is the fallback that still gets the job done: it can be
+            // selected out of the toast by hand.
+            toast.add({
+                title: 'Could not copy that link',
+                description: link,
+                type: 'error',
+            });
+            return false;
+        }
+    };
 }
 
 /**
@@ -72,42 +72,42 @@ export function useCopyLink(): (link: string) => Promise<boolean> {
  *
  * Neutral and ghost: this is chrome about the pane, not an action the surface
  * offers. It must not compete with the thing the pane exists to do, which is
- * usually the coloured button a few pixels to its left.
+ * usually the colored button a few pixels to its left.
  */
 export function CopyPaneLink() {
-  const paneId = usePaneId();
-  const link = usePaneLink(paneId);
-  const copyLink = useCopyLink();
-  const [copied, setCopied] = useState(false);
+    const paneId = usePaneId();
+    const link = usePaneLink(paneId);
+    const copyLink = useCopyLink();
+    const [copied, setCopied] = useState(false);
 
-  if (!link) return null;
+    if (!link) return null;
 
-  return (
-    <Tooltip content={copied ? 'Link copied' : 'Copy a link to this'}>
-      <Button
-        size="sm"
-        variant="ghost"
-        color="neutral"
-        shape="square"
-        aria-label="Copy a link to this panel"
-        onClick={() => {
-          void copyLink(link).then((ok) => {
-            if (!ok) return;
-            setCopied(true);
-            // Long enough to register, short enough to be ready again before
-            // someone reaches for the next one.
-            setTimeout(() => {
-              setCopied(false);
-            }, 1600);
-          });
-        }}
-      >
-        {copied ? (
-          <Check className="size-4" aria-hidden />
-        ) : (
-          <Link2 className="size-4" aria-hidden />
-        )}
-      </Button>
-    </Tooltip>
-  );
+    return (
+        <Tooltip content={copied ? 'Link copied' : 'Copy a link to this'}>
+            <Button
+                size="sm"
+                variant="ghost"
+                color="neutral"
+                shape="square"
+                aria-label="Copy a link to this panel"
+                onClick={() => {
+                    void copyLink(link).then((ok) => {
+                        if (!ok) return;
+                        setCopied(true);
+                        // Long enough to register, short enough to be ready again before
+                        // someone reaches for the next one.
+                        setTimeout(() => {
+                            setCopied(false);
+                        }, 1600);
+                    });
+                }}
+            >
+                {copied ? (
+                    <Check className="size-4" aria-hidden />
+                ) : (
+                    <Link2 className="size-4" aria-hidden />
+                )}
+            </Button>
+        </Tooltip>
+    );
 }

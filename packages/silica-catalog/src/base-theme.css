@@ -25,7 +25,7 @@
  * the injected theme carries it (`:root[data-theme="dark"]`).
  *
  * This REPLACES the `--color-*: var(--st-*)` bridge each storefront used to declare
- * inline — the second colour vocabulary that let a builder-authored page resolve its
+ * inline — the second color vocabulary that let a builder-authored page resolve its
  * palette from the legacy brand compile instead of the applied theme.
  * See docs/implementation/st-token-retirement.md. */
 

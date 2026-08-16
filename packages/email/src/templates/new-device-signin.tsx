@@ -7,6 +7,7 @@ import {
   EmailLineItems,
   EmailParagraph,
   EmailSectionLabel,
+  usePlatformName,
   type LineItem,
 } from '../components';
 
@@ -35,6 +36,7 @@ export function NewDeviceSigninEmail({
   signedInAtLabel,
   secureUrl,
 }: NewDeviceSigninEmailProps) {
+  const platform = usePlatformName();
   const rows: LineItem[] = [];
   if (device) rows.push({ title: 'Device', amount: device });
   if (location) rows.push({ title: 'Location', amount: location });
@@ -43,12 +45,12 @@ export function NewDeviceSigninEmail({
 
   return (
     <PlatformEmailLayout
-      preview="New sign-in to your sparx account"
-      footerReason="You're receiving this because someone signed in to your sparx account from a new device."
+      preview={`New sign-in to your ${platform} account`}
+      footerReason={`You're receiving this because someone signed in to your ${platform} account from a new device.`}
     >
       <EmailDisplayHeading>New sign-in to your account</EmailDisplayHeading>
       <EmailParagraph>
-        {name ? `Hi ${name}, ` : ''}your sparx account was just signed into from a device we
+        {name ? `Hi ${name}, ` : ''}your {platform} account was just signed into from a device we
         haven&apos;t seen before. If this was you, you can safely ignore this email.
       </EmailParagraph>
 
@@ -75,4 +77,5 @@ export function NewDeviceSigninEmail({
   );
 }
 
-export const newDeviceSigninSubject = 'New sign-in to your sparx account';
+export const newDeviceSigninSubject = (platform: string) =>
+  `New sign-in to your ${platform} account`;

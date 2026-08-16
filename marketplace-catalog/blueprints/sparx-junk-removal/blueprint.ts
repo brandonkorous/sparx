@@ -10,71 +10,71 @@ import emails from './emails.json' with { type: 'json' };
 import assets from './assets.json' with { type: 'json' };
 
 const blueprint = {
-  key: 'sparx-junk-removal',
-  version: '1.3.0',
-  name: 'sparx — Junk Removal',
-  summary:
-    'A bold, friendly junk & debris removal site — a confident green palette with a warm orange accent, off-white ground and a sturdy sans display. Installs a working online booking flow: homeowners book a free quote or a pickup and get a real time slot. Ships a full menu (free quote, single-item, furniture & appliance, garage & estate cleanouts, construction debris, same-day), three crews as dispatchable resources, and standard + same-day policies. Ships as "Haul Away Junk Removal".',
-  vertical: 'services',
-  preview: 'media/preview.png',
-  requiresModules: ['builder', 'scheduling', 'crm', 'email'],
+    key: 'sparx-junk-removal',
+    version: '1.3.0',
+    name: 'sparx — Junk Removal',
+    summary:
+        'A bold, friendly junk & debris removal site — a confident green palette with a warm orange accent, off-white ground and a sturdy sans display. Installs a working online booking flow: homeowners book a free quote or a pickup and get a real time slot. Ships a full menu (free quote, single-item, furniture & appliance, garage & estate cleanouts, construction debris, same-day), three crews as dispatchable resources, and standard + same-day policies. Ships as "Haul Away Junk Removal".',
+    vertical: 'services',
+    preview: 'media/preview.png',
+    requiresModules: ['builder', 'scheduling', 'crm', 'email'],
 
-  // Identity only (business name + tagline + fonts + the theme's hex colours). The look
-  // rides site.theme + the theme decl below; the installing tenant rebrands the name.
-  brand: {
-    businessName: 'Haul Away Junk Removal',
-    tagline: 'You point. We haul. It’s gone.',
-    colors: {
-      primary: '#218041',
-      primaryForeground: '#f4faf5',
-      accent: '#ef852e',
-      secondary: '#2b362e',
-    },
-    fonts: {
-      heading: 'Archivo',
-      body: 'Inter',
-    },
-  },
-
-  // The provisioned SiteTheme the installer creates + applies — an editable saved theme
-  // over a foundation base + the template's brand snapshot. The LIVE storefront look is
-  // site.theme (the flat bespoke tokens), written last.
-  theme: {
-    name: 'haulaway',
-    basePresetKey: 'apex',
-    presentation: {
-      v: 2,
-      containerWidth: '1152px',
-    },
+    // Identity only (business name + tagline + fonts + the theme's hex colors). The look
+    // rides site.theme + the theme decl below; the installing tenant rebrands the name.
     brand: {
-      colorPrimary: '#218041',
-      colorAccent: '#ef852e',
-      colorSecondary: '#2b362e',
-      fontHeading: 'Archivo',
-      fontBody: 'Inter',
-      tokens: {},
+        businessName: 'Haul Away Junk Removal',
+        tagline: 'You point. We haul. It’s gone.',
+        colors: {
+            primary: '#218041',
+            primaryForeground: '#f4faf5',
+            accent: '#ef852e',
+            secondary: '#2b362e',
+        },
+        fonts: {
+            heading: 'Archivo',
+            body: 'Inter',
+        },
     },
-    apply: true,
-  },
 
-  assets,
-  contentTypes: [],
+    // The provisioned SiteTheme the installer creates + applies — an editable saved theme
+    // over a foundation base + the template's brand snapshot. The LIVE storefront look is
+    // site.theme (the flat bespoke tokens), written last.
+    theme: {
+        name: 'haulaway',
+        basePresetKey: 'apex',
+        presentation: {
+            v: 2,
+            containerWidth: '1152px',
+        },
+        brand: {
+            colorPrimary: '#218041',
+            colorAccent: '#ef852e',
+            colorSecondary: '#2b362e',
+            fontHeading: 'Archivo',
+            fontBody: 'Inter',
+            tokens: {},
+        },
+        apply: true,
+    },
 
-  // The booking spine — policies, bookable resources (staff/rooms/stations) with weekly
-  // hours, and the service menu. The installer's scheduling slice replays it into a live
-  // booking flow that the site's /book page renders.
-  scheduling,
+    assets,
+    contentTypes: [],
 
-  // Brand-voiced MARKETING starters (a welcome + a come-back), installed as DRAFTS the
-  // tenant switches on. The transactional booking sends — confirmation, reminder,
-  // reschedule, cancellation, waitlist — are platform KEYED defaults, so they are covered
-  // on email-module activation and are deliberately NOT duplicated here.
-  emails,
-  sequences: [],
+    // The booking spine — policies, bookable resources (staff/rooms/stations) with weekly
+    // hours, and the service menu. The installer's scheduling slice replays it into a live
+    // booking flow that the site's /book page renders.
+    scheduling,
 
-  // The composed distinct site (frame + Home + Book + About + Contact) in the bespoke
-  // theme, fully stamped.
-  site,
+    // Brand-voiced MARKETING starters (a welcome + a come-back), installed as DRAFTS the
+    // tenant switches on. The transactional booking sends — confirmation, reminder,
+    // reschedule, cancellation, waitlist — are platform KEYED defaults, so they are covered
+    // on email-module activation and are deliberately NOT duplicated here.
+    emails,
+    sequences: [],
+
+    // The composed distinct site (frame + Home + Book + About + Contact) in the bespoke
+    // theme, fully stamped.
+    site,
 };
 
 export default blueprint;

@@ -36,7 +36,7 @@ Ports: **3020** meet, **3021** get (reserved), **3022** my (reserved).
 
 - **Themes are the bare names `light` / `dark`**, not `piggles-light`. Safe because
   no Piggles app loads `@sparx/brand/theme.css` and no shared package imports it.
-- **Colour is by GROUP, not by app.** Five hues plus the brand cover fifteen apps.
+- **Color is by GROUP, not by app.** Five hues plus the brand cover fifteen apps.
   An 18-hue wheel does not stay distinguishable once the rose family is reserved
   for the brand — the six-family alternative measured 17 pairs under ΔE 18.
 - **Marks render in `currentColor`**, so the token drives the logo. The delivered
@@ -73,14 +73,14 @@ Ports: **3020** meet, **3021** get (reserved), **3022** my (reserved).
   Alert/Toast/Progress/Meter. Table is NOT on it. Full reasoning: DESIGN.md §5.
 - **`neutral` is unusable as ink on a dark ground** in this palette (2.52:1 even
   inside a dark island). Dark bands are real `data-theme="dark"` islands and their
-  secondary button asks for `outline` with **no colour**. Table in DESIGN.md §3.
+  secondary button asks for `outline` with **no color**. Table in DESIGN.md §3.
   **Superseded for the CONSOLE, and worth knowing which half:** that measurement
   was of a dark ISLAND on the marketing site, where the surrounding page is light
   and `neutral` has to keep working on both. In the console the whole document is
   `data-theme="dark"`, so `neutral` could simply be inverted the way `secondary`
   already was — it is now `#c2b1bc` with near-black content. The marketing-site
   rule stands unchanged; see the 2026-08-14 (last) section.
-- **Colour tokens are NOT theme-independent, and the reasoning that said they
+- **Color tokens are NOT theme-independent, and the reasoning that said they
   were is the trap.** "A saturated hue reads on either canvas" is true of a FILL
   and false of INK, and most of a console is ink. Any new hue needs measuring on
   base-100 in BOTH themes before it is written down.
@@ -404,7 +404,7 @@ the whole thing is reachable from outside without touching a line of it.
 ### The seam that made it possible: `apps/workbench/lib/product.ts`
 
 The platform-side vocabulary provider (item 4 on the old Next list, now done).
-Three things a surface says out loud that are not a colour: the **product name**,
+Three things a surface says out loud that are not a color: the **product name**,
 the **module labels**, and the **loading mark**. A registry rather than a React
 context, because `moduleLabel()` is a plain function called from render bodies
 across a dozen surfaces and from the imperative update toast.
@@ -956,7 +956,7 @@ state component carrying its own card) and it broke the one pane that was alread
 correct. The card is the content REGION; what fills it is the state.
 
 **Glyph tones, decided inside the components.** silica's `EmptyState` is
-colourless by design — a 55%-faded glyph on base-200 — so a failure, an empty
+colorless by design — a 55%-faded glyph on base-200 — so a failure, an empty
 filter and a first run drew the identical grey picture and only a sentence told
 them apart. Now error → `text-error`, gone → `text-warning`, no-results →
 `text-warning`, first-run / nothing-chosen → `text-module`. Decided in the two
@@ -1210,14 +1210,14 @@ that you are already in. getpiggles has also already asked the two questions
 worth asking, so asking again would be the software forgetting a conversation it
 just had.
 
-## 2026-08-14 (last) — the console gets its colour, its ranking, and its own voice
+## 2026-08-14 (last) — the console gets its color, its ranking, and its own voice
 
 Driven app by app, screen by screen, at desktop, at 360px and in dark. Everything
 below was found by looking at it; every one of them passed typecheck and lint.
 
 ### The two biggest finds were both invisible to every check we run
 
-**1. In dark mode, every app colour was unreadable.** The five group hues were
+**1. In dark mode, every app color was unreadable.** The five group hues were
 declared once for both themes, on the stated reasoning that "a saturated hue
 reads on either canvas". True of a FILL, where the hue is the background. False
 wherever the hue is the INK — and that is most of this console, because the app
@@ -1234,7 +1234,7 @@ Measured against the canvas each one lands on:
 
 Same families, three steps lighter, so an app keeps its identity across a theme
 switch. **Lightening a palette usually costs separation, so both gates were
-re-run:** closest group pair 12.8 ΔE2000, closest to a semantic colour 10.8 —
+re-run:** closest group pair 12.8 ΔE2000, closest to a semantic color 10.8 —
 against the SHIPPING LIGHT SET's own 9.6 and 5.9. The dark set is better
 separated than the one already in production, which is the bar that matters.
 `-content` inverts with them and is not optional: white on `#bef264` is 1.3:1.
@@ -1269,9 +1269,9 @@ Verified by adding a product through the form: the row turned green and read
 ### The app panel wears its app
 
 Every row's glyph was `base-content`, so the widest, most-read column in the
-product was twenty identical black marks and the only colour on a browsing screen
+product was twenty identical black marks and the only color on a browsing screen
 was the one rail row behind it. They now carry the app's hue from the `<AppScope>`
-already wrapping the panel. Within one app the colour distinguishes nothing;
+already wrapping the panel. Within one app the color distinguishes nothing;
 between apps it is the whole distinction, which is what the rail already does.
 
 Its header was `text-sm` — a 14px heading over 16px rows, a heading smaller than

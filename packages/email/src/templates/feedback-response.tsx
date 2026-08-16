@@ -8,6 +8,7 @@ import {
   EmailParagraph,
   EmailSectionLabel,
   EmailStatusPill,
+  usePlatformName,
 } from '../components';
 
 // In-product feedback — "WizeWorks replied to your feedback" notification
@@ -39,11 +40,12 @@ export function FeedbackResponseEmail({
   statusLabel,
   threadUrl,
 }: FeedbackResponseEmailProps) {
+  const platform = usePlatformName();
   return (
     <PlatformEmailLayout
       preview={`${responderName} replied to your feedback`}
       footerLinks={[{ label: 'View the conversation', href: threadUrl }]}
-      footerReason="You're receiving this because you submitted feedback in your sparx dashboard."
+      footerReason={`You're receiving this because you submitted feedback in your ${platform} dashboard.`}
     >
       <EmailDisplayHeading>We replied to your feedback</EmailDisplayHeading>
       <EmailParagraph>{recipientName ? `Hi ${recipientName},` : 'Hi there,'}</EmailParagraph>

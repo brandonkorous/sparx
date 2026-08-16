@@ -23,26 +23,26 @@
 // here and the nodes the catalog factories mint are the same module instance.
 
 import {
-  atom,
-  bind,
-  el,
-  repeat,
-  type Node,
+    atom,
+    bind,
+    el,
+    repeat,
+    type Node,
 } from '../../../packages/silica-catalog/node_modules/@wizeworks/silicaui-html/dist/index.js';
 
 import { bindAttr } from '../../../packages/silica-catalog/src/attr-binding';
 import { visibleWhen } from '../../../packages/silica-catalog/src/conditional';
 import {
-  addToCartForm,
-  productsBlock,
-  type ProductsSource,
+    addToCartForm,
+    productsBlock,
+    type ProductsSource,
 } from '../../../packages/silica-catalog/src/commerce';
 import { PLACEHOLDER_IMAGE } from '../../../packages/silica-catalog/src/placeholder';
 
 // ── Bound field primitives ────────────────────────────────────────────────────
 //
 // Each returns ONE bound node the routed product fills. `className` is the whole
-// visual decision, so a template controls aspect, scale, weight and colour while the
+// visual decision, so a template controls aspect, scale, weight and color while the
 // bind stays correct. Every key here is what `buyBox()` binds, verified against the
 // resolver — do not invent field keys (an unknown key resolves to nothing, silently).
 
@@ -54,13 +54,13 @@ import { PLACEHOLDER_IMAGE } from '../../../packages/silica-catalog/src/placehol
  *  tenant's stored tree (the site-lint sweep flags it `class-no-css`). Use `aspect-square` /
  *  `aspect-video`, not an arbitrary ratio; the same rule the whole catalog follows. */
 export function pdpImage(className: string, alt = 'Product image'): Node {
-  return bind(atom('Image', className, { src: PLACEHOLDER_IMAGE, alt }), 'image');
+    return bind(atom('Image', className, { src: PLACEHOLDER_IMAGE, alt }), 'image');
 }
 
 /** The product title, bound to `title`. The PDP heading is the page's ONE `<h1>` — pass
  *  `tag: 'h1'` on the main title and `h2`/`h3` for any secondary echo. */
 export function pdpTitle(tag: 'h1' | 'h2' | 'h3', className: string): Node {
-  return bind(el(tag, className, { text: 'Product name' }), 'title');
+    return bind(el(tag, className, { text: 'Product name' }), 'title');
 }
 
 /**
@@ -70,31 +70,31 @@ export function pdpTitle(tag: 'h1' | 'h2' | 'h3', className: string): Node {
  * emits the element as a real flex item, leaving a stray gap after every non-sale price).
  *
  * INK, never the brand role, on the number a shopper commits money against — the same
- * lesson `buyBox`/`productCard` carry: a bright primary is a FILL colour on several
+ * lesson `buyBox`/`productCard` carry: a bright primary is a FILL color on several
  * themes and goes pale-on-pale as text. The template picks scale/weight through the
- * class args; legibility is not negotiable, so the colour is fixed to ink here.
+ * class args; legibility is not negotiable, so the color is fixed to ink here.
  */
 export function pdpPriceRow(opts: {
-  priceClass: string;
-  compareClass: string;
-  rowClass?: string;
+    priceClass: string;
+    compareClass: string;
+    rowClass?: string;
 }): Node {
-  return el('div', opts.rowClass ?? 'flex items-baseline gap-3', {
-    children: [
-      bind(el('span', opts.priceClass, { text: '$0.00' }), 'price'),
-      visibleWhen(
-        el('span', opts.compareClass, {
-          children: [bind(el('span', '', { text: '' }), 'compareAtPrice')],
-        }),
-        'compareAtPrice'
-      ),
-    ],
-  });
+    return el('div', opts.rowClass ?? 'flex items-baseline gap-3', {
+        children: [
+            bind(el('span', opts.priceClass, { text: '$0.00' }), 'price'),
+            visibleWhen(
+                el('span', opts.compareClass, {
+                    children: [bind(el('span', '', { text: '' }), 'compareAtPrice')],
+                }),
+                'compareAtPrice'
+            ),
+        ],
+    });
 }
 
 /** The product description, bound to `description`. */
 export function pdpDescription(className: string): Node {
-  return bind(el('div', className, { text: 'Product description.' }), 'description');
+    return bind(el('div', className, { text: 'Product description.' }), 'description');
 }
 
 /** The add-to-cart form — quantity + Add-to-cart, the buy box's interactive half. Re-exported
@@ -106,7 +106,7 @@ export { addToCartForm };
  *  key. Only `description` is a guaranteed scalar today; reserved for templates that want a
  *  second bound line, it defaults to the description so it is always safe. */
 export function pdpBoundLine(className: string, key = 'description'): Node {
-  return bind(el('p', className, { text: '' }), key);
+    return bind(el('p', className, { text: '' }), key);
 }
 
 // ── Typed attributes (docs/143) ─────────────────────────────────────────────────
@@ -134,39 +134,39 @@ export function pdpBoundLine(className: string, key = 'description'): Node {
  * decision; the binds stay correct.
  */
 export function pdpAttributes(opts: {
-  containerClass?: string;
-  sectionClass?: string;
-  labelTag?: 'h2' | 'h3' | 'h4';
-  labelClass: string;
-  valueClass: string;
-  rowsClass?: string;
-  rowClass?: string;
-  rowLabelClass?: string;
-  rowValueClass?: string;
+    containerClass?: string;
+    sectionClass?: string;
+    labelTag?: 'h2' | 'h3' | 'h4';
+    labelClass: string;
+    valueClass: string;
+    rowsClass?: string;
+    rowClass?: string;
+    rowLabelClass?: string;
+    rowValueClass?: string;
 }): Node {
-  const section = el('div', opts.sectionClass ?? 'flex flex-col gap-2', {
-    children: [
-      bind(el(opts.labelTag ?? 'h3', opts.labelClass, { text: 'Section' }), 'label'),
-      // Scalar value — dropped for a repeater section (its `value` is '').
-      visibleWhen(bind(el('div', opts.valueClass, { text: '' }), 'value'), 'value'),
-      // Repeater rows — an empty list for a scalar section, so this renders nothing there.
-      repeat(
-        el('div', opts.rowClass ?? 'flex items-baseline justify-between gap-4', {
-          children: [
-            bind(el('span', opts.rowLabelClass ?? '', { text: '' }), 'label'),
-            bind(el('span', opts.rowValueClass ?? '', { text: '' }), 'value'),
-          ],
+    const section = el('div', opts.sectionClass ?? 'flex flex-col gap-2', {
+        children: [
+            bind(el(opts.labelTag ?? 'h3', opts.labelClass, { text: 'Section' }), 'label'),
+            // Scalar value — dropped for a repeater section (its `value` is '').
+            visibleWhen(bind(el('div', opts.valueClass, { text: '' }), 'value'), 'value'),
+            // Repeater rows — an empty list for a scalar section, so this renders nothing there.
+            repeat(
+                el('div', opts.rowClass ?? 'flex items-baseline justify-between gap-4', {
+                    children: [
+                        bind(el('span', opts.rowLabelClass ?? '', { text: '' }), 'label'),
+                        bind(el('span', opts.rowValueClass ?? '', { text: '' }), 'value'),
+                    ],
+                }),
+                'items'
+            ),
+        ],
+    });
+    return visibleWhen(
+        el('div', opts.containerClass ?? 'flex flex-col gap-6', {
+            children: [repeat(section, 'attributeSections')],
         }),
-        'items'
-      ),
-    ],
-  });
-  return visibleWhen(
-    el('div', opts.containerClass ?? 'flex flex-col gap-6', {
-      children: [repeat(section, 'attributeSections')],
-    }),
-    'attributeSections'
-  );
+        'attributeSections'
+    );
 }
 
 /**
@@ -177,23 +177,23 @@ export function pdpAttributes(opts: {
  * and every PDP points at it.
  */
 export function pdpPolicyLinks(opts: {
-  className?: string;
-  linkClass?: string;
-  shippingLabel?: string;
-  returnsLabel?: string;
+    className?: string;
+    linkClass?: string;
+    shippingLabel?: string;
+    returnsLabel?: string;
 }): Node {
-  return el('div', opts.className ?? 'flex flex-wrap items-center gap-x-6 gap-y-2 text-sm', {
-    children: [
-      el('a', opts.linkClass ?? 'underline underline-offset-4', {
-        text: opts.shippingLabel ?? 'Shipping & delivery',
-        attrs: { href: '/shipping-policy' },
-      }),
-      el('a', opts.linkClass ?? 'underline underline-offset-4', {
-        text: opts.returnsLabel ?? 'Returns & refunds',
-        attrs: { href: '/returns-policy' },
-      }),
-    ],
-  });
+    return el('div', opts.className ?? 'flex flex-wrap items-center gap-x-6 gap-y-2 text-sm', {
+        children: [
+            el('a', opts.linkClass ?? 'underline underline-offset-4', {
+                text: opts.shippingLabel ?? 'Shipping & delivery',
+                attrs: { href: '/shipping-policy' },
+            }),
+            el('a', opts.linkClass ?? 'underline underline-offset-4', {
+                text: opts.returnsLabel ?? 'Returns & refunds',
+                attrs: { href: '/returns-policy' },
+            }),
+        ],
+    });
 }
 
 /**
@@ -205,12 +205,12 @@ export function pdpPolicyLinks(opts: {
  * leaks exact inventory. Classes carry the whole look (a Badge atom or a styled span).
  */
 export function pdpStockBadge(opts: { className?: string; label?: string }): Node {
-  return visibleWhen(
-    el('span', opts.className ?? 'inline-flex items-center gap-2 text-sm font-medium', {
-      text: opts.label ?? 'Low stock',
-    }),
-    'lowStock'
-  );
+    return visibleWhen(
+        el('span', opts.className ?? 'inline-flex items-center gap-2 text-sm font-medium', {
+            text: opts.label ?? 'Low stock',
+        }),
+        'lowStock'
+    );
 }
 
 // ── Page assembly ─────────────────────────────────────────────────────────────
@@ -232,21 +232,21 @@ export function pdpStockBadge(opts: { className?: string; label?: string }): Nod
  * or `null` for no rail.
  */
 export function productPage(
-  buyRegion: Node,
-  opts: { related?: Node | null; relatedHeading?: string; relatedSource?: ProductsSource } = {}
+    buyRegion: Node,
+    opts: { related?: Node | null; relatedHeading?: string; relatedSource?: ProductsSource } = {}
 ): Node {
-  const related =
-    opts.related === null
-      ? null
-      : (opts.related ??
-        productsBlock({
-          source: opts.relatedSource ?? 'commerce.related',
-          layout: 'carousel',
-          heading: opts.relatedHeading ?? 'You may also like',
-        }));
-  return el('div', 'flex flex-col', {
-    children: [repeat(buyRegion, 'product'), ...(related ? [related] : [])],
-  });
+    const related =
+        opts.related === null
+            ? null
+            : (opts.related ??
+                productsBlock({
+                    source: opts.relatedSource ?? 'commerce.related',
+                    layout: 'carousel',
+                    heading: opts.relatedHeading ?? 'You may also like',
+                }));
+    return el('div', 'flex flex-col', {
+        children: [repeat(buyRegion, 'product'), ...(related ? [related] : [])],
+    });
 }
 
 /** A bound whole-tile product LINK — image over title + price, the card `<a>` whose `href`
@@ -254,25 +254,25 @@ export function productPage(
  *  bespoke grid (rather than the catalog's `productsBlock` card) composes from this. The
  *  classes are the whole visual decision; the binds + the `href` carrier stay correct. */
 export function pdpProductCardLink(opts: {
-  cardClass: string;
-  imageClass: string;
-  bodyClass: string;
-  titleClass: string;
-  priceClass: string;
+    cardClass: string;
+    imageClass: string;
+    bodyClass: string;
+    titleClass: string;
+    priceClass: string;
 }): Node {
-  return bindAttr(
-    el('a', opts.cardClass, {
-      children: [
-        pdpImage(opts.imageClass),
-        el('div', opts.bodyClass, {
-          children: [
-            bind(el('h3', opts.titleClass, { text: 'Product name' }), 'title'),
-            bind(el('p', opts.priceClass, { text: '$0.00' }), 'price'),
-          ],
+    return bindAttr(
+        el('a', opts.cardClass, {
+            children: [
+                pdpImage(opts.imageClass),
+                el('div', opts.bodyClass, {
+                    children: [
+                        bind(el('h3', opts.titleClass, { text: 'Product name' }), 'title'),
+                        bind(el('p', opts.priceClass, { text: '$0.00' }), 'price'),
+                    ],
+                }),
+            ],
         }),
-      ],
-    }),
-    'href',
-    'url'
-  );
+        'href',
+        'url'
+    );
 }

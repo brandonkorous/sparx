@@ -10,71 +10,71 @@ import emails from './emails.json' with { type: 'json' };
 import assets from './assets.json' with { type: 'json' };
 
 const blueprint = {
-  key: 'sparx-acupuncture-modern',
-  version: '1.3.0',
-  name: 'sparx — Acupuncture (Modern)',
-  summary:
-    'A clean, calming site for a modern integrative acupuncture studio — a soft sage-and-white minimal palette, a modern sans display and online booking from day one. Installs a working booking flow: seven session types (acupuncture, facial/cosmetic acupuncture, dry needling, stress & sleep), three licensed practitioners you book by name with their own hours, and two treatment rooms as bookable resources. Ships as "Meridian Wellness".',
-  vertical: 'services',
-  preview: 'media/preview.png',
-  requiresModules: ['builder', 'scheduling', 'crm', 'email'],
+    key: 'sparx-acupuncture-modern',
+    version: '1.3.0',
+    name: 'sparx — Acupuncture (Modern)',
+    summary:
+        'A clean, calming site for a modern integrative acupuncture studio — a soft sage-and-white minimal palette, a modern sans display and online booking from day one. Installs a working booking flow: seven session types (acupuncture, facial/cosmetic acupuncture, dry needling, stress & sleep), three licensed practitioners you book by name with their own hours, and two treatment rooms as bookable resources. Ships as "Meridian Wellness".',
+    vertical: 'services',
+    preview: 'media/preview.png',
+    requiresModules: ['builder', 'scheduling', 'crm', 'email'],
 
-  // Identity only (business name + tagline + fonts + the theme's hex colours). The look
-  // rides site.theme + the theme decl below; the installing tenant rebrands the name.
-  brand: {
-    businessName: 'Meridian Wellness',
-    tagline: 'Calm, evidence-informed acupuncture.',
-    colors: {
-      primary: '#7aa488',
-      primaryForeground: '#050e08',
-      accent: '#d2b99f',
-      secondary: '#35443d',
-    },
-    fonts: {
-      heading: 'Outfit',
-      body: 'Inter',
-    },
-  },
-
-  // The provisioned SiteTheme the installer creates + applies — an editable saved theme
-  // over a foundation base + the template's brand snapshot. The LIVE storefront look is
-  // site.theme (the flat bespoke tokens), written last.
-  theme: {
-    name: 'meridian',
-    basePresetKey: 'apex',
-    presentation: {
-      v: 2,
-      containerWidth: '1152px',
-    },
+    // Identity only (business name + tagline + fonts + the theme's hex colors). The look
+    // rides site.theme + the theme decl below; the installing tenant rebrands the name.
     brand: {
-      colorPrimary: '#7aa488',
-      colorAccent: '#d2b99f',
-      colorSecondary: '#35443d',
-      fontHeading: 'Outfit',
-      fontBody: 'Inter',
-      tokens: {},
+        businessName: 'Meridian Wellness',
+        tagline: 'Calm, evidence-informed acupuncture.',
+        colors: {
+            primary: '#7aa488',
+            primaryForeground: '#050e08',
+            accent: '#d2b99f',
+            secondary: '#35443d',
+        },
+        fonts: {
+            heading: 'Outfit',
+            body: 'Inter',
+        },
     },
-    apply: true,
-  },
 
-  assets,
-  contentTypes: [],
+    // The provisioned SiteTheme the installer creates + applies — an editable saved theme
+    // over a foundation base + the template's brand snapshot. The LIVE storefront look is
+    // site.theme (the flat bespoke tokens), written last.
+    theme: {
+        name: 'meridian',
+        basePresetKey: 'apex',
+        presentation: {
+            v: 2,
+            containerWidth: '1152px',
+        },
+        brand: {
+            colorPrimary: '#7aa488',
+            colorAccent: '#d2b99f',
+            colorSecondary: '#35443d',
+            fontHeading: 'Outfit',
+            fontBody: 'Inter',
+            tokens: {},
+        },
+        apply: true,
+    },
 
-  // The booking spine — policies, bookable resources (staff/rooms/stations) with weekly
-  // hours, and the service menu. The installer's scheduling slice replays it into a live
-  // booking flow that the site's /book page renders.
-  scheduling,
+    assets,
+    contentTypes: [],
 
-  // Brand-voiced MARKETING starters (a welcome + a come-back), installed as DRAFTS the
-  // tenant switches on. The transactional booking sends — confirmation, reminder,
-  // reschedule, cancellation, waitlist — are platform KEYED defaults, so they are covered
-  // on email-module activation and are deliberately NOT duplicated here.
-  emails,
-  sequences: [],
+    // The booking spine — policies, bookable resources (staff/rooms/stations) with weekly
+    // hours, and the service menu. The installer's scheduling slice replays it into a live
+    // booking flow that the site's /book page renders.
+    scheduling,
 
-  // The composed distinct site (frame + Home + Book + About + Contact) in the bespoke
-  // theme, fully stamped.
-  site,
+    // Brand-voiced MARKETING starters (a welcome + a come-back), installed as DRAFTS the
+    // tenant switches on. The transactional booking sends — confirmation, reminder,
+    // reschedule, cancellation, waitlist — are platform KEYED defaults, so they are covered
+    // on email-module activation and are deliberately NOT duplicated here.
+    emails,
+    sequences: [],
+
+    // The composed distinct site (frame + Home + Book + About + Contact) in the bespoke
+    // theme, fully stamped.
+    site,
 };
 
 export default blueprint;

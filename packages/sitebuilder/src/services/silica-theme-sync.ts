@@ -8,13 +8,13 @@
 // the BUILDER, which derives a preview theme from those columns via `tenantTheme` —
 // and it is nothing at all to the storefront, which since the `--st-*` retirement
 // reads `silicaFrame.theme ?? BASE_SILICA_THEME` (apps/site/app/layout.tsx) and
-// derives nothing. So a tenant picked a theme, watched the editor recolour, hit
+// derives nothing. So a tenant picked a theme, watched the editor recolor, hit
 // publish, and the visitor got sparx Ember. Every surface was reporting success.
 //
 // The fix is WRITE-side, deliberately. A read-side fallback — "storefront compiles
 // the brand columns when no silica theme exists" — would reinstate the second token
 // vocabulary that `docs/implementation/st-token-retirement.md` exists to remove: two
-// sources for one colour, reconciled by whichever emitter ran last. Compiling ONCE,
+// sources for one color, reconciled by whichever emitter ran last. Compiling ONCE,
 // here, keeps `builder_site.silica_draft_theme` the single answer to "what does this
 // site look like" for the editor and the visitor alike.
 //
@@ -24,40 +24,40 @@
 
 import type { Prisma, TxClient } from '@sparx/db';
 import {
-  applyBrandOverride,
-  compileThemeForTenant,
-  compiledToSilicaTheme,
-  storedPresetV2,
-  type BrandColumns,
-  type PresentationOverlayV2,
+    applyBrandOverride,
+    compileThemeForTenant,
+    compiledToSilicaTheme,
+    storedPresetV2,
+    type BrandColumns,
+    type PresentationOverlayV2,
 } from '@sparx/site-themes';
 
 export interface SilicaThemeSyncArgs {
-  /** The theme slug the site now wears — `site_configs.theme_key`. Recorded on the
-   *  compiled theme so the stored blob says which theme produced it; it resolves
-   *  NOTHING (a theme is compiled from its preset, never looked up by name). */
-  themeKey: string;
-  /** The v2 presentation overlay from `draft_settings.presentation`, if any. */
-  presentation: unknown;
-  /** The site's stored theme preset from `draft_settings.themePreset` — the
-   *  `{v, v1, v2}` blob written by every theme surface (theme-preset.ts). Absent
-   *  → the platform base. */
-  themePreset?: unknown;
-  /** A brand override the CALLER just computed, so it doesn't have to be re-read
-   *  (and can't drift from what was written). Null → read the stored one. */
-  brandOverride?: Record<string, unknown> | null;
+    /** The theme slug the site now wears — `site_configs.theme_key`. Recorded on the
+     *  compiled theme so the stored blob says which theme produced it; it resolves
+     *  NOTHING (a theme is compiled from its preset, never looked up by name). */
+    themeKey: string;
+    /** The v2 presentation overlay from `draft_settings.presentation`, if any. */
+    presentation: unknown;
+    /** The site's stored theme preset from `draft_settings.themePreset` — the
+     *  `{v, v1, v2}` blob written by every theme surface (theme-preset.ts). Absent
+     *  → the platform base. */
+    themePreset?: unknown;
+    /** A brand override the CALLER just computed, so it doesn't have to be re-read
+     *  (and can't drift from what was written). Null → read the stored one. */
+    brandOverride?: Record<string, unknown> | null;
 }
 
 /** The stored `draft_settings` slices this module reads, named once. */
 export function readDraftThemeSlices(draftSettings: unknown): {
-  presentation: unknown;
-  themePreset: unknown;
+    presentation: unknown;
+    themePreset: unknown;
 } {
-  const d =
-    draftSettings && typeof draftSettings === 'object' && !Array.isArray(draftSettings)
-      ? (draftSettings as Record<string, unknown>)
-      : {};
-  return { presentation: d.presentation, themePreset: d.themePreset };
+    const d =
+        draftSettings && typeof draftSettings === 'object' && !Array.isArray(draftSettings)
+            ? (draftSettings as Record<string, unknown>)
+            : {};
+    return { presentation: d.presentation, themePreset: d.themePreset };
 }
 
 /**
@@ -70,54 +70,54 @@ export function readDraftThemeSlices(draftSettings: unknown): {
  * swallowed so a headless caller can tell "applied" from "applied everywhere".
  */
 export async function syncSilicaDraftTheme(
-  tx: TxClient,
-  tenantId: string,
-  propertyId: string,
-  args: SilicaThemeSyncArgs
+    tx: TxClient,
+    tenantId: string,
+    propertyId: string,
+    args: SilicaThemeSyncArgs
 ): Promise<boolean> {
-  const [brandRow, property] = await Promise.all([
-    tx.tenantBrand.findUnique({ where: { tenantId } }),
-    // Only read the stored override when the caller didn't supply one. A legacy saved
-    // theme carries no brand snapshot, and its presentation still has to compile
-    // against whatever this site already wears — not the bare tenant base.
-    args.brandOverride
-      ? null
-      : tx.property.findUnique({ where: { id: propertyId }, select: { brandOverride: true } }),
-  ]);
+    const [brandRow, property] = await Promise.all([
+        tx.tenantBrand.findUnique({ where: { tenantId } }),
+        // Only read the stored override when the caller didn't supply one. A legacy saved
+        // theme carries no brand snapshot, and its presentation still has to compile
+        // against whatever this site already wears — not the bare tenant base.
+        args.brandOverride
+            ? null
+            : tx.property.findUnique({ where: { id: propertyId }, select: { brandOverride: true } }),
+    ]);
 
-  const base: BrandColumns = {
-    tagline: brandRow?.tagline ?? null,
-    logoLightMediaId: brandRow?.logoLightMediaId ?? null,
-    logoDarkMediaId: brandRow?.logoDarkMediaId ?? null,
-    faviconMediaId: brandRow?.faviconMediaId ?? null,
-    colorPrimary: brandRow?.colorPrimary ?? null,
-    colorPrimaryForeground: brandRow?.colorPrimaryForeground ?? null,
-    colorSecondary: brandRow?.colorSecondary ?? null,
-    colorSecondaryForeground: brandRow?.colorSecondaryForeground ?? null,
-    colorAccent: brandRow?.colorAccent ?? null,
-    colorAccentForeground: brandRow?.colorAccentForeground ?? null,
-    fontHeading: brandRow?.fontHeading ?? null,
-    fontBody: brandRow?.fontBody ?? null,
-    tokens: brandRow?.tokens ?? null,
-  };
-  const effective = applyBrandOverride(base, args.brandOverride ?? property?.brandOverride ?? null);
+    const base: BrandColumns = {
+        tagline: brandRow?.tagline ?? null,
+        logoLightMediaId: brandRow?.logoLightMediaId ?? null,
+        logoDarkMediaId: brandRow?.logoDarkMediaId ?? null,
+        faviconMediaId: brandRow?.faviconMediaId ?? null,
+        colorPrimary: brandRow?.colorPrimary ?? null,
+        colorPrimaryForeground: brandRow?.colorPrimaryForeground ?? null,
+        colorSecondary: brandRow?.colorSecondary ?? null,
+        colorSecondaryForeground: brandRow?.colorSecondaryForeground ?? null,
+        colorAccent: brandRow?.colorAccent ?? null,
+        colorAccentForeground: brandRow?.colorAccentForeground ?? null,
+        fontHeading: brandRow?.fontHeading ?? null,
+        fontBody: brandRow?.fontBody ?? null,
+        tokens: brandRow?.tokens ?? null,
+    };
+    const effective = applyBrandOverride(base, args.brandOverride ?? property?.brandOverride ?? null);
 
-  let theme;
-  try {
-    const compiled = compileThemeForTenant({
-      preset: storedPresetV2(args.themePreset),
-      brand: effective,
-      presentation: (args.presentation as PresentationOverlayV2 | undefined) ?? null,
+    let theme;
+    try {
+        const compiled = compileThemeForTenant({
+            preset: storedPresetV2(args.themePreset),
+            brand: effective,
+            presentation: (args.presentation as PresentationOverlayV2 | undefined) ?? null,
+        });
+        theme = compiledToSilicaTheme(compiled, args.themeKey);
+    } catch {
+        return false;
+    }
+
+    await tx.builderSite.upsert({
+        where: { propertyId },
+        create: { tenantId, propertyId, silicaDraftTheme: theme as unknown as Prisma.InputJsonValue },
+        update: { silicaDraftTheme: theme as unknown as Prisma.InputJsonValue },
     });
-    theme = compiledToSilicaTheme(compiled, args.themeKey);
-  } catch {
-    return false;
-  }
-
-  await tx.builderSite.upsert({
-    where: { propertyId },
-    create: { tenantId, propertyId, silicaDraftTheme: theme as unknown as Prisma.InputJsonValue },
-    update: { silicaDraftTheme: theme as unknown as Prisma.InputJsonValue },
-  });
-  return true;
+    return true;
 }

@@ -17,38 +17,38 @@
 //
 // ── A short line is loud ──────────────────────────────────────────────────
 //
-// Danger colour, the reason spelled out, and a link to the count it raised. A
+// Danger color, the reason spelled out, and a link to the count it raised. A
 // short pick is the single best free signal that a stock number is wrong, and it
 // is worth nothing if it is a grey row somebody scrolls past.
 
 import { useState, type ReactNode } from 'react';
 import { PaneWaiting } from '../../components/pane-waiting';
 import {
-  Alert,
-  AlertActions,
-  AlertContent,
-  AlertDescription,
-  AlertTitle,
-  Badge,
-  Button,
-  Card,
-  EmptyState,
-  Input,
-  Table,
-  Text,
-  Timestamp,
-  ToolbarSeparator,
-  Tooltip,
+    Alert,
+    AlertActions,
+    AlertContent,
+    AlertDescription,
+    AlertTitle,
+    Badge,
+    Button,
+    Card,
+    EmptyState,
+    Input,
+    Table,
+    Text,
+    Timestamp,
+    ToolbarSeparator,
+    Tooltip,
 } from '@wizeworks/silicaui-react';
 import {
-  faBan,
-  faBarcodeRead,
-  faBox,
-  faClipboardCheck,
-  faExclamationTriangle,
-  faPrint,
-  faRoute,
-  faUser,
+    faBan,
+    faBarcodeRead,
+    faBox,
+    faClipboardCheck,
+    faExclamationTriangle,
+    faPrint,
+    faRoute,
+    faUser,
 } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { useConfirm } from '../../lib/confirm';
@@ -57,401 +57,401 @@ import { RefreshButton } from '../../components/refresh-button';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { plural } from './data';
 import {
-  pickErrorMessage,
-  pickKindLabel,
-  pickLineState,
-  pickListState,
-  shortReasonLabel,
-  strategyLabel,
-  useAssignPickList,
-  useCancelPickList,
-  usePickList,
-  type PickLine,
+    pickErrorMessage,
+    pickKindLabel,
+    pickLineState,
+    pickListState,
+    shortReasonLabel,
+    strategyLabel,
+    useAssignPickList,
+    useCancelPickList,
+    usePickList,
+    type PickLine,
 } from './picking-data';
 
 function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
-  if (event.altKey) return 'window';
-  if (event.shiftKey) return 'beside';
-  return 'tab';
+    if (event.altKey) return 'window';
+    if (event.shiftKey) return 'beside';
+    return 'tab';
 }
 
 /** Consecutive lines on the same shelf, in walk order. The shape of the job. */
 function groupByShelf(lines: PickLine[]): { key: string; label: string; lines: PickLine[] }[] {
-  const groups: { key: string; label: string; lines: PickLine[] }[] = [];
-  for (const line of lines) {
-    const key = line.binId ?? 'no-shelf';
-    const last = groups[groups.length - 1];
-    if (last?.key === key) {
-      last.lines.push(line);
-      continue;
+    const groups: { key: string; label: string; lines: PickLine[] }[] = [];
+    for (const line of lines) {
+        const key = line.binId ?? 'no-shelf';
+        const last = groups[groups.length - 1];
+        if (last?.key === key) {
+            last.lines.push(line);
+            continue;
+        }
+        groups.push({
+            key,
+            label: line.binCode ?? 'Anywhere in this location',
+            lines: [line],
+        });
     }
-    groups.push({
-      key,
-      label: line.binCode ?? 'Anywhere in this location',
-      lines: [line],
-    });
-  }
-  return groups;
+    return groups;
 }
 
 export function PickListDetailSurface({ ctx }: { ctx: SurfaceContext }) {
-  const id = typeof ctx.params.id === 'string' ? ctx.params.id : '';
-  const { data: walk, isLoading, isFetching, dataUpdatedAt, isError, refetch } = usePickList(id);
+    const id = typeof ctx.params.id === 'string' ? ctx.params.id : '';
+    const { data: walk, isLoading, isFetching, dataUpdatedAt, isError, refetch } = usePickList(id);
 
-  const [assignee, setAssignee] = useState('');
-  const [error, setError] = useState<string | null>(null);
+    const [assignee, setAssignee] = useState('');
+    const [error, setError] = useState<string | null>(null);
 
-  const assign = useAssignPickList(id);
-  const cancel = useCancelPickList(id);
-  const confirm = useConfirm();
+    const assign = useAssignPickList(id);
+    const cancel = useCancelPickList(id);
+    const confirm = useConfirm();
 
-  if (isError) {
+    if (isError) {
+        return (
+            <div className={PANE_SHELL}>
+                <EmptyState
+                    icon={<Icon glyph={faRoute} className="size-6" aria-hidden />}
+                    title="Could not open that walk"
+                    description="It may have been abandoned, or the server could not be reached."
+                />
+            </div>
+        );
+    }
+
+    if (isLoading || !walk) {
+        return (
+            <div className={PANE_SHELL}>
+                <PaneWaiting label="Loading the walk…" />
+            </div>
+        );
+    }
+
+    const state = pickListState(walk.status);
+    const open = walk.status !== 'picked' && walk.status !== 'cancelled';
+    const groups = groupByShelf(walk.lines);
+    const shorts = walk.lines.filter((l) => l.status === 'short');
+
     return (
-      <div className={PANE_SHELL}>
-        <EmptyState
-          icon={<Icon glyph={faRoute} className="size-6" aria-hidden />}
-          title="Could not open that walk"
-          description="It may have been abandoned, or the server could not be reached."
-        />
-      </div>
-    );
-  }
+        <div className={PANE_SHELL}>
+            <PaneToolbar label="Walk actions">
+                <Badge color={state.tone} variant="soft">
+                    {state.label}
+                </Badge>
+                <span className="font-mono text-sm">{walk.number}</span>
 
-  if (isLoading || !walk) {
-    return (
-      <div className={PANE_SHELL}>
-        <PaneWaiting label="Loading the walk…" />
-      </div>
-    );
-  }
+                <ToolbarSeparator className="hidden @lg:block" />
 
-  const state = pickListState(walk.status);
-  const open = walk.status !== 'picked' && walk.status !== 'cancelled';
-  const groups = groupByShelf(walk.lines);
-  const shorts = walk.lines.filter((l) => l.status === 'short');
+                {open ? (
+                    <Button
+                        size="sm"
+                        color="module-inventory"
+                        onClick={(event) => {
+                            ctx.open('inventory.picking.guided', { id: walk.id }, { target: targetFor(event) });
+                        }}
+                    >
+                        <Icon glyph={faBarcodeRead} className="size-4" aria-hidden />
+                        <span className="hidden @md:inline">Work this walk</span>
+                    </Button>
+                ) : null}
 
-  return (
-    <div className={PANE_SHELL}>
-      <PaneToolbar label="Walk actions">
-        <Badge color={state.tone} variant="soft">
-          {state.label}
-        </Badge>
-        <span className="font-mono text-sm">{walk.number}</span>
+                <Tooltip content="Print the walk as a scannable sheet">
+                    <Button
+                        size="sm"
+                        variant="outline"
+                        aria-label="Print the walk sheet"
+                        onClick={(event) => {
+                            ctx.open(
+                                'inventory.documents.label',
+                                {
+                                    number: walk.number,
+                                    title: 'Pick list',
+                                    subtitle: `${walk.warehouseName} · ${plural(walk.lineCount, 'line', 'lines')}`,
+                                },
+                                { target: targetFor(event) }
+                            );
+                        }}
+                    >
+                        <Icon glyph={faPrint} className="size-4" aria-hidden />
+                    </Button>
+                </Tooltip>
 
-        <ToolbarSeparator className="hidden @lg:block" />
+                {open ? (
+                    <Tooltip content="Abandon this walk">
+                        <Button
+                            size="sm"
+                            variant="outline"
+                            color="danger"
+                            aria-label="Abandon this walk"
+                            disabled={cancel.isPending}
+                            onClick={() => {
+                                void (async () => {
+                                    const ok = await confirm({
+                                        title: `Abandon walk ${walk.number}?`,
+                                        description:
+                                            'Anything already picked stays picked — it is in a tote. The rest of the route is dropped and those orders can be put on a new walk.',
+                                        confirmLabel: 'Abandon it',
+                                        cancelLabel: 'Keep it',
+                                        color: 'danger',
+                                    });
+                                    if (!ok) return;
+                                    try {
+                                        await cancel.mutateAsync(undefined);
+                                    } catch (err) {
+                                        setError(pickErrorMessage(err, 'Could not abandon the walk.'));
+                                    }
+                                })();
+                            }}
+                        >
+                            <Icon glyph={faBan} className="size-4" aria-hidden />
+                        </Button>
+                    </Tooltip>
+                ) : null}
 
-        {open ? (
-          <Button
-            size="sm"
-            color="module-inventory"
-            onClick={(event) => {
-              ctx.open('inventory.picking.guided', { id: walk.id }, { target: targetFor(event) });
-            }}
-          >
-            <Icon glyph={faBarcodeRead} className="size-4" aria-hidden />
-            <span className="hidden @md:inline">Work this walk</span>
-          </Button>
-        ) : null}
-
-        <Tooltip content="Print the walk as a scannable sheet">
-          <Button
-            size="sm"
-            variant="outline"
-            aria-label="Print the walk sheet"
-            onClick={(event) => {
-              ctx.open(
-                'inventory.documents.label',
-                {
-                  number: walk.number,
-                  title: 'Pick list',
-                  subtitle: `${walk.warehouseName} · ${plural(walk.lineCount, 'line', 'lines')}`,
-                },
-                { target: targetFor(event) }
-              );
-            }}
-          >
-            <Icon glyph={faPrint} className="size-4" aria-hidden />
-          </Button>
-        </Tooltip>
-
-        {open ? (
-          <Tooltip content="Abandon this walk">
-            <Button
-              size="sm"
-              variant="outline"
-              color="danger"
-              aria-label="Abandon this walk"
-              disabled={cancel.isPending}
-              onClick={() => {
-                void (async () => {
-                  const ok = await confirm({
-                    title: `Abandon walk ${walk.number}?`,
-                    description:
-                      'Anything already picked stays picked — it is in a tote. The rest of the route is dropped and those orders can be put on a new walk.',
-                    confirmLabel: 'Abandon it',
-                    cancelLabel: 'Keep it',
-                    color: 'danger',
-                  });
-                  if (!ok) return;
-                  try {
-                    await cancel.mutateAsync(undefined);
-                  } catch (err) {
-                    setError(pickErrorMessage(err, 'Could not abandon the walk.'));
-                  }
-                })();
-              }}
-            >
-              <Icon glyph={faBan} className="size-4" aria-hidden />
-            </Button>
-          </Tooltip>
-        ) : null}
-
-        <RefreshButton
-          isFetching={isFetching}
-          updatedAt={dataUpdatedAt}
-          onRefresh={() => {
-            void refetch();
-          }}
-        />
-      </PaneToolbar>
-
-      <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto">
-        {error ? (
-          <Alert color="danger" variant="soft">
-            <AlertContent>
-              <AlertTitle>{error}</AlertTitle>
-            </AlertContent>
-          </Alert>
-        ) : null}
-
-        {shorts.length > 0 ? (
-          <Alert color="danger" variant="soft">
-            <AlertContent>
-              <AlertTitle>
-                {plural(shorts.length, 'line', 'lines')} could not be found on the shelf
-              </AlertTitle>
-              <AlertDescription>
-                Those units have gone back into stock and are held for their orders, so nobody else
-                can buy them. Each shelf has been put on a blind count — settle those and the
-                numbers come right.
-              </AlertDescription>
-              {shorts[0]?.shortCountId ? (
-                <AlertActions>
-                  <Button
-                    size="sm"
-                    color="danger"
-                    onClick={(event) => {
-                      ctx.open(
-                        'inventory.counts.detail',
-                        { id: shorts[0]?.shortCountId ?? '' },
-                        { target: targetFor(event) }
-                      );
+                <RefreshButton
+                    isFetching={isFetching}
+                    updatedAt={dataUpdatedAt}
+                    onRefresh={() => {
+                        void refetch();
                     }}
-                  >
-                    <Icon glyph={faClipboardCheck} className="size-4" aria-hidden />
-                    Open the count
-                  </Button>
-                </AlertActions>
-              ) : null}
-            </AlertContent>
-          </Alert>
-        ) : null}
+                />
+            </PaneToolbar>
 
-        {/* What this walk IS. Facts, not a form. */}
-        <Card>
-          <div className="grid gap-4 p-4 @lg:grid-cols-3">
-            <Fact label="Location" value={walk.warehouseName} />
-            <Fact label="Shape" value={pickKindLabel(walk.kind)} />
-            <Fact label="Route" value={strategyLabel(walk.strategy)} />
-            <Fact label="Orders" value={walk.orders.map((o) => o.orderNumber).join(', ') || '—'} />
-            <Fact
-              label="Progress"
-              value={`${String(walk.unitsPicked)} of ${String(walk.unitsRequested)} units`}
-            />
-            <Fact
-              label="Started"
-              value={
-                walk.startedAt ? <Timestamp value={walk.startedAt} format="relative" /> : 'Not yet'
-              }
-            />
-          </div>
-        </Card>
+            <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto">
+                {error ? (
+                    <Alert color="danger" variant="soft">
+                        <AlertContent>
+                            <AlertTitle>{error}</AlertTitle>
+                        </AlertContent>
+                    </Alert>
+                ) : null}
 
-        {/* Who has it. An input rather than a picker because a floor login is
+                {shorts.length > 0 ? (
+                    <Alert color="danger" variant="soft">
+                        <AlertContent>
+                            <AlertTitle>
+                                {plural(shorts.length, 'line', 'lines')} could not be found on the shelf
+                            </AlertTitle>
+                            <AlertDescription>
+                                Those units have gone back into stock and are held for their orders, so nobody else
+                                can buy them. Each shelf has been put on a blind count — settle those and the
+                                numbers come right.
+                            </AlertDescription>
+                            {shorts[0]?.shortCountId ? (
+                                <AlertActions>
+                                    <Button
+                                        size="sm"
+                                        color="danger"
+                                        onClick={(event) => {
+                                            ctx.open(
+                                                'inventory.counts.detail',
+                                                { id: shorts[0]?.shortCountId ?? '' },
+                                                { target: targetFor(event) }
+                                            );
+                                        }}
+                                    >
+                                        <Icon glyph={faClipboardCheck} className="size-4" aria-hidden />
+                                        Open the count
+                                    </Button>
+                                </AlertActions>
+                            ) : null}
+                        </AlertContent>
+                    </Alert>
+                ) : null}
+
+                {/* What this walk IS. Facts, not a form. */}
+                <Card>
+                    <div className="grid gap-4 p-4 @lg:grid-cols-3">
+                        <Fact label="Location" value={walk.warehouseName} />
+                        <Fact label="Shape" value={pickKindLabel(walk.kind)} />
+                        <Fact label="Route" value={strategyLabel(walk.strategy)} />
+                        <Fact label="Orders" value={walk.orders.map((o) => o.orderNumber).join(', ') || '—'} />
+                        <Fact
+                            label="Progress"
+                            value={`${String(walk.unitsPicked)} of ${String(walk.unitsRequested)} units`}
+                        />
+                        <Fact
+                            label="Started"
+                            value={
+                                walk.startedAt ? <Timestamp value={walk.startedAt} format="relative" /> : 'Not yet'
+                            }
+                        />
+                    </div>
+                </Card>
+
+                {/* Who has it. An input rather than a picker because a floor login is
             often not a sparx account, and refusing an unlinked name would mean
             the throughput report simply has no rows for half a shift. */}
-        {open ? (
-          <Card>
-            <div className="flex flex-wrap items-end gap-3 p-4">
-              <div className="min-w-48 flex-1">
-                <Text className="mb-1 text-sm">Who is walking it</Text>
-                <Input
-                  size="sm"
-                  placeholder={walk.assignedTo ?? 'Nobody yet'}
-                  value={assignee}
-                  onChange={(event) => {
-                    setAssignee(event.target.value);
-                  }}
-                />
-              </div>
-              <Button
-                size="sm"
-                color="module-inventory"
-                variant="outline"
-                disabled={assign.isPending || assignee.trim() === ''}
-                onClick={() => {
-                  void (async () => {
-                    try {
-                      await assign.mutateAsync(assignee.trim());
-                      setAssignee('');
-                    } catch (err) {
-                      setError(pickErrorMessage(err, 'Could not assign the walk.'));
-                    }
-                  })();
-                }}
-              >
-                <Icon glyph={faUser} className="size-4" aria-hidden />
-                Assign
-              </Button>
-              {walk.assignedTo ? (
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  disabled={assign.isPending}
-                  onClick={() => {
-                    void assign.mutateAsync(null);
-                  }}
-                >
-                  Hand back to the pool
-                </Button>
-              ) : null}
-            </div>
-          </Card>
-        ) : null}
-
-        {/* The route. */}
-        {groups.map((group) => (
-          <Card key={group.key}>
-            <div className="border-base-300 flex items-center gap-2 border-b p-3">
-              <Icon glyph={faBox} className="size-4" aria-hidden />
-              <span className="font-mono font-semibold">{group.label}</span>
-              <span className="text-sm">{plural(group.lines.length, 'item', 'items')}</span>
-            </div>
-            <Table size="sm">
-              <thead>
-                <tr>
-                  <th>Item</th>
-                  <th className="text-right whitespace-nowrap">Take</th>
-                  <th className="hidden @lg:table-cell">For</th>
-                  <th>State</th>
-                </tr>
-              </thead>
-              <tbody>
-                {group.lines.map((line) => {
-                  const lineState = pickLineState(line.status);
-                  return (
-                    <tr key={line.id}>
-                      <td className="w-full max-w-0">
-                        <span className="flex min-w-0 flex-col">
-                          <span className="truncate font-medium">{line.productTitle}</span>
-                          <span className="truncate font-mono text-sm">{line.sku}</span>
-                          {line.lotNumber ? (
-                            <span className="truncate text-sm">
-                              Batch {line.lotNumber}
-                              {line.lotExpiresAt ? (
-                                <>
-                                  {' · expires '}
-                                  <Timestamp value={line.lotExpiresAt} format="relative" />
-                                </>
-                              ) : null}
-                            </span>
-                          ) : null}
-                          {line.status === 'short' ? (
-                            <span className="truncate text-sm">
-                              {shortReasonLabel(line.shortReason)}
-                              {line.shortNote ? ` — ${line.shortNote}` : ''}
-                            </span>
-                          ) : null}
-                          <span className="truncate text-sm @lg:hidden">
-                            For {line.orderNumber}
-                          </span>
-                        </span>
-                      </td>
-                      <td className="text-right whitespace-nowrap tabular-nums">
-                        {line.pickedQuantity > 0 && line.pickedQuantity < line.quantity
-                          ? `${String(line.pickedQuantity)}/${String(line.quantity)}`
-                          : line.quantity}
-                      </td>
-                      <td className="hidden whitespace-nowrap @lg:table-cell">
-                        {line.orderNumber}
-                      </td>
-                      <td className="whitespace-nowrap">
-                        <span className="flex items-center gap-1">
-                          <Badge color={lineState.tone} variant="soft" size="sm">
-                            {line.status === 'short' ? (
-                              <Icon glyph={faExclamationTriangle} className="size-3" aria-hidden />
+                {open ? (
+                    <Card>
+                        <div className="flex flex-wrap items-end gap-3 p-4">
+                            <div className="min-w-48 flex-1">
+                                <Text className="mb-1 text-sm">Who is walking it</Text>
+                                <Input
+                                    size="sm"
+                                    placeholder={walk.assignedTo ?? 'Nobody yet'}
+                                    value={assignee}
+                                    onChange={(event) => {
+                                        setAssignee(event.target.value);
+                                    }}
+                                />
+                            </div>
+                            <Button
+                                size="sm"
+                                color="module-inventory"
+                                variant="outline"
+                                disabled={assign.isPending || assignee.trim() === ''}
+                                onClick={() => {
+                                    void (async () => {
+                                        try {
+                                            await assign.mutateAsync(assignee.trim());
+                                            setAssignee('');
+                                        } catch (err) {
+                                            setError(pickErrorMessage(err, 'Could not assign the walk.'));
+                                        }
+                                    })();
+                                }}
+                            >
+                                <Icon glyph={faUser} className="size-4" aria-hidden />
+                                Assign
+                            </Button>
+                            {walk.assignedTo ? (
+                                <Button
+                                    size="sm"
+                                    variant="ghost"
+                                    disabled={assign.isPending}
+                                    onClick={() => {
+                                        void assign.mutateAsync(null);
+                                    }}
+                                >
+                                    Hand back to the pool
+                                </Button>
                             ) : null}
-                            {lineState.label}
-                          </Badge>
-                          {line.verifiedByScan ? (
-                            <Tooltip content="Confirmed by a scan, not a tap">
-                              <Badge color="success" variant="outline" size="sm">
-                                <Icon glyph={faBarcodeRead} className="size-3" aria-hidden />
-                              </Badge>
-                            </Tooltip>
-                          ) : null}
-                        </span>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </Table>
-          </Card>
-        ))}
+                        </div>
+                    </Card>
+                ) : null}
 
-        {/* Once the walk is done, the next thing anybody wants is a box. */}
-        {walk.status === 'picked' ? (
-          <Alert color="success" variant="soft">
-            <AlertContent>
-              <AlertTitle>Picked — ready to pack</AlertTitle>
-              <AlertDescription>
-                Open a box for each order and scan the items into it. Anything that does not belong
-                will be refused before it reaches the customer.
-              </AlertDescription>
-              <AlertActions>
-                {walk.orders.map((order) => (
-                  <Button
-                    key={order.orderId}
-                    size="sm"
-                    color="success"
-                    variant="outline"
-                    onClick={(event) => {
-                      ctx.open(
-                        'inventory.packing.bench',
-                        { orderId: order.orderId, pickListId: walk.id },
-                        { target: targetFor(event) }
-                      );
-                    }}
-                  >
-                    <Icon glyph={faBox} className="size-4" aria-hidden />
-                    Pack {order.orderNumber}
-                  </Button>
+                {/* The route. */}
+                {groups.map((group) => (
+                    <Card key={group.key}>
+                        <div className="border-base-300 flex items-center gap-2 border-b p-3">
+                            <Icon glyph={faBox} className="size-4" aria-hidden />
+                            <span className="font-mono font-semibold">{group.label}</span>
+                            <span className="text-sm">{plural(group.lines.length, 'item', 'items')}</span>
+                        </div>
+                        <Table size="sm">
+                            <thead>
+                                <tr>
+                                    <th>Item</th>
+                                    <th className="text-right whitespace-nowrap">Take</th>
+                                    <th className="hidden @lg:table-cell">For</th>
+                                    <th>State</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {group.lines.map((line) => {
+                                    const lineState = pickLineState(line.status);
+                                    return (
+                                        <tr key={line.id}>
+                                            <td className="w-full max-w-0">
+                                                <span className="flex min-w-0 flex-col">
+                                                    <span className="truncate font-medium">{line.productTitle}</span>
+                                                    <span className="truncate font-mono text-sm">{line.sku}</span>
+                                                    {line.lotNumber ? (
+                                                        <span className="truncate text-sm">
+                                                            Batch {line.lotNumber}
+                                                            {line.lotExpiresAt ? (
+                                                                <>
+                                                                    {' · expires '}
+                                                                    <Timestamp value={line.lotExpiresAt} format="relative" />
+                                                                </>
+                                                            ) : null}
+                                                        </span>
+                                                    ) : null}
+                                                    {line.status === 'short' ? (
+                                                        <span className="truncate text-sm">
+                                                            {shortReasonLabel(line.shortReason)}
+                                                            {line.shortNote ? ` — ${line.shortNote}` : ''}
+                                                        </span>
+                                                    ) : null}
+                                                    <span className="truncate text-sm @lg:hidden">
+                                                        For {line.orderNumber}
+                                                    </span>
+                                                </span>
+                                            </td>
+                                            <td className="text-right whitespace-nowrap tabular-nums">
+                                                {line.pickedQuantity > 0 && line.pickedQuantity < line.quantity
+                                                    ? `${String(line.pickedQuantity)}/${String(line.quantity)}`
+                                                    : line.quantity}
+                                            </td>
+                                            <td className="hidden whitespace-nowrap @lg:table-cell">
+                                                {line.orderNumber}
+                                            </td>
+                                            <td className="whitespace-nowrap">
+                                                <span className="flex items-center gap-1">
+                                                    <Badge color={lineState.tone} variant="soft" size="sm">
+                                                        {line.status === 'short' ? (
+                                                            <Icon glyph={faExclamationTriangle} className="size-3" aria-hidden />
+                                                        ) : null}
+                                                        {lineState.label}
+                                                    </Badge>
+                                                    {line.verifiedByScan ? (
+                                                        <Tooltip content="Confirmed by a scan, not a tap">
+                                                            <Badge color="success" variant="outline" size="sm">
+                                                                <Icon glyph={faBarcodeRead} className="size-3" aria-hidden />
+                                                            </Badge>
+                                                        </Tooltip>
+                                                    ) : null}
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    );
+                                })}
+                            </tbody>
+                        </Table>
+                    </Card>
                 ))}
-              </AlertActions>
-            </AlertContent>
-          </Alert>
-        ) : null}
-      </div>
-    </div>
-  );
+
+                {/* Once the walk is done, the next thing anybody wants is a box. */}
+                {walk.status === 'picked' ? (
+                    <Alert color="success" variant="soft">
+                        <AlertContent>
+                            <AlertTitle>Picked — ready to pack</AlertTitle>
+                            <AlertDescription>
+                                Open a box for each order and scan the items into it. Anything that does not belong
+                                will be refused before it reaches the customer.
+                            </AlertDescription>
+                            <AlertActions>
+                                {walk.orders.map((order) => (
+                                    <Button
+                                        key={order.orderId}
+                                        size="sm"
+                                        color="success"
+                                        variant="outline"
+                                        onClick={(event) => {
+                                            ctx.open(
+                                                'inventory.packing.bench',
+                                                { orderId: order.orderId, pickListId: walk.id },
+                                                { target: targetFor(event) }
+                                            );
+                                        }}
+                                    >
+                                        <Icon glyph={faBox} className="size-4" aria-hidden />
+                                        Pack {order.orderNumber}
+                                    </Button>
+                                ))}
+                            </AlertActions>
+                        </AlertContent>
+                    </Alert>
+                ) : null}
+            </div>
+        </div>
+    );
 }
 
 function Fact({ label, value }: { label: string; value: ReactNode }) {
-  return (
-    <span className="flex flex-col">
-      <Text className="text-sm">{label}</Text>
-      <span className="font-medium">{value}</span>
-    </span>
-  );
+    return (
+        <span className="flex flex-col">
+            <Text className="text-sm">{label}</Text>
+            <span className="font-medium">{value}</span>
+        </span>
+    );
 }

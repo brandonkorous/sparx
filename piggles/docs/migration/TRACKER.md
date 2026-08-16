@@ -1,6 +1,6 @@
 # Migration tracker
 
-**Version:** 1.1.0
+**Version:** 1.3.0
 **Author:** Brandon Korous
 **Last Updated:** 2026-08-16
 
@@ -8,21 +8,28 @@ The working checklist. Tick a box only when its **exit test** passes — not whe
 the code is written. Update `Last Updated` and the counts below whenever you tick
 anything.
 
-**Track A — decoupling:** 18 / 26 — A0, A1 and A2 complete, including the
-transitive `cms-editor → ui → brand` chain that put sparx's brand package inside
-the Piggles image. A3 (the rename), A4 (the tree move) and A5 (the deletability
-job) are repo-wide restructures touching every sparx app, and are open.
-**Track B — console:** 16 / 17 — everything except B4.3, which is a decision
-rather than a build.
+**Track A — decoupling:** 24 / 26 — A0, A1, **all of A2** and **all of A5**.
+A2's sweep turned out to be the largest item in the track (read its note before
+assuming anything else is "just a sweep"), and A5 now PROVES the invariant rather
+than approximating it. What is left is A3 (the rename) and A4 (the tree move):
+two repo-wide restructures touching every sparx app.
+**Track B — console:** 18 / 18 — B4.3 is decided (no), B5.3 is built.
+
 **Blocked right now:** nothing. The three cross-track edges (B2.3←A2.1,
 B3.1←A1.4, B3.4←A1.3) all cleared when A1 and A2 landed.
 
-**One thing to run before any of this typechecks:** `pnpm install`. Two new
-packages (`@wizeworks/silica-corrections`, `@wizeworks/brand-core`) and eleven
-new workspace edges — silica-corrections into six apps plus `@sparx/ui` and
-`@sparx/cms-editor`, `@sparx/links` into `@sparx/auth` and `@piggles/account`,
-brand-core into `api-rest` and `email-worker`. None resolve until the workspace
-is linked, so a typecheck before that reports missing modules and means nothing.
+**The order of the two remaining items matters, and it is A3 then A4.** The
+rename is mechanical and reversible; the tree move rewrites every Dockerfile
+path, every workflow path filter and every structural check's assumptions. Doing
+the move first means debugging both at once. Both are repo-wide codemods, so
+**start them against a clean working tree** — a half-applied rename mixed into
+somebody else's in-flight edits is not something `git checkout` gets you out of.
+
+**Run `pnpm install` after pulling this.** Two new packages
+(`@wizeworks/silica-corrections`, `@wizeworks/brand-core`) and fifteen new
+workspace edges. A typecheck before the workspace is linked reports missing
+modules and means nothing — so if you see `Cannot find module
+'@wizeworks/brand-core'`, that is this and not a real break.
 
 Legend: ⬜ open · 🔶 in progress · ✅ done · ⛔ blocked · ❌ decided against
 
@@ -88,7 +95,7 @@ caught this exact work, which is the evidence it functions.
 | A2.2 | Threaded the brand through every caller that has a tenant: api-rest team (invites, role change), chat notify, email domains, tenant module toggle, operator feedback, Stripe billing webhook, domain-worker (handler + cron ×2), social-worker (×2), and `@sparx/auth`'s own invitation email. The two sparx-ONLY emitters (market payouts, partner programme) keep the default with the reason written down | No caller silently takes the default without a comment saying why  | ✅    |
 | A2.3 | `packages/attribution` — `LAUNCH_LINKS` is sparx's own campaign data, not a mechanism, so it moved OFF the barrel to a `./launch-links` subpath rather than growing a fake brand lookup. Piggles imports the barrel and can no longer reach it                                                                                                                                                               | `@sparx/attribution`'s barrel states no brand value                | ✅    |
 | A2.4 | `@wizeworks/brand-core` — **shipped, and it is not the token contract.** See below                                                                                                                                                                                                                                                                                                                           | 8 tests in `packages/brand-core/src/index.test.ts`, all green      | ✅    |
-| A2.5 | Sweep the 29 remaining Class-1 packages for brand literals in code                                                                                                                                                                                                                                                                                                                                           | No sparx hostname / hex / product name outside a comment           | ⬜    |
+| A2.5 | Sweep the 29 remaining Class-1 packages for brand literals in code. **Done, and it was far larger than "a sweep" — see below**                                                                                                                                                                                                                                                                               | 159 tests across `email` + `brand-core`, all green                 | ✅    |
 | A2.6 | Break `@piggles/console → @sparx/cms-editor → @sparx/ui → @sparx/brand` — **done, and it was an hour, not a phase.** See below                                                                                                                                                                                                                                                                               | No `packages/{brand,ui}` in the console image; the ban enforces it | ✅    |
 
 **A2.4 turned out to be load-bearing, and it is a different package than
@@ -113,9 +120,68 @@ tenant's `platformBrand`. Support replies are now signed by the tenant's own
 product and carry its reply-to when one is configured.
 
 **Deliberately NOT fixed: the fallback PALETTE.** A platform email to an
-unbranded tenant still uses sparx's colours. What a brand-neutral platform email
+unbranded tenant still uses sparx's colors. What a brand-neutral platform email
 should look like is a design question, and silently restyling every sparx email
 while fixing a name would be smuggling one in. Open, and listed below.
+
+**A2.5 was filed as a tidy-up and was the largest single item in Track A.**
+A2.4 fixed the fallback NAME on a platform email. The sweep found that the name
+was the smallest part of it:
+
+- **`PlatformEmailLayout`'s masthead rendered the literal JSX
+  `spar<span>x</span>`** — so every platform email a Piggles owner receives, the
+  password reset above all, arrived under another company's wordmark. The
+  tenant frame's `EmailWordmark` had its own copy of the same literal as its
+  fallback. Both now render `brand.platform` through ONE `PlatformWordmark`;
+  the accent split is `accentChars` (sparx sets 1, everyone else 0), so sparx's
+  rendering is byte-identical and nothing else inherits it.
+- **~110 sparx literals in the COPY of 29 templates** — "your sparx account",
+  "Sign in to sparx", "your sparx subscription" — plus **11 subject lines**.
+  Copy is the widest surface of the leak and the least visible, because every
+  sentence reads perfectly. `usePlatformName()` for bodies, `platformNameOf()`
+  for subjects (which are strings and cannot read context).
+- **The `From` was `sparx <noreply@sparx.email>` for both brands.** The ADDRESS
+  cannot move until Piggles has DNS of its own — one Mailgun domain serves both
+  — so `platformFrom()` corrects the display NAME and keeps the address, which
+  is the half that is safe to fix.
+- **Both footers stated `WizeWorks · sparx.works`** regardless of tenant
+  branding, because that line was never about the tenant.
+- **The TOTP `issuer` was `'sparx'`** — baked into the QR at enrollment and
+  uncorrectable afterwards, so a Piggles owner would have had another product
+  sitting in their authenticator app permanently.
+- **A Google signup stamped `platform_brand = 'sparx'` and minted
+  `<slug>.sparx.zone`.** The OAuth hook runs before any tenant exists, so there
+  was no row to read a brand from and nothing supplied one. This is the worst of
+  the set: it silently defeats every other fix for that tenant, forever. Same
+  for an invited owner. Fixed by `currentPlatformBrand()` — each brand's account
+  app is its own deployment, so `PLATFORM_BRAND` on the pod is the answer.
+- **`customers.sparx.zone` was the hardcoded CNAME target** in `@sparx/registrar`
+  and `domain-worker` — the hostname a customer is told to point their own domain
+  at. Now per-tenant-zone in both, and in api-rest's and api-mcp's purchase paths.
+- **Three places CONSTRUCTED `${slug}.sparx.zone`** as a fallback when a Domain
+  row lookup came back empty (`customer-auth`, `automation-actions`, `social`).
+  Every one of them had just queried the real host; the fallback was a guess at
+  which company's zone the tenant lived in. They read the row or return null now.
+- **The builder's Browser-mockup catalog entry shipped `app.sparx.works`** as its
+  placeholder address, so every tenant of every brand dropped a component onto
+  their own page pre-filled with one company's console URL.
+- **A Piggles onboarding description still said "Leads from sparx.market route
+  here too"** — a sparx PRODUCT offered to a Piggles owner, which is the leak
+  `hiddenSurfaces` exists to prevent and which copy had walked around.
+
+The new configuration, all keyed by brand and named by derivation so no file
+names a brand: `<BRAND>_BRAND_URL`, `<BRAND>_BRAND_ACCENT_CHARS`,
+`<BRAND>_EMAIL_FROM`, `<BRAND>_BILLING_EMAIL`, `<BRAND>_ZONE_DOMAIN`, plus the
+per-process `PLATFORM_BRAND`.
+
+**Deliberately left, with reasons.** `SPARX_EMAIL_FROM` / `FALLBACK_FROM` /
+`defaultBrand.billingEmail` are the DEFAULT brand's values in the documented
+fallback chains, not leaks. `packages/email-platform`'s two `FALLBACK_FROM`
+constants (broadcasts, builder email) are tenant-facing sends that should resolve
+the TENANT's sending domain first — a separate fix, filed as B5.3 below.
+`market-settlement-report`, the three `partner-*` and the two `job-application-*`
+templates name sparx because sparx is what they are ABOUT; the test excludes them
+by name rather than silently.
 
 **A2.6 was mis-filed as a phase-A3/A4 problem and was neither.** The chain was
 held up by exactly two things: `cn`, a 26-line tailwind-merge wrapper with no
@@ -151,12 +217,52 @@ transitive dependency to what it actually imports before scheduling it.**
 
 ## A5 · Prove it
 
-| ID   | Step                                                                                                                                  | Exit test                                                       | State |
-| ---- | ------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------- | ----- |
-| A5.1 | `scripts/check-deletability.mjs` — worktree, `rm -rf sparx/`, install, typecheck, build                                               | Runs locally and passes                                         | ⬜    |
-| A5.2 | Add the container build to it                                                                                                         | `piggles-console` image builds with `sparx/` deleted            | ⬜    |
-| A5.3 | CI job on `main`                                                                                                                      | Green on `main`; red if an `@sparx/*` dep returns to `piggles/` | ⬜    |
-| A5.4 | Correct piggles/CLAUDE.md — delete _"What is ALLOWED, deliberately: `@sparx/_` package imports"\* and the paragraph under "The guard" | No binding file still grants the allowance                      | ⬜    |
+| ID   | Step                                                                                                                                  | Exit test                                                     | State |
+| ---- | ------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------- | ----- |
+| A5.1 | `scripts/check-deletability.mjs` — **a dependency-CLOSURE proof, not a build.** See below                                             | Runs green; goes red under an injected transitive leak        | ✅    |
+| A5.2 | The destructive version — `--build`: throwaway worktree, sparx paths deleted, install, build                                          | `pnpm check:deletability:build` runs the real thing on demand | ✅    |
+| A5.3 | CI + pre-push, beside `check:boundaries`                                                                                              | Blocks a push that reintroduces a sparx-owned dependency      | ✅    |
+| A5.4 | Correct piggles/CLAUDE.md — delete _"What is ALLOWED, deliberately: `@sparx/_` package imports"\* and the paragraph under "The guard" | No binding file still grants the allowance                    | ✅    |
+
+**A5.1 is a closure walk rather than the planned install-and-build, and that is
+the stronger check, not the cheaper one.**
+
+`check-boundaries` reads source text, so it catches the import somebody WROTE.
+The import that actually breaks you is never that one. It is the one four
+packages down — `@piggles/console → @sparx/cms-editor → @sparx/ui →
+@sparx/brand`. Nothing under `piggles/` mentioned `@sparx/brand`, the text scan
+was green, and sparx's mascot was in the Piggles container image.
+
+So this walks every workspace edge from Piggles' eight packages and asserts that
+nothing it reaches lives in a sparx-owned directory. If no package in the closure
+sits under a deleted path, deleting those paths cannot break the build — that is
+a proof, and it runs in well under a second with no install.
+
+Two design points worth keeping:
+
+- **It prints the CHAIN, not just the package.** A bare "you depend on
+  `@sparx/brand`" sends you looking in `piggles/`, where there is nothing to
+  find. The chain names the first edge that should not exist, which is the one
+  to break.
+- **A missing `SPARX_OWNED` path is a FAILURE, not a skip.** After the tree move
+  those paths change, and a check that quietly passed because there was nothing
+  left to reach is the exact shape of a guard that stops guarding.
+
+`SPARX_OWNED` is a list today because the tree move has not happened; after A4 it
+collapses to `sparx/` and nothing else about the check changes. `apps/admin` and
+`apps/site` are deliberately NOT in it — the staff console and the tenant site
+renderer serve either brand, so neither is sparx's to delete.
+
+**Verified by injecting the real historical leak.** Adding `@sparx/ui` to
+`@sparx/cms-editor`'s manifest turns it red and reproduces that exact four-hop
+chain. A guard nobody has watched fail is a guard nobody knows works.
+
+`--build` is the destructive version for when someone wants to watch it happen: a
+throwaway detached worktree, the sparx paths genuinely deleted, then install and
+build. Minutes rather than milliseconds, so CI runs the closure and this stays
+on-demand. It works from HEAD, so it proves what is COMMITTED — which is what
+ships — and leaves the worktree in place on failure, because that directory is
+the evidence.
 
 ---
 
@@ -236,19 +342,31 @@ Each needs a recorded outcome. ❌ (delete) is a legitimate answer.
 | ---- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------- | ----- |
 | B4.1 | `app/icon.svg` — the delivered Piggles mark, matching the account app. No `.ico` or `apple-icon`: Next generates what it needs from the SVG, and two more raster copies of one mark is two more things to keep in step | The console tab shows the Piggles mark | ✅    |
 | B4.2 | `app/robots.ts` — blanket disallow. Not `public/robots.txt`: a route composes with the layout's `robots` metadata and cannot go stale against it                                                                       | Served, and it disallows everything    | ✅    |
-| B4.3 | Real-time presence — decision below                                                                                                                                                                                    | A yes/no is written down here          | ⬜    |
+| B4.3 | Real-time presence — **decided: NO, and it is not a migration item.** See below                                                                                                                                        | A yes/no is written down here          | ❌    |
 
 ## B5 · Open, and named so it is not carried silently
 
-| ID   | Step                                                                                                                                                                                                     | Exit test                                                                  | State |
-| ---- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------- | ----- |
-| B5.1 | The platform email fallback PALETTE. A tenant with no branding still gets sparx's colours; only the NAME was fixed (A2.4). Needs a decision: brand-neutral chrome, or per-brand values in `brand-core`   | An unbranded Piggles tenant's receipt looks like neither brand by accident | ⬜    |
-| B5.2 | Confirm `PIGGLES_SUPPORT_EMAIL`. Set to `support@meetpiggles.com` in the configmaps with a CONFIRM-BEFORE-USE comment. Unset is safe (the reply-to is omitted); a wrong value bounces a customer's reply | The address accepts mail, or the line is deleted                           | ⬜    |
+| ID   | Step                                                                                                                                                                                                                                                                        | Exit test                                                                  | State |
+| ---- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------- | ----- |
+| B5.1 | The platform email fallback PALETTE. A tenant with no branding still gets sparx's colors; only the NAME was fixed (A2.4). Needs a decision: brand-neutral chrome, or per-brand values in `brand-core`                                                                       | An unbranded Piggles tenant's receipt looks like neither brand by accident | ⬜    |
+| B5.2 | Confirm `PIGGLES_SUPPORT_EMAIL`. Set to `support@meetpiggles.com` in the configmaps with a CONFIRM-BEFORE-USE comment. Unset is safe (the reply-to is omitted); a wrong value bounces a customer's reply                                                                    | The address accepts mail, or the line is deleted                           | ⬜    |
+| B5.3 | `@sparx/email-platform`'s two `FALLBACK_FROM` constants (broadcast + builder email). **Done** — both paths were identical copies of the same six lines, including the same bug, so the fix is one `buildTenantFrom()` in `services/platform-sender.ts` and both now call it | A Piggles tenant's newsletter is not from `sparx <noreply@…>`              | ✅    |
 
-**B4.3, stated so it is not carried silently.** Neither console has presence, and
-neither ever did — no SSE, no WebSocket, no "who is looking at this". socket.io
-ships in both but serves only the builder's live session and chat. So this is not
-something the fork lost and it is not a migration item; it is a platform feature
-nobody has built. It stays open and unticked until somebody decides they want it,
-because the alternative — closing it because it was never promised — is how a gap
-becomes invisible.
+**B4.3 — decided: NO, and it is closed as a MIGRATION item while staying open as
+a product one.** Neither console has presence, and neither ever did: no SSE, no
+WebSocket, no "who is looking at this". socket.io ships in both but serves only
+the builder's live session and chat.
+
+That is the whole decision. This tracker's job is "did the fork lose anything?",
+and the answer here is no — there was nothing to lose. Carrying it as ⬜ implied
+Piggles was missing something sparx has, which is false, and an item that can
+never be ticked by the work this document describes makes the remaining count
+lie.
+
+**What must not happen is it disappearing.** Presence is a real capability
+neither product has, and the reason to want it is real too: Piggles' pricing
+includes three users, so two people editing the same thing is a Tuesday rather
+than an edge case. It belongs on a product backlog, not here. Recorded as ❌
+(decided against, in this scope) rather than deleted, so the decision is
+findable — closing it because it was never promised is how a gap becomes
+invisible.

@@ -19,11 +19,15 @@ import {
 } from '../../surfaces/builder/studio/brand-theme';
 import { makeRenderHostNode } from '../../surfaces/builder/studio/host-cores';
 import { useActiveProperty } from '../../surfaces/builder/studio/data';
+import { useMediaPicker } from '../../surfaces/cms/media-picker';
 import { useActiveSiteId } from '../api/shell-data';
 import { PageSettingsPanel } from '../../surfaces/studio/page-settings-panel';
 import { PieceSettingsPanel } from '../../surfaces/studio/piece-settings-panel';
+import { EmailTagsPanel } from '../../surfaces/studio/email-tags-panel';
 import { catalogFor } from './catalog-scope';
 import { useCanvasPreview } from './preview';
+import { EMAIL_CONTENT_BLOCKS, useEmailPreview } from './email-domain';
+import { useEmailColors } from './email-data';
 
 /** A blank brand, so theming degrades to bare defaults rather than crashing while
  *  `/v1/brand` is still in flight. */
@@ -47,7 +51,7 @@ const EMPTY_BRAND: BrandColumns = {
  * The host, or null until the brand has resolved.
  *
  * Null rather than a placeholder theme on purpose: a canvas that opens in the
- * platform's default colours and re-paints a moment later in the business's own
+ * platform's default colors and re-paints a moment later in the business's own
  * is a flash of somebody else's brand on their own site.
  */
 export function useStudioHostConfig(): StudioHost | null {
@@ -56,6 +60,9 @@ export function useStudioHostConfig(): StudioHost | null {
   const { data: siteState } = useActiveSiteId();
   const property = useActiveProperty(siteState?.propertyId ?? null);
   const preview = useCanvasPreview();
+  const emailPreview = useEmailPreview();
+  const emailColors = useEmailColors();
+  const pickMedia = useMediaPicker();
 
   const fallbackTheme = useMemo(() => {
     if (brand.isPending || config.isPending) return null;
@@ -73,6 +80,21 @@ export function useStudioHostConfig(): StudioHost | null {
       catalog: catalogFor,
       renderHostNode: (node) => drawHostNode(node, { preview: true }),
       resolveBinding: (ref) => preview.resolve(ref),
+      // The business's own picture browser, so no image field ever asks for a web
+      // address. A picked asset with no URL is one still being processed — treated
+      // as "nothing picked" rather than written as an empty source.
+      pickAsset: async () => {
+        const picked = await pickMedia();
+        return picked?.url ? { url: picked.url, alt: picked.filename } : null;
+      },
+      // Email resolves against its own sample recipient, never the site's preview
+      // root: `customer.firstName` means the person this is being SENT to.
+      emailPreview,
+      // The exact colours the send paints with, so a new block lands on brand.
+      // Undefined until the read settles — silica's own neutral default then,
+      // which is visibly not the brand rather than quietly the wrong brand.
+      ...(emailColors.data ? { emailColors: emailColors.data } : {}),
+      emailCatalog: () => EMAIL_CONTENT_BLOCKS,
       // A document's own settings live under the DOCUMENT — select the page (or the
       // piece) itself and they are there, rather than in a drawer with a second Save
       // button of its own.
@@ -80,11 +102,12 @@ export function useStudioHostConfig(): StudioHost | null {
         if (!ctx.isRoot) return null;
         if (ctx.doc.kind === 'page') return <PageSettingsPanel />;
         if (ctx.doc.kind === 'component') return <PieceSettingsPanel />;
+        if (ctx.doc.kind === 'email') return <EmailTagsPanel />;
         return null;
       },
       // Platform policy, not a tenant setting: a viewport variant makes the device
       // toggle lie about the page, and no business benefits from opting into that.
       validateClass: (className: string) => validateResponsiveVocabulary(className),
     } satisfies StudioHost;
-  }, [fallbackTheme, preview]);
+  }, [fallbackTheme, preview, emailPreview, emailColors.data, pickMedia]);
 }

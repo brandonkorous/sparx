@@ -1,39 +1,49 @@
 {
-  "schemaVersion": 1,
-  "category": "blueprint",
-  "slug": "sparx-salon-editorial",
-  "name": "Salon (Editorial)",
-  "version": "1.3.0",
-  "tagline": "A warm, editorial template for hair salons — book online from day one.",
-  "description": "An upscale, editorial hair-salon site — a warm-ivory palette, a brass primary and a high-contrast serif display, with soft-lit photography carrying the page. Installs a working booking flow: a real service menu (cuts, colour, balayage), three stylists you book by name with their own hours, and a colour-deposit policy. Ships as \"Maison Élan\", a calm three-chair studio.",
-  "payload": "blueprint.ts",
-  "facets": {
-    "vertical": "services",
-    "industry": "Hair salon",
-    "requiredModules": ["builder", "scheduling", "crm", "email"]
-  },
-  "pricing": {
-    "model": "free",
-    "priceCents": 0
-  },
-  "requires": {
-    "modules": ["builder", "scheduling", "crm", "email"]
-  },
-  "media": [
-    {
-      "file": "media/icon.png",
-      "kind": "icon",
-      "alt": "Salon (Editorial) icon"
+    "schemaVersion": 1,
+    "category": "blueprint",
+    "slug": "sparx-salon-editorial",
+    "name": "Salon (Editorial)",
+    "version": "1.3.0",
+    "tagline": "A warm, editorial template for hair salons — book online from day one.",
+    "description": "An upscale, editorial hair-salon site — a warm-ivory palette, a brass primary and a high-contrast serif display, with soft-lit photography carrying the page. Installs a working booking flow: a real service menu (cuts, color, balayage), three stylists you book by name with their own hours, and a color-deposit policy. Ships as \"Maison Élan\", a calm three-chair studio.",
+    "payload": "blueprint.ts",
+    "facets": {
+        "vertical": "services",
+        "industry": "Hair salon",
+        "requiredModules": [
+            "builder",
+            "scheduling",
+            "crm",
+            "email"
+        ]
     },
-    {
-      "file": "media/preview.png",
-      "kind": "preview",
-      "alt": "Salon (Editorial) — home page preview"
-    }
-  ],
-  "author": {
-    "displayName": "WizeWorks"
-  },
-  "accent": "#ad8c5d",
-  "sortWeight": 90
+    "pricing": {
+        "model": "free",
+        "priceCents": 0
+    },
+    "requires": {
+        "modules": [
+            "builder",
+            "scheduling",
+            "crm",
+            "email"
+        ]
+    },
+    "media": [
+        {
+            "file": "media/icon.png",
+            "kind": "icon",
+            "alt": "Salon (Editorial) icon"
+        },
+        {
+            "file": "media/preview.png",
+            "kind": "preview",
+            "alt": "Salon (Editorial) — home page preview"
+        }
+    ],
+    "author": {
+        "displayName": "WizeWorks"
+    },
+    "accent": "#ad8c5d",
+    "sortWeight": 90
 }

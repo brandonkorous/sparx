@@ -20,102 +20,102 @@
  *  Concrete color/font values only (never CSS custom properties): the artifact is
  *  self-contained and prints/opens anywhere. */
 export interface BillingRenderBrand {
-  primary?: string;
-  primaryForeground?: string;
-  accent?: string;
-  background?: string;
-  foreground?: string;
-  muted?: string;
-  border?: string;
-  fontHeading?: string;
-  fontBody?: string;
-  /** Absolute logo URL; when present the masthead renders the image. */
-  logoUrl?: string;
-  /** Seller business name — masthead fallback + footer. */
-  businessName?: string;
-  /** Seller address / contact lines, rendered under the masthead name. */
-  addressLines?: string[];
+    primary?: string;
+    primaryForeground?: string;
+    accent?: string;
+    background?: string;
+    foreground?: string;
+    muted?: string;
+    border?: string;
+    fontHeading?: string;
+    fontBody?: string;
+    /** Absolute logo URL; when present the masthead renders the image. */
+    logoUrl?: string;
+    /** Seller business name — masthead fallback + footer. */
+    businessName?: string;
+    /** Seller address / contact lines, rendered under the masthead name. */
+    addressLines?: string[];
 }
 
 type ResolvedBrand = Required<Omit<BillingRenderBrand, 'logoUrl' | 'addressLines'>> &
-  Pick<BillingRenderBrand, 'logoUrl' | 'addressLines'>;
+    Pick<BillingRenderBrand, 'logoUrl' | 'addressLines'>;
 
 const DEFAULT_BRAND: Required<Omit<BillingRenderBrand, 'logoUrl' | 'addressLines'>> = {
-  primary: '#6366F1',
-  primaryForeground: '#FFFFFF',
-  accent: '#6366F1',
-  background: '#FFFFFF',
-  foreground: '#111827',
-  muted: '#F3F4F6',
-  border: '#E5E7EB',
-  fontHeading: "'Geist', system-ui, -apple-system, Segoe UI, sans-serif",
-  fontBody: "'Geist', system-ui, -apple-system, Segoe UI, sans-serif",
-  businessName: 'sparx',
+    primary: '#6366F1',
+    primaryForeground: '#FFFFFF',
+    accent: '#6366F1',
+    background: '#FFFFFF',
+    foreground: '#111827',
+    muted: '#F3F4F6',
+    border: '#E5E7EB',
+    fontHeading: "'Geist', system-ui, -apple-system, Segoe UI, sans-serif",
+    fontBody: "'Geist', system-ui, -apple-system, Segoe UI, sans-serif",
+    businessName: 'sparx',
 };
 
 /** Merge a partial brand over the sparx defaults. */
 export function resolveBillingBrand(brand: BillingRenderBrand = {}): ResolvedBrand {
-  return { ...DEFAULT_BRAND, ...brand };
+    return { ...DEFAULT_BRAND, ...brand };
 }
 
 /** A party block (bill-to / ship-to): a heading, a name, and free address /
  *  contact lines — already resolved to display strings by the caller. */
 export interface BillingRenderParty {
-  heading: string;
-  name: string;
-  lines: string[];
+    heading: string;
+    name: string;
+    lines: string[];
 }
 
 export interface BillingRenderLine {
-  /** Line-type label ("Part", "Labor", "Sublet") or null for an untyped line. */
-  typeLabel: string | null;
-  description: string;
-  quantity: number;
-  unitPrice: number;
-  lineTotal: number;
-  taxable: boolean;
+    /** Line-type label ("Part", "Labor", "Sublet") or null for an untyped line. */
+    typeLabel: string | null;
+    description: string;
+    quantity: number;
+    unitPrice: number;
+    lineTotal: number;
+    taxable: boolean;
 }
 
 export interface BillingRenderTotals {
-  subtotal: number;
-  discountTotal: number;
-  taxTotal: number;
-  /** Tax rate as a fraction (0.0875 = 8.75%) — shown next to the tax row. */
-  taxRate: number;
-  shippingTotal: number;
-  surchargeTotal: number;
-  total: number;
-  depositTotal: number;
-  amountPaid: number;
-  balance: number;
+    subtotal: number;
+    discountTotal: number;
+    taxTotal: number;
+    /** Tax rate as a fraction (0.0875 = 8.75%) — shown next to the tax row. */
+    taxRate: number;
+    shippingTotal: number;
+    surchargeTotal: number;
+    total: number;
+    depositTotal: number;
+    amountPaid: number;
+    balance: number;
 }
 
 export interface BillingRenderPaymentRow {
-  label: string;
-  method: string;
-  amount: number;
-  receivedAt: string | null;
+    label: string;
+    method: string;
+    amount: number;
+    receivedAt: string | null;
 }
 
 /** Everything the renderer needs, brand aside — assembled by billingRenderService
  *  from a live document or a frozen snapshot. Dates are ISO strings (or null). */
 export interface BillingRenderData {
-  /** The customer-facing noun for this document at its stage ("Invoice",
-   *  "Estimate", "Work Order", "Ticket") — the §3 `customerLabel`. */
-  title: string;
-  number: string | null;
-  /** AR status (unpaid | partial | paid | overdue | void) — drives the banner. */
-  status: string;
-  currency: string;
-  issuedAt: string | null;
-  dueAt: string | null;
-  validUntil: string | null;
-  billTo: BillingRenderParty | null;
-  shipTo: BillingRenderParty | null;
-  lines: BillingRenderLine[];
-  totals: BillingRenderTotals;
-  notes: string | null;
-  payments?: BillingRenderPaymentRow[];
+    /** The customer-facing noun for this document at its stage ("Invoice",
+     *  "Estimate", "Work Order", "Ticket") — the §3 `customerLabel`. */
+    title: string;
+    number: string | null;
+    /** AR status (unpaid | partial | paid | overdue | void) — drives the banner. */
+    status: string;
+    currency: string;
+    issuedAt: string | null;
+    dueAt: string | null;
+    validUntil: string | null;
+    billTo: BillingRenderParty | null;
+    shipTo: BillingRenderParty | null;
+    lines: BillingRenderLine[];
+    totals: BillingRenderTotals;
+    notes: string | null;
+    payments?: BillingRenderPaymentRow[];
 }
 
 // ── Formatting / escaping ────────────────────────────────────────────────────
@@ -124,29 +124,29 @@ export interface BillingRenderData {
  *  author/customer text and must never break out of their cell. Exported so the
  *  tree renderer escapes chrome text through the same path. */
 export function escapeHtml(value: string): string {
-  return value
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#39;');
+    return value
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
 }
 
 const esc = escapeHtml;
 
 export function formatMoney(amount: number, currency: string): string {
-  try {
-    return new Intl.NumberFormat('en-US', { style: 'currency', currency }).format(amount);
-  } catch {
-    // Unknown/invalid currency code — fall back to a plain 2-dp figure + code.
-    return `${amount.toFixed(2)} ${currency}`;
-  }
+    try {
+        return new Intl.NumberFormat('en-US', { style: 'currency', currency }).format(amount);
+    } catch {
+        // Unknown/invalid currency code — fall back to a plain 2-dp figure + code.
+        return `${amount.toFixed(2)} ${currency}`;
+    }
 }
 
 /** Quantities carry fractional labor hours (2.5 h) — show up to 3 decimals,
  *  trimming trailing zeros so whole counts read as "2", not "2.000". */
 function qty(n: number): string {
-  return Number.isInteger(n) ? String(n) : String(Number(n.toFixed(3)));
+    return Number.isInteger(n) ? String(n) : String(Number(n.toFixed(3)));
 }
 
 /** Format a document date.
@@ -162,57 +162,57 @@ function qty(n: number): string {
  *  merchant's browser — a server-local zone makes the same document print
  *  differently depending on where it ran. */
 export function formatDate(iso: string | null): string {
-  if (!iso) return '';
-  const d = new Date(iso);
-  if (Number.isNaN(d.getTime())) return '';
-  return d.toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-    timeZone: 'UTC',
-  });
+    if (!iso) return '';
+    const d = new Date(iso);
+    if (Number.isNaN(d.getTime())) return '';
+    return d.toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+        timeZone: 'UTC',
+    });
 }
 
 function pct(rate: number): string {
-  return `${Number((rate * 100).toFixed(4))}%`;
+    return `${Number((rate * 100).toFixed(4))}%`;
 }
 
 const STATUS_LABEL: Record<string, string> = {
-  unpaid: 'Unpaid',
-  partial: 'Partially paid',
-  paid: 'Paid in full',
-  overdue: 'Overdue',
-  void: 'Void',
+    unpaid: 'Unpaid',
+    partial: 'Partially paid',
+    paid: 'Paid in full',
+    overdue: 'Overdue',
+    void: 'Void',
 };
 
 // ── Section builders (shared by both renderers) ───────────────────────────────
 
 /** The seller masthead: logo image (or business-name wordmark) + address lines. */
 export function sellerBlockHtml(brand: BillingRenderBrand): string {
-  const b = resolveBillingBrand(brand);
-  const mark = b.logoUrl
-    ? `<img class="logo" src="${esc(b.logoUrl)}" alt="${esc(b.businessName)}" />`
-    : `<div class="logo-wordmark">${esc(b.businessName)}</div>`;
-  const sellerLines = (b.addressLines ?? [])
-    .filter((l) => l.trim().length > 0)
-    .map((l) => `<div>${esc(l)}</div>`)
-    .join('');
-  return `${mark}${sellerLines ? `<div class="seller">${sellerLines}</div>` : ''}`;
+    const b = resolveBillingBrand(brand);
+    const mark = b.logoUrl
+        ? `<img class="logo" src="${esc(b.logoUrl)}" alt="${esc(b.businessName)}" />`
+        : `<div class="logo-wordmark">${esc(b.businessName)}</div>`;
+    const sellerLines = (b.addressLines ?? [])
+        .filter((l) => l.trim().length > 0)
+        .map((l) => `<div>${esc(l)}</div>`)
+        .join('');
+    return `${mark}${sellerLines ? `<div class="seller">${sellerLines}</div>` : ''}`;
 }
 
 /** The document head: title, AR status pill, and the number/dates meta. */
 export function docHeadBlockHtml(data: BillingRenderData): string {
-  const meta: string[] = [];
-  if (data.number) meta.push(`<div><span>Number</span><strong>${esc(data.number)}</strong></div>`);
-  if (data.issuedAt) meta.push(`<div><span>Issued</span>${esc(formatDate(data.issuedAt))}</div>`);
-  if (data.dueAt) meta.push(`<div><span>Due</span>${esc(formatDate(data.dueAt))}</div>`);
-  if (data.validUntil) {
-    meta.push(`<div><span>Valid until</span>${esc(formatDate(data.validUntil))}</div>`);
-  }
-  const statusLabel = STATUS_LABEL[data.status] ?? data.status;
-  const statusClass =
-    data.status === 'paid' ? 'ok' : data.status === 'overdue' ? 'alert' : 'neutral';
-  return `<div class="doc-head">
+    const meta: string[] = [];
+    if (data.number) meta.push(`<div><span>Number</span><strong>${esc(data.number)}</strong></div>`);
+    if (data.issuedAt) meta.push(`<div><span>Issued</span>${esc(formatDate(data.issuedAt))}</div>`);
+    if (data.dueAt) meta.push(`<div><span>Due</span>${esc(formatDate(data.dueAt))}</div>`);
+    if (data.validUntil) {
+        meta.push(`<div><span>Valid until</span>${esc(formatDate(data.validUntil))}</div>`);
+    }
+    const statusLabel = STATUS_LABEL[data.status] ?? data.status;
+    const statusClass =
+        data.status === 'paid' ? 'ok' : data.status === 'overdue' ? 'alert' : 'neutral';
+    return `<div class="doc-head">
     <div class="doc-title">${esc(data.title)}</div>
     <div class="status ${statusClass}">${esc(statusLabel)}</div>
     <div class="meta">${meta.join('')}</div>
@@ -220,12 +220,12 @@ export function docHeadBlockHtml(data: BillingRenderData): string {
 }
 
 function partyBlock(party: BillingRenderParty | null): string {
-  if (!party) return '';
-  const lines = party.lines
-    .filter((l) => l.trim().length > 0)
-    .map((l) => `<div>${esc(l)}</div>`)
-    .join('');
-  return `<div class="party">
+    if (!party) return '';
+    const lines = party.lines
+        .filter((l) => l.trim().length > 0)
+        .map((l) => `<div>${esc(l)}</div>`)
+        .join('');
+    return `<div class="party">
     <div class="party-heading">${esc(party.heading)}</div>
     ${party.name ? `<div class="party-name">${esc(party.name)}</div>` : ''}
     ${lines}
@@ -234,20 +234,20 @@ function partyBlock(party: BillingRenderParty | null): string {
 
 /** Both party blocks (bill-to + ship-to), in the `.parties` row. */
 export function partiesBlockHtml(data: BillingRenderData): string {
-  return `<div class="parties">${partyBlock(data.billTo)}${partyBlock(data.shipTo)}</div>`;
+    return `<div class="parties">${partyBlock(data.billTo)}${partyBlock(data.shipTo)}</div>`;
 }
 
 /** The line-items table. */
 export function lineTableHtml(data: BillingRenderData): string {
-  const { currency } = data;
-  const rows =
-    data.lines.length === 0
-      ? `<tr><td class="empty" colspan="4">No line items.</td></tr>`
-      : data.lines
-          .map((l) => {
-            const type = l.typeLabel ? `<span class="line-type">${esc(l.typeLabel)}</span>` : '';
-            const taxFlag = l.taxable ? '' : '<span class="line-note">non-taxable</span>';
-            return `<tr>
+    const { currency } = data;
+    const rows =
+        data.lines.length === 0
+            ? `<tr><td class="empty" colspan="4">No line items.</td></tr>`
+            : data.lines
+                .map((l) => {
+                    const type = l.typeLabel ? `<span class="line-type">${esc(l.typeLabel)}</span>` : '';
+                    const taxFlag = l.taxable ? '' : '<span class="line-note">non-taxable</span>';
+                    return `<tr>
               <td>
                 <div class="line-desc">${esc(l.description)}</div>
                 ${type}${taxFlag}
@@ -256,9 +256,9 @@ export function lineTableHtml(data: BillingRenderData): string {
               <td class="num">${formatMoney(l.unitPrice, currency)}</td>
               <td class="num">${formatMoney(l.lineTotal, currency)}</td>
             </tr>`;
-          })
-          .join('');
-  return `<table class="lines">
+                })
+                .join('');
+    return `<table class="lines">
     <thead>
       <tr>
         <th>Description</th>
@@ -273,43 +273,43 @@ export function lineTableHtml(data: BillingRenderData): string {
 
 /** The totals summary block — zero rows are omitted; the balance-due row anchors. */
 export function totalsBlockHtml(data: BillingRenderData): string {
-  const t = data.totals;
-  const { currency } = data;
-  const row = (label: string, value: number, cls = '') =>
-    `<tr class="${cls}"><td>${label}</td><td class="num">${formatMoney(value, currency)}</td></tr>`;
+    const t = data.totals;
+    const { currency } = data;
+    const row = (label: string, value: number, cls = '') =>
+        `<tr class="${cls}"><td>${label}</td><td class="num">${formatMoney(value, currency)}</td></tr>`;
 
-  const out: string[] = [row('Subtotal', t.subtotal)];
-  if (t.discountTotal > 0) out.push(row('Discount', -t.discountTotal));
-  if (t.taxTotal > 0 || t.taxRate > 0) {
-    out.push(row(`Tax${t.taxRate > 0 ? ` (${pct(t.taxRate)})` : ''}`, t.taxTotal));
-  }
-  if (t.shippingTotal > 0) out.push(row('Shipping', t.shippingTotal));
-  if (t.surchargeTotal > 0) out.push(row('Surcharge', t.surchargeTotal));
-  out.push(row('Total', t.total, 'grand'));
-  if (t.depositTotal > 0) out.push(row('Deposit', -t.depositTotal));
-  if (t.amountPaid > 0) out.push(row('Amount paid', -t.amountPaid));
-  out.push(row('Balance due', t.balance, 'balance'));
-  return `<div class="summary"><table class="totals">${out.join('')}</table></div>`;
+    const out: string[] = [row('Subtotal', t.subtotal)];
+    if (t.discountTotal > 0) out.push(row('Discount', -t.discountTotal));
+    if (t.taxTotal > 0 || t.taxRate > 0) {
+        out.push(row(`Tax${t.taxRate > 0 ? ` (${pct(t.taxRate)})` : ''}`, t.taxTotal));
+    }
+    if (t.shippingTotal > 0) out.push(row('Shipping', t.shippingTotal));
+    if (t.surchargeTotal > 0) out.push(row('Surcharge', t.surchargeTotal));
+    out.push(row('Total', t.total, 'grand'));
+    if (t.depositTotal > 0) out.push(row('Deposit', -t.depositTotal));
+    if (t.amountPaid > 0) out.push(row('Amount paid', -t.amountPaid));
+    out.push(row('Balance due', t.balance, 'balance'));
+    return `<div class="summary"><table class="totals">${out.join('')}</table></div>`;
 }
 
 /** The notes / terms block — empty when there are no notes. */
 export function notesBlockHtml(data: BillingRenderData): string {
-  if (!data.notes) return '';
-  return `<section class="notes"><h2>Notes</h2><p>${esc(data.notes)}</p></section>`;
+    if (!data.notes) return '';
+    return `<section class="notes"><h2>Notes</h2><p>${esc(data.notes)}</p></section>`;
 }
 
 /** The payment ledger block — empty when there are no payments. */
 export function paymentsBlockHtml(data: BillingRenderData): string {
-  const rows = data.payments;
-  if (!rows || rows.length === 0) return '';
-  const body = rows
-    .map(
-      (p) =>
-        `<tr><td>${esc(p.label)}</td><td>${esc(p.method)}</td>` +
-        `<td>${esc(formatDate(p.receivedAt))}</td><td class="num">${formatMoney(p.amount, data.currency)}</td></tr>`
-    )
-    .join('');
-  return `<section class="payments">
+    const rows = data.payments;
+    if (!rows || rows.length === 0) return '';
+    const body = rows
+        .map(
+            (p) =>
+                `<tr><td>${esc(p.label)}</td><td>${esc(p.method)}</td>` +
+                `<td>${esc(formatDate(p.receivedAt))}</td><td class="num">${formatMoney(p.amount, data.currency)}</td></tr>`
+        )
+        .join('');
+    return `<section class="payments">
     <h2>Payments</h2>
     <table class="payments-table">
       <thead><tr><th>Type</th><th>Method</th><th>Date</th><th class="num">Amount</th></tr></thead>
@@ -323,8 +323,8 @@ export function paymentsBlockHtml(data: BillingRenderData): string {
 /** The print stylesheet, parameterised by the resolved brand. Shared by both
  *  renderers so a default print and a builder-authored template share one look. */
 export function invoiceStyles(brand: BillingRenderBrand): string {
-  const b = resolveBillingBrand(brand);
-  return `
+    const b = resolveBillingBrand(brand);
+    return `
   :root { color-scheme: light; }
   * { box-sizing: border-box; }
   body {
@@ -344,14 +344,14 @@ export function invoiceStyles(brand: BillingRenderBrand): string {
   .logo-wordmark { font-family: ${b.fontHeading}; font-size: 24px; font-weight: 700; color: ${b.foreground}; }
   .seller { margin-top: 8px; font-size: 12px; color: #6B7280; }
   .doc-head { text-align: right; }
-  /* Two brand colours, two jobs. The document title is the tenant's IDENTITY, so
+  /* Two brand colors, two jobs. The document title is the tenant's IDENTITY, so
      it takes the brand PRIMARY. The balance row keeps the ACCENT, because the
      amount still owed is the one number the reader must not miss — which is what
      an accent is for.
      Previously BOTH were on the accent, which left primary resolved from the
      tenant, threaded through the entire render, and then used nowhere at all: a
      tenant whose primary was olive got an invoice in their accent crimson, with
-     no way to reach the colour they had actually chosen as their brand. */
+     no way to reach the color they had actually chosen as their brand. */
   .doc-title { font-size: 28px; font-weight: 700; letter-spacing: -0.02em; color: ${b.primary}; }
   .status { display: inline-block; margin-top: 8px; padding: 4px 12px; border-radius: 999px;
     font-size: 12px; font-weight: 600; }
@@ -410,11 +410,11 @@ export function invoiceStyles(brand: BillingRenderBrand): string {
 /** Wrap a rendered body in the full print document shell (DOCTYPE + head + sheet).
  *  Used by both the default renderer and the builder-template renderer. */
 export function invoiceHtmlShell(input: {
-  title: string;
-  brand: BillingRenderBrand;
-  body: string;
+    title: string;
+    brand: BillingRenderBrand;
+    body: string;
 }): string {
-  return `<!DOCTYPE html>
+    return `<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="utf-8" />
@@ -433,12 +433,12 @@ export function invoiceHtmlShell(input: {
 /** Render a billing document (live or frozen) to a complete, branded, print-ready
  *  HTML document using the built-in default layout. */
 export function renderBillingDocumentHtml(
-  data: BillingRenderData,
-  brand: BillingRenderBrand = {}
+    data: BillingRenderData,
+    brand: BillingRenderBrand = {}
 ): string {
-  const b = resolveBillingBrand(brand);
-  const docTitle = data.number ? `${data.title} ${data.number}` : data.title;
-  const body = `
+    const b = resolveBillingBrand(brand);
+    const docTitle = data.number ? `${data.title} ${data.number}` : data.title;
+    const body = `
     <header class="masthead">
       <div class="masthead-seller">${sellerBlockHtml(brand)}</div>
       ${docHeadBlockHtml(data)}
@@ -449,5 +449,5 @@ export function renderBillingDocumentHtml(
     ${notesBlockHtml(data)}
     ${paymentsBlockHtml(data)}
     <div class="footer">${esc(b.businessName)}${data.number ? ` &middot; ${esc(data.number)}` : ''}</div>`;
-  return invoiceHtmlShell({ title: docTitle, brand, body });
+    return invoiceHtmlShell({ title: docTitle, brand, body });
 }

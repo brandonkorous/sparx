@@ -12,7 +12,7 @@ import type { PigglesGroup } from '@piggles/brand';
 // Piggles and the surfaces speak platform, and CSS reconciles them.
 //
 // Like its counterpart, this renders NOTHING but an attribute. No inline
-// `style`, no JS colour table that can drift from the tokens.
+// `style`, no JS color table that can drift from the tokens.
 //
 // One consequence worth knowing: CSS variables cascade by DOM, not by React
 // tree. A pane portalled into a detached window does not inherit a scope from
@@ -21,34 +21,34 @@ import type { PigglesGroup } from '@piggles/brand';
 // the main document.
 
 export function AppScope({
-  app,
-  children,
-  className,
+    app,
+    children,
+    className,
 }: {
-  /** A Piggles app id — `sell`, `customers`, `get_found`. */
-  app: string;
-  children: ReactNode;
-  className?: string;
+    /** A Piggles app id — `sell`, `customers`, `get_found`. */
+    app: string;
+    children: ReactNode;
+    className?: string;
 }) {
-  return (
-    <div data-app={app} className={className}>
-      {children}
-    </div>
-  );
+    return (
+        <div data-app={app} className={className}>
+            {children}
+        </div>
+    );
 }
 
 export function GroupScope({
-  group,
-  children,
-  className,
+    group,
+    children,
+    className,
 }: {
-  group: PigglesGroup;
-  children: ReactNode;
-  className?: string;
+    group: PigglesGroup;
+    children: ReactNode;
+    className?: string;
 }) {
-  return (
-    <div data-group={group} className={className}>
-      {children}
-    </div>
-  );
+    return (
+        <div data-group={group} className={className}>
+            {children}
+        </div>
+    );
 }

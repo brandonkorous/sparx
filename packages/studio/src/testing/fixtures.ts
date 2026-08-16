@@ -2,7 +2,15 @@
 // outside this package should be able to mint a document that skipped the loader.
 
 import type { ElementNode, Node, Theme } from '@wizeworks/silicaui-html';
-import type { ComponentDoc, LayoutDoc, PageDoc, ThemeDoc } from '../documents/types';
+import type {
+  ButtonNode,
+  ColumnNode,
+  ColumnsNode,
+  EmailBody,
+  SectionNode,
+  TextNode,
+} from '@wizeworks/silicaui-builder/email';
+import type { ComponentDoc, EmailDoc, LayoutDoc, PageDoc, ThemeDoc } from '../documents/types';
 
 export function el(id: string, children: (Node | string)[] = [], tag = 'div'): ElementNode {
   return { kind: 'element', id, tag, children };
@@ -66,6 +74,87 @@ export function pageDoc(overrides: Partial<PageDoc> = {}): PageDoc {
     frame: null,
     seo: { title: null, description: null, canonical: null, ogImage: null, noindex: false },
     root: el('body-root', [el('hero', [el('title', ['Fresh bread'], 'h1')], 'section')]),
+    ...overrides,
+  };
+}
+
+export function emailText(id: string, html: string): TextNode {
+  // `lineHeight` is a PX count, not a ratio — see `TextNode`.
+  return {
+    kind: 'text',
+    id,
+    html,
+    align: 'left',
+    color: '#111827',
+    fontSize: 16,
+    fontWeight: 'normal',
+    lineHeight: 24,
+  };
+}
+
+export function emailButton(id: string, label: string): ButtonNode {
+  return {
+    kind: 'button',
+    id,
+    label,
+    href: 'https://example.test',
+    bg: '#FF6F86',
+    color: '#FFFFFF',
+    radius: 8,
+    align: 'center',
+    paddingX: 20,
+    paddingY: 12,
+  };
+}
+
+export function emailSection(id: string, children: SectionNode['children']): SectionNode {
+  return { kind: 'section', id, bg: '#FFFFFF', paddingX: 24, paddingY: 24, children };
+}
+
+export function emailColumns(id: string, columns: ColumnNode[]): ColumnsNode {
+  return { kind: 'columns', id, children: columns, stackOnMobile: true };
+}
+
+export function emailColumn(id: string, children: ColumnNode['children']): ColumnNode {
+  return { kind: 'column', id, widthPct: 50, children };
+}
+
+/** A body of two sections — the second a two-column row — so a fixture exercises
+ *  every nesting rule `canHold` adjudicates. */
+export function emailBody(): EmailBody {
+  return {
+    kind: 'body',
+    id: 'body',
+    width: 600,
+    bg: '#F3F4F6',
+    contentBg: '#FFFFFF',
+    fontFamily: 'system-ui, sans-serif',
+    children: [
+      emailSection('intro', [emailText('greeting', 'Hello there')]),
+      emailSection('row', [
+        emailColumns('cols', [
+          emailColumn('left', [emailText('left-copy', 'Left')]),
+          emailColumn('right', [emailButton('cta', 'Order again')]),
+        ]),
+      ]),
+    ],
+  };
+}
+
+export function emailDoc(overrides: Partial<EmailDoc> = {}): EmailDoc {
+  return {
+    kind: 'email',
+    id: 'email-1',
+    name: 'Order confirmation',
+    rev: 1,
+    publishedAt: null,
+    unpublished: true,
+    document: {
+      version: '1',
+      subject: 'Your order is on its way',
+      preheader: 'Thanks for shopping with us',
+      root: emailBody(),
+    },
     ...overrides,
   };
 }

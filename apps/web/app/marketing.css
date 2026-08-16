@@ -124,7 +124,7 @@
     background-color: var(--color-base-200) !important;
   }
   /* ground tier: a section dropped to the page base (surface-300), FLUSH with no
-   plate of its own. No rounding — it IS the reveal colour, so the lifted content
+   plate of its own. No rounding — it IS the reveal color, so the lifted content
    above and the stage below notch straight into it. The recessed "baseline /
    before" beat the rest of the page floats above. */
   .mkt-paneled > section.mkt-ground {
@@ -1276,7 +1276,7 @@
 
   /* ── PARTNERS / BOOTCAMP: structural devices (docs/114 §B.6) ──────
    Layout-only classes for the two partner-program marketing pages. All
-   surface/colour comes from inline CSS-var styles in the section components;
+   surface/color comes from inline CSS-var styles in the section components;
    these only change structure across breakpoints. */
 
   /* Free-to-build arc — a horizontal build track (4 waypoints + a publish

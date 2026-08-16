@@ -10,71 +10,71 @@ import emails from './emails.json' with { type: 'json' };
 import assets from './assets.json' with { type: 'json' };
 
 const blueprint = {
-  key: 'sparx-music-school',
-  version: '1.3.0',
-  name: 'sparx — Music School',
-  summary:
-    'A warm, all-ages music-school site — a cream palette, a burgundy primary and a friendly serif display — with online booking for free trial lessons from day one. Installs a working booking flow: a real menu of private lessons (piano, guitar, voice, violin) and a group class, three teachers you book by name matched with a lesson room, and a no-show policy. Ships as "Crescendo Music School", an encouraging community school for every age and level.',
-  vertical: 'services',
-  preview: 'media/preview.png',
-  requiresModules: ['builder', 'scheduling', 'crm', 'email'],
+    key: 'sparx-music-school',
+    version: '1.3.0',
+    name: 'sparx — Music School',
+    summary:
+        'A warm, all-ages music-school site — a cream palette, a burgundy primary and a friendly serif display — with online booking for free trial lessons from day one. Installs a working booking flow: a real menu of private lessons (piano, guitar, voice, violin) and a group class, three teachers you book by name matched with a lesson room, and a no-show policy. Ships as "Crescendo Music School", an encouraging community school for every age and level.',
+    vertical: 'services',
+    preview: 'media/preview.png',
+    requiresModules: ['builder', 'scheduling', 'crm', 'email'],
 
-  // Identity only (business name + tagline + fonts + the theme's hex colours). The look
-  // rides site.theme + the theme decl below; the installing tenant rebrands the name.
-  brand: {
-    businessName: 'Crescendo Music School',
-    tagline: 'Learn to love making music.',
-    colors: {
-      primary: '#852531',
-      primaryForeground: '#fff6f6',
-      accent: '#d9a850',
-      secondary: '#513c3b',
-    },
-    fonts: {
-      heading: 'Fraunces',
-      body: 'Inter',
-    },
-  },
-
-  // The provisioned SiteTheme the installer creates + applies — an editable saved theme
-  // over a foundation base + the template's brand snapshot. The LIVE storefront look is
-  // site.theme (the flat bespoke tokens), written last.
-  theme: {
-    name: 'crescendo',
-    basePresetKey: 'apex',
-    presentation: {
-      v: 2,
-      containerWidth: '1152px',
-    },
+    // Identity only (business name + tagline + fonts + the theme's hex colors). The look
+    // rides site.theme + the theme decl below; the installing tenant rebrands the name.
     brand: {
-      colorPrimary: '#852531',
-      colorAccent: '#d9a850',
-      colorSecondary: '#513c3b',
-      fontHeading: 'Fraunces',
-      fontBody: 'Inter',
-      tokens: {},
+        businessName: 'Crescendo Music School',
+        tagline: 'Learn to love making music.',
+        colors: {
+            primary: '#852531',
+            primaryForeground: '#fff6f6',
+            accent: '#d9a850',
+            secondary: '#513c3b',
+        },
+        fonts: {
+            heading: 'Fraunces',
+            body: 'Inter',
+        },
     },
-    apply: true,
-  },
 
-  assets,
-  contentTypes: [],
+    // The provisioned SiteTheme the installer creates + applies — an editable saved theme
+    // over a foundation base + the template's brand snapshot. The LIVE storefront look is
+    // site.theme (the flat bespoke tokens), written last.
+    theme: {
+        name: 'crescendo',
+        basePresetKey: 'apex',
+        presentation: {
+            v: 2,
+            containerWidth: '1152px',
+        },
+        brand: {
+            colorPrimary: '#852531',
+            colorAccent: '#d9a850',
+            colorSecondary: '#513c3b',
+            fontHeading: 'Fraunces',
+            fontBody: 'Inter',
+            tokens: {},
+        },
+        apply: true,
+    },
 
-  // The booking spine — policies, bookable resources (staff/rooms/stations) with weekly
-  // hours, and the service menu. The installer's scheduling slice replays it into a live
-  // booking flow that the site's /book page renders.
-  scheduling,
+    assets,
+    contentTypes: [],
 
-  // Brand-voiced MARKETING starters (a welcome + a come-back), installed as DRAFTS the
-  // tenant switches on. The transactional booking sends — confirmation, reminder,
-  // reschedule, cancellation, waitlist — are platform KEYED defaults, so they are covered
-  // on email-module activation and are deliberately NOT duplicated here.
-  emails,
-  sequences: [],
+    // The booking spine — policies, bookable resources (staff/rooms/stations) with weekly
+    // hours, and the service menu. The installer's scheduling slice replays it into a live
+    // booking flow that the site's /book page renders.
+    scheduling,
 
-  // The composed distinct site (frame + Home + Book + About + Contact) in the bespoke
-  // theme, fully stamped.
-  site,
+    // Brand-voiced MARKETING starters (a welcome + a come-back), installed as DRAFTS the
+    // tenant switches on. The transactional booking sends — confirmation, reminder,
+    // reschedule, cancellation, waitlist — are platform KEYED defaults, so they are covered
+    // on email-module activation and are deliberately NOT duplicated here.
+    emails,
+    sequences: [],
+
+    // The composed distinct site (frame + Home + Book + About + Contact) in the bespoke
+    // theme, fully stamped.
+    site,
 };
 
 export default blueprint;

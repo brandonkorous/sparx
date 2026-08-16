@@ -10,71 +10,71 @@ import emails from './emails.json' with { type: 'json' };
 import assets from './assets.json' with { type: 'json' };
 
 const blueprint = {
-  key: 'sparx-accounting-advisory',
-  version: '1.3.0',
-  name: 'sparx — Accounting (Advisory)',
-  summary:
-    'A premium CPA advisory and wealth site — a deep-navy palette with a refined gold accent and a data-forward layout. Installs a working consultation-booking flow: a real menu of advisory sessions (tax strategy, CFO advisory, business valuation, wealth and retirement planning), three CPAs and advisors you book by name with their own hours, and a complimentary initial strategy call. Ships as "Northpoint CPA", a modern firm for established businesses and high earners.',
-  vertical: 'services',
-  preview: 'media/preview.png',
-  requiresModules: ['builder', 'scheduling', 'crm', 'email'],
+    key: 'sparx-accounting-advisory',
+    version: '1.3.0',
+    name: 'sparx — Accounting (Advisory)',
+    summary:
+        'A premium CPA advisory and wealth site — a deep-navy palette with a refined gold accent and a data-forward layout. Installs a working consultation-booking flow: a real menu of advisory sessions (tax strategy, CFO advisory, business valuation, wealth and retirement planning), three CPAs and advisors you book by name with their own hours, and a complimentary initial strategy call. Ships as "Northpoint CPA", a modern firm for established businesses and high earners.',
+    vertical: 'services',
+    preview: 'media/preview.png',
+    requiresModules: ['builder', 'scheduling', 'crm', 'email'],
 
-  // Identity only (business name + tagline + fonts + the theme's hex colours). The look
-  // rides site.theme + the theme decl below; the installing tenant rebrands the name.
-  brand: {
-    businessName: 'Northpoint CPA',
-    tagline: 'Advisory-led accounting and wealth.',
-    colors: {
-      primary: '#20385c',
-      primaryForeground: '#f4f9ff',
-      accent: '#be9946',
-      secondary: '#394353',
-    },
-    fonts: {
-      heading: 'Fraunces',
-      body: 'Inter',
-    },
-  },
-
-  // The provisioned SiteTheme the installer creates + applies — an editable saved theme
-  // over a foundation base + the template's brand snapshot. The LIVE storefront look is
-  // site.theme (the flat bespoke tokens), written last.
-  theme: {
-    name: 'northpoint',
-    basePresetKey: 'apex',
-    presentation: {
-      v: 2,
-      containerWidth: '1152px',
-    },
+    // Identity only (business name + tagline + fonts + the theme's hex colors). The look
+    // rides site.theme + the theme decl below; the installing tenant rebrands the name.
     brand: {
-      colorPrimary: '#20385c',
-      colorAccent: '#be9946',
-      colorSecondary: '#394353',
-      fontHeading: 'Fraunces',
-      fontBody: 'Inter',
-      tokens: {},
+        businessName: 'Northpoint CPA',
+        tagline: 'Advisory-led accounting and wealth.',
+        colors: {
+            primary: '#20385c',
+            primaryForeground: '#f4f9ff',
+            accent: '#be9946',
+            secondary: '#394353',
+        },
+        fonts: {
+            heading: 'Fraunces',
+            body: 'Inter',
+        },
     },
-    apply: true,
-  },
 
-  assets,
-  contentTypes: [],
+    // The provisioned SiteTheme the installer creates + applies — an editable saved theme
+    // over a foundation base + the template's brand snapshot. The LIVE storefront look is
+    // site.theme (the flat bespoke tokens), written last.
+    theme: {
+        name: 'northpoint',
+        basePresetKey: 'apex',
+        presentation: {
+            v: 2,
+            containerWidth: '1152px',
+        },
+        brand: {
+            colorPrimary: '#20385c',
+            colorAccent: '#be9946',
+            colorSecondary: '#394353',
+            fontHeading: 'Fraunces',
+            fontBody: 'Inter',
+            tokens: {},
+        },
+        apply: true,
+    },
 
-  // The booking spine — policies, bookable resources (staff/rooms/stations) with weekly
-  // hours, and the service menu. The installer's scheduling slice replays it into a live
-  // booking flow that the site's /book page renders.
-  scheduling,
+    assets,
+    contentTypes: [],
 
-  // Brand-voiced MARKETING starters (a welcome + a come-back), installed as DRAFTS the
-  // tenant switches on. The transactional booking sends — confirmation, reminder,
-  // reschedule, cancellation, waitlist — are platform KEYED defaults, so they are covered
-  // on email-module activation and are deliberately NOT duplicated here.
-  emails,
-  sequences: [],
+    // The booking spine — policies, bookable resources (staff/rooms/stations) with weekly
+    // hours, and the service menu. The installer's scheduling slice replays it into a live
+    // booking flow that the site's /book page renders.
+    scheduling,
 
-  // The composed distinct site (frame + Home + Book + About + Contact) in the bespoke
-  // theme, fully stamped.
-  site,
+    // Brand-voiced MARKETING starters (a welcome + a come-back), installed as DRAFTS the
+    // tenant switches on. The transactional booking sends — confirmation, reminder,
+    // reschedule, cancellation, waitlist — are platform KEYED defaults, so they are covered
+    // on email-module activation and are deliberately NOT duplicated here.
+    emails,
+    sequences: [],
+
+    // The composed distinct site (frame + Home + Book + About + Contact) in the bespoke
+    // theme, fully stamped.
+    site,
 };
 
 export default blueprint;

@@ -27,7 +27,7 @@ the brands never see each other.
   `wizeworks/` is a boundary violation, not a shortcut. Brand-varying behaviour
   arrives as a **token**, a **registry entry**, a **lexicon lookup**, or a
   **policy object supplied by the caller** — never a branch.
-- **No brand hexes.** Not one. Colours are tokens; the values live in each
+- **No brand hexes.** Not one. Colors are tokens; the values live in each
   brand's theme package.
 - **No product names in user-facing strings.** No "sparx", no "Piggles", no
   "Workbench". Anything a person reads comes from the brand's lexicon.
@@ -102,11 +102,11 @@ Getting this split wrong in either direction is expensive, so it is spelled out:
 
 **Shared — a brand must not redefine these:**
 
-- Which semantic colours are registered (`primary`, `secondary`, `accent`,
+- Which semantic colors are registered (`primary`, `secondary`, `accent`,
   `neutral`, `info`, `success`, `warning`, `error`, `danger`) and the fact that
   every one is a `--color-{name}` / `--color-{name}-content` **pair**.
-  `danger` is the N-th registered colour and exists because `statusTone()`
-  returns it — drop the pair and `.badge-danger` renders colourless.
+  `danger` is the N-th registered color and exists because `statusTone()`
+  returns it — drop the pair and `.badge-danger` renders colorless.
 - The module list, and the fact that every module owns a `--color-module-<name>`
   / `-content` pair.
 - The attribute vocabulary: `data-theme`, `data-module`, and the
@@ -122,7 +122,7 @@ Getting this split wrong in either direction is expensive, so it is spelled out:
 
 **Brand — never stated here:**
 
-- Every colour _value_, including the module wheel. sparx gives each module its
+- Every color _value_, including the module wheel. sparx gives each module its
   own hue; Piggles groups them. Both are valid because this layer only says the
   pairs must exist.
 - Radius, type, and density _values_.
@@ -132,7 +132,7 @@ Getting this split wrong in either direction is expensive, so it is spelled out:
 **Why `--color-module` matters more than it looks.** It is the indirection that
 lets a shared surface emit `data-module="commerce"` and get the right hue under
 either brand with zero brand awareness. A shared surface must always go through
-it. Reading a module colour any other way — a JS colour table, an inline style —
+it. Reading a module color any other way — a JS color table, an inline style —
 is how sparx once ended up with white text at 2.80:1 on Commerce orange: the
 inline style beat the selector, and the drifted copy won.
 
@@ -237,7 +237,7 @@ pre-push guard. It fails on:
 
 - an import from `wizeworks/**` reaching into `sparx/**` or `piggles/**`
 - an import crossing between `sparx/**` and `piggles/**`
-- a literal hex colour under `wizeworks/**` outside the two sanctioned
+- a literal hex color under `wizeworks/**` outside the two sanctioned
   exceptions (edge-runtime OG images, which cannot resolve custom properties;
   and third-party brand marks)
 - a brand name literal in a user-facing string under `wizeworks/**`

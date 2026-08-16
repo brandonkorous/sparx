@@ -33,13 +33,7 @@ import { TestSendInput } from '../schemas/templates';
 import type { ServiceContext } from '../errors';
 import { resolveEmailBrand } from './brand-service';
 import { get as getSettings } from './settings-service';
-
-const FALLBACK_FROM = 'sparx <noreply@sparx.email>';
-
-function buildFrom(fromName: string | null, fromAddress: string | null): string {
-  if (!fromAddress) return process.env.SPARX_EMAIL_FROM ?? FALLBACK_FROM;
-  return fromName ? `${fromName} <${fromAddress}>` : fromAddress;
-}
+import { buildTenantFrom } from './platform-sender';
 
 /** Resolve a silica email document's bound DataSources (docs/52 §7, docs/120).
  *  Injected by the caller (api-rest's `silicaEmailDataResolver`, which has
@@ -87,7 +81,7 @@ export interface RenderedPreview {
 /** Render a Builder email to inlined HTML + plain text for the editor preview.
  *  Resolves the brand so the preview matches what ships. `propertyId` scopes the
  *  brand to the active site (docs/49 Phase 7): when the editor is authoring a
- *  per-site email, the preview paints THAT site's name / colours / fonts / logo —
+ *  per-site email, the preview paints THAT site's name / colors / fonts / logo —
  *  the same `resolveEmailBrand(ctx, propertyId)` merge the real send uses — so the
  *  preview can't diverge from the canvas. Absent → the tenant brand (single-site).
  *  The injected `resolveData` resolves the document's bound sources so the preview
@@ -149,13 +143,13 @@ export interface EmailChrome {
   /** The brand bar + wordmark (header) and tiered legal footer (footer) rendered as
    *  inert chrome around the authored body (silicaui 0.34 `<EmailBuilder frame>`). */
   frame: EmailFrame;
-  /** The role→hex colour map the send paints with. The studio builds its canvas theme
-   *  from THIS (not the site page theme) so silica's live repaint colours every block
-   *  in exactly the brand + fixed-semantic colours the inbox gets. */
+  /** The role→hex color map the send paints with. The studio builds its canvas theme
+   *  from THIS (not the site page theme) so silica's live repaint colors every block
+   *  in exactly the brand + fixed-semantic colors the inbox gets. */
   colors: EmailColorDefaults;
 }
 
-/** The canvas chrome + colour map for the active site (docs/impl transactional-email
+/** The canvas chrome + color map for the active site (docs/impl transactional-email
  *  §7). Both derive from the SAME `resolveEmailBrand(ctx, propertyId)` the preview +
  *  send use, so the edit canvas can't diverge from what ships. `marketing:false` (no
  *  per-recipient unsubscribe line on the canvas) + no per-send compliance — the canvas
@@ -232,7 +226,7 @@ export async function prepareTestSend(
   );
 
   return {
-    from: buildFrom(settings.fromName, settings.fromAddress),
+    from: await buildTenantFrom(ctx.tenantId, settings.fromName, settings.fromAddress),
     to,
     replyTo: settings.replyTo ?? undefined,
     subject: rendered.subject,

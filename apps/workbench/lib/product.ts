@@ -4,7 +4,7 @@
 // sparx's own (apps/workbench) and the Piggles console (piggles/apps/workbench).
 // Almost everything that differs between the two is already carried by tokens —
 // a hue, a radius, a font — and needs nothing here. Three things are not
-// colours, and this file is where they live rather than becoming an
+// colors, and this file is where they live rather than becoming an
 // `if (brand === …)` inside a surface (piggles/CLAUDE.md RULE #0):
 //
 //   • THE PRODUCT'S NAME. A handful of shared strings say it out loud ("a new
@@ -44,42 +44,42 @@ import type { WorkbenchModule } from '../components/module-scope';
  *  Note what is NOT here: a size. A numeric size has to become an inline
  *  `style`, which is banned, so a mark sizes itself with a utility class. */
 export interface ProductLoadingMarkProps {
-  tone: 'light' | 'dark';
+    tone: 'light' | 'dark';
 }
 
 interface ProductAdapter {
-  /** The customer-facing product name, as it appears mid-sentence. */
-  name: string;
-  /** Overrides for `moduleLabel()`. Partial on purpose: a brand states only what
-   *  it renames, and anything absent falls through to the platform's own label. */
-  moduleLabels: Partial<Record<WorkbenchModule, string>>;
-  /** The mark shown while a pane loads. `null` means "use the platform's". */
-  LoadingMark: ComponentType<ProductLoadingMarkProps> | null;
+    /** The customer-facing product name, as it appears mid-sentence. */
+    name: string;
+    /** Overrides for `moduleLabel()`. Partial on purpose: a brand states only what
+     *  it renames, and anything absent falls through to the platform's own label. */
+    moduleLabels: Partial<Record<WorkbenchModule, string>>;
+    /** The mark shown while a pane loads. `null` means "use the platform's". */
+    LoadingMark: ComponentType<ProductLoadingMarkProps> | null;
 }
 
 const adapter: ProductAdapter = {
-  name: 'sparx',
-  moduleLabels: {},
-  LoadingMark: null,
+    name: 'sparx',
+    moduleLabels: {},
+    LoadingMark: null,
 };
 
 /** Point the shared surfaces at a brand. Call once, at module scope, from the
  *  shell — before the first render, and never conditionally. */
 export function configureProduct(next: Partial<ProductAdapter>): void {
-  Object.assign(adapter, next);
+    Object.assign(adapter, next);
 }
 
 /** The product's name, for the few shared strings that say it out loud. */
 export function productName(): string {
-  return adapter.name;
+    return adapter.name;
 }
 
 /** The brand's name for a module, or `undefined` to use the platform's. */
 export function productModuleLabel(module: WorkbenchModule): string | undefined {
-  return adapter.moduleLabels[module];
+    return adapter.moduleLabels[module];
 }
 
 /** The brand's loading mark, or `null` to use the platform's. */
 export function productLoadingMark(): ComponentType<ProductLoadingMarkProps> | null {
-  return adapter.LoadingMark;
+    return adapter.LoadingMark;
 }

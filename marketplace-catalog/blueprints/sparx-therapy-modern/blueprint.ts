@@ -10,71 +10,71 @@ import emails from './emails.json' with { type: 'json' };
 import assets from './assets.json' with { type: 'json' };
 
 const blueprint = {
-  key: 'sparx-therapy-modern',
-  version: '1.3.0',
-  name: 'sparx — Therapy (Modern)',
-  summary:
-    'A clean, modern teletherapy site — a soft-indigo palette, a warm accent and a modern sans, built for accessible online mental-wellness care. Installs a working booking flow: a free matching call plus individual, stress & burnout, and professional-wellness sessions, three therapists you book by name with evening and weekend hours, and a no-show hold policy. Ships as "Clearmind Therapy", an online-first practice you can book in about a minute.',
-  vertical: 'services',
-  preview: 'media/preview.png',
-  requiresModules: ['builder', 'scheduling', 'crm', 'email'],
+    key: 'sparx-therapy-modern',
+    version: '1.3.0',
+    name: 'sparx — Therapy (Modern)',
+    summary:
+        'A clean, modern teletherapy site — a soft-indigo palette, a warm accent and a modern sans, built for accessible online mental-wellness care. Installs a working booking flow: a free matching call plus individual, stress & burnout, and professional-wellness sessions, three therapists you book by name with evening and weekend hours, and a no-show hold policy. Ships as "Clearmind Therapy", an online-first practice you can book in about a minute.',
+    vertical: 'services',
+    preview: 'media/preview.png',
+    requiresModules: ['builder', 'scheduling', 'crm', 'email'],
 
-  // Identity only (business name + tagline + fonts + the theme's hex colours). The look
-  // rides site.theme + the theme decl below; the installing tenant rebrands the name.
-  brand: {
-    businessName: 'Clearmind Therapy',
-    tagline: 'Therapy that fits your life.',
-    colors: {
-      primary: '#4e78c7',
-      primaryForeground: '#070b14',
-      accent: '#e1a170',
-      secondary: '#3a404c',
-    },
-    fonts: {
-      heading: 'Outfit',
-      body: 'Inter',
-    },
-  },
-
-  // The provisioned SiteTheme the installer creates + applies — an editable saved theme
-  // over a foundation base + the template's brand snapshot. The LIVE storefront look is
-  // site.theme (the flat bespoke tokens), written last.
-  theme: {
-    name: 'clearmind',
-    basePresetKey: 'apex',
-    presentation: {
-      v: 2,
-      containerWidth: '1152px',
-    },
+    // Identity only (business name + tagline + fonts + the theme's hex colors). The look
+    // rides site.theme + the theme decl below; the installing tenant rebrands the name.
     brand: {
-      colorPrimary: '#4e78c7',
-      colorAccent: '#e1a170',
-      colorSecondary: '#3a404c',
-      fontHeading: 'Outfit',
-      fontBody: 'Inter',
-      tokens: {},
+        businessName: 'Clearmind Therapy',
+        tagline: 'Therapy that fits your life.',
+        colors: {
+            primary: '#4e78c7',
+            primaryForeground: '#070b14',
+            accent: '#e1a170',
+            secondary: '#3a404c',
+        },
+        fonts: {
+            heading: 'Outfit',
+            body: 'Inter',
+        },
     },
-    apply: true,
-  },
 
-  assets,
-  contentTypes: [],
+    // The provisioned SiteTheme the installer creates + applies — an editable saved theme
+    // over a foundation base + the template's brand snapshot. The LIVE storefront look is
+    // site.theme (the flat bespoke tokens), written last.
+    theme: {
+        name: 'clearmind',
+        basePresetKey: 'apex',
+        presentation: {
+            v: 2,
+            containerWidth: '1152px',
+        },
+        brand: {
+            colorPrimary: '#4e78c7',
+            colorAccent: '#e1a170',
+            colorSecondary: '#3a404c',
+            fontHeading: 'Outfit',
+            fontBody: 'Inter',
+            tokens: {},
+        },
+        apply: true,
+    },
 
-  // The booking spine — policies, bookable resources (staff/rooms/stations) with weekly
-  // hours, and the service menu. The installer's scheduling slice replays it into a live
-  // booking flow that the site's /book page renders.
-  scheduling,
+    assets,
+    contentTypes: [],
 
-  // Brand-voiced MARKETING starters (a welcome + a come-back), installed as DRAFTS the
-  // tenant switches on. The transactional booking sends — confirmation, reminder,
-  // reschedule, cancellation, waitlist — are platform KEYED defaults, so they are covered
-  // on email-module activation and are deliberately NOT duplicated here.
-  emails,
-  sequences: [],
+    // The booking spine — policies, bookable resources (staff/rooms/stations) with weekly
+    // hours, and the service menu. The installer's scheduling slice replays it into a live
+    // booking flow that the site's /book page renders.
+    scheduling,
 
-  // The composed distinct site (frame + Home + Book + About + Contact) in the bespoke
-  // theme, fully stamped.
-  site,
+    // Brand-voiced MARKETING starters (a welcome + a come-back), installed as DRAFTS the
+    // tenant switches on. The transactional booking sends — confirmation, reminder,
+    // reschedule, cancellation, waitlist — are platform KEYED defaults, so they are covered
+    // on email-module activation and are deliberately NOT duplicated here.
+    emails,
+    sequences: [],
+
+    // The composed distinct site (frame + Home + Book + About + Contact) in the bespoke
+    // theme, fully stamped.
+    site,
 };
 
 export default blueprint;

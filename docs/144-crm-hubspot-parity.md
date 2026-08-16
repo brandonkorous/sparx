@@ -1,6 +1,6 @@
 # 144 — CRM: from 5 to 10
 
-Version: 1.6 (the surface-by-surface sweep is COMPLETE, and so are the two decisions it raised — a hand-set score now survives re-scoring, and an uncoloured form control follows the module rather than the brand; §14.1 carries what using it as its owner found, surface by surface)
+Version: 1.6 (the surface-by-surface sweep is COMPLETE, and so are the two decisions it raised — a hand-set score now survives re-scoring, and an uncolored form control follows the module rather than the brand; §14.1 carries what using it as its owner found, surface by surface)
 Author: Brandon Korous
 Last Updated: 2026-08-11
 
@@ -194,7 +194,7 @@ board as the default and the choice remembered per user.
   workbench. Per the drag rule ([[feedback_drag_whole_element_not_handle]]): the **whole card**
   drags, with the pointer sensor guarded so inner controls stay usable.
 - Drop calls the existing `POST /v1/crm/deals/:id/move-stage`, optimistic with rollback on failure.
-- Colour carries the state (RULE #4): won/lost stage columns wear semantic tone from `stage_type`,
+- Color carries the state (RULE #4): won/lost stage columns wear semantic tone from `stage_type`,
   cards wear the deal's own signal (overdue close date, stalled, unassigned) — not a wall of grey.
 - Below a tablet breakpoint the board collapses to a stage-picker plus a single column
   ([[feedback_responsive_top2_rule]]).
@@ -326,7 +326,7 @@ existing `list_merge_tags` vocabulary, extended with custom properties from §3.
 
 **Two surfaces, not one.** `crm.templates.list` (`/crm/email-templates`) and `crm.snippets.list`
 (`/crm/saved-paragraphs`) — a whole message and a paragraph dropped into one are different things,
-usually kept by different people. The template list carries the reply rate as its one coloured
+usually kept by different people. The template list carries the reply rate as its one colored
 column, and archiving is reversible (`POST /v1/crm/sales-templates/:id/restore`) because the
 counters are the only record of what a business learned about its own words. A snippet's shortcut
 EXPANDS: typing `;hours` and pressing space drops the paragraph in mid-sentence and counts the use
@@ -465,8 +465,8 @@ work on tickets the day this lands, because both are parameterised by object.
 
 `TicketSlaPolicy` — first-response and resolution targets per priority, evaluated against **business
 hours** rather than wall clock. Breach and approaching-breach fire events, which the automation
-engine can act on and the ticket list colours by. A ticket at 80% of its clock is amber; a breached
-one is danger — colour carries it (RULE #4).
+engine can act on and the ticket list colors by. A ticket at 80% of its clock is amber; a breached
+one is danger — color carries it (RULE #4).
 
 **Correction to this plan, made while building it.** The line above originally said the business
 hours would come from reusing the scheduling module's `AvailabilityWindow`. That is the wrong table:
@@ -674,7 +674,7 @@ a plan that scores 10 and a plan that scores 6 with a long tail of follow-ups.
 5. **Modules.** Tickets/service activate as part of the `crm` module; calling gates on a configured
    voice provider. No new default-on anything ([[feedback_never_default_modules_on]]).
 6. **UI.** silicaui components with `color × variant × size × shape`, Tailwind for layout only, no
-   inline `style`, no eyebrows, no faded readable text, colour carrying state via `statusTone()`.
+   inline `style`, no eyebrows, no faded readable text, color carrying state via `statusTone()`.
    Every list and board is responsive to the 3-tier collapse.
 7. **Copy.** Written for a business owner. "The extra details you track", not "custom properties".
    "Who else is involved", not "associations". "What you're aiming for", not "goal criteria".
@@ -1235,7 +1235,7 @@ same records down again through the rail. Each tile is now a `ClickableCard` ont
 and each panel that summarises a list carries the way into it. Shift opens alongside, alt in its own
 window, the same gesture as every CRM list.
 
-Colour was doing no work either (RULE #4). The four task-urgency badges — urgent, high, medium, low —
+Color was doing no work either (RULE #4). The four task-urgency badges — urgent, high, medium, low —
 all rendered `color="neutral"`, saying the same thing four times; they now carry the urgency, and
 only when there is something at it, because "Urgent: 0" in red is a warning about nothing. Overdue
 counts tint `bg-danger bg-soft` above zero. A win rate is a verdict rather than a measurement, so 20%
@@ -1295,10 +1295,10 @@ red-orange, and near-indistinguishable at a glance from the danger state. Every 
 passes `color="module"` and focuses CRM cyan, so the ones that forgot do not read as "unstyled", they
 read as **invalid** — on a screen where nothing is wrong.
 
-It was not one file. A scan of `surfaces/crm/*.tsx` found **52 of 207 form controls** with no colour,
+It was not one file. A scan of `surfaces/crm/*.tsx` found **52 of 207 form controls** with no color,
 across 15 surfaces — worst in `custom-properties-panel` (11), which is the renderer every custom
 field on every contact, deal and custom record goes through, so one omission there is red boxes on
-screens all over the module. All 52 now pass `color="module"`, which is choosing a registered colour
+screens all over the module. All 52 now pass `color="module"`, which is choosing a registered color
 through the component's own prop rather than painting anything.
 
 Worth raising separately: the single-point version of this fix is a `--input-accent: var(--color-module)`
@@ -1415,7 +1415,7 @@ the guard is registered from the pane while a draft has content.
 **Every control in the panel's dialog rendered Ember red.** `--color-module` is set by `ModuleScope`
 on the pane subtree, and the dialog was not wrapped in `<PaneScope>` — so it portalled to the app
 root, outside that scope, and every `color="module"` control fell back to `--color-primary`. Three
-fields outlined in what reads as the error colour on a form where nothing was wrong. The booking-links
+fields outlined in what reads as the error color on a form where nothing was wrong. The booking-links
 dialog beside it was correctly cyan; the only difference was the wrapper. Not merely cosmetic: without
 `PaneScope` a dialog opened from a torn-off pane renders in the ORIGINAL window, which is the thing
 `PaneWindowBoundary` exists to prevent. Same bug fixed in `deals-list.tsx`. **The rest of the
@@ -1447,7 +1447,7 @@ message somebody in sales owns, while a paragraph is usually a FACT about the bu
 the returns policy, the lead time — and whoever knows that fact should be able to fix it without
 opening a screen full of other people's sales emails. Side by side is one drag away.
 
-**The reply rate is the only column that earns a colour**, because it is the only number that changes
+**The reply rate is the only column that earns a color**, because it is the only number that changes
 what somebody does: a template nobody answers should be rewritten or retired. Sends and opens are
 context for it and stay chassis-neutral. Rates are the SERVER's, floor and all — nothing on the
 screen recomputes them from the counts beside them, or the two would eventually disagree about which
@@ -1524,9 +1524,9 @@ are +20, because each is a separate judgement. Three pieces of copy that promise
 corrected, including the re-score confirm — that is the exact moment somebody wonders whether they
 are about to lose last week's nudge.
 
-**An uncoloured form control now follows the module, not the brand.** Every silica field resolves
+**An uncolored form control now follows the module, not the brand.** Every silica field resolves
 its focus ring as `var(--<family>-accent, var(--color-primary))`, and `--color-primary` is Ember
-`#e04631`, so a control with no `color` prop focuses in what reads as the danger colour — a field
+`#e04631`, so a control with no `color` prop focuses in what reads as the danger color — a field
 saying _you got that wrong_ about content that is fine. 52 of 207 CRM controls were fixed one at a
 time earlier in this sweep, which is a treatment, not a cure: the 53rd was already sitting in the
 nav panel's own filter box. One block in `apps/workbench/app/globals.css` now repoints the default

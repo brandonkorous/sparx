@@ -32,7 +32,7 @@
  *     renders `.badge-danger` colorless on every shared surface.
  *   • `module` — the ACTIVE-app bridge. `data-app` / `data-group` / `data-module`
  *     point `--color-module` at the right hue, and registering the name is what
- *     makes `color="module"` resolve through silica's normal colour machinery.
+ *     makes `color="module"` resolve through silica's normal color machinery.
  *     Without it, every app-tinted control renders unstyled — not fallback-hued,
  *     unstyled.
  *   • `group-*` — so a nav rail or launcher can reach a group hue directly

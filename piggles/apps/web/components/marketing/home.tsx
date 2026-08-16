@@ -111,10 +111,10 @@ import { TwoQuestionsForm } from './two-questions';
 // is how a heading ends up decorative rather than read. Same measurement as
 // <Whatever> records for the same reason.
 //
-// The emphasis is carried by SCALE instead, and the colour goes where it can be
+// The emphasis is carried by SCALE instead, and the color goes where it can be
 // read AND mean something: the four nouns in the paragraph wear the group hue of
 // the app that eventually absorbs them. Every group hue is measured AA on white
-// (4.99–6.98:1), so they are legible, and a reader meets the product's colour
+// (4.99–6.98:1), so they are legible, and a reader meets the product's color
 // system here — in a sentence about their own week — before the trade wall or
 // the nav ever shows it to them.
 function Thursday() {
@@ -209,7 +209,7 @@ function Thursday() {
 //
 // Five group hues over eleven trades, arranged so no two adjacent cards in a
 // lane share one AND the last does not match the first — the lane loops, so the
-// wrap is an adjacency too. Not the brand pink: it is the CTA colour on this
+// wrap is an adjacency too. Not the brand pink: it is the CTA color on this
 // page and a label wearing it competes with the button.
 interface Trade {
   pose: MascotPoseId;
@@ -473,7 +473,13 @@ const ONCE: { act: string; then: React.ReactNode }[] = [
 
 function TheTurn() {
   return (
-    <Section variant="panel" className="bg-secondary text-secondary-content shadow">
+    // A theme ISLAND, as close-band.tsx is. `bg-secondary` was a navy panel
+    // only because `--color-secondary` happens to be dark in the LIGHT
+    // theme; it is #d7dbe3 in the dark one, so with a theme toggle on the
+    // site this section turned pale and took `text-primary` pink with it.
+    // An island is dark in both, and the pink lands on the ground it was
+    // measured against.
+    <Section variant="panel" theme="dark" className="bg-base-200 shadow">
       <div className="grid gap-10 lg:grid-cols-2 lg:items-center lg:gap-16">
         <div className="rise">
           {/* "Stop wiring your business together" was the draft, and wiring is
@@ -601,7 +607,7 @@ function Pricing() {
             <ul className="mt-6 space-y-3">
               {INCLUDED.map((line) => (
                 <li key={line} className="flex gap-3 text-base">
-                  {/* Colour on the marker, weight on the sentence. Colouring the
+                  {/* Color on the marker, weight on the sentence. Coloring the
                       whole row would make five equal facts look like five links. */}
                   <span className="text-primary">
                     <Tick />

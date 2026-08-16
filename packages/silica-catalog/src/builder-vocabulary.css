@@ -168,10 +168,10 @@
 @source inline('{sm:,md:,lg:,xl:,}tracking-{tighter,tight,normal,wide,wider,widest}');
 @source inline('{sm:,md:,lg:,xl:,}leading-{none,tight,snug,normal,relaxed,loose}');
 
-/* Full-bleed colour bands. A page built only from `base-100`/`base-200` has no
+/* Full-bleed color bands. A page built only from `base-100`/`base-200` has no
  * rhythm — those two sit ~2% apart in lightness and read as one flat surface. Real
- * sectioning comes from committing a whole band to a colour and flipping the text
- * to its paired on-colour, so both halves of each pair must exist. */
+ * sectioning comes from committing a whole band to a color and flipping the text
+ * to its paired on-color, so both halves of each pair must exist. */
 @source inline(
   'bg-{primary,secondary,accent,neutral,base-100,base-200,base-300,info,success,warning,error}'
 );
@@ -179,11 +179,11 @@
   'text-{primary,secondary,accent,neutral,base-content,primary-content,secondary-content,accent-content,neutral-content,info,success,warning,error}'
 );
 @source inline('border-{primary,secondary,accent,neutral,base-200,base-300}');
-/* Hairline dividers ON a coloured band. A full-strength border in the band's own
- * on-colour is too loud; the readable choice is that on-colour at low opacity — a
+/* Hairline dividers ON a colored band. A full-strength border in the band's own
+ * on-color is too loud; the readable choice is that on-color at low opacity — a
  * translucent rule that reads as a seam rather than a line. `border-base-300` cannot
  * do this job on a dark band (it is a near-cream light-theme surface), so without
- * these the divider is either invisible or glaring. Bounded to the on-colours and the
+ * these the divider is either invisible or glaring. Bounded to the on-colors and the
  * two low opacities an author actually reaches for. */
 @source inline(
   '{border,divide}-{base-content,primary-content,neutral-content,accent-content}/{10,20,30}'

@@ -18,21 +18,21 @@ import { ModuleScope, WORKBENCH_MODULES, type WorkbenchModule } from '../module-
 
 const MODULE_KEYS = new Set<string>(WORKBENCH_MODULES);
 
-/** Severity is the semantic colour axis — independent of any module hue. */
+/** Severity is the semantic color axis — independent of any module hue. */
 export function severityTone(
-  severity: AppNotification['severity']
+    severity: AppNotification['severity']
 ): 'success' | 'warning' | 'danger' | 'info' {
-  if (severity === 'success' || severity === 'warning' || severity === 'danger') return severity;
-  return 'info';
+    if (severity === 'success' || severity === 'warning' || severity === 'danger') return severity;
+    return 'info';
 }
 
 /** The unread dot's fill. Spelled out rather than interpolated because Tailwind
  *  only emits classes it can see written literally. */
 export const SEVERITY_DOT: Record<'success' | 'warning' | 'danger' | 'info', string> = {
-  info: 'bg-info',
-  success: 'bg-success',
-  warning: 'bg-warning',
-  danger: 'bg-danger',
+    info: 'bg-info',
+    success: 'bg-success',
+    warning: 'bg-warning',
+    danger: 'bg-danger',
 };
 
 /**
@@ -44,8 +44,8 @@ export const SEVERITY_DOT: Record<'success' | 'warning' | 'danger' | 'info', str
  * sparx belongs to no business module) and a safe one for an unknown key.
  */
 export function moduleOf(notification: AppNotification): WorkbenchModule {
-  const key = notification.module;
-  return key !== null && MODULE_KEYS.has(key) ? (key as WorkbenchModule) : 'platform';
+    const key = notification.module;
+    return key !== null && MODULE_KEYS.has(key) ? (key as WorkbenchModule) : 'platform';
 }
 
 /**
@@ -56,8 +56,8 @@ export function moduleOf(notification: AppNotification): WorkbenchModule {
  * from the sparx team is correspondence, not a workbench dashboard.
  */
 export function iconFor(notification: AppNotification): PigglesIcon {
-  if (notification.entityType === 'feedback') return faMessage;
-  return moduleIcon(moduleOf(notification)) ?? faBell;
+    if (notification.entityType === 'feedback') return faMessage;
+    return moduleIcon(moduleOf(notification)) ?? faBell;
 }
 
 /**
@@ -77,20 +77,20 @@ export function iconFor(notification: AppNotification): PigglesIcon {
  * One table means the two cannot disagree about where an order is again.
  */
 export function destinationFor(
-  notification: AppNotification
+    notification: AppNotification
 ): { surface: string; params?: Record<string, string> } | null {
-  const type = notification.entityType;
-  if (type === null || type === undefined) return null;
+    const type = notification.entityType;
+    if (type === null || type === undefined) return null;
 
-  const route = routeForEntity(type);
-  if (!route) return null;
+    const route = routeForEntity(type);
+    if (!route) return null;
 
-  // An entity whose home is a LIST (no path parameter) still leads somewhere —
-  // it just lands on the list rather than preselecting a row, which is the
-  // honest answer when no detail surface exists.
-  if (!routeAcceptsId(route)) return { surface: route.surface };
-  if (!notification.entityId) return null;
-  return { surface: route.surface, params: { id: notification.entityId } };
+    // An entity whose home is a LIST (no path parameter) still leads somewhere —
+    // it just lands on the list rather than preselecting a row, which is the
+    // honest answer when no detail surface exists.
+    if (!routeAcceptsId(route)) return { surface: route.surface };
+    if (!notification.entityId) return null;
+    return { surface: route.surface, params: { id: notification.entityId } };
 }
 
 /**
@@ -98,25 +98,25 @@ export function destinationFor(
  *
  * `bg-module bg-soft` is the same theme-aware tint the module cards use,
  * repointed per row by ModuleScope's data attribute — so the hue comes from the
- * token cascade rather than a colour table in here.
+ * token cascade rather than a color table in here.
  */
 export function NotificationIcon({ notification }: { notification: AppNotification }) {
-  const glyph = iconFor(notification);
-  return (
-    <ModuleScope module={moduleOf(notification)} className="shrink-0">
-      <span className="bg-module bg-soft text-module flex size-7 items-center justify-center rounded">
-        <Icon glyph={glyph} className="size-3.5" aria-hidden />
-      </span>
-    </ModuleScope>
-  );
+    const glyph = iconFor(notification);
+    return (
+        <ModuleScope module={moduleOf(notification)} className="shrink-0">
+            <span className="bg-module bg-soft text-module flex size-7 items-center justify-center rounded">
+                <Icon glyph={glyph} className="size-3.5" aria-hidden />
+            </span>
+        </ModuleScope>
+    );
 }
 
 /** A notification, plus how many identical ones it stands for. */
 export interface NoticeRun {
-  notice: AppNotification;
-  count: number;
-  /** Every id in the run, so marking the line read marks all of them. */
-  ids: string[];
+    notice: AppNotification;
+    count: number;
+    /** Every id in the run, so marking the line read marks all of them. */
+    ids: string[];
 }
 
 /**
@@ -141,19 +141,19 @@ export interface NoticeRun {
  * or bury something that still needs doing.
  */
 export function collapseNotices(items: readonly AppNotification[]): NoticeRun[] {
-  const runs: NoticeRun[] = [];
-  for (const notice of items) {
-    const previous = runs[runs.length - 1];
-    if (
-      previous?.notice.kind === notice.kind &&
-      previous.notice.title === notice.title &&
-      (previous.notice.readAt === null) === (notice.readAt === null)
-    ) {
-      previous.count += 1;
-      previous.ids.push(notice.id);
-      continue;
+    const runs: NoticeRun[] = [];
+    for (const notice of items) {
+        const previous = runs[runs.length - 1];
+        if (
+            previous?.notice.kind === notice.kind &&
+            previous.notice.title === notice.title &&
+            (previous.notice.readAt === null) === (notice.readAt === null)
+        ) {
+            previous.count += 1;
+            previous.ids.push(notice.id);
+            continue;
+        }
+        runs.push({ notice, count: 1, ids: [notice.id] });
     }
-    runs.push({ notice, count: 1, ids: [notice.id] });
-  }
-  return runs;
+    return runs;
 }

@@ -1,677 +1,793 @@
 {
-  "categories": [
-    {
-      "handle": "drinkware",
-      "name": "Drinkware",
-      "description": "Mugs, tumblers and carafes.",
-      "featured": true
-    },
-    {
-      "handle": "dinnerware",
-      "name": "Dinnerware",
-      "description": "Plates, bowls and sets for the table.",
-      "featured": true
-    },
-    {
-      "handle": "vases",
-      "name": "Vases",
-      "description": "Sculptural vessels for the shelf.",
-      "featured": true
-    },
-    {
-      "handle": "home",
-      "name": "Home",
-      "description": "Planters and pieces beyond the table.",
-      "featured": true
-    }
-  ],
-  "collections": [
-    {
-      "handle": "new-season",
-      "name": "New this season",
-      "description": "The latest pieces from the studio.",
-      "type": "manual",
-      "featured": true,
-      "productHandles": [
-        "cylinder-mug",
-        "nesting-bowls",
-        "carafe-and-cup",
-        "arc-vase",
-        "cylinder-planter"
-      ]
-    },
-    {
-      "handle": "everyday-table",
-      "name": "The everyday table",
-      "description": "Pieces made to be used every day.",
-      "type": "manual",
-      "featured": true,
-      "productHandles": ["cylinder-mug", "nesting-bowls", "coupe-plates", "table-set"]
-    },
-    {
-      "handle": "best-sellers",
-      "name": "Best sellers",
-      "description": "The pieces people come back for.",
-      "type": "manual",
-      "featured": true,
-      "productHandles": ["cylinder-mug", "nesting-bowls", "tumbler-set"]
-    },
-    {
-      "handle": "drinkware-edit",
-      "name": "The drinkware edit",
-      "description": "Everything to drink from.",
-      "type": "manual",
-      "featured": false,
-      "productHandles": ["cylinder-mug", "tumbler-set", "carafe-and-cup"]
-    },
-    {
-      "handle": "entertaining",
-      "name": "Entertaining",
-      "description": "Plates and sets for a table full of people.",
-      "type": "manual",
-      "featured": false,
-      "productHandles": ["coupe-plates", "table-set"]
-    },
-    {
-      "handle": "gift-ready",
-      "name": "Gift-ready",
-      "description": "Sets and single objects that give well.",
-      "type": "manual",
-      "featured": false,
-      "productHandles": [
-        "carafe-and-cup",
-        "tumbler-set",
-        "arc-vase",
-        "column-vase",
-        "cylinder-planter",
-        "table-set"
-      ]
-    },
-    {
-      "handle": "home-edit",
-      "name": "For the home",
-      "description": "Planters and vessels beyond the table.",
-      "type": "manual",
-      "featured": false,
-      "productHandles": ["cylinder-planter", "arc-vase", "column-vase"]
-    }
-  ],
-  "products": [
-    {
-      "handle": "cylinder-mug",
-      "title": "Cylinder Mug",
-      "description": "A straight-sided 11oz mug with a clean cut rim and a small, deliberate handle — no swoops, no taper, just the essential shape done right. Thrown with a slightly heavy base so it sits solid and holds the heat, and glazed matte on the outside, gloss in the well.",
-      "status": "active",
-      "productType": "Drinkware",
-      "vendor": "Form",
-      "tags": ["mug", "drinkware", "stoneware", "modern"],
-      "categoryHandles": ["drinkware"],
-      "collectionHandles": ["new-season", "best-sellers", "everyday-table", "drinkware-edit"],
-      "seoTitle": "Cylinder Mug — modern stoneware | Form",
-      "seoDescription": "A straight-sided 11oz mug with a clean rim and a small handle. Matte outside, gloss well. Three colours.",
-      "options": [
+    "categories": [
         {
-          "name": "Color",
-          "displayType": "swatch",
-          "values": [
-            {
-              "value": "Chalk"
-            },
-            {
-              "value": "Slate"
-            },
-            {
-              "value": "Coral"
-            }
-          ]
-        }
-      ],
-      "variants": [
-        {
-          "sku": "FORM-MUG-CHK",
-          "priceCents": 3400,
-          "isDefault": true,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "Chalk"
-          }
+            "handle": "drinkware",
+            "name": "Drinkware",
+            "description": "Mugs, tumblers and carafes.",
+            "featured": true
         },
         {
-          "sku": "FORM-MUG-SLT",
-          "priceCents": 3400,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "Slate"
-          }
+            "handle": "dinnerware",
+            "name": "Dinnerware",
+            "description": "Plates, bowls and sets for the table.",
+            "featured": true
         },
         {
-          "sku": "FORM-MUG-COR",
-          "priceCents": 3400,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "Coral"
-          }
-        }
-      ],
-      "images": [
-        {
-          "assetId": "form-prod-mug",
-          "isPrimary": true,
-          "alt": "A straight-sided cylinder mug in a matte glaze"
-        }
-      ]
-    },
-    {
-      "handle": "nesting-bowls",
-      "title": "Nesting Bowl Set",
-      "description": "Three bowls in graduating sizes that stack down to one — a deep bowl for cereal and soup, a mid for a side, a small for dips and prep. Coupe-shaped with no rim to trap water, and sized so the set lives in a single cupboard space instead of three.",
-      "status": "active",
-      "productType": "Tableware",
-      "vendor": "Form",
-      "tags": ["bowls", "set", "tableware", "stoneware"],
-      "categoryHandles": ["dinnerware"],
-      "collectionHandles": ["new-season", "best-sellers", "everyday-table"],
-      "seoTitle": "Nesting Bowl Set — modern stoneware | Form",
-      "seoDescription": "Three graduating coupe bowls that nest to one, for cereal, sides and prep. A set of three in three colours.",
-      "options": [
-        {
-          "name": "Color",
-          "displayType": "swatch",
-          "values": [
-            {
-              "value": "Chalk"
-            },
-            {
-              "value": "Slate"
-            },
-            {
-              "value": "Coral"
-            }
-          ]
-        }
-      ],
-      "variants": [
-        {
-          "sku": "FORM-BOWLS-CHK",
-          "priceCents": 9600,
-          "isDefault": true,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "Chalk"
-          }
+            "handle": "vases",
+            "name": "Vases",
+            "description": "Sculptural vessels for the shelf.",
+            "featured": true
         },
         {
-          "sku": "FORM-BOWLS-SLT",
-          "priceCents": 9600,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "Slate"
-          }
+            "handle": "home",
+            "name": "Home",
+            "description": "Planters and pieces beyond the table.",
+            "featured": true
+        }
+    ],
+    "collections": [
+        {
+            "handle": "new-season",
+            "name": "New this season",
+            "description": "The latest pieces from the studio.",
+            "type": "manual",
+            "featured": true,
+            "productHandles": [
+                "cylinder-mug",
+                "nesting-bowls",
+                "carafe-and-cup",
+                "arc-vase",
+                "cylinder-planter"
+            ]
         },
         {
-          "sku": "FORM-BOWLS-COR",
-          "priceCents": 9600,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "Coral"
-          }
-        }
-      ],
-      "images": [
-        {
-          "assetId": "form-prod-bowls",
-          "isPrimary": true,
-          "alt": "A set of nesting bowls stacked on white"
-        }
-      ]
-    },
-    {
-      "handle": "coupe-plates",
-      "title": "Coupe Plate Set",
-      "description": "A set of four coupe dinner plates — no rim, a gentle rising wall, a wide flat centre that makes an ordinary plate of food look composed. Ten inches across and fully glazed edge to edge, so they stack quietly and wipe clean. The plate the rest of the table is built around.",
-      "status": "active",
-      "productType": "Tableware",
-      "vendor": "Form",
-      "tags": ["plates", "set", "tableware", "stoneware"],
-      "categoryHandles": ["dinnerware"],
-      "collectionHandles": ["everyday-table", "entertaining"],
-      "seoTitle": "Coupe Plate Set — modern stoneware | Form",
-      "seoDescription": "Four rimless 10\" coupe dinner plates, fully glazed and made to stack. A set of four in three house colours.",
-      "options": [
-        {
-          "name": "Color",
-          "displayType": "swatch",
-          "values": [
-            {
-              "value": "Chalk"
-            },
-            {
-              "value": "Slate"
-            },
-            {
-              "value": "Coral"
-            }
-          ]
-        }
-      ],
-      "variants": [
-        {
-          "sku": "FORM-PLATES-CHK",
-          "priceCents": 12000,
-          "isDefault": true,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "Chalk"
-          }
+            "handle": "everyday-table",
+            "name": "The everyday table",
+            "description": "Pieces made to be used every day.",
+            "type": "manual",
+            "featured": true,
+            "productHandles": [
+                "cylinder-mug",
+                "nesting-bowls",
+                "coupe-plates",
+                "table-set"
+            ]
         },
         {
-          "sku": "FORM-PLATES-SLT",
-          "priceCents": 12000,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "Slate"
-          }
+            "handle": "best-sellers",
+            "name": "Best sellers",
+            "description": "The pieces people come back for.",
+            "type": "manual",
+            "featured": true,
+            "productHandles": [
+                "cylinder-mug",
+                "nesting-bowls",
+                "tumbler-set"
+            ]
         },
         {
-          "sku": "FORM-PLATES-COR",
-          "priceCents": 12000,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "Coral"
-          }
-        }
-      ],
-      "images": [
-        {
-          "assetId": "form-prod-plates",
-          "isPrimary": true,
-          "alt": "A set of coupe dinner plates shot from above"
-        }
-      ]
-    },
-    {
-      "handle": "carafe-and-cup",
-      "title": "Carafe & Cup",
-      "description": "A tall, slim carafe with a matching cup that sits over the neck as a lid — water by the bed, wine on the table, or a slow pour of coffee. Balanced to pour with one hand and drip-free at the lip, in a form spare enough to leave out on the counter and mean it.",
-      "status": "active",
-      "productType": "Drinkware",
-      "vendor": "Form",
-      "tags": ["carafe", "drinkware", "set", "stoneware"],
-      "categoryHandles": ["drinkware"],
-      "collectionHandles": ["new-season", "drinkware-edit", "gift-ready"],
-      "seoTitle": "Carafe & Cup — modern stoneware | Form",
-      "seoDescription": "A slim bedside carafe with a matching cup lid, balanced to pour one-handed and drip-free. Three colours.",
-      "options": [
-        {
-          "name": "Color",
-          "displayType": "swatch",
-          "values": [
-            {
-              "value": "Chalk"
-            },
-            {
-              "value": "Slate"
-            },
-            {
-              "value": "Coral"
-            }
-          ]
-        }
-      ],
-      "variants": [
-        {
-          "sku": "FORM-CARAFE-CHK",
-          "priceCents": 6800,
-          "isDefault": true,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "Chalk"
-          }
+            "handle": "drinkware-edit",
+            "name": "The drinkware edit",
+            "description": "Everything to drink from.",
+            "type": "manual",
+            "featured": false,
+            "productHandles": [
+                "cylinder-mug",
+                "tumbler-set",
+                "carafe-and-cup"
+            ]
         },
         {
-          "sku": "FORM-CARAFE-SLT",
-          "priceCents": 6800,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "Slate"
-          }
+            "handle": "entertaining",
+            "name": "Entertaining",
+            "description": "Plates and sets for a table full of people.",
+            "type": "manual",
+            "featured": false,
+            "productHandles": [
+                "coupe-plates",
+                "table-set"
+            ]
         },
         {
-          "sku": "FORM-CARAFE-COR",
-          "priceCents": 6800,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "Coral"
-          }
-        }
-      ],
-      "images": [
-        {
-          "assetId": "form-prod-carafe",
-          "isPrimary": true,
-          "alt": "A tall carafe with a matching cup"
-        }
-      ]
-    },
-    {
-      "handle": "tumbler-set",
-      "title": "Tumbler Set",
-      "description": "A set of four straight-walled tumblers, sized to sit under a coffee machine and to stack two-high in a cupboard. No handle, no foot — just a clean cylinder that works for water, juice, wine or a nightcap, and looks right whether it’s full or drying on the rack.",
-      "status": "active",
-      "productType": "Drinkware",
-      "vendor": "Form",
-      "tags": ["tumblers", "set", "drinkware", "stoneware"],
-      "categoryHandles": ["drinkware"],
-      "collectionHandles": ["best-sellers", "drinkware-edit", "gift-ready"],
-      "seoTitle": "Tumbler Set — modern stoneware | Form",
-      "seoDescription": "Four straight-walled stoneware tumblers for water, wine or juice, made to stack. A set of four in three colours.",
-      "options": [
-        {
-          "name": "Color",
-          "displayType": "swatch",
-          "values": [
-            {
-              "value": "Chalk"
-            },
-            {
-              "value": "Slate"
-            },
-            {
-              "value": "Coral"
-            }
-          ]
-        }
-      ],
-      "variants": [
-        {
-          "sku": "FORM-TUMBLERS-CHK",
-          "priceCents": 5600,
-          "isDefault": true,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "Chalk"
-          }
+            "handle": "gift-ready",
+            "name": "Gift-ready",
+            "description": "Sets and single objects that give well.",
+            "type": "manual",
+            "featured": false,
+            "productHandles": [
+                "carafe-and-cup",
+                "tumbler-set",
+                "arc-vase",
+                "column-vase",
+                "cylinder-planter",
+                "table-set"
+            ]
         },
         {
-          "sku": "FORM-TUMBLERS-SLT",
-          "priceCents": 5600,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "Slate"
-          }
+            "handle": "home-edit",
+            "name": "For the home",
+            "description": "Planters and vessels beyond the table.",
+            "type": "manual",
+            "featured": false,
+            "productHandles": [
+                "cylinder-planter",
+                "arc-vase",
+                "column-vase"
+            ]
+        }
+    ],
+    "products": [
+        {
+            "handle": "cylinder-mug",
+            "title": "Cylinder Mug",
+            "description": "A straight-sided 11oz mug with a clean cut rim and a small, deliberate handle — no swoops, no taper, just the essential shape done right. Thrown with a slightly heavy base so it sits solid and holds the heat, and glazed matte on the outside, gloss in the well.",
+            "status": "active",
+            "productType": "Drinkware",
+            "vendor": "Form",
+            "tags": [
+                "mug",
+                "drinkware",
+                "stoneware",
+                "modern"
+            ],
+            "categoryHandles": [
+                "drinkware"
+            ],
+            "collectionHandles": [
+                "new-season",
+                "best-sellers",
+                "everyday-table",
+                "drinkware-edit"
+            ],
+            "seoTitle": "Cylinder Mug — modern stoneware | Form",
+            "seoDescription": "A straight-sided 11oz mug with a clean rim and a small handle. Matte outside, gloss well. Three colors.",
+            "options": [
+                {
+                    "name": "Color",
+                    "displayType": "swatch",
+                    "values": [
+                        {
+                            "value": "Chalk"
+                        },
+                        {
+                            "value": "Slate"
+                        },
+                        {
+                            "value": "Coral"
+                        }
+                    ]
+                }
+            ],
+            "variants": [
+                {
+                    "sku": "FORM-MUG-CHK",
+                    "priceCents": 3400,
+                    "isDefault": true,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Chalk"
+                    }
+                },
+                {
+                    "sku": "FORM-MUG-SLT",
+                    "priceCents": 3400,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Slate"
+                    }
+                },
+                {
+                    "sku": "FORM-MUG-COR",
+                    "priceCents": 3400,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Coral"
+                    }
+                }
+            ],
+            "images": [
+                {
+                    "assetId": "form-prod-mug",
+                    "isPrimary": true,
+                    "alt": "A straight-sided cylinder mug in a matte glaze"
+                }
+            ]
         },
         {
-          "sku": "FORM-TUMBLERS-COR",
-          "priceCents": 5600,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "Coral"
-          }
-        }
-      ],
-      "images": [
-        {
-          "assetId": "form-prod-tumblers",
-          "isPrimary": true,
-          "alt": "A set of straight-walled tumblers in a soft glaze"
-        }
-      ]
-    },
-    {
-      "handle": "arc-vase",
-      "title": "Arc Vase",
-      "description": "A sculptural vase with a wide, sweeping opening that reads almost like a section cut through a cylinder — a piece that holds a loose armful of stems or stands empty as an object. Weighted low so a top-heavy branch won’t tip it, and glazed matte to keep the shape, not the shine, in front.",
-      "status": "active",
-      "productType": "Vessel",
-      "vendor": "Form",
-      "tags": ["vase", "vessel", "sculptural", "decor"],
-      "categoryHandles": ["vases"],
-      "collectionHandles": ["new-season", "gift-ready"],
-      "seoTitle": "Arc Vase — sculptural stoneware | Form",
-      "seoDescription": "A sculptural vase with a wide sweeping opening, weighted low for stems or shown empty. Matte, in three colours.",
-      "options": [
-        {
-          "name": "Color",
-          "displayType": "swatch",
-          "values": [
-            {
-              "value": "Chalk"
-            },
-            {
-              "value": "Slate"
-            },
-            {
-              "value": "Coral"
-            }
-          ]
-        }
-      ],
-      "variants": [
-        {
-          "sku": "FORM-VASE-ARC-CHK",
-          "priceCents": 8800,
-          "isDefault": true,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "Chalk"
-          }
+            "handle": "nesting-bowls",
+            "title": "Nesting Bowl Set",
+            "description": "Three bowls in graduating sizes that stack down to one — a deep bowl for cereal and soup, a mid for a side, a small for dips and prep. Coupe-shaped with no rim to trap water, and sized so the set lives in a single cupboard space instead of three.",
+            "status": "active",
+            "productType": "Tableware",
+            "vendor": "Form",
+            "tags": [
+                "bowls",
+                "set",
+                "tableware",
+                "stoneware"
+            ],
+            "categoryHandles": [
+                "dinnerware"
+            ],
+            "collectionHandles": [
+                "new-season",
+                "best-sellers",
+                "everyday-table"
+            ],
+            "seoTitle": "Nesting Bowl Set — modern stoneware | Form",
+            "seoDescription": "Three graduating coupe bowls that nest to one, for cereal, sides and prep. A set of three in three colors.",
+            "options": [
+                {
+                    "name": "Color",
+                    "displayType": "swatch",
+                    "values": [
+                        {
+                            "value": "Chalk"
+                        },
+                        {
+                            "value": "Slate"
+                        },
+                        {
+                            "value": "Coral"
+                        }
+                    ]
+                }
+            ],
+            "variants": [
+                {
+                    "sku": "FORM-BOWLS-CHK",
+                    "priceCents": 9600,
+                    "isDefault": true,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Chalk"
+                    }
+                },
+                {
+                    "sku": "FORM-BOWLS-SLT",
+                    "priceCents": 9600,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Slate"
+                    }
+                },
+                {
+                    "sku": "FORM-BOWLS-COR",
+                    "priceCents": 9600,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Coral"
+                    }
+                }
+            ],
+            "images": [
+                {
+                    "assetId": "form-prod-bowls",
+                    "isPrimary": true,
+                    "alt": "A set of nesting bowls stacked on white"
+                }
+            ]
         },
         {
-          "sku": "FORM-VASE-ARC-SLT",
-          "priceCents": 8800,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "Slate"
-          }
+            "handle": "coupe-plates",
+            "title": "Coupe Plate Set",
+            "description": "A set of four coupe dinner plates — no rim, a gentle rising wall, a wide flat centre that makes an ordinary plate of food look composed. Ten inches across and fully glazed edge to edge, so they stack quietly and wipe clean. The plate the rest of the table is built around.",
+            "status": "active",
+            "productType": "Tableware",
+            "vendor": "Form",
+            "tags": [
+                "plates",
+                "set",
+                "tableware",
+                "stoneware"
+            ],
+            "categoryHandles": [
+                "dinnerware"
+            ],
+            "collectionHandles": [
+                "everyday-table",
+                "entertaining"
+            ],
+            "seoTitle": "Coupe Plate Set — modern stoneware | Form",
+            "seoDescription": "Four rimless 10\" coupe dinner plates, fully glazed and made to stack. A set of four in three house colors.",
+            "options": [
+                {
+                    "name": "Color",
+                    "displayType": "swatch",
+                    "values": [
+                        {
+                            "value": "Chalk"
+                        },
+                        {
+                            "value": "Slate"
+                        },
+                        {
+                            "value": "Coral"
+                        }
+                    ]
+                }
+            ],
+            "variants": [
+                {
+                    "sku": "FORM-PLATES-CHK",
+                    "priceCents": 12000,
+                    "isDefault": true,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Chalk"
+                    }
+                },
+                {
+                    "sku": "FORM-PLATES-SLT",
+                    "priceCents": 12000,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Slate"
+                    }
+                },
+                {
+                    "sku": "FORM-PLATES-COR",
+                    "priceCents": 12000,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Coral"
+                    }
+                }
+            ],
+            "images": [
+                {
+                    "assetId": "form-prod-plates",
+                    "isPrimary": true,
+                    "alt": "A set of coupe dinner plates shot from above"
+                }
+            ]
         },
         {
-          "sku": "FORM-VASE-ARC-COR",
-          "priceCents": 8800,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "Coral"
-          }
-        }
-      ],
-      "images": [
-        {
-          "assetId": "form-prod-vase-arc",
-          "isPrimary": true,
-          "alt": "A sculptural arc vase with a wide opening"
-        }
-      ]
-    },
-    {
-      "handle": "column-vase",
-      "title": "Column Vase",
-      "description": "A tall, narrow column with a cut opening — for a single architectural stem, a few grasses, or nothing at all. The kind of quiet vertical an open shelf wants to break up a run of plates and bowls. Slip-cast for a crisp, even wall and finished with a bare, sanded rim.",
-      "status": "active",
-      "productType": "Vessel",
-      "vendor": "Form",
-      "tags": ["vase", "vessel", "sculptural", "decor"],
-      "categoryHandles": ["vases"],
-      "collectionHandles": ["gift-ready"],
-      "seoTitle": "Column Vase — sculptural stoneware | Form",
-      "seoDescription": "A tall narrow column vase for a single stem or shown empty, with a crisp slip-cast wall. Three colours.",
-      "options": [
-        {
-          "name": "Color",
-          "displayType": "swatch",
-          "values": [
-            {
-              "value": "Chalk"
-            },
-            {
-              "value": "Slate"
-            },
-            {
-              "value": "Coral"
-            }
-          ]
-        }
-      ],
-      "variants": [
-        {
-          "sku": "FORM-VASE-COL-CHK",
-          "priceCents": 7200,
-          "isDefault": true,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "Chalk"
-          }
+            "handle": "carafe-and-cup",
+            "title": "Carafe & Cup",
+            "description": "A tall, slim carafe with a matching cup that sits over the neck as a lid — water by the bed, wine on the table, or a slow pour of coffee. Balanced to pour with one hand and drip-free at the lip, in a form spare enough to leave out on the counter and mean it.",
+            "status": "active",
+            "productType": "Drinkware",
+            "vendor": "Form",
+            "tags": [
+                "carafe",
+                "drinkware",
+                "set",
+                "stoneware"
+            ],
+            "categoryHandles": [
+                "drinkware"
+            ],
+            "collectionHandles": [
+                "new-season",
+                "drinkware-edit",
+                "gift-ready"
+            ],
+            "seoTitle": "Carafe & Cup — modern stoneware | Form",
+            "seoDescription": "A slim bedside carafe with a matching cup lid, balanced to pour one-handed and drip-free. Three colors.",
+            "options": [
+                {
+                    "name": "Color",
+                    "displayType": "swatch",
+                    "values": [
+                        {
+                            "value": "Chalk"
+                        },
+                        {
+                            "value": "Slate"
+                        },
+                        {
+                            "value": "Coral"
+                        }
+                    ]
+                }
+            ],
+            "variants": [
+                {
+                    "sku": "FORM-CARAFE-CHK",
+                    "priceCents": 6800,
+                    "isDefault": true,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Chalk"
+                    }
+                },
+                {
+                    "sku": "FORM-CARAFE-SLT",
+                    "priceCents": 6800,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Slate"
+                    }
+                },
+                {
+                    "sku": "FORM-CARAFE-COR",
+                    "priceCents": 6800,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Coral"
+                    }
+                }
+            ],
+            "images": [
+                {
+                    "assetId": "form-prod-carafe",
+                    "isPrimary": true,
+                    "alt": "A tall carafe with a matching cup"
+                }
+            ]
         },
         {
-          "sku": "FORM-VASE-COL-SLT",
-          "priceCents": 7200,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "Slate"
-          }
+            "handle": "tumbler-set",
+            "title": "Tumbler Set",
+            "description": "A set of four straight-walled tumblers, sized to sit under a coffee machine and to stack two-high in a cupboard. No handle, no foot — just a clean cylinder that works for water, juice, wine or a nightcap, and looks right whether it’s full or drying on the rack.",
+            "status": "active",
+            "productType": "Drinkware",
+            "vendor": "Form",
+            "tags": [
+                "tumblers",
+                "set",
+                "drinkware",
+                "stoneware"
+            ],
+            "categoryHandles": [
+                "drinkware"
+            ],
+            "collectionHandles": [
+                "best-sellers",
+                "drinkware-edit",
+                "gift-ready"
+            ],
+            "seoTitle": "Tumbler Set — modern stoneware | Form",
+            "seoDescription": "Four straight-walled stoneware tumblers for water, wine or juice, made to stack. A set of four in three colors.",
+            "options": [
+                {
+                    "name": "Color",
+                    "displayType": "swatch",
+                    "values": [
+                        {
+                            "value": "Chalk"
+                        },
+                        {
+                            "value": "Slate"
+                        },
+                        {
+                            "value": "Coral"
+                        }
+                    ]
+                }
+            ],
+            "variants": [
+                {
+                    "sku": "FORM-TUMBLERS-CHK",
+                    "priceCents": 5600,
+                    "isDefault": true,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Chalk"
+                    }
+                },
+                {
+                    "sku": "FORM-TUMBLERS-SLT",
+                    "priceCents": 5600,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Slate"
+                    }
+                },
+                {
+                    "sku": "FORM-TUMBLERS-COR",
+                    "priceCents": 5600,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Coral"
+                    }
+                }
+            ],
+            "images": [
+                {
+                    "assetId": "form-prod-tumblers",
+                    "isPrimary": true,
+                    "alt": "A set of straight-walled tumblers in a soft glaze"
+                }
+            ]
         },
         {
-          "sku": "FORM-VASE-COL-COR",
-          "priceCents": 7200,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "Coral"
-          }
-        }
-      ],
-      "images": [
-        {
-          "assetId": "form-prod-vase-column",
-          "isPrimary": true,
-          "alt": "A tall column vase with a narrow body"
-        }
-      ]
-    },
-    {
-      "handle": "cylinder-planter",
-      "title": "Cylinder Planter",
-      "description": "A clean cylinder planter with a bare unglazed rim and an inner pot with a drainage hole, dropped into a glazed outer that catches the overflow — so a plant lives happily without a saucer cluttering the shelf. Sized for a six-inch grower pot; a fern, a snake plant, a herb on the sill.",
-      "status": "active",
-      "productType": "Vessel",
-      "vendor": "Form",
-      "tags": ["planter", "home", "plants", "stoneware"],
-      "categoryHandles": ["home"],
-      "collectionHandles": ["new-season", "home-edit", "gift-ready"],
-      "seoTitle": "Cylinder Planter — modern stoneware | Form",
-      "seoDescription": "A clean cylinder planter with a drop-in drainage pot and glazed outer, sized for a 6\" grower. Three colours.",
-      "options": [
-        {
-          "name": "Color",
-          "displayType": "swatch",
-          "values": [
-            {
-              "value": "Chalk"
-            },
-            {
-              "value": "Slate"
-            },
-            {
-              "value": "Coral"
-            }
-          ]
-        }
-      ],
-      "variants": [
-        {
-          "sku": "FORM-PLANTER-CHK",
-          "priceCents": 6200,
-          "isDefault": true,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "Chalk"
-          }
+            "handle": "arc-vase",
+            "title": "Arc Vase",
+            "description": "A sculptural vase with a wide, sweeping opening that reads almost like a section cut through a cylinder — a piece that holds a loose armful of stems or stands empty as an object. Weighted low so a top-heavy branch won’t tip it, and glazed matte to keep the shape, not the shine, in front.",
+            "status": "active",
+            "productType": "Vessel",
+            "vendor": "Form",
+            "tags": [
+                "vase",
+                "vessel",
+                "sculptural",
+                "decor"
+            ],
+            "categoryHandles": [
+                "vases"
+            ],
+            "collectionHandles": [
+                "new-season",
+                "gift-ready"
+            ],
+            "seoTitle": "Arc Vase — sculptural stoneware | Form",
+            "seoDescription": "A sculptural vase with a wide sweeping opening, weighted low for stems or shown empty. Matte, in three colors.",
+            "options": [
+                {
+                    "name": "Color",
+                    "displayType": "swatch",
+                    "values": [
+                        {
+                            "value": "Chalk"
+                        },
+                        {
+                            "value": "Slate"
+                        },
+                        {
+                            "value": "Coral"
+                        }
+                    ]
+                }
+            ],
+            "variants": [
+                {
+                    "sku": "FORM-VASE-ARC-CHK",
+                    "priceCents": 8800,
+                    "isDefault": true,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Chalk"
+                    }
+                },
+                {
+                    "sku": "FORM-VASE-ARC-SLT",
+                    "priceCents": 8800,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Slate"
+                    }
+                },
+                {
+                    "sku": "FORM-VASE-ARC-COR",
+                    "priceCents": 8800,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Coral"
+                    }
+                }
+            ],
+            "images": [
+                {
+                    "assetId": "form-prod-vase-arc",
+                    "isPrimary": true,
+                    "alt": "A sculptural arc vase with a wide opening"
+                }
+            ]
         },
         {
-          "sku": "FORM-PLANTER-SLT",
-          "priceCents": 6200,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "Slate"
-          }
+            "handle": "column-vase",
+            "title": "Column Vase",
+            "description": "A tall, narrow column with a cut opening — for a single architectural stem, a few grasses, or nothing at all. The kind of quiet vertical an open shelf wants to break up a run of plates and bowls. Slip-cast for a crisp, even wall and finished with a bare, sanded rim.",
+            "status": "active",
+            "productType": "Vessel",
+            "vendor": "Form",
+            "tags": [
+                "vase",
+                "vessel",
+                "sculptural",
+                "decor"
+            ],
+            "categoryHandles": [
+                "vases"
+            ],
+            "collectionHandles": [
+                "gift-ready"
+            ],
+            "seoTitle": "Column Vase — sculptural stoneware | Form",
+            "seoDescription": "A tall narrow column vase for a single stem or shown empty, with a crisp slip-cast wall. Three colors.",
+            "options": [
+                {
+                    "name": "Color",
+                    "displayType": "swatch",
+                    "values": [
+                        {
+                            "value": "Chalk"
+                        },
+                        {
+                            "value": "Slate"
+                        },
+                        {
+                            "value": "Coral"
+                        }
+                    ]
+                }
+            ],
+            "variants": [
+                {
+                    "sku": "FORM-VASE-COL-CHK",
+                    "priceCents": 7200,
+                    "isDefault": true,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Chalk"
+                    }
+                },
+                {
+                    "sku": "FORM-VASE-COL-SLT",
+                    "priceCents": 7200,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Slate"
+                    }
+                },
+                {
+                    "sku": "FORM-VASE-COL-COR",
+                    "priceCents": 7200,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Coral"
+                    }
+                }
+            ],
+            "images": [
+                {
+                    "assetId": "form-prod-vase-column",
+                    "isPrimary": true,
+                    "alt": "A tall column vase with a narrow body"
+                }
+            ]
         },
         {
-          "sku": "FORM-PLANTER-COR",
-          "priceCents": 6200,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "Coral"
-          }
-        }
-      ],
-      "images": [
-        {
-          "assetId": "form-prod-planter",
-          "isPrimary": true,
-          "alt": "A cylinder planter with a clean unglazed rim"
-        }
-      ]
-    },
-    {
-      "handle": "table-set",
-      "title": "The Table Set",
-      "description": "The whole table for two, made to match — two coupe plates, two nesting bowls and two cylinder mugs, thrown and glazed in the same runs so their tones and weights actually agree, which pieces bought one at a time never quite do. The fastest way to a considered table, and the easiest gift we sell.",
-      "status": "active",
-      "productType": "Tableware",
-      "vendor": "Form",
-      "tags": ["set", "tableware", "gift", "stoneware"],
-      "categoryHandles": ["dinnerware"],
-      "collectionHandles": ["everyday-table", "entertaining", "gift-ready"],
-      "seoTitle": "The Table Set — modern stoneware for two | Form",
-      "seoDescription": "A six-piece table set for two — two plates, two bowls, two mugs, made in one run to match. In three colours.",
-      "options": [
-        {
-          "name": "Color",
-          "displayType": "swatch",
-          "values": [
-            {
-              "value": "Chalk"
-            },
-            {
-              "value": "Slate"
-            },
-            {
-              "value": "Coral"
-            }
-          ]
-        }
-      ],
-      "variants": [
-        {
-          "sku": "FORM-TABLESET-CHK",
-          "priceCents": 28000,
-          "isDefault": true,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "Chalk"
-          }
+            "handle": "cylinder-planter",
+            "title": "Cylinder Planter",
+            "description": "A clean cylinder planter with a bare unglazed rim and an inner pot with a drainage hole, dropped into a glazed outer that catches the overflow — so a plant lives happily without a saucer cluttering the shelf. Sized for a six-inch grower pot; a fern, a snake plant, a herb on the sill.",
+            "status": "active",
+            "productType": "Vessel",
+            "vendor": "Form",
+            "tags": [
+                "planter",
+                "home",
+                "plants",
+                "stoneware"
+            ],
+            "categoryHandles": [
+                "home"
+            ],
+            "collectionHandles": [
+                "new-season",
+                "home-edit",
+                "gift-ready"
+            ],
+            "seoTitle": "Cylinder Planter — modern stoneware | Form",
+            "seoDescription": "A clean cylinder planter with a drop-in drainage pot and glazed outer, sized for a 6\" grower. Three colors.",
+            "options": [
+                {
+                    "name": "Color",
+                    "displayType": "swatch",
+                    "values": [
+                        {
+                            "value": "Chalk"
+                        },
+                        {
+                            "value": "Slate"
+                        },
+                        {
+                            "value": "Coral"
+                        }
+                    ]
+                }
+            ],
+            "variants": [
+                {
+                    "sku": "FORM-PLANTER-CHK",
+                    "priceCents": 6200,
+                    "isDefault": true,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Chalk"
+                    }
+                },
+                {
+                    "sku": "FORM-PLANTER-SLT",
+                    "priceCents": 6200,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Slate"
+                    }
+                },
+                {
+                    "sku": "FORM-PLANTER-COR",
+                    "priceCents": 6200,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Coral"
+                    }
+                }
+            ],
+            "images": [
+                {
+                    "assetId": "form-prod-planter",
+                    "isPrimary": true,
+                    "alt": "A cylinder planter with a clean unglazed rim"
+                }
+            ]
         },
         {
-          "sku": "FORM-TABLESET-SLT",
-          "priceCents": 28000,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "Slate"
-          }
-        },
-        {
-          "sku": "FORM-TABLESET-COR",
-          "priceCents": 28000,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "Coral"
-          }
+            "handle": "table-set",
+            "title": "The Table Set",
+            "description": "The whole table for two, made to match — two coupe plates, two nesting bowls and two cylinder mugs, thrown and glazed in the same runs so their tones and weights actually agree, which pieces bought one at a time never quite do. The fastest way to a considered table, and the easiest gift we sell.",
+            "status": "active",
+            "productType": "Tableware",
+            "vendor": "Form",
+            "tags": [
+                "set",
+                "tableware",
+                "gift",
+                "stoneware"
+            ],
+            "categoryHandles": [
+                "dinnerware"
+            ],
+            "collectionHandles": [
+                "everyday-table",
+                "entertaining",
+                "gift-ready"
+            ],
+            "seoTitle": "The Table Set — modern stoneware for two | Form",
+            "seoDescription": "A six-piece table set for two — two plates, two bowls, two mugs, made in one run to match. In three colors.",
+            "options": [
+                {
+                    "name": "Color",
+                    "displayType": "swatch",
+                    "values": [
+                        {
+                            "value": "Chalk"
+                        },
+                        {
+                            "value": "Slate"
+                        },
+                        {
+                            "value": "Coral"
+                        }
+                    ]
+                }
+            ],
+            "variants": [
+                {
+                    "sku": "FORM-TABLESET-CHK",
+                    "priceCents": 28000,
+                    "isDefault": true,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Chalk"
+                    }
+                },
+                {
+                    "sku": "FORM-TABLESET-SLT",
+                    "priceCents": 28000,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Slate"
+                    }
+                },
+                {
+                    "sku": "FORM-TABLESET-COR",
+                    "priceCents": 28000,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Coral"
+                    }
+                }
+            ],
+            "images": [
+                {
+                    "assetId": "form-prod-table-set",
+                    "isPrimary": true,
+                    "alt": "A full table set of plates, bowls and mugs on white"
+                }
+            ]
         }
-      ],
-      "images": [
-        {
-          "assetId": "form-prod-table-set",
-          "isPrimary": true,
-          "alt": "A full table set of plates, bowls and mugs on white"
-        }
-      ]
-    }
-  ]
+    ]
 }

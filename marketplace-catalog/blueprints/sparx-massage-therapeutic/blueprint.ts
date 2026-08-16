@@ -10,71 +10,71 @@ import emails from './emails.json' with { type: 'json' };
 import assets from './assets.json' with { type: 'json' };
 
 const blueprint = {
-  key: 'sparx-massage-therapeutic',
-  version: '1.3.0',
-  name: 'sparx — Massage (Therapeutic)',
-  summary:
-    'A clinical therapeutic-massage site — a cool slate-and-teal palette, a muted-steel secondary and a confident sans display, leading with the outcome, not luxury. Installs a working booking flow: a menu by concern (deep tissue, sports recovery, prenatal, cupping, trigger-point, medical/rehab), three licensed therapists and two treatment rooms as bookable resources, and standard plus card-hold policies. Ships as "Meridian Bodywork".',
-  vertical: 'services',
-  preview: 'media/preview.png',
-  requiresModules: ['builder', 'scheduling', 'crm', 'email'],
+    key: 'sparx-massage-therapeutic',
+    version: '1.3.0',
+    name: 'sparx — Massage (Therapeutic)',
+    summary:
+        'A clinical therapeutic-massage site — a cool slate-and-teal palette, a muted-steel secondary and a confident sans display, leading with the outcome, not luxury. Installs a working booking flow: a menu by concern (deep tissue, sports recovery, prenatal, cupping, trigger-point, medical/rehab), three licensed therapists and two treatment rooms as bookable resources, and standard plus card-hold policies. Ships as "Meridian Bodywork".',
+    vertical: 'services',
+    preview: 'media/preview.png',
+    requiresModules: ['builder', 'scheduling', 'crm', 'email'],
 
-  // Identity only (business name + tagline + fonts + the theme's hex colours). The look
-  // rides site.theme + the theme decl below; the installing tenant rebrands the name.
-  brand: {
-    businessName: 'Meridian Bodywork',
-    tagline: 'Therapeutic massage that fixes the thing that hurts.',
-    colors: {
-      primary: '#216f7b',
-      primaryForeground: '#f1fafc',
-      accent: '#c18a65',
-      secondary: '#4e5a64',
-    },
-    fonts: {
-      heading: 'Outfit',
-      body: 'Inter',
-    },
-  },
-
-  // The provisioned SiteTheme the installer creates + applies — an editable saved theme
-  // over a foundation base + the template's brand snapshot. The LIVE storefront look is
-  // site.theme (the flat bespoke tokens), written last.
-  theme: {
-    name: 'meridian',
-    basePresetKey: 'apex',
-    presentation: {
-      v: 2,
-      containerWidth: '1152px',
-    },
+    // Identity only (business name + tagline + fonts + the theme's hex colors). The look
+    // rides site.theme + the theme decl below; the installing tenant rebrands the name.
     brand: {
-      colorPrimary: '#216f7b',
-      colorAccent: '#c18a65',
-      colorSecondary: '#4e5a64',
-      fontHeading: 'Outfit',
-      fontBody: 'Inter',
-      tokens: {},
+        businessName: 'Meridian Bodywork',
+        tagline: 'Therapeutic massage that fixes the thing that hurts.',
+        colors: {
+            primary: '#216f7b',
+            primaryForeground: '#f1fafc',
+            accent: '#c18a65',
+            secondary: '#4e5a64',
+        },
+        fonts: {
+            heading: 'Outfit',
+            body: 'Inter',
+        },
     },
-    apply: true,
-  },
 
-  assets,
-  contentTypes: [],
+    // The provisioned SiteTheme the installer creates + applies — an editable saved theme
+    // over a foundation base + the template's brand snapshot. The LIVE storefront look is
+    // site.theme (the flat bespoke tokens), written last.
+    theme: {
+        name: 'meridian',
+        basePresetKey: 'apex',
+        presentation: {
+            v: 2,
+            containerWidth: '1152px',
+        },
+        brand: {
+            colorPrimary: '#216f7b',
+            colorAccent: '#c18a65',
+            colorSecondary: '#4e5a64',
+            fontHeading: 'Outfit',
+            fontBody: 'Inter',
+            tokens: {},
+        },
+        apply: true,
+    },
 
-  // The booking spine — policies, bookable resources (staff/rooms/stations) with weekly
-  // hours, and the service menu. The installer's scheduling slice replays it into a live
-  // booking flow that the site's /book page renders.
-  scheduling,
+    assets,
+    contentTypes: [],
 
-  // Brand-voiced MARKETING starters (a welcome + a come-back), installed as DRAFTS the
-  // tenant switches on. The transactional booking sends — confirmation, reminder,
-  // reschedule, cancellation, waitlist — are platform KEYED defaults, so they are covered
-  // on email-module activation and are deliberately NOT duplicated here.
-  emails,
-  sequences: [],
+    // The booking spine — policies, bookable resources (staff/rooms/stations) with weekly
+    // hours, and the service menu. The installer's scheduling slice replays it into a live
+    // booking flow that the site's /book page renders.
+    scheduling,
 
-  // The composed distinct site (frame + Home + Book + About + Contact) in the bespoke
-  // theme, fully stamped.
-  site,
+    // Brand-voiced MARKETING starters (a welcome + a come-back), installed as DRAFTS the
+    // tenant switches on. The transactional booking sends — confirmation, reminder,
+    // reschedule, cancellation, waitlist — are platform KEYED defaults, so they are covered
+    // on email-module activation and are deliberately NOT duplicated here.
+    emails,
+    sequences: [],
+
+    // The composed distinct site (frame + Home + Book + About + Contact) in the bespoke
+    // theme, fully stamped.
+    site,
 };
 
 export default blueprint;

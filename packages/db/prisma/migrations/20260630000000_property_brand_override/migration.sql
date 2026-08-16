@@ -2,7 +2,7 @@
 -- doc-34's "brand overridable by none". A single additive, NULLABLE column on
 -- `properties`: null = inherit the tenant brand (the default / source of truth);
 -- a JSON partial overrides only the identity fields a site sets (businessName,
--- theme colours, logo). Presentation-only, NOT a full brand fork.
+-- theme colors, logo). Presentation-only, NOT a full brand fork.
 --
 -- DDL only — no backfill (null is the correct default for every existing site),
 -- so no per-tenant set_config loop is needed. RLS on `properties` is unchanged

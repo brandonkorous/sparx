@@ -2,7 +2,7 @@
 --
 -- `tokens` is a nullable JSONB holding the brand-owned NON-IDENTITY tokens the
 -- Site Builder Brand pane edits: shape (radius trio + border width), rhythm
--- (space base + control sizes), and effect (depth). Colour and typography keep
+-- (space base + control sizes), and effect (depth). Color and typography keep
 -- their dedicated columns — one source of truth per axis — so this stores only
 -- the shape/rhythm/effect branches of a BrandTokenDoc.
 --

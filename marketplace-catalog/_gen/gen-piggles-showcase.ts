@@ -34,8 +34,8 @@
 // the real pipeline. Authoring a fresh silica theme would mean inventing a
 // four-step oklch surface ramp in light AND dark, and the Piggles palette is not
 // this file's to invent. So this takes the proven structure and substitutes ONLY
-// the colour roles, with the values from `@piggles/brand`. Nothing here is a new
-// colour.
+// the color roles, with the values from `@piggles/brand`. Nothing here is a new
+// color.
 
 import { promises as fs } from 'node:fs';
 import { dirname, join } from 'node:path';
@@ -64,39 +64,39 @@ const DEMO_SLUG = 'rowan';
 // no node_modules, and a blueprint bundle must stay pure data besides. The
 // source of truth is that stylesheet — re-copy from it, never re-pick by eye.
 const LIGHT: Record<string, string> = {
-  '--color-primary': '#ff6f86',
-  '--color-secondary': '#2d3443',
-  '--color-accent': '#ffb3c0',
-  '--color-neutral': '#52454f',
-  '--color-base-100': '#ffffff',
-  '--color-base-200': '#fbf7f8',
-  '--color-base-300': '#f0e8ea',
-  '--color-base-content': '#202631',
-  '--color-success': '#14804a',
-  '--color-info': '#2563eb',
-  '--color-warning': '#f3b61f',
-  '--color-error': '#c93838',
-  '--color-danger': '#c93838',
-  // Piggles declares neither. `border` takes the warm 300-step it already uses
-  // as its edge tone, and `highlight` takes the brand pink — the golden's
-  // `#ec4899` is a different pink and would read as a second brand.
-  '--color-border': '#f0e8ea',
-  '--color-highlight': '#ff6f86',
+    '--color-primary': '#ff6f86',
+    '--color-secondary': '#2d3443',
+    '--color-accent': '#ffb3c0',
+    '--color-neutral': '#52454f',
+    '--color-base-100': '#ffffff',
+    '--color-base-200': '#fbf7f8',
+    '--color-base-300': '#f0e8ea',
+    '--color-base-content': '#202631',
+    '--color-success': '#14804a',
+    '--color-info': '#2563eb',
+    '--color-warning': '#f3b61f',
+    '--color-error': '#c93838',
+    '--color-danger': '#c93838',
+    // Piggles declares neither. `border` takes the warm 300-step it already uses
+    // as its edge tone, and `highlight` takes the brand pink — the golden's
+    // `#ec4899` is a different pink and would read as a second brand.
+    '--color-border': '#f0e8ea',
+    '--color-highlight': '#ff6f86',
 };
 
 const DARK: Record<string, string> = {
-  '--color-primary': '#ff7c91',
-  '--color-secondary': '#d7dbe3',
-  '--color-accent': '#8f4656',
-  '--color-neutral': '#c2b1bc',
-  '--color-base-100': '#272d39',
-  '--color-base-200': '#1c212c',
-  '--color-base-300': '#151922',
-  '--color-base-content': '#f4f5f7',
-  '--color-error': '#ef4444',
-  '--color-danger': '#ef4444',
-  '--color-border': '#151922',
-  '--color-highlight': '#ff7c91',
+    '--color-primary': '#ff7c91',
+    '--color-secondary': '#d7dbe3',
+    '--color-accent': '#8f4656',
+    '--color-neutral': '#c2b1bc',
+    '--color-base-100': '#272d39',
+    '--color-base-200': '#1c212c',
+    '--color-base-300': '#151922',
+    '--color-base-content': '#f4f5f7',
+    '--color-error': '#ef4444',
+    '--color-danger': '#ef4444',
+    '--color-border': '#151922',
+    '--color-highlight': '#ff7c91',
 };
 
 // Every place the golden names the platform, and what it becomes here.
@@ -112,146 +112,146 @@ const DARK: Record<string, string> = {
 // company's products in it. The first pass here rewrote only the site and the
 // guard only checked the site, which is exactly how it was nearly missed.
 const REWRITES: [string, string][] = [
-  [
-    'sparx brings your site, your store, your content, and your customers together — so you can run the whole business from one place. This is a starter you can make entirely your own.',
-    'Your site, your shop, your writing, and your customers — together, so you can run the whole business from one place. This is a starter you can make entirely your own.',
-  ],
-  // Handles + ids before display names: `sparx-everyday-tee` would otherwise be
-  // half-rewritten by the bare-word rule into `Harlow-everyday-tee`.
-  ['sparx-', `${DEMO_SLUG}-`],
-  ['sparx ', `${DEMO_SHORT} `],
-  ['sparx', DEMO_BUSINESS],
+    [
+        'sparx brings your site, your store, your content, and your customers together — so you can run the whole business from one place. This is a starter you can make entirely your own.',
+        'Your site, your shop, your writing, and your customers — together, so you can run the whole business from one place. This is a starter you can make entirely your own.',
+    ],
+    // Handles + ids before display names: `sparx-everyday-tee` would otherwise be
+    // half-rewritten by the bare-word rule into `Harlow-everyday-tee`.
+    ['sparx-', `${DEMO_SLUG}-`],
+    ['sparx ', `${DEMO_SHORT} `],
+    ['sparx', DEMO_BUSINESS],
 ];
 
 /** Rewrite every branded string in one authored part. Runs over the SERIALIZED
  *  tree: the parts are deep and heterogeneous, and a walk would have to know
  *  every node shape to find the strings a replace finds by construction. */
 function debrand<T>(part: T): T {
-  let raw = JSON.stringify(part);
-  for (const [from, to] of REWRITES) raw = raw.split(from).join(to);
-  return JSON.parse(raw) as T;
+    let raw = JSON.stringify(part);
+    for (const [from, to] of REWRITES) raw = raw.split(from).join(to);
+    return JSON.parse(raw) as T;
 }
 
 /** Throw if anything shipped still names the platform. The guard is the point of
  *  the whole file — a bundle that quietly carries the other brand's name looks
  *  completely normal until a customer reads it. */
 function assertUnbranded(label: string, part: unknown): void {
-  const hits = JSON.stringify(part).match(/sparx/gi);
-  if (hits) {
-    throw new Error(
-      `gen-piggles-showcase: ${hits.length} unhandled "sparx" string(s) remain in ${label} — ` +
-        'add a rule to REWRITES rather than shipping a bundle that names another brand.'
-    );
-  }
+    const hits = JSON.stringify(part).match(/sparx/gi);
+    if (hits) {
+        throw new Error(
+            `gen-piggles-showcase: ${hits.length} unhandled "sparx" string(s) remain in ${label} — ` +
+            'add a rule to REWRITES rather than shipping a bundle that names another brand.'
+        );
+    }
 }
 
 const json = (value: unknown): string => JSON.stringify(value, null, 2) + '\n';
 
-/** Substitute a colour bag over a resolved token bag, leaving every structural
+/** Substitute a color bag over a resolved token bag, leaving every structural
  *  token (radius, spacing, type scale) exactly as the golden proved it. */
 function reskin(bag: Record<string, string>, overrides: Record<string, string>) {
-  const out: Record<string, string> = { ...bag };
-  for (const [token, value] of Object.entries(overrides)) {
-    // Only tokens the bag already HAS — a substitution that invents a key would
-    // silently add a token the renderer never asked for, and nothing downstream
-    // would report it.
-    if (token in out) out[token] = value;
-  }
-  return out;
+    const out: Record<string, string> = { ...bag };
+    for (const [token, value] of Object.entries(overrides)) {
+        // Only tokens the bag already HAS — a substitution that invents a key would
+        // silently add a token the renderer never asked for, and nothing downstream
+        // would report it.
+        if (token in out) out[token] = value;
+    }
+    return out;
 }
 
 async function main(): Promise<void> {
-  const mod = (await import(pathToFileURL(join(goldenDir, 'blueprint.ts')).href)) as {
-    default: Record<string, unknown>;
-  };
-  const golden = mod.default;
-  const emails = golden.emails as { name: string; publish: boolean; doc: unknown }[];
+    const mod = (await import(pathToFileURL(join(goldenDir, 'blueprint.ts')).href)) as {
+        default: Record<string, unknown>;
+    };
+    const golden = mod.default;
+    const emails = golden.emails as { name: string; publish: boolean; doc: unknown }[];
 
-  await fs.mkdir(join(outDir, 'media'), { recursive: true });
+    await fs.mkdir(join(outDir, 'media'), { recursive: true });
 
-  // The captured site, re-skinned and de-branded. String replacement over the
-  // serialized tree rather than a walk: the tree is deep, heterogeneous, and the
-  // two targets are exact full-string matches, so a targeted replace cannot hit
-  // a node it was not meant to.
-  type GoldenSite = {
-    theme: { tokens: Record<string, string>; dark: Record<string, string>; [k: string]: unknown };
-    [k: string]: unknown;
-  };
-  const site = debrand(golden.site as GoldenSite);
-  site.theme = {
-    ...site.theme,
-    name: 'piggles',
-    tokens: reskin(site.theme.tokens, LIGHT),
-    dark: reskin(site.theme.dark, DARK),
-  };
+    // The captured site, re-skinned and de-branded. String replacement over the
+    // serialized tree rather than a walk: the tree is deep, heterogeneous, and the
+    // two targets are exact full-string matches, so a targeted replace cannot hit
+    // a node it was not meant to.
+    type GoldenSite = {
+        theme: { tokens: Record<string, string>; dark: Record<string, string>;[k: string]: unknown };
+        [k: string]: unknown;
+    };
+    const site = debrand(golden.site as GoldenSite);
+    site.theme = {
+        ...site.theme,
+        name: 'piggles',
+        tokens: reskin(site.theme.tokens, LIGHT),
+        dark: reskin(site.theme.dark, DARK),
+    };
 
-  const content = debrand(golden.content);
-  const commerce = debrand(golden.commerce);
-  const assetsPart = debrand(golden.assets);
-  const sequences = debrand(golden.sequences);
-  const emailDocs = emails.map((e) => debrand(e.doc));
+    const content = debrand(golden.content);
+    const commerce = debrand(golden.commerce);
+    const assetsPart = debrand(golden.assets);
+    const sequences = debrand(golden.sequences);
+    const emailDocs = emails.map((e) => debrand(e.doc));
 
-  assertUnbranded('site', site);
-  assertUnbranded('content', content);
-  assertUnbranded('commerce', commerce);
-  assertUnbranded('assets', assetsPart);
-  assertUnbranded('sequences', sequences);
-  emailDocs.forEach((doc, i) => assertUnbranded(`email ${i + 1}`, doc));
+    assertUnbranded('site', site);
+    assertUnbranded('content', content);
+    assertUnbranded('commerce', commerce);
+    assertUnbranded('assets', assetsPart);
+    assertUnbranded('sequences', sequences);
+    emailDocs.forEach((doc, i) => assertUnbranded(`email ${i + 1}`, doc));
 
-  const brand = {
-    businessName: DEMO_BUSINESS,
-    tagline: DEMO_TAGLINE,
-    colors: {
-      primary: LIGHT['--color-primary'],
-      // WHITE, DELIBERATELY — matching `--color-primary-content` in
-      // piggles/packages/brand/src/theme.css. That file's own comment argues for
-      // the charcoal ink on a contrast measurement; the white was chosen ON
-      // PURPOSE afterwards, by Brandon, because it reads better in practice, and
-      // a ratio that wins on paper is worth nothing if the label is harder to
-      // read on the screen.
-      //
-      // DO NOT "FIX" THIS, here or in theme.css. It is a settled decision, not an
-      // oversight, and it is not a change this bundle is permitted to make — the
-      // blueprint follows the brand, it does not correct it. It has already been
-      // raised and answered; raising it again is the failure mode this note
-      // exists to stop.
-      primaryForeground: '#ffffff',
-      accent: LIGHT['--color-accent'],
-      secondary: LIGHT['--color-secondary'],
-    },
-    fonts: { heading: 'Nunito', body: 'Nunito' },
-  };
+    const brand = {
+        businessName: DEMO_BUSINESS,
+        tagline: DEMO_TAGLINE,
+        colors: {
+            primary: LIGHT['--color-primary'],
+            // WHITE, DELIBERATELY — matching `--color-primary-content` in
+            // piggles/packages/brand/src/theme.css. That file's own comment argues for
+            // the charcoal ink on a contrast measurement; the white was chosen ON
+            // PURPOSE afterwards, by Brandon, because it reads better in practice, and
+            // a ratio that wins on paper is worth nothing if the label is harder to
+            // read on the screen.
+            //
+            // DO NOT "FIX" THIS, here or in theme.css. It is a settled decision, not an
+            // oversight, and it is not a change this bundle is permitted to make — the
+            // blueprint follows the brand, it does not correct it. It has already been
+            // raised and answered; raising it again is the failure mode this note
+            // exists to stop.
+            primaryForeground: '#ffffff',
+            accent: LIGHT['--color-accent'],
+            secondary: LIGHT['--color-secondary'],
+        },
+        fonts: { heading: 'Nunito', body: 'Nunito' },
+    };
 
-  const theme = {
-    name: 'piggles',
-    basePresetKey: 'piggles',
-    presentation: { v: 2, containerWidth: '1152px' },
-    brand: {
-      colorPrimary: brand.colors.primary,
-      colorAccent: brand.colors.accent,
-      colorSecondary: brand.colors.secondary,
-      fontHeading: brand.fonts.heading,
-      fontBody: brand.fonts.body,
-      tokens: {},
-    },
-    apply: true,
-  };
+    const theme = {
+        name: 'piggles',
+        basePresetKey: 'piggles',
+        presentation: { v: 2, containerWidth: '1152px' },
+        brand: {
+            colorPrimary: brand.colors.primary,
+            colorAccent: brand.colors.accent,
+            colorSecondary: brand.colors.secondary,
+            fontHeading: brand.fonts.heading,
+            fontBody: brand.fonts.body,
+            tokens: {},
+        },
+        apply: true,
+    };
 
-  const name = 'Universal Starter';
-  const summary =
-    'The complete starter — a faceted shop, a journal, a booking page, and a wholesale ' +
-    'page. Install it, make it yours, and launch a polished working site in minutes.';
+    const name = 'Universal Starter';
+    const summary =
+        'The complete starter — a faceted shop, a journal, a booking page, and a wholesale ' +
+        'page. Install it, make it yours, and launch a polished working site in minutes.';
 
-  await fs.writeFile(join(outDir, 'site.json'), json(site));
-  await fs.writeFile(join(outDir, 'content.json'), json(content));
-  await fs.writeFile(join(outDir, 'commerce.json'), json(commerce));
-  await fs.writeFile(join(outDir, 'assets.json'), json(assetsPart));
-  await fs.writeFile(join(outDir, 'welcome-email.json'), json(emailDocs[0]));
-  await fs.writeFile(join(outDir, 'welcome-email-2.json'), json(emailDocs[1]));
+    await fs.writeFile(join(outDir, 'site.json'), json(site));
+    await fs.writeFile(join(outDir, 'content.json'), json(content));
+    await fs.writeFile(join(outDir, 'commerce.json'), json(commerce));
+    await fs.writeFile(join(outDir, 'assets.json'), json(assetsPart));
+    await fs.writeFile(join(outDir, 'welcome-email.json'), json(emailDocs[0]));
+    await fs.writeFile(join(outDir, 'welcome-email-2.json'), json(emailDocs[1]));
 
-  await fs.writeFile(
-    join(outDir, 'blueprint.ts'),
-    `// The Piggles showcase — a clone of the golden \`sparx\` bundle in the Piggles
+    await fs.writeFile(
+        join(outDir, 'blueprint.ts'),
+        `// The Piggles showcase — a clone of the golden \`sparx\` bundle in the Piggles
 // look, with an INVENTED demo business rather than the product's own name.
 //
 // GENERATED by marketplace-catalog/_gen/gen-piggles-showcase.ts — do NOT hand-edit;
@@ -294,65 +294,65 @@ const blueprint = {
 
 export default blueprint;
 `
-  );
+    );
 
-  await fs.writeFile(
-    join(outDir, 'sparx.json'),
-    json({
-      schemaVersion: 1,
-      category: 'blueprint',
-      slug: KEY,
-      name,
-      version: '1.0.0',
-      tagline: 'A complete multi-module starter — shop, journal, bookings, and wholesale.',
-      description: summary,
-      payload: 'blueprint.ts',
-      // The counterpart of the sparx showcase family's own restriction. Each
-      // brand's reference site is its own; the ~169 vertical templates declare no
-      // `brands` and stay shared, which is the default and must remain so.
-      brands: ['piggles'],
-      facets: { vertical: 'retail', industry: 'Universal' },
-      pricing: { model: 'free', priceCents: 0 },
-      requires: { modules: ['builder', 'commerce', 'cms', 'crm', 'email'] },
-      media: [
-        { file: 'media/icon.png', kind: 'icon', alt: `${name} icon` },
-        { file: 'media/preview.png', kind: 'preview', alt: `${name} — home page preview` },
-      ],
-      author: { displayName: 'WizeWorks' },
-      accent: LIGHT['--color-primary'],
-      sortWeight: 100,
-    })
-  );
+    await fs.writeFile(
+        join(outDir, 'sparx.json'),
+        json({
+            schemaVersion: 1,
+            category: 'blueprint',
+            slug: KEY,
+            name,
+            version: '1.0.0',
+            tagline: 'A complete multi-module starter — shop, journal, bookings, and wholesale.',
+            description: summary,
+            payload: 'blueprint.ts',
+            // The counterpart of the sparx showcase family's own restriction. Each
+            // brand's reference site is its own; the ~169 vertical templates declare no
+            // `brands` and stay shared, which is the default and must remain so.
+            brands: ['piggles'],
+            facets: { vertical: 'retail', industry: 'Universal' },
+            pricing: { model: 'free', priceCents: 0 },
+            requires: { modules: ['builder', 'commerce', 'cms', 'crm', 'email'] },
+            media: [
+                { file: 'media/icon.png', kind: 'icon', alt: `${name} icon` },
+                { file: 'media/preview.png', kind: 'preview', alt: `${name} — home page preview` },
+            ],
+            author: { displayName: 'WizeWorks' },
+            accent: LIGHT['--color-primary'],
+            sortWeight: 100,
+        })
+    );
 
-  for (const file of ['icon.png', 'preview.png']) {
-    const dst = join(outDir, 'media', file);
-    try {
-      await fs.access(dst);
-    } catch {
-      await fs.copyFile(join(goldenDir, 'media', file), dst);
-      console.log(`  ! ${file} copied from the sparx bundle — PLACEHOLDER, needs a Piggles shot`);
+    for (const file of ['icon.png', 'preview.png']) {
+        const dst = join(outDir, 'media', file);
+        try {
+            await fs.access(dst);
+        } catch {
+            await fs.copyFile(join(goldenDir, 'media', file), dst);
+            console.log(`  ! ${file} copied from the sparx bundle — PLACEHOLDER, needs a Piggles shot`);
+        }
     }
-  }
 
-  // Oracle: the emitted payload has to satisfy the same schema the installer
-  // parses it with. Re-imported from DISK rather than validated in memory, so
-  // what is checked is the file that actually ships — a generator that writes
-  // one thing and validates another is worse than no check at all.
-  const emitted = (await import(
-    `${pathToFileURL(join(outDir, 'blueprint.ts')).href}?t=${String(Date.now())}`
-  )) as { default: unknown };
-  const parsed = safeParseBlueprint(emitted.default);
-  console.log(`safeParseBlueprint → ${parsed.success ? 'VALID' : 'INVALID'}`);
-  if (!parsed.success) {
-    console.error(JSON.stringify(parsed.error.issues.slice(0, 8), null, 2));
-    process.exitCode = 1;
-    return;
-  }
+    // Oracle: the emitted payload has to satisfy the same schema the installer
+    // parses it with. Re-imported from DISK rather than validated in memory, so
+    // what is checked is the file that actually ships — a generator that writes
+    // one thing and validates another is worse than no check at all.
+    const emitted = (await import(
+        `${pathToFileURL(join(outDir, 'blueprint.ts')).href}?t=${String(Date.now())}`
+    )) as { default: unknown };
+    const parsed = safeParseBlueprint(emitted.default);
+    console.log(`safeParseBlueprint → ${parsed.success ? 'VALID' : 'INVALID'}`);
+    if (!parsed.success) {
+        console.error(JSON.stringify(parsed.error.issues.slice(0, 8), null, 2));
+        process.exitCode = 1;
+        return;
+    }
 
-  console.log(`gen-piggles-showcase: wrote ${KEY}`);
+    console.log(`gen-piggles-showcase: wrote ${KEY}`);
 }
 
 main().catch((err: unknown) => {
-  console.error(err);
-  process.exit(1);
+    console.error(err);
+    process.exit(1);
 });

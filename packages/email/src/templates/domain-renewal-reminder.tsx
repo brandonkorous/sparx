@@ -6,6 +6,7 @@ import {
   EmailDisplayHeading,
   EmailFinePrint,
   EmailParagraph,
+  usePlatformName,
 } from '../components';
 
 export interface DomainRenewalReminderEmailProps {
@@ -28,13 +29,14 @@ export function DomainRenewalReminderEmail({
   renewUrl,
   autoRenew,
 }: DomainRenewalReminderEmailProps) {
+  const platform = usePlatformName();
   const dayLabel = daysUntilExpiry === 1 ? 'day' : 'days';
   const tone = daysUntilExpiry <= 7 ? 'warn' : 'info';
 
   return (
     <PlatformEmailLayout
       preview={`${domainName} expires in ${daysUntilExpiry} ${dayLabel}`}
-      footerReason={`You're receiving this because ${domainName} is registered through sparx.`}
+      footerReason={`You're receiving this because ${domainName} is registered through ${platform}.`}
     >
       <EmailDisplayHeading>Domain expiring soon</EmailDisplayHeading>
       <EmailCallout tone={tone}>

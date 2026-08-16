@@ -62,12 +62,12 @@ commits to the pane's own draft rather than the server.
 of literal Tailwind classes instead (see `BAR_HEIGHT` in `surfaces/sites/traffic.tsx`). Ask before
 reaching for any other workaround.
 
-**Never re-skin a control.** A background fill + a foreground colour = you have rebuilt `<Button>`.
+**Never re-skin a control.** A background fill + a foreground color = you have rebuilt `<Button>`.
 Use silica props (`color × variant × size × shape`). Layout/spacing/sizing utilities are fine and
 expected. No `shadow-*`, no gradients, no hardcoded hex — tokens only.
 
 **Never fade readable text.** No `/opacity`, no `text-soft` on anything a person is meant to read.
-Hierarchy comes from scale, weight and colour. Body text floor is 16px.
+Hierarchy comes from scale, weight and color. Body text floor is 16px.
 
 **No eyebrows.** Nothing sits above a heading to introduce it — no kicker, no uppercase-mono label,
 no `01/02/03`, and no `<Badge>` used as one. A Badge is state ON a thing.
@@ -93,7 +93,7 @@ list's `isFetching` / `dataUpdatedAt` / `refetch`. It is **ALWAYS the last child
 right-most, past the primary action. A pane in a background tab group can be hours stale while the
 window never loses focus, so `refetchOnWindowFocus` does not save you here.
 
-**Status is semantic colour.** `<Badge color={tone} variant="soft">` where tone is
+**Status is semantic color.** `<Badge color={tone} variant="soft">` where tone is
 success/warning/error/info. Never a bland neutral pill.
 
 **Destructive actions** go behind a confirm that names the target and says what is lost, in plain
@@ -152,8 +152,8 @@ Check your work against every one of these before you say you are done.
 - Plugin classes (`bg-module`, `text-module-content`, `border-module`) are **not** Tailwind's, so
   `hover:text-module-content` and `text-module-content!` compile to **nothing**. Arbitrary-property
   utilities (`hover:[color:var(--color-module-content)]`) do work.
-- Opacity modifiers do not work on module colours (`bg-module/8` → transparent). There are no
-  per-side border colours; use `border-module border-t-2 border-x-0`.
+- Opacity modifiers do not work on module colors (`bg-module/8` → transparent). There are no
+  per-side border colors; use `border-module border-t-2 border-x-0`.
 - The soft treatment is `bg-module soft` (standalone `soft`). **Root CLAUDE.md documents
   `bg-module bg-soft`, which is wrong** and renders solid.
 - `<Button render={<a href … />}>` puts the children on the **Button**, not inside the anchor. The

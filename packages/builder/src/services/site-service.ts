@@ -20,22 +20,22 @@
 // until the render cutover flips it. Tenant-scoped via withTenant (FORCE RLS).
 
 import {
-  STARTER_LAYOUT,
-  SiteSyncInput,
-  blankPageTree,
-  resolvePageFrame,
-  storedToFrameId,
-  type BuilderOpEnvelope,
-  type BuilderPageKind,
-  type SitePublishState,
-  type PublishedSilicaFrameDto,
-  type PublishedSilicaPageDto,
-  type SilicaFrame,
-  type SilicaNode,
-  type SilicaPage,
-  type SilicaSymbolDef,
-  type SilicaTheme,
-  type StoredSilicaSite,
+    STARTER_LAYOUT,
+    SiteSyncInput,
+    blankPageTree,
+    resolvePageFrame,
+    storedToFrameId,
+    type BuilderOpEnvelope,
+    type BuilderPageKind,
+    type SitePublishState,
+    type PublishedSilicaFrameDto,
+    type PublishedSilicaPageDto,
+    type SilicaFrame,
+    type SilicaNode,
+    type SilicaPage,
+    type SilicaSymbolDef,
+    type SilicaTheme,
+    type StoredSilicaSite,
 } from '@sparx/builder-schemas';
 import type { BuilderLayout, BuilderPage, BuilderSite } from '@sparx/db';
 // @sparx/db re-exports the Prisma namespace as a VALUE (its `DbNull` runtime
@@ -48,18 +48,18 @@ import { defaultMakeId, pageBody, stampTree } from '@wizeworks/silicaui-html';
 // The starter chrome factory — the one definition of "the default header + footer",
 // shared with the studio's seed path so a reset restores today's chrome, not a copy.
 import {
-  RECORD_ADDRESSES,
-  RECORD_ADDRESS_SLUGS,
-  RECORD_TEMPLATE_LABELS,
-  isPlatformRecordPageName,
-  isRecordAddress,
-  recordAddressAt,
-  recordAddressFor,
-  recordPage,
-  slugCandidatesForPath,
-  starterFrame,
-  type RecordAddress,
-  type SiteChromeOptions,
+    RECORD_ADDRESSES,
+    RECORD_ADDRESS_SLUGS,
+    RECORD_TEMPLATE_LABELS,
+    isPlatformRecordPageName,
+    isRecordAddress,
+    recordAddressAt,
+    recordAddressFor,
+    recordPage,
+    slugCandidatesForPath,
+    starterFrame,
+    type RecordAddress,
+    type SiteChromeOptions,
 } from '@sparx/silica-catalog';
 
 import { writeAuditLog } from '../audit';
@@ -110,7 +110,7 @@ const isSilica = (r: Pick<BuilderPage, 'silicaDraftTree'>): boolean => r.silicaD
  * decides whether content a tenant asked to remove actually leaves their site.
  */
 export const hasSilicaContent = (r: Pick<BuilderPage, 'silicaDraftTree' | 'silicaPublishedTree'>) =>
-  r.silicaDraftTree != null || r.silicaPublishedTree != null;
+    r.silicaDraftTree != null || r.silicaPublishedTree != null;
 
 /**
  * The `silicaDraftSymbols` write for a sync payload — `{}` (write nothing) when the
@@ -124,14 +124,14 @@ export const hasSilicaContent = (r: Pick<BuilderPage, 'silicaDraftTree' | 'silic
  * data loss that only reproduces through a transaction.
  */
 export function symbolsUpdateFor(
-  symbols: unknown
+    symbols: unknown
 ): Record<string, never> | { silicaDraftSymbols: Prisma.InputJsonValue } {
-  return symbols != null ? { silicaDraftSymbols: asJson(symbols) } : {};
+    return symbols != null ? { silicaDraftSymbols: asJson(symbols) } : {};
 }
 
 /** A symbols map, defaulting to empty. Stored as a NOT-NULL `{}` Json column. */
 function symbolsOf(value: unknown): Record<string, SilicaSymbolDef> {
-  return (value as Record<string, SilicaSymbolDef> | null | undefined) ?? {};
+    return (value as Record<string, SilicaSymbolDef> | null | undefined) ?? {};
 }
 
 /** Rebuild the STORED site from materialized rows: page bodies + the active
@@ -147,70 +147,70 @@ function symbolsOf(value: unknown): Record<string, SilicaSymbolDef> {
  *  layout would simply not come back after a reload, which is indistinguishable from
  *  never having saved. Not part of the service's public surface. */
 export function rowsToStoredSite(
-  pages: BuilderPage[],
-  layouts: BuilderLayout[],
-  site: BuilderSite | null
+    pages: BuilderPage[],
+    layouts: BuilderLayout[],
+    site: BuilderSite | null
 ): StoredSilicaSite {
-  const symbols = symbolsOf(site?.silicaDraftSymbols);
-  const theme = site?.silicaDraftTheme as SilicaTheme | null | undefined;
-  const savedThemes = site?.silicaDraftSavedThemes as SilicaTheme[] | null | undefined;
-  const layout = layouts.find((l) => l.isActive) ?? null;
-  // The catalog splits the way silica's `Site` does: the LIVE layout is the default
-  // shell (`frame`), every other one is a named alternative (`frames[id]`). Keyed by
-  // the row id, which is exactly what `builder_pages.frame_id` stores — so a page's
-  // pointer needs no translation between the engine and the storefront.
-  //
-  // A layout with no silica tree yet (created through the legacy `.bx-*` catalog, or
-  // never opened) is SKIPPED rather than sent as an empty shell: the engine would show
-  // it in the switcher as a layout with no Outlet, which is not a thing an author can
-  // repair from inside the editor.
-  const named = layouts.filter((l) => !l.isActive && l.silicaDraftTree != null);
-  return {
-    ...(layout?.silicaDraftTree != null
-      ? { frame: { root: layout.silicaDraftTree as unknown as SilicaNode, editable: true } }
-      : {}),
-    ...(named.length > 0
-      ? {
-          frames: Object.fromEntries(
-            named.map((l) => [
-              l.id,
-              {
-                root: l.silicaDraftTree as unknown as SilicaNode,
-                editable: true,
-                name: l.name,
-              },
-            ])
-          ),
-        }
-      : {}),
-    pages: pages.map((r) => ({
-      id: r.id,
-      name: r.name,
-      // A PRE-ADDRESS RECORD TEMPLATE HAS ITS ADDRESS DERIVED, not defaulted to `/`.
-      //
-      // A page that renders one record used to be identified by `recordType` with no
-      // slug at all, and rows like that are already in production — the DB seed writes
-      // them, `STARTER_PAGES` ships them, and every blueprint install creates them. The
-      // bare `?? '/'` loaded each one into the editor as a SECOND HOME PAGE: two entries
-      // in the switcher both claiming `/`, one of them a product template.
-      //
-      // Its address was always implied by its `recordType`. Stating it here does three
-      // things at once: the switcher shows it where it belongs, the ensure below reads
-      // the address as occupied so it does not seed a duplicate, and the tenant's own
-      // template — not a fresh copy of the factory — is the one they edit. The row
-      // self-migrates on their next save, when `sync` writes the derived slug back.
-      slug: recordAddressFor(r.recordType ?? '')?.slug ?? r.slug ?? '/',
-      root: r.silicaDraftTree as unknown as SilicaNode,
-      // The stored chrome choice, in the engine's spelling — so its own per-page layout
-      // picker opens showing what this page actually does, rather than defaulting every
-      // page to "Default layout" and inviting the author to re-pick what they already
-      // picked. `undefined` is omitted by JSON, which IS the default case.
-      frameId: storedToFrameId(r.frameId),
-    })),
-    ...(Object.keys(symbols).length > 0 ? { symbols } : {}),
-    ...(theme ? { theme } : {}),
-    ...(savedThemes && savedThemes.length > 0 ? { savedThemes } : {}),
-  };
+    const symbols = symbolsOf(site?.silicaDraftSymbols);
+    const theme = site?.silicaDraftTheme as SilicaTheme | null | undefined;
+    const savedThemes = site?.silicaDraftSavedThemes as SilicaTheme[] | null | undefined;
+    const layout = layouts.find((l) => l.isActive) ?? null;
+    // The catalog splits the way silica's `Site` does: the LIVE layout is the default
+    // shell (`frame`), every other one is a named alternative (`frames[id]`). Keyed by
+    // the row id, which is exactly what `builder_pages.frame_id` stores — so a page's
+    // pointer needs no translation between the engine and the storefront.
+    //
+    // A layout with no silica tree yet (created through the legacy `.bx-*` catalog, or
+    // never opened) is SKIPPED rather than sent as an empty shell: the engine would show
+    // it in the switcher as a layout with no Outlet, which is not a thing an author can
+    // repair from inside the editor.
+    const named = layouts.filter((l) => !l.isActive && l.silicaDraftTree != null);
+    return {
+        ...(layout?.silicaDraftTree != null
+            ? { frame: { root: layout.silicaDraftTree as unknown as SilicaNode, editable: true } }
+            : {}),
+        ...(named.length > 0
+            ? {
+                frames: Object.fromEntries(
+                    named.map((l) => [
+                        l.id,
+                        {
+                            root: l.silicaDraftTree as unknown as SilicaNode,
+                            editable: true,
+                            name: l.name,
+                        },
+                    ])
+                ),
+            }
+            : {}),
+        pages: pages.map((r) => ({
+            id: r.id,
+            name: r.name,
+            // A PRE-ADDRESS RECORD TEMPLATE HAS ITS ADDRESS DERIVED, not defaulted to `/`.
+            //
+            // A page that renders one record used to be identified by `recordType` with no
+            // slug at all, and rows like that are already in production — the DB seed writes
+            // them, `STARTER_PAGES` ships them, and every blueprint install creates them. The
+            // bare `?? '/'` loaded each one into the editor as a SECOND HOME PAGE: two entries
+            // in the switcher both claiming `/`, one of them a product template.
+            //
+            // Its address was always implied by its `recordType`. Stating it here does three
+            // things at once: the switcher shows it where it belongs, the ensure below reads
+            // the address as occupied so it does not seed a duplicate, and the tenant's own
+            // template — not a fresh copy of the factory — is the one they edit. The row
+            // self-migrates on their next save, when `sync` writes the derived slug back.
+            slug: recordAddressFor(r.recordType ?? '')?.slug ?? r.slug ?? '/',
+            root: r.silicaDraftTree as unknown as SilicaNode,
+            // The stored chrome choice, in the engine's spelling — so its own per-page layout
+            // picker opens showing what this page actually does, rather than defaulting every
+            // page to "Default layout" and inviting the author to re-pick what they already
+            // picked. `undefined` is omitted by JSON, which IS the default case.
+            frameId: storedToFrameId(r.frameId),
+        })),
+        ...(Object.keys(symbols).length > 0 ? { symbols } : {}),
+        ...(theme ? { theme } : {}),
+        ...(savedThemes && savedThemes.length > 0 ? { savedThemes } : {}),
+    };
 }
 
 /** Load the property's stored silica site, or null if none is materialized yet.
@@ -222,46 +222,46 @@ export function rowsToStoredSite(
  *  a caller that has no flags to hand — a test, a script — behaves predictably rather
  *  than seeding a publisher a product page. */
 export function load(
-  ctx: PropertyContext,
-  modules: SiteChromeOptions = {}
+    ctx: PropertyContext,
+    modules: SiteChromeOptions = {}
 ): Promise<StoredSilicaSite | null> {
-  return withTenant(ctx, async (tx) => {
-    let allPages = await tx.builderPage.findMany({
-      where: { propertyId: ctx.propertyId },
-      orderBy: [{ position: 'asc' }, { createdAt: 'asc' }],
-    });
-    // Only for a property that already HAS a site. With no pages at all the studio opens
-    // on `starterSite`, which composes the record pages itself, and materializing them
-    // here would leave a half-seeded site — record pages and no Home.
-    const silicaPages = allPages.filter(isSilica);
-    if (silicaPages.length > 0) {
-      // EVERY row is passed, not just the silica ones. Whether the tenant can EDIT their
-      // product page is a question about silica rows — but whether a `create` would
-      // collide is a question about ALL of them, and passing only the silica rows asked
-      // the first question twice. `20270203000000_record_page_addresses` addresses record
-      // pages without regard to tier, so a legacy sparx-tier template (`STARTER_PAGES`
-      // seeds one per record type) now HOLDS `/products/:handle` while still being
-      // invisible to the filter above — and seeding "the missing page" over the top of it
-      // hit `(tenant_id, property_id, slug)` and 500'd every builder load in production.
-      const seeded = await ensureRecordPagesTx(tx, ctx, allPages, modules);
-      if (seeded) {
-        allPages = await tx.builderPage.findMany({
-          where: { propertyId: ctx.propertyId },
-          orderBy: [{ position: 'asc' }, { createdAt: 'asc' }],
+    return withTenant(ctx, async (tx) => {
+        let allPages = await tx.builderPage.findMany({
+            where: { propertyId: ctx.propertyId },
+            orderBy: [{ position: 'asc' }, { createdAt: 'asc' }],
         });
-      }
-    }
-    const pages = allPages.filter(isSilica);
-    if (pages.length === 0) return null;
-    const [layouts, site] = await Promise.all([
-      tx.builderLayout.findMany({
-        where: { propertyId: ctx.propertyId },
-        orderBy: [{ position: 'asc' }, { createdAt: 'asc' }],
-      }),
-      tx.builderSite.findUnique({ where: { propertyId: ctx.propertyId } }),
-    ]);
-    return rowsToStoredSite(pages, layouts, site);
-  });
+        // Only for a property that already HAS a site. With no pages at all the studio opens
+        // on `starterSite`, which composes the record pages itself, and materializing them
+        // here would leave a half-seeded site — record pages and no Home.
+        const silicaPages = allPages.filter(isSilica);
+        if (silicaPages.length > 0) {
+            // EVERY row is passed, not just the silica ones. Whether the tenant can EDIT their
+            // product page is a question about silica rows — but whether a `create` would
+            // collide is a question about ALL of them, and passing only the silica rows asked
+            // the first question twice. `20270203000000_record_page_addresses` addresses record
+            // pages without regard to tier, so a legacy sparx-tier template (`STARTER_PAGES`
+            // seeds one per record type) now HOLDS `/products/:handle` while still being
+            // invisible to the filter above — and seeding "the missing page" over the top of it
+            // hit `(tenant_id, property_id, slug)` and 500'd every builder load in production.
+            const seeded = await ensureRecordPagesTx(tx, ctx, allPages, modules);
+            if (seeded) {
+                allPages = await tx.builderPage.findMany({
+                    where: { propertyId: ctx.propertyId },
+                    orderBy: [{ position: 'asc' }, { createdAt: 'asc' }],
+                });
+            }
+        }
+        const pages = allPages.filter(isSilica);
+        if (pages.length === 0) return null;
+        const [layouts, site] = await Promise.all([
+            tx.builderLayout.findMany({
+                where: { propertyId: ctx.propertyId },
+                orderBy: [{ position: 'asc' }, { createdAt: 'asc' }],
+            }),
+            tx.builderSite.findUnique({ where: { propertyId: ctx.propertyId } }),
+        ]);
+        return rowsToStoredSite(pages, layouts, site);
+    });
 }
 
 // ── Public storefront reads (docs/118 Stage 6, the render cutover) ────────────
@@ -295,12 +295,12 @@ export type SiteStage = 'published' | 'draft';
  *  rather than trusting to a two-branch ternary. Getting it backwards would serve
  *  unpublished work to the public. */
 export function hasStagedTree(r: StagedPageRow, stage: SiteStage): boolean {
-  return stagedTree(r, stage) != null;
+    return stagedTree(r, stage) != null;
 }
 
 /** The tree column for `stage` — the ONLY place the stage→column mapping is written. */
 export function stagedTree(r: StagedPageRow, stage: SiteStage): unknown {
-  return stage === 'draft' ? r.silicaDraftTree : r.silicaPublishedTree;
+    return stage === 'draft' ? r.silicaDraftTree : r.silicaPublishedTree;
 }
 
 /** The frame-pointer column for `stage`, and the same invariant as {@link stagedTree}
@@ -312,16 +312,16 @@ export function stagedTree(r: StagedPageRow, stage: SiteStage): unknown {
  *  is the exact failure the staged pointer was added to prevent, so it gets a test
  *  rather than trust in a ternary. */
 export function stagedFrameId(
-  r: { frameId: string | null; publishedFrameId: string | null },
-  stage: SiteStage
+    r: { frameId: string | null; publishedFrameId: string | null },
+    stage: SiteStage
 ): string | null {
-  return stage === 'draft' ? r.frameId : r.publishedFrameId;
+    return stage === 'draft' ? r.frameId : r.publishedFrameId;
 }
 
 /** Strip a leading slash so a stored silica slug (`/`, `/shop`) and the storefront's
  *  path segment (`shop`, or `''` for home) compare on equal footing. */
 function normalizeSlug(slug: string | null | undefined): string {
-  return (slug ?? '').replace(/^\/+/, '');
+    return (slug ?? '').replace(/^\/+/, '');
 }
 
 /**
@@ -338,16 +338,16 @@ function normalizeSlug(slug: string | null | undefined): string {
  * caller's `position` ordering already decided it and there is nothing to re-rank.
  */
 function pickByCandidate<T extends { slug: string | null }>(
-  rows: readonly T[],
-  candidates: readonly string[],
-  target: string
+    rows: readonly T[],
+    candidates: readonly string[],
+    target: string
 ): T | undefined {
-  if (target === '' || rows.length <= 1) return rows[0];
-  for (const candidate of candidates) {
-    const row = rows.find((r) => r.slug === candidate);
-    if (row) return row;
-  }
-  return rows[0];
+    if (target === '' || rows.length <= 1) return rows[0];
+    for (const candidate of candidates) {
+        const row = rows.find((r) => r.slug === candidate);
+        if (row) return row;
+    }
+    return rows[0];
 }
 
 /**
@@ -367,41 +367,41 @@ function pickByCandidate<T extends { slug: string | null }>(
  * inputs, where a `:` must be impossible to type in the first place).
  */
 function addressOf(slug: string): RecordAddress | null {
-  const address = recordAddressAt(slug);
-  if (!address && slug.includes(':')) {
-    throw new BuilderValidationError(
-      `"${slug}" is not a valid page address. Page addresses use lowercase letters, ` +
-        `numbers and hyphens; the only addresses containing ":" are the pages sparx ` +
-        `provides for your records (${RECORD_ADDRESS_SLUGS.join(', ')}), which cannot ` +
-        `be created or renamed.`,
-      [{ field: 'slug', message: 'Not a valid page address.' }]
-    );
-  }
-  return address;
+    const address = recordAddressAt(slug);
+    if (!address && slug.includes(':')) {
+        throw new BuilderValidationError(
+            `"${slug}" is not a valid page address. Page addresses use lowercase letters, ` +
+            `numbers and hyphens; the only addresses containing ":" are the pages sparx ` +
+            `provides for your records (${RECORD_ADDRESS_SLUGS.join(', ')}), which cannot ` +
+            `be created or renamed.`,
+            [{ field: 'slug', message: 'Not a valid page address.' }]
+        );
+    }
+    return address;
 }
 
 /** The columns {@link recordPagePlan} decides from. A `Pick` rather than a shape of its
  *  own, so "what the planner reads" cannot drift from what the row actually is. */
 export type RecordPageRow = Pick<
-  BuilderPage,
-  'id' | 'name' | 'slug' | 'recordType' | 'position' | 'silicaDraftTree'
+    BuilderPage,
+    'id' | 'name' | 'slug' | 'recordType' | 'position' | 'silicaDraftTree'
 >;
 
 /** What {@link ensureRecordPagesTx} should write. `upgrades` come first: they are the
  *  rows that already OWN an address, so resolving them is what makes the `creates` safe
  *  against `(tenant_id, property_id, slug)`. */
 export interface RecordPagePlan {
-  /** Rows holding an address with no silica body — given one IN PLACE. `slug` is the
-   *  address to write, or null to leave the row's own slug alone. */
-  upgrades: { id: string; address: RecordAddress; slug: string | null }[];
-  /** Addresses no row holds at all — created fresh. */
-  creates: RecordAddress[];
-  /** Rows still carrying a name the PLATFORM wrote, where that name is no longer the one
-   *  the platform uses — corrected in place. Never a name a person chose; see
-   *  `isPlatformRecordPageName`. Empty once healed, which is what keeps `load` idempotent. */
-  renames: { id: string; name: string }[];
-  /** The `position` the first created page takes; each later one increments. */
-  nextPosition: number;
+    /** Rows holding an address with no silica body — given one IN PLACE. `slug` is the
+     *  address to write, or null to leave the row's own slug alone. */
+    upgrades: { id: string; address: RecordAddress; slug: string | null }[];
+    /** Addresses no row holds at all — created fresh. */
+    creates: RecordAddress[];
+    /** Rows still carrying a name the PLATFORM wrote, where that name is no longer the one
+     *  the platform uses — corrected in place. Never a name a person chose; see
+     *  `isPlatformRecordPageName`. Empty once healed, which is what keeps `load` idempotent. */
+    renames: { id: string; name: string }[];
+    /** The `position` the first created page takes; each later one increments. */
+    nextPosition: number;
 }
 
 /**
@@ -435,84 +435,84 @@ export interface RecordPagePlan {
  * is saved from the studio.
  */
 export function recordPagePlan(
-  rows: readonly RecordPageRow[],
-  modules: SiteChromeOptions
+    rows: readonly RecordPageRow[],
+    modules: SiteChromeOptions
 ): RecordPagePlan {
-  const active = {
-    commerce: modules.commerceEnabled ?? true,
-    scheduling: modules.schedulingEnabled ?? false,
-    cms: modules.cmsEnabled ?? false,
-  };
-  // The address a row presents at — by its slug, else by the `recordType`
-  // `rowsToStoredSite` derives one from. Both spellings are in production.
-  const addressOfRow = (r: RecordPageRow): RecordAddress | null =>
-    recordAddressAt(r.slug) ?? recordAddressFor(r.recordType ?? '');
+    const active = {
+        commerce: modules.commerceEnabled ?? true,
+        scheduling: modules.schedulingEnabled ?? false,
+        cms: modules.cmsEnabled ?? false,
+    };
+    // The address a row presents at — by its slug, else by the `recordType`
+    // `rowsToStoredSite` derives one from. Both spellings are in production.
+    const addressOfRow = (r: RecordPageRow): RecordAddress | null =>
+        recordAddressAt(r.slug) ?? recordAddressFor(r.recordType ?? '');
 
-  const delivered = new Set(
-    rows.filter(isSilica).flatMap((r) => {
-      const address = addressOfRow(r);
-      return address ? [address.recordType] : [];
-    })
-  );
-  // Every slug already spoken for, so an upgrade never writes an address a SIBLING row
-  // holds — the same collision one tier down.
-  const occupiedSlugs = new Set(rows.map((r) => normalizeSlug(r.slug)));
-  // A row is claimed by at most one address. Two addresses can otherwise select the same
-  // row when its slug and its `recordType` disagree, and the second update would silently
-  // overwrite the first.
-  const claimed = new Set<string>();
+    const delivered = new Set(
+        rows.filter(isSilica).flatMap((r) => {
+            const address = addressOfRow(r);
+            return address ? [address.recordType] : [];
+        })
+    );
+    // Every slug already spoken for, so an upgrade never writes an address a SIBLING row
+    // holds — the same collision one tier down.
+    const occupiedSlugs = new Set(rows.map((r) => normalizeSlug(r.slug)));
+    // A row is claimed by at most one address. Two addresses can otherwise select the same
+    // row when its slug and its `recordType` disagree, and the second update would silently
+    // overwrite the first.
+    const claimed = new Set<string>();
 
-  const upgrades: RecordPagePlan['upgrades'] = [];
-  const creates: RecordAddress[] = [];
-  for (const address of RECORD_ADDRESSES) {
-    if (!active[address.module] || delivered.has(address.recordType)) continue;
-    // Prefer the row SITTING at the address over one that merely claims the record type:
-    // that is the row the unique index would actually collide with.
-    const occupant =
-      rows.find(
-        (r) =>
-          !isSilica(r) &&
-          !claimed.has(r.id) &&
-          recordAddressAt(r.slug)?.recordType === address.recordType
-      ) ??
-      rows.find((r) => !isSilica(r) && !claimed.has(r.id) && r.recordType === address.recordType);
-    if (!occupant) {
-      creates.push(address);
-      continue;
+    const upgrades: RecordPagePlan['upgrades'] = [];
+    const creates: RecordAddress[] = [];
+    for (const address of RECORD_ADDRESSES) {
+        if (!active[address.module] || delivered.has(address.recordType)) continue;
+        // Prefer the row SITTING at the address over one that merely claims the record type:
+        // that is the row the unique index would actually collide with.
+        const occupant =
+            rows.find(
+                (r) =>
+                    !isSilica(r) &&
+                    !claimed.has(r.id) &&
+                    recordAddressAt(r.slug)?.recordType === address.recordType
+            ) ??
+            rows.find((r) => !isSilica(r) && !claimed.has(r.id) && r.recordType === address.recordType);
+        if (!occupant) {
+            creates.push(address);
+            continue;
+        }
+        claimed.add(occupant.id);
+        // Write the address only when this row isn't already at it AND nothing else is. A row
+        // matched on `recordType` alone still carries its old slug; taking the address is what
+        // puts it in the switcher, but never at the cost of the collision being fixed here.
+        const writeSlug =
+            recordAddressAt(occupant.slug) === null && !occupiedSlugs.has(normalizeSlug(address.slug));
+        if (writeSlug) occupiedSlugs.add(normalizeSlug(address.slug));
+        upgrades.push({ id: occupant.id, address, slug: writeSlug ? address.slug : null });
     }
-    claimed.add(occupant.id);
-    // Write the address only when this row isn't already at it AND nothing else is. A row
-    // matched on `recordType` alone still carries its old slug; taking the address is what
-    // puts it in the switcher, but never at the cost of the collision being fixed here.
-    const writeSlug =
-      recordAddressAt(occupant.slug) === null && !occupiedSlugs.has(normalizeSlug(address.slug));
-    if (writeSlug) occupiedSlugs.add(normalizeSlug(address.slug));
-    upgrades.push({ id: occupant.id, address, slug: writeSlug ? address.slug : null });
-  }
 
-  // Correct a stale PLATFORM name wherever one sits at an address — including on rows this
-  // plan is not otherwise touching, which is the whole point: a site healed by an earlier
-  // release already has its record pages, and they are carrying the labels that release
-  // wrote. Without this the new names reach only sites seeded after the change.
-  const renames: RecordPagePlan['renames'] = [];
-  for (const row of rows) {
-    const address = addressOfRow(row);
-    if (!address) continue;
-    const target = RECORD_TEMPLATE_LABELS[address.recordType];
-    // Two guards, and they are different questions. `isPlatformRecordPageName` asks may we
-    // touch this at all; the inequality asks is there anything to do. Together they make
-    // the heal a no-op on both a renamed page and an already-correct one.
-    if (row.name !== target && isPlatformRecordPageName(row.name)) {
-      renames.push({ id: row.id, name: target });
+    // Correct a stale PLATFORM name wherever one sits at an address — including on rows this
+    // plan is not otherwise touching, which is the whole point: a site healed by an earlier
+    // release already has its record pages, and they are carrying the labels that release
+    // wrote. Without this the new names reach only sites seeded after the change.
+    const renames: RecordPagePlan['renames'] = [];
+    for (const row of rows) {
+        const address = addressOfRow(row);
+        if (!address) continue;
+        const target = RECORD_TEMPLATE_LABELS[address.recordType];
+        // Two guards, and they are different questions. `isPlatformRecordPageName` asks may we
+        // touch this at all; the inequality asks is there anything to do. Together they make
+        // the heal a no-op on both a renamed page and an already-correct one.
+        if (row.name !== target && isPlatformRecordPageName(row.name)) {
+            renames.push({ id: row.id, name: target });
+        }
     }
-  }
 
-  return {
-    upgrades,
-    creates,
-    renames,
-    nextPosition: Math.max(0, ...rows.map((r) => r.position)) + 1,
-  };
+    return {
+        upgrades,
+        creates,
+        renames,
+        nextPosition: Math.max(0, ...rows.map((r) => r.position)) + 1,
+    };
 }
 
 /**
@@ -538,75 +538,75 @@ export function recordPagePlan(
  * wearing the clothes of a no-op. An UPGRADE keeps its row's position for the same reason.
  */
 async function ensureRecordPagesTx(
-  tx: TxClient,
-  ctx: PropertyContext,
-  rows: readonly RecordPageRow[],
-  modules: SiteChromeOptions
+    tx: TxClient,
+    ctx: PropertyContext,
+    rows: readonly RecordPageRow[],
+    modules: SiteChromeOptions
 ): Promise<boolean> {
-  const plan = recordPagePlan(rows, modules);
-  if (plan.upgrades.length === 0 && plan.creates.length === 0 && plan.renames.length === 0) {
-    return false;
-  }
+    const plan = recordPagePlan(rows, modules);
+    if (plan.upgrades.length === 0 && plan.creates.length === 0 && plan.renames.length === 0) {
+        return false;
+    }
 
-  // Stale platform names first, so an upgrade below can still overwrite one on the same
-  // row without the two fighting over `name`.
-  for (const { id, name } of plan.renames) {
-    await tx.builderPage.update({ where: { id }, data: { name } });
-  }
+    // Stale platform names first, so an upgrade below can still overwrite one on the same
+    // row without the two fighting over `name`.
+    for (const { id, name } of plan.renames) {
+        await tx.builderPage.update({ where: { id }, data: { name } });
+    }
 
-  // Upgrades FIRST — each one settles a slug a create might otherwise have reached for.
-  for (const { id, address, slug } of plan.upgrades) {
-    await tx.builderPage.update({
-      where: { id },
-      data: {
-        kind: 'collection',
-        recordType: address.recordType,
-        ...(slug !== null ? { slug } : {}),
-        // The body it was always missing. `name` is NOT written here — the `renames` pass
-        // above owns it, and owns it more narrowly than this branch could: it corrects a
-        // name only when the PLATFORM wrote it. Blanket-writing the label here would
-        // rename a page an operator had deliberately called `Treatments`, on a read.
-        silicaDraftTree: asJson(recordPage(address).root),
-      },
-    });
-  }
+    // Upgrades FIRST — each one settles a slug a create might otherwise have reached for.
+    for (const { id, address, slug } of plan.upgrades) {
+        await tx.builderPage.update({
+            where: { id },
+            data: {
+                kind: 'collection',
+                recordType: address.recordType,
+                ...(slug !== null ? { slug } : {}),
+                // The body it was always missing. `name` is NOT written here — the `renames` pass
+                // above owns it, and owns it more narrowly than this branch could: it corrects a
+                // name only when the PLATFORM wrote it. Blanket-writing the label here would
+                // rename a page an operator had deliberately called `Treatments`, on a read.
+                silicaDraftTree: asJson(recordPage(address).root),
+            },
+        });
+    }
 
-  let position = plan.nextPosition;
-  for (const address of plan.creates) {
-    const page = recordPage(address);
-    await tx.builderPage.create({
-      data: {
-        id: page.id,
-        tenantId: ctx.tenantId,
-        propertyId: ctx.propertyId,
-        name: page.name,
-        kind: 'collection',
-        recordType: address.recordType,
-        slug: address.slug,
-        draftTree: asJson(blankPageTree()),
-        silicaDraftTree: asJson(page.root),
-        position: position++,
-      },
-    });
-  }
-  return true;
+    let position = plan.nextPosition;
+    for (const address of plan.creates) {
+        const page = recordPage(address);
+        await tx.builderPage.create({
+            data: {
+                id: page.id,
+                tenantId: ctx.tenantId,
+                propertyId: ctx.propertyId,
+                name: page.name,
+                kind: 'collection',
+                recordType: address.recordType,
+                slug: address.slug,
+                draftTree: asJson(blankPageTree()),
+                silicaDraftTree: asJson(page.root),
+                position: position++,
+            },
+        });
+    }
+    return true;
 }
 
 /** The property's site-global symbols for `stage` (saved components). Read alongside
  *  every page so a body's symbol instances flatten at render. Preview reads the DRAFT
  *  map so a symbol edited but not yet published previews inside every page using it. */
 function stagedSymbols(
-  site: BuilderSite | null,
-  stage: SiteStage
+    site: BuilderSite | null,
+    stage: SiteStage
 ): Record<string, SilicaSymbolDef> {
-  return symbolsOf(stage === 'draft' ? site?.silicaDraftSymbols : site?.silicaPublishedSymbols);
+    return symbolsOf(stage === 'draft' ? site?.silicaDraftSymbols : site?.silicaPublishedSymbols);
 }
 
 /** The property's authored theme for `stage`, or null when the author never saved one
  *  (the storefront then renders the tenant's brand-derived theme). */
 function stagedTheme(site: BuilderSite | null, stage: SiteStage): SilicaTheme | null {
-  const value = stage === 'draft' ? site?.silicaDraftTheme : site?.silicaPublishedTheme;
-  return (value as SilicaTheme | null | undefined) ?? null;
+    const value = stage === 'draft' ? site?.silicaDraftTheme : site?.silicaPublishedTheme;
+    return (value as SilicaTheme | null | undefined) ?? null;
 }
 
 /**
@@ -619,25 +619,25 @@ function stagedTheme(site: BuilderSite | null, stage: SiteStage): SilicaTheme | 
  * been near the new editor has a null pointer and is completely unaffected.
  *
  * A dangling pointer falls through to the column and then to brand-derived. That
- * is the deliberate degradation: the site keeps rendering in its own colours
+ * is the deliberate degradation: the site keeps rendering in its own colors
  * rather than going unstyled because a look was deleted.
  */
 async function resolveStagedTheme(
-  tx: TxClient,
-  ctx: PropertyContext,
-  site: BuilderSite | null,
-  stage: SiteStage
+    tx: TxClient,
+    ctx: PropertyContext,
+    site: BuilderSite | null,
+    stage: SiteStage
 ): Promise<SilicaTheme | null> {
-  const themeId = stage === 'draft' ? site?.themeId : site?.publishedThemeId;
-  if (themeId) {
-    const row = await tx.builderTheme.findFirst({
-      where: { id: themeId, tenantId: ctx.tenantId },
-      select: { draftTokens: true, publishedTokens: true },
-    });
-    const tokens = stage === 'draft' ? row?.draftTokens : row?.publishedTokens;
-    if (tokens != null) return tokens as unknown as SilicaTheme;
-  }
-  return stagedTheme(site, stage);
+    const themeId = stage === 'draft' ? site?.themeId : site?.publishedThemeId;
+    if (themeId) {
+        const row = await tx.builderTheme.findFirst({
+            where: { id: themeId, tenantId: ctx.tenantId },
+            select: { draftTokens: true, publishedTokens: true },
+        });
+        const tokens = stage === 'draft' ? row?.draftTokens : row?.publishedTokens;
+        if (tokens != null) return tokens as unknown as SilicaTheme;
+    }
+    return stagedTheme(site, stage);
 }
 
 /**
@@ -653,24 +653,24 @@ async function resolveStagedTheme(
  * the other three never leave the database on a storefront read.
  */
 const PAGE_META_SELECT = {
-  id: true,
-  name: true,
-  slug: true,
-  kind: true,
-  recordType: true,
-  // The product-type target (docs/143 Option B) — a scalar, so it rides free on the
-  // read that already refuses to drag trees it will discard. Drives per-type page routing.
-  recordSubtype: true,
-  isDefault: true,
-  // Which chrome wraps this page (docs/silicaui/01 §5). A scalar, so it costs nothing on the
-  // read that already refuses to drag trees it will discard.
-  frameId: true,
-  seoTitle: true,
-  seoDescription: true,
-  canonical: true,
-  ogImage: true,
-  noindex: true,
-  publishedAt: true,
+    id: true,
+    name: true,
+    slug: true,
+    kind: true,
+    recordType: true,
+    // The product-type target (docs/143 Option B) — a scalar, so it rides free on the
+    // read that already refuses to drag trees it will discard. Drives per-type page routing.
+    recordSubtype: true,
+    isDefault: true,
+    // Which chrome wraps this page (docs/silicaui/01 §5). A scalar, so it costs nothing on the
+    // read that already refuses to drag trees it will discard.
+    frameId: true,
+    seoTitle: true,
+    seoDescription: true,
+    canonical: true,
+    ogImage: true,
+    noindex: true,
+    publishedAt: true,
 } as const;
 
 const PUBLISHED_PAGE_SELECT = { ...PAGE_META_SELECT, silicaPublishedTree: true } as const;
@@ -681,42 +681,42 @@ const DRAFT_PAGE_SELECT = { ...PAGE_META_SELECT, silicaDraftTree: true } as cons
  *  hard for a preview read: serving the draft is not a licence to select the published
  *  column too. */
 function pageSelectFor(stage: SiteStage) {
-  return stage === 'draft' ? DRAFT_PAGE_SELECT : PUBLISHED_PAGE_SELECT;
+    return stage === 'draft' ? DRAFT_PAGE_SELECT : PUBLISHED_PAGE_SELECT;
 }
 
 /** A page row narrowed to {@link PAGE_META_SELECT} plus whichever ONE tree column the
  *  stage asked for. The page helpers take this rather than the full `BuilderPage` so a
  *  future column addition cannot silently re-widen the read back to every tree. */
 export type StagedPageRow = Pick<BuilderPage, keyof typeof PAGE_META_SELECT> &
-  Partial<Pick<BuilderPage, 'silicaPublishedTree' | 'silicaDraftTree'>>;
+    Partial<Pick<BuilderPage, 'silicaPublishedTree' | 'silicaDraftTree'>>;
 
 /** SEO + lifecycle projection shared by the page reads. */
 function publishedPageMeta(r: StagedPageRow) {
-  return {
-    seoTitle: r.seoTitle,
-    seoDescription: r.seoDescription,
-    canonical: r.canonical,
-    ogImage: r.ogImage,
-    noindex: r.noindex,
-    publishedAt: r.publishedAt ? r.publishedAt.toISOString() : null,
-  };
+    return {
+        seoTitle: r.seoTitle,
+        seoDescription: r.seoDescription,
+        canonical: r.canonical,
+        ogImage: r.ogImage,
+        noindex: r.noindex,
+        publishedAt: r.publishedAt ? r.publishedAt.toISOString() : null,
+    };
 }
 
 function toPublishedPage(
-  r: StagedPageRow,
-  symbols: Record<string, SilicaSymbolDef>,
-  stage: SiteStage
+    r: StagedPageRow,
+    symbols: Record<string, SilicaSymbolDef>,
+    stage: SiteStage
 ): PublishedSilicaPageDto {
-  return {
-    id: r.id,
-    name: r.name,
-    slug: r.slug ?? '',
-    kind: r.kind,
-    recordType: r.recordType,
-    root: stagedTree(r, stage) as SilicaNode,
-    symbols,
-    ...publishedPageMeta(r),
-  };
+    return {
+        id: r.id,
+        name: r.name,
+        slug: r.slug ?? '',
+        kind: r.kind,
+        recordType: r.recordType,
+        root: stagedTree(r, stage) as SilicaNode,
+        symbols,
+        ...publishedPageMeta(r),
+    };
 }
 
 /** The published FRAME (chrome) + the site-global symbols + authored theme — one
@@ -735,45 +735,45 @@ function toPublishedPage(
  *  collection template rather than a slug) falls back to the default, which is what
  *  those routes have always had. */
 export function getPublishedFrame(
-  ctx: PropertyContext,
-  stage: SiteStage = 'published',
-  path?: string
+    ctx: PropertyContext,
+    stage: SiteStage = 'published',
+    path?: string
 ): Promise<PublishedSilicaFrameDto> {
-  return withTenant(ctx, async (tx) => {
-    const [layout, site, pageFrameId] = await Promise.all([
-      tx.builderLayout.findFirst({ where: { propertyId: ctx.propertyId, isActive: true } }),
-      tx.builderSite.findUnique({ where: { propertyId: ctx.propertyId } }),
-      path == null ? undefined : findPageFrameId(tx, ctx.propertyId, path, stage),
-    ]);
+    return withTenant(ctx, async (tx) => {
+        const [layout, site, pageFrameId] = await Promise.all([
+            tx.builderLayout.findFirst({ where: { propertyId: ctx.propertyId, isActive: true } }),
+            tx.builderSite.findUnique({ where: { propertyId: ctx.propertyId } }),
+            path == null ? undefined : findPageFrameId(tx, ctx.propertyId, path, stage),
+        ]);
 
-    const meta = {
-      symbols: stagedSymbols(site, stage),
-      theme: await resolveStagedTheme(tx, ctx, site, stage),
-    };
-    const treeOf = (l: { silicaDraftTree: unknown; silicaPublishedTree: unknown } | null) =>
-      stage === 'draft' ? l?.silicaDraftTree : l?.silicaPublishedTree;
-    const asFrame = (root: unknown): SilicaFrame | null =>
-      root != null ? { root: root as SilicaNode, editable: true } : null;
+        const meta = {
+            symbols: stagedSymbols(site, stage),
+            theme: await resolveStagedTheme(tx, ctx, site, stage),
+        };
+        const treeOf = (l: { silicaDraftTree: unknown; silicaPublishedTree: unknown } | null) =>
+            stage === 'draft' ? l?.silicaDraftTree : l?.silicaPublishedTree;
+        const asFrame = (root: unknown): SilicaFrame | null =>
+            root != null ? { root: root as SilicaNode, editable: true } : null;
 
-    const choice = resolvePageFrame(pageFrameId, EMPTY_IDS);
-    // `default` covers both "no path given" and "this page takes the site default".
-    if (choice.kind === 'default') return { frame: asFrame(treeOf(layout)), ...meta };
-    // Explicitly bare. `frameless` matters as much as the null: the storefront falls
-    // back to the code starter frame when a property has published no chrome, and
-    // without the flag that fallback would put a header straight back onto the landing
-    // page built to avoid one.
-    if (choice.kind === 'none') return { frame: null, frameless: true, ...meta };
+        const choice = resolvePageFrame(pageFrameId, EMPTY_IDS);
+        // `default` covers both "no path given" and "this page takes the site default".
+        if (choice.kind === 'default') return { frame: asFrame(treeOf(layout)), ...meta };
+        // Explicitly bare. `frameless` matters as much as the null: the storefront falls
+        // back to the code starter frame when a property has published no chrome, and
+        // without the flag that fallback would put a header straight back onto the landing
+        // page built to avoid one.
+        if (choice.kind === 'none') return { frame: null, frameless: true, ...meta };
 
-    const named = await tx.builderLayout.findFirst({
-      where: { id: choice.frameId, propertyId: ctx.propertyId },
-      select: { silicaDraftTree: true, silicaPublishedTree: true },
+        const named = await tx.builderLayout.findFirst({
+            where: { id: choice.frameId, propertyId: ctx.propertyId },
+            select: { silicaDraftTree: true, silicaPublishedTree: true },
+        });
+        const frame = asFrame(treeOf(named));
+        // A named layout that is GONE (deleted, or never published its silica chrome) also
+        // renders bare, and is equally deliberate: the author moved this page off the
+        // default, so quietly restoring the default is the wrong repair.
+        return frame ? { frame, ...meta } : { frame: null, frameless: true, ...meta };
     });
-    const frame = asFrame(treeOf(named));
-    // A named layout that is GONE (deleted, or never published its silica chrome) also
-    // renders bare, and is equally deliberate: the author moved this page off the
-    // default, so quietly restoring the default is the wrong repair.
-    return frame ? { frame, ...meta } : { frame: null, frameless: true, ...meta };
-  });
 }
 
 /**
@@ -794,10 +794,10 @@ export function getPublishedFrame(
  * Exported for tests: both rules are about data that is gone if they fail.
  */
 export function framesToDelete(
-  deletedFrameIds: readonly string[] | null | undefined,
-  activeId: string
+    deletedFrameIds: readonly string[] | null | undefined,
+    activeId: string
 ): string[] {
-  return (deletedFrameIds ?? []).filter((id) => id !== activeId);
+    return (deletedFrameIds ?? []).filter((id) => id !== activeId);
 }
 
 /**
@@ -815,50 +815,50 @@ export function framesToDelete(
  * idea of it.
  */
 async function syncNamedLayoutsTx(
-  tx: TxClient,
-  ctx: PropertyContext,
-  frames: NonNullable<SiteSyncInput['frames']>,
-  activeId: string
+    tx: TxClient,
+    ctx: PropertyContext,
+    frames: NonNullable<SiteSyncInput['frames']>,
+    activeId: string
 ): Promise<void> {
-  const existing = await tx.builderLayout.findMany({
-    where: { propertyId: ctx.propertyId },
-    select: { id: true, position: true },
-  });
-  const known = new Map(existing.map((l) => [l.id, l]));
-  let nextPosition = existing.reduce((max, l) => Math.max(max, l.position), -1) + 1;
+    const existing = await tx.builderLayout.findMany({
+        where: { propertyId: ctx.propertyId },
+        select: { id: true, position: true },
+    });
+    const known = new Map(existing.map((l) => [l.id, l]));
+    let nextPosition = existing.reduce((max, l) => Math.max(max, l.position), -1) + 1;
 
-  for (const [frameId, frame] of Object.entries(frames)) {
-    if (frameId === activeId) continue;
-    const tree = asJson(frame.root);
-    if (known.has(frameId)) {
-      await tx.builderLayout.update({
-        where: { id: frameId },
-        // The label is only written when the payload carries one — `frame.rename` is an
-        // op the engine emits, and a body-only save must not reset a layout's name.
-        data: { silicaDraftTree: tree, ...(frame.name ? { name: frame.name } : {}) },
-      });
-    } else {
-      await tx.builderLayout.create({
-        data: {
-          id: frameId,
-          tenantId: ctx.tenantId,
-          propertyId: ctx.propertyId,
-          name: frame.name ?? 'Layout',
-          // `draftTree` is the LEGACY `.bx-*` column and is non-null in the schema. A
-          // silica-native layout has no legacy tree, so it takes the starter shell —
-          // the same thing `activeLayoutTx` does when it materializes the first one.
-          draftTree: asJson(STARTER_LAYOUT.tree as unknown as SilicaNode),
-          silicaDraftTree: tree,
-          // Never live on arrival. Activation is its own deliberate act (docs/45), and
-          // a layout the author just created has not been published, so making it live
-          // would swap the site's chrome for an unpublished shell.
-          isActive: false,
-          position: nextPosition++,
-        },
-      });
+    for (const [frameId, frame] of Object.entries(frames)) {
+        if (frameId === activeId) continue;
+        const tree = asJson(frame.root);
+        if (known.has(frameId)) {
+            await tx.builderLayout.update({
+                where: { id: frameId },
+                // The label is only written when the payload carries one — `frame.rename` is an
+                // op the engine emits, and a body-only save must not reset a layout's name.
+                data: { silicaDraftTree: tree, ...(frame.name ? { name: frame.name } : {}) },
+            });
+        } else {
+            await tx.builderLayout.create({
+                data: {
+                    id: frameId,
+                    tenantId: ctx.tenantId,
+                    propertyId: ctx.propertyId,
+                    name: frame.name ?? 'Layout',
+                    // `draftTree` is the LEGACY `.bx-*` column and is non-null in the schema. A
+                    // silica-native layout has no legacy tree, so it takes the starter shell —
+                    // the same thing `activeLayoutTx` does when it materializes the first one.
+                    draftTree: asJson(STARTER_LAYOUT.tree as unknown as SilicaNode),
+                    silicaDraftTree: tree,
+                    // Never live on arrival. Activation is its own deliberate act (docs/45), and
+                    // a layout the author just created has not been published, so making it live
+                    // would swap the site's chrome for an unpublished shell.
+                    isActive: false,
+                    position: nextPosition++,
+                },
+            });
+        }
+        await reindexTreeTx(tx, ctx, { ownerKind: 'layout', ownerId: frameId, tree: frame.root });
     }
-    await reindexTreeTx(tx, ctx, { ownerKind: 'layout', ownerId: frameId, tree: frame.root });
-  }
 }
 
 /** `resolvePageFrame` takes the ids that exist only to tell `named` from `missing`, and
@@ -886,101 +886,101 @@ const EMPTY_IDS: readonly string[] = [];
  *
  *  So both readers ask `slugCandidatesForPath` instead. One matcher, one answer. */
 async function findPageFrameId(
-  tx: TxClient,
-  propertyId: string,
-  path: string,
-  stage: SiteStage
+    tx: TxClient,
+    propertyId: string,
+    path: string,
+    stage: SiteStage
 ): Promise<string | null | undefined> {
-  const target = normalizeSlug(path);
-  const candidates = slugCandidatesForPath(target);
-  const rows = await tx.builderPage.findMany({
-    where: {
-      propertyId,
-      // Home is the slugless page — stored as NULL, '' or '/' depending on how it was
-      // seeded; every other page is stored bare or `/`-prefixed by vintage.
-      ...(target === ''
-        ? { OR: [{ slug: null }, { slug: { in: ['', '/'] } }] }
-        : { slug: { in: candidates } }),
-    },
-    select: { slug: true, frameId: true, publishedFrameId: true },
-    orderBy: [{ position: 'asc' }, { createdAt: 'asc' }],
-  });
-  // PRECEDENCE COMES FROM THE CANDIDATE ORDER, NOT FROM `position`. A tenant who owns a
-  // real page at `/products/brake-kit` must get THAT page's chrome, not the record
-  // page's, and `IN` returns rows in no particular order. Ordering by position would
-  // usually give the right answer — a seeded record page is appended last — and "usually"
-  // is exactly the kind of thing that renders one tenant's page in the wrong shell after
-  // they drag their pages into a different order.
-  const row = pickByCandidate(rows, candidates, target);
-  // `undefined` (no page owns this path) and `null` (this page takes the site default)
-  // both land on `default`, which is what those routes have always rendered.
-  if (!row) return undefined;
-  return stagedFrameId(row, stage);
+    const target = normalizeSlug(path);
+    const candidates = slugCandidatesForPath(target);
+    const rows = await tx.builderPage.findMany({
+        where: {
+            propertyId,
+            // Home is the slugless page — stored as NULL, '' or '/' depending on how it was
+            // seeded; every other page is stored bare or `/`-prefixed by vintage.
+            ...(target === ''
+                ? { OR: [{ slug: null }, { slug: { in: ['', '/'] } }] }
+                : { slug: { in: candidates } }),
+        },
+        select: { slug: true, frameId: true, publishedFrameId: true },
+        orderBy: [{ position: 'asc' }, { createdAt: 'asc' }],
+    });
+    // PRECEDENCE COMES FROM THE CANDIDATE ORDER, NOT FROM `position`. A tenant who owns a
+    // real page at `/products/brake-kit` must get THAT page's chrome, not the record
+    // page's, and `IN` returns rows in no particular order. Ordering by position would
+    // usually give the right answer — a seeded record page is appended last — and "usually"
+    // is exactly the kind of thing that renders one tenant's page in the wrong shell after
+    // they drag their pages into a different order.
+    const row = pickByCandidate(rows, candidates, target);
+    // `undefined` (no page owns this path) and `null` (this page takes the site default)
+    // both land on `default`, which is what those routes have always rendered.
+    if (!row) return undefined;
+    return stagedFrameId(row, stage);
 }
 
 /** The published page body for a storefront slug (docs/49 per-site). Matches on the
  *  normalized slug so `/shop` (stored) resolves the `shop` path segment. Null when
  *  no silica-published page owns that slug — the storefront falls through. */
 export function getPublishedPageBySlug(
-  ctx: PropertyContext,
-  slug: string,
-  stage: SiteStage = 'published'
+    ctx: PropertyContext,
+    slug: string,
+    stage: SiteStage = 'published'
 ): Promise<PublishedSilicaPageDto | null> {
-  const target = normalizeSlug(slug);
-  // Home has its own reader; an empty target here can never resolve.
-  if (target === '') return Promise.resolve(null);
-  // A RECORD ADDRESS IS NOT A LOCATION. `/products/:handle` is where the page lives, not
-  // somewhere a visitor goes, and answering it would hand back a template with nothing
-  // bound into it — an empty buy box, a post with no post. Next's routing precedence
-  // means the storefront never asks (the `[handle]` route wins over the catch-all), but
-  // the auth-exempt `GET /v1/public/builder/silica/page?slug=…` takes any string a caller
-  // sends. Refusing here is the difference between that being safe by design and safe by
-  // coincidence.
-  if (isRecordAddress(target)) return Promise.resolve(null);
-  const candidates = slugCandidatesForPath(target);
-  return withTenant(ctx, async (tx) => {
-    const [pages, site] = await Promise.all([
-      tx.builderPage.findMany({
-        // Match in the WHERE clause, not in JS over every page in the property. Slugs
-        // are stored either `/`-prefixed or bare depending on their vintage, so both
-        // forms are queried rather than normalized on write — normalizing would need a
-        // backfill migration, and an `IN` on the `(tenant, property, slug)` unique index
-        // is exact and index-backed regardless.
-        where: { propertyId: ctx.propertyId, slug: { in: candidates } },
-        select: pageSelectFor(stage),
-        orderBy: [{ position: 'asc' }, { createdAt: 'asc' }],
-      }),
-      tx.builderSite.findUnique({ where: { propertyId: ctx.propertyId } }),
-    ]);
-    // The tree check stays in JS: a Json column's NULL test needs Prisma's runtime
-    // sentinel and this module imports Prisma as a type only.
-    const publishable = pages.filter((p) => hasStagedTree(p, stage));
-    const row = pickByCandidate(publishable, candidates, target);
-    if (!row) return null;
-    return toPublishedPage(row, stagedSymbols(site, stage), stage);
-  });
+    const target = normalizeSlug(slug);
+    // Home has its own reader; an empty target here can never resolve.
+    if (target === '') return Promise.resolve(null);
+    // A RECORD ADDRESS IS NOT A LOCATION. `/products/:handle` is where the page lives, not
+    // somewhere a visitor goes, and answering it would hand back a template with nothing
+    // bound into it — an empty buy box, a post with no post. Next's routing precedence
+    // means the storefront never asks (the `[handle]` route wins over the catch-all), but
+    // the auth-exempt `GET /v1/public/builder/silica/page?slug=…` takes any string a caller
+    // sends. Refusing here is the difference between that being safe by design and safe by
+    // coincidence.
+    if (isRecordAddress(target)) return Promise.resolve(null);
+    const candidates = slugCandidatesForPath(target);
+    return withTenant(ctx, async (tx) => {
+        const [pages, site] = await Promise.all([
+            tx.builderPage.findMany({
+                // Match in the WHERE clause, not in JS over every page in the property. Slugs
+                // are stored either `/`-prefixed or bare depending on their vintage, so both
+                // forms are queried rather than normalized on write — normalizing would need a
+                // backfill migration, and an `IN` on the `(tenant, property, slug)` unique index
+                // is exact and index-backed regardless.
+                where: { propertyId: ctx.propertyId, slug: { in: candidates } },
+                select: pageSelectFor(stage),
+                orderBy: [{ position: 'asc' }, { createdAt: 'asc' }],
+            }),
+            tx.builderSite.findUnique({ where: { propertyId: ctx.propertyId } }),
+        ]);
+        // The tree check stays in JS: a Json column's NULL test needs Prisma's runtime
+        // sentinel and this module imports Prisma as a type only.
+        const publishable = pages.filter((p) => hasStagedTree(p, stage));
+        const row = pickByCandidate(publishable, candidates, target);
+        if (!row) return null;
+        return toPublishedPage(row, stagedSymbols(site, stage), stage);
+    });
 }
 
 /** The published HOME body — the silica page whose slug is `/` (or empty). Lowest
  *  position wins. Null when the property has published no silica home. */
 export function getPublishedHome(
-  ctx: PropertyContext,
-  stage: SiteStage = 'published'
+    ctx: PropertyContext,
+    stage: SiteStage = 'published'
 ): Promise<PublishedSilicaPageDto | null> {
-  return withTenant(ctx, async (tx) => {
-    const [pages, site] = await Promise.all([
-      tx.builderPage.findMany({
-        // Home is the slugless page: stored as NULL (a sparx-seeded home), '' or '/'.
-        where: { propertyId: ctx.propertyId, OR: [{ slug: null }, { slug: { in: ['', '/'] } }] },
-        select: pageSelectFor(stage),
-        orderBy: [{ position: 'asc' }, { createdAt: 'asc' }],
-      }),
-      tx.builderSite.findUnique({ where: { propertyId: ctx.propertyId } }),
-    ]);
-    const row = pages.find((p) => hasStagedTree(p, stage));
-    if (!row) return null;
-    return toPublishedPage(row, stagedSymbols(site, stage), stage);
-  });
+    return withTenant(ctx, async (tx) => {
+        const [pages, site] = await Promise.all([
+            tx.builderPage.findMany({
+                // Home is the slugless page: stored as NULL (a sparx-seeded home), '' or '/'.
+                where: { propertyId: ctx.propertyId, OR: [{ slug: null }, { slug: { in: ['', '/'] } }] },
+                select: pageSelectFor(stage),
+                orderBy: [{ position: 'asc' }, { createdAt: 'asc' }],
+            }),
+            tx.builderSite.findUnique({ where: { propertyId: ctx.propertyId } }),
+        ]);
+        const row = pages.find((p) => hasStagedTree(p, stage));
+        if (!row) return null;
+        return toPublishedPage(row, stagedSymbols(site, stage), stage);
+    });
 }
 
 /** The published silica COLLECTION template for a record type (docs/118 Stage 6 —
@@ -1004,88 +1004,88 @@ export function getPublishedHome(
  *  box / entry template scopes its descendants to it. Off the `silica_*` published
  *  column; runs parallel to the sparx read until the storefront flips. */
 export function getPublishedByRecordType(
-  ctx: PropertyContext,
-  recordType: string,
-  recordId?: string,
-  stage: SiteStage = 'published',
-  recordSubtype?: string
+    ctx: PropertyContext,
+    recordType: string,
+    recordId?: string,
+    stage: SiteStage = 'published',
+    recordSubtype?: string
 ): Promise<PublishedSilicaPageDto | null> {
-  const address = recordAddressFor(recordType);
-  return withTenant(ctx, async (tx) => {
-    const [rows, site] = await Promise.all([
-      tx.builderPage.findMany({
-        where: {
-          propertyId: ctx.propertyId,
-          OR: [
-            ...(address ? [{ slug: { in: [normalizeSlug(address.slug), address.slug] } }] : []),
-            { recordType, kind: 'collection' },
-          ],
-        },
-        select: pageSelectFor(stage),
-        orderBy: [{ position: 'asc' }, { createdAt: 'asc' }],
-      }),
-      tx.builderSite.findUnique({ where: { propertyId: ctx.propertyId } }),
-    ]);
-    if (rows.length === 0) return null;
+    const address = recordAddressFor(recordType);
+    return withTenant(ctx, async (tx) => {
+        const [rows, site] = await Promise.all([
+            tx.builderPage.findMany({
+                where: {
+                    propertyId: ctx.propertyId,
+                    OR: [
+                        ...(address ? [{ slug: { in: [normalizeSlug(address.slug), address.slug] } }] : []),
+                        { recordType, kind: 'collection' },
+                    ],
+                },
+                select: pageSelectFor(stage),
+                orderBy: [{ position: 'asc' }, { createdAt: 'asc' }],
+            }),
+            tx.builderSite.findUnique({ where: { propertyId: ctx.propertyId } }),
+        ]);
+        if (rows.length === 0) return null;
 
-    const addressed = rows.find((r) => recordAddressAt(r.slug)?.recordType === recordType);
-    if (addressed && hasStagedTree(addressed, stage)) {
-      return toPublishedPage(addressed, stagedSymbols(site, stage), stage);
-    }
+        const addressed = rows.find((r) => recordAddressAt(r.slug)?.recordType === recordType);
+        if (addressed && hasStagedTree(addressed, stage)) {
+            return toPublishedPage(addressed, stagedSymbols(site, stage), stage);
+        }
 
-    // Per-record override (a specific template pinned to this exact record).
-    let overrideId: string | null = null;
-    if (recordId) {
-      const assignment = await tx.builderPageAssignment.findFirst({
-        where: { recordType, itemRef: recordId, propertyId: ctx.propertyId },
-        select: { builderPageId: true },
-      });
-      overrideId = assignment?.builderPageId ?? null;
-    }
+        // Per-record override (a specific template pinned to this exact record).
+        let overrideId: string | null = null;
+        if (recordId) {
+            const assignment = await tx.builderPageAssignment.findFirst({
+                where: { recordType, itemRef: recordId, propertyId: ctx.propertyId },
+                select: { builderPageId: true },
+            });
+            overrideId = assignment?.builderPageId ?? null;
+        }
 
-    const override = overrideId ? rows.find((r) => r.id === overrideId) : undefined;
+        const override = overrideId ? rows.find((r) => r.id === overrideId) : undefined;
 
-    // Per-TYPE page (docs/143 Option B): when the record carries a subtype (a product's
-    // product-type key), a page whose `record_subtype` matches wins over the default —
-    // most-specific-wins, mirroring how a per-record override beats the type default. A
-    // type-specific page is never `isDefault` (the partial unique keeps one default per
-    // record type), so it can only be reached here, on purpose.
-    const subtypeMatch = recordSubtype
-      ? rows.find((r) => r.recordSubtype === recordSubtype && hasStagedTree(r, stage))
-      : undefined;
+        // Per-TYPE page (docs/143 Option B): when the record carries a subtype (a product's
+        // product-type key), a page whose `record_subtype` matches wins over the default —
+        // most-specific-wins, mirroring how a per-record override beats the type default. A
+        // type-specific page is never `isDefault` (the partial unique keeps one default per
+        // record type), so it can only be reached here, on purpose.
+        const subtypeMatch = recordSubtype
+            ? rows.find((r) => r.recordSubtype === recordSubtype && hasStagedTree(r, stage))
+            : undefined;
 
-    const chosen =
-      (override && hasStagedTree(override, stage) ? override : undefined) ??
-      subtypeMatch ??
-      // The default / lowest-position fallback prefers a subtype-LESS page so a product of
-      // one type never lands on another type's bespoke layout; the final `any` keeps the
-      // legacy behavior for a tenant whose pages predate subtypes (all null).
-      rows.find((r) => r.isDefault && hasStagedTree(r, stage)) ??
-      rows.find((r) => r.recordSubtype == null && hasStagedTree(r, stage)) ??
-      rows.find((r) => hasStagedTree(r, stage));
+        const chosen =
+            (override && hasStagedTree(override, stage) ? override : undefined) ??
+            subtypeMatch ??
+            // The default / lowest-position fallback prefers a subtype-LESS page so a product of
+            // one type never lands on another type's bespoke layout; the final `any` keeps the
+            // legacy behavior for a tenant whose pages predate subtypes (all null).
+            rows.find((r) => r.isDefault && hasStagedTree(r, stage)) ??
+            rows.find((r) => r.recordSubtype == null && hasStagedTree(r, stage)) ??
+            rows.find((r) => hasStagedTree(r, stage));
 
-    if (!chosen) return null;
-    return toPublishedPage(chosen, stagedSymbols(site, stage), stage);
-  });
+        if (!chosen) return null;
+        return toPublishedPage(chosen, stagedSymbols(site, stage), stage);
+    });
 }
 
 /** The active layout for the property, seeding the starter shell if the property
  *  has none yet (mirrors layoutService.listOrSeed's lazy materialization) so the
  *  frame always has a home. */
 async function activeLayoutTx(tx: TxClient, ctx: PropertyContext): Promise<BuilderLayout> {
-  const layouts = await tx.builderLayout.findMany({ where: { propertyId: ctx.propertyId } });
-  const active = layouts.find((l) => l.isActive) ?? layouts[0];
-  if (active) return active;
-  return tx.builderLayout.create({
-    data: {
-      tenantId: ctx.tenantId,
-      propertyId: ctx.propertyId,
-      name: STARTER_LAYOUT.name,
-      draftTree: asJson(STARTER_LAYOUT.tree),
-      isActive: true,
-      position: 0,
-    },
-  });
+    const layouts = await tx.builderLayout.findMany({ where: { propertyId: ctx.propertyId } });
+    const active = layouts.find((l) => l.isActive) ?? layouts[0];
+    if (active) return active;
+    return tx.builderLayout.create({
+        data: {
+            tenantId: ctx.tenantId,
+            propertyId: ctx.propertyId,
+            name: STARTER_LAYOUT.name,
+            draftTree: asJson(STARTER_LAYOUT.tree),
+            isActive: true,
+            position: 0,
+        },
+    });
 }
 
 /** Reconcile an extracted silica `Site` into the store. Upserts a `BuilderPage`
@@ -1108,18 +1108,18 @@ async function activeLayoutTx(tx: TxClient, ctx: PropertyContext): Promise<Build
  *  · otherwise     → ONLY the ids the caller named in `deletedPageIds`, intersected
  *                    with what actually exists (a stale entry is a harmless no-op). */
 export function pagesToDelete(args: {
-  allowReplace: boolean;
-  storedSilicaIds: readonly string[];
-  roster: readonly string[];
-  deletedPageIds: readonly string[];
+    allowReplace: boolean;
+    storedSilicaIds: readonly string[];
+    roster: readonly string[];
+    deletedPageIds: readonly string[];
 }): string[] {
-  const { allowReplace, storedSilicaIds, roster, deletedPageIds } = args;
-  if (allowReplace) {
-    const inRoster = new Set(roster);
-    return storedSilicaIds.filter((id) => !inRoster.has(id));
-  }
-  const stored = new Set(storedSilicaIds);
-  return deletedPageIds.filter((id) => stored.has(id));
+    const { allowReplace, storedSilicaIds, roster, deletedPageIds } = args;
+    if (allowReplace) {
+        const inRoster = new Set(roster);
+        return storedSilicaIds.filter((id) => !inRoster.has(id));
+    }
+    const stored = new Set(storedSilicaIds);
+    return deletedPageIds.filter((id) => stored.has(id));
 }
 
 /** Would this sync payload CLOBBER the stored site — i.e. delete every page it has?
@@ -1132,47 +1132,47 @@ export function pagesToDelete(args: {
  *  · any id in common    → false (a normal edit, however many pages were removed)
  *  · no id in common     → TRUE  (the caller holds a different site than the store) */
 export function wouldClobberSite(
-  storedPageIds: readonly string[],
-  incomingPageIds: readonly string[]
+    storedPageIds: readonly string[],
+    incomingPageIds: readonly string[]
 ): boolean {
-  if (storedPageIds.length === 0) return false;
-  const incoming = new Set(incomingPageIds);
-  return !storedPageIds.some((id) => incoming.has(id));
+    if (storedPageIds.length === 0) return false;
+    const incoming = new Set(incomingPageIds);
+    return !storedPageIds.some((id) => incoming.has(id));
 }
 
 export interface SyncOptions {
-  /** Permit a WHOLESALE REPLACEMENT — a sync whose pages share no id with the stored
-   *  site, which otherwise trips the clobber guard below. Only for callers that mean
-   *  to swap the whole site (a blueprint install, a reset→reseed). NEVER set this on
-   *  the editor autosave path. */
-  allowReplace?: boolean;
-  /** Who authored this save, for the draft version history (docs/126 §4.6). A human
-   *  editor save is `save` (the default); an agent's MCP write is `agent`. */
-  versionSource?: DraftVersionSource;
+    /** Permit a WHOLESALE REPLACEMENT — a sync whose pages share no id with the stored
+     *  site, which otherwise trips the clobber guard below. Only for callers that mean
+     *  to swap the whole site (a blueprint install, a reset→reseed). NEVER set this on
+     *  the editor autosave path. */
+    allowReplace?: boolean;
+    /** Who authored this save, for the draft version history (docs/126 §4.6). A human
+     *  editor save is `save` (the default); an agent's MCP write is `agent`. */
+    versionSource?: DraftVersionSource;
 }
 
 /** What a successful {@link sync} hands back: the post-write `updatedAt` for every
  *  page in the property, so the caller can advance its optimistic-concurrency map. */
 export interface SiteSyncResult {
-  pageUpdatedAt: Record<string, string>;
-  /** The op log's new high-water sequence (docs/126 Phase 2), when this sync carried
-   *  ops. The client `ackSeq()`s it so its `baseSeq` advances to what the server
-   *  assigned. Null when the caller sent no ops (MCP writers, blueprint installer). */
-  seq: number | null;
-  /** The ops just persisted, for the caller to RELAY to co-editors (docs/126 Phase 4).
-   *  Server-side only — the api-rest route hands this to the socket broadcaster and
-   *  strips it from the HTTP response (the sender already has these ops). Null when no
-   *  ops were recorded. */
-  relay: { batchId: string; seq: number; ops: BuilderOpEnvelope[] } | null;
+    pageUpdatedAt: Record<string, string>;
+    /** The op log's new high-water sequence (docs/126 Phase 2), when this sync carried
+     *  ops. The client `ackSeq()`s it so its `baseSeq` advances to what the server
+     *  assigned. Null when the caller sent no ops (MCP writers, blueprint installer). */
+    seq: number | null;
+    /** The ops just persisted, for the caller to RELAY to co-editors (docs/126 Phase 4).
+     *  Server-side only — the api-rest route hands this to the socket broadcaster and
+     *  strips it from the HTTP response (the sender already has these ops). Null when no
+     *  ops were recorded. */
+    relay: { batchId: string; seq: number; ops: BuilderOpEnvelope[] } | null;
 }
 
 export async function sync(
-  ctx: PropertyContext,
-  rawInput: unknown,
-  opts: SyncOptions = {}
+    ctx: PropertyContext,
+    rawInput: unknown,
+    opts: SyncOptions = {}
 ): Promise<SiteSyncResult> {
-  const input = SiteSyncInput.parse(rawInput);
-  return asSlugConflict(input, () => syncTx(ctx, input, opts));
+    const input = SiteSyncInput.parse(rawInput);
+    return asSlugConflict(input, () => syncTx(ctx, input, opts));
 }
 
 /**
@@ -1189,334 +1189,334 @@ export async function sync(
  * collide with. `BuilderConflictError` maps to a 409 with the real message.
  */
 async function asSlugConflict<T>(
-  input: { pages: readonly { slug: string; name: string }[] },
-  run: () => Promise<T>
+    input: { pages: readonly { slug: string; name: string }[] },
+    run: () => Promise<T>
 ): Promise<T> {
-  try {
-    return await run();
-  } catch (err) {
-    const code = (err as { code?: string })?.code;
-    const target = (err as { meta?: { target?: unknown } })?.meta?.target;
-    const onSlug =
-      code === 'P2002' && (Array.isArray(target) ? target.includes('slug') : target === 'slug');
-    if (!onSlug) throw err;
-    const page = input.pages.find((p) => isRecordAddress(p.slug)) ?? input.pages[0];
-    throw new BuilderConflictError(
-      page
-        ? `Another page already uses the address "${page.slug}". Two pages cannot share one address.`
-        : 'Another page already uses that address. Two pages cannot share one address.',
-      'slug'
-    );
-  }
+    try {
+        return await run();
+    } catch (err) {
+        const code = (err as { code?: string })?.code;
+        const target = (err as { meta?: { target?: unknown } })?.meta?.target;
+        const onSlug =
+            code === 'P2002' && (Array.isArray(target) ? target.includes('slug') : target === 'slug');
+        if (!onSlug) throw err;
+        const page = input.pages.find((p) => isRecordAddress(p.slug)) ?? input.pages[0];
+        throw new BuilderConflictError(
+            page
+                ? `Another page already uses the address "${page.slug}". Two pages cannot share one address.`
+                : 'Another page already uses that address. Two pages cannot share one address.',
+            'slug'
+        );
+    }
 }
 
 function syncTx(
-  ctx: PropertyContext,
-  input: SiteSyncInput,
-  opts: SyncOptions
+    ctx: PropertyContext,
+    input: SiteSyncInput,
+    opts: SyncOptions
 ): Promise<SiteSyncResult> {
-  return withTenant(ctx, async (tx) => {
-    const allPages = await tx.builderPage.findMany({ where: { propertyId: ctx.propertyId } });
-    const silicaRows = allPages.filter(isSilica);
+    return withTenant(ctx, async (tx) => {
+        const allPages = await tx.builderPage.findMany({ where: { propertyId: ctx.propertyId } });
+        const silicaRows = allPages.filter(isSilica);
 
-    // The COMPLETE page roster in site order (docs/126 Phase 0). When the caller sends
-    // `pageIds`, `input.pages` carries only the bodies that actually changed and the
-    // roster drives ordering (deletion is explicit — see `deletedPageIds`). Without it,
-    // `input.pages` IS the roster — the original whole-site semantics.
-    const roster = input.pageIds ?? input.pages.map((p) => p.id);
-    const positionOf = new Map(roster.map((id, i) => [id, i] as const));
+        // The COMPLETE page roster in site order (docs/126 Phase 0). When the caller sends
+        // `pageIds`, `input.pages` carries only the bodies that actually changed and the
+        // roster drives ordering (deletion is explicit — see `deletedPageIds`). Without it,
+        // `input.pages` IS the roster — the original whole-site semantics.
+        const roster = input.pageIds ?? input.pages.map((p) => p.id);
+        const positionOf = new Map(roster.map((id, i) => [id, i] as const));
 
-    // ── Clobber guard ────────────────────────────────────────────────────────
-    // Deletion itself is explicit now (see the delete step below), so a stale roster
-    // can no longer silently remove pages. But ZERO id overlap against a NON-EMPTY
-    // site is still a red flag worth refusing: a real edit always keeps most page ids
-    // (silica hands back the same `Site` it was given, mutated), so no overlap means
-    // the caller is holding a DIFFERENT site than the one on disk. Writing it would
-    // graft a foreign site's pages alongside the tenant's real ones — recoverable, but
-    // wrong. Refuse rather than pollute.
-    //
-    // This is not hypothetical: a transient read failure made the studio seed a
-    // pristine STARTER (fresh ids) over a real tenant. The route no longer swallows
-    // that error, but the guard lives HERE so the store is safe from ANY caller — a
-    // future route, an MCP tool, a bug. Seeding a brand-new property is unaffected
-    // (no stored rows ⇒ nothing to clobber).
-    if (
-      !opts.allowReplace &&
-      wouldClobberSite(
-        silicaRows.map((r) => r.id),
-        roster
-      )
-    ) {
-      throw new BuilderConflictError(
-        `Refusing to sync: none of the ${roster.length} incoming page(s) match any of ` +
-          `the ${silicaRows.length} stored page(s) for this site, so this write would delete ` +
-          `every existing page. This usually means the editor loaded a starter or a different ` +
-          `site instead of yours. Reload the editor; if you meant to replace the whole site, ` +
-          `use the explicit replace path.`
-      );
-    }
-    // Matched by id against EVERY page, not just already-silica ones: a page id
-    // can belong to a legacy-only row (the onboarding→silica bridge reuses the
-    // legacy page's id so both trees live on one row) — treating that as "new"
-    // would `create()` a second row with the same id and collide on the PK.
-    const existingById = new Map(allPages.map((r) => [r.id, r] as const));
-
-    // ── Optimistic-concurrency precondition (docs/126 Phase 1) ───────────────
-    // Reject rather than overwrite when a page moved under the author. Checked for
-    // EVERY page being written, before ANY of them is written, so a conflict leaves
-    // the site untouched instead of half-applied.
-    //
-    // Callers that legitimately own the whole site (the MCP writers, the blueprint
-    // installer) send no map and keep last-write-wins.
-    if (input.pageUpdatedAt) {
-      const stale = input.pages.filter((p) => {
-        const seen = input.pageUpdatedAt?.[p.id];
-        const row = existingById.get(p.id);
-        // A page the client has never seen (no entry) or that does not exist yet is
-        // not a conflict — it is a create, or a caller that simply didn't track it.
-        if (!seen || !row) return false;
-        return row.updatedAt.getTime() > new Date(seen).getTime();
-      });
-      if (stale.length > 0) {
-        const names = stale.map((p) => p.name).join(', ');
-        throw new BuilderConflictError(
-          `Someone else saved changes to ${stale.length === 1 ? 'this page' : 'these pages'} ` +
-            `while you were editing: ${names}. Reload the editor to pick up their version — ` +
-            `saving now would overwrite it.`,
-          'pages'
-        );
-      }
-    }
-
-    // Deletes first (a removed page frees its slug before any create reuses it).
-    // EXPLICIT only: a page absent from the roster is preserved, never deleted — it
-    // may be a page a concurrent MCP writer just added that this client never loaded.
-    // Only ids the caller named in `deletedPageIds` (or, on the wholesale-replace path,
-    // roster-absent pages) are removed. See {@link pagesToDelete}.
-    const toDelete = pagesToDelete({
-      allowReplace: opts.allowReplace ?? false,
-      storedSilicaIds: silicaRows.map((r) => r.id),
-      roster,
-      deletedPageIds: input.deletedPageIds ?? [],
-    });
-    for (const id of toDelete) {
-      await tx.builderPage.delete({ where: { id } });
-      // The index is derived, so a deleted page's rows are dead weight that would
-      // otherwise keep answering "this symbol is used here" for a page that is gone.
-      await dropOwnerTx(tx, ctx, 'page', id);
-    }
-
-    // Upsert each page whose body was sent. `position` comes from the ROSTER, not the
-    // loop index — with a partial payload the index is meaningless.
-    for (const p of input.pages) {
-      const i = positionOf.get(p.id) ?? 0;
-      const address = addressOf(p.slug);
-      if (existingById.has(p.id)) {
-        const existing = existingById.get(p.id)!;
-        // Only stamp `slug` when it actually changed under normalization — a
-        // silica `Page.slug` is a non-nullable `string`, so a home page always
-        // arrives as `''`; unconditionally writing that would clobber a legacy
-        // row's `slug: null` (the LEGACY home-page sentinel `pageService`
-        // reads) even though both normalize to the same empty route. Leaving a
-        // semantically-unchanged slug alone keeps that legacy sentinel intact
-        // for a row a bridge (not the studio editor) materialized in place.
+        // ── Clobber guard ────────────────────────────────────────────────────────
+        // Deletion itself is explicit now (see the delete step below), so a stale roster
+        // can no longer silently remove pages. But ZERO id overlap against a NON-EMPTY
+        // site is still a red flag worth refusing: a real edit always keeps most page ids
+        // (silica hands back the same `Site` it was given, mutated), so no overlap means
+        // the caller is holding a DIFFERENT site than the one on disk. Writing it would
+        // graft a foreign site's pages alongside the tenant's real ones — recoverable, but
+        // wrong. Refuse rather than pollute.
         //
-        // A RECORD ADDRESS IS NOT THE AUTHOR'S TO CHANGE. It is how the storefront finds
-        // the page at all: rename `/products/:handle` and every product page on the site
-        // silently falls back to the platform template, with the tenant's own design
-        // still sitting in the editor looking applied. silica's page settings will
-        // happily offer the rename, so it is refused here rather than trusted not to
-        // happen. The write is dropped, not thrown on — the page still saves, it just
-        // keeps its address.
-        const slugChanged =
-          !isRecordAddress(existing.slug) && normalizeSlug(existing.slug) !== normalizeSlug(p.slug);
-        await tx.builderPage.update({
-          where: { id: p.id },
-          data: {
-            name: p.name,
-            ...(slugChanged ? { slug: p.slug } : {}),
-            // Re-derived on every save, which is what self-heals a legacy row: an
-            // MCP- or blueprint-authored template arrives carrying the right
-            // `recordType` and no slug, `rowsToStoredSite` gives it its address on the
-            // way out, and this writes the address back. No migration needed for the
-            // rows that were already correct in the old vocabulary.
-            ...(address ? { kind: 'collection', recordType: address.recordType } : {}),
-            silicaDraftTree: asJson(p.root),
-            // Chrome only when the payload SPEAKS about it. `undefined` here is the
-            // scripted writer that has no opinion, and overwriting on its behalf would
-            // put a header back on every landing page it happened to touch.
-            ...(p.frameId !== undefined ? { frameId: p.frameId } : {}),
-            position: i,
-          },
+        // This is not hypothetical: a transient read failure made the studio seed a
+        // pristine STARTER (fresh ids) over a real tenant. The route no longer swallows
+        // that error, but the guard lives HERE so the store is safe from ANY caller — a
+        // future route, an MCP tool, a bug. Seeding a brand-new property is unaffected
+        // (no stored rows ⇒ nothing to clobber).
+        if (
+            !opts.allowReplace &&
+            wouldClobberSite(
+                silicaRows.map((r) => r.id),
+                roster
+            )
+        ) {
+            throw new BuilderConflictError(
+                `Refusing to sync: none of the ${roster.length} incoming page(s) match any of ` +
+                `the ${silicaRows.length} stored page(s) for this site, so this write would delete ` +
+                `every existing page. This usually means the editor loaded a starter or a different ` +
+                `site instead of yours. Reload the editor; if you meant to replace the whole site, ` +
+                `use the explicit replace path.`
+            );
+        }
+        // Matched by id against EVERY page, not just already-silica ones: a page id
+        // can belong to a legacy-only row (the onboarding→silica bridge reuses the
+        // legacy page's id so both trees live on one row) — treating that as "new"
+        // would `create()` a second row with the same id and collide on the PK.
+        const existingById = new Map(allPages.map((r) => [r.id, r] as const));
+
+        // ── Optimistic-concurrency precondition (docs/126 Phase 1) ───────────────
+        // Reject rather than overwrite when a page moved under the author. Checked for
+        // EVERY page being written, before ANY of them is written, so a conflict leaves
+        // the site untouched instead of half-applied.
+        //
+        // Callers that legitimately own the whole site (the MCP writers, the blueprint
+        // installer) send no map and keep last-write-wins.
+        if (input.pageUpdatedAt) {
+            const stale = input.pages.filter((p) => {
+                const seen = input.pageUpdatedAt?.[p.id];
+                const row = existingById.get(p.id);
+                // A page the client has never seen (no entry) or that does not exist yet is
+                // not a conflict — it is a create, or a caller that simply didn't track it.
+                if (!seen || !row) return false;
+                return row.updatedAt.getTime() > new Date(seen).getTime();
+            });
+            if (stale.length > 0) {
+                const names = stale.map((p) => p.name).join(', ');
+                throw new BuilderConflictError(
+                    `Someone else saved changes to ${stale.length === 1 ? 'this page' : 'these pages'} ` +
+                    `while you were editing: ${names}. Reload the editor to pick up their version — ` +
+                    `saving now would overwrite it.`,
+                    'pages'
+                );
+            }
+        }
+
+        // Deletes first (a removed page frees its slug before any create reuses it).
+        // EXPLICIT only: a page absent from the roster is preserved, never deleted — it
+        // may be a page a concurrent MCP writer just added that this client never loaded.
+        // Only ids the caller named in `deletedPageIds` (or, on the wholesale-replace path,
+        // roster-absent pages) are removed. See {@link pagesToDelete}.
+        const toDelete = pagesToDelete({
+            allowReplace: opts.allowReplace ?? false,
+            storedSilicaIds: silicaRows.map((r) => r.id),
+            roster,
+            deletedPageIds: input.deletedPageIds ?? [],
         });
-      } else {
-        await tx.builderPage.create({
-          data: {
-            // silica's page id (a uuid) becomes the row id, so later syncs match.
-            id: p.id,
-            tenantId: ctx.tenantId,
-            propertyId: ctx.propertyId,
-            name: p.name,
-            // DERIVED FROM THE ADDRESS, never sent. The address is the fact now; these
-            // two columns are a projection of it that half a dozen consumers still read
-            // — the sitemap's `kind:'singleton'` filter, the Pages report's prefix
-            // rollup, the link checker's relative-path rule, the storefront's legacy
-            // per-record tier. Writing them keeps every one of those correct with no
-            // change of its own, and Stage 2 deletes the columns and their readers
-            // together rather than one ahead of the other.
-            kind: address ? 'collection' : 'singleton',
-            recordType: address?.recordType ?? null,
-            slug: p.slug,
-            // The sparx tree column is NOT NULL; a silica-only row parks a blank
-            // sparx tree there (the storefront never reads it — it has no sparx
-            // published tree, so it falls through the legacy path until cutover).
-            draftTree: asJson(blankPageTree()),
-            silicaDraftTree: asJson(p.root),
-            ...(p.frameId !== undefined ? { frameId: p.frameId } : {}),
-            position: i,
-          },
+        for (const id of toDelete) {
+            await tx.builderPage.delete({ where: { id } });
+            // The index is derived, so a deleted page's rows are dead weight that would
+            // otherwise keep answering "this symbol is used here" for a page that is gone.
+            await dropOwnerTx(tx, ctx, 'page', id);
+        }
+
+        // Upsert each page whose body was sent. `position` comes from the ROSTER, not the
+        // loop index — with a partial payload the index is meaningless.
+        for (const p of input.pages) {
+            const i = positionOf.get(p.id) ?? 0;
+            const address = addressOf(p.slug);
+            if (existingById.has(p.id)) {
+                const existing = existingById.get(p.id)!;
+                // Only stamp `slug` when it actually changed under normalization — a
+                // silica `Page.slug` is a non-nullable `string`, so a home page always
+                // arrives as `''`; unconditionally writing that would clobber a legacy
+                // row's `slug: null` (the LEGACY home-page sentinel `pageService`
+                // reads) even though both normalize to the same empty route. Leaving a
+                // semantically-unchanged slug alone keeps that legacy sentinel intact
+                // for a row a bridge (not the studio editor) materialized in place.
+                //
+                // A RECORD ADDRESS IS NOT THE AUTHOR'S TO CHANGE. It is how the storefront finds
+                // the page at all: rename `/products/:handle` and every product page on the site
+                // silently falls back to the platform template, with the tenant's own design
+                // still sitting in the editor looking applied. silica's page settings will
+                // happily offer the rename, so it is refused here rather than trusted not to
+                // happen. The write is dropped, not thrown on — the page still saves, it just
+                // keeps its address.
+                const slugChanged =
+                    !isRecordAddress(existing.slug) && normalizeSlug(existing.slug) !== normalizeSlug(p.slug);
+                await tx.builderPage.update({
+                    where: { id: p.id },
+                    data: {
+                        name: p.name,
+                        ...(slugChanged ? { slug: p.slug } : {}),
+                        // Re-derived on every save, which is what self-heals a legacy row: an
+                        // MCP- or blueprint-authored template arrives carrying the right
+                        // `recordType` and no slug, `rowsToStoredSite` gives it its address on the
+                        // way out, and this writes the address back. No migration needed for the
+                        // rows that were already correct in the old vocabulary.
+                        ...(address ? { kind: 'collection', recordType: address.recordType } : {}),
+                        silicaDraftTree: asJson(p.root),
+                        // Chrome only when the payload SPEAKS about it. `undefined` here is the
+                        // scripted writer that has no opinion, and overwriting on its behalf would
+                        // put a header back on every landing page it happened to touch.
+                        ...(p.frameId !== undefined ? { frameId: p.frameId } : {}),
+                        position: i,
+                    },
+                });
+            } else {
+                await tx.builderPage.create({
+                    data: {
+                        // silica's page id (a uuid) becomes the row id, so later syncs match.
+                        id: p.id,
+                        tenantId: ctx.tenantId,
+                        propertyId: ctx.propertyId,
+                        name: p.name,
+                        // DERIVED FROM THE ADDRESS, never sent. The address is the fact now; these
+                        // two columns are a projection of it that half a dozen consumers still read
+                        // — the sitemap's `kind:'singleton'` filter, the Pages report's prefix
+                        // rollup, the link checker's relative-path rule, the storefront's legacy
+                        // per-record tier. Writing them keeps every one of those correct with no
+                        // change of its own, and Stage 2 deletes the columns and their readers
+                        // together rather than one ahead of the other.
+                        kind: address ? 'collection' : 'singleton',
+                        recordType: address?.recordType ?? null,
+                        slug: p.slug,
+                        // The sparx tree column is NOT NULL; a silica-only row parks a blank
+                        // sparx tree there (the storefront never reads it — it has no sparx
+                        // published tree, so it falls through the legacy path until cutover).
+                        draftTree: asJson(blankPageTree()),
+                        silicaDraftTree: asJson(p.root),
+                        ...(p.frameId !== undefined ? { frameId: p.frameId } : {}),
+                        position: i,
+                    },
+                });
+            }
+        }
+
+        // Reindex the pages whose bodies this payload actually carried (docs/126 §5.4).
+        // Rides the same transaction, so a rolled-back write leaves no index rows behind;
+        // scoped to the sent pages, so a partial payload does not re-walk the whole site.
+        for (const p of input.pages) {
+            await reindexTreeTx(tx, ctx, { ownerKind: 'page', ownerId: p.id, tree: p.root });
+        }
+
+        // Reordering changes no page BODY, so with a partial payload the pages that moved
+        // may not be in `input.pages` at all. Their position still has to follow the
+        // roster, or a drag in the page list would appear to do nothing after a reload.
+        if (input.pageIds) {
+            const sent = new Set(input.pages.map((p) => p.id));
+            for (const row of silicaRows) {
+                if (sent.has(row.id)) continue;
+                const next = positionOf.get(row.id);
+                if (next === undefined || next === row.position) continue;
+                await tx.builderPage.update({ where: { id: row.id }, data: { position: next } });
+            }
+        }
+
+        // Frame → the active layout (the chrome row).
+        const layout = await activeLayoutTx(tx, ctx);
+        if (input.frame) {
+            await tx.builderLayout.update({
+                where: { id: layout.id },
+                data: { silicaDraftTree: asJson(input.frame.root) },
+            });
+            // The chrome holds symbol instances and bindings like any other tree.
+            await reindexTreeTx(tx, ctx, {
+                ownerKind: 'layout',
+                ownerId: layout.id,
+                tree: input.frame.root,
+            });
+        }
+
+        // Named layouts → the rest of the catalog (silicaui 0.37). The engine mints their
+        // ids with `crypto.randomUUID`, so an id it invents IS a valid `builder_layouts`
+        // primary key and a valid `builder_pages.frame_id` — no id mapping to keep honest.
+        if (input.frames) await syncNamedLayoutsTx(tx, ctx, input.frames, layout.id);
+        const droppedFrames = framesToDelete(input.deletedFrameIds, layout.id);
+        if (droppedFrames.length > 0) {
+            await tx.builderLayout.deleteMany({
+                where: { id: { in: droppedFrames }, propertyId: ctx.propertyId, isActive: false },
+            });
+            // Pages pointing at a deleted layout fall back to the site DEFAULT, not to
+            // `null`-as-bare: losing your header is a much louder change than the author
+            // asked for, and it is what the engine's own `deleteLayout` does.
+            await tx.builderPage.updateMany({
+                where: { propertyId: ctx.propertyId, frameId: { in: droppedFrames } },
+                data: { frameId: null },
+            });
+        }
+
+        // Site-global theme + symbols + saved-theme library → the property's silica
+        // site record (docs/118). `theme` and `savedThemes` are only written when the
+        // payload carries them, so a tenant on the brand-derived theme never has a null
+        // stomped over an authored theme, and a load that didn't send the library never
+        // wipes it. An empty `savedThemes: []` IS present (the author cleared it) and is
+        // stored as such.
+        const themeData = input.theme ? { silicaDraftTheme: asJson(input.theme) } : {};
+        const savedThemesData =
+            input.savedThemes != null ? { silicaDraftSavedThemes: asJson(input.savedThemes) } : {};
+        // ABSENT and EMPTY are different (docs/125 §9.3). This was an unconditional
+        // `input.symbols ?? {}`, so any payload that didn't carry symbols WIPED the
+        // tenant's whole saved-component library — and `toSyncInput` only includes them
+        // when `site.symbols` is truthy, so an engine handing back an empty/absent map
+        // silently destroyed every saved component. Theme and savedThemes one line up
+        // already guarded against exactly this; symbols did not.
+        //
+        // `{}` sent explicitly still stores `{}` — that IS "the author deleted their last
+        // symbol", and a library you can never empty is its own bug.
+        const symbolsData = symbolsUpdateFor(input.symbols);
+
+        // Symbol MASTERS are trees too — one can instantiate another, and can bind a
+        // pinned record. Reindexed only when the payload speaks about symbols at all
+        // (see symbolsUpdateFor): an absent map must not be read as "no symbols exist".
+        if (input.symbols != null) {
+            const masters = input.symbols as Record<string, { root?: SilicaNode } | undefined>;
+            // The library is replaced wholesale on write, so drop every symbol row for the
+            // property first — a master removed from the map has no other signal it is gone.
+            await tx.builderNodeIndex.deleteMany({
+                where: { propertyId: ctx.propertyId, ownerKind: 'symbol' },
+            });
+            for (const [key, def] of Object.entries(masters)) {
+                if (!def?.root) continue;
+                await reindexTreeTx(tx, ctx, { ownerKind: 'symbol', ownerId: key, tree: asNode(def.root) });
+            }
+        }
+        await tx.builderSite.upsert({
+            where: { propertyId: ctx.propertyId },
+            update: { ...themeData, ...savedThemesData, ...symbolsData },
+            create: {
+                tenantId: ctx.tenantId,
+                propertyId: ctx.propertyId,
+                ...themeData,
+                ...savedThemesData,
+                ...symbolsData,
+            },
         });
-      }
-    }
 
-    // Reindex the pages whose bodies this payload actually carried (docs/126 §5.4).
-    // Rides the same transaction, so a rolled-back write leaves no index rows behind;
-    // scoped to the sent pages, so a partial payload does not re-walk the whole site.
-    for (const p of input.pages) {
-      await reindexTreeTx(tx, ctx, { ownerKind: 'page', ownerId: p.id, tree: p.root });
-    }
+        // Record the engine's ops in the SAME transaction as the snapshot write (docs/126
+        // Phase 2). Additive — the snapshot above stays authoritative — but co-committed, so
+        // the log can never claim an edit that rolled back. Only the collaborative editor
+        // sends ops; scripted callers (MCP, blueprint installer) send none and get seq=null.
+        let seq: number | null = null;
+        let relay: SiteSyncResult['relay'] = null;
+        if (input.ops && input.ops.length > 0) {
+            const batchId = input.batchId ?? `sync-${input.baseSeq ?? 0}`;
+            const result = await appendOpsTx(tx, ctx, input.ops, batchId, input.baseSeq ?? 0);
+            seq = result.newSeq;
+            // Relay only a batch we ACTUALLY recorded — an idempotent retry (alreadyApplied)
+            // was already relayed on its first pass, and re-broadcasting it would make peers
+            // apply the same ops twice.
+            if (!result.alreadyApplied) {
+                relay = { batchId, seq: result.newSeq, ops: input.ops };
+            }
+        }
 
-    // Reordering changes no page BODY, so with a partial payload the pages that moved
-    // may not be in `input.pages` at all. Their position still has to follow the
-    // roster, or a drag in the page list would appear to do nothing after a reload.
-    if (input.pageIds) {
-      const sent = new Set(input.pages.map((p) => p.id));
-      for (const row of silicaRows) {
-        if (sent.has(row.id)) continue;
-        const next = positionOf.get(row.id);
-        if (next === undefined || next === row.position) continue;
-        await tx.builderPage.update({ where: { id: row.id }, data: { position: next } });
-      }
-    }
+        // Seal this save as a restorable draft version (docs/126 §4.6) — rides the SAME
+        // transaction as the snapshot, so a rolled-back save leaves no orphan version, and a
+        // save that changed nothing is skipped (no duplicate row). This is what makes a
+        // last-write-wins overwrite recoverable rather than permanent.
+        await captureDraftVersionTx(tx, ctx, opts.versionSource ?? 'save');
 
-    // Frame → the active layout (the chrome row).
-    const layout = await activeLayoutTx(tx, ctx);
-    if (input.frame) {
-      await tx.builderLayout.update({
-        where: { id: layout.id },
-        data: { silicaDraftTree: asJson(input.frame.root) },
-      });
-      // The chrome holds symbol instances and bindings like any other tree.
-      await reindexTreeTx(tx, ctx, {
-        ownerKind: 'layout',
-        ownerId: layout.id,
-        tree: input.frame.root,
-      });
-    }
-
-    // Named layouts → the rest of the catalog (silicaui 0.37). The engine mints their
-    // ids with `crypto.randomUUID`, so an id it invents IS a valid `builder_layouts`
-    // primary key and a valid `builder_pages.frame_id` — no id mapping to keep honest.
-    if (input.frames) await syncNamedLayoutsTx(tx, ctx, input.frames, layout.id);
-    const droppedFrames = framesToDelete(input.deletedFrameIds, layout.id);
-    if (droppedFrames.length > 0) {
-      await tx.builderLayout.deleteMany({
-        where: { id: { in: droppedFrames }, propertyId: ctx.propertyId, isActive: false },
-      });
-      // Pages pointing at a deleted layout fall back to the site DEFAULT, not to
-      // `null`-as-bare: losing your header is a much louder change than the author
-      // asked for, and it is what the engine's own `deleteLayout` does.
-      await tx.builderPage.updateMany({
-        where: { propertyId: ctx.propertyId, frameId: { in: droppedFrames } },
-        data: { frameId: null },
-      });
-    }
-
-    // Site-global theme + symbols + saved-theme library → the property's silica
-    // site record (docs/118). `theme` and `savedThemes` are only written when the
-    // payload carries them, so a tenant on the brand-derived theme never has a null
-    // stomped over an authored theme, and a load that didn't send the library never
-    // wipes it. An empty `savedThemes: []` IS present (the author cleared it) and is
-    // stored as such.
-    const themeData = input.theme ? { silicaDraftTheme: asJson(input.theme) } : {};
-    const savedThemesData =
-      input.savedThemes != null ? { silicaDraftSavedThemes: asJson(input.savedThemes) } : {};
-    // ABSENT and EMPTY are different (docs/125 §9.3). This was an unconditional
-    // `input.symbols ?? {}`, so any payload that didn't carry symbols WIPED the
-    // tenant's whole saved-component library — and `toSyncInput` only includes them
-    // when `site.symbols` is truthy, so an engine handing back an empty/absent map
-    // silently destroyed every saved component. Theme and savedThemes one line up
-    // already guarded against exactly this; symbols did not.
-    //
-    // `{}` sent explicitly still stores `{}` — that IS "the author deleted their last
-    // symbol", and a library you can never empty is its own bug.
-    const symbolsData = symbolsUpdateFor(input.symbols);
-
-    // Symbol MASTERS are trees too — one can instantiate another, and can bind a
-    // pinned record. Reindexed only when the payload speaks about symbols at all
-    // (see symbolsUpdateFor): an absent map must not be read as "no symbols exist".
-    if (input.symbols != null) {
-      const masters = input.symbols as Record<string, { root?: SilicaNode } | undefined>;
-      // The library is replaced wholesale on write, so drop every symbol row for the
-      // property first — a master removed from the map has no other signal it is gone.
-      await tx.builderNodeIndex.deleteMany({
-        where: { propertyId: ctx.propertyId, ownerKind: 'symbol' },
-      });
-      for (const [key, def] of Object.entries(masters)) {
-        if (!def?.root) continue;
-        await reindexTreeTx(tx, ctx, { ownerKind: 'symbol', ownerId: key, tree: asNode(def.root) });
-      }
-    }
-    await tx.builderSite.upsert({
-      where: { propertyId: ctx.propertyId },
-      update: { ...themeData, ...savedThemesData, ...symbolsData },
-      create: {
-        tenantId: ctx.tenantId,
-        propertyId: ctx.propertyId,
-        ...themeData,
-        ...savedThemesData,
-        ...symbolsData,
-      },
+        // Hand back each page's post-write `updatedAt` so the client can advance its
+        // precondition map (docs/126 Phase 1). Without this the client's timestamps would
+        // go stale the instant it saved, and its own next write would look like a conflict
+        // against itself.
+        const after = await tx.builderPage.findMany({
+            where: { propertyId: ctx.propertyId },
+            select: { id: true, updatedAt: true },
+        });
+        return {
+            pageUpdatedAt: Object.fromEntries(after.map((r) => [r.id, r.updatedAt.toISOString()])),
+            seq,
+            relay,
+        };
     });
-
-    // Record the engine's ops in the SAME transaction as the snapshot write (docs/126
-    // Phase 2). Additive — the snapshot above stays authoritative — but co-committed, so
-    // the log can never claim an edit that rolled back. Only the collaborative editor
-    // sends ops; scripted callers (MCP, blueprint installer) send none and get seq=null.
-    let seq: number | null = null;
-    let relay: SiteSyncResult['relay'] = null;
-    if (input.ops && input.ops.length > 0) {
-      const batchId = input.batchId ?? `sync-${input.baseSeq ?? 0}`;
-      const result = await appendOpsTx(tx, ctx, input.ops, batchId, input.baseSeq ?? 0);
-      seq = result.newSeq;
-      // Relay only a batch we ACTUALLY recorded — an idempotent retry (alreadyApplied)
-      // was already relayed on its first pass, and re-broadcasting it would make peers
-      // apply the same ops twice.
-      if (!result.alreadyApplied) {
-        relay = { batchId, seq: result.newSeq, ops: input.ops };
-      }
-    }
-
-    // Seal this save as a restorable draft version (docs/126 §4.6) — rides the SAME
-    // transaction as the snapshot, so a rolled-back save leaves no orphan version, and a
-    // save that changed nothing is skipped (no duplicate row). This is what makes a
-    // last-write-wins overwrite recoverable rather than permanent.
-    await captureDraftVersionTx(tx, ctx, opts.versionSource ?? 'save');
-
-    // Hand back each page's post-write `updatedAt` so the client can advance its
-    // precondition map (docs/126 Phase 1). Without this the client's timestamps would
-    // go stale the instant it saved, and its own next write would look like a conflict
-    // against itself.
-    const after = await tx.builderPage.findMany({
-      where: { propertyId: ctx.propertyId },
-      select: { id: true, updatedAt: true },
-    });
-    return {
-      pageUpdatedAt: Object.fromEntries(after.map((r) => [r.id, r.updatedAt.toISOString()])),
-      seq,
-      relay,
-    };
-  });
 }
 
 /**
@@ -1543,64 +1543,64 @@ function syncTx(
  *     them to re-pick a theme.
  */
 export async function reset(ctx: PropertyContext): Promise<void> {
-  await withTenant(ctx, async (tx) => {
-    const allPages = await tx.builderPage.findMany({ where: { propertyId: ctx.propertyId } });
-    // `hasSilicaContent`, not `isSilica`. Reset is the tool for "take this silica content
-    // off my site", so it has to reason about what is SERVED, and the storefront serves
-    // the published column. Filtering on the draft made reset skip precisely the rows a
-    // tenant most needs it for: a published body with no draft is live, invisible to
-    // every listing, and — before this — permanently so, because the one tool that
-    // clears silica content could not see it either. The branch below already clears
-    // BOTH columns; it was simply never reached for these rows.
-    const silicaRows = allPages.filter(hasSilicaContent);
+    await withTenant(ctx, async (tx) => {
+        const allPages = await tx.builderPage.findMany({ where: { propertyId: ctx.propertyId } });
+        // `hasSilicaContent`, not `isSilica`. Reset is the tool for "take this silica content
+        // off my site", so it has to reason about what is SERVED, and the storefront serves
+        // the published column. Filtering on the draft made reset skip precisely the rows a
+        // tenant most needs it for: a published body with no draft is live, invisible to
+        // every listing, and — before this — permanently so, because the one tool that
+        // clears silica content could not see it either. The branch below already clears
+        // BOTH columns; it was simply never reached for these rows.
+        const silicaRows = allPages.filter(hasSilicaContent);
 
-    for (const r of silicaRows) {
-      // `publishedTree` is the LEGACY sparx column. A silica-only row never has
-      // one (sync parks a blank `draftTree` there and nothing else), so the row
-      // exists solely to carry the silica body — drop it.
-      if (r.publishedTree == null) {
-        await tx.builderPage.delete({ where: { id: r.id } });
-      } else {
-        await tx.builderPage.update({
-          where: { id: r.id },
-          data: { silicaDraftTree: Prisma.DbNull, silicaPublishedTree: Prisma.DbNull },
+        for (const r of silicaRows) {
+            // `publishedTree` is the LEGACY sparx column. A silica-only row never has
+            // one (sync parks a blank `draftTree` there and nothing else), so the row
+            // exists solely to carry the silica body — drop it.
+            if (r.publishedTree == null) {
+                await tx.builderPage.delete({ where: { id: r.id } });
+            } else {
+                await tx.builderPage.update({
+                    where: { id: r.id },
+                    data: { silicaDraftTree: Prisma.DbNull, silicaPublishedTree: Prisma.DbNull },
+                });
+            }
+        }
+
+        const layout = await tx.builderLayout.findFirst({
+            where: { propertyId: ctx.propertyId, isActive: true },
         });
-      }
-    }
+        if (layout) {
+            await tx.builderLayout.update({
+                where: { id: layout.id },
+                data: { silicaDraftTree: Prisma.DbNull, silicaPublishedTree: Prisma.DbNull },
+            });
+        }
 
-    const layout = await tx.builderLayout.findFirst({
-      where: { propertyId: ctx.propertyId, isActive: true },
+        const site = await tx.builderSite.findUnique({ where: { propertyId: ctx.propertyId } });
+        if (site) {
+            await tx.builderSite.update({
+                where: { propertyId: ctx.propertyId },
+                data: {
+                    silicaDraftSymbols: asJson({}),
+                    silicaPublishedSymbols: Prisma.DbNull,
+                    publishedAt: null,
+                },
+            });
+        }
+
+        await writeAuditLog({
+            tx,
+            tenantId: ctx.tenantId,
+            actorId: ctx.userId ?? null,
+            actorType: 'user',
+            action: 'builder.site.reset',
+            entityType: 'Property',
+            entityId: ctx.propertyId,
+            diff: { before: { pages: silicaRows.length } },
+        });
     });
-    if (layout) {
-      await tx.builderLayout.update({
-        where: { id: layout.id },
-        data: { silicaDraftTree: Prisma.DbNull, silicaPublishedTree: Prisma.DbNull },
-      });
-    }
-
-    const site = await tx.builderSite.findUnique({ where: { propertyId: ctx.propertyId } });
-    if (site) {
-      await tx.builderSite.update({
-        where: { propertyId: ctx.propertyId },
-        data: {
-          silicaDraftSymbols: asJson({}),
-          silicaPublishedSymbols: Prisma.DbNull,
-          publishedAt: null,
-        },
-      });
-    }
-
-    await writeAuditLog({
-      tx,
-      tenantId: ctx.tenantId,
-      actorId: ctx.userId ?? null,
-      actorType: 'user',
-      action: 'builder.site.reset',
-      entityType: 'Property',
-      entityId: ctx.propertyId,
-      diff: { before: { pages: silicaRows.length } },
-    });
-  });
 }
 
 /**
@@ -1630,28 +1630,28 @@ export async function reset(ctx: PropertyContext): Promise<void> {
  * a tenant with no Commerce module must not get a Shop link back.
  */
 export async function resetFrame(
-  ctx: PropertyContext,
-  opts: SiteChromeOptions = {}
+    ctx: PropertyContext,
+    opts: SiteChromeOptions = {}
 ): Promise<SilicaFrame> {
-  const frame = starterFrame(opts);
-  await withTenant(ctx, async (tx) => {
-    const layout = await activeLayoutTx(tx, ctx);
-    await tx.builderLayout.update({
-      where: { id: layout.id },
-      data: { silicaDraftTree: asJson(frame.root) },
+    const frame = starterFrame(opts);
+    await withTenant(ctx, async (tx) => {
+        const layout = await activeLayoutTx(tx, ctx);
+        await tx.builderLayout.update({
+            where: { id: layout.id },
+            data: { silicaDraftTree: asJson(frame.root) },
+        });
+        await writeAuditLog({
+            tx,
+            tenantId: ctx.tenantId,
+            actorId: ctx.userId ?? null,
+            actorType: 'user',
+            action: 'builder.site.frame.reset',
+            entityType: 'BuilderLayout',
+            entityId: layout.id,
+            diff: { before: { frame: layout.silicaDraftTree ?? null } },
+        });
     });
-    await writeAuditLog({
-      tx,
-      tenantId: ctx.tenantId,
-      actorId: ctx.userId ?? null,
-      actorType: 'user',
-      action: 'builder.site.frame.reset',
-      entityType: 'BuilderLayout',
-      entityId: layout.id,
-      diff: { before: { frame: layout.silicaDraftTree ?? null } },
-    });
-  });
-  return frame;
+    return frame;
 }
 
 /** Deep-equal for two stored trees. `JSON.stringify` is exact HERE (though not in
@@ -1659,21 +1659,21 @@ export async function resetFrame(
  *  copy of the draft: same producer, same key order. A false "changed" would only
  *  ever nag; it can't lose work. */
 const treeDiffers = (draft: unknown, published: unknown): boolean =>
-  JSON.stringify(draft ?? null) !== JSON.stringify(published ?? null);
+    JSON.stringify(draft ?? null) !== JSON.stringify(published ?? null);
 
 /** The site's chrome as ONE document — what the layout builder opens. */
 export interface FrameDocument {
-  /** `builder_layouts.id` — the same value `builder_pages.frame_id` points at, so a
-   *  page and the editor agree on which chrome wraps it with no translation. */
-  layoutId: string;
-  name: string;
-  root: SilicaNode;
-  /** False when this is the starter seed rather than a stored tree: nobody has
-   *  authored chrome here yet, and the first Save materializes it. */
-  stored: boolean;
-  publishedAt: string | null;
-  /** The saved draft differs from what visitors are served. */
-  unpublished: boolean;
+    /** `builder_layouts.id` — the same value `builder_pages.frame_id` points at, so a
+     *  page and the editor agree on which chrome wraps it with no translation. */
+    layoutId: string;
+    name: string;
+    root: SilicaNode;
+    /** False when this is the starter seed rather than a stored tree: nobody has
+     *  authored chrome here yet, and the first Save materializes it. */
+    stored: boolean;
+    publishedAt: string | null;
+    /** The saved draft differs from what visitors are served. */
+    unpublished: boolean;
 }
 
 /**
@@ -1689,22 +1689,22 @@ export interface FrameDocument {
  * panes resolve their chrome through that same id.
  */
 export function loadFrame(
-  ctx: PropertyContext,
-  modules: SiteChromeOptions = {}
+    ctx: PropertyContext,
+    modules: SiteChromeOptions = {}
 ): Promise<FrameDocument> {
-  return withTenant(ctx, async (tx) => {
-    const layout = await activeLayoutTx(tx, ctx);
-    const stored = layout.silicaDraftTree != null;
-    return {
-      layoutId: layout.id,
-      name: layout.name,
-      root: stored ? asNode(layout.silicaDraftTree) : starterFrame(modules).root,
-      stored,
-      publishedAt: layout.publishedAt ? layout.publishedAt.toISOString() : null,
-      // A seed is not a draft: there is nothing saved to be ahead of what is live.
-      unpublished: stored && treeDiffers(layout.silicaDraftTree, layout.silicaPublishedTree),
-    };
-  });
+    return withTenant(ctx, async (tx) => {
+        const layout = await activeLayoutTx(tx, ctx);
+        const stored = layout.silicaDraftTree != null;
+        return {
+            layoutId: layout.id,
+            name: layout.name,
+            root: stored ? asNode(layout.silicaDraftTree) : starterFrame(modules).root,
+            stored,
+            publishedAt: layout.publishedAt ? layout.publishedAt.toISOString() : null,
+            // A seed is not a draft: there is nothing saved to be ahead of what is live.
+            unpublished: stored && treeDiffers(layout.silicaDraftTree, layout.silicaPublishedTree),
+        };
+    });
 }
 
 /**
@@ -1720,64 +1720,64 @@ export function loadFrame(
  * one-entry release, and restoring it would blank every page the site has.
  */
 export async function publishFrame(
-  ctx: PropertyContext
+    ctx: PropertyContext
 ): Promise<{ layoutId: string; publishedAt: string; release: { id: string; hash: string } }> {
-  const now = new Date();
-  const result = await withTenant(ctx, async (tx) => {
-    const layout = await activeLayoutTx(tx, ctx);
-    if (layout.silicaDraftTree == null) {
-      throw new BuilderValidationError(
-        'There is no header or footer saved yet — save your layout before publishing it.'
-      );
-    }
-    await tx.builderLayout.update({
-      where: { id: layout.id },
-      data: { silicaPublishedTree: asJson(layout.silicaDraftTree), publishedAt: now },
-    });
-    const hash = await recordArtifactTx(tx, ctx, 'layout', layout.id, layout.silicaDraftTree);
-    await reindexTreeTx(tx, ctx, {
-      ownerKind: 'layout',
-      ownerId: layout.id,
-      tree: asNode(layout.silicaDraftTree),
+    const now = new Date();
+    const result = await withTenant(ctx, async (tx) => {
+        const layout = await activeLayoutTx(tx, ctx);
+        if (layout.silicaDraftTree == null) {
+            throw new BuilderValidationError(
+                'There is no header or footer saved yet — save your layout before publishing it.'
+            );
+        }
+        await tx.builderLayout.update({
+            where: { id: layout.id },
+            data: { silicaPublishedTree: asJson(layout.silicaDraftTree), publishedAt: now },
+        });
+        const hash = await recordArtifactTx(tx, ctx, 'layout', layout.id, layout.silicaDraftTree);
+        await reindexTreeTx(tx, ctx, {
+            ownerKind: 'layout',
+            ownerId: layout.id,
+            tree: asNode(layout.silicaDraftTree),
+        });
+
+        const manifest = await carryForwardManifestTx(tx, ctx, {
+            ownerKind: 'layout',
+            ownerId: layout.id,
+            hash,
+        });
+        const release = await createReleaseTx(tx, ctx, manifest);
+
+        await writeAuditLog({
+            tx,
+            tenantId: ctx.tenantId,
+            actorId: ctx.userId ?? null,
+            actorType: 'user',
+            action: 'builder.layout.published',
+            entityType: 'BuilderLayout',
+            entityId: layout.id,
+            diff: { after: { name: layout.name, release: release.hash } },
+        });
+        return { layoutId: layout.id, name: layout.name, release };
     });
 
-    const manifest = await carryForwardManifestTx(tx, ctx, {
-      ownerKind: 'layout',
-      ownerId: layout.id,
-      hash,
+    invalidatePublishedStylesheet(ctx);
+    await publishBuilderEvent({
+        tenantId: ctx.tenantId,
+        topic: 'builder.layout.published',
+        payload: {
+            propertyId: ctx.propertyId,
+            layoutId: result.layoutId,
+            name: result.name,
+            releaseId: result.release.id,
+            hash: result.release.hash,
+        },
     });
-    const release = await createReleaseTx(tx, ctx, manifest);
-
-    await writeAuditLog({
-      tx,
-      tenantId: ctx.tenantId,
-      actorId: ctx.userId ?? null,
-      actorType: 'user',
-      action: 'builder.layout.published',
-      entityType: 'BuilderLayout',
-      entityId: layout.id,
-      diff: { after: { name: layout.name, release: release.hash } },
-    });
-    return { layoutId: layout.id, name: layout.name, release };
-  });
-
-  invalidatePublishedStylesheet(ctx);
-  await publishBuilderEvent({
-    tenantId: ctx.tenantId,
-    topic: 'builder.layout.published',
-    payload: {
-      propertyId: ctx.propertyId,
-      layoutId: result.layoutId,
-      name: result.name,
-      releaseId: result.release.id,
-      hash: result.release.hash,
-    },
-  });
-  return {
-    layoutId: result.layoutId,
-    publishedAt: now.toISOString(),
-    release: result.release,
-  };
+    return {
+        layoutId: result.layoutId,
+        publishedAt: now.toISOString(),
+        release: result.release,
+    };
 }
 
 /**
@@ -1788,10 +1788,10 @@ export async function publishFrame(
  * where the master is STORED differs, and the id namespace is what says which.
  */
 export function loadSymbols(ctx: PropertyContext): Promise<Record<string, SilicaSymbolDef>> {
-  return withTenant(ctx, async (tx) => {
-    const site = await tx.builderSite.findUnique({ where: { propertyId: ctx.propertyId } });
-    return symbolsOf(site?.silicaDraftSymbols);
-  });
+    return withTenant(ctx, async (tx) => {
+        const site = await tx.builderSite.findUnique({ where: { propertyId: ctx.propertyId } });
+        return symbolsOf(site?.silicaDraftSymbols);
+    });
 }
 
 /**
@@ -1803,36 +1803,40 @@ export function loadSymbols(ctx: PropertyContext): Promise<Record<string, Silica
  * saving a master cannot overwrite a page another pane is editing.
  */
 export async function setSymbol(
-  ctx: PropertyContext,
-  id: string,
-  input: { name: string; root: SilicaNode }
+    ctx: PropertyContext,
+    id: string,
+    input: { name: string; root: SilicaNode }
 ): Promise<SilicaSymbolDef> {
-  const symbol: SilicaSymbolDef = { id, name: input.name, root: input.root };
-  await withTenant(ctx, async (tx) => {
-    const site = await tx.builderSite.findUnique({ where: { propertyId: ctx.propertyId } });
-    const symbols = { ...symbolsOf(site?.silicaDraftSymbols), [id]: symbol };
-    await tx.builderSite.upsert({
-      where: { propertyId: ctx.propertyId },
-      update: { silicaDraftSymbols: asJson(symbols) },
-      create: {
-        tenantId: ctx.tenantId,
-        propertyId: ctx.propertyId,
-        silicaDraftSymbols: asJson(symbols),
-      },
+    const symbol: SilicaSymbolDef = { id, name: input.name, root: input.root };
+    await withTenant(ctx, async (tx) => {
+        const site = await tx.builderSite.findUnique({ where: { propertyId: ctx.propertyId } });
+        const symbols = { ...symbolsOf(site?.silicaDraftSymbols), [id]: symbol };
+        await tx.builderSite.upsert({
+            where: { propertyId: ctx.propertyId },
+            update: { silicaDraftSymbols: asJson(symbols) },
+            create: {
+                tenantId: ctx.tenantId,
+                propertyId: ctx.propertyId,
+                silicaDraftSymbols: asJson(symbols),
+            },
+        });
+        await reindexTreeTx(tx, ctx, { ownerKind: 'symbol', ownerId: id, tree: input.root });
+        // Seal the save, exactly as `sync` does for a page or the chrome. Writing this
+        // column directly is what makes the narrow write safe; skipping the version is
+        // what would make a saved piece the ONE document with no way back.
+        await captureDraftVersionTx(tx, ctx, 'save');
+        await writeAuditLog({
+            tx,
+            tenantId: ctx.tenantId,
+            actorId: ctx.userId ?? null,
+            actorType: 'user',
+            action: 'builder.site.symbol.saved',
+            entityType: 'BuilderSite',
+            entityId: ctx.propertyId,
+            diff: { after: { symbolId: id, name: input.name } },
+        });
     });
-    await reindexTreeTx(tx, ctx, { ownerKind: 'symbol', ownerId: id, tree: input.root });
-    await writeAuditLog({
-      tx,
-      tenantId: ctx.tenantId,
-      actorId: ctx.userId ?? null,
-      actorType: 'user',
-      action: 'builder.site.symbol.saved',
-      entityType: 'BuilderSite',
-      entityId: ctx.propertyId,
-      diff: { after: { symbolId: id, name: input.name } },
-    });
-  });
-  return symbol;
+    return symbol;
 }
 
 /**
@@ -1844,51 +1848,54 @@ export async function setSymbol(
  * have told the author how many placements that is first.
  */
 export async function removeSymbol(ctx: PropertyContext, id: string): Promise<void> {
-  await withTenant(ctx, async (tx) => {
-    const site = await tx.builderSite.findUnique({ where: { propertyId: ctx.propertyId } });
-    const symbols = symbolsOf(site?.silicaDraftSymbols);
-    if (!(id in symbols)) throw new BuilderNotFoundError('Symbol', id);
-    delete symbols[id];
-    await tx.builderSite.update({
-      where: { propertyId: ctx.propertyId },
-      data: { silicaDraftSymbols: asJson(symbols) },
+    await withTenant(ctx, async (tx) => {
+        const site = await tx.builderSite.findUnique({ where: { propertyId: ctx.propertyId } });
+        const symbols = symbolsOf(site?.silicaDraftSymbols);
+        if (!(id in symbols)) throw new BuilderNotFoundError('Symbol', id);
+        delete symbols[id];
+        await tx.builderSite.update({
+            where: { propertyId: ctx.propertyId },
+            data: { silicaDraftSymbols: asJson(symbols) },
+        });
+        await dropOwnerTx(tx, ctx, 'symbol', id);
+        // Sealed like a save, so the piece that was deleted is one row back rather than
+        // gone — which is the whole reason a delete is safe to offer at all.
+        await captureDraftVersionTx(tx, ctx, 'save');
+        await writeAuditLog({
+            tx,
+            tenantId: ctx.tenantId,
+            actorId: ctx.userId ?? null,
+            actorType: 'user',
+            action: 'builder.site.symbol.removed',
+            entityType: 'BuilderSite',
+            entityId: ctx.propertyId,
+            diff: { before: { symbolId: id } },
+        });
     });
-    await dropOwnerTx(tx, ctx, 'symbol', id);
-    await writeAuditLog({
-      tx,
-      tenantId: ctx.tenantId,
-      actorId: ctx.userId ?? null,
-      actorType: 'user',
-      action: 'builder.site.symbol.removed',
-      entityType: 'BuilderSite',
-      entityId: ctx.propertyId,
-      diff: { before: { symbolId: id } },
-    });
-  });
 }
 
 /** One page as the page builder opens it — its body, and everything about it that
  *  is not a node. */
 export interface PageDocument {
-  id: string;
-  name: string;
-  slug: string | null;
-  kind: 'singleton' | 'collection';
-  recordType: string | null;
-  recordSubtype: string | null;
-  isDefault: boolean;
-  /** `null` the site's layout, `'none'` no chrome at all, otherwise a layout id. */
-  frameId: string | null;
-  seoTitle: string | null;
-  seoDescription: string | null;
-  canonical: string | null;
-  ogImage: string | null;
-  noindex: boolean;
-  root: SilicaNode;
-  /** False when the page has no silica body yet — this is an empty one to start from. */
-  stored: boolean;
-  publishedAt: string | null;
-  unpublished: boolean;
+    id: string;
+    name: string;
+    slug: string | null;
+    kind: 'singleton' | 'collection';
+    recordType: string | null;
+    recordSubtype: string | null;
+    isDefault: boolean;
+    /** `null` the site's layout, `'none'` no chrome at all, otherwise a layout id. */
+    frameId: string | null;
+    seoTitle: string | null;
+    seoDescription: string | null;
+    canonical: string | null;
+    ogImage: string | null;
+    noindex: boolean;
+    root: SilicaNode;
+    /** False when the page has no silica body yet — this is an empty one to start from. */
+    stored: boolean;
+    publishedAt: string | null;
+    unpublished: boolean;
 }
 
 /**
@@ -1900,37 +1907,37 @@ export interface PageDocument {
  * of one site blob racing each other.
  */
 export function loadPage(ctx: PropertyContext, id: string): Promise<PageDocument> {
-  return withTenant(ctx, async (tx) => {
-    const row = await tx.builderPage.findFirst({ where: { id, propertyId: ctx.propertyId } });
-    if (!row) throw new BuilderNotFoundError('BuilderPage', id);
-    const stored = row.silicaDraftTree != null;
-    return {
-      id: row.id,
-      name: row.name,
-      slug: row.slug,
-      kind: row.kind === 'collection' ? 'collection' : 'singleton',
-      recordType: row.recordType,
-      recordSubtype: row.recordSubtype,
-      isDefault: row.isDefault,
-      frameId: row.frameId,
-      seoTitle: row.seoTitle,
-      seoDescription: row.seoDescription,
-      canonical: row.canonical,
-      ogImage: row.ogImage,
-      noindex: row.noindex,
-      // An empty page BODY, not an empty node: the Navigator needs a real root to
-      // hang sections off, and the author needs something to drop the first one into.
-      root: stored ? asNode(row.silicaDraftTree) : stampTree(pageBody([])),
-      stored,
-      publishedAt: row.publishedAt ? row.publishedAt.toISOString() : null,
-      // The chrome POINTER counts as unpublished work too. Moving a page off the
-      // site header and seeing "nothing to publish" is how that change reached
-      // production on Save instead of on Publish.
-      unpublished:
-        (stored && treeDiffers(row.silicaDraftTree, row.silicaPublishedTree)) ||
-        row.frameId !== row.publishedFrameId,
-    };
-  });
+    return withTenant(ctx, async (tx) => {
+        const row = await tx.builderPage.findFirst({ where: { id, propertyId: ctx.propertyId } });
+        if (!row) throw new BuilderNotFoundError('BuilderPage', id);
+        const stored = row.silicaDraftTree != null;
+        return {
+            id: row.id,
+            name: row.name,
+            slug: row.slug,
+            kind: row.kind === 'collection' ? 'collection' : 'singleton',
+            recordType: row.recordType,
+            recordSubtype: row.recordSubtype,
+            isDefault: row.isDefault,
+            frameId: row.frameId,
+            seoTitle: row.seoTitle,
+            seoDescription: row.seoDescription,
+            canonical: row.canonical,
+            ogImage: row.ogImage,
+            noindex: row.noindex,
+            // An empty page BODY, not an empty node: the Navigator needs a real root to
+            // hang sections off, and the author needs something to drop the first one into.
+            root: stored ? asNode(row.silicaDraftTree) : stampTree(pageBody([])),
+            stored,
+            publishedAt: row.publishedAt ? row.publishedAt.toISOString() : null,
+            // The chrome POINTER counts as unpublished work too. Moving a page off the
+            // site header and seeing "nothing to publish" is how that change reached
+            // production on Save instead of on Publish.
+            unpublished:
+                (stored && treeDiffers(row.silicaDraftTree, row.silicaPublishedTree)) ||
+                row.frameId !== row.publishedFrameId,
+        };
+    });
 }
 
 /**
@@ -1941,67 +1948,67 @@ export function loadPage(ctx: PropertyContext, id: string): Promise<PageDocument
  * would render inside a header its author had already moved it away from.
  */
 export async function publishPage(
-  ctx: PropertyContext,
-  id: string
+    ctx: PropertyContext,
+    id: string
 ): Promise<{ pageId: string; publishedAt: string; release: { id: string; hash: string } }> {
-  const now = new Date();
-  const result = await withTenant(ctx, async (tx) => {
-    const row = await tx.builderPage.findFirst({ where: { id, propertyId: ctx.propertyId } });
-    if (!row) throw new BuilderNotFoundError('BuilderPage', id);
-    if (row.silicaDraftTree == null) {
-      throw new BuilderValidationError(
-        'There is nothing saved on this page yet — save it before publishing it.'
-      );
-    }
-    await tx.builderPage.update({
-      where: { id: row.id },
-      data: {
-        silicaPublishedTree: asJson(row.silicaDraftTree),
-        publishedFrameId: row.frameId,
-        publishedAt: now,
-      },
-    });
-    const hash = await recordArtifactTx(tx, ctx, 'page', row.id, row.silicaDraftTree);
-    await reindexTreeTx(tx, ctx, {
-      ownerKind: 'page',
-      ownerId: row.id,
-      tree: asNode(row.silicaDraftTree),
+    const now = new Date();
+    const result = await withTenant(ctx, async (tx) => {
+        const row = await tx.builderPage.findFirst({ where: { id, propertyId: ctx.propertyId } });
+        if (!row) throw new BuilderNotFoundError('BuilderPage', id);
+        if (row.silicaDraftTree == null) {
+            throw new BuilderValidationError(
+                'There is nothing saved on this page yet — save it before publishing it.'
+            );
+        }
+        await tx.builderPage.update({
+            where: { id: row.id },
+            data: {
+                silicaPublishedTree: asJson(row.silicaDraftTree),
+                publishedFrameId: row.frameId,
+                publishedAt: now,
+            },
+        });
+        const hash = await recordArtifactTx(tx, ctx, 'page', row.id, row.silicaDraftTree);
+        await reindexTreeTx(tx, ctx, {
+            ownerKind: 'page',
+            ownerId: row.id,
+            tree: asNode(row.silicaDraftTree),
+        });
+
+        const manifest = await carryForwardManifestTx(tx, ctx, {
+            ownerKind: 'page',
+            ownerId: row.id,
+            hash,
+        });
+        const release = await createReleaseTx(tx, ctx, manifest);
+
+        await writeAuditLog({
+            tx,
+            tenantId: ctx.tenantId,
+            actorId: ctx.userId ?? null,
+            actorType: 'user',
+            action: 'builder.page.published',
+            entityType: 'BuilderPage',
+            entityId: row.id,
+            diff: { after: { name: row.name, release: release.hash } },
+        });
+        return { pageId: row.id, release };
     });
 
-    const manifest = await carryForwardManifestTx(tx, ctx, {
-      ownerKind: 'page',
-      ownerId: row.id,
-      hash,
+    invalidatePublishedStylesheet(ctx);
+    await publishBuilderEvent({
+        tenantId: ctx.tenantId,
+        topic: 'builder.page.published',
+        payload: {
+            propertyId: ctx.propertyId,
+            scope: 'page',
+            pageId: result.pageId,
+            pages: 1,
+            releaseId: result.release.id,
+            hash: result.release.hash,
+        },
     });
-    const release = await createReleaseTx(tx, ctx, manifest);
-
-    await writeAuditLog({
-      tx,
-      tenantId: ctx.tenantId,
-      actorId: ctx.userId ?? null,
-      actorType: 'user',
-      action: 'builder.page.published',
-      entityType: 'BuilderPage',
-      entityId: row.id,
-      diff: { after: { name: row.name, release: release.hash } },
-    });
-    return { pageId: row.id, release };
-  });
-
-  invalidatePublishedStylesheet(ctx);
-  await publishBuilderEvent({
-    tenantId: ctx.tenantId,
-    topic: 'builder.page.published',
-    payload: {
-      propertyId: ctx.propertyId,
-      scope: 'page',
-      pageId: result.pageId,
-      pages: 1,
-      releaseId: result.release.id,
-      hash: result.release.hash,
-    },
-  });
-  return { pageId: result.pageId, publishedAt: now.toISOString(), release: result.release };
+    return { pageId: result.pageId, publishedAt: now.toISOString(), release: result.release };
 }
 
 /** The newest release's manifest with one owner's entry replaced (or added).
@@ -2011,60 +2018,60 @@ export async function publishPage(
  *  therefore restorable, description of the site. With no prior release the answer
  *  is the one entry — which is accurate: nothing else has ever been published. */
 async function carryForwardManifestTx(
-  tx: TxClient,
-  ctx: PropertyContext,
-  entry: ManifestEntry
+    tx: TxClient,
+    ctx: PropertyContext,
+    entry: ManifestEntry
 ): Promise<ManifestEntry[]> {
-  const previous = await tx.builderRelease.findFirst({
-    where: { propertyId: ctx.propertyId },
-    orderBy: { createdAt: 'desc' },
-    select: { manifest: true },
-  });
-  const carried = ((previous?.manifest ?? []) as unknown as ManifestEntry[]).filter(
-    (e) => !(e.ownerKind === entry.ownerKind && e.ownerId === entry.ownerId)
-  );
-  return [...carried, entry];
+    const previous = await tx.builderRelease.findFirst({
+        where: { propertyId: ctx.propertyId },
+        orderBy: { createdAt: 'desc' },
+        select: { manifest: true },
+    });
+    const carried = ((previous?.manifest ?? []) as unknown as ManifestEntry[]).filter(
+        (e) => !(e.ownerKind === entry.ownerKind && e.ownerId === entry.ownerId)
+    );
+    return [...carried, entry];
 }
 
 /** Compare every silica draft tree against its published counterpart. Read-only. */
 export function publishState(ctx: PropertyContext): Promise<SitePublishState> {
-  return withTenant(ctx, async (tx) => {
-    const [allPages, layouts] = await Promise.all([
-      tx.builderPage.findMany({ where: { propertyId: ctx.propertyId } }),
-      tx.builderLayout.findMany({ where: { propertyId: ctx.propertyId } }),
-    ]);
-    const pages = allPages.filter(isSilica);
-    // A page counts as unpublished when its BODY or its CHROME CHOICE differs from what
-    // visitors are served. Counting only the tree would let "no header on this page" sit
-    // in the editor with Publish greyed out, which is the same silence the staged
-    // pointer exists to end.
-    const unpublishedPages = pages.filter(
-      (r) =>
-        treeDiffers(r.silicaDraftTree, r.silicaPublishedTree) || r.frameId !== r.publishedFrameId
-    ).length;
-    // ANY layout, not just the live one — an edit to a named layout is unpublished work
-    // a visitor is not seeing, and a signal that only watched the default shell would
-    // tell the author there is nothing to publish while a page renders the old one.
-    const frameUnpublished = layouts.some(
-      (l) => l.silicaDraftTree != null && treeDiffers(l.silicaDraftTree, l.silicaPublishedTree)
-    );
+    return withTenant(ctx, async (tx) => {
+        const [allPages, layouts] = await Promise.all([
+            tx.builderPage.findMany({ where: { propertyId: ctx.propertyId } }),
+            tx.builderLayout.findMany({ where: { propertyId: ctx.propertyId } }),
+        ]);
+        const pages = allPages.filter(isSilica);
+        // A page counts as unpublished when its BODY or its CHROME CHOICE differs from what
+        // visitors are served. Counting only the tree would let "no header on this page" sit
+        // in the editor with Publish greyed out, which is the same silence the staged
+        // pointer exists to end.
+        const unpublishedPages = pages.filter(
+            (r) =>
+                treeDiffers(r.silicaDraftTree, r.silicaPublishedTree) || r.frameId !== r.publishedFrameId
+        ).length;
+        // ANY layout, not just the live one — an edit to a named layout is unpublished work
+        // a visitor is not seeing, and a signal that only watched the default shell would
+        // tell the author there is nothing to publish while a page renders the old one.
+        const frameUnpublished = layouts.some(
+            (l) => l.silicaDraftTree != null && treeDiffers(l.silicaDraftTree, l.silicaPublishedTree)
+        );
 
-    // The most recent publish across pages + frame — the timestamp the author reads
-    // as "what visitors currently see".
-    const stamps = [
-      ...pages.map((r) => r.publishedAt),
-      ...layouts.map((l) => l.publishedAt),
-    ].filter((d): d is Date => d != null);
-    const last = stamps.length ? new Date(Math.max(...stamps.map((d) => d.getTime()))) : null;
+        // The most recent publish across pages + frame — the timestamp the author reads
+        // as "what visitors currently see".
+        const stamps = [
+            ...pages.map((r) => r.publishedAt),
+            ...layouts.map((l) => l.publishedAt),
+        ].filter((d): d is Date => d != null);
+        const last = stamps.length ? new Date(Math.max(...stamps.map((d) => d.getTime()))) : null;
 
-    return {
-      hasUnpublished: unpublishedPages > 0 || frameUnpublished,
-      unpublishedPages,
-      frameUnpublished,
-      lastPublishedAt: last?.toISOString() ?? null,
-      neverPublished: last === null,
-    };
-  });
+        return {
+            hasUnpublished: unpublishedPages > 0 || frameUnpublished,
+            unpublishedPages,
+            frameUnpublished,
+            lastPublishedAt: last?.toISOString() ?? null,
+            neverPublished: last === null,
+        };
+    });
 }
 
 /** Snapshot every silica DRAFT into its published counterpart — the publish
@@ -2078,153 +2085,153 @@ export function publishState(ctx: PropertyContext): Promise<SitePublishState> {
  *  onto the artifacts — the two are written in the same transaction, so they
  *  cannot disagree. */
 export async function publish(ctx: PropertyContext): Promise<{ id: string; hash: string }> {
-  let publishedPageCount = 0;
-  let release = { id: '', hash: '' };
-  await withTenant(ctx, async (tx) => {
-    const now = new Date();
-    const manifest: ManifestEntry[] = [];
-    const allPages = await tx.builderPage.findMany({ where: { propertyId: ctx.propertyId } });
-    const pages = allPages.filter(isSilica);
-    publishedPageCount = pages.length;
-    for (const r of pages) {
-      await tx.builderPage.update({
-        where: { id: r.id },
-        data: {
-          silicaPublishedTree: asJson(r.silicaDraftTree),
-          // The chrome POINTER publishes with the body, so a page and the shell around
-          // it always go live together. Without this the editor's frame picker would
-          // reach production on Save rather than on Publish.
-          publishedFrameId: r.frameId,
-          publishedAt: now,
-        },
-      });
-      const hash = await recordArtifactTx(tx, ctx, 'page', r.id, r.silicaDraftTree);
-      manifest.push({ ownerKind: 'page', ownerId: r.id, hash });
-      // Also rebuild the node index here, not only in `sync` (docs/126 §5.4).
-      //
-      // `sync` alone leaves a real hole: it only ever indexes trees the editor just
-      // saved, so a page nobody has touched since the index shipped is invisible to
-      // every where-used query — and "which pages show this product?" silently
-      // answering "none" is worse than not offering the answer at all. Publish is the
-      // one operation guaranteed to visit EVERY tree in the property, so putting the
-      // rebuild here means any published site has a complete index. Cheap: the trees
-      // are already loaded and the rebuild rides this transaction.
-      await reindexTreeTx(tx, ctx, {
-        ownerKind: 'page',
-        ownerId: r.id,
-        tree: asNode(r.silicaDraftTree),
-      });
-    }
-    // EVERY layout, not just the live one. A page pointed at a named layout renders
-    // through that layout's PUBLISHED tree, so publishing only the active shell would
-    // leave such a page serving whatever the alternative looked like when it was last
-    // published — or, for one created since, nothing at all.
-    const layouts = await tx.builderLayout.findMany({ where: { propertyId: ctx.propertyId } });
-    for (const layout of layouts) {
-      if (layout.silicaDraftTree == null) continue;
-      await tx.builderLayout.update({
-        where: { id: layout.id },
-        data: { silicaPublishedTree: asJson(layout.silicaDraftTree), publishedAt: now },
-      });
-      const hash = await recordArtifactTx(tx, ctx, 'layout', layout.id, layout.silicaDraftTree);
-      manifest.push({ ownerKind: 'layout', ownerId: layout.id, hash });
-      await reindexTreeTx(tx, ctx, {
-        ownerKind: 'layout',
-        ownerId: layout.id,
-        tree: asNode(layout.silicaDraftTree),
-      });
-    }
+    let publishedPageCount = 0;
+    let release = { id: '', hash: '' };
+    await withTenant(ctx, async (tx) => {
+        const now = new Date();
+        const manifest: ManifestEntry[] = [];
+        const allPages = await tx.builderPage.findMany({ where: { propertyId: ctx.propertyId } });
+        const pages = allPages.filter(isSilica);
+        publishedPageCount = pages.length;
+        for (const r of pages) {
+            await tx.builderPage.update({
+                where: { id: r.id },
+                data: {
+                    silicaPublishedTree: asJson(r.silicaDraftTree),
+                    // The chrome POINTER publishes with the body, so a page and the shell around
+                    // it always go live together. Without this the editor's frame picker would
+                    // reach production on Save rather than on Publish.
+                    publishedFrameId: r.frameId,
+                    publishedAt: now,
+                },
+            });
+            const hash = await recordArtifactTx(tx, ctx, 'page', r.id, r.silicaDraftTree);
+            manifest.push({ ownerKind: 'page', ownerId: r.id, hash });
+            // Also rebuild the node index here, not only in `sync` (docs/126 §5.4).
+            //
+            // `sync` alone leaves a real hole: it only ever indexes trees the editor just
+            // saved, so a page nobody has touched since the index shipped is invisible to
+            // every where-used query — and "which pages show this product?" silently
+            // answering "none" is worse than not offering the answer at all. Publish is the
+            // one operation guaranteed to visit EVERY tree in the property, so putting the
+            // rebuild here means any published site has a complete index. Cheap: the trees
+            // are already loaded and the rebuild rides this transaction.
+            await reindexTreeTx(tx, ctx, {
+                ownerKind: 'page',
+                ownerId: r.id,
+                tree: asNode(r.silicaDraftTree),
+            });
+        }
+        // EVERY layout, not just the live one. A page pointed at a named layout renders
+        // through that layout's PUBLISHED tree, so publishing only the active shell would
+        // leave such a page serving whatever the alternative looked like when it was last
+        // published — or, for one created since, nothing at all.
+        const layouts = await tx.builderLayout.findMany({ where: { propertyId: ctx.propertyId } });
+        for (const layout of layouts) {
+            if (layout.silicaDraftTree == null) continue;
+            await tx.builderLayout.update({
+                where: { id: layout.id },
+                data: { silicaPublishedTree: asJson(layout.silicaDraftTree), publishedAt: now },
+            });
+            const hash = await recordArtifactTx(tx, ctx, 'layout', layout.id, layout.silicaDraftTree);
+            manifest.push({ ownerKind: 'layout', ownerId: layout.id, hash });
+            await reindexTreeTx(tx, ctx, {
+                ownerKind: 'layout',
+                ownerId: layout.id,
+                tree: asNode(layout.silicaDraftTree),
+            });
+        }
 
-    // Site-global theme + symbols: draft → published. A null draft theme publishes
-    // as null (the storefront keeps rendering the brand-derived theme), so an author
-    // who never touched the theme never freezes one in.
-    const site = await tx.builderSite.findUnique({ where: { propertyId: ctx.propertyId } });
-    if (site) {
-      await tx.builderSite.update({
-        where: { propertyId: ctx.propertyId },
-        data: {
-          silicaPublishedTheme:
-            site.silicaDraftTheme == null ? Prisma.DbNull : asJson(site.silicaDraftTheme),
-          silicaPublishedSymbols: asJson(site.silicaDraftSymbols),
-          // WHICH `builder_themes` look this site wears goes live with everything
-          // else. The same argument as `publishedFrameId` on a page: without it,
-          // choosing a different look in the theme picker would repaint the live
-          // site on Save, and Publish would report nothing to publish.
-          publishedThemeId: site.themeId,
-          publishedAt: now,
-        },
-      });
-      const symbolsHash = await recordArtifactTx(
-        tx,
-        ctx,
-        'symbols',
-        ctx.propertyId,
-        site.silicaDraftSymbols
-      );
-      manifest.push({ ownerKind: 'symbols', ownerId: ctx.propertyId, hash: symbolsHash });
-      // Symbol masters, same completeness argument as the pages above. Wholesale
-      // replace: a master dropped from the library has no other signal it is gone.
-      await tx.builderNodeIndex.deleteMany({
-        where: { propertyId: ctx.propertyId, ownerKind: 'symbol' },
-      });
-      const masters = (site.silicaDraftSymbols ?? {}) as Record<
-        string,
-        { root?: SilicaNode } | undefined
-      >;
-      for (const [key, def] of Object.entries(masters)) {
-        if (!def?.root) continue;
-        await reindexTreeTx(tx, ctx, { ownerKind: 'symbol', ownerId: key, tree: asNode(def.root) });
-      }
-      // A null theme records NO entry rather than an artifact holding `null`. Absence is
-      // how a restore knows to clear the published theme, and it keeps the artifact table
-      // free of rows that carry nothing.
-      if (site.silicaDraftTheme != null) {
-        const themeHash = await recordArtifactTx(
-          tx,
-          ctx,
-          'theme',
-          ctx.propertyId,
-          site.silicaDraftTheme
-        );
-        manifest.push({ ownerKind: 'theme', ownerId: ctx.propertyId, hash: themeHash });
-      }
-    }
+        // Site-global theme + symbols: draft → published. A null draft theme publishes
+        // as null (the storefront keeps rendering the brand-derived theme), so an author
+        // who never touched the theme never freezes one in.
+        const site = await tx.builderSite.findUnique({ where: { propertyId: ctx.propertyId } });
+        if (site) {
+            await tx.builderSite.update({
+                where: { propertyId: ctx.propertyId },
+                data: {
+                    silicaPublishedTheme:
+                        site.silicaDraftTheme == null ? Prisma.DbNull : asJson(site.silicaDraftTheme),
+                    silicaPublishedSymbols: asJson(site.silicaDraftSymbols),
+                    // WHICH `builder_themes` look this site wears goes live with everything
+                    // else. The same argument as `publishedFrameId` on a page: without it,
+                    // choosing a different look in the theme picker would repaint the live
+                    // site on Save, and Publish would report nothing to publish.
+                    publishedThemeId: site.themeId,
+                    publishedAt: now,
+                },
+            });
+            const symbolsHash = await recordArtifactTx(
+                tx,
+                ctx,
+                'symbols',
+                ctx.propertyId,
+                site.silicaDraftSymbols
+            );
+            manifest.push({ ownerKind: 'symbols', ownerId: ctx.propertyId, hash: symbolsHash });
+            // Symbol masters, same completeness argument as the pages above. Wholesale
+            // replace: a master dropped from the library has no other signal it is gone.
+            await tx.builderNodeIndex.deleteMany({
+                where: { propertyId: ctx.propertyId, ownerKind: 'symbol' },
+            });
+            const masters = (site.silicaDraftSymbols ?? {}) as Record<
+                string,
+                { root?: SilicaNode } | undefined
+            >;
+            for (const [key, def] of Object.entries(masters)) {
+                if (!def?.root) continue;
+                await reindexTreeTx(tx, ctx, { ownerKind: 'symbol', ownerId: key, tree: asNode(def.root) });
+            }
+            // A null theme records NO entry rather than an artifact holding `null`. Absence is
+            // how a restore knows to clear the published theme, and it keeps the artifact table
+            // free of rows that carry nothing.
+            if (site.silicaDraftTheme != null) {
+                const themeHash = await recordArtifactTx(
+                    tx,
+                    ctx,
+                    'theme',
+                    ctx.propertyId,
+                    site.silicaDraftTheme
+                );
+                manifest.push({ ownerKind: 'theme', ownerId: ctx.propertyId, hash: themeHash });
+            }
+        }
 
-    release = await createReleaseTx(tx, ctx, manifest);
+        release = await createReleaseTx(tx, ctx, manifest);
 
-    await writeAuditLog({
-      tx,
-      tenantId: ctx.tenantId,
-      actorId: ctx.userId ?? null,
-      actorType: 'user',
-      action: 'builder.site.published',
-      entityType: 'Property',
-      entityId: ctx.propertyId,
-      diff: { after: { pages: pages.length, release: release.hash } },
+        await writeAuditLog({
+            tx,
+            tenantId: ctx.tenantId,
+            actorId: ctx.userId ?? null,
+            actorType: 'user',
+            action: 'builder.site.published',
+            entityType: 'Property',
+            entityId: ctx.propertyId,
+            diff: { after: { pages: pages.length, release: release.hash } },
+        });
     });
-  });
-  // The compiled Surface stylesheet is memoized per property (docs/127 §4). Publishing
-  // is the only thing that changes a PUBLISHED tree, so this is the invalidation point —
-  // without it a newly published class renders unstyled until the TTL backstop lapses.
-  invalidatePublishedStylesheet(ctx);
-  await publishBuilderEvent({
-    tenantId: ctx.tenantId,
-    topic: 'builder.page.published',
-    // A whole-site publish, not one page — so it carries the propertyId and the page
-    // count, NOT a `pageId`. It previously put `ctx.propertyId` in a field named
-    // `pageId` (docs/127 §6), which was harmless only for as long as nothing consumed
-    // it; cache-revalidation-worker now does.
-    // `hash` is the release address (docs/126 §5.3) — the value a consumer can use as a
-    // cache key, because it changes if and only if the published bytes did.
-    payload: {
-      propertyId: ctx.propertyId,
-      scope: 'site',
-      pages: publishedPageCount,
-      releaseId: release.id,
-      hash: release.hash,
-    },
-  });
-  return release;
+    // The compiled Surface stylesheet is memoized per property (docs/127 §4). Publishing
+    // is the only thing that changes a PUBLISHED tree, so this is the invalidation point —
+    // without it a newly published class renders unstyled until the TTL backstop lapses.
+    invalidatePublishedStylesheet(ctx);
+    await publishBuilderEvent({
+        tenantId: ctx.tenantId,
+        topic: 'builder.page.published',
+        // A whole-site publish, not one page — so it carries the propertyId and the page
+        // count, NOT a `pageId`. It previously put `ctx.propertyId` in a field named
+        // `pageId` (docs/127 §6), which was harmless only for as long as nothing consumed
+        // it; cache-revalidation-worker now does.
+        // `hash` is the release address (docs/126 §5.3) — the value a consumer can use as a
+        // cache key, because it changes if and only if the published bytes did.
+        payload: {
+            propertyId: ctx.propertyId,
+            scope: 'site',
+            pages: publishedPageCount,
+            releaseId: release.id,
+            hash: release.hash,
+        },
+    });
+    return release;
 }
 
 // ── Single-item safe writers (the Builder MCP silica tools) ───────────────────
@@ -2246,7 +2253,7 @@ export async function publish(ctx: PropertyContext): Promise<{ id: string; hash:
 
 /** The empty site a property with no silica pages yet starts from. */
 function emptySite(): StoredSilicaSite {
-  return { pages: [] };
+    return { pages: [] };
 }
 
 /** What one scripted (MCP) write did, for the transport to relay to co-editors
@@ -2257,30 +2264,30 @@ function emptySite(): StoredSilicaSite {
  *  was REPLACED with no faithful op, so a co-editor is prompted to reload them rather than
  *  have their own in-progress edits overwritten. */
 export interface SilicaWriteChange {
-  relay: SiteSyncResult['relay'];
-  reloadHints: string[];
+    relay: SiteSyncResult['relay'];
+    reloadHints: string[];
 }
 
 /** Sync a spliced whole-site payload from a scripted writer, appending any synthesized
  *  ops under a fresh idempotency batch, and report what a co-editor should do about it.
  *  Centralizes the op/batch plumbing so each wrapper only decides its op + reload hint. */
 async function syncScripted(
-  ctx: PropertyContext,
-  site: object,
-  opts: { ops?: BuilderOpEnvelope[]; reloadHints?: string[] } = {}
+    ctx: PropertyContext,
+    site: object,
+    opts: { ops?: BuilderOpEnvelope[]; reloadHints?: string[] } = {}
 ): Promise<SilicaWriteChange> {
-  const ops = opts.ops ?? [];
-  const { relay } = await sync(
-    ctx,
-    {
-      ...site,
-      ...(ops.length > 0 ? { ops, batchId: newOpBatch() } : {}),
-    },
-    // An agent's MCP write — labels the draft version in the history so the owner can see
-    // which saves the assistant made.
-    { versionSource: 'agent' }
-  );
-  return { relay, reloadHints: opts.reloadHints ?? [] };
+    const ops = opts.ops ?? [];
+    const { relay } = await sync(
+        ctx,
+        {
+            ...site,
+            ...(ops.length > 0 ? { ops, batchId: newOpBatch() } : {}),
+        },
+        // An agent's MCP write — labels the draft version in the history so the owner can see
+        // which saves the assistant made.
+        { versionSource: 'agent' }
+    );
+    return { relay, reloadHints: opts.reloadHints ?? [] };
 }
 
 /** A silica `Site` always needs at least one page (its own schema requires it —
@@ -2289,11 +2296,11 @@ async function syncScripted(
  *  page to attach to and raise a clear error otherwise, rather than surfacing a
  *  raw schema-validation failure from `sync`. */
 function requireAtLeastOnePage(current: StoredSilicaSite): void {
-  if (current.pages.length === 0) {
-    throw new BuilderValidationError(
-      'This site has no pages yet — call upsert_silica_page to create one (e.g. the home page) before setting the frame or theme.'
-    );
-  }
+    if (current.pages.length === 0) {
+        throw new BuilderValidationError(
+            'This site has no pages yet — call upsert_silica_page to create one (e.g. the home page) before setting the frame or theme.'
+        );
+    }
 }
 
 /** Create or replace ONE page's body, leaving every other page/the frame/theme/
@@ -2303,24 +2310,24 @@ function requireAtLeastOnePage(current: StoredSilicaSite): void {
  *  create a new page; a fresh id then becomes its row id. Returns the page's id
  *  so a caller that omitted it learns what was minted. */
 export async function upsertPage(
-  ctx: PropertyContext,
-  input: { id?: string; name: string; slug: string; sections: SilicaNode[] }
+    ctx: PropertyContext,
+    input: { id?: string; name: string; slug: string; sections: SilicaNode[] }
 ): Promise<{ id: string; change: SilicaWriteChange }> {
-  const current = (await load(ctx)) ?? emptySite();
-  const id = input.id ?? defaultMakeId();
-  const root = stampTree(pageBody(input.sections));
-  const nextPage: SilicaPage = { id, name: input.name, slug: input.slug, root };
-  const exists = current.pages.some((p) => p.id === id);
-  const pages = exists
-    ? current.pages.map((p) => (p.id === id ? nextPage : p))
-    : [...current.pages, nextPage];
-  // A NEW page relays as `page.create` — the reducer `pages.push`es it, so it folds into
-  // a co-editor's canvas without touching their other pages. REPLACING an existing body
-  // has no faithful delta op (fresh ids, no `page.setRoot`), so it carries a reload hint.
-  const change = exists
-    ? await syncScripted(ctx, { ...current, pages }, { reloadHints: [id] })
-    : await syncScripted(ctx, { ...current, pages }, { ops: [pageCreateOp(nextPage)] });
-  return { id, change };
+    const current = (await load(ctx)) ?? emptySite();
+    const id = input.id ?? defaultMakeId();
+    const root = stampTree(pageBody(input.sections));
+    const nextPage: SilicaPage = { id, name: input.name, slug: input.slug, root };
+    const exists = current.pages.some((p) => p.id === id);
+    const pages = exists
+        ? current.pages.map((p) => (p.id === id ? nextPage : p))
+        : [...current.pages, nextPage];
+    // A NEW page relays as `page.create` — the reducer `pages.push`es it, so it folds into
+    // a co-editor's canvas without touching their other pages. REPLACING an existing body
+    // has no faithful delta op (fresh ids, no `page.setRoot`), so it carries a reload hint.
+    const change = exists
+        ? await syncScripted(ctx, { ...current, pages }, { reloadHints: [id] })
+        : await syncScripted(ctx, { ...current, pages }, { ops: [pageCreateOp(nextPage)] });
+    return { id, change };
 }
 
 /** Replace ONE page's body with a COMPLETE root, leaving the rest of the site
@@ -2330,44 +2337,44 @@ export async function upsertPage(
  *  which would both double-wrap an already-complete body and re-mint every node id
  *  (severing the correspondence the merge keys on). */
 export async function setPageRoot(
-  ctx: PropertyContext,
-  pageId: string,
-  root: SilicaNode
+    ctx: PropertyContext,
+    pageId: string,
+    root: SilicaNode
 ): Promise<SilicaWriteChange | null> {
-  const current = await load(ctx);
-  if (!current) return null;
-  const pages = current.pages.map((p) => (p.id === pageId ? { ...p, root } : p));
-  if (pages.every((p, i) => p === current.pages[i])) return null; // no such page — nothing to write
-  // A whole-root replace has no live delta op — a co-editor reloads this page.
-  return syncScripted(ctx, { ...current, pages }, { reloadHints: [pageId] });
+    const current = await load(ctx);
+    if (!current) return null;
+    const pages = current.pages.map((p) => (p.id === pageId ? { ...p, root } : p));
+    if (pages.every((p, i) => p === current.pages[i])) return null; // no such page — nothing to write
+    // A whole-root replace has no live delta op — a co-editor reloads this page.
+    return syncScripted(ctx, { ...current, pages }, { reloadHints: [pageId] });
 }
 
 /** Remove ONE page, leaving the rest of the site untouched. A silica `Site`
  *  cannot have zero pages, so removing the last one is refused with a clear
  *  message rather than left to fail inside `sync`'s schema validation. */
 export async function removePage(
-  ctx: PropertyContext,
-  pageId: string
+    ctx: PropertyContext,
+    pageId: string
 ): Promise<SilicaWriteChange | null> {
-  const current = await load(ctx);
-  if (!current) return null;
-  const pages = current.pages.filter((p) => p.id !== pageId);
-  if (pages.length === current.pages.length) return null;
-  if (pages.length === 0) {
-    throw new BuilderValidationError(
-      `Cannot remove page ${pageId} — it is the site's only page. A site needs at least one page; replace its content with upsert_silica_page instead of deleting it.`
+    const current = await load(ctx);
+    if (!current) return null;
+    const pages = current.pages.filter((p) => p.id !== pageId);
+    if (pages.length === current.pages.length) return null;
+    if (pages.length === 0) {
+        throw new BuilderValidationError(
+            `Cannot remove page ${pageId} — it is the site's only page. A site needs at least one page; replace its content with upsert_silica_page instead of deleting it.`
+        );
+    }
+    // State the deletion EXPLICITLY: `sync` no longer removes a page just because it is
+    // absent from the payload (that would delete pages a concurrent operator/agent added
+    // and this snapshot never saw). `deletedPageIds` names the one page this call removes;
+    // every other page — including any the operator authored meanwhile — is left intact.
+    // It relays as `page.delete`, so a co-editor's canvas drops the page live.
+    return syncScripted(
+        ctx,
+        { ...current, pages, deletedPageIds: [pageId] },
+        { ops: [pageDeleteOp(pageId)] }
     );
-  }
-  // State the deletion EXPLICITLY: `sync` no longer removes a page just because it is
-  // absent from the payload (that would delete pages a concurrent operator/agent added
-  // and this snapshot never saw). `deletedPageIds` names the one page this call removes;
-  // every other page — including any the operator authored meanwhile — is left intact.
-  // It relays as `page.delete`, so a co-editor's canvas drops the page live.
-  return syncScripted(
-    ctx,
-    { ...current, pages, deletedPageIds: [pageId] },
-    { ops: [pageDeleteOp(pageId)] }
-  );
 }
 
 /** Replace the site's FRAME (chrome) — the shared navbar/Outlet/footer every
@@ -2375,12 +2382,12 @@ export async function removePage(
  *  reached only by node ops, and a scripted whole-frame swap has no faithful delta, so
  *  a co-editor is prompted to reload the frame rather than have theirs overwritten. */
 export async function setFrame(
-  ctx: PropertyContext,
-  input: { root: SilicaNode }
+    ctx: PropertyContext,
+    input: { root: SilicaNode }
 ): Promise<SilicaWriteChange> {
-  const current = (await load(ctx)) ?? emptySite();
-  requireAtLeastOnePage(current);
-  return syncScripted(ctx, { ...current, frame: { root: input.root } }, { reloadHints: ['frame'] });
+    const current = (await load(ctx)) ?? emptySite();
+    requireAtLeastOnePage(current);
+    return syncScripted(ctx, { ...current, frame: { root: input.root } }, { reloadHints: ['frame'] });
 }
 
 /** Replace the site's authored THEME (and optionally its saved-theme library),
@@ -2389,22 +2396,22 @@ export async function setFrame(
  *  library alone, mirroring `sync`'s own nullish-vs-absent contract. Relays as
  *  `theme.set` (+ `savedThemes.set`) — both fold into a co-editor's canvas live. */
 export async function setTheme(
-  ctx: PropertyContext,
-  input: { theme: SilicaTheme; savedThemes?: SilicaTheme[] }
+    ctx: PropertyContext,
+    input: { theme: SilicaTheme; savedThemes?: SilicaTheme[] }
 ): Promise<SilicaWriteChange> {
-  const current = (await load(ctx)) ?? emptySite();
-  requireAtLeastOnePage(current);
-  const ops: BuilderOpEnvelope[] = [themeSetOp(input.theme)];
-  if (input.savedThemes !== undefined) ops.push(savedThemesSetOp(input.savedThemes));
-  return syncScripted(
-    ctx,
-    {
-      ...current,
-      theme: input.theme,
-      ...(input.savedThemes !== undefined ? { savedThemes: input.savedThemes } : {}),
-    },
-    { ops }
-  );
+    const current = (await load(ctx)) ?? emptySite();
+    requireAtLeastOnePage(current);
+    const ops: BuilderOpEnvelope[] = [themeSetOp(input.theme)];
+    if (input.savedThemes !== undefined) ops.push(savedThemesSetOp(input.savedThemes));
+    return syncScripted(
+        ctx,
+        {
+            ...current,
+            theme: input.theme,
+            ...(input.savedThemes !== undefined ? { savedThemes: input.savedThemes } : {}),
+        },
+        { ops }
+    );
 }
 
 // ── Blueprint install (docs/54 + docs/118 Phase 3) ────────────────────────────
@@ -2413,21 +2420,21 @@ export async function setTheme(
  *  runtime UUIDs (the handle-not-id rule), so `installSite` mints one per page.
  *  `root` is the page's FULL silica body tree, taken verbatim. */
 export interface InstallPageInput {
-  name: string;
-  slug: string;
-  root: SilicaNode;
-  kind?: string;
-  recordType?: string | null;
-  /** A `commerce.product` page's product-TYPE target (docs/143 Option B). null = the
-   *  DEFAULT product page (takes the `/products/:handle` address); a value makes it a
-   *  per-type page, resolved by subtype rather than by URL. */
-  recordSubtype?: string | null;
-  isDefault?: boolean;
-  seoTitle?: string | null;
-  seoDescription?: string | null;
-  canonical?: string | null;
-  ogImage?: string | null;
-  noindex?: boolean;
+    name: string;
+    slug: string;
+    root: SilicaNode;
+    kind?: string;
+    recordType?: string | null;
+    /** A `commerce.product` page's product-TYPE target (docs/143 Option B). null = the
+     *  DEFAULT product page (takes the `/products/:handle` address); a value makes it a
+     *  per-type page, resolved by subtype rather than by URL. */
+    recordSubtype?: string | null;
+    isDefault?: boolean;
+    seoTitle?: string | null;
+    seoDescription?: string | null;
+    canonical?: string | null;
+    ogImage?: string | null;
+    noindex?: boolean;
 }
 
 /** The stored slug for a collection page. The DEFAULT product page takes the derived
@@ -2437,21 +2444,21 @@ export interface InstallPageInput {
  *  `record_subtype`, and `recordAddressAt` won't parse the `::` variant as the address, so
  *  it never masquerades as the default. */
 function slugForCollectionPage(page: {
-  kind?: string;
-  slug: string;
-  recordType?: string | null;
-  recordSubtype?: string | null;
+    kind?: string;
+    slug: string;
+    recordType?: string | null;
+    recordSubtype?: string | null;
 }): string {
-  if (page.kind !== 'collection' || !page.recordType) return page.slug;
-  const address = recordAddressFor(page.recordType)?.slug ?? page.slug;
-  return page.recordSubtype ? `${address}::${page.recordSubtype}` : address;
+    if (page.kind !== 'collection' || !page.recordType) return page.slug;
+    const address = recordAddressFor(page.recordType)?.slug ?? page.slug;
+    return page.recordSubtype ? `${address}::${page.recordSubtype}` : address;
 }
 
 export interface InstallSiteInput {
-  pages: InstallPageInput[];
-  frame?: { root: SilicaNode } | null;
-  theme?: SilicaTheme | null;
-  symbols?: Record<string, unknown> | null;
+    pages: InstallPageInput[];
+    frame?: { root: SilicaNode } | null;
+    theme?: SilicaTheme | null;
+    symbols?: Record<string, unknown> | null;
 }
 
 /**
@@ -2474,67 +2481,67 @@ export interface InstallSiteInput {
  * SEO — a collection template would silently never bind to its recordType.
  */
 export async function installSite(
-  ctx: PropertyContext,
-  input: InstallSiteInput
+    ctx: PropertyContext,
+    input: InstallSiteInput
 ): Promise<{ pageIds: string[] }> {
-  const pages = input.pages.map((p) => ({ ...p, id: defaultMakeId() }));
+    const pages = input.pages.map((p) => ({ ...p, id: defaultMakeId() }));
 
-  // A COLLECTION TEMPLATE'S ADDRESS IS DERIVED FROM ITS recordType, not defaulted to `/`.
-  //
-  // A bundle authors a record template (`kind:'collection'`, `recordType:'commerce.product'`)
-  // with NO slug: the manifest's `PageSlug` forbids the `:` in `/products/:handle`, so the
-  // address can only be stated by the recordType. The READ path already derives it (see
-  // `toSilicaSite` above), but `sync` on the WRITE path takes the slug verbatim — so a
-  // slugless record page reached `sync` as `''`, normalized to `null`, and collided with Home
-  // (also `null`) on `(tenant_id, property_id, slug)`. That is a unique-constraint 500 partway
-  // through the pages write, which is exactly why a blueprint carrying a bespoke PDP installed
-  // `theme` + `assets` and then died with `pages: []`. Deriving the address here — the same
-  // `recordAddressFor` the read path and the record-page ensure use — gives the product page
-  // `/products/:handle` before `sync` ever sees it, so it lands at its own address.
-  const slugForPage = (p: (typeof pages)[number]): string => slugForCollectionPage(p);
+    // A COLLECTION TEMPLATE'S ADDRESS IS DERIVED FROM ITS recordType, not defaulted to `/`.
+    //
+    // A bundle authors a record template (`kind:'collection'`, `recordType:'commerce.product'`)
+    // with NO slug: the manifest's `PageSlug` forbids the `:` in `/products/:handle`, so the
+    // address can only be stated by the recordType. The READ path already derives it (see
+    // `toSilicaSite` above), but `sync` on the WRITE path takes the slug verbatim — so a
+    // slugless record page reached `sync` as `''`, normalized to `null`, and collided with Home
+    // (also `null`) on `(tenant_id, property_id, slug)`. That is a unique-constraint 500 partway
+    // through the pages write, which is exactly why a blueprint carrying a bespoke PDP installed
+    // `theme` + `assets` and then died with `pages: []`. Deriving the address here — the same
+    // `recordAddressFor` the read path and the record-page ensure use — gives the product page
+    // `/products/:handle` before `sync` ever sees it, so it lands at its own address.
+    const slugForPage = (p: (typeof pages)[number]): string => slugForCollectionPage(p);
 
-  await sync(
-    ctx,
-    {
-      pages: pages.map((p) => ({ id: p.id, name: p.name, slug: slugForPage(p), root: p.root })),
-      ...(input.frame ? { frame: input.frame } : {}),
-      ...(input.theme ? { theme: input.theme } : {}),
-      ...(input.symbols ? { symbols: input.symbols } : {}),
-    },
-    { allowReplace: true }
-  );
-
-  await withTenant(ctx, async (tx) => {
-    for (const p of pages) {
-      const isCollection = p.kind === 'collection';
-      await tx.builderPage.update({
-        where: { id: p.id },
-        data: {
-          ...(p.kind ? { kind: p.kind } : {}),
-          recordType: p.recordType ?? null,
-          recordSubtype: p.recordSubtype ?? null,
-          ...(p.seoTitle !== undefined ? { seoTitle: p.seoTitle } : {}),
-          ...(p.seoDescription !== undefined ? { seoDescription: p.seoDescription } : {}),
-          ...(p.canonical !== undefined ? { canonical: p.canonical } : {}),
-          ...(p.ogImage !== undefined ? { ogImage: p.ogImage } : {}),
-          ...(p.noindex !== undefined ? { noindex: p.noindex } : {}),
+    await sync(
+        ctx,
+        {
+            pages: pages.map((p) => ({ id: p.id, name: p.name, slug: slugForPage(p), root: p.root })),
+            ...(input.frame ? { frame: input.frame } : {}),
+            ...(input.theme ? { theme: input.theme } : {}),
+            ...(input.symbols ? { symbols: input.symbols } : {}),
         },
-      });
-      // A recordType default is exclusive per (property, recordType) — clear any
-      // incumbent before promoting this one, or two templates both claim the type
-      // and which one renders becomes row-order luck. Only a subtype-LESS page can be
-      // the default (docs/143): a per-type page wins via `record_subtype`, never as THE default.
-      if (isCollection && p.isDefault && p.recordType && !p.recordSubtype) {
-        await tx.builderPage.updateMany({
-          where: { propertyId: ctx.propertyId, recordType: p.recordType, id: { not: p.id } },
-          data: { isDefault: false },
-        });
-        await tx.builderPage.update({ where: { id: p.id }, data: { isDefault: true } });
-      }
-    }
-  });
+        { allowReplace: true }
+    );
 
-  return { pageIds: pages.map((p) => p.id) };
+    await withTenant(ctx, async (tx) => {
+        for (const p of pages) {
+            const isCollection = p.kind === 'collection';
+            await tx.builderPage.update({
+                where: { id: p.id },
+                data: {
+                    ...(p.kind ? { kind: p.kind } : {}),
+                    recordType: p.recordType ?? null,
+                    recordSubtype: p.recordSubtype ?? null,
+                    ...(p.seoTitle !== undefined ? { seoTitle: p.seoTitle } : {}),
+                    ...(p.seoDescription !== undefined ? { seoDescription: p.seoDescription } : {}),
+                    ...(p.canonical !== undefined ? { canonical: p.canonical } : {}),
+                    ...(p.ogImage !== undefined ? { ogImage: p.ogImage } : {}),
+                    ...(p.noindex !== undefined ? { noindex: p.noindex } : {}),
+                },
+            });
+            // A recordType default is exclusive per (property, recordType) — clear any
+            // incumbent before promoting this one, or two templates both claim the type
+            // and which one renders becomes row-order luck. Only a subtype-LESS page can be
+            // the default (docs/143): a per-type page wins via `record_subtype`, never as THE default.
+            if (isCollection && p.isDefault && p.recordType && !p.recordSubtype) {
+                await tx.builderPage.updateMany({
+                    where: { propertyId: ctx.propertyId, recordType: p.recordType, id: { not: p.id } },
+                    data: { isDefault: false },
+                });
+                await tx.builderPage.update({ where: { id: p.id }, data: { isDefault: true } });
+            }
+        }
+    });
+
+    return { pageIds: pages.map((p) => p.id) };
 }
 
 /**
@@ -2552,44 +2559,44 @@ export async function installSite(
  * — a slugless product page would otherwise land at `''`/`null` and collide with Home.
  */
 export async function addPage(ctx: PropertyContext, page: InstallPageInput): Promise<string> {
-  const current = (await load(ctx)) ?? emptySite();
-  const id = defaultMakeId();
-  const slug = slugForCollectionPage(page);
+    const current = (await load(ctx)) ?? emptySite();
+    const id = defaultMakeId();
+    const slug = slugForCollectionPage(page);
 
-  await sync(
-    ctx,
-    { ...current, pages: [...current.pages, { id, name: page.name, slug, root: page.root }] },
-    { allowReplace: true }
-  );
+    await sync(
+        ctx,
+        { ...current, pages: [...current.pages, { id, name: page.name, slug, root: page.root }] },
+        { allowReplace: true }
+    );
 
-  // The per-page domain columns `sync` does not model, applied exactly as `installSite`
-  // does — so a collection template added by an update binds to its recordType and wins
-  // as the default for it.
-  await withTenant(ctx, async (tx) => {
-    await tx.builderPage.update({
-      where: { id },
-      data: {
-        ...(page.kind ? { kind: page.kind } : {}),
-        recordType: page.recordType ?? null,
-        recordSubtype: page.recordSubtype ?? null,
-        ...(page.seoTitle !== undefined ? { seoTitle: page.seoTitle } : {}),
-        ...(page.seoDescription !== undefined ? { seoDescription: page.seoDescription } : {}),
-        ...(page.canonical !== undefined ? { canonical: page.canonical } : {}),
-        ...(page.ogImage !== undefined ? { ogImage: page.ogImage } : {}),
-        ...(page.noindex !== undefined ? { noindex: page.noindex } : {}),
-      },
+    // The per-page domain columns `sync` does not model, applied exactly as `installSite`
+    // does — so a collection template added by an update binds to its recordType and wins
+    // as the default for it.
+    await withTenant(ctx, async (tx) => {
+        await tx.builderPage.update({
+            where: { id },
+            data: {
+                ...(page.kind ? { kind: page.kind } : {}),
+                recordType: page.recordType ?? null,
+                recordSubtype: page.recordSubtype ?? null,
+                ...(page.seoTitle !== undefined ? { seoTitle: page.seoTitle } : {}),
+                ...(page.seoDescription !== undefined ? { seoDescription: page.seoDescription } : {}),
+                ...(page.canonical !== undefined ? { canonical: page.canonical } : {}),
+                ...(page.ogImage !== undefined ? { ogImage: page.ogImage } : {}),
+                ...(page.noindex !== undefined ? { noindex: page.noindex } : {}),
+            },
+        });
+        // Only a subtype-LESS page can be THE default for its record type (docs/143).
+        if (page.kind === 'collection' && page.isDefault && page.recordType && !page.recordSubtype) {
+            await tx.builderPage.updateMany({
+                where: { propertyId: ctx.propertyId, recordType: page.recordType, id: { not: id } },
+                data: { isDefault: false },
+            });
+            await tx.builderPage.update({ where: { id }, data: { isDefault: true } });
+        }
     });
-    // Only a subtype-LESS page can be THE default for its record type (docs/143).
-    if (page.kind === 'collection' && page.isDefault && page.recordType && !page.recordSubtype) {
-      await tx.builderPage.updateMany({
-        where: { propertyId: ctx.propertyId, recordType: page.recordType, id: { not: id } },
-        data: { isDefault: false },
-      });
-      await tx.builderPage.update({ where: { id }, data: { isDefault: true } });
-    }
-  });
 
-  return id;
+    return id;
 }
 
 /** The property's PUBLISHED site — pages + frame + theme + symbols, in one read
@@ -2597,33 +2604,33 @@ export async function addPage(ctx: PropertyContext, page: InstallPageInput): Pro
  *  verification tooling (confirm what a publish actually made live) and by the
  *  Phase 3 blueprint capture path (docs/118). Null when nothing is published. */
 export function getPublishedSite(ctx: PropertyContext): Promise<StoredSilicaSite | null> {
-  return withTenant(ctx, async (tx) => {
-    const allPages = await tx.builderPage.findMany({
-      where: { propertyId: ctx.propertyId },
-      orderBy: [{ position: 'asc' }, { createdAt: 'asc' }],
+    return withTenant(ctx, async (tx) => {
+        const allPages = await tx.builderPage.findMany({
+            where: { propertyId: ctx.propertyId },
+            orderBy: [{ position: 'asc' }, { createdAt: 'asc' }],
+        });
+        const pages = allPages.filter((p) => hasStagedTree(p, 'published'));
+        if (pages.length === 0) return null;
+        const [layout, site] = await Promise.all([
+            tx.builderLayout.findFirst({ where: { propertyId: ctx.propertyId, isActive: true } }),
+            tx.builderSite.findUnique({ where: { propertyId: ctx.propertyId } }),
+        ]);
+        const symbols = stagedSymbols(site, 'published');
+        const theme = stagedTheme(site, 'published');
+        return {
+            ...(layout?.silicaPublishedTree != null
+                ? { frame: { root: layout.silicaPublishedTree as unknown as SilicaNode, editable: true } }
+                : {}),
+            pages: pages.map((r) => ({
+                id: r.id,
+                name: r.name,
+                slug: r.slug ?? '/',
+                root: r.silicaPublishedTree as unknown as SilicaNode,
+            })),
+            ...(Object.keys(symbols).length > 0 ? { symbols } : {}),
+            ...(theme ? { theme } : {}),
+        };
     });
-    const pages = allPages.filter((p) => hasStagedTree(p, 'published'));
-    if (pages.length === 0) return null;
-    const [layout, site] = await Promise.all([
-      tx.builderLayout.findFirst({ where: { propertyId: ctx.propertyId, isActive: true } }),
-      tx.builderSite.findUnique({ where: { propertyId: ctx.propertyId } }),
-    ]);
-    const symbols = stagedSymbols(site, 'published');
-    const theme = stagedTheme(site, 'published');
-    return {
-      ...(layout?.silicaPublishedTree != null
-        ? { frame: { root: layout.silicaPublishedTree as unknown as SilicaNode, editable: true } }
-        : {}),
-      pages: pages.map((r) => ({
-        id: r.id,
-        name: r.name,
-        slug: r.slug ?? '/',
-        root: r.silicaPublishedTree as unknown as SilicaNode,
-      })),
-      ...(Object.keys(symbols).length > 0 ? { symbols } : {}),
-      ...(theme ? { theme } : {}),
-    };
-  });
 }
 
 // ── Blueprint capture (docs/118 Phase 3) ─────────────────────────────────────
@@ -2638,80 +2645,80 @@ export function getPublishedSite(ctx: PropertyContext): Promise<StoredSilicaSite
  *  domain columns. Structurally mirrors `@sparx/blueprints`' `CapturedPageInput` so
  *  the projector consumes it directly, without this package importing that one. */
 export interface CapturablePage {
-  id: string;
-  name: string;
-  slug: string | null;
-  root: SilicaNode;
-  kind: BuilderPageKind;
-  recordType: string | null;
-  isDefault: boolean;
-  seoTitle: string | null;
-  seoDescription: string | null;
-  canonical: string | null;
-  ogImage: string | null;
-  noindex: boolean;
+    id: string;
+    name: string;
+    slug: string | null;
+    root: SilicaNode;
+    kind: BuilderPageKind;
+    recordType: string | null;
+    isDefault: boolean;
+    seoTitle: string | null;
+    seoDescription: string | null;
+    canonical: string | null;
+    ogImage: string | null;
+    noindex: boolean;
 }
 
 export interface CapturableSite {
-  pages: CapturablePage[];
-  frame?: { root: SilicaNode };
-  theme?: SilicaTheme;
-  symbols?: Record<string, SilicaSymbolDef>;
+    pages: CapturablePage[];
+    frame?: { root: SilicaNode };
+    theme?: SilicaTheme;
+    symbols?: Record<string, SilicaSymbolDef>;
 }
 
 export interface CaptureSourceOptions {
-  /** Which trees to read: the author's working `draft` (default — capture without
-   *  publishing) or the last `published` snapshot. */
-  source?: 'draft' | 'published';
+    /** Which trees to read: the author's working `draft` (default — capture without
+     *  publishing) or the last `published` snapshot. */
+    source?: 'draft' | 'published';
 }
 
 /** Read the property's authored site for capture into a blueprint, or null when it
  *  has materialized no site for the requested source. Mirrors `load` /
  *  `getPublishedSite` but keeps every page's domain columns. */
 export function getCapturableSite(
-  ctx: PropertyContext,
-  opts: CaptureSourceOptions = {}
+    ctx: PropertyContext,
+    opts: CaptureSourceOptions = {}
 ): Promise<CapturableSite | null> {
-  const published = opts.source === 'published';
-  return withTenant(ctx, async (tx) => {
-    const allPages = await tx.builderPage.findMany({
-      where: { propertyId: ctx.propertyId },
-      orderBy: [{ position: 'asc' }, { createdAt: 'asc' }],
+    const published = opts.source === 'published';
+    return withTenant(ctx, async (tx) => {
+        const allPages = await tx.builderPage.findMany({
+            where: { propertyId: ctx.propertyId },
+            orderBy: [{ position: 'asc' }, { createdAt: 'asc' }],
+        });
+        const pages = allPages.filter(published ? (p) => hasStagedTree(p, 'published') : isSilica);
+        if (pages.length === 0) return null;
+        const [layout, site] = await Promise.all([
+            tx.builderLayout.findFirst({ where: { propertyId: ctx.propertyId, isActive: true } }),
+            tx.builderSite.findUnique({ where: { propertyId: ctx.propertyId } }),
+        ]);
+
+        const frameTree = published ? layout?.silicaPublishedTree : layout?.silicaDraftTree;
+        const symbols = symbolsOf(published ? site?.silicaPublishedSymbols : site?.silicaDraftSymbols);
+        const theme =
+            (published
+                ? (site?.silicaPublishedTheme as SilicaTheme | null | undefined)
+                : (site?.silicaDraftTheme as SilicaTheme | null | undefined)) ?? undefined;
+
+        return {
+            pages: pages.map((r) => ({
+                id: r.id,
+                name: r.name,
+                slug: r.slug,
+                root: asNode(published ? r.silicaPublishedTree : r.silicaDraftTree),
+                // Normalized rather than cast: the row column and the zod union share values,
+                // but a plain comparison typechecks without asserting Prisma's type.
+                kind: r.kind === 'collection' ? 'collection' : 'singleton',
+                recordType: r.recordType,
+                isDefault: r.isDefault,
+                seoTitle: r.seoTitle,
+                seoDescription: r.seoDescription,
+                canonical: r.canonical,
+                ogImage: r.ogImage,
+                noindex: r.noindex,
+            })),
+            ...(frameTree != null ? { frame: { root: asNode(frameTree) } } : {}),
+            ...(theme ? { theme } : {}),
+            ...(Object.keys(symbols).length > 0 ? { symbols } : {}),
+        };
     });
-    const pages = allPages.filter(published ? (p) => hasStagedTree(p, 'published') : isSilica);
-    if (pages.length === 0) return null;
-    const [layout, site] = await Promise.all([
-      tx.builderLayout.findFirst({ where: { propertyId: ctx.propertyId, isActive: true } }),
-      tx.builderSite.findUnique({ where: { propertyId: ctx.propertyId } }),
-    ]);
-
-    const frameTree = published ? layout?.silicaPublishedTree : layout?.silicaDraftTree;
-    const symbols = symbolsOf(published ? site?.silicaPublishedSymbols : site?.silicaDraftSymbols);
-    const theme =
-      (published
-        ? (site?.silicaPublishedTheme as SilicaTheme | null | undefined)
-        : (site?.silicaDraftTheme as SilicaTheme | null | undefined)) ?? undefined;
-
-    return {
-      pages: pages.map((r) => ({
-        id: r.id,
-        name: r.name,
-        slug: r.slug,
-        root: asNode(published ? r.silicaPublishedTree : r.silicaDraftTree),
-        // Normalized rather than cast: the row column and the zod union share values,
-        // but a plain comparison typechecks without asserting Prisma's type.
-        kind: r.kind === 'collection' ? 'collection' : 'singleton',
-        recordType: r.recordType,
-        isDefault: r.isDefault,
-        seoTitle: r.seoTitle,
-        seoDescription: r.seoDescription,
-        canonical: r.canonical,
-        ogImage: r.ogImage,
-        noindex: r.noindex,
-      })),
-      ...(frameTree != null ? { frame: { root: asNode(frameTree) } } : {}),
-      ...(theme ? { theme } : {}),
-      ...(Object.keys(symbols).length > 0 ? { symbols } : {}),
-    };
-  });
 }

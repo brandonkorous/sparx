@@ -79,7 +79,7 @@ Coded templates (the `@sparx/email` `TemplateSend` union) cannot be edited by a
 tenant, can't render a working CTA without bespoke prop plumbing, and don't carry a
 per-site identity. The default emails become **Builder node-trees** so that:
 
-- A tenant **edits** every default in `/builder/email` — copy, layout, colours —
+- A tenant **edits** every default in `/builder/email` — copy, layout, colors —
   with no deploy.
 - CTAs **work**: `*Url` tokens (`recoveryUrl`, `payUrl`, `reviewUrl`, `portalUrl`)
   resolve at dispatch (§3), fixing the old "coded templates can't render a working
@@ -97,7 +97,7 @@ per-site identity. The default emails become **Builder node-trees** so that:
 These bind every template (and every tenant edit):
 
 - **Brand chrome is automatic.** Every tree renders inside `EmailLayout` — logo,
-  colours, fonts, footer resolve from the tenant's (or the active site's) brand at
+  colors, fonts, footer resolve from the tenant's (or the active site's) brand at
   dispatch via `resolveEmailBrand`. **Never hardcode brand.**
 - **Plain-text is auto-generated** (`render({ plainText: true })`). Never hand-write
   a text body.

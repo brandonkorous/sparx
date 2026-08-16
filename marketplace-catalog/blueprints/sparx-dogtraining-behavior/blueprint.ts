@@ -10,71 +10,71 @@ import emails from './emails.json' with { type: 'json' };
 import assets from './assets.json' with { type: 'json' };
 
 const blueprint = {
-  key: 'sparx-dogtraining-behavior',
-  version: '1.3.0',
-  name: 'sparx — Dog Training (Behavior)',
-  summary:
-    'A bold, professional dog-training & behavior site — a deep charcoal-navy palette, a confident amber accent and sturdy condensed type. Installs a working booking flow: online booking for assessments and private sessions, specialist trainers you choose by name with their own hours, and a program-deposit policy for board-and-train. Covers reactivity, aggression, puppy foundations and service-dog work. Ships as "K9 Method".',
-  vertical: 'services',
-  preview: 'media/preview.png',
-  requiresModules: ['builder', 'scheduling', 'crm', 'email'],
+    key: 'sparx-dogtraining-behavior',
+    version: '1.3.0',
+    name: 'sparx — Dog Training (Behavior)',
+    summary:
+        'A bold, professional dog-training & behavior site — a deep charcoal-navy palette, a confident amber accent and sturdy condensed type. Installs a working booking flow: online booking for assessments and private sessions, specialist trainers you choose by name with their own hours, and a program-deposit policy for board-and-train. Covers reactivity, aggression, puppy foundations and service-dog work. Ships as "K9 Method".',
+    vertical: 'services',
+    preview: 'media/preview.png',
+    requiresModules: ['builder', 'scheduling', 'crm', 'email'],
 
-  // Identity only (business name + tagline + fonts + the theme's hex colours). The look
-  // rides site.theme + the theme decl below; the installing tenant rebrands the name.
-  brand: {
-    businessName: 'K9 Method',
-    tagline: 'Real behavior change, led by specialists.',
-    colors: {
-      primary: '#212938',
-      primaryForeground: '#f5f9ff',
-      accent: '#e78d02',
-      secondary: '#323844',
-    },
-    fonts: {
-      heading: 'Oswald',
-      body: 'Inter',
-    },
-  },
-
-  // The provisioned SiteTheme the installer creates + applies — an editable saved theme
-  // over a foundation base + the template's brand snapshot. The LIVE storefront look is
-  // site.theme (the flat bespoke tokens), written last.
-  theme: {
-    name: 'k9method',
-    basePresetKey: 'apex',
-    presentation: {
-      v: 2,
-      containerWidth: '1152px',
-    },
+    // Identity only (business name + tagline + fonts + the theme's hex colors). The look
+    // rides site.theme + the theme decl below; the installing tenant rebrands the name.
     brand: {
-      colorPrimary: '#212938',
-      colorAccent: '#e78d02',
-      colorSecondary: '#323844',
-      fontHeading: 'Oswald',
-      fontBody: 'Inter',
-      tokens: {},
+        businessName: 'K9 Method',
+        tagline: 'Real behavior change, led by specialists.',
+        colors: {
+            primary: '#212938',
+            primaryForeground: '#f5f9ff',
+            accent: '#e78d02',
+            secondary: '#323844',
+        },
+        fonts: {
+            heading: 'Oswald',
+            body: 'Inter',
+        },
     },
-    apply: true,
-  },
 
-  assets,
-  contentTypes: [],
+    // The provisioned SiteTheme the installer creates + applies — an editable saved theme
+    // over a foundation base + the template's brand snapshot. The LIVE storefront look is
+    // site.theme (the flat bespoke tokens), written last.
+    theme: {
+        name: 'k9method',
+        basePresetKey: 'apex',
+        presentation: {
+            v: 2,
+            containerWidth: '1152px',
+        },
+        brand: {
+            colorPrimary: '#212938',
+            colorAccent: '#e78d02',
+            colorSecondary: '#323844',
+            fontHeading: 'Oswald',
+            fontBody: 'Inter',
+            tokens: {},
+        },
+        apply: true,
+    },
 
-  // The booking spine — policies, bookable resources (staff/rooms/stations) with weekly
-  // hours, and the service menu. The installer's scheduling slice replays it into a live
-  // booking flow that the site's /book page renders.
-  scheduling,
+    assets,
+    contentTypes: [],
 
-  // Brand-voiced MARKETING starters (a welcome + a come-back), installed as DRAFTS the
-  // tenant switches on. The transactional booking sends — confirmation, reminder,
-  // reschedule, cancellation, waitlist — are platform KEYED defaults, so they are covered
-  // on email-module activation and are deliberately NOT duplicated here.
-  emails,
-  sequences: [],
+    // The booking spine — policies, bookable resources (staff/rooms/stations) with weekly
+    // hours, and the service menu. The installer's scheduling slice replays it into a live
+    // booking flow that the site's /book page renders.
+    scheduling,
 
-  // The composed distinct site (frame + Home + Book + About + Contact) in the bespoke
-  // theme, fully stamped.
-  site,
+    // Brand-voiced MARKETING starters (a welcome + a come-back), installed as DRAFTS the
+    // tenant switches on. The transactional booking sends — confirmation, reminder,
+    // reschedule, cancellation, waitlist — are platform KEYED defaults, so they are covered
+    // on email-module activation and are deliberately NOT duplicated here.
+    emails,
+    sequences: [],
+
+    // The composed distinct site (frame + Home + Book + About + Contact) in the bespoke
+    // theme, fully stamped.
+    site,
 };
 
 export default blueprint;

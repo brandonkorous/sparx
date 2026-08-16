@@ -73,6 +73,7 @@ COPY packages/api-core/package.json packages/api-core/
 COPY packages/app-kit/package.json packages/app-kit/
 COPY packages/attribution/package.json packages/attribution/
 COPY packages/auth/package.json packages/auth/
+COPY packages/brand-core/package.json packages/brand-core/
 COPY packages/automation-schemas/package.json packages/automation-schemas/
 COPY packages/blueprints/package.json packages/blueprints/
 COPY packages/builder-schemas/package.json packages/builder-schemas/
@@ -127,6 +128,7 @@ COPY packages/api-core packages/api-core
 COPY packages/app-kit packages/app-kit
 COPY packages/attribution packages/attribution
 COPY packages/auth packages/auth
+COPY packages/brand-core packages/brand-core
 COPY packages/automation-schemas packages/automation-schemas
 COPY packages/blueprints packages/blueprints
 COPY packages/builder-schemas packages/builder-schemas

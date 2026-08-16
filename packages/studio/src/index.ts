@@ -24,10 +24,11 @@ export type {
 } from './documents/types';
 export { NO_FRAME, docKey, isEditable, isTreeDoc, refOf } from './documents/types';
 
-export type { FieldOp, OpBatch, StudioOp, ThemeOp, TreeOp } from './ops/types';
-export { isThemeOp, isTreeOp } from './ops/types';
+export type { EmailTreeOp, FieldOp, OpBatch, StudioOp, ThemeOp, TreeOp } from './ops/types';
+export { isEmailTreeOp, isThemeOp, isTreeOp } from './ops/types';
 export { applyOp, type Applied } from './ops/apply';
 export { applyTreeOp, type TreeApplied } from './ops/apply-tree';
+export { applyEmailOp, type EmailApplied } from './ops/apply-email';
 
 export type { AddressableNode, NodePlace } from './tree/walk';
 export {
@@ -44,6 +45,27 @@ export {
   walkTree,
 } from './tree/walk';
 export { insertChild, moveNode, removeNode, replaceNode } from './tree/edit';
+
+export type { EmailPlace } from './email/walk';
+export {
+  collectEmailIds,
+  emailAncestors,
+  emailChildren,
+  findEmailNode,
+  findEmailPlace,
+  isEmailContainer,
+  isWithinEmail,
+  walkEmail,
+} from './email/walk';
+export {
+  insertEmailChild,
+  moveEmailNode,
+  patchEmailNode,
+  removeEmailNode,
+  replaceEmailNode,
+  stampEmailTree,
+} from './email/edit';
+export { resolveEmailDrop, type EmailDropTarget } from './email/drop';
 
 export { History, HISTORY_LIMIT } from './session/history';
 export { DocumentStore, type DocSnapshot, type StoreListener } from './session/document-store';

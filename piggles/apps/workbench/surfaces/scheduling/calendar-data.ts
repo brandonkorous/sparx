@@ -14,7 +14,7 @@
 // A confirm/cancel fired from the diary has to refresh the DIARY, and the range
 // read is keyed under ['scheduling','calendar'] — a namespace bookings-data's
 // own mutations never touch. So these actions invalidate BOTH roots. The single
-// booking READ and every pure helper (status colour, formatters) are reused from
+// booking READ and every pure helper (status color, formatters) are reused from
 // bookings-data unchanged, so the block on the grid and the row in the list can
 // never disagree about what a status means or looks like.
 //
@@ -38,23 +38,23 @@ import type { Tone } from './bookings-data';
  * `GET /v1/scheduling/bookings/calendar` returns. It carries only what a block
  * needs to draw and place itself; the full record is fetched on click.
  *
- * `color` is the service's colour (or its first resource's) — a hint the business
- * chose, kept for later. The BLOCK is coloured by status, not by this, so the
+ * `color` is the service's color (or its first resource's) — a hint the business
+ * chose, kept for later. The BLOCK is colored by status, not by this, so the
  * diary reads as "what still needs doing" rather than "what kind of thing".
  */
 export interface CalendarEvent {
-  id: string;
-  serviceId: string;
-  serviceName: string;
-  bookingType: string;
-  status: string;
-  startAt: string;
-  endAt: string;
-  color: string | null;
-  customerId: string | null;
-  resourceIds: string[];
-  resourceNames: string[];
-  partySize: number | null;
+    id: string;
+    serviceId: string;
+    serviceName: string;
+    bookingType: string;
+    status: string;
+    startAt: string;
+    endAt: string;
+    color: string | null;
+    customerId: string | null;
+    resourceIds: string[];
+    resourceNames: string[];
+    partySize: number | null;
 }
 
 /* ── Shapes: an external-calendar connection ────────────────────────────── */
@@ -63,41 +63,41 @@ export type ConnectionStatus = 'active' | 'expired' | 'error';
 
 /** A resource's linked outside calendar, in the API's safe view (no secrets). */
 export interface CalendarConnection {
-  id: string;
-  resourceId: string;
-  provider: string;
-  connectionKind: string;
-  credentialSource: string;
-  direction: string;
-  fidelity: string;
-  status: ConnectionStatus;
-  externalCalendarId: string | null;
-  lastSyncedAt: string | null;
-  lastError: string | null;
-  createdAt: string;
+    id: string;
+    resourceId: string;
+    provider: string;
+    connectionKind: string;
+    credentialSource: string;
+    direction: string;
+    fidelity: string;
+    status: ConnectionStatus;
+    externalCalendarId: string | null;
+    lastSyncedAt: string | null;
+    lastError: string | null;
+    createdAt: string;
 }
 
 /** Which OAuth connect buttons the deployment can actually offer. */
 export interface OAuthProviders {
-  cryptoConfigured: boolean;
-  google: boolean;
-  microsoft: boolean;
+    cryptoConfigured: boolean;
+    google: boolean;
+    microsoft: boolean;
 }
 
 /* ── Query keys ─────────────────────────────────────────────────────────── */
 
 export interface RangeQuery {
-  from: string;
-  to: string;
-  /** Narrow to one resource — passed to the server so the payload shrinks too. */
-  resourceId?: string;
+    from: string;
+    to: string;
+    /** Narrow to one resource — passed to the server so the payload shrinks too. */
+    resourceId?: string;
 }
 
 export const calendarKeys = {
-  all: ['scheduling', 'calendar'] as const,
-  range: (query: RangeQuery) => [...calendarKeys.all, 'range', query] as const,
-  connections: (resourceId: string) => [...calendarKeys.all, 'connections', resourceId] as const,
-  oauthProviders: () => [...calendarKeys.all, 'oauth-providers'] as const,
+    all: ['scheduling', 'calendar'] as const,
+    range: (query: RangeQuery) => [...calendarKeys.all, 'range', query] as const,
+    connections: (resourceId: string) => [...calendarKeys.all, 'connections', resourceId] as const,
+    oauthProviders: () => [...calendarKeys.all, 'oauth-providers'] as const,
 };
 
 /** The booking root the list owns — spelled here so a diary write can refresh it
@@ -116,40 +116,40 @@ const BOOKINGS_ROOT = ['scheduling', 'bookings'] as const;
  * stands.
  */
 export function useCalendarRange(query: RangeQuery, enabled = true) {
-  return useQuery({
-    queryKey: calendarKeys.range(query),
-    queryFn: () =>
-      api.get<CalendarEvent[]>('/v1/scheduling/bookings/calendar', {
-        from: query.from,
-        to: query.to,
-        ...(query.resourceId ? { resourceId: query.resourceId } : {}),
-      }),
-    enabled,
-    // Keep the current week/day on screen while the next loads, so paging through
-    // time doesn't blink the grid empty and back.
-    placeholderData: (previous) => previous,
-  });
+    return useQuery({
+        queryKey: calendarKeys.range(query),
+        queryFn: () =>
+            api.get<CalendarEvent[]>('/v1/scheduling/bookings/calendar', {
+                from: query.from,
+                to: query.to,
+                ...(query.resourceId ? { resourceId: query.resourceId } : {}),
+            }),
+        enabled,
+        // Keep the current week/day on screen while the next loads, so paging through
+        // time doesn't blink the grid empty and back.
+        placeholderData: (previous) => previous,
+    });
 }
 
 /** One resource's linked outside calendars (or every connection when unscoped). */
 export function useConnections(resourceId?: string) {
-  return useQuery({
-    queryKey: calendarKeys.connections(resourceId ?? 'all'),
-    queryFn: () =>
-      api.get<CalendarConnection[]>('/v1/scheduling/calendar/connections', {
-        ...(resourceId ? { resourceId } : {}),
-      }),
-    staleTime: 30_000,
-  });
+    return useQuery({
+        queryKey: calendarKeys.connections(resourceId ?? 'all'),
+        queryFn: () =>
+            api.get<CalendarConnection[]>('/v1/scheduling/calendar/connections', {
+                ...(resourceId ? { resourceId } : {}),
+            }),
+        staleTime: 30_000,
+    });
 }
 
 /** Which connect options this deployment supports — read once, cached long. */
 export function useOAuthProviders() {
-  return useQuery({
-    queryKey: calendarKeys.oauthProviders(),
-    queryFn: () => api.get<OAuthProviders>('/v1/scheduling/calendar/oauth/providers'),
-    staleTime: 5 * 60_000,
-  });
+    return useQuery({
+        queryKey: calendarKeys.oauthProviders(),
+        queryFn: () => api.get<OAuthProviders>('/v1/scheduling/calendar/oauth/providers'),
+        staleTime: 5 * 60_000,
+    });
 }
 
 /* ── Invalidation ───────────────────────────────────────────────────────── */
@@ -157,23 +157,23 @@ export function useOAuthProviders() {
 /** The one way the diary says "a booking moved" — refreshes every grid window
  *  AND the booking list/record the change also belongs to. */
 export function useInvalidateCalendar() {
-  const queryClient = useQueryClient();
-  return (bookingId?: string) => {
-    void queryClient.invalidateQueries({ queryKey: calendarKeys.all });
-    void queryClient.invalidateQueries({ queryKey: BOOKINGS_ROOT });
-    if (bookingId) {
-      void queryClient.invalidateQueries({ queryKey: [...BOOKINGS_ROOT, bookingId] });
-    }
-  };
+    const queryClient = useQueryClient();
+    return (bookingId?: string) => {
+        void queryClient.invalidateQueries({ queryKey: calendarKeys.all });
+        void queryClient.invalidateQueries({ queryKey: BOOKINGS_ROOT });
+        if (bookingId) {
+            void queryClient.invalidateQueries({ queryKey: [...BOOKINGS_ROOT, bookingId] });
+        }
+    };
 }
 
 function useInvalidateConnections() {
-  const queryClient = useQueryClient();
-  return () => {
-    void queryClient.invalidateQueries({ queryKey: [...calendarKeys.all, 'connections'] });
-    // A fresh feed writes external-busy blocks, which change what the grid shows.
-    void queryClient.invalidateQueries({ queryKey: calendarKeys.all });
-  };
+    const queryClient = useQueryClient();
+    return () => {
+        void queryClient.invalidateQueries({ queryKey: [...calendarKeys.all, 'connections'] });
+        // A fresh feed writes external-busy blocks, which change what the grid shows.
+        void queryClient.invalidateQueries({ queryKey: calendarKeys.all });
+    };
 }
 
 /* ── Writes: booking lifecycle, fired from a block on the grid ──────────── */
@@ -182,135 +182,135 @@ function useInvalidateConnections() {
  *  write), because entering a stage has effects (releasing a slot, settling a
  *  deposit). Every one refreshes the diary and the list together. */
 function useBookingAction(id: string, action: string) {
-  const invalidate = useInvalidateCalendar();
-  return useMutation({
-    mutationFn: (body?: Record<string, unknown>) =>
-      api.post(`/v1/scheduling/bookings/${id}/${action}`, body ?? {}),
-    onSuccess: () => {
-      invalidate(id);
-    },
-  });
+    const invalidate = useInvalidateCalendar();
+    return useMutation({
+        mutationFn: (body?: Record<string, unknown>) =>
+            api.post(`/v1/scheduling/bookings/${id}/${action}`, body ?? {}),
+        onSuccess: () => {
+            invalidate(id);
+        },
+    });
 }
 
 export function useConfirm(id: string) {
-  return useBookingAction(id, 'confirm');
+    return useBookingAction(id, 'confirm');
 }
 export function useCheckIn(id: string) {
-  return useBookingAction(id, 'check-in');
+    return useBookingAction(id, 'check-in');
 }
 export function useComplete(id: string) {
-  return useBookingAction(id, 'complete');
+    return useBookingAction(id, 'complete');
 }
 export function useNoShow(id: string) {
-  return useBookingAction(id, 'no-show');
+    return useBookingAction(id, 'no-show');
 }
 export function useCancel(id: string) {
-  return useBookingAction(id, 'cancel');
+    return useBookingAction(id, 'cancel');
 }
 export function useReschedule(id: string) {
-  return useBookingAction(id, 'reschedule');
+    return useBookingAction(id, 'reschedule');
 }
 
 /* ── Writes: calendar connections ───────────────────────────────────────── */
 
 export interface AddIcalFeedPayload {
-  resourceId: string;
-  icalUrl: string;
-  provider?: string;
-  label?: string;
+    resourceId: string;
+    icalUrl: string;
+    provider?: string;
+    label?: string;
 }
 
 export function useAddIcalFeed() {
-  const invalidate = useInvalidateConnections();
-  return useMutation({
-    mutationFn: (input: AddIcalFeedPayload) =>
-      api.post<CalendarConnection>('/v1/scheduling/calendar/connections/ical', input),
-    onSuccess: () => {
-      invalidate();
-    },
-  });
+    const invalidate = useInvalidateConnections();
+    return useMutation({
+        mutationFn: (input: AddIcalFeedPayload) =>
+            api.post<CalendarConnection>('/v1/scheduling/calendar/connections/ical', input),
+        onSuccess: () => {
+            invalidate();
+        },
+    });
 }
 
 export function useSyncConnection() {
-  const invalidate = useInvalidateConnections();
-  return useMutation({
-    mutationFn: (id: string) =>
-      api.post<CalendarConnection>(`/v1/scheduling/calendar/connections/${id}/sync`),
-    onSuccess: () => {
-      invalidate();
-    },
-  });
+    const invalidate = useInvalidateConnections();
+    return useMutation({
+        mutationFn: (id: string) =>
+            api.post<CalendarConnection>(`/v1/scheduling/calendar/connections/${id}/sync`),
+        onSuccess: () => {
+            invalidate();
+        },
+    });
 }
 
 export function useRemoveConnection() {
-  const invalidate = useInvalidateConnections();
-  return useMutation({
-    mutationFn: (id: string) =>
-      api.delete<{ id: string; deleted: boolean }>(`/v1/scheduling/calendar/connections/${id}`),
-    onSuccess: () => {
-      invalidate();
-    },
-  });
+    const invalidate = useInvalidateConnections();
+    return useMutation({
+        mutationFn: (id: string) =>
+            api.delete<{ id: string; deleted: boolean }>(`/v1/scheduling/calendar/connections/${id}`),
+        onSuccess: () => {
+            invalidate();
+        },
+    });
 }
 
 /* ── Saying what a connection's state means ─────────────────────────────── */
 
 export function connectionStateMeta(status: ConnectionStatus): { label: string; tone: Tone } {
-  switch (status) {
-    case 'active':
-      return { label: 'Syncing', tone: 'success' };
-    case 'expired':
-      return { label: 'Needs reconnecting', tone: 'warning' };
-    case 'error':
-      return { label: 'Sync problem', tone: 'danger' };
-    default:
-      return { label: status, tone: 'neutral' };
-  }
+    switch (status) {
+        case 'active':
+            return { label: 'Syncing', tone: 'success' };
+        case 'expired':
+            return { label: 'Needs reconnecting', tone: 'warning' };
+        case 'error':
+            return { label: 'Sync problem', tone: 'danger' };
+        default:
+            return { label: status, tone: 'neutral' };
+    }
 }
 
 /** A connection's provider in plain words. */
 export function providerLabel(provider: string): string {
-  switch (provider) {
-    case 'google':
-      return 'Google Calendar';
-    case 'microsoft':
-      return 'Microsoft Outlook';
-    case 'apple_caldav':
-      return 'Apple iCloud';
-    case 'caldav':
-      return 'Other calendar (CalDAV)';
-    case 'ical':
-      return 'Calendar link (iCal)';
-    default:
-      return provider;
-  }
+    switch (provider) {
+        case 'google':
+            return 'Google Calendar';
+        case 'microsoft':
+            return 'Microsoft Outlook';
+        case 'apple_caldav':
+            return 'Apple iCloud';
+        case 'caldav':
+            return 'Other calendar (CalDAV)';
+        case 'ical':
+            return 'Calendar link (iCal)';
+        default:
+            return provider;
+    }
 }
 
 /* ── Tone → block classes ───────────────────────────────────────────────── */
 
 /**
- * A soft tinted block per status, plus a solid rail of the same colour.
+ * A soft tinted block per status, plus a solid rail of the same color.
  *
- * `bg-<tone> soft` is the sanctioned soft treatment — the colour utility sets an
+ * `bg-<tone> soft` is the sanctioned soft treatment — the color utility sets an
  * accent, `soft` mixes 15% of it into base-100 — so the block reads as tinted
  * without an inline style and its text stays a real, readable ink. The rail is a
  * separate solid element, because a 15% tint alone is too quiet to scan a busy
  * day by.
  */
 export const TONE_BLOCK: Record<Tone, string> = {
-  success: 'bg-success soft',
-  warning: 'bg-warning soft',
-  danger: 'bg-danger soft',
-  info: 'bg-info soft',
-  neutral: 'bg-neutral soft',
+    success: 'bg-success soft',
+    warning: 'bg-warning soft',
+    danger: 'bg-danger soft',
+    info: 'bg-info soft',
+    neutral: 'bg-neutral soft',
 };
 
 export const TONE_RAIL: Record<Tone, string> = {
-  success: 'bg-success',
-  warning: 'bg-warning',
-  danger: 'bg-danger',
-  info: 'bg-info',
-  neutral: 'bg-neutral',
+    success: 'bg-success',
+    warning: 'bg-warning',
+    danger: 'bg-danger',
+    info: 'bg-info',
+    neutral: 'bg-neutral',
 };
 
 /* ── Dates: the diary's navigation ──────────────────────────────────────── */
@@ -319,112 +319,112 @@ const DAY_MS = 24 * 60 * 60 * 1000;
 
 /** Midnight at the start of a date, on the operator's own clock. */
 export function startOfDay(date: Date): Date {
-  const copy = new Date(date);
-  copy.setHours(0, 0, 0, 0);
-  return copy;
+    const copy = new Date(date);
+    copy.setHours(0, 0, 0, 0);
+    return copy;
 }
 
 /** Monday 00:00 of the week a date falls in. Weeks start Monday — the working
  *  week most diaries are read by. */
 export function startOfWeek(date: Date): Date {
-  const start = startOfDay(date);
-  // getDay(): 0=Sun..6=Sat. Shift so Monday is the origin.
-  const shift = (start.getDay() + 6) % 7;
-  start.setDate(start.getDate() - shift);
-  return start;
+    const start = startOfDay(date);
+    // getDay(): 0=Sun..6=Sat. Shift so Monday is the origin.
+    const shift = (start.getDay() + 6) % 7;
+    start.setDate(start.getDate() - shift);
+    return start;
 }
 
 export function addDays(date: Date, days: number): Date {
-  return new Date(date.getTime() + days * DAY_MS);
+    return new Date(date.getTime() + days * DAY_MS);
 }
 
 export function addWeeks(date: Date, weeks: number): Date {
-  return addDays(date, weeks * 7);
+    return addDays(date, weeks * 7);
 }
 
 /** The seven day-starts of the week a date falls in. */
 export function weekDays(anchor: Date): Date[] {
-  const start = startOfWeek(anchor);
-  return Array.from({ length: 7 }, (_unused, index) => addDays(start, index));
+    const start = startOfWeek(anchor);
+    return Array.from({ length: 7 }, (_unused, index) => addDays(start, index));
 }
 
 export function isSameDay(a: Date, b: Date): boolean {
-  return (
-    a.getFullYear() === b.getFullYear() &&
-    a.getMonth() === b.getMonth() &&
-    a.getDate() === b.getDate()
-  );
+    return (
+        a.getFullYear() === b.getFullYear() &&
+        a.getMonth() === b.getMonth() &&
+        a.getDate() === b.getDate()
+    );
 }
 
 export function isToday(date: Date): boolean {
-  return isSameDay(date, new Date());
+    return isSameDay(date, new Date());
 }
 
 /** The [from, to) ISO window a day view reads. */
 export function dayWindow(anchor: Date): RangeQuery {
-  const from = startOfDay(anchor);
-  return { from: from.toISOString(), to: addDays(from, 1).toISOString() };
+    const from = startOfDay(anchor);
+    return { from: from.toISOString(), to: addDays(from, 1).toISOString() };
 }
 
 /** The [from, to) ISO window a week view reads. */
 export function weekWindow(anchor: Date): RangeQuery {
-  const from = startOfWeek(anchor);
-  return { from: from.toISOString(), to: addDays(from, 7).toISOString() };
+    const from = startOfWeek(anchor);
+    return { from: from.toISOString(), to: addDays(from, 7).toISOString() };
 }
 
 /* ── Dates: labels ──────────────────────────────────────────────────────── */
 
 /** The heading for a day, e.g. "Monday, 12 May 2026". */
 export function dayLabel(date: Date): string {
-  return new Intl.DateTimeFormat(undefined, {
-    weekday: 'long',
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric',
-  }).format(date);
+    return new Intl.DateTimeFormat(undefined, {
+        weekday: 'long',
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric',
+    }).format(date);
 }
 
 /** The heading for a week, e.g. "12–18 May 2026" or "28 Apr – 4 May 2026". */
 export function weekLabel(anchor: Date): string {
-  const start = startOfWeek(anchor);
-  const end = addDays(start, 6);
-  const sameMonth =
-    start.getMonth() === end.getMonth() && start.getFullYear() === end.getFullYear();
-  const sameYear = start.getFullYear() === end.getFullYear();
-  const day = (date: Date) => new Intl.DateTimeFormat(undefined, { day: 'numeric' }).format(date);
-  const dayMonth = (date: Date) =>
-    new Intl.DateTimeFormat(undefined, { day: 'numeric', month: 'short' }).format(date);
-  const dayMonthYear = (date: Date) =>
-    new Intl.DateTimeFormat(undefined, {
-      day: 'numeric',
-      month: 'short',
-      year: 'numeric',
-    }).format(date);
-  if (sameMonth) return `${day(start)}–${dayMonthYear(end)}`;
-  if (sameYear) return `${dayMonth(start)} – ${dayMonthYear(end)}`;
-  return `${dayMonthYear(start)} – ${dayMonthYear(end)}`;
+    const start = startOfWeek(anchor);
+    const end = addDays(start, 6);
+    const sameMonth =
+        start.getMonth() === end.getMonth() && start.getFullYear() === end.getFullYear();
+    const sameYear = start.getFullYear() === end.getFullYear();
+    const day = (date: Date) => new Intl.DateTimeFormat(undefined, { day: 'numeric' }).format(date);
+    const dayMonth = (date: Date) =>
+        new Intl.DateTimeFormat(undefined, { day: 'numeric', month: 'short' }).format(date);
+    const dayMonthYear = (date: Date) =>
+        new Intl.DateTimeFormat(undefined, {
+            day: 'numeric',
+            month: 'short',
+            year: 'numeric',
+        }).format(date);
+    if (sameMonth) return `${day(start)}–${dayMonthYear(end)}`;
+    if (sameYear) return `${dayMonth(start)} – ${dayMonthYear(end)}`;
+    return `${dayMonthYear(start)} – ${dayMonthYear(end)}`;
 }
 
 /** A short column heading for a week day, e.g. "Mon 12". */
 export function weekdayHeading(date: Date): { weekday: string; day: string } {
-  return {
-    weekday: new Intl.DateTimeFormat(undefined, { weekday: 'short' }).format(date),
-    day: new Intl.DateTimeFormat(undefined, { day: 'numeric' }).format(date),
-  };
+    return {
+        weekday: new Intl.DateTimeFormat(undefined, { weekday: 'short' }).format(date),
+        day: new Intl.DateTimeFormat(undefined, { day: 'numeric' }).format(date),
+    };
 }
 
 /** An hour mark for the time gutter, e.g. "9 AM". */
 export function hourLabel(hour: number): string {
-  const date = new Date();
-  date.setHours(hour, 0, 0, 0);
-  return new Intl.DateTimeFormat(undefined, { hour: 'numeric' }).format(date);
+    const date = new Date();
+    date.setHours(hour, 0, 0, 0);
+    return new Intl.DateTimeFormat(undefined, { hour: 'numeric' }).format(date);
 }
 
 /** The clock part of an instant, e.g. "9:30 AM". */
 export function clockLabel(iso: string): string {
-  const date = new Date(iso);
-  if (Number.isNaN(date.getTime())) return '';
-  return new Intl.DateTimeFormat(undefined, { hour: 'numeric', minute: '2-digit' }).format(date);
+    const date = new Date(iso);
+    if (Number.isNaN(date.getTime())) return '';
+    return new Intl.DateTimeFormat(undefined, { hour: 'numeric', minute: '2-digit' }).format(date);
 }
 
 /* ── Errors ─────────────────────────────────────────────────────────────── */
@@ -432,12 +432,12 @@ export function clockLabel(iso: string): string {
 /** The server's own sentence for a 4xx, shown verbatim — a slot clash or a bad
  *  feed URL names itself far better than a status code. A 5xx falls back. */
 export function calendarErrorMessage(error: unknown, fallback: string): string {
-  if (error instanceof ApiError && error.status >= 400 && error.status < 500 && error.message) {
-    return error.message;
-  }
-  return fallback;
+    if (error instanceof ApiError && error.status >= 400 && error.status < 500 && error.message) {
+        return error.message;
+    }
+    return fallback;
 }
 
 export function isModuleDisabled(error: unknown): boolean {
-  return error instanceof ApiError && error.code === 'MODULE_DISABLED';
+    return error instanceof ApiError && error.code === 'MODULE_DISABLED';
 }

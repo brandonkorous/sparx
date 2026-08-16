@@ -13,65 +13,65 @@ import assets from './assets.json' with { type: 'json' };
 import emails from './emails.json' with { type: 'json' };
 
 const blueprint = {
-  key: 'sparx-portfolio-photographer',
-  version: '1.2.0',
-  name: 'sparx — Photographer Portfolio',
-  summary:
-    'An image-first portfolio for a photographer: a centered wordmark, a near-full-bleed hero, selected series as large edge-to-edge frames, and photo-story pages that read like a gallery wall. Chrome recedes and type stays recessive so the photographs carry all the colour. Dressed in a cool gallery-white theme with a near-black mono primary, zero radius and a serif display. Shipped as Mara Ilić.',
-  vertical: 'content',
-  preview: 'media/preview.png',
-  requiresModules: ['builder', 'cms', 'email'],
+    key: 'sparx-portfolio-photographer',
+    version: '1.2.0',
+    name: 'sparx — Photographer Portfolio',
+    summary:
+        'An image-first portfolio for a photographer: a centered wordmark, a near-full-bleed hero, selected series as large edge-to-edge frames, and photo-story pages that read like a gallery wall. Chrome recedes and type stays recessive so the photographs carry all the color. Dressed in a cool gallery-white theme with a near-black mono primary, zero radius and a serif display. Shipped as Mara Ilić.',
+    vertical: 'content',
+    preview: 'media/preview.png',
+    requiresModules: ['builder', 'cms', 'email'],
 
-  // Identity only (person's name + tagline + fonts + the theme's hex colours). The look
-  // itself rides site.theme + the theme decl below; the installing tenant rebrands the name.
-  brand: {
-    businessName: 'Mara Ilić',
-    tagline: 'Photographs that hold still.',
-    colors: {
-      primary: '#111212',
-      primaryForeground: '#f8f8fa',
-      accent: '#616367',
-      secondary: '#46484a',
-    },
-    fonts: {
-      heading: 'Fraunces',
-      body: 'Inter',
-    },
-  },
-
-  // The provisioned SiteTheme the installer creates + applies — the bespoke portfolio look
-  // as a tenant-editable saved theme (base preset = the template's own theme key, plus its
-  // brand snapshot).
-  theme: {
-    name: 'portfolio-photographer',
-    basePresetKey: 'portfolio-photographer',
-    presentation: {
-      v: 2,
-      containerWidth: '1152px',
-    },
+    // Identity only (person's name + tagline + fonts + the theme's hex colors). The look
+    // itself rides site.theme + the theme decl below; the installing tenant rebrands the name.
     brand: {
-      colorPrimary: '#111212',
-      colorAccent: '#616367',
-      colorSecondary: '#46484a',
-      fontHeading: 'Fraunces',
-      fontBody: 'Inter',
-      tokens: {},
+        businessName: 'Mara Ilić',
+        tagline: 'Photographs that hold still.',
+        colors: {
+            primary: '#111212',
+            primaryForeground: '#f8f8fa',
+            accent: '#616367',
+            secondary: '#46484a',
+        },
+        fonts: {
+            heading: 'Fraunces',
+            body: 'Inter',
+        },
     },
-    apply: true,
-  },
 
-  assets,
-  contentTypes: [],
-  authors,
-  content,
+    // The provisioned SiteTheme the installer creates + applies — the bespoke portfolio look
+    // as a tenant-editable saved theme (base preset = the template's own theme key, plus its
+    // brand snapshot).
+    theme: {
+        name: 'portfolio-photographer',
+        basePresetKey: 'portfolio-photographer',
+        presentation: {
+            v: 2,
+            containerWidth: '1152px',
+        },
+        brand: {
+            colorPrimary: '#111212',
+            colorAccent: '#616367',
+            colorSecondary: '#46484a',
+            fontHeading: 'Fraunces',
+            fontBody: 'Inter',
+            tokens: {},
+        },
+        apply: true,
+    },
 
-  // A portfolio has no commerce. The projects are CMS `blog_post` records (see content).
-  emails,
-  sequences: [],
+    assets,
+    contentTypes: [],
+    authors,
+    content,
 
-  // The composed distinct site (frame + home + a live /work index + about/contact + the
-  // /blog/:slug case-study template), in the bespoke theme, fully stamped.
-  site,
+    // A portfolio has no commerce. The projects are CMS `blog_post` records (see content).
+    emails,
+    sequences: [],
+
+    // The composed distinct site (frame + home + a live /work index + about/contact + the
+    // /blog/:slug case-study template), in the bespoke theme, fully stamped.
+    site,
 };
 
 export default blueprint;

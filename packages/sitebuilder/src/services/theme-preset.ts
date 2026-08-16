@@ -9,7 +9,7 @@
 //
 // WHAT THIS FIXES. Nothing performed that conversion, so a site whose `themeKey` was
 // a catalog slug had no preset to compile — and the compile fell back to the platform
-// base. Picking `clinic` and picking nothing produced identical colours, with every
+// base. Picking `clinic` and picking nothing produced identical colors, with every
 // surface reporting success. The theme was shipped, correct, and unreachable.
 //
 // THE SHAPE. `DataThemePreset` (@sparx/marketplace-schemas) — `{ v, v1, v2 }` — is
@@ -19,11 +19,11 @@
 // and the storefront recompile take `.v2`. One format, two sources.
 
 import {
-  themePresetV2FromTokens,
-  PLATFORM_PRESET_V2,
-  PLATFORM_TOKEN_DEFAULTS,
-  type CompiledTokens,
-  type ThemeTokens,
+    themePresetV2FromTokens,
+    PLATFORM_PRESET_V2,
+    PLATFORM_TOKEN_DEFAULTS,
+    type CompiledTokens,
+    type ThemeTokens,
 } from '@sparx/site-themes';
 import { firstPartyTheme, resolveSparxTheme, type FirstPartyTheme } from '@sparx/silica-catalog';
 
@@ -34,20 +34,20 @@ type Tokens = Record<string, string | undefined>;
  *  @sparx/marketplace-schemas — this package must not depend on the marketplace to
  *  apply a theme that ships in the box. */
 export interface StoredThemePreset {
-  v: 1;
-  v1: CompiledTokens;
-  v2: ReturnType<typeof themePresetV2FromTokens>;
+    v: 1;
+    v1: CompiledTokens;
+    v2: ReturnType<typeof themePresetV2FromTokens>;
 }
 
 /** First family of a CSS font stack, unquoted. Silica stores a stack; the v1 token
  *  surface stores a family. */
 function family(stack: string | undefined, fallback: string): string {
-  const bare =
-    (stack ?? '')
-      .split(',')[0]
-      ?.trim()
-      .replace(/^['"]|['"]$/g, '') ?? '';
-  return bare || fallback;
+    const bare =
+        (stack ?? '')
+            .split(',')[0]
+            ?.trim()
+            .replace(/^['"]|['"]$/g, '') ?? '';
+    return bare || fallback;
 }
 
 /** The v1 token surface, projected from the resolved silica bag.
@@ -59,25 +59,25 @@ function family(stack: string | undefined, fallback: string): string {
  *  `colorBorder` the theme's own hairline, matching how the silica ramp is read
  *  everywhere else. */
 function v1From(light: Tokens, dark: Tokens): CompiledTokens {
-  const mode = (t: Tokens, base: Tokens): ThemeTokens => {
-    const at = (role: string, fallback: string): string =>
-      t[`--color-${role}`] ?? base[`--color-${role}`] ?? fallback;
-    const shared = (key: string, fallback: string): string => base[key] ?? t[key] ?? fallback;
-    return {
-      colorPrimary: at('primary', '#e04631'),
-      colorPrimaryForeground: at('primary-content', '#ffffff'),
-      colorAccent: at('accent', at('primary', '#c1652e')),
-      colorBackground: at('base-100', '#ffffff'),
-      colorForeground: at('base-content', '#0f172a'),
-      colorMuted: at('base-200', '#f8fafc'),
-      colorBorder: at('border', at('base-300', '#e2e8f0')),
-      fontHeading: family(shared('--font-heading', '') || shared('--font-head', ''), 'Inter'),
-      fontBody: family(shared('--font-sans', ''), 'Inter'),
-      radiusBase: shared('--radius-box', '0.5rem'),
-      containerWidth: shared('--container-max', 'medium'),
+    const mode = (t: Tokens, base: Tokens): ThemeTokens => {
+        const at = (role: string, fallback: string): string =>
+            t[`--color-${role}`] ?? base[`--color-${role}`] ?? fallback;
+        const shared = (key: string, fallback: string): string => base[key] ?? t[key] ?? fallback;
+        return {
+            colorPrimary: at('primary', '#e04631'),
+            colorPrimaryForeground: at('primary-content', '#ffffff'),
+            colorAccent: at('accent', at('primary', '#c1652e')),
+            colorBackground: at('base-100', '#ffffff'),
+            colorForeground: at('base-content', '#0f172a'),
+            colorMuted: at('base-200', '#f8fafc'),
+            colorBorder: at('border', at('base-300', '#e2e8f0')),
+            fontHeading: family(shared('--font-heading', '') || shared('--font-head', ''), 'Inter'),
+            fontBody: family(shared('--font-sans', ''), 'Inter'),
+            radiusBase: shared('--radius-box', '0.5rem'),
+            containerWidth: shared('--container-max', 'medium'),
+        };
     };
-  };
-  return { light: mode(light, light), dark: mode(dark, light) };
+    return { light: mode(light, light), dark: mode(dark, light) };
 }
 
 /**
@@ -89,14 +89,14 @@ function v1From(light: Tokens, dark: Tokens): CompiledTokens {
  * second implementation of the thing silica already owns, and the two would drift.
  */
 export function themePresetFor(theme: Theme): StoredThemePreset {
-  const resolved = resolveSparxTheme(theme);
-  const light: Tokens = resolved.tokens;
-  const dark: Tokens = { ...resolved.tokens, ...(resolved.dark ?? {}) };
-  return {
-    v: 1,
-    v1: v1From(light, dark),
-    v2: themePresetV2FromTokens(light, dark),
-  };
+    const resolved = resolveSparxTheme(theme);
+    const light: Tokens = resolved.tokens;
+    const dark: Tokens = { ...resolved.tokens, ...(resolved.dark ?? {}) };
+    return {
+        v: 1,
+        v1: v1From(light, dark),
+        v2: themePresetV2FromTokens(light, dark),
+    };
 }
 
 /** The platform base as a stored preset — the sparx Ember look, under the name the
@@ -110,9 +110,9 @@ const PLATFORM_SLUG = 'sparx';
  * nothing — the flagship blueprint names it.
  */
 export function themePresetForSlug(slug: string): StoredThemePreset | null {
-  if (slug === PLATFORM_SLUG) {
-    return { v: 1, v1: PLATFORM_TOKEN_DEFAULTS, v2: PLATFORM_PRESET_V2 };
-  }
-  const shipped = firstPartyTheme(slug);
-  return shipped ? themePresetFor(shipped.theme) : null;
+    if (slug === PLATFORM_SLUG) {
+        return { v: 1, v1: PLATFORM_TOKEN_DEFAULTS, v2: PLATFORM_PRESET_V2 };
+    }
+    const shipped = firstPartyTheme(slug);
+    return shipped ? themePresetFor(shipped.theme) : null;
 }

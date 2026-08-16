@@ -10,71 +10,71 @@ import emails from './emails.json' with { type: 'json' };
 import assets from './assets.json' with { type: 'json' };
 
 const blueprint = {
-  key: 'sparx-restaurant-pizzeria',
-  version: '1.3.0',
-  name: 'sparx — Pizzeria',
-  summary:
-    'A complete, working site for a wood-fired pizzeria & trattoria: a real menu (antipasti, pizza, pasta, dolci, drinks) and a live table-reservations flow (tables as bookable resources, party-size reservation services, opening hours, a cancellation policy) on the /reserve page. Warm terracotta theme — cream, tomato-brick red, a basil-green accent. Pages: Home, Menu, Reserve, About, Visit. Shipped as Forno.',
-  vertical: 'services',
-  preview: 'media/preview.png',
-  requiresModules: ['builder', 'scheduling', 'crm', 'email'],
+    key: 'sparx-restaurant-pizzeria',
+    version: '1.3.0',
+    name: 'sparx — Pizzeria',
+    summary:
+        'A complete, working site for a wood-fired pizzeria & trattoria: a real menu (antipasti, pizza, pasta, dolci, drinks) and a live table-reservations flow (tables as bookable resources, party-size reservation services, opening hours, a cancellation policy) on the /reserve page. Warm terracotta theme — cream, tomato-brick red, a basil-green accent. Pages: Home, Menu, Reserve, About, Visit. Shipped as Forno.',
+    vertical: 'services',
+    preview: 'media/preview.png',
+    requiresModules: ['builder', 'scheduling', 'crm', 'email'],
 
-  // Identity only (business name + tagline + fonts + the theme's hex colours). The look
-  // rides site.theme + the theme decl below; the installing tenant rebrands the name.
-  brand: {
-    businessName: 'Forno',
-    tagline: 'A wood-fired pizzeria & trattoria.',
-    colors: {
-      primary: '#a1331a',
-      primaryForeground: '#fff6f4',
-      accent: '#2f6633',
-      secondary: '#664837',
-    },
-    fonts: {
-      heading: 'Fraunces',
-      body: 'Inter',
-    },
-  },
-
-  // The provisioned SiteTheme the installer creates + applies — an editable saved theme
-  // over a foundation base + the template's brand snapshot. The LIVE storefront look is
-  // site.theme (the flat bespoke tokens), written last.
-  theme: {
-    name: 'fico-forno',
-    basePresetKey: 'apex',
-    presentation: {
-      v: 2,
-      containerWidth: '1152px',
-    },
+    // Identity only (business name + tagline + fonts + the theme's hex colors). The look
+    // rides site.theme + the theme decl below; the installing tenant rebrands the name.
     brand: {
-      colorPrimary: '#a1331a',
-      colorAccent: '#2f6633',
-      colorSecondary: '#664837',
-      fontHeading: 'Fraunces',
-      fontBody: 'Inter',
-      tokens: {},
+        businessName: 'Forno',
+        tagline: 'A wood-fired pizzeria & trattoria.',
+        colors: {
+            primary: '#a1331a',
+            primaryForeground: '#fff6f4',
+            accent: '#2f6633',
+            secondary: '#664837',
+        },
+        fonts: {
+            heading: 'Fraunces',
+            body: 'Inter',
+        },
     },
-    apply: true,
-  },
 
-  assets,
-  contentTypes: [],
+    // The provisioned SiteTheme the installer creates + applies — an editable saved theme
+    // over a foundation base + the template's brand snapshot. The LIVE storefront look is
+    // site.theme (the flat bespoke tokens), written last.
+    theme: {
+        name: 'fico-forno',
+        basePresetKey: 'apex',
+        presentation: {
+            v: 2,
+            containerWidth: '1152px',
+        },
+        brand: {
+            colorPrimary: '#a1331a',
+            colorAccent: '#2f6633',
+            colorSecondary: '#664837',
+            fontHeading: 'Fraunces',
+            fontBody: 'Inter',
+            tokens: {},
+        },
+        apply: true,
+    },
 
-  // The booking spine — policies, bookable resources (staff/rooms/stations) with weekly
-  // hours, and the service menu. The installer's scheduling slice replays it into a live
-  // booking flow that the site's /book page renders.
-  scheduling,
+    assets,
+    contentTypes: [],
 
-  // Brand-voiced MARKETING starters (a welcome + a come-back), installed as DRAFTS the
-  // tenant switches on. The transactional booking sends — confirmation, reminder,
-  // reschedule, cancellation, waitlist — are platform KEYED defaults, so they are covered
-  // on email-module activation and are deliberately NOT duplicated here.
-  emails,
-  sequences: [],
+    // The booking spine — policies, bookable resources (staff/rooms/stations) with weekly
+    // hours, and the service menu. The installer's scheduling slice replays it into a live
+    // booking flow that the site's /book page renders.
+    scheduling,
 
-  // The composed distinct site (frame + Home + Book + About + Contact) in the bespoke
-  // theme, fully stamped.
-  site,
+    // Brand-voiced MARKETING starters (a welcome + a come-back), installed as DRAFTS the
+    // tenant switches on. The transactional booking sends — confirmation, reminder,
+    // reschedule, cancellation, waitlist — are platform KEYED defaults, so they are covered
+    // on email-module activation and are deliberately NOT duplicated here.
+    emails,
+    sequences: [],
+
+    // The composed distinct site (frame + Home + Book + About + Contact) in the bespoke
+    // theme, fully stamped.
+    site,
 };
 
 export default blueprint;

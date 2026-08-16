@@ -17,7 +17,7 @@ import type { ToolMeta } from './registry';
  *
  * Three things were wrong with how it looked.
  *
- * The module name sat ABOVE the headline as a small coloured label. A previous
+ * The module name sat ABOVE the headline as a small colored label. A previous
  * pass had already de-uppercased it, which treated the styling and missed the
  * problem: RULE #2 bans the SLOT, not the letterspacing — anything introducing a
  * heading from above is an eyebrow. It is a badge beside the CTA now, which is
@@ -29,46 +29,46 @@ import type { ToolMeta } from './registry';
  * solid CTA, both of which are fills and therefore legible.
  *
  * And that label measured 2.43:1 — `text-module-*` on a 15% tint of the same
- * hue. Module colours are FILLS.
+ * hue. Module colors are FILLS.
  */
 export function ToolLadder({ tool }: { tool: ToolMeta }) {
-  const mod = getModule(tool.module);
-  const href = `/${tool.module}`;
+    const mod = getModule(tool.module);
+    const href = `/${tool.module}`;
 
-  return (
-    <Band tone="page">
-      <div className="border-base-300 bg-base-100 flex flex-col items-start justify-between gap-8 rounded-4xl border p-8 sm:p-10 lg:flex-row lg:items-center">
-        <div className="flex max-w-2xl flex-col gap-4">
-          <Heading level={2} size={3} className="tracking-tight">
-            {tool.ladder.headline}
-            {/* `text-primary`, not the module ink: these headings sit on a
+    return (
+        <Band tone="page">
+            <div className="border-base-300 bg-base-100 flex flex-col items-start justify-between gap-8 rounded-4xl border p-8 sm:p-10 lg:flex-row lg:items-center">
+                <div className="flex max-w-2xl flex-col gap-4">
+                    <Heading level={2} size={3} className="tracking-tight">
+                        {tool.ladder.headline}
+                        {/* `text-primary`, not the module ink: these headings sit on a
                 LIGHT band, where a module hue is a ~2.4:1 fill pretending to
                 be ink. The module hue belongs on the dark hero and on fills. */}
-            <span className="text-primary">.</span>
-          </Heading>
-          <Text className="text-lg">{tool.ladder.body}</Text>
-        </div>
+                        <span className="text-primary">.</span>
+                    </Heading>
+                    <Text className="text-lg">{tool.ladder.body}</Text>
+                </div>
 
-        <div className="flex shrink-0 flex-col items-start gap-3">
-          <a
-            href={href}
-            aria-label={tool.ladder.cta}
-            className={buttonClasses({ color: tool.module, variant: 'solid', size: 'lg' })}
-          >
-            {tool.ladder.cta}
-            <ArrowRight className="h-4 w-4" />
-          </a>
-          <span
-            className={badgeClasses({
-              color: `module-${tool.module}`,
-              variant: 'solid',
-              size: 'sm',
-            })}
-          >
-            {`Part of ${mod?.label ?? tool.module}`}
-          </span>
-        </div>
-      </div>
-    </Band>
-  );
+                <div className="flex shrink-0 flex-col items-start gap-3">
+                    <a
+                        href={href}
+                        aria-label={tool.ladder.cta}
+                        className={buttonClasses({ color: tool.module, variant: 'solid', size: 'lg' })}
+                    >
+                        {tool.ladder.cta}
+                        <ArrowRight className="h-4 w-4" />
+                    </a>
+                    <span
+                        className={badgeClasses({
+                            color: `module-${tool.module}`,
+                            variant: 'solid',
+                            size: 'sm',
+                        })}
+                    >
+                        {`Part of ${mod?.label ?? tool.module}`}
+                    </span>
+                </div>
+            </div>
+        </Band>
+    );
 }

@@ -17,7 +17,7 @@
    imports too. The surfaces are shared platform code and neither shell may fork
    them (piggles/CLAUDE.md RULE #0); their supporting CSS is part of that
    contract. What stays here is what names a BRAND: the theme import, the
-   registered colour list, the heading face, the mascot. */
+   registered color list, the heading face, the mascot. */
 @import 'tailwindcss';
 @import '@sparx/brand/theme.css';
 /* Rules that close a hole in a silicaui component — see the file header. */

@@ -14,69 +14,69 @@ import assets from './assets.json' with { type: 'json' };
 import emails from './emails.json' with { type: 'json' };
 
 const blueprint = {
-  key: 'sparx-retail-stationery-playful',
-  version: '1.4.0',
-  name: 'sparx — Stationery & Gifts (Playful)',
-  summary:
-    'A complete, working shop for a bright, playful stationery & gifts store: a real catalogue of colour-pop notebooks, a gel-pen set, sticker packs, an enamel pin, a desk calendar, greeting cards, washi tape, a sticky-note cube and a fun gift bundle, with categories, collections, a bespoke PDP and a loud, merchandised home page. Joyful pop theme — soft lemon ground, a bubblegum-pink primary, a grape-purple accent, a rounded Fredoka display. Shipped as Pencil Club.',
-  vertical: 'retail',
-  preview: 'media/preview.png',
-  requiresModules: ['builder', 'commerce', 'cms', 'crm', 'email'],
+    key: 'sparx-retail-stationery-playful',
+    version: '1.4.0',
+    name: 'sparx — Stationery & Gifts (Playful)',
+    summary:
+        'A complete, working shop for a bright, playful stationery & gifts store: a real catalogue of color-pop notebooks, a gel-pen set, sticker packs, an enamel pin, a desk calendar, greeting cards, washi tape, a sticky-note cube and a fun gift bundle, with categories, collections, a bespoke PDP and a loud, merchandised home page. Joyful pop theme — soft lemon ground, a bubblegum-pink primary, a grape-purple accent, a rounded Fredoka display. Shipped as Pencil Club.',
+    vertical: 'retail',
+    preview: 'media/preview.png',
+    requiresModules: ['builder', 'commerce', 'cms', 'crm', 'email'],
 
-  // Identity only (business name + tagline + fonts + the theme's hex colours). The look
-  // itself rides site.theme + the theme decl below; the installing tenant rebrands the name.
-  brand: {
-    businessName: 'Pencil Club',
-    tagline: 'Make your desk a happier place.',
-    colors: {
-      primary: '#cb2984',
-      primaryForeground: '#fef6f9',
-      accent: '#6e34b3',
-      secondary: '#00596f',
-    },
-    fonts: {
-      heading: 'Fredoka',
-      body: 'Nunito',
-    },
-  },
-
-  // The provisioned SiteTheme the installer creates + applies — the bespoke template
-  // look as a tenant-editable saved theme (base preset = the template's own theme key,
-  // plus its brand snapshot).
-  theme: {
-    name: 'retail-stationery-playful',
-    basePresetKey: 'retail-stationery-playful',
-    presentation: {
-      v: 2,
-      containerWidth: '1152px',
-    },
+    // Identity only (business name + tagline + fonts + the theme's hex colors). The look
+    // itself rides site.theme + the theme decl below; the installing tenant rebrands the name.
     brand: {
-      colorPrimary: '#cb2984',
-      colorAccent: '#6e34b3',
-      colorSecondary: '#00596f',
-      fontHeading: 'Fredoka',
-      fontBody: 'Nunito',
-      tokens: {},
+        businessName: 'Pencil Club',
+        tagline: 'Make your desk a happier place.',
+        colors: {
+            primary: '#cb2984',
+            primaryForeground: '#fef6f9',
+            accent: '#6e34b3',
+            secondary: '#00596f',
+        },
+        fonts: {
+            heading: 'Fredoka',
+            body: 'Nunito',
+        },
     },
-    apply: true,
-  },
 
-  assets,
-  contentTypes: [],
-  authors,
-  content,
-  commerce,
+    // The provisioned SiteTheme the installer creates + applies — the bespoke template
+    // look as a tenant-editable saved theme (base preset = the template's own theme key,
+    // plus its brand snapshot).
+    theme: {
+        name: 'retail-stationery-playful',
+        basePresetKey: 'retail-stationery-playful',
+        presentation: {
+            v: 2,
+            containerWidth: '1152px',
+        },
+        brand: {
+            colorPrimary: '#cb2984',
+            colorAccent: '#6e34b3',
+            colorSecondary: '#00596f',
+            fontHeading: 'Fredoka',
+            fontBody: 'Nunito',
+            tokens: {},
+        },
+        apply: true,
+    },
 
-  // A shop's brand-voiced MARKETING starters (a welcome + a win-back), tokenized so a fork
-  // re-themes to the tenant and installed as DRAFTS — the platform's keyed transactional
-  // defaults (order/shipping/dunning) are separate and never duplicated here. Content
-  // templates ship an empty set.
-  emails,
-  sequences: [],
+    assets,
+    contentTypes: [],
+    authors,
+    content,
+    commerce,
 
-  // The composed distinct site (frame + a template-specific home + standard commerce/
-  // cms/about/contact pages + the /journal index), in the bespoke theme, fully stamped.
-  site,
+    // A shop's brand-voiced MARKETING starters (a welcome + a win-back), tokenized so a fork
+    // re-themes to the tenant and installed as DRAFTS — the platform's keyed transactional
+    // defaults (order/shipping/dunning) are separate and never duplicated here. Content
+    // templates ship an empty set.
+    emails,
+    sequences: [],
+
+    // The composed distinct site (frame + a template-specific home + standard commerce/
+    // cms/about/contact pages + the /journal index), in the bespoke theme, fully stamped.
+    site,
 };
 
 export default blueprint;

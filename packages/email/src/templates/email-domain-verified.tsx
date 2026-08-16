@@ -6,6 +6,7 @@ import {
   EmailDisplayHeading,
   EmailFinePrint,
   EmailParagraph,
+  usePlatformName,
 } from '../components';
 
 export interface EmailDomainVerifiedEmailProps {
@@ -22,11 +23,12 @@ export function EmailDomainVerifiedEmail({
   domainName,
   dashboardUrl,
 }: EmailDomainVerifiedEmailProps) {
+  const platform = usePlatformName();
   return (
     <PlatformEmailLayout
       preview={`You can now send email from ${domainName}`}
       footerLinks={[{ label: 'Email settings', href: dashboardUrl }]}
-      footerReason={`You're receiving this because ${domainName} was set up as a sending domain in sparx.`}
+      footerReason={`You're receiving this because ${domainName} was set up as a sending domain in ${platform}.`}
     >
       <EmailDisplayHeading>Your sending domain is ready</EmailDisplayHeading>
       <EmailParagraph>

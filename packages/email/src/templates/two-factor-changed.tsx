@@ -6,6 +6,7 @@ import {
   EmailDisplayHeading,
   EmailFinePrint,
   EmailParagraph,
+  usePlatformName,
 } from '../components';
 
 export interface TwoFactorChangedEmailProps {
@@ -20,12 +21,13 @@ export interface TwoFactorChangedEmailProps {
 // PLATFORM security email (sparx → account owner) — two-factor authentication was
 // enabled or disabled on their account.
 export function TwoFactorChangedEmail({ enabled, name, secureUrl }: TwoFactorChangedEmailProps) {
+  const platform = usePlatformName();
   return (
     <PlatformEmailLayout
       preview={
         enabled ? 'Two-factor authentication is on' : 'Two-factor authentication was turned off'
       }
-      footerReason="You're receiving this because a security setting on your sparx account changed."
+      footerReason={`You're receiving this because a security setting on your ${platform} account changed.`}
     >
       <EmailDisplayHeading>
         {enabled ? 'Two-factor is on' : 'Two-factor was turned off'}
@@ -33,8 +35,8 @@ export function TwoFactorChangedEmail({ enabled, name, secureUrl }: TwoFactorCha
       <EmailParagraph>
         {name ? `Hi ${name}, ` : ''}
         {enabled
-          ? 'Two-factor authentication is now protecting your sparx account. From now on, signing in needs your password and a one-time code — nice work locking things down.'
-          : 'Two-factor authentication has been turned off for your sparx account. Signing in now needs only your password.'}
+          ? `Two-factor authentication is now protecting your ${platform} account. From now on, signing in needs your password and a one-time code — nice work locking things down.`
+          : `Two-factor authentication has been turned off for your ${platform} account. Signing in now needs only your password.`}
       </EmailParagraph>
 
       <EmailAlert
@@ -60,8 +62,8 @@ export function TwoFactorChangedEmail({ enabled, name, secureUrl }: TwoFactorCha
   );
 }
 
-export function twoFactorChangedSubject(enabled: boolean): string {
+export function twoFactorChangedSubject(enabled: boolean, platform: string): string {
   return enabled
-    ? 'Two-factor authentication is on for your sparx account'
+    ? `Two-factor authentication is on for your ${platform} account`
     : 'Two-factor authentication was turned off';
 }

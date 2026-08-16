@@ -1,9 +1,9 @@
 -- Drop StorefrontTheme's IDENTITY columns (docs/30 §6).
 --
--- Brand identity — primary/accent colour, typography, logo, favicon — is now the
+-- Brand identity — primary/accent color, typography, logo, favicon — is now the
 -- tenant-level source of truth in `tenant_brands`. The storefront reads it live
 -- and overlays it at render (1D-4): the public tenants endpoint sources logo/
--- favicon/identity colours from brand, the publish write-through no longer
+-- favicon/identity colors from brand, the publish write-through no longer
 -- projects identity tokens here, and the dashboard editors moved identity to the
 -- Brand panel (1D-4b). These columns are therefore dead reads/writes.
 --

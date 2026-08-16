@@ -75,7 +75,7 @@ model Ticket {
   slaPolicyId String? @map("sla_policy_id") @db.Uuid
 
   /// Absolute instants, already converted through the policy's business hours —
-  /// so everything downstream (the list colour, the sweep, a report) compares
+  /// so everything downstream (the list color, the sweep, a report) compares
   /// two timestamps instead of each re-deriving a calendar. Null when the
   /// policy sets no target for this priority, which is a legitimate answer.
   ///

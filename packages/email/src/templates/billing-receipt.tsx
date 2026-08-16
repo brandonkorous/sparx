@@ -8,6 +8,7 @@ import {
   EmailPayCard,
   EmailParagraph,
   EmailSectionLabel,
+  usePlatform,
   type LineItem,
   type SummaryRow,
 } from '../components';
@@ -50,12 +51,13 @@ export function BillingReceiptEmail({
   paymentMethod,
   receiptNumber,
 }: BillingReceiptEmailProps) {
+  const platform = usePlatform();
   const items: LineItem[] =
     lineItems && lineItems.length > 0
       ? lineItems
       : [
           {
-            title: 'sparx subscription',
+            title: `${platform.name} subscription`,
             subtitle: periodLabel ? `Billing period · ${periodLabel}` : undefined,
             amount: amountLabel,
           },
@@ -71,20 +73,24 @@ export function BillingReceiptEmail({
     <PlatformEmailLayout
       preview={`Payment received${periodLabel ? ` for ${periodLabel}` : ''} — thanks!`}
       mastheadRight={receiptNumber ? `RECEIPT · ${receiptNumber}` : 'RECEIPT'}
-      footerLinks={[
-        { label: 'Billing history', href: 'https://sparx.works/settings/billing' },
-        { label: 'Manage plan', href: 'https://sparx.works/settings/billing' },
-      ]}
+      footerLinks={
+        platform.appUrl
+          ? [
+              { label: 'Billing history', href: `${platform.appUrl}/settings/billing` },
+              { label: 'Manage plan', href: `${platform.appUrl}/settings/billing` },
+            ]
+          : undefined
+      }
       footerReason={
         receiptNumber
-          ? `Receipt ${receiptNumber} for your sparx subscription.`
-          : 'A receipt for your sparx subscription.'
+          ? `Receipt ${receiptNumber} for your ${platform.name} subscription.`
+          : `A receipt for your ${platform.name} subscription.`
       }
     >
       <EmailDisplayHeading>Payment received</EmailDisplayHeading>
       <EmailParagraph>
-        Thanks{accountName ? `, ${accountName}` : ''} — your sparx subscription is paid and there is
-        nothing you need to do.
+        Thanks{accountName ? `, ${accountName}` : ''} — your {platform.name} subscription is paid
+        and there is nothing you need to do.
       </EmailParagraph>
 
       <EmailAmountHero
@@ -113,10 +119,11 @@ export function BillingReceiptEmail({
       </EmailActionButton>
 
       <EmailParagraph flush style={{ marginTop: 18 }}>
-        Questions about this charge? Just reply, or reach us at billing@sparx.email.
+        Questions about this charge? Just reply
+        {platform.billingEmail ? `, or reach us at ${platform.billingEmail}` : ''}.
       </EmailParagraph>
     </PlatformEmailLayout>
   );
 }
 
-export const billingReceiptSubject = 'Your sparx receipt';
+export const billingReceiptSubject = (platform: string) => `Your ${platform} receipt`;

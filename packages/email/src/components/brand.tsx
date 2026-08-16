@@ -77,6 +77,33 @@ export interface BrandTokens {
    * builds the fallback knows the answer; nobody downstream can work it out.
    */
   siteNameIsPlatformDefault?: boolean;
+  /**
+   * WHICH PRODUCT is sending, as distinct from which shop the mail is on behalf
+   * of. Every field above describes the TENANT; this one describes us.
+   *
+   * The footer's legal line needs it and cannot get it from anything else: a
+   * fully-branded Piggles shop, with its own logo and palette and nothing
+   * defaulted, still had "WizeWorks · sparx.works" under it — because the
+   * tenant's identity was never the thing that line was stating. Set by whoever
+   * resolves the send (email-worker), from `tenants.platform_brand`.
+   */
+  platform?: {
+    /** The product's name, as `@wizeworks/brand-core` resolves it. */
+    name: string;
+    /** Its public home, or null when the brand has published none. */
+    url: string | null;
+    /** Trailing characters of `name` set in the accent color where the name is
+     *  used as a wordmark. 0 / absent → the name is set plainly. */
+    accentChars?: number;
+    /** Where a billing question goes. Null/absent → the line is omitted, which
+     *  is the honest rendering for a brand that has published no address. */
+    billingEmail?: string | null;
+    /** The console origin — where a "manage your plan" link in a platform email
+     *  has to land. Distinct from `url`, which is the marketing site: for a brand
+     *  whose console is a separate host, linking to `url/settings/billing` is a
+     *  404. Resolved by the sender via `appOrigin(brand)`. */
+    appUrl?: string | null;
+  };
   /** The site's social links, rendered as self-contained badges in the footer.
    *  Platform is a free string here; the footer maps it to silica's supported
    *  badge set and drops the rest. */
@@ -99,6 +126,16 @@ export const defaultBrand: BrandTokens = {
   // wordmark this is a fallback rather than somebody's actual shop name.
   siteName: 'sparx',
   siteNameIsPlatformDefault: true,
+  // Likewise pre-multibrand: a send that names no platform brand renders the
+  // footer it always rendered. Anything routed through email-worker overrides
+  // it from the tenant's own `platform_brand`.
+  platform: {
+    name: 'sparx',
+    url: 'https://sparx.works',
+    accentChars: 1,
+    billingEmail: 'billing@sparx.email',
+    appUrl: 'https://app.sparx.works',
+  },
   // The sparx default theme's DARK neutrals (the `apex` preset's dark tokens in
   // @sparx/site-themes) — so an unbranded send still renders a real dark theme on a
   // dark-mode client, not the light card on a black screen. Brand hue (`primary`) is
@@ -128,4 +165,37 @@ export function BrandProvider({
 
 export function useBrand(): BrandTokens {
   return React.useContext(BrandContext);
+}
+
+/** Required-shape `platform`, with the pre-multibrand values as the floor — so a
+ *  render with no provider is byte-identical to what it always was. */
+export type PlatformIdentity = NonNullable<BrandTokens['platform']>;
+
+const PLATFORM_FALLBACK: PlatformIdentity = defaultBrand.platform as PlatformIdentity;
+
+export function usePlatform(): PlatformIdentity {
+  return React.useContext(BrandContext).platform ?? PLATFORM_FALLBACK;
+}
+
+/**
+ * The name of the product this email is FROM, for use in copy.
+ *
+ * Platform templates said "your sparx account", "Sign in to sparx", "your sparx
+ * subscription" — 110-odd literals across 29 files, every one of which reached a
+ * Piggles owner naming the wrong company. Copy is the largest surface of the
+ * leak and the least visible, because each sentence reads perfectly.
+ *
+ * Only for the PLATFORM's name. A tenant's own shop name is `brand.siteName`,
+ * and the two are never interchangeable.
+ */
+export function usePlatformName(): string {
+  return usePlatform().name;
+}
+
+/**
+ * The same value outside React — for subject lines, which are computed in
+ * `renderTemplate`'s switch rather than rendered.
+ */
+export function platformNameOf(brand?: Partial<BrandTokens>): string {
+  return brand?.platform?.name ?? PLATFORM_FALLBACK.name;
 }

@@ -6,6 +6,7 @@ import {
   EmailDisplayHeading,
   EmailFinePrint,
   EmailParagraph,
+  usePlatformName,
 } from '../components';
 
 export interface DomainLiveEmailProps {
@@ -21,17 +22,18 @@ export interface DomainLiveEmailProps {
 // + SSL verification and is now serving the site (domain-worker marks status='active').
 // The good-news counterpart to domain-renewal-reminder.
 export function DomainLiveEmail({ domainName, siteUrl, dashboardUrl }: DomainLiveEmailProps) {
+  const platform = usePlatformName();
   const url = siteUrl ?? `https://${domainName}`;
   return (
     <PlatformEmailLayout
       preview={`${domainName} is live`}
       footerLinks={[{ label: 'Domain settings', href: dashboardUrl }]}
-      footerReason={`You're receiving this because ${domainName} is connected through sparx.`}
+      footerReason={`You're receiving this because ${domainName} is connected through ${platform}.`}
     >
       <EmailDisplayHeading>Your domain is live</EmailDisplayHeading>
       <EmailParagraph>
         Good news — {domainName} is connected, secured with HTTPS, and now serving your site. Anyone
-        who visits it lands on your sparx site automatically.
+        who visits it lands on your {platform} site automatically.
       </EmailParagraph>
 
       <EmailAmountHero amount={domainName} status={{ label: 'Live', tone: 'success' }} />

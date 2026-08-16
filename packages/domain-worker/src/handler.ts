@@ -13,11 +13,9 @@ import { prisma } from '@sparx/db';
 import { publishEvent } from '@sparx/events';
 import type { DomainPurchasedPayload, SparxEvent } from '@sparx/events';
 import { appLink, appOrigin } from '@sparx/links/server';
-import { configureDNS, buildSparxDnsRecords, GoDaddyError } from './godaddy.js';
+import { cnameTargetFor, configureDNS, buildSparxDnsRecords, GoDaddyError } from './godaddy.js';
 import { publisher, pubLogger } from './publisher.js';
 import { env } from './env.js';
-
-const CNAME_TARGET = env.SPARX_CNAME_TARGET;
 
 async function verifyCname(host: string, target: string): Promise<boolean> {
   try {
@@ -58,12 +56,24 @@ export async function handleDomainPurchased(
     return;
   }
 
+  // Which brand's ingress this customer is being pointed at. A worker has no
+  // request and therefore no hostname, so the tenant row is the only place the
+  // answer can come from — and it has to be read BEFORE the DNS is written,
+  // because a CNAME to the wrong company's host is what the customer copies
+  // into their registrar.
+  const brand = (
+    await prisma.tenant.findUnique({
+      where: { id: event.tenantId },
+      select: { platformBrand: true },
+    })
+  )?.platformBrand;
+
   // Step 1: retry DNS configuration if the purchase flow's configureDNS failed.
   // Only attempt when status is still pending_ssl (not yet tried by this worker).
   if (!dnsConfigured && row.status === 'pending_ssl') {
     logger.info({ domain }, 'retrying GoDaddy DNS configuration');
     try {
-      await configureDNS(domain, buildSparxDnsRecords());
+      await configureDNS(domain, buildSparxDnsRecords(brand));
       await prisma.domain.update({ where: { host: domain }, data: { status: 'verifying' } });
       logger.info({ domain }, 'DNS configuration retry succeeded');
     } catch (err) {
@@ -80,7 +90,7 @@ export async function handleDomainPurchased(
   }
 
   // Step 2: poll CNAME propagation. If not yet live, throw → 500 → Pub/Sub retry.
-  const cnameOk = await verifyCname(domain, CNAME_TARGET);
+  const cnameOk = await verifyCname(domain, cnameTargetFor(brand));
   if (!cnameOk) {
     // Advance status from pending_ssl → verifying if this is the first check,
     // so future retries skip the DNS config step.
@@ -103,13 +113,11 @@ export async function handleDomainPurchased(
   try {
     const tenant = await prisma.tenant.findUnique({
       where: { id: event.tenantId },
-      // `platformBrand` rides this read: a worker has no request and therefore
-      // no hostname, so the row is the only place the brand can come from — and
-      // without it this link opens the other brand's console.
-      select: { email: true, platformBrand: true },
+      select: { email: true },
     });
     if (tenant?.email) {
-      const brand = tenant.platformBrand;
+      // `brand` is the one read above — without it this link opens the other
+      // brand's console.
       await publishEvent(
         publisher,
         'email.send',

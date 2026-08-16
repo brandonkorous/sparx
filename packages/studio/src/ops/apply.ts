@@ -8,7 +8,8 @@
 import type { EmailDoc, PageDoc, StudioDoc, ThemeDoc } from '../documents/types';
 import { isTreeDoc } from '../documents/types';
 import { applyTreeOp } from './apply-tree';
-import { isThemeOp, isTreeOp, type StudioOp, type ThemeOp } from './types';
+import { applyEmailOp } from './apply-email';
+import { isEmailTreeOp, isThemeOp, isTreeOp, type StudioOp, type ThemeOp } from './types';
 
 export interface Applied {
   doc: StudioDoc;
@@ -21,6 +22,16 @@ export function applyOp(doc: StudioDoc, op: StudioOp): Applied | undefined {
     const result = applyTreeOp(doc.root, op);
     if (!result) return undefined;
     return { doc: { ...doc, root: result.root }, inverse: result.inverse };
+  }
+
+  if (isEmailTreeOp(op)) {
+    if (doc.kind !== 'email') return undefined;
+    const result = applyEmailOp(doc.document.root, op);
+    if (!result) return undefined;
+    return {
+      doc: { ...doc, document: { ...doc.document, root: result.root } },
+      inverse: result.inverse,
+    };
   }
 
   if (isThemeOp(op)) {

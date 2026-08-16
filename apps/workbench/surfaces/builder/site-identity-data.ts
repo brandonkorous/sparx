@@ -7,7 +7,7 @@
 // under the wrong site:
 //
 //   · The tenant has ONE base brand (`/v1/brand`) — the identity every site
-//     inherits by default: tagline, light/dark logo, favicon (plus colours and
+//     inherits by default: tagline, light/dark logo, favicon (plus colors and
 //     fonts, which the visual editor owns, not this surface).
 //   · Each site is a Property. Its customer-facing NAME (`Property.name`) and its
 //     own SOCIAL links live on the property, never on the tenant brand.
@@ -28,39 +28,39 @@ import { useSite, type Site } from '../sites/data';
 /** A social link as the property stores it (settings.socials) and as api-rest
  *  validates it: a platform key/label and a URL. */
 export interface SocialLink {
-  platform: string;
-  url: string;
+    platform: string;
+    url: string;
 }
 
 /** The tenant base brand (`/v1/brand`). Only the identity fields this surface
- *  reads or preserves — colours/fonts/tokens are carried through untouched so a
+ *  reads or preserves — colors/fonts/tokens are carried through untouched so a
  *  non-primary site's theme override survives an identity save. */
 export interface Brand {
-  tenantId: string;
-  businessName: string | null;
-  tagline: string | null;
-  logoLightMediaId: string | null;
-  logoDarkMediaId: string | null;
-  faviconMediaId: string | null;
-  colorPrimary: string | null;
-  colorPrimaryForeground: string | null;
-  colorSecondary: string | null;
-  colorSecondaryForeground: string | null;
-  colorAccent: string | null;
-  colorAccentForeground: string | null;
-  fontHeading: string | null;
-  fontBody: string | null;
-  tokens: unknown;
+    tenantId: string;
+    businessName: string | null;
+    tagline: string | null;
+    logoLightMediaId: string | null;
+    logoDarkMediaId: string | null;
+    faviconMediaId: string | null;
+    colorPrimary: string | null;
+    colorPrimaryForeground: string | null;
+    colorSecondary: string | null;
+    colorSecondaryForeground: string | null;
+    colorAccent: string | null;
+    colorAccentForeground: string | null;
+    fontHeading: string | null;
+    fontBody: string | null;
+    tokens: unknown;
 }
 
 /** The base brand. Tenant-level and ungated (like `/v1/tenant`), read regardless
  *  of which site is active — the override is applied on top of it client-side. */
 export function useBrand() {
-  return useQuery({
-    queryKey: ['brand'],
-    queryFn: () => api.get<Brand>('/v1/brand'),
-    staleTime: 300_000,
-  });
+    return useQuery({
+        queryKey: ['brand'],
+        queryFn: () => api.get<Brand>('/v1/brand'),
+        staleTime: 300_000,
+    });
 }
 
 /** The active site's full property row — carries the name, `isPrimary`, its
@@ -68,7 +68,7 @@ export function useBrand() {
  *  a rename here reaches the toolbar switcher through the same `['properties']`
  *  key. */
 export function useSiteProperty(propertyId: string | undefined) {
-  return useSite(propertyId ?? 'new');
+    return useSite(propertyId ?? 'new');
 }
 
 /** How a customer reaches this business, stored per-site beside `socials` in the
@@ -77,9 +77,9 @@ export function useSiteProperty(propertyId: string | undefined) {
  *  the owner's REAL details the moment they type them here — rather than shipping
  *  an invented number nobody ever replaces. */
 export interface SiteContact {
-  phone: string;
-  email: string;
-  address: string;
+    phone: string;
+    email: string;
+    address: string;
 }
 
 export const EMPTY_CONTACT: SiteContact = { phone: '', email: '', address: '' };
@@ -87,93 +87,93 @@ export const EMPTY_CONTACT: SiteContact = { phone: '', email: '', address: '' };
 /** Read a property's own contact details out of its settings bag. Defensive for
  *  the same reason `socialsOf` is — the column is free-form JSON. */
 export function contactOf(property: Site | undefined): SiteContact {
-  const raw = (property?.settings as { contact?: unknown } | undefined)?.contact;
-  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return EMPTY_CONTACT;
-  const str = (key: keyof SiteContact): string => {
-    const v = (raw as Record<string, unknown>)[key];
-    return typeof v === 'string' ? v : '';
-  };
-  return { phone: str('phone'), email: str('email'), address: str('address') };
+    const raw = (property?.settings as { contact?: unknown } | undefined)?.contact;
+    if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return EMPTY_CONTACT;
+    const str = (key: keyof SiteContact): string => {
+        const v = (raw as Record<string, unknown>)[key];
+        return typeof v === 'string' ? v : '';
+    };
+    return { phone: str('phone'), email: str('email'), address: str('address') };
 }
 
 /** Read a property's own social links out of its settings bag. Defensive — the
  *  column is free-form JSON. */
 export function socialsOf(property: Site | undefined): SocialLink[] {
-  const raw = (property?.settings as { socials?: unknown } | undefined)?.socials;
-  if (!Array.isArray(raw)) return [];
-  return raw
-    .filter(
-      (s): s is SocialLink =>
-        typeof s === 'object' &&
-        s !== null &&
-        typeof (s as SocialLink).platform === 'string' &&
-        typeof (s as SocialLink).url === 'string'
-    )
-    .map((s) => ({ platform: s.platform, url: s.url }));
+    const raw = (property?.settings as { socials?: unknown } | undefined)?.socials;
+    if (!Array.isArray(raw)) return [];
+    return raw
+        .filter(
+            (s): s is SocialLink =>
+                typeof s === 'object' &&
+                s !== null &&
+                typeof (s as SocialLink).platform === 'string' &&
+                typeof (s as SocialLink).url === 'string'
+        )
+        .map((s) => ({ platform: s.platform, url: s.url }));
 }
 
 /* ── Per-site brand override (docs/49 §3) ──────────────────────────────────── */
 
-/** The brand identity fields a site can override, diffed against the base. Colour
+/** The brand identity fields a site can override, diffed against the base. Color
  *  and font fields are here so an existing theme override is preserved when the
  *  effective brand (which already carries it) is diffed back. */
 const OVERRIDE_FIELDS = [
-  'tagline',
-  'logoLightMediaId',
-  'logoDarkMediaId',
-  'faviconMediaId',
-  'colorPrimary',
-  'colorPrimaryForeground',
-  'colorSecondary',
-  'colorSecondaryForeground',
-  'colorAccent',
-  'colorAccentForeground',
-  'fontHeading',
-  'fontBody',
+    'tagline',
+    'logoLightMediaId',
+    'logoDarkMediaId',
+    'faviconMediaId',
+    'colorPrimary',
+    'colorPrimaryForeground',
+    'colorSecondary',
+    'colorSecondaryForeground',
+    'colorAccent',
+    'colorAccentForeground',
+    'fontHeading',
+    'fontBody',
 ] as const;
 
 type OverrideField = (typeof OVERRIDE_FIELDS)[number];
 
 /** The identity slice this surface actually edits — folded onto the effective
- *  brand before diffing so untouched colour/font overrides ride through. */
+ *  brand before diffing so untouched color/font overrides ride through. */
 export interface IdentityFields {
-  tagline: string | null;
-  logoLightMediaId: string | null;
-  logoDarkMediaId: string | null;
-  faviconMediaId: string | null;
+    tagline: string | null;
+    logoLightMediaId: string | null;
+    logoDarkMediaId: string | null;
+    faviconMediaId: string | null;
 }
 
 /** The effective brand a site renders: the base for a primary site, else the base
  *  with the site's stored override applied field-by-field (null/absent inherits).
  *  `logoMediaId` is the legacy single-logo override, mapped to the light logo. */
 export function effectiveBrand(base: Brand, override: Record<string, unknown> | null): Brand {
-  if (!override) return base;
-  const get = (k: OverrideField): string | null => {
-    const v = override[k];
-    return typeof v === 'string' && v !== '' ? v : (base[k] ?? null);
-  };
-  const legacyLight =
-    typeof override.logoLightMediaId === 'string' && override.logoLightMediaId !== ''
-      ? override.logoLightMediaId
-      : typeof override.logoMediaId === 'string' && override.logoMediaId !== ''
-        ? override.logoMediaId
-        : (base.logoLightMediaId ?? null);
-  return {
-    ...base,
-    tagline: get('tagline'),
-    logoLightMediaId: legacyLight,
-    logoDarkMediaId: get('logoDarkMediaId'),
-    faviconMediaId: get('faviconMediaId'),
-    colorPrimary: get('colorPrimary'),
-    colorPrimaryForeground: get('colorPrimaryForeground'),
-    colorSecondary: get('colorSecondary'),
-    colorSecondaryForeground: get('colorSecondaryForeground'),
-    colorAccent: get('colorAccent'),
-    colorAccentForeground: get('colorAccentForeground'),
-    fontHeading: get('fontHeading'),
-    fontBody: get('fontBody'),
-    tokens: override.tokens ?? base.tokens,
-  };
+    if (!override) return base;
+    const get = (k: OverrideField): string | null => {
+        const v = override[k];
+        return typeof v === 'string' && v !== '' ? v : (base[k] ?? null);
+    };
+    const legacyLight =
+        typeof override.logoLightMediaId === 'string' && override.logoLightMediaId !== ''
+            ? override.logoLightMediaId
+            : typeof override.logoMediaId === 'string' && override.logoMediaId !== ''
+                ? override.logoMediaId
+                : (base.logoLightMediaId ?? null);
+    return {
+        ...base,
+        tagline: get('tagline'),
+        logoLightMediaId: legacyLight,
+        logoDarkMediaId: get('logoDarkMediaId'),
+        faviconMediaId: get('faviconMediaId'),
+        colorPrimary: get('colorPrimary'),
+        colorPrimaryForeground: get('colorPrimaryForeground'),
+        colorSecondary: get('colorSecondary'),
+        colorSecondaryForeground: get('colorSecondaryForeground'),
+        colorAccent: get('colorAccent'),
+        colorAccentForeground: get('colorAccentForeground'),
+        fontHeading: get('fontHeading'),
+        fontBody: get('fontBody'),
+        tokens: override.tokens ?? base.tokens,
+    };
 }
 
 /**
@@ -188,32 +188,32 @@ export function effectiveBrand(base: Brand, override: Record<string, unknown> | 
  * differs, which clears the override to full inheritance.
  */
 export function computeOverride(
-  current: Brand,
-  base: Brand,
-  existing: Record<string, unknown> | null
+    current: Brand,
+    base: Brand,
+    existing: Record<string, unknown> | null
 ): Record<string, unknown> | null {
-  // Start from everything the stored override held EXCEPT the fields we manage,
-  // so unrelated per-site settings survive this write.
-  const managed = new Set<string>([...OVERRIDE_FIELDS, 'tokens', 'logoMediaId']);
-  const override: Record<string, unknown> = {};
-  if (existing) {
-    for (const [key, value] of Object.entries(existing)) {
-      if (!managed.has(key) && value != null && value !== '') override[key] = value;
+    // Start from everything the stored override held EXCEPT the fields we manage,
+    // so unrelated per-site settings survive this write.
+    const managed = new Set<string>([...OVERRIDE_FIELDS, 'tokens', 'logoMediaId']);
+    const override: Record<string, unknown> = {};
+    if (existing) {
+        for (const [key, value] of Object.entries(existing)) {
+            if (!managed.has(key) && value != null && value !== '') override[key] = value;
+        }
     }
-  }
 
-  for (const field of OVERRIDE_FIELDS) {
-    const cur = current[field] ?? null;
-    const baseVal = base[field] ?? null;
-    if (cur !== baseVal && cur != null) override[field] = cur;
-  }
-  const curTokens = current.tokens ?? null;
-  const baseTokens = base.tokens ?? null;
-  if (JSON.stringify(curTokens) !== JSON.stringify(baseTokens) && curTokens != null) {
-    override.tokens = curTokens;
-  }
+    for (const field of OVERRIDE_FIELDS) {
+        const cur = current[field] ?? null;
+        const baseVal = base[field] ?? null;
+        if (cur !== baseVal && cur != null) override[field] = cur;
+    }
+    const curTokens = current.tokens ?? null;
+    const baseTokens = base.tokens ?? null;
+    if (JSON.stringify(curTokens) !== JSON.stringify(baseTokens) && curTokens != null) {
+        override.tokens = curTokens;
+    }
 
-  return Object.keys(override).length > 0 ? override : null;
+    return Object.keys(override).length > 0 ? override : null;
 }
 
 /* ── The save ──────────────────────────────────────────────────────────────── */
@@ -221,14 +221,14 @@ export function computeOverride(
 /** Everything one save needs. `effective` and `base` drive the override diff;
  *  `existingOverride` preserves unrelated per-site settings. */
 export interface SaveIdentityInput {
-  propertyId: string;
-  name: string;
-  socials: SocialLink[];
-  contact: SiteContact;
-  identity: IdentityFields;
-  effective: Brand;
-  base: Brand;
-  existingOverride: Record<string, unknown> | null;
+    propertyId: string;
+    name: string;
+    socials: SocialLink[];
+    contact: SiteContact;
+    identity: IdentityFields;
+    effective: Brand;
+    base: Brand;
+    existingOverride: Record<string, unknown> | null;
 }
 
 /**
@@ -243,53 +243,53 @@ export interface SaveIdentityInput {
  * appearing on another. Every site now stores its own identity on its own row.
  */
 export function useSaveIdentity() {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: async (input: SaveIdentityInput) => {
-      const cleanSocials = input.socials
-        .map((s) => ({ platform: s.platform.trim(), url: s.url.trim() }))
-        .filter((s) => s.platform && s.url);
-      // Sent whole (all three keys, trimmed), so clearing a field really clears it.
-      // api-rest merges the block key-by-key, so a caller that omits one keeps it.
-      const cleanContact = {
-        phone: input.contact.phone.trim(),
-        email: input.contact.email.trim(),
-        address: input.contact.address.trim(),
-      };
-      const trimmedName = input.name.trim();
-      const name = trimmedName === '' ? undefined : trimmedName;
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: async (input: SaveIdentityInput) => {
+            const cleanSocials = input.socials
+                .map((s) => ({ platform: s.platform.trim(), url: s.url.trim() }))
+                .filter((s) => s.platform && s.url);
+            // Sent whole (all three keys, trimmed), so clearing a field really clears it.
+            // api-rest merges the block key-by-key, so a caller that omits one keeps it.
+            const cleanContact = {
+                phone: input.contact.phone.trim(),
+                email: input.contact.email.trim(),
+                address: input.contact.address.trim(),
+            };
+            const trimmedName = input.name.trim();
+            const name = trimmedName === '' ? undefined : trimmedName;
 
-      const trimmedTagline = input.identity.tagline?.trim() ?? '';
-      const identityBrand = {
-        tagline: trimmedTagline === '' ? null : trimmedTagline,
-        logoLightMediaId: input.identity.logoLightMediaId,
-        logoDarkMediaId: input.identity.logoDarkMediaId,
-        faviconMediaId: input.identity.faviconMediaId,
-      };
+            const trimmedTagline = input.identity.tagline?.trim() ?? '';
+            const identityBrand = {
+                tagline: trimmedTagline === '' ? null : trimmedTagline,
+                logoLightMediaId: input.identity.logoLightMediaId,
+                logoDarkMediaId: input.identity.logoDarkMediaId,
+                faviconMediaId: input.identity.faviconMediaId,
+            };
 
-      const current: Brand = { ...input.effective, ...identityBrand };
-      const brandOverride = computeOverride(current, input.base, input.existingOverride);
-      await api.patch(`/v1/properties/${input.propertyId}`, {
-        name,
-        socials: cleanSocials,
-        contact: cleanContact,
-        brandOverride,
-      });
-    },
-    onSuccess: (_data, input) => {
-      void queryClient.invalidateQueries({ queryKey: ['brand'] });
-      void queryClient.invalidateQueries({ queryKey: ['properties'] });
-      void queryClient.invalidateQueries({ queryKey: ['properties', input.propertyId] });
-    },
-  });
+            const current: Brand = { ...input.effective, ...identityBrand };
+            const brandOverride = computeOverride(current, input.base, input.existingOverride);
+            await api.patch(`/v1/properties/${input.propertyId}`, {
+                name,
+                socials: cleanSocials,
+                contact: cleanContact,
+                brandOverride,
+            });
+        },
+        onSuccess: (_data, input) => {
+            void queryClient.invalidateQueries({ queryKey: ['brand'] });
+            void queryClient.invalidateQueries({ queryKey: ['properties'] });
+            void queryClient.invalidateQueries({ queryKey: ['properties', input.propertyId] });
+        },
+    });
 }
 
 /** api-rest returns a plain-language sentence for a 4xx (a name too long, a bad
  *  URL). Show it verbatim; fall back to the caller's wording for a 5xx that has
  *  no such sentence. */
 export function saveErrorMessage(error: unknown, fallback: string): string {
-  if (error instanceof ApiError && error.status >= 400 && error.status < 500) {
-    return error.message;
-  }
-  return fallback;
+    if (error instanceof ApiError && error.status >= 400 && error.status < 500) {
+        return error.message;
+    }
+    return fallback;
 }

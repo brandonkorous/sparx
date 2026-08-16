@@ -443,7 +443,12 @@ const domainsRoutes: FastifyPluginAsync = async (app) => {
 
     // 4. GoDaddy: DNS (DKIM is Mailgun's — added at Mailgun domain verification,
     //    not self-signed here).
-    const dnsRecords = buildSparxDnsRecords();
+    //
+    // The tenant's OWN zone, not a constant: these two CNAMEs are what the
+    // customer's domain will point at, and handing one brand's customer another
+    // brand's ingress hostname is the same class of leak as an email signed by
+    // the wrong company — it just happens to resolve.
+    const dnsRecords = buildSparxDnsRecords(await tenantZone(auth.tenantId));
 
     let dnsConfigured = false;
     try {

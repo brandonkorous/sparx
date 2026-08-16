@@ -10,71 +10,71 @@ import emails from './emails.json' with { type: 'json' };
 import assets from './assets.json' with { type: 'json' };
 
 const blueprint = {
-  key: 'sparx-catering-events',
-  version: '1.3.0',
-  name: 'sparx — Catering (Events & Weddings)',
-  summary:
-    'An elegant events-and-wedding catering site — a warm-cream palette, a deep saffron primary and a sage accent under a Fraunces serif display, with seasonal food photography carrying the page. Installs a working booking flow: tastings and consultations you book online, three event coordinators you book by name with their own hours, and a tasting-deposit policy credited to your event. Ships as "Saffron & Sage Catering", a from-scratch seasonal kitchen for weddings and events.',
-  vertical: 'services',
-  preview: 'media/preview.png',
-  requiresModules: ['builder', 'scheduling', 'crm', 'email'],
+    key: 'sparx-catering-events',
+    version: '1.3.0',
+    name: 'sparx — Catering (Events & Weddings)',
+    summary:
+        'An elegant events-and-wedding catering site — a warm-cream palette, a deep saffron primary and a sage accent under a Fraunces serif display, with seasonal food photography carrying the page. Installs a working booking flow: tastings and consultations you book online, three event coordinators you book by name with their own hours, and a tasting-deposit policy credited to your event. Ships as "Saffron & Sage Catering", a from-scratch seasonal kitchen for weddings and events.',
+    vertical: 'services',
+    preview: 'media/preview.png',
+    requiresModules: ['builder', 'scheduling', 'crm', 'email'],
 
-  // Identity only (business name + tagline + fonts + the theme's hex colours). The look
-  // rides site.theme + the theme decl below; the installing tenant rebrands the name.
-  brand: {
-    businessName: 'Saffron & Sage Catering',
-    tagline: 'Seasonal food for occasions that matter.',
-    colors: {
-      primary: '#c77618',
-      primaryForeground: '#110904',
-      accent: '#6b835f',
-      secondary: '#44342e',
-    },
-    fonts: {
-      heading: 'Fraunces',
-      body: 'Inter',
-    },
-  },
-
-  // The provisioned SiteTheme the installer creates + applies — an editable saved theme
-  // over a foundation base + the template's brand snapshot. The LIVE storefront look is
-  // site.theme (the flat bespoke tokens), written last.
-  theme: {
-    name: 'saffronsage',
-    basePresetKey: 'apex',
-    presentation: {
-      v: 2,
-      containerWidth: '1152px',
-    },
+    // Identity only (business name + tagline + fonts + the theme's hex colors). The look
+    // rides site.theme + the theme decl below; the installing tenant rebrands the name.
     brand: {
-      colorPrimary: '#c77618',
-      colorAccent: '#6b835f',
-      colorSecondary: '#44342e',
-      fontHeading: 'Fraunces',
-      fontBody: 'Inter',
-      tokens: {},
+        businessName: 'Saffron & Sage Catering',
+        tagline: 'Seasonal food for occasions that matter.',
+        colors: {
+            primary: '#c77618',
+            primaryForeground: '#110904',
+            accent: '#6b835f',
+            secondary: '#44342e',
+        },
+        fonts: {
+            heading: 'Fraunces',
+            body: 'Inter',
+        },
     },
-    apply: true,
-  },
 
-  assets,
-  contentTypes: [],
+    // The provisioned SiteTheme the installer creates + applies — an editable saved theme
+    // over a foundation base + the template's brand snapshot. The LIVE storefront look is
+    // site.theme (the flat bespoke tokens), written last.
+    theme: {
+        name: 'saffronsage',
+        basePresetKey: 'apex',
+        presentation: {
+            v: 2,
+            containerWidth: '1152px',
+        },
+        brand: {
+            colorPrimary: '#c77618',
+            colorAccent: '#6b835f',
+            colorSecondary: '#44342e',
+            fontHeading: 'Fraunces',
+            fontBody: 'Inter',
+            tokens: {},
+        },
+        apply: true,
+    },
 
-  // The booking spine — policies, bookable resources (staff/rooms/stations) with weekly
-  // hours, and the service menu. The installer's scheduling slice replays it into a live
-  // booking flow that the site's /book page renders.
-  scheduling,
+    assets,
+    contentTypes: [],
 
-  // Brand-voiced MARKETING starters (a welcome + a come-back), installed as DRAFTS the
-  // tenant switches on. The transactional booking sends — confirmation, reminder,
-  // reschedule, cancellation, waitlist — are platform KEYED defaults, so they are covered
-  // on email-module activation and are deliberately NOT duplicated here.
-  emails,
-  sequences: [],
+    // The booking spine — policies, bookable resources (staff/rooms/stations) with weekly
+    // hours, and the service menu. The installer's scheduling slice replays it into a live
+    // booking flow that the site's /book page renders.
+    scheduling,
 
-  // The composed distinct site (frame + Home + Book + About + Contact) in the bespoke
-  // theme, fully stamped.
-  site,
+    // Brand-voiced MARKETING starters (a welcome + a come-back), installed as DRAFTS the
+    // tenant switches on. The transactional booking sends — confirmation, reminder,
+    // reschedule, cancellation, waitlist — are platform KEYED defaults, so they are covered
+    // on email-module activation and are deliberately NOT duplicated here.
+    emails,
+    sequences: [],
+
+    // The composed distinct site (frame + Home + Book + About + Contact) in the bespoke
+    // theme, fully stamped.
+    site,
 };
 
 export default blueprint;

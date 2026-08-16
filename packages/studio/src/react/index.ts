@@ -9,7 +9,15 @@
 // `@source` line for it or every control renders unstyled while typecheck, lint
 // and the build all pass.
 
-export type { CatalogScope, ClassDenial, ClassVerdict, PickedAsset, StudioHost } from './host';
+export type {
+  CatalogScope,
+  ClassDenial,
+  ClassVerdict,
+  EmailPreviewHost,
+  InspectorContext,
+  PickedAsset,
+  StudioHost,
+} from './host';
 
 export {
   DocumentProvider,
@@ -67,7 +75,17 @@ export {
   type ControlSection,
 } from './inspector/class-groups';
 
+export { EmailCanvas, EMAIL_DRAG_TYPE } from './email/canvas';
+export { EmailNavigator } from './email/navigator';
+export { EmailPalette } from './email/palette';
+export { EmailInspector } from './email/inspector/inspector';
+export { emailLayerRows, emailRowLabel, type EmailLayerRow } from './email/layers';
+export { resolveMergeTags } from './email/tokens';
+export { emailStylesheet } from './email/style';
+export { useEmailShortcuts } from './email/shortcuts';
+
 export { TreeBuilder } from './builders/tree-builder';
+export { EmailBuilder } from './builders/email-builder';
 export { ThemeBuilder } from './builders/theme-builder';
 export { ThemePreview } from './builders/theme-preview';
 export { canRemove, useBuilderShortcuts } from './builders/shortcuts';

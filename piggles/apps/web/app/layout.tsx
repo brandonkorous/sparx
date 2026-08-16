@@ -3,6 +3,7 @@ import { Fredoka, Inter } from 'next/font/google';
 import { PRODUCT } from '@piggles/config';
 import { SiteHeader } from '@/components/marketing/site-header';
 import { SiteFooter } from '@/components/marketing/site-footer';
+import { THEME_SCRIPT } from '@/lib/theme';
 import './globals.css';
 
 // Self-hosted at build time by next/font — no request leaves the page, so there
@@ -46,7 +47,25 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     // `light` is the BARE silicaui theme name, and it is the Piggles brand here
     // because this app never loads @sparx/brand/theme.css. See globals.css.
-    <html lang="en" data-theme="light" className={`${inter.variable} ${fredoka.variable}`}>
+    //
+    // It is also the SSR DEFAULT, not the answer: THEME_SCRIPT overwrites the
+    // attribute before the first paint from the visitor's choice, or from their
+    // operating system if they have not made one. `suppressHydrationWarning` is
+    // required and is scoped to this element — by the time React hydrates, the
+    // attribute legitimately differs from the markup it was sent, and that is
+    // the whole point rather than a bug to report.
+    <html
+      lang="en"
+      data-theme="light"
+      suppressHydrationWarning
+      className={`${inter.variable} ${fredoka.variable}`}
+    >
+      <head>
+        {/* In <head> and blocking, so it lands before anything is painted. An
+            effect, a provider or a server-read cookie are all later than the
+            first frame, which is the one frame this exists to fix. */}
+        <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
+      </head>
       <body>
         <SiteHeader />
         <main>{children}</main>

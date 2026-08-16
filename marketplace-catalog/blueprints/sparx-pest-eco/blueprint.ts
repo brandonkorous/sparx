@@ -10,71 +10,71 @@ import emails from './emails.json' with { type: 'json' };
 import assets from './assets.json' with { type: 'json' };
 
 const blueprint = {
-  key: 'sparx-pest-eco',
-  version: '1.3.0',
-  name: 'sparx — Pest Control (Eco)',
-  summary:
-    'An eco, botanical pest-control site — a natural sage-and-clay palette on a soft cream ground, refined type and calm, natural photography. Installs a working booking flow: real inspections and treatments (free inspection, botanical treatment, natural rodent control, IPM assessment, ant and mosquito treatments, recurring-plan setup), three technicians you book by name with their own hours, and a low-toxicity promise safe for kids and pets. Ships as "GreenShield Pest Solutions".',
-  vertical: 'services',
-  preview: 'media/preview.png',
-  requiresModules: ['builder', 'scheduling', 'crm', 'email'],
+    key: 'sparx-pest-eco',
+    version: '1.3.0',
+    name: 'sparx — Pest Control (Eco)',
+    summary:
+        'An eco, botanical pest-control site — a natural sage-and-clay palette on a soft cream ground, refined type and calm, natural photography. Installs a working booking flow: real inspections and treatments (free inspection, botanical treatment, natural rodent control, IPM assessment, ant and mosquito treatments, recurring-plan setup), three technicians you book by name with their own hours, and a low-toxicity promise safe for kids and pets. Ships as "GreenShield Pest Solutions".',
+    vertical: 'services',
+    preview: 'media/preview.png',
+    requiresModules: ['builder', 'scheduling', 'crm', 'email'],
 
-  // Identity only (business name + tagline + fonts + the theme's hex colours). The look
-  // rides site.theme + the theme decl below; the installing tenant rebrands the name.
-  brand: {
-    businessName: 'GreenShield Pest Solutions',
-    tagline: 'Gone for good, gently.',
-    colors: {
-      primary: '#236e44',
-      primaryForeground: '#f3fbf5',
-      accent: '#ac7046',
-      secondary: '#2c3d31',
-    },
-    fonts: {
-      heading: 'Fraunces',
-      body: 'Inter',
-    },
-  },
-
-  // The provisioned SiteTheme the installer creates + applies — an editable saved theme
-  // over a foundation base + the template's brand snapshot. The LIVE storefront look is
-  // site.theme (the flat bespoke tokens), written last.
-  theme: {
-    name: 'greenshield',
-    basePresetKey: 'apex',
-    presentation: {
-      v: 2,
-      containerWidth: '1152px',
-    },
+    // Identity only (business name + tagline + fonts + the theme's hex colors). The look
+    // rides site.theme + the theme decl below; the installing tenant rebrands the name.
     brand: {
-      colorPrimary: '#236e44',
-      colorAccent: '#ac7046',
-      colorSecondary: '#2c3d31',
-      fontHeading: 'Fraunces',
-      fontBody: 'Inter',
-      tokens: {},
+        businessName: 'GreenShield Pest Solutions',
+        tagline: 'Gone for good, gently.',
+        colors: {
+            primary: '#236e44',
+            primaryForeground: '#f3fbf5',
+            accent: '#ac7046',
+            secondary: '#2c3d31',
+        },
+        fonts: {
+            heading: 'Fraunces',
+            body: 'Inter',
+        },
     },
-    apply: true,
-  },
 
-  assets,
-  contentTypes: [],
+    // The provisioned SiteTheme the installer creates + applies — an editable saved theme
+    // over a foundation base + the template's brand snapshot. The LIVE storefront look is
+    // site.theme (the flat bespoke tokens), written last.
+    theme: {
+        name: 'greenshield',
+        basePresetKey: 'apex',
+        presentation: {
+            v: 2,
+            containerWidth: '1152px',
+        },
+        brand: {
+            colorPrimary: '#236e44',
+            colorAccent: '#ac7046',
+            colorSecondary: '#2c3d31',
+            fontHeading: 'Fraunces',
+            fontBody: 'Inter',
+            tokens: {},
+        },
+        apply: true,
+    },
 
-  // The booking spine — policies, bookable resources (staff/rooms/stations) with weekly
-  // hours, and the service menu. The installer's scheduling slice replays it into a live
-  // booking flow that the site's /book page renders.
-  scheduling,
+    assets,
+    contentTypes: [],
 
-  // Brand-voiced MARKETING starters (a welcome + a come-back), installed as DRAFTS the
-  // tenant switches on. The transactional booking sends — confirmation, reminder,
-  // reschedule, cancellation, waitlist — are platform KEYED defaults, so they are covered
-  // on email-module activation and are deliberately NOT duplicated here.
-  emails,
-  sequences: [],
+    // The booking spine — policies, bookable resources (staff/rooms/stations) with weekly
+    // hours, and the service menu. The installer's scheduling slice replays it into a live
+    // booking flow that the site's /book page renders.
+    scheduling,
 
-  // The composed distinct site (frame + Home + Book + About + Contact) in the bespoke
-  // theme, fully stamped.
-  site,
+    // Brand-voiced MARKETING starters (a welcome + a come-back), installed as DRAFTS the
+    // tenant switches on. The transactional booking sends — confirmation, reminder,
+    // reschedule, cancellation, waitlist — are platform KEYED defaults, so they are covered
+    // on email-module activation and are deliberately NOT duplicated here.
+    emails,
+    sequences: [],
+
+    // The composed distinct site (frame + Home + Book + About + Contact) in the bespoke
+    // theme, fully stamped.
+    site,
 };
 
 export default blueprint;

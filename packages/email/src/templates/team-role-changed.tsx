@@ -5,6 +5,7 @@ import {
   EmailAmountHero,
   EmailDisplayHeading,
   EmailParagraph,
+  usePlatformName,
 } from '../components';
 
 export interface TeamRoleChangedEmailProps {
@@ -26,16 +27,17 @@ export function TeamRoleChangedEmail({
   newRole,
   dashboardUrl,
 }: TeamRoleChangedEmailProps) {
+  const platform = usePlatformName();
   return (
     <PlatformEmailLayout
       preview={`Your role in ${orgName} is now ${newRole}`}
       footerLinks={[{ label: 'Open workspace', href: dashboardUrl }]}
-      footerReason={`You're receiving this because your role in ${orgName} on sparx changed.`}
+      footerReason={`You're receiving this because your role in ${orgName} on ${platform} changed.`}
     >
       <EmailDisplayHeading>Your role changed</EmailDisplayHeading>
       <EmailParagraph>
-        {memberName ? `Hi ${memberName}, ` : ''}your role in <strong>{orgName}</strong> on sparx has
-        been updated.
+        {memberName ? `Hi ${memberName}, ` : ''}your role in <strong>{orgName}</strong> on{' '}
+        {platform} has been updated.
       </EmailParagraph>
 
       <EmailAmountHero

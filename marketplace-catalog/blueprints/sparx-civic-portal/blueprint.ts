@@ -14,69 +14,69 @@ import assets from './assets.json' with { type: 'json' };
 import emails from './emails.json' with { type: 'json' };
 
 const blueprint = {
-  key: 'sparx-civic-portal',
-  version: '1.4.0',
-  name: 'sparx — Civic Portal',
-  summary:
-    'An accessibility-first portal for a city or public agency — a clear welcome band, a task-first services directory, a state-aware public-notices and alerts channel, a live news feed, and a light civic shop, in a white-ground deep-federal-blue theme tuned for AAA contrast. Modelled on the government/public-service archetype; shipped as the City of Rivermark. Ships a light shop (a city publication, two passes) to demonstrate content + commerce together.',
-  vertical: 'content',
-  preview: 'media/preview.png',
-  requiresModules: ['builder', 'commerce', 'cms', 'crm', 'email'],
+    key: 'sparx-civic-portal',
+    version: '1.4.0',
+    name: 'sparx — Civic Portal',
+    summary:
+        'An accessibility-first portal for a city or public agency — a clear welcome band, a task-first services directory, a state-aware public-notices and alerts channel, a live news feed, and a light civic shop, in a white-ground deep-federal-blue theme tuned for AAA contrast. Modelled on the government/public-service archetype; shipped as the City of Rivermark. Ships a light shop (a city publication, two passes) to demonstrate content + commerce together.',
+    vertical: 'content',
+    preview: 'media/preview.png',
+    requiresModules: ['builder', 'commerce', 'cms', 'crm', 'email'],
 
-  // Identity only (business name + tagline + fonts + the theme's hex colours). The look
-  // itself rides site.theme + the theme decl below; the installing tenant rebrands the name.
-  brand: {
-    businessName: 'City of Rivermark',
-    tagline: 'Your city, online.',
-    colors: {
-      primary: '#0c3164',
-      primaryForeground: '#f4f9ff',
-      accent: '#bb061e',
-      secondary: '#3d556d',
-    },
-    fonts: {
-      heading: 'Archivo',
-      body: 'Work Sans',
-    },
-  },
-
-  // The provisioned SiteTheme the installer creates + applies — the bespoke template
-  // look as a tenant-editable saved theme (base preset = the template's own theme key,
-  // plus its brand snapshot).
-  theme: {
-    name: 'civic-portal',
-    basePresetKey: 'civic-portal',
-    presentation: {
-      v: 2,
-      containerWidth: '1152px',
-    },
+    // Identity only (business name + tagline + fonts + the theme's hex colors). The look
+    // itself rides site.theme + the theme decl below; the installing tenant rebrands the name.
     brand: {
-      colorPrimary: '#0c3164',
-      colorAccent: '#bb061e',
-      colorSecondary: '#3d556d',
-      fontHeading: 'Archivo',
-      fontBody: 'Work Sans',
-      tokens: {},
+        businessName: 'City of Rivermark',
+        tagline: 'Your city, online.',
+        colors: {
+            primary: '#0c3164',
+            primaryForeground: '#f4f9ff',
+            accent: '#bb061e',
+            secondary: '#3d556d',
+        },
+        fonts: {
+            heading: 'Archivo',
+            body: 'Work Sans',
+        },
     },
-    apply: true,
-  },
 
-  assets,
-  contentTypes: [],
-  authors,
-  content,
-  commerce,
+    // The provisioned SiteTheme the installer creates + applies — the bespoke template
+    // look as a tenant-editable saved theme (base preset = the template's own theme key,
+    // plus its brand snapshot).
+    theme: {
+        name: 'civic-portal',
+        basePresetKey: 'civic-portal',
+        presentation: {
+            v: 2,
+            containerWidth: '1152px',
+        },
+        brand: {
+            colorPrimary: '#0c3164',
+            colorAccent: '#bb061e',
+            colorSecondary: '#3d556d',
+            fontHeading: 'Archivo',
+            fontBody: 'Work Sans',
+            tokens: {},
+        },
+        apply: true,
+    },
 
-  // A shop's brand-voiced MARKETING starters (a welcome + a win-back), tokenized so a fork
-  // re-themes to the tenant and installed as DRAFTS — the platform's keyed transactional
-  // defaults (order/shipping/dunning) are separate and never duplicated here. Content
-  // templates ship an empty set.
-  emails,
-  sequences: [],
+    assets,
+    contentTypes: [],
+    authors,
+    content,
+    commerce,
 
-  // The composed distinct site (frame + a template-specific home + standard commerce/
-  // cms/about/contact pages + the /journal index), in the bespoke theme, fully stamped.
-  site,
+    // A shop's brand-voiced MARKETING starters (a welcome + a win-back), tokenized so a fork
+    // re-themes to the tenant and installed as DRAFTS — the platform's keyed transactional
+    // defaults (order/shipping/dunning) are separate and never duplicated here. Content
+    // templates ship an empty set.
+    emails,
+    sequences: [],
+
+    // The composed distinct site (frame + a template-specific home + standard commerce/
+    // cms/about/contact pages + the /journal index), in the bespoke theme, fully stamped.
+    site,
 };
 
 export default blueprint;

@@ -13,65 +13,65 @@ import assets from './assets.json' with { type: 'json' };
 import emails from './emails.json' with { type: 'json' };
 
 const blueprint = {
-  key: 'sparx-portfolio-studio',
-  version: '1.2.0',
-  name: 'sparx — Studio / Architect Portfolio',
-  summary:
-    'A hire-me portfolio for an architect & spatial designer: a statement hero over a large-format project image, a structured grid of project tiles, a sober practice band, and project sheets that open with the facts — Year, Role, Location, Scope — then tell the site, the idea and the making. Range shown with precision. Dressed in a bone-and-concrete theme carried by one burnt-amber signal and a cool slate for the facts. Shipped as Nadia Rehman.',
-  vertical: 'content',
-  preview: 'media/preview.png',
-  requiresModules: ['builder', 'cms', 'email'],
+    key: 'sparx-portfolio-studio',
+    version: '1.2.0',
+    name: 'sparx — Studio / Architect Portfolio',
+    summary:
+        'A hire-me portfolio for an architect & spatial designer: a statement hero over a large-format project image, a structured grid of project tiles, a sober practice band, and project sheets that open with the facts — Year, Role, Location, Scope — then tell the site, the idea and the making. Range shown with precision. Dressed in a bone-and-concrete theme carried by one burnt-amber signal and a cool slate for the facts. Shipped as Nadia Rehman.',
+    vertical: 'content',
+    preview: 'media/preview.png',
+    requiresModules: ['builder', 'cms', 'email'],
 
-  // Identity only (person's name + tagline + fonts + the theme's hex colours). The look
-  // itself rides site.theme + the theme decl below; the installing tenant rebrands the name.
-  brand: {
-    businessName: 'Nadia Rehman',
-    tagline: 'Buildings and spaces that know why they exist.',
-    colors: {
-      primary: '#a05000',
-      primaryForeground: '#fef7f2',
-      accent: '#3d627c',
-      secondary: '#4f4a3e',
-    },
-    fonts: {
-      heading: 'Archivo',
-      body: 'Inter',
-    },
-  },
-
-  // The provisioned SiteTheme the installer creates + applies — the bespoke portfolio look
-  // as a tenant-editable saved theme (base preset = the template's own theme key, plus its
-  // brand snapshot).
-  theme: {
-    name: 'portfolio-studio',
-    basePresetKey: 'portfolio-studio',
-    presentation: {
-      v: 2,
-      containerWidth: '1152px',
-    },
+    // Identity only (person's name + tagline + fonts + the theme's hex colors). The look
+    // itself rides site.theme + the theme decl below; the installing tenant rebrands the name.
     brand: {
-      colorPrimary: '#a05000',
-      colorAccent: '#3d627c',
-      colorSecondary: '#4f4a3e',
-      fontHeading: 'Archivo',
-      fontBody: 'Inter',
-      tokens: {},
+        businessName: 'Nadia Rehman',
+        tagline: 'Buildings and spaces that know why they exist.',
+        colors: {
+            primary: '#a05000',
+            primaryForeground: '#fef7f2',
+            accent: '#3d627c',
+            secondary: '#4f4a3e',
+        },
+        fonts: {
+            heading: 'Archivo',
+            body: 'Inter',
+        },
     },
-    apply: true,
-  },
 
-  assets,
-  contentTypes: [],
-  authors,
-  content,
+    // The provisioned SiteTheme the installer creates + applies — the bespoke portfolio look
+    // as a tenant-editable saved theme (base preset = the template's own theme key, plus its
+    // brand snapshot).
+    theme: {
+        name: 'portfolio-studio',
+        basePresetKey: 'portfolio-studio',
+        presentation: {
+            v: 2,
+            containerWidth: '1152px',
+        },
+        brand: {
+            colorPrimary: '#a05000',
+            colorAccent: '#3d627c',
+            colorSecondary: '#4f4a3e',
+            fontHeading: 'Archivo',
+            fontBody: 'Inter',
+            tokens: {},
+        },
+        apply: true,
+    },
 
-  // A portfolio has no commerce. The projects are CMS `blog_post` records (see content).
-  emails,
-  sequences: [],
+    assets,
+    contentTypes: [],
+    authors,
+    content,
 
-  // The composed distinct site (frame + home + a live /work index + about/contact + the
-  // /blog/:slug case-study template), in the bespoke theme, fully stamped.
-  site,
+    // A portfolio has no commerce. The projects are CMS `blog_post` records (see content).
+    emails,
+    sequences: [],
+
+    // The composed distinct site (frame + home + a live /work index + about/contact + the
+    // /blog/:slug case-study template), in the bespoke theme, fully stamped.
+    site,
 };
 
 export default blueprint;

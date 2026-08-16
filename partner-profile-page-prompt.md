@@ -191,7 +191,7 @@ These are from `CLAUDE.md` and have caused rejected work on this exact page fami
   site: `badge-warning badge-soft` = 1.66:1, `badge-module-crm badge-soft` = 2.15:1 — silica
   paints the label in the raw accent over a 15% tint of the same accent. See
   `docs/silicaui/02-core-asks.md` §2. **Use `variant="solid"`** (the `--color-<c>` /
-  `--color-<c>-content` pair measures 4.6:1–8:1) and do not paint a text colour on top.
+  `--color-<c>-content` pair measures 4.6:1–8:1) and do not paint a text color on top.
 - **Module hues are fills, not inks.** `text-module-crm` on white measures 2.4:1. To show a
   hue at size, fill a shape and write in its paired `-content`. `bg-*` does **not** bring
   its `-content` along — always write both.

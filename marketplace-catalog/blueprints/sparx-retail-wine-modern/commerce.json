@@ -1,458 +1,560 @@
 {
-  "categories": [
-    {
-      "handle": "reds",
-      "name": "Reds",
-      "description": "Easy, juicy and full-bodied reds.",
-      "featured": true
-    },
-    {
-      "handle": "whites-rose",
-      "name": "Whites & Rosé",
-      "description": "Crisp whites and dry, pale rosé.",
-      "featured": true
-    },
-    {
-      "handle": "bubbles",
-      "name": "Bubbles",
-      "description": "Pét-nat, sparkling and non-alc fizz.",
-      "featured": true
-    },
-    {
-      "handle": "cases",
-      "name": "Mixed cases",
-      "description": "Ready-made cases and gift sets.",
-      "featured": true
-    },
-    {
-      "handle": "club",
-      "name": "Wine club",
-      "description": "Hand-picked bottles, every month.",
-      "featured": true
-    }
-  ],
-  "collections": [
-    {
-      "handle": "new-this-month",
-      "name": "New this month",
-      "description": "The latest bottles on the shelf.",
-      "type": "manual",
-      "featured": true,
-      "productHandles": [
-        "big-swing-bold-red",
-        "poolside-crisp-white",
-        "sunday-rose",
-        "confetti-petnat",
-        "off-duty-non-alc-fizz",
-        "wine-club"
-      ]
-    },
-    {
-      "handle": "crowd-pleasers",
-      "name": "Crowd pleasers",
-      "description": "The bottles that never miss.",
-      "type": "manual",
-      "featured": true,
-      "productHandles": [
-        "weeknight-house-red",
-        "big-swing-bold-red",
-        "sunday-rose",
-        "wine-club",
-        "dinner-party-six"
-      ]
-    },
-    {
-      "handle": "chill-and-pour",
-      "name": "Chill & pour",
-      "description": "Everything that loves a proper cold.",
-      "type": "manual",
-      "featured": true,
-      "productHandles": ["poolside-crisp-white", "sunday-rose", "confetti-petnat"]
-    },
-    {
-      "handle": "party-starters",
-      "name": "Party starters",
-      "description": "Bubbles and bottles for a full table.",
-      "type": "manual",
-      "featured": false,
-      "productHandles": [
-        "confetti-petnat",
-        "off-duty-non-alc-fizz",
-        "dinner-party-six",
-        "housewarming-gift-set"
-      ]
-    },
-    {
-      "handle": "under-20",
-      "name": "Under $20",
-      "description": "Great bottles that go easy on the wallet.",
-      "type": "manual",
-      "featured": false,
-      "productHandles": [
-        "weeknight-house-red",
-        "poolside-crisp-white",
-        "sunday-rose",
-        "off-duty-non-alc-fizz"
-      ]
-    },
-    {
-      "handle": "gifting",
-      "name": "Worth gifting",
-      "description": "Sets, cases and the club — for the generous.",
-      "type": "manual",
-      "featured": false,
-      "productHandles": ["wine-club", "dinner-party-six", "housewarming-gift-set"]
-    }
-  ],
-  "products": [
-    {
-      "handle": "weeknight-house-red",
-      "title": "Weeknight House Red",
-      "description": "The bottle we reach for most and the one we recommend first. A soft, juicy 750ml red — ripe black cherry, plum and a little cocoa, low on tannin and easy to love. Great on its own, better with pizza, and honestly farmed at a price that makes it a habit.",
-      "status": "active",
-      "productType": "Red wine",
-      "vendor": "Coupe",
-      "tags": ["red", "easy-drinking", "everyday", "value"],
-      "categoryHandles": ["reds"],
-      "collectionHandles": ["crowd-pleasers", "under-20"],
-      "seoTitle": "Weeknight House Red — easy everyday red wine | Coupe",
-      "seoDescription": "A soft, juicy everyday red — black cherry, plum and cocoa, low tannin and easy to love. 750ml.",
-      "variants": [
+    "categories": [
         {
-          "sku": "COUPE-RED-HOUSE-01",
-          "priceCents": 1600,
-          "isDefault": true,
-          "inventoryPolicy": "continue"
-        }
-      ],
-      "images": [
-        {
-          "assetId": "prod-house-red",
-          "isPrimary": true,
-          "alt": "A bottle of the Weeknight House Red"
-        }
-      ]
-    },
-    {
-      "handle": "big-swing-bold-red",
-      "title": "Big Swing Bold Red",
-      "description": "The red for when dinner deserves an occasion. A full-bodied 750ml with dark berry, black pepper and a savoury, structured finish that stands up to steak, mushrooms and long conversations. Give it ten minutes open and it really sings.",
-      "status": "active",
-      "productType": "Red wine",
-      "vendor": "Coupe",
-      "tags": ["red", "full-bodied", "dinner"],
-      "categoryHandles": ["reds"],
-      "collectionHandles": ["new-this-month", "crowd-pleasers"],
-      "seoTitle": "Big Swing Bold Red — full-bodied red wine | Coupe",
-      "seoDescription": "A full-bodied dinner red — dark berry, black pepper and a savoury, structured finish. 750ml.",
-      "variants": [
-        {
-          "sku": "COUPE-RED-BOLD-01",
-          "priceCents": 2300,
-          "isDefault": true,
-          "inventoryPolicy": "continue"
-        }
-      ],
-      "images": [
-        {
-          "assetId": "prod-bold-red",
-          "isPrimary": true,
-          "alt": "A bottle of the Big Swing Bold Red"
-        }
-      ]
-    },
-    {
-      "handle": "poolside-crisp-white",
-      "title": "Poolside Crisp White",
-      "description": "Sunshine in a 750ml bottle. Bright, dry and thirst-quenching, with green apple, citrus and a clean snap that begs for a proper chill. The white you open on the first warm day and keep opening all summer — and it loves a plate of anything from the sea.",
-      "status": "active",
-      "productType": "White wine",
-      "vendor": "Coupe",
-      "tags": ["white", "crisp", "dry", "chillable"],
-      "categoryHandles": ["whites-rose"],
-      "collectionHandles": ["new-this-month", "chill-and-pour", "under-20"],
-      "seoTitle": "Poolside Crisp White — bright, dry white wine | Coupe",
-      "seoDescription": "A bright, dry, thirst-quenching white — green apple, citrus and a clean snap. Serve it cold. 750ml.",
-      "variants": [
-        {
-          "sku": "COUPE-WHITE-01",
-          "priceCents": 1700,
-          "isDefault": true,
-          "inventoryPolicy": "continue"
-        }
-      ],
-      "images": [
-        {
-          "assetId": "prod-crisp-white",
-          "isPrimary": true,
-          "alt": "A cold bottle of the Poolside Crisp White"
-        }
-      ]
-    },
-    {
-      "handle": "sunday-rose",
-      "title": "Sunday Rosé",
-      "description": "A dry, pale 750ml rosé with none of the sweetness the colour gets blamed for. Wild strawberry, pink grapefruit and a fresh, savoury finish — the house pour from the first warm afternoon to the last. Brunch approved, picnic essential.",
-      "status": "active",
-      "productType": "Rosé wine",
-      "vendor": "Coupe",
-      "tags": ["rose", "dry", "chillable"],
-      "categoryHandles": ["whites-rose"],
-      "collectionHandles": ["new-this-month", "chill-and-pour", "crowd-pleasers"],
-      "seoTitle": "Sunday Rosé — dry pale rosé wine | Coupe",
-      "seoDescription": "A dry, pale rosé — wild strawberry, pink grapefruit and a fresh, savoury finish. 750ml.",
-      "variants": [
-        {
-          "sku": "COUPE-ROSE-01",
-          "priceCents": 1800,
-          "isDefault": true,
-          "inventoryPolicy": "continue"
-        }
-      ],
-      "images": [
-        {
-          "assetId": "prod-rose",
-          "isPrimary": true,
-          "alt": "A bottle of pale Sunday Rosé"
-        }
-      ]
-    },
-    {
-      "handle": "confetti-petnat",
-      "title": "Confetti Pét-Nat",
-      "description": "The fun one. A cloudy, crown-capped 750ml sparkler finished the old way — bone-dry, gently fizzy and impossible not to smile at. Green apple, lemon and a little bready funk. The bottle that turns a regular Tuesday into a small celebration.",
-      "status": "active",
-      "productType": "Sparkling wine",
-      "vendor": "Coupe",
-      "tags": ["pet-nat", "sparkling", "dry", "chillable", "fun"],
-      "categoryHandles": ["bubbles"],
-      "collectionHandles": ["new-this-month", "chill-and-pour", "party-starters"],
-      "seoTitle": "Confetti Pét-Nat — dry sparkling wine | Coupe",
-      "seoDescription": "A bone-dry, gently fizzy pét-nat — green apple, lemon and a little bready funk. 750ml.",
-      "variants": [
-        {
-          "sku": "COUPE-BUB-PETNAT-01",
-          "priceCents": 2400,
-          "isDefault": true,
-          "inventoryPolicy": "continue"
-        }
-      ],
-      "images": [
-        {
-          "assetId": "prod-petnat",
-          "isPrimary": true,
-          "alt": "A crown-capped bottle of Confetti Pét-Nat"
-        }
-      ]
-    },
-    {
-      "handle": "off-duty-non-alc-fizz",
-      "title": "Off-Duty Non-Alc Fizz",
-      "description": "A grown-up alcohol-free 750ml sparkling for the nights you are not drinking but still want something in the good glass. Properly dry and gently fizzy, with white peach, elderflower and a citrus snap — none of the cloying sweetness most non-alc falls into.",
-      "status": "active",
-      "productType": "Non-alcoholic",
-      "vendor": "Coupe",
-      "tags": ["non-alc", "sparkling", "dry", "alcohol-free"],
-      "categoryHandles": ["bubbles"],
-      "collectionHandles": ["new-this-month", "party-starters", "under-20"],
-      "seoTitle": "Off-Duty Non-Alc Fizz — alcohol-free sparkling | Coupe",
-      "seoDescription": "A grown-up alcohol-free sparkling — dry, gently fizzy, white peach and elderflower. 750ml.",
-      "variants": [
-        {
-          "sku": "COUPE-NONALC-01",
-          "priceCents": 1500,
-          "isDefault": true,
-          "inventoryPolicy": "continue"
-        }
-      ],
-      "images": [
-        {
-          "assetId": "prod-nonalc",
-          "isPrimary": true,
-          "alt": "A bottle of the Off-Duty non-alcoholic fizz on ice"
-        }
-      ]
-    },
-    {
-      "handle": "wine-club",
-      "title": "Coupe Wine Club",
-      "description": "Let us do the choosing. Every month we hand-pick a set of bottles to match the season and your taste, tuck in tasting notes and a pairing or two, and send them chilled-friendly to your door. Three bottles or six, and you can skip, swap or cancel any time — no lock-in, ever. The easiest way to always have something good open.",
-      "status": "active",
-      "productType": "Subscription",
-      "vendor": "Coupe",
-      "tags": ["wine-club", "subscription", "gift"],
-      "categoryHandles": ["club"],
-      "collectionHandles": ["new-this-month", "crowd-pleasers", "gifting"],
-      "seoTitle": "Coupe Wine Club — hand-picked wine, monthly | Coupe",
-      "seoDescription": "A flexible monthly wine club — three or six hand-picked bottles with tasting notes. Skip, swap or cancel any time.",
-      "options": [
-        {
-          "name": "Plan",
-          "displayType": "dropdown",
-          "values": [
-            {
-              "value": "Three bottles"
-            },
-            {
-              "value": "Six bottles"
-            }
-          ]
-        }
-      ],
-      "variants": [
-        {
-          "sku": "COUPE-CLUB-3",
-          "priceCents": 4500,
-          "isDefault": true,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Plan": "Three bottles"
-          }
+            "handle": "reds",
+            "name": "Reds",
+            "description": "Easy, juicy and full-bodied reds.",
+            "featured": true
         },
         {
-          "sku": "COUPE-CLUB-6",
-          "priceCents": 8000,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Plan": "Six bottles"
-          }
-        }
-      ],
-      "images": [
-        {
-          "assetId": "prod-club",
-          "isPrimary": true,
-          "alt": "A monthly wine-club box packed with bottles"
-        }
-      ]
-    },
-    {
-      "handle": "dinner-party-six",
-      "title": "Dinner Party Mixed Six",
-      "description": "A ready-made line-up for a table full of friends — six bottles, our pick, at a better price than buying them one by one. Choose a mix of colours to cover every course, all reds for a hearty night, or whites and bubbles for something lighter. We swap the picks every month.",
-      "status": "active",
-      "productType": "Mixed case",
-      "vendor": "Coupe",
-      "tags": ["mixed-case", "value", "gift", "party"],
-      "categoryHandles": ["cases"],
-      "collectionHandles": ["crowd-pleasers", "party-starters", "gifting"],
-      "seoTitle": "Dinner Party Mixed Six — curated wine case | Coupe",
-      "seoDescription": "A curated six-bottle case at a better price — mixed colours, all reds, or whites and bubbles.",
-      "options": [
-        {
-          "name": "Selection",
-          "displayType": "dropdown",
-          "values": [
-            {
-              "value": "Mixed colours"
-            },
-            {
-              "value": "All reds"
-            },
-            {
-              "value": "Whites & bubbles"
-            }
-          ]
-        }
-      ],
-      "variants": [
-        {
-          "sku": "COUPE-SIX-MIX",
-          "priceCents": 9500,
-          "isDefault": true,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Selection": "Mixed colours"
-          }
+            "handle": "whites-rose",
+            "name": "Whites & Rosé",
+            "description": "Crisp whites and dry, pale rosé.",
+            "featured": true
         },
         {
-          "sku": "COUPE-SIX-RED",
-          "priceCents": 9500,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Selection": "All reds"
-          }
+            "handle": "bubbles",
+            "name": "Bubbles",
+            "description": "Pét-nat, sparkling and non-alc fizz.",
+            "featured": true
         },
         {
-          "sku": "COUPE-SIX-WHT",
-          "priceCents": 9500,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Selection": "Whites & bubbles"
-          }
-        }
-      ],
-      "images": [
-        {
-          "assetId": "prod-six",
-          "isPrimary": true,
-          "alt": "A Dinner Party mixed six standing together in a case"
-        }
-      ]
-    },
-    {
-      "handle": "housewarming-gift-set",
-      "title": "The Housewarming Gift Set",
-      "description": "The present that never misses. A bright bottle of bubbles and a crowd-pleasing red, wrapped and ready with a hand-written note and a card of tasting notes. Pick a message at checkout and we will send it straight to them — the easy win for a new home, a thank-you or a just-because.",
-      "status": "active",
-      "productType": "Gift set",
-      "vendor": "Coupe",
-      "tags": ["gift", "gift-set", "bubbles", "red"],
-      "categoryHandles": ["cases"],
-      "collectionHandles": ["gifting", "party-starters"],
-      "seoTitle": "The Housewarming Gift Set — wine gift | Coupe",
-      "seoDescription": "A wrapped wine gift set — a bottle of bubbles and a crowd-pleasing red, with a hand-written note.",
-      "options": [
-        {
-          "name": "Message",
-          "displayType": "dropdown",
-          "values": [
-            {
-              "value": "Congratulations"
-            },
-            {
-              "value": "Thank you"
-            },
-            {
-              "value": "Just because"
-            }
-          ]
-        }
-      ],
-      "variants": [
-        {
-          "sku": "COUPE-GIFT-CONGRATS",
-          "priceCents": 5200,
-          "isDefault": true,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Message": "Congratulations"
-          }
+            "handle": "cases",
+            "name": "Mixed cases",
+            "description": "Ready-made cases and gift sets.",
+            "featured": true
         },
         {
-          "sku": "COUPE-GIFT-THANKS",
-          "priceCents": 5200,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Message": "Thank you"
-          }
+            "handle": "club",
+            "name": "Wine club",
+            "description": "Hand-picked bottles, every month.",
+            "featured": true
+        }
+    ],
+    "collections": [
+        {
+            "handle": "new-this-month",
+            "name": "New this month",
+            "description": "The latest bottles on the shelf.",
+            "type": "manual",
+            "featured": true,
+            "productHandles": [
+                "big-swing-bold-red",
+                "poolside-crisp-white",
+                "sunday-rose",
+                "confetti-petnat",
+                "off-duty-non-alc-fizz",
+                "wine-club"
+            ]
         },
         {
-          "sku": "COUPE-GIFT-BECAUSE",
-          "priceCents": 5200,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Message": "Just because"
-          }
-        }
-      ],
-      "images": [
+            "handle": "crowd-pleasers",
+            "name": "Crowd pleasers",
+            "description": "The bottles that never miss.",
+            "type": "manual",
+            "featured": true,
+            "productHandles": [
+                "weeknight-house-red",
+                "big-swing-bold-red",
+                "sunday-rose",
+                "wine-club",
+                "dinner-party-six"
+            ]
+        },
         {
-          "assetId": "prod-gift",
-          "isPrimary": true,
-          "alt": "A wrapped housewarming wine gift set with a ribbon"
+            "handle": "chill-and-pour",
+            "name": "Chill & pour",
+            "description": "Everything that loves a proper cold.",
+            "type": "manual",
+            "featured": true,
+            "productHandles": [
+                "poolside-crisp-white",
+                "sunday-rose",
+                "confetti-petnat"
+            ]
+        },
+        {
+            "handle": "party-starters",
+            "name": "Party starters",
+            "description": "Bubbles and bottles for a full table.",
+            "type": "manual",
+            "featured": false,
+            "productHandles": [
+                "confetti-petnat",
+                "off-duty-non-alc-fizz",
+                "dinner-party-six",
+                "housewarming-gift-set"
+            ]
+        },
+        {
+            "handle": "under-20",
+            "name": "Under $20",
+            "description": "Great bottles that go easy on the wallet.",
+            "type": "manual",
+            "featured": false,
+            "productHandles": [
+                "weeknight-house-red",
+                "poolside-crisp-white",
+                "sunday-rose",
+                "off-duty-non-alc-fizz"
+            ]
+        },
+        {
+            "handle": "gifting",
+            "name": "Worth gifting",
+            "description": "Sets, cases and the club — for the generous.",
+            "type": "manual",
+            "featured": false,
+            "productHandles": [
+                "wine-club",
+                "dinner-party-six",
+                "housewarming-gift-set"
+            ]
         }
-      ]
-    }
-  ]
+    ],
+    "products": [
+        {
+            "handle": "weeknight-house-red",
+            "title": "Weeknight House Red",
+            "description": "The bottle we reach for most and the one we recommend first. A soft, juicy 750ml red — ripe black cherry, plum and a little cocoa, low on tannin and easy to love. Great on its own, better with pizza, and honestly farmed at a price that makes it a habit.",
+            "status": "active",
+            "productType": "Red wine",
+            "vendor": "Coupe",
+            "tags": [
+                "red",
+                "easy-drinking",
+                "everyday",
+                "value"
+            ],
+            "categoryHandles": [
+                "reds"
+            ],
+            "collectionHandles": [
+                "crowd-pleasers",
+                "under-20"
+            ],
+            "seoTitle": "Weeknight House Red — easy everyday red wine | Coupe",
+            "seoDescription": "A soft, juicy everyday red — black cherry, plum and cocoa, low tannin and easy to love. 750ml.",
+            "variants": [
+                {
+                    "sku": "COUPE-RED-HOUSE-01",
+                    "priceCents": 1600,
+                    "isDefault": true,
+                    "inventoryPolicy": "continue"
+                }
+            ],
+            "images": [
+                {
+                    "assetId": "prod-house-red",
+                    "isPrimary": true,
+                    "alt": "A bottle of the Weeknight House Red"
+                }
+            ]
+        },
+        {
+            "handle": "big-swing-bold-red",
+            "title": "Big Swing Bold Red",
+            "description": "The red for when dinner deserves an occasion. A full-bodied 750ml with dark berry, black pepper and a savoury, structured finish that stands up to steak, mushrooms and long conversations. Give it ten minutes open and it really sings.",
+            "status": "active",
+            "productType": "Red wine",
+            "vendor": "Coupe",
+            "tags": [
+                "red",
+                "full-bodied",
+                "dinner"
+            ],
+            "categoryHandles": [
+                "reds"
+            ],
+            "collectionHandles": [
+                "new-this-month",
+                "crowd-pleasers"
+            ],
+            "seoTitle": "Big Swing Bold Red — full-bodied red wine | Coupe",
+            "seoDescription": "A full-bodied dinner red — dark berry, black pepper and a savoury, structured finish. 750ml.",
+            "variants": [
+                {
+                    "sku": "COUPE-RED-BOLD-01",
+                    "priceCents": 2300,
+                    "isDefault": true,
+                    "inventoryPolicy": "continue"
+                }
+            ],
+            "images": [
+                {
+                    "assetId": "prod-bold-red",
+                    "isPrimary": true,
+                    "alt": "A bottle of the Big Swing Bold Red"
+                }
+            ]
+        },
+        {
+            "handle": "poolside-crisp-white",
+            "title": "Poolside Crisp White",
+            "description": "Sunshine in a 750ml bottle. Bright, dry and thirst-quenching, with green apple, citrus and a clean snap that begs for a proper chill. The white you open on the first warm day and keep opening all summer — and it loves a plate of anything from the sea.",
+            "status": "active",
+            "productType": "White wine",
+            "vendor": "Coupe",
+            "tags": [
+                "white",
+                "crisp",
+                "dry",
+                "chillable"
+            ],
+            "categoryHandles": [
+                "whites-rose"
+            ],
+            "collectionHandles": [
+                "new-this-month",
+                "chill-and-pour",
+                "under-20"
+            ],
+            "seoTitle": "Poolside Crisp White — bright, dry white wine | Coupe",
+            "seoDescription": "A bright, dry, thirst-quenching white — green apple, citrus and a clean snap. Serve it cold. 750ml.",
+            "variants": [
+                {
+                    "sku": "COUPE-WHITE-01",
+                    "priceCents": 1700,
+                    "isDefault": true,
+                    "inventoryPolicy": "continue"
+                }
+            ],
+            "images": [
+                {
+                    "assetId": "prod-crisp-white",
+                    "isPrimary": true,
+                    "alt": "A cold bottle of the Poolside Crisp White"
+                }
+            ]
+        },
+        {
+            "handle": "sunday-rose",
+            "title": "Sunday Rosé",
+            "description": "A dry, pale 750ml rosé with none of the sweetness the color gets blamed for. Wild strawberry, pink grapefruit and a fresh, savoury finish — the house pour from the first warm afternoon to the last. Brunch approved, picnic essential.",
+            "status": "active",
+            "productType": "Rosé wine",
+            "vendor": "Coupe",
+            "tags": [
+                "rose",
+                "dry",
+                "chillable"
+            ],
+            "categoryHandles": [
+                "whites-rose"
+            ],
+            "collectionHandles": [
+                "new-this-month",
+                "chill-and-pour",
+                "crowd-pleasers"
+            ],
+            "seoTitle": "Sunday Rosé — dry pale rosé wine | Coupe",
+            "seoDescription": "A dry, pale rosé — wild strawberry, pink grapefruit and a fresh, savoury finish. 750ml.",
+            "variants": [
+                {
+                    "sku": "COUPE-ROSE-01",
+                    "priceCents": 1800,
+                    "isDefault": true,
+                    "inventoryPolicy": "continue"
+                }
+            ],
+            "images": [
+                {
+                    "assetId": "prod-rose",
+                    "isPrimary": true,
+                    "alt": "A bottle of pale Sunday Rosé"
+                }
+            ]
+        },
+        {
+            "handle": "confetti-petnat",
+            "title": "Confetti Pét-Nat",
+            "description": "The fun one. A cloudy, crown-capped 750ml sparkler finished the old way — bone-dry, gently fizzy and impossible not to smile at. Green apple, lemon and a little bready funk. The bottle that turns a regular Tuesday into a small celebration.",
+            "status": "active",
+            "productType": "Sparkling wine",
+            "vendor": "Coupe",
+            "tags": [
+                "pet-nat",
+                "sparkling",
+                "dry",
+                "chillable",
+                "fun"
+            ],
+            "categoryHandles": [
+                "bubbles"
+            ],
+            "collectionHandles": [
+                "new-this-month",
+                "chill-and-pour",
+                "party-starters"
+            ],
+            "seoTitle": "Confetti Pét-Nat — dry sparkling wine | Coupe",
+            "seoDescription": "A bone-dry, gently fizzy pét-nat — green apple, lemon and a little bready funk. 750ml.",
+            "variants": [
+                {
+                    "sku": "COUPE-BUB-PETNAT-01",
+                    "priceCents": 2400,
+                    "isDefault": true,
+                    "inventoryPolicy": "continue"
+                }
+            ],
+            "images": [
+                {
+                    "assetId": "prod-petnat",
+                    "isPrimary": true,
+                    "alt": "A crown-capped bottle of Confetti Pét-Nat"
+                }
+            ]
+        },
+        {
+            "handle": "off-duty-non-alc-fizz",
+            "title": "Off-Duty Non-Alc Fizz",
+            "description": "A grown-up alcohol-free 750ml sparkling for the nights you are not drinking but still want something in the good glass. Properly dry and gently fizzy, with white peach, elderflower and a citrus snap — none of the cloying sweetness most non-alc falls into.",
+            "status": "active",
+            "productType": "Non-alcoholic",
+            "vendor": "Coupe",
+            "tags": [
+                "non-alc",
+                "sparkling",
+                "dry",
+                "alcohol-free"
+            ],
+            "categoryHandles": [
+                "bubbles"
+            ],
+            "collectionHandles": [
+                "new-this-month",
+                "party-starters",
+                "under-20"
+            ],
+            "seoTitle": "Off-Duty Non-Alc Fizz — alcohol-free sparkling | Coupe",
+            "seoDescription": "A grown-up alcohol-free sparkling — dry, gently fizzy, white peach and elderflower. 750ml.",
+            "variants": [
+                {
+                    "sku": "COUPE-NONALC-01",
+                    "priceCents": 1500,
+                    "isDefault": true,
+                    "inventoryPolicy": "continue"
+                }
+            ],
+            "images": [
+                {
+                    "assetId": "prod-nonalc",
+                    "isPrimary": true,
+                    "alt": "A bottle of the Off-Duty non-alcoholic fizz on ice"
+                }
+            ]
+        },
+        {
+            "handle": "wine-club",
+            "title": "Coupe Wine Club",
+            "description": "Let us do the choosing. Every month we hand-pick a set of bottles to match the season and your taste, tuck in tasting notes and a pairing or two, and send them chilled-friendly to your door. Three bottles or six, and you can skip, swap or cancel any time — no lock-in, ever. The easiest way to always have something good open.",
+            "status": "active",
+            "productType": "Subscription",
+            "vendor": "Coupe",
+            "tags": [
+                "wine-club",
+                "subscription",
+                "gift"
+            ],
+            "categoryHandles": [
+                "club"
+            ],
+            "collectionHandles": [
+                "new-this-month",
+                "crowd-pleasers",
+                "gifting"
+            ],
+            "seoTitle": "Coupe Wine Club — hand-picked wine, monthly | Coupe",
+            "seoDescription": "A flexible monthly wine club — three or six hand-picked bottles with tasting notes. Skip, swap or cancel any time.",
+            "options": [
+                {
+                    "name": "Plan",
+                    "displayType": "dropdown",
+                    "values": [
+                        {
+                            "value": "Three bottles"
+                        },
+                        {
+                            "value": "Six bottles"
+                        }
+                    ]
+                }
+            ],
+            "variants": [
+                {
+                    "sku": "COUPE-CLUB-3",
+                    "priceCents": 4500,
+                    "isDefault": true,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Plan": "Three bottles"
+                    }
+                },
+                {
+                    "sku": "COUPE-CLUB-6",
+                    "priceCents": 8000,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Plan": "Six bottles"
+                    }
+                }
+            ],
+            "images": [
+                {
+                    "assetId": "prod-club",
+                    "isPrimary": true,
+                    "alt": "A monthly wine-club box packed with bottles"
+                }
+            ]
+        },
+        {
+            "handle": "dinner-party-six",
+            "title": "Dinner Party Mixed Six",
+            "description": "A ready-made line-up for a table full of friends — six bottles, our pick, at a better price than buying them one by one. Choose a mix of colors to cover every course, all reds for a hearty night, or whites and bubbles for something lighter. We swap the picks every month.",
+            "status": "active",
+            "productType": "Mixed case",
+            "vendor": "Coupe",
+            "tags": [
+                "mixed-case",
+                "value",
+                "gift",
+                "party"
+            ],
+            "categoryHandles": [
+                "cases"
+            ],
+            "collectionHandles": [
+                "crowd-pleasers",
+                "party-starters",
+                "gifting"
+            ],
+            "seoTitle": "Dinner Party Mixed Six — curated wine case | Coupe",
+            "seoDescription": "A curated six-bottle case at a better price — mixed colors, all reds, or whites and bubbles.",
+            "options": [
+                {
+                    "name": "Selection",
+                    "displayType": "dropdown",
+                    "values": [
+                        {
+                            "value": "Mixed colors"
+                        },
+                        {
+                            "value": "All reds"
+                        },
+                        {
+                            "value": "Whites & bubbles"
+                        }
+                    ]
+                }
+            ],
+            "variants": [
+                {
+                    "sku": "COUPE-SIX-MIX",
+                    "priceCents": 9500,
+                    "isDefault": true,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Selection": "Mixed colors"
+                    }
+                },
+                {
+                    "sku": "COUPE-SIX-RED",
+                    "priceCents": 9500,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Selection": "All reds"
+                    }
+                },
+                {
+                    "sku": "COUPE-SIX-WHT",
+                    "priceCents": 9500,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Selection": "Whites & bubbles"
+                    }
+                }
+            ],
+            "images": [
+                {
+                    "assetId": "prod-six",
+                    "isPrimary": true,
+                    "alt": "A Dinner Party mixed six standing together in a case"
+                }
+            ]
+        },
+        {
+            "handle": "housewarming-gift-set",
+            "title": "The Housewarming Gift Set",
+            "description": "The present that never misses. A bright bottle of bubbles and a crowd-pleasing red, wrapped and ready with a hand-written note and a card of tasting notes. Pick a message at checkout and we will send it straight to them — the easy win for a new home, a thank-you or a just-because.",
+            "status": "active",
+            "productType": "Gift set",
+            "vendor": "Coupe",
+            "tags": [
+                "gift",
+                "gift-set",
+                "bubbles",
+                "red"
+            ],
+            "categoryHandles": [
+                "cases"
+            ],
+            "collectionHandles": [
+                "gifting",
+                "party-starters"
+            ],
+            "seoTitle": "The Housewarming Gift Set — wine gift | Coupe",
+            "seoDescription": "A wrapped wine gift set — a bottle of bubbles and a crowd-pleasing red, with a hand-written note.",
+            "options": [
+                {
+                    "name": "Message",
+                    "displayType": "dropdown",
+                    "values": [
+                        {
+                            "value": "Congratulations"
+                        },
+                        {
+                            "value": "Thank you"
+                        },
+                        {
+                            "value": "Just because"
+                        }
+                    ]
+                }
+            ],
+            "variants": [
+                {
+                    "sku": "COUPE-GIFT-CONGRATS",
+                    "priceCents": 5200,
+                    "isDefault": true,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Message": "Congratulations"
+                    }
+                },
+                {
+                    "sku": "COUPE-GIFT-THANKS",
+                    "priceCents": 5200,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Message": "Thank you"
+                    }
+                },
+                {
+                    "sku": "COUPE-GIFT-BECAUSE",
+                    "priceCents": 5200,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Message": "Just because"
+                    }
+                }
+            ],
+            "images": [
+                {
+                    "assetId": "prod-gift",
+                    "isPrimary": true,
+                    "alt": "A wrapped housewarming wine gift set with a ribbon"
+                }
+            ]
+        }
+    ]
 }

@@ -1,19 +1,30 @@
 import type { Metadata } from 'next';
 import { FaqSection, Section } from '@piggles/ui';
 import Link from 'next/link';
-import { Card, CardBody, Table } from '@wizeworks/silicaui-react';
+import { Table } from '@wizeworks/silicaui-react';
 import { buttonClasses } from '@wizeworks/silicaui-react/server';
 import { accountUrl, PRODUCT } from '@piggles/config';
 import { PageHero } from '@/components/marketing/page-hero';
+import { WhatYouPay } from '@/components/marketing/what-you-pay';
 import { CloseBand } from '@/components/marketing/close-band';
 
 // /pricing — one plan, and the part everyone actually wants to know: what makes
 // the number go up.
 //
-// The page is structured as a promise followed by its own small print, in that
-// order, because the promise is only worth anything if the small print is on the
-// same page. A pricing page that says "one simple price" and hides the limits
-// behind a support article is the thing this product is positioned against.
+// The page is structured as a promise, then what the promise is measured
+// against, then its own small print — in that order, because the promise is only
+// worth anything if the small print is on the same page. A pricing page that
+// says "one simple price" and hides the limits behind a support article is the
+// thing this product is positioned against.
+//
+// ── THE PRICE IS STATED TWICE, NOT THREE TIMES ──────────────────────────────
+//
+// The hero said $49 and then a card three lines below said $49 again, with the
+// same button under it. Repeating a number is not emphasis; it is the page
+// having nothing to add. <WhatYouPay> now carries the price and the call to
+// action, because it is the one place on the page where $49 is standing next to
+// something — so "What you get for it" went back to being what it says it is: a
+// sentence and the allowance table, full width.
 //
 // NO COMPARISON GRID. Not a stylistic choice — piggles/CLAUDE.md RULE #2 forbids
 // tiers, and a three-column grid is how tiers get reintroduced by a designer who
@@ -108,55 +119,38 @@ export default function PricingPage() {
         lede="You are not charged for what the software is allowed to do. You are charged when your business needs more room — more people, more storage, more email going out."
       >
         <a
-          className={buttonClasses({ color: 'primary', size: 'lg' })}
+          className={buttonClasses({ color: 'primary', size: 'lg', block: true })}
           href={accountUrl('signup', 'pricing-hero')}
         >
           Start free for 14 days
         </a>
-        <Link className={buttonClasses({ variant: 'outline', size: 'lg' })} href="/apps">
+        <Link className={buttonClasses({ size: 'lg', block: true })} href="/apps">
           See the fifteen apps
         </Link>
       </PageHero>
 
+      <WhatYouPay />
+
       <Section>
-        <div className="grid gap-12 lg:grid-cols-2 lg:gap-16">
-          <div>
-            <h2 className="text-3xl font-extrabold sm:text-4xl">What you get for it</h2>
-            <p className="mt-6 text-lg">
-              The allowances below are what one subscription includes. Most businesses never come
-              near any of them — they exist so that the price can stay the same for everybody who
-              does not.
-            </p>
-            {/* Spelled out, not `{APPS.length}`. The derived count is more
+        <div className="max-w-[62ch]">
+          <h2 className="text-3xl font-extrabold sm:text-4xl">What you get for it</h2>
+          <p className="mt-6 text-lg">
+            The allowances below are what one subscription includes. Most businesses never come near
+            any of them — they exist so that the price can stay the same for everybody who does not.
+          </p>
+          {/* Spelled out, not `{APPS.length}`. The derived count is more
                 robust but it renders "15" three lines under a heading that says
                 "fifteen", and mixed numerals in one passage read as an
                 oversight. The registry is still the source of truth — if an app
                 is ever added, this page is one of the places to update, which is
                 why /apps derives its own list rather than repeating one here. */}
-            <p className="mt-4 text-lg">
-              Fifteen apps, and the two things that usually cost extra everywhere else — your own
-              domain and your own sending address — are in here too.
-            </p>
-          </div>
-
-          <Card>
-            <CardBody>
-              <p className="text-6xl font-extrabold">
-                $49<span className="text-xl font-bold">/month</span>
-              </p>
-              <p className="mt-2 text-base">Per business. Cancel any time.</p>
-              <a
-                className={`${buttonClasses({ color: 'primary', size: 'lg', block: true })} mt-8`}
-                href={accountUrl('signup', 'pricing-card')}
-              >
-                Start free for 14 days
-              </a>
-              <p className="mt-3 text-center text-base">No card needed to start.</p>
-            </CardBody>
-          </Card>
+          <p className="mt-4 text-lg">
+            Fifteen apps, and the two things that usually cost extra everywhere else — your own
+            domain and your own sending address — are in here too.
+          </p>
         </div>
 
-        <div className="mx-auto mt-12 max-w-7xl">
+        <div className="mt-12">
           <Table zebra>
             <thead>
               <tr>

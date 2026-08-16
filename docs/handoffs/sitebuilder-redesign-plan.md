@@ -136,12 +136,12 @@ layout (keeps live preview + docked inspector + in-canvas selection).
       only); recommend eyeballing on the deploy or local `pnpm db:up`.
 - [x] **§2.4 Brand pane v2-native** (2026-05-31, green: typecheck 38/38, lint 0 err, 52 theme tests;
       migration applied to LOCAL docker only — **prod via db-migrate.yml, user-triggered**). The Brand
-      pane now edits identity (colour/type — existing) PLUS shape/rhythm/effect (new), and the site
+      pane now edits identity (color/type — existing) PLUS shape/rhythm/effect (new), and the site
       SSR + the Theme scope's live canvas pick up the brand feel via `compileThemeForTenant`. Kept the
       shipped self-contained brand BOARD full-width (NOT a canvas scope) — flipping it into the ~360px
       inspector would have forced a rewrite of a good, working surface; instead the board's "Applied"
       samples now reflect the chosen radius/border/depth so the feel is truthful. **Decisions:** (a)
-      `tenant_brands.tokens` JSONB stores ONLY shape/rhythm/effect — colour/type stay in their dedicated
+      `tenant_brands.tokens` JSONB stores ONLY shape/rhythm/effect — color/type stay in their dedicated
       columns (one source of truth per axis); (b) feel exposed as approachable preset knobs (Corners /
       Border weight / Spacing / Control size / Depth), each with a "Theme default" that clears the axis so
       it inherits the preset (brand never silently pins a default). Files: migration
@@ -181,7 +181,7 @@ layout (keeps live preview + docked inspector + in-canvas selection).
       ENABLE+FORCE RLS; applied to LOCAL docker only). Wired: `PATCH /v1/brand` (PatchBrand/BrandView/toView +
       forwarding, clear-via-null) + the `@sparx/site-themes` **v2** compile branch (`TenantBrandColumns` +
       `brandColsToTokenDoc` now map the 3 cols onto the brand doc's secondary + accent-content + secondary-content
-      colour slots, which `compileTokensV2` already consumed) + `publish-service` brand `select` +
+      color slots, which `compileTokensV2` already consumed) + `publish-service` brand `select` +
       dashboard `BrandDto`. **Deliberately did NOT touch the v1 `BRAND_IDENTITY_TOKEN_KEYS`/`applyBrandIdentityTokens`
       surface** (the recorded plan listed it): the v1 `ThemeTokenKey` union has no slot for secondary or any
       accent/secondary `-content`, and the site CSS reads no such v1 var — adding them would be inventing

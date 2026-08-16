@@ -115,7 +115,7 @@ reads as one card rather than a deck.
 
 `btn-<c> btn-soft` / `badge-<c> badge-soft` fill with a ~15% tint of `--color-<c>` and then set the
 foreground to **`--color-<c>` itself**. That only works while the accent is dark. For any mid- or
-light-toned hue the label is the same colour family as the surface it sits on, and the contrast
+light-toned hue the label is the same color family as the surface it sits on, and the contrast
 collapses — silently, because the class pair looks correct in source and reads as "a tinted chip".
 
 `outline` has the identical problem for the same reason: it paints border AND label in the raw hue.
@@ -161,7 +161,7 @@ reach for it.**
 sparx's workaround on `/features` was to stop using `soft` entirely — price chips, status chips and
 the selected filter are all `solid` now. That is a fine outcome for that page (it reads stronger),
 but it is not available everywhere: `soft` is the correct register for a quiet status pill, and
-right now the platform cannot have one in any colour but `neutral`.
+right now the platform cannot have one in any color but `neutral`.
 
 ### Shape
 
@@ -174,13 +174,13 @@ Derive the soft/outline foreground from the accent instead of using it verbatim 
   color: var(--color-<c>-emphasis, var(--color-<c>));
 }
 
-/* b) or computed, so it needs no new authoring per colour */
+/* b) or computed, so it needs no new authoring per color */
 .badge-soft {
   color: color-mix(in oklab, var(--color-<c>) 70%, var(--color-<c>-content));
 }
 ```
 
-(b) is self-maintaining and gets every registered colour — including tenant-authored ones — right
+(b) is self-maintaining and gets every registered color — including tenant-authored ones — right
 by construction, which matters here because sparx registers 27 and none of them can be hand-checked
 by silica. Whichever way it lands, the invariant worth stating in the docs is the one `solid`
 already keeps and `soft` does not: **a silica variant never emits a fill without emitting an ink

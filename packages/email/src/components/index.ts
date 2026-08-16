@@ -2,7 +2,7 @@
 // <EmailLayout>; the contract is that no template inlines raw style props —
 // extend a component here instead.
 
-export { EmailWordmark, type EmailWordmarkProps } from './wordmark';
+export { EmailWordmark, PlatformWordmark, type EmailWordmarkProps } from './wordmark';
 export {
   EmailHeading,
   EmailParagraph,
@@ -24,7 +24,16 @@ export {
   type EmailSpacerProps,
 } from './primitives';
 export { colors, typography, spacing, radius, fontFamily, signal } from './tokens';
-export { BrandProvider, useBrand, defaultBrand, type BrandTokens } from './brand';
+export {
+  BrandProvider,
+  useBrand,
+  usePlatform,
+  usePlatformName,
+  platformNameOf,
+  defaultBrand,
+  type BrandTokens,
+  type PlatformIdentity,
+} from './brand';
 
 // "Signal" — structural block components for sparx PLATFORM emails (composed
 // inside PlatformEmailLayout). See ./blocks.

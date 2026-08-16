@@ -10,71 +10,71 @@ import emails from './emails.json' with { type: 'json' };
 import assets from './assets.json' with { type: 'json' };
 
 const blueprint = {
-  key: 'sparx-cleaning-eco',
-  version: '1.3.0',
-  name: 'sparx — Cleaning (Eco)',
-  summary:
-    'An eco, plant-based residential and boutique cleaning site — a natural sage-and-clay palette on a soft cream ground, refined type and calm, plant-filled photography. Installs a working booking flow: real green cleans (walkthrough, standard, deep, recurring, move-out, nursery, office), three cleaners you book by name with their own hours, and a non-toxic promise safe for kids, pets and sensitive homes. Ships as "Verdi Clean", a premium green cleaning service.',
-  vertical: 'services',
-  preview: 'media/preview.png',
-  requiresModules: ['builder', 'scheduling', 'crm', 'email'],
+    key: 'sparx-cleaning-eco',
+    version: '1.3.0',
+    name: 'sparx — Cleaning (Eco)',
+    summary:
+        'An eco, plant-based residential and boutique cleaning site — a natural sage-and-clay palette on a soft cream ground, refined type and calm, plant-filled photography. Installs a working booking flow: real green cleans (walkthrough, standard, deep, recurring, move-out, nursery, office), three cleaners you book by name with their own hours, and a non-toxic promise safe for kids, pets and sensitive homes. Ships as "Verdi Clean", a premium green cleaning service.',
+    vertical: 'services',
+    preview: 'media/preview.png',
+    requiresModules: ['builder', 'scheduling', 'crm', 'email'],
 
-  // Identity only (business name + tagline + fonts + the theme's hex colours). The look
-  // rides site.theme + the theme decl below; the installing tenant rebrands the name.
-  brand: {
-    businessName: 'Verdi Clean',
-    tagline: 'Clean home, clear conscience.',
-    colors: {
-      primary: '#3f774d',
-      primaryForeground: '#f4faf5',
-      accent: '#b27654',
-      secondary: '#374439',
-    },
-    fonts: {
-      heading: 'Fraunces',
-      body: 'Inter',
-    },
-  },
-
-  // The provisioned SiteTheme the installer creates + applies — an editable saved theme
-  // over a foundation base + the template's brand snapshot. The LIVE storefront look is
-  // site.theme (the flat bespoke tokens), written last.
-  theme: {
-    name: 'verdi',
-    basePresetKey: 'apex',
-    presentation: {
-      v: 2,
-      containerWidth: '1152px',
-    },
+    // Identity only (business name + tagline + fonts + the theme's hex colors). The look
+    // rides site.theme + the theme decl below; the installing tenant rebrands the name.
     brand: {
-      colorPrimary: '#3f774d',
-      colorAccent: '#b27654',
-      colorSecondary: '#374439',
-      fontHeading: 'Fraunces',
-      fontBody: 'Inter',
-      tokens: {},
+        businessName: 'Verdi Clean',
+        tagline: 'Clean home, clear conscience.',
+        colors: {
+            primary: '#3f774d',
+            primaryForeground: '#f4faf5',
+            accent: '#b27654',
+            secondary: '#374439',
+        },
+        fonts: {
+            heading: 'Fraunces',
+            body: 'Inter',
+        },
     },
-    apply: true,
-  },
 
-  assets,
-  contentTypes: [],
+    // The provisioned SiteTheme the installer creates + applies — an editable saved theme
+    // over a foundation base + the template's brand snapshot. The LIVE storefront look is
+    // site.theme (the flat bespoke tokens), written last.
+    theme: {
+        name: 'verdi',
+        basePresetKey: 'apex',
+        presentation: {
+            v: 2,
+            containerWidth: '1152px',
+        },
+        brand: {
+            colorPrimary: '#3f774d',
+            colorAccent: '#b27654',
+            colorSecondary: '#374439',
+            fontHeading: 'Fraunces',
+            fontBody: 'Inter',
+            tokens: {},
+        },
+        apply: true,
+    },
 
-  // The booking spine — policies, bookable resources (staff/rooms/stations) with weekly
-  // hours, and the service menu. The installer's scheduling slice replays it into a live
-  // booking flow that the site's /book page renders.
-  scheduling,
+    assets,
+    contentTypes: [],
 
-  // Brand-voiced MARKETING starters (a welcome + a come-back), installed as DRAFTS the
-  // tenant switches on. The transactional booking sends — confirmation, reminder,
-  // reschedule, cancellation, waitlist — are platform KEYED defaults, so they are covered
-  // on email-module activation and are deliberately NOT duplicated here.
-  emails,
-  sequences: [],
+    // The booking spine — policies, bookable resources (staff/rooms/stations) with weekly
+    // hours, and the service menu. The installer's scheduling slice replays it into a live
+    // booking flow that the site's /book page renders.
+    scheduling,
 
-  // The composed distinct site (frame + Home + Book + About + Contact) in the bespoke
-  // theme, fully stamped.
-  site,
+    // Brand-voiced MARKETING starters (a welcome + a come-back), installed as DRAFTS the
+    // tenant switches on. The transactional booking sends — confirmation, reminder,
+    // reschedule, cancellation, waitlist — are platform KEYED defaults, so they are covered
+    // on email-module activation and are deliberately NOT duplicated here.
+    emails,
+    sequences: [],
+
+    // The composed distinct site (frame + Home + Book + About + Contact) in the bespoke
+    // theme, fully stamped.
+    site,
 };
 
 export default blueprint;

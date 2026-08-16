@@ -252,6 +252,13 @@ jobs:
       - name: Check the product boundaries hold
         run: node scripts/check-boundaries.mjs
 
+      # The boundary check reads source text, so it catches the import somebody
+      # WROTE. This walks the dependency closure and catches the one four
+      # packages down — which is the one that actually put sparx's mascot in the
+      # Piggles image while the text scan stayed green.
+      - name: Check sparx could be deleted without breaking Piggles
+        run: node scripts/check-deletability.mjs
+
       # Isolation stops Piggles IMPORTING sparx; this stops it SOUNDING like
       # sparx. The surfaces are a fork of sparx's catalog, so every new screen
       # arrives wearing sparx's words and keeps them until somebody looks —

@@ -174,7 +174,7 @@ Change the brand once and every section reflects it. _Content_ binding is availa
 too: "static" denotes only a section's **default content source** (authored, same for every
 item) — not a wall. A static heading or CTA can still interpolate fields (`{{product.title}}`,
 `{{brand.name}}`) or target a dynamic destination. The static-vs-bound distinction is about where
-a section's content comes from _by default_, not whether it may bind. (The static/bound colour
+a section's content comes from _by default_, not whether it may bind. (The static/bound color
 legend in the editor concept is a teaching device for content source, not a hardcoded-vs-dynamic
 wall.)
 

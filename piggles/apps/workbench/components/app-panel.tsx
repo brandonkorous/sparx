@@ -20,18 +20,18 @@ import { useEffect, useRef, useState } from 'react';
 import { faPlus, faThumbtack, faThumbtackSlash } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import {
-  Button,
-  SearchInput,
-  Sidebar,
-  SidebarContent,
-  SidebarFooter,
-  SidebarGroup,
-  SidebarGroupLabel,
-  SidebarHeader,
-  SidebarHeaderBrand,
-  SidebarItem,
-  Text,
-  Tooltip,
+    Button,
+    SearchInput,
+    Sidebar,
+    SidebarContent,
+    SidebarFooter,
+    SidebarGroup,
+    SidebarGroupLabel,
+    SidebarHeader,
+    SidebarHeaderBrand,
+    SidebarItem,
+    Text,
+    Tooltip,
 } from '@wizeworks/silicaui-react';
 import { resolveTitle, type OpenTarget, type SurfaceDefinition } from '@/lib/surfaces/registry';
 import { useWorkbench } from '@/lib/workbench/context';
@@ -43,35 +43,35 @@ import type { ConsoleNavApp } from '@/lib/console/nav';
 type Attention = ReturnType<typeof useAttention>;
 
 interface AppPanelProps {
-  entry: ConsoleNavApp;
-  pinned: boolean;
-  onTogglePin: () => void;
-  /** Unpinned panels are transient — they close once something is opened. */
-  onDismiss: () => void;
-  /**
-   * Whether pinning is even a concept here. False in the mobile drawer, where
-   * the panel IS the screen: a pinned panel would mean permanently covering the
-   * work, so the control is not disabled, it is absent.
-   */
-  pinnable?: boolean;
-  /**
-   * `panel` takes the fixed 20rem the desktop shell clips it to. `fill` takes
-   * whatever the container is, for the mobile drawer.
-   *
-   * Not a detail. The drawer is `85vw` capped at `max-w-sm`, so on a 320px phone
-   * it is 272px — and a panel insisting on 20rem inside it overflows by 48px,
-   * which is a sideways scrollbar on the primary navigation. The desktop case
-   * genuinely does want the fixed width: its wrapper animates from `w-80` to
-   * `w-0`, and a percentage panel would re-wrap every label on the way shut
-   * instead of sliding out cleanly.
-   */
-  width?: 'panel' | 'fill';
+    entry: ConsoleNavApp;
+    pinned: boolean;
+    onTogglePin: () => void;
+    /** Unpinned panels are transient — they close once something is opened. */
+    onDismiss: () => void;
+    /**
+     * Whether pinning is even a concept here. False in the mobile drawer, where
+     * the panel IS the screen: a pinned panel would mean permanently covering the
+     * work, so the control is not disabled, it is absent.
+     */
+    pinnable?: boolean;
+    /**
+     * `panel` takes the fixed 20rem the desktop shell clips it to. `fill` takes
+     * whatever the container is, for the mobile drawer.
+     *
+     * Not a detail. The drawer is `85vw` capped at `max-w-sm`, so on a 320px phone
+     * it is 272px — and a panel insisting on 20rem inside it overflows by 48px,
+     * which is a sideways scrollbar on the primary navigation. The desktop case
+     * genuinely does want the fixed width: its wrapper animates from `w-80` to
+     * `w-0`, and a percentage panel would re-wrap every label on the way shut
+     * instead of sliding out cleanly.
+     */
+    width?: 'panel' | 'fill';
 }
 
 function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
-  if (event.altKey) return 'window';
-  if (event.shiftKey) return 'beside';
-  return 'tab';
+    if (event.altKey) return 'window';
+    if (event.shiftKey) return 'beside';
+    return 'tab';
 }
 
 /**
@@ -83,7 +83,7 @@ function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
  * sums its screens, its group sums its apps (components/rail/waiting.tsx). The
  * app rail badge beside "Sell" IS the sum of the badges in this panel, so the
  * two can never tell a person different things — and it wears the identical
- * badge, because a warning-coloured pill here and a module-coloured one there
+ * badge, because a warning-colored pill here and a module-colored one there
  * read as two different kinds of fact.
  *
  * ONE source. There used to be two — this, and a `useBadgeCount` hook the
@@ -92,263 +92,262 @@ function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
  * lib/surfaces/registry.ts.
  */
 function NavBadge({ surface, attention }: { surface: SurfaceDefinition; attention: Attention }) {
-  return <WaitingBadge count={surfaceWaiting(surface.key, attention)} />;
+    return <WaitingBadge count={surfaceWaiting(surface.key, attention)} />;
 }
 
 /** React key for a nav row. The surface key alone stopped being unique the
  *  moment one surface could appear once per record type a business invented. */
 function navRowKey(surface: SurfaceDefinition): string {
-  const params = surface.defaultParams;
-  if (!params) return surface.key;
-  return `${surface.key}:${Object.entries(params)
-    .map(([k, v]) => `${k}=${String(v)}`)
-    .join(',')}`;
+    const params = surface.defaultParams;
+    if (!params) return surface.key;
+    return `${surface.key}:${Object.entries(params)
+        .map(([k, v]) => `${k}=${String(v)}`)
+        .join(',')}`;
 }
 
 function matches(surface: SurfaceDefinition, filter: string): boolean {
-  if (!filter) return true;
-  const needle = filter.toLowerCase();
-  if (resolveTitle(surface, {}).toLowerCase().includes(needle)) return true;
-  return (surface.keywords ?? []).some((keyword) => keyword.toLowerCase().includes(needle));
+    if (!filter) return true;
+    const needle = filter.toLowerCase();
+    if (resolveTitle(surface, {}).toLowerCase().includes(needle)) return true;
+    return (surface.keywords ?? []).some((keyword) => keyword.toLowerCase().includes(needle));
 }
 
 export function AppPanel({
-  entry,
-  pinned,
-  onTogglePin,
-  onDismiss,
-  pinnable = true,
-  width = 'panel',
+    entry,
+    pinned,
+    onTogglePin,
+    onDismiss,
+    pinnable = true,
+    width = 'panel',
 }: AppPanelProps) {
-  const { controller } = useWorkbench();
-  const listRef = useRef<HTMLDivElement>(null);
-  const [filter, setFilter] = useState('');
-  const appId = entry.app.id;
-  // Same query keys the rail and Home read — react-query dedupes them to one
-  // request each, which is what makes the three levels physically unable to
-  // disagree.
-  const attention = useAttention();
+    const { controller } = useWorkbench();
+    const listRef = useRef<HTMLDivElement>(null);
+    const [filter, setFilter] = useState('');
+    const appId = entry.app.id;
+    // Same query keys the rail and Home read — react-query dedupes them to one
+    // request each, which is what makes the three levels physically unable to
+    // disagree.
+    const attention = useAttention();
 
-  // Reset the filter when switching apps — a stale filter from the last app
-  // reads as "this app is empty".
-  useEffect(() => {
-    setFilter('');
-  }, [appId]);
+    // Reset the filter when switching apps — a stale filter from the last app
+    // reads as "this app is empty".
+    useEffect(() => {
+        setFilter('');
+    }, [appId]);
 
-  // An unpinned panel is a transient overlay, so Escape must dismiss it — the
-  // same expectation any popover sets. A pinned panel is furniture and stays.
-  useEffect(() => {
-    if (pinned) return;
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') onDismiss();
+    // An unpinned panel is a transient overlay, so Escape must dismiss it — the
+    // same expectation any popover sets. A pinned panel is furniture and stays.
+    useEffect(() => {
+        if (pinned) return;
+        const onKeyDown = (event: KeyboardEvent) => {
+            if (event.key === 'Escape') onDismiss();
+        };
+        window.addEventListener('keydown', onKeyDown);
+        return () => {
+            window.removeEventListener('keydown', onKeyDown);
+        };
+    }, [pinned, onDismiss]);
+
+    /** Up/Down move between rows without leaving the keyboard, wrapping at both ends. */
+    const onItemKeyDown = (event: React.KeyboardEvent<HTMLElement>) => {
+        if (event.key !== 'ArrowDown' && event.key !== 'ArrowUp') return;
+        const items = listRef.current?.querySelectorAll<HTMLElement>('[data-nav-item]');
+        if (!items?.length) return;
+
+        event.preventDefault();
+        const index = [...items].findIndex((item) => item === event.currentTarget);
+        const next =
+            event.key === 'ArrowDown'
+                ? (items[index + 1] ?? items[0])
+                : (items[index - 1] ?? items[items.length - 1]);
+        next?.focus();
     };
-    window.addEventListener('keydown', onKeyDown);
-    return () => {
-      window.removeEventListener('keydown', onKeyDown);
+
+    const openSurface = (
+        surface: SurfaceDefinition,
+        event: { shiftKey: boolean; altKey: boolean }
+    ) => {
+        // A row for a record type this business invented is the generic records
+        // surface plus which type it is showing, so the params ride on the row.
+        controller.open(surface.key, surface.defaultParams, { target: targetFor(event) });
+        if (!pinned) onDismiss();
     };
-  }, [pinned, onDismiss]);
 
-  /** Up/Down move between rows without leaving the keyboard, wrapping at both ends. */
-  const onItemKeyDown = (event: React.KeyboardEvent<HTMLElement>) => {
-    if (event.key !== 'ArrowDown' && event.key !== 'ArrowUp') return;
-    const items = listRef.current?.querySelectorAll<HTMLElement>('[data-nav-item]');
-    if (!items?.length) return;
+    const sections = entry.sections
+        .map((section) => ({
+            ...section,
+            surfaces: section.surfaces.filter((s) => matches(s, filter)),
+        }))
+        .filter((section) => section.surfaces.length > 0);
 
-    event.preventDefault();
-    const index = [...items].findIndex((item) => item === event.currentTarget);
-    const next =
-      event.key === 'ArrowDown'
-        ? (items[index + 1] ?? items[0])
-        : (items[index - 1] ?? items[items.length - 1]);
-    next?.focus();
-  };
+    const AppIcon = entry.icon;
 
-  const openSurface = (
-    surface: SurfaceDefinition,
-    event: { shiftKey: boolean; altKey: boolean }
-  ) => {
-    // A row for a record type this business invented is the generic records
-    // surface plus which type it is showing, so the params ride on the row.
-    controller.open(surface.key, surface.defaultParams, { target: targetFor(event) });
-    if (!pinned) onDismiss();
-  };
-
-  const sections = entry.sections
-    .map((section) => ({
-      ...section,
-      surfaces: section.surfaces.filter((s) => matches(s, filter)),
-    }))
-    .filter((section) => section.surfaces.length > 0);
-
-  const AppIcon = entry.icon;
-
-  return (
-    // Layout belongs to the shell: it renders this in normal flow (so the panel
-    // PUSHES the panes right rather than covering them) inside a wrapper that
-    // clips and animates its width open and shut. This component only ever fills
-    // the box it is given.
-    <AppScope app={appId} className="h-full shrink-0">
-      {/* `collapsed={false}` is explicit and defensive: this is a full-width
+    return (
+        // Layout belongs to the shell: it renders this in normal flow (so the panel
+        // PUSHES the panes right rather than covering them) inside a wrapper that
+        // clips and animates its width open and shut. This component only ever fills
+        // the box it is given.
+        <AppScope app={appId} className="h-full shrink-0">
+            {/* `collapsed={false}` is explicit and defensive: this is a full-width
           panel, never an icon strip, whatever collapsed state any ancestor
           SidebarProvider happens to be carrying. */}
-      <Sidebar
-        collapsed={false}
-        color="module"
-        aria-label={`${entry.label} navigation`}
-        // 20rem, matching the wrapper the shell clips this to.
-        //
-        // BOTH are needed and that is not belt-and-braces. The shell's wrapper
-        // owns the open/close animation and therefore the CLIP width; silica's
-        // Sidebar sizes itself from its own `--sidebar-w`, which defaults to
-        // 16rem. Widening only the wrapper produced a 20rem box with a 16rem
-        // panel in it and four rems of dead space on the right, while the labels
-        // carried on truncating — the change looked applied and did nothing.
-        className={`h-full bg-transparent ${
-          width === 'fill' ? 'w-full [--sidebar-w:100%]' : '[--sidebar-w:20rem]'
-        }`}
-      >
-        <SidebarHeader>
-          <SidebarHeaderBrand>
-            {/* The SAME icon the rail shows for this app — the panel is the rail
+            <Sidebar
+                collapsed={false}
+                color="module"
+                aria-label={`${entry.label} navigation`}
+                // 20rem, matching the wrapper the shell clips this to.
+                //
+                // BOTH are needed and that is not belt-and-braces. The shell's wrapper
+                // owns the open/close animation and therefore the CLIP width; silica's
+                // Sidebar sizes itself from its own `--sidebar-w`, which defaults to
+                // 16rem. Widening only the wrapper produced a 20rem box with a 16rem
+                // panel in it and four rems of dead space on the right, while the labels
+                // carried on truncating — the change looked applied and did nothing.
+                className={`h-full bg-transparent ${width === 'fill' ? 'w-full [--sidebar-w:100%]' : '[--sidebar-w:20rem]'
+                    }`}
+            >
+                <SidebarHeader>
+                    <SidebarHeaderBrand>
+                        {/* The SAME icon the rail shows for this app — the panel is the rail
                 item opened up, so its header has to be recognisably that item.
                 An abstract dot named nothing and forced the eye back to the rail
                 to confirm what had been clicked. */}
-            <Icon glyph={AppIcon} className="text-module size-5 shrink-0" aria-hidden />
-            {/* The name of the column, so it reads as at least as important as
+                        <Icon glyph={AppIcon} className="text-module size-5 shrink-0" aria-hidden />
+                        {/* The name of the column, so it reads as at least as important as
                 the rows under it. At `text-sm` it was 14px heading a list of
                 16px items — a heading smaller than its own contents, which
                 inverts the hierarchy it exists to state. */}
-            <span className="min-w-0 truncate text-base font-semibold" title={entry.label}>
-              {entry.label}
-            </span>
-          </SidebarHeaderBrand>
-          {pinnable ? (
-            <Tooltip content={pinned ? 'Unpin — hide after opening' : 'Pin — keep this open'}>
-              <Button
-                color="neutral"
-                variant="ghost"
-                size="xs"
-                shape="square"
-                aria-pressed={pinned}
-                aria-label={pinned ? 'Unpin the navigation panel' : 'Pin the navigation panel'}
-                onClick={onTogglePin}
-              >
-                {pinned ? (
-                  <Icon glyph={faThumbtackSlash} className="size-3.5" aria-hidden />
-                ) : (
-                  <Icon glyph={faThumbtack} className="size-3.5" aria-hidden />
-                )}
-              </Button>
-            </Tooltip>
-          ) : null}
-        </SidebarHeader>
-
-        <SidebarContent ref={listRef}>
-          {entry.count > 6 ? (
-            <div className="px-2 pb-1">
-              <SearchInput
-                size="sm"
-                value={filter}
-                aria-label={`Search ${entry.label}`}
-                // "Filter" is what the control DOES to a list. "Search" is what
-                // the person is doing, and it is the word they already know.
-                placeholder="Search…"
-                onValueChange={setFilter}
-              />
-            </div>
-          ) : null}
-
-          {sections.length === 0 ? (
-            <Text className="px-3 py-6 text-center text-sm">
-              {filter
-                ? 'Nothing here matches that.'
-                : `There is nothing in ${entry.label} you can open yet.`}
-            </Text>
-          ) : (
-            sections.map((section, index) => (
-              // The title is not unique across an app that fronts several
-              // modules — two of them can each contribute a "Settings" — so the
-              // key carries the position too.
-              <SidebarGroup key={`${section.title ?? '_'}:${String(index)}`}>
-                {section.title ? <SidebarGroupLabel>{section.title}</SidebarGroupLabel> : null}
-                {section.surfaces.map((surface) => {
-                  const label = resolveTitle(surface, {});
-                  return (
-                    // The `+` is a SIBLING of the row, not inside SidebarItem's
-                    // `trailing` slot: SidebarItem renders a <button>, and a
-                    // button inside a button is invalid HTML that React reports
-                    // as a hydration error. `trailing` is for badges and
-                    // chevrons — anything clickable has to sit outside.
-                    <div key={navRowKey(surface)} className="group/row relative flex items-center">
-                      <Tooltip
-                        side="right"
-                        content={`${label} — Shift-click to open alongside, Alt-click for a new window`}
-                      >
-                        <SidebarItem
-                          data-nav-item
-                          className="flex-1"
-                          // The app's hue, on every row. It is the SAME hue for
-                          // the whole column on purpose: within one app it
-                          // distinguishes nothing, but between apps it is the
-                          // whole distinction — the panel for Sell has to be
-                          // recognisably not the panel for Money at a glance,
-                          // the way the rail already is. Left neutral, this
-                          // column was twenty identical black glyphs and the
-                          // only colour anywhere on a browsing screen was the
-                          // one rail row behind it (DESIGN.md RULE #4).
-                          //
-                          // The hue comes from the <AppScope> around the whole
-                          // panel, so nothing here names a colour.
-                          icon={
-                            <Icon glyph={surface.icon} className="text-module size-4" aria-hidden />
-                          }
-                          // `trailing` is for badges and chevrons —
-                          // non-interactive, so the count can live inside the
-                          // row's button.
-                          trailing={<NavBadge surface={surface} attention={attention} />}
-                          onKeyDown={onItemKeyDown}
-                          onClick={(event) => {
-                            openSurface(surface, event);
-                          }}
-                        >
-                          {label}
-                        </SidebarItem>
-                      </Tooltip>
-
-                      {surface.createSurface ? (
-                        <Tooltip content={surface.createLabel ?? 'New'}>
-                          <Button
-                            color="neutral"
-                            variant="ghost"
-                            size="xs"
-                            shape="square"
-                            aria-label={surface.createLabel ?? `New ${label}`}
-                            // Revealed on row hover or its own focus, never
-                            // display:none — it stays reachable by keyboard.
-                            className="absolute right-2 opacity-0 transition-opacity group-hover/row:opacity-100 focus-visible:opacity-100"
-                            onClick={(event) => {
-                              const create = surface.createSurface;
-                              if (!create) return;
-                              controller.open(create, { id: 'new' }, { target: targetFor(event) });
-                              if (!pinned) onDismiss();
-                            }}
-                          >
-                            <Icon glyph={faPlus} className="size-3.5" aria-hidden />
-                          </Button>
+                        <span className="min-w-0 truncate text-base font-semibold" title={entry.label}>
+                            {entry.label}
+                        </span>
+                    </SidebarHeaderBrand>
+                    {pinnable ? (
+                        <Tooltip content={pinned ? 'Unpin — hide after opening' : 'Pin — keep this open'}>
+                            <Button
+                                color="neutral"
+                                variant="ghost"
+                                size="xs"
+                                shape="square"
+                                aria-pressed={pinned}
+                                aria-label={pinned ? 'Unpin the navigation panel' : 'Pin the navigation panel'}
+                                onClick={onTogglePin}
+                            >
+                                {pinned ? (
+                                    <Icon glyph={faThumbtackSlash} className="size-3.5" aria-hidden />
+                                ) : (
+                                    <Icon glyph={faThumbtack} className="size-3.5" aria-hidden />
+                                )}
+                            </Button>
                         </Tooltip>
-                      ) : null}
-                    </div>
-                  );
-                })}
-              </SidebarGroup>
-            ))
-          )}
-        </SidebarContent>
+                    ) : null}
+                </SidebarHeader>
 
-        <SidebarFooter>
-          <Text className="px-2 py-1 text-sm">Opens in a panel you can move anywhere.</Text>
-        </SidebarFooter>
-      </Sidebar>
-    </AppScope>
-  );
+                <SidebarContent ref={listRef}>
+                    {entry.count > 6 ? (
+                        <div className="px-2 pb-1">
+                            <SearchInput
+                                size="sm"
+                                value={filter}
+                                aria-label={`Search ${entry.label}`}
+                                // "Filter" is what the control DOES to a list. "Search" is what
+                                // the person is doing, and it is the word they already know.
+                                placeholder="Search…"
+                                onValueChange={setFilter}
+                            />
+                        </div>
+                    ) : null}
+
+                    {sections.length === 0 ? (
+                        <Text className="px-3 py-6 text-center text-sm">
+                            {filter
+                                ? 'Nothing here matches that.'
+                                : `There is nothing in ${entry.label} you can open yet.`}
+                        </Text>
+                    ) : (
+                        sections.map((section, index) => (
+                            // The title is not unique across an app that fronts several
+                            // modules — two of them can each contribute a "Settings" — so the
+                            // key carries the position too.
+                            <SidebarGroup key={`${section.title ?? '_'}:${String(index)}`}>
+                                {section.title ? <SidebarGroupLabel>{section.title}</SidebarGroupLabel> : null}
+                                {section.surfaces.map((surface) => {
+                                    const label = resolveTitle(surface, {});
+                                    return (
+                                        // The `+` is a SIBLING of the row, not inside SidebarItem's
+                                        // `trailing` slot: SidebarItem renders a <button>, and a
+                                        // button inside a button is invalid HTML that React reports
+                                        // as a hydration error. `trailing` is for badges and
+                                        // chevrons — anything clickable has to sit outside.
+                                        <div key={navRowKey(surface)} className="group/row relative flex items-center">
+                                            <Tooltip
+                                                side="right"
+                                                content={`${label} — Shift-click to open alongside, Alt-click for a new window`}
+                                            >
+                                                <SidebarItem
+                                                    data-nav-item
+                                                    className="flex-1"
+                                                    // The app's hue, on every row. It is the SAME hue for
+                                                    // the whole column on purpose: within one app it
+                                                    // distinguishes nothing, but between apps it is the
+                                                    // whole distinction — the panel for Sell has to be
+                                                    // recognisably not the panel for Money at a glance,
+                                                    // the way the rail already is. Left neutral, this
+                                                    // column was twenty identical black glyphs and the
+                                                    // only color anywhere on a browsing screen was the
+                                                    // one rail row behind it (DESIGN.md RULE #4).
+                                                    //
+                                                    // The hue comes from the <AppScope> around the whole
+                                                    // panel, so nothing here names a color.
+                                                    icon={
+                                                        <Icon glyph={surface.icon} className="text-module size-4" aria-hidden />
+                                                    }
+                                                    // `trailing` is for badges and chevrons —
+                                                    // non-interactive, so the count can live inside the
+                                                    // row's button.
+                                                    trailing={<NavBadge surface={surface} attention={attention} />}
+                                                    onKeyDown={onItemKeyDown}
+                                                    onClick={(event) => {
+                                                        openSurface(surface, event);
+                                                    }}
+                                                >
+                                                    {label}
+                                                </SidebarItem>
+                                            </Tooltip>
+
+                                            {surface.createSurface ? (
+                                                <Tooltip content={surface.createLabel ?? 'New'}>
+                                                    <Button
+                                                        color="neutral"
+                                                        variant="ghost"
+                                                        size="xs"
+                                                        shape="square"
+                                                        aria-label={surface.createLabel ?? `New ${label}`}
+                                                        // Revealed on row hover or its own focus, never
+                                                        // display:none — it stays reachable by keyboard.
+                                                        className="absolute right-2 opacity-0 transition-opacity group-hover/row:opacity-100 focus-visible:opacity-100"
+                                                        onClick={(event) => {
+                                                            const create = surface.createSurface;
+                                                            if (!create) return;
+                                                            controller.open(create, { id: 'new' }, { target: targetFor(event) });
+                                                            if (!pinned) onDismiss();
+                                                        }}
+                                                    >
+                                                        <Icon glyph={faPlus} className="size-3.5" aria-hidden />
+                                                    </Button>
+                                                </Tooltip>
+                                            ) : null}
+                                        </div>
+                                    );
+                                })}
+                            </SidebarGroup>
+                        ))
+                    )}
+                </SidebarContent>
+
+                <SidebarFooter>
+                    <Text className="px-2 py-1 text-sm">Opens in a panel you can move anywhere.</Text>
+                </SidebarFooter>
+            </Sidebar>
+        </AppScope>
+    );
 }

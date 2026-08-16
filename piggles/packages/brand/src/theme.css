@@ -22,7 +22,7 @@
  * docs/initial/config/brand.tokens.json (the approved identity board).
  *
  * Two structural corrections to the spec, which are about ASSIGNMENT rather than
- * choice of colour:
+ * choice of color:
  *
  *   1. The dark base ramp was inverted. The spec had base-100 as the DARKEST of
  *      the three, which put MDI windows (base-100) visually BELOW the workspace
@@ -32,7 +32,7 @@
  *   2. `neutral` and `danger` were absent from the spec entirely. Both are
  *      required — see ./layers.css.
  *
- * **The palette is Brandon's. Do not compute colour.** Use these tokens as
+ * **The palette is Brandon's. Do not compute color.** Use these tokens as
  * given; if a pairing looks wrong on screen, say so and ask. See the note at the
  * top of piggles/DESIGN.md. */
 
@@ -614,7 +614,7 @@
   gap: 0.25rem;
 }
 
-/* The gap between GROUPS — the six colour families in the rail, and the sections
+/* The gap between GROUPS — the six color families in the rail, and the sections
  * inside an app's panel. This is the spacing that does the actual grouping work,
  * so it is the one that has to be unmistakable. */
 .sidebar-content {
@@ -625,7 +625,7 @@
  *
  * Repoints `--color-module` for a subtree from an ATTRIBUTE, so a component
  * shifts the active hue by rendering `data-app="sell"` and nothing else. No
- * inline `style`, no JS colour table.
+ * inline `style`, no JS color table.
  *
  * ALL THREE attributes are live and that is deliberate. `data-app` is Piggles'
  * own vocabulary, used by the Piggles shell and nav. `data-group` colors a whole

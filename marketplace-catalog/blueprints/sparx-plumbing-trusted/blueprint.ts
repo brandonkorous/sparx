@@ -10,71 +10,71 @@ import emails from './emails.json' with { type: 'json' };
 import assets from './assets.json' with { type: 'json' };
 
 const blueprint = {
-  key: 'sparx-plumbing-trusted',
-  version: '1.3.0',
-  name: 'sparx — Plumbing (Trusted Local)',
-  summary:
-    'A warm, trusted local-plumber site — a deep navy palette with a brass accent, sturdy sans display and photo-led reliability. Installs a working online booking flow: homeowners book a free estimate or a service call and get a real time slot. Ships a full visit menu (estimate, drain, leak, water-heater, fixture install, emergency), three plumbers as dispatchable staff with their own hours, and standard + emergency policies. Ships as "Copper & Main Plumbing".',
-  vertical: 'services',
-  preview: 'media/preview.png',
-  requiresModules: ['builder', 'scheduling', 'crm', 'email'],
+    key: 'sparx-plumbing-trusted',
+    version: '1.3.0',
+    name: 'sparx — Plumbing (Trusted Local)',
+    summary:
+        'A warm, trusted local-plumber site — a deep navy palette with a brass accent, sturdy sans display and photo-led reliability. Installs a working online booking flow: homeowners book a free estimate or a service call and get a real time slot. Ships a full visit menu (estimate, drain, leak, water-heater, fixture install, emergency), three plumbers as dispatchable staff with their own hours, and standard + emergency policies. Ships as "Copper & Main Plumbing".',
+    vertical: 'services',
+    preview: 'media/preview.png',
+    requiresModules: ['builder', 'scheduling', 'crm', 'email'],
 
-  // Identity only (business name + tagline + fonts + the theme's hex colours). The look
-  // rides site.theme + the theme decl below; the installing tenant rebrands the name.
-  brand: {
-    businessName: 'Copper & Main Plumbing',
-    tagline: 'Show up on time. Quote it straight. Fix it right.',
-    colors: {
-      primary: '#255079',
-      primaryForeground: '#f4f9ff',
-      accent: '#c79443',
-      secondary: '#38414a',
-    },
-    fonts: {
-      heading: 'Archivo',
-      body: 'Inter',
-    },
-  },
-
-  // The provisioned SiteTheme the installer creates + applies — an editable saved theme
-  // over a foundation base + the template's brand snapshot. The LIVE storefront look is
-  // site.theme (the flat bespoke tokens), written last.
-  theme: {
-    name: 'coppermain',
-    basePresetKey: 'apex',
-    presentation: {
-      v: 2,
-      containerWidth: '1152px',
-    },
+    // Identity only (business name + tagline + fonts + the theme's hex colors). The look
+    // rides site.theme + the theme decl below; the installing tenant rebrands the name.
     brand: {
-      colorPrimary: '#255079',
-      colorAccent: '#c79443',
-      colorSecondary: '#38414a',
-      fontHeading: 'Archivo',
-      fontBody: 'Inter',
-      tokens: {},
+        businessName: 'Copper & Main Plumbing',
+        tagline: 'Show up on time. Quote it straight. Fix it right.',
+        colors: {
+            primary: '#255079',
+            primaryForeground: '#f4f9ff',
+            accent: '#c79443',
+            secondary: '#38414a',
+        },
+        fonts: {
+            heading: 'Archivo',
+            body: 'Inter',
+        },
     },
-    apply: true,
-  },
 
-  assets,
-  contentTypes: [],
+    // The provisioned SiteTheme the installer creates + applies — an editable saved theme
+    // over a foundation base + the template's brand snapshot. The LIVE storefront look is
+    // site.theme (the flat bespoke tokens), written last.
+    theme: {
+        name: 'coppermain',
+        basePresetKey: 'apex',
+        presentation: {
+            v: 2,
+            containerWidth: '1152px',
+        },
+        brand: {
+            colorPrimary: '#255079',
+            colorAccent: '#c79443',
+            colorSecondary: '#38414a',
+            fontHeading: 'Archivo',
+            fontBody: 'Inter',
+            tokens: {},
+        },
+        apply: true,
+    },
 
-  // The booking spine — policies, bookable resources (staff/rooms/stations) with weekly
-  // hours, and the service menu. The installer's scheduling slice replays it into a live
-  // booking flow that the site's /book page renders.
-  scheduling,
+    assets,
+    contentTypes: [],
 
-  // Brand-voiced MARKETING starters (a welcome + a come-back), installed as DRAFTS the
-  // tenant switches on. The transactional booking sends — confirmation, reminder,
-  // reschedule, cancellation, waitlist — are platform KEYED defaults, so they are covered
-  // on email-module activation and are deliberately NOT duplicated here.
-  emails,
-  sequences: [],
+    // The booking spine — policies, bookable resources (staff/rooms/stations) with weekly
+    // hours, and the service menu. The installer's scheduling slice replays it into a live
+    // booking flow that the site's /book page renders.
+    scheduling,
 
-  // The composed distinct site (frame + Home + Book + About + Contact) in the bespoke
-  // theme, fully stamped.
-  site,
+    // Brand-voiced MARKETING starters (a welcome + a come-back), installed as DRAFTS the
+    // tenant switches on. The transactional booking sends — confirmation, reminder,
+    // reschedule, cancellation, waitlist — are platform KEYED defaults, so they are covered
+    // on email-module activation and are deliberately NOT duplicated here.
+    emails,
+    sequences: [],
+
+    // The composed distinct site (frame + Home + Book + About + Contact) in the bespoke
+    // theme, fully stamped.
+    site,
 };
 
 export default blueprint;

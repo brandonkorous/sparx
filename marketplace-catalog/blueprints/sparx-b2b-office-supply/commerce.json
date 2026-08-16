@@ -1,536 +1,636 @@
 {
-  "categories": [
-    {
-      "handle": "paper-ink",
-      "name": "Paper & ink",
-      "description": "Copier paper, toner and printing supplies.",
-      "featured": true
-    },
-    {
-      "handle": "writing",
-      "name": "Writing",
-      "description": "Pens, notebooks and desk stationery.",
-      "featured": true
-    },
-    {
-      "handle": "furniture",
-      "name": "Furniture",
-      "description": "Chairs, whiteboards and desk organisers.",
-      "featured": true
-    },
-    {
-      "handle": "breakroom",
-      "name": "Breakroom",
-      "description": "Coffee, cleaning and breakroom supplies.",
-      "featured": true
-    }
-  ],
-  "collections": [
-    {
-      "handle": "best-sellers",
-      "name": "Best sellers",
-      "description": "The lines every office reorders.",
-      "type": "manual",
-      "featured": true,
-      "productHandles": [
-        "copier-paper-carton",
-        "ballpoint-pens-box",
-        "laser-toner-box",
-        "disinfecting-wipes-case"
-      ]
-    },
-    {
-      "handle": "new-in",
-      "name": "New in",
-      "description": "Lines just added to the catalog.",
-      "type": "manual",
-      "featured": true,
-      "productHandles": [
-        "wirebound-notebooks-case",
-        "ergonomic-task-chair",
-        "breakroom-restock-case"
-      ]
-    },
-    {
-      "handle": "workspace-essentials",
-      "name": "Workspace essentials",
-      "description": "The everyday supplies no desk runs without.",
-      "type": "manual",
-      "featured": false,
-      "productHandles": [
-        "copier-paper-carton",
-        "ballpoint-pens-box",
-        "wirebound-notebooks-case",
-        "desk-organiser-case",
-        "office-starter-bundle"
-      ]
-    },
-    {
-      "handle": "furniture-fitout",
-      "name": "Furniture fit-out",
-      "description": "Kit out a room or a whole floor.",
-      "type": "manual",
-      "featured": false,
-      "productHandles": [
-        "ergonomic-task-chair",
-        "dry-erase-whiteboards-case",
-        "desk-organiser-case"
-      ]
-    },
-    {
-      "handle": "keep-it-stocked",
-      "name": "Keep it stocked",
-      "description": "Buy the case, reorder on a schedule.",
-      "type": "manual",
-      "featured": false,
-      "productHandles": [
-        "copier-paper-carton",
-        "laser-toner-box",
-        "disinfecting-wipes-case",
-        "breakroom-restock-case"
-      ]
-    },
-    {
-      "handle": "new-office-setup",
-      "name": "New office setup",
-      "description": "Stock a new workspace from empty.",
-      "type": "manual",
-      "featured": false,
-      "productHandles": [
-        "office-starter-bundle",
-        "copier-paper-carton",
-        "ergonomic-task-chair",
-        "desk-organiser-case"
-      ]
-    }
-  ],
-  "products": [
-    {
-      "handle": "copier-paper-carton",
-      "title": "Copier Paper — Carton of 5 Reams",
-      "description": "Bright 20 lb, 92-bright multipurpose paper that runs clean through copiers, laser and inkjet without jamming or curling. A carton is 5 reams — 2,500 sheets. MOQ 1 carton. Pick the sheet size your machines take.",
-      "status": "active",
-      "productType": "Paper",
-      "vendor": "Worksmith Supply Co.",
-      "tags": ["paper", "copier-paper", "consumable", "bulk"],
-      "categoryHandles": ["paper-ink"],
-      "collectionHandles": ["best-sellers", "workspace-essentials", "keep-it-stocked"],
-      "seoTitle": "Copier Paper, Carton of 5 Reams | Worksmith Supply",
-      "seoDescription": "Bright 20 lb 92-bright multipurpose copier paper, carton of 5 reams (2,500 sheets). Letter, Legal or A4.",
-      "options": [
+    "categories": [
         {
-          "name": "Size",
-          "displayType": "dropdown",
-          "values": [
-            {
-              "value": "Letter"
-            },
-            {
-              "value": "Legal"
-            },
-            {
-              "value": "A4"
-            }
-          ]
-        }
-      ],
-      "variants": [
-        {
-          "sku": "WSS-PPR-COPY-LTR",
-          "priceCents": 4200,
-          "isDefault": true,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Size": "Letter"
-          }
+            "handle": "paper-ink",
+            "name": "Paper & ink",
+            "description": "Copier paper, toner and printing supplies.",
+            "featured": true
         },
         {
-          "sku": "WSS-PPR-COPY-LGL",
-          "priceCents": 4900,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Size": "Legal"
-          }
+            "handle": "writing",
+            "name": "Writing",
+            "description": "Pens, notebooks and desk stationery.",
+            "featured": true
         },
         {
-          "sku": "WSS-PPR-COPY-A4",
-          "priceCents": 4600,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Size": "A4"
-          }
-        }
-      ],
-      "images": [
-        {
-          "assetId": "prod-paper",
-          "isPrimary": true,
-          "alt": "A carton of five reams of copier paper"
-        }
-      ]
-    },
-    {
-      "handle": "ballpoint-pens-box",
-      "title": "Retractable Ballpoint Pens — Box of 50",
-      "description": "Smooth 1.0 mm medium-point retractable ballpoints with a cushioned grip and a click that survives a year of meetings. A box is 50 pens. MOQ 2 boxes — enough to stock the supply drawer and the ones that walk off. Pick your ink.",
-      "status": "active",
-      "productType": "Writing",
-      "vendor": "Worksmith Supply Co.",
-      "tags": ["writing", "pens", "ballpoint", "consumable"],
-      "categoryHandles": ["writing"],
-      "collectionHandles": ["best-sellers", "workspace-essentials"],
-      "seoTitle": "Retractable Ballpoint Pens, Box of 50 | Worksmith Supply",
-      "seoDescription": "Smooth 1.0 mm medium-point retractable ballpoint pens with a cushioned grip, box of 50. Black, blue or assorted.",
-      "options": [
-        {
-          "name": "Ink",
-          "displayType": "dropdown",
-          "values": [
-            {
-              "value": "Black"
-            },
-            {
-              "value": "Blue"
-            },
-            {
-              "value": "Assorted"
-            }
-          ]
-        }
-      ],
-      "variants": [
-        {
-          "sku": "WSS-WRT-PEN-BLK",
-          "priceCents": 1800,
-          "isDefault": true,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Ink": "Black"
-          }
+            "handle": "furniture",
+            "name": "Furniture",
+            "description": "Chairs, whiteboards and desk organisers.",
+            "featured": true
         },
         {
-          "sku": "WSS-WRT-PEN-BLU",
-          "priceCents": 1800,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Ink": "Blue"
-          }
+            "handle": "breakroom",
+            "name": "Breakroom",
+            "description": "Coffee, cleaning and breakroom supplies.",
+            "featured": true
+        }
+    ],
+    "collections": [
+        {
+            "handle": "best-sellers",
+            "name": "Best sellers",
+            "description": "The lines every office reorders.",
+            "type": "manual",
+            "featured": true,
+            "productHandles": [
+                "copier-paper-carton",
+                "ballpoint-pens-box",
+                "laser-toner-box",
+                "disinfecting-wipes-case"
+            ]
         },
         {
-          "sku": "WSS-WRT-PEN-AST",
-          "priceCents": 2000,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Ink": "Assorted"
-          }
-        }
-      ],
-      "images": [
-        {
-          "assetId": "prod-pens",
-          "isPrimary": true,
-          "alt": "A box of fifty retractable ballpoint pens"
-        }
-      ]
-    },
-    {
-      "handle": "wirebound-notebooks-case",
-      "title": "Wirebound Notebooks — Case of 24",
-      "description": "College-ruled wirebound notebooks, 70 sheets of 20 lb paper that does not bleed through, with a poly cover that survives a bag. A case is 24 books. MOQ 1 case. The pad every desk, meeting room and new hire goes through.",
-      "status": "active",
-      "productType": "Writing",
-      "vendor": "Worksmith Supply Co.",
-      "tags": ["writing", "notebooks", "paper", "consumable"],
-      "categoryHandles": ["writing"],
-      "collectionHandles": ["workspace-essentials", "new-in"],
-      "seoTitle": "Wirebound Notebooks, Case of 24 | Worksmith Supply",
-      "seoDescription": "College-ruled wirebound notebooks, 70 sheets, poly cover, case of 24. The everyday pad for any office.",
-      "variants": [
-        {
-          "sku": "WSS-WRT-NBK-24",
-          "priceCents": 4600,
-          "isDefault": true,
-          "inventoryPolicy": "continue"
-        }
-      ],
-      "images": [
-        {
-          "assetId": "prod-notebooks",
-          "isPrimary": true,
-          "alt": "Wirebound Notebooks — Case of 24"
-        }
-      ]
-    },
-    {
-      "handle": "laser-toner-box",
-      "title": "Laser Toner Cartridges — Box of 2",
-      "description": "High-quality compatible black laser toner that drops straight into the workhorse mono printers most offices run, at a fraction of the branded-cartridge price. A box is 2 cartridges. MOQ 1 box. Pick standard or high-yield for the heavy printers.",
-      "status": "active",
-      "productType": "Ink & toner",
-      "vendor": "Worksmith Supply Co.",
-      "tags": ["toner", "ink", "printing", "consumable"],
-      "categoryHandles": ["paper-ink"],
-      "collectionHandles": ["best-sellers", "keep-it-stocked"],
-      "seoTitle": "Laser Toner Cartridges, Box of 2 | Worksmith Supply",
-      "seoDescription": "Compatible black laser toner cartridges, box of 2, standard or high-yield. Fits the workhorse mono office printers.",
-      "options": [
-        {
-          "name": "Yield",
-          "displayType": "dropdown",
-          "values": [
-            {
-              "value": "Standard"
-            },
-            {
-              "value": "High-yield"
-            }
-          ]
-        }
-      ],
-      "variants": [
-        {
-          "sku": "WSS-INK-TONER-STD",
-          "priceCents": 6400,
-          "isDefault": true,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Yield": "Standard"
-          }
+            "handle": "new-in",
+            "name": "New in",
+            "description": "Lines just added to the catalog.",
+            "type": "manual",
+            "featured": true,
+            "productHandles": [
+                "wirebound-notebooks-case",
+                "ergonomic-task-chair",
+                "breakroom-restock-case"
+            ]
         },
         {
-          "sku": "WSS-INK-TONER-HY",
-          "priceCents": 9800,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Yield": "High-yield"
-          }
-        }
-      ],
-      "images": [
-        {
-          "assetId": "prod-toner",
-          "isPrimary": true,
-          "alt": "A box of laser toner cartridges"
-        }
-      ]
-    },
-    {
-      "handle": "desk-organiser-case",
-      "title": "Desk Organiser Sets — Case of 6",
-      "description": "A five-piece steel-mesh desk set — pen cup, letter tray, sorter, memo holder and clip caddy — that turns a cluttered desk into one someone can actually work at. A case is 6 sets. MOQ 1 case. Ideal for a new-hire fit-out or a whole-floor refresh.",
-      "status": "active",
-      "productType": "Furniture",
-      "vendor": "Worksmith Supply Co.",
-      "tags": ["furniture", "desk", "organiser", "accessories"],
-      "categoryHandles": ["furniture"],
-      "collectionHandles": ["workspace-essentials", "furniture-fitout"],
-      "seoTitle": "Desk Organiser Sets, Case of 6 | Worksmith Supply",
-      "seoDescription": "Five-piece steel-mesh desk organiser sets, case of 6. Pen cup, trays, sorter and caddy for a tidy desk.",
-      "variants": [
-        {
-          "sku": "WSS-FUR-ORG-6",
-          "priceCents": 8400,
-          "isDefault": true,
-          "inventoryPolicy": "continue"
-        }
-      ],
-      "images": [
-        {
-          "assetId": "prod-organiser",
-          "isPrimary": true,
-          "alt": "Desk Organiser Sets — Case of 6"
-        }
-      ]
-    },
-    {
-      "handle": "ergonomic-task-chair",
-      "title": "Ergonomic Mesh Task Chair — Carton of 1",
-      "description": "A breathable mesh-back task chair with adjustable lumbar, seat height and armrests — the chair a team can sit in for eight hours without a physio bill. Ships one to a carton, assembled in minutes. MOQ 4 chairs — enough to fit out a room. Pick the frame colour.",
-      "status": "active",
-      "productType": "Furniture",
-      "vendor": "Worksmith Supply Co.",
-      "tags": ["furniture", "chair", "ergonomic", "seating"],
-      "categoryHandles": ["furniture"],
-      "collectionHandles": ["furniture-fitout", "new-in"],
-      "seoTitle": "Ergonomic Mesh Task Chair | Worksmith Supply",
-      "seoDescription": "A breathable mesh-back ergonomic task chair with adjustable lumbar, height and arms. Sold by the carton, MOQ 4.",
-      "options": [
-        {
-          "name": "Colour",
-          "displayType": "dropdown",
-          "values": [
-            {
-              "value": "Black"
-            },
-            {
-              "value": "Grey"
-            }
-          ]
-        }
-      ],
-      "variants": [
-        {
-          "sku": "WSS-FUR-CHAIR-BLK",
-          "priceCents": 13900,
-          "isDefault": true,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Colour": "Black"
-          }
+            "handle": "workspace-essentials",
+            "name": "Workspace essentials",
+            "description": "The everyday supplies no desk runs without.",
+            "type": "manual",
+            "featured": false,
+            "productHandles": [
+                "copier-paper-carton",
+                "ballpoint-pens-box",
+                "wirebound-notebooks-case",
+                "desk-organiser-case",
+                "office-starter-bundle"
+            ]
         },
         {
-          "sku": "WSS-FUR-CHAIR-GRY",
-          "priceCents": 13900,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Colour": "Grey"
-          }
-        }
-      ],
-      "images": [
-        {
-          "assetId": "prod-chair",
-          "isPrimary": true,
-          "alt": "A boxed ergonomic mesh task chair"
-        }
-      ]
-    },
-    {
-      "handle": "dry-erase-whiteboards-case",
-      "title": "Dry-Erase Whiteboards — Case of 2",
-      "description": "Magnetic dry-erase boards with an aluminium frame and a marker tray, wiping clean with no ghosting after months of stand-ups. A case is 2 boards. MOQ 1 case. Pick the size that fits the wall — a huddle room or a whole planning wall.",
-      "status": "active",
-      "productType": "Furniture",
-      "vendor": "Worksmith Supply Co.",
-      "tags": ["furniture", "whiteboard", "dry-erase", "meeting-room"],
-      "categoryHandles": ["furniture"],
-      "collectionHandles": ["furniture-fitout"],
-      "seoTitle": "Dry-Erase Whiteboards, Case of 2 | Worksmith Supply",
-      "seoDescription": "Magnetic dry-erase whiteboards with aluminium frame and marker tray, case of 2. 3x2 ft or 4x3 ft.",
-      "options": [
-        {
-          "name": "Size",
-          "displayType": "dropdown",
-          "values": [
-            {
-              "value": "3 x 2 ft"
-            },
-            {
-              "value": "4 x 3 ft"
-            }
-          ]
-        }
-      ],
-      "variants": [
-        {
-          "sku": "WSS-FUR-WB-32",
-          "priceCents": 7800,
-          "isDefault": true,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Size": "3 x 2 ft"
-          }
+            "handle": "furniture-fitout",
+            "name": "Furniture fit-out",
+            "description": "Kit out a room or a whole floor.",
+            "type": "manual",
+            "featured": false,
+            "productHandles": [
+                "ergonomic-task-chair",
+                "dry-erase-whiteboards-case",
+                "desk-organiser-case"
+            ]
         },
         {
-          "sku": "WSS-FUR-WB-43",
-          "priceCents": 11200,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Size": "4 x 3 ft"
-          }
-        }
-      ],
-      "images": [
+            "handle": "keep-it-stocked",
+            "name": "Keep it stocked",
+            "description": "Buy the case, reorder on a schedule.",
+            "type": "manual",
+            "featured": false,
+            "productHandles": [
+                "copier-paper-carton",
+                "laser-toner-box",
+                "disinfecting-wipes-case",
+                "breakroom-restock-case"
+            ]
+        },
         {
-          "assetId": "prod-whiteboard",
-          "isPrimary": true,
-          "alt": "A case of dry-erase whiteboards"
+            "handle": "new-office-setup",
+            "name": "New office setup",
+            "description": "Stock a new workspace from empty.",
+            "type": "manual",
+            "featured": false,
+            "productHandles": [
+                "office-starter-bundle",
+                "copier-paper-carton",
+                "ergonomic-task-chair",
+                "desk-organiser-case"
+            ]
         }
-      ]
-    },
-    {
-      "handle": "disinfecting-wipes-case",
-      "title": "Disinfecting Wipes — Case of 12",
-      "description": "Alcohol-free disinfecting wipes that clean desks, keyboards, phones and door handles without leaving a film — 75 wipes a canister, a case of 12. MOQ 2 cases. The line a shared office burns through fastest, and the one you never want to run short of.",
-      "status": "active",
-      "productType": "Breakroom & cleaning",
-      "vendor": "Worksmith Supply Co.",
-      "tags": ["breakroom", "cleaning", "wipes", "consumable"],
-      "categoryHandles": ["breakroom"],
-      "collectionHandles": ["keep-it-stocked", "best-sellers"],
-      "seoTitle": "Disinfecting Wipes, Case of 12 | Worksmith Supply",
-      "seoDescription": "Alcohol-free disinfecting wipes, 75 per canister, case of 12. Cleans desks, keyboards and shared surfaces.",
-      "variants": [
+    ],
+    "products": [
         {
-          "sku": "WSS-BRK-WIPES-12",
-          "priceCents": 5400,
-          "isDefault": true,
-          "inventoryPolicy": "continue"
-        }
-      ],
-      "images": [
+            "handle": "copier-paper-carton",
+            "title": "Copier Paper — Carton of 5 Reams",
+            "description": "Bright 20 lb, 92-bright multipurpose paper that runs clean through copiers, laser and inkjet without jamming or curling. A carton is 5 reams — 2,500 sheets. MOQ 1 carton. Pick the sheet size your machines take.",
+            "status": "active",
+            "productType": "Paper",
+            "vendor": "Worksmith Supply Co.",
+            "tags": [
+                "paper",
+                "copier-paper",
+                "consumable",
+                "bulk"
+            ],
+            "categoryHandles": [
+                "paper-ink"
+            ],
+            "collectionHandles": [
+                "best-sellers",
+                "workspace-essentials",
+                "keep-it-stocked"
+            ],
+            "seoTitle": "Copier Paper, Carton of 5 Reams | Worksmith Supply",
+            "seoDescription": "Bright 20 lb 92-bright multipurpose copier paper, carton of 5 reams (2,500 sheets). Letter, Legal or A4.",
+            "options": [
+                {
+                    "name": "Size",
+                    "displayType": "dropdown",
+                    "values": [
+                        {
+                            "value": "Letter"
+                        },
+                        {
+                            "value": "Legal"
+                        },
+                        {
+                            "value": "A4"
+                        }
+                    ]
+                }
+            ],
+            "variants": [
+                {
+                    "sku": "WSS-PPR-COPY-LTR",
+                    "priceCents": 4200,
+                    "isDefault": true,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Size": "Letter"
+                    }
+                },
+                {
+                    "sku": "WSS-PPR-COPY-LGL",
+                    "priceCents": 4900,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Size": "Legal"
+                    }
+                },
+                {
+                    "sku": "WSS-PPR-COPY-A4",
+                    "priceCents": 4600,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Size": "A4"
+                    }
+                }
+            ],
+            "images": [
+                {
+                    "assetId": "prod-paper",
+                    "isPrimary": true,
+                    "alt": "A carton of five reams of copier paper"
+                }
+            ]
+        },
         {
-          "assetId": "prod-wipes",
-          "isPrimary": true,
-          "alt": "Disinfecting Wipes — Case of 12"
-        }
-      ]
-    },
-    {
-      "handle": "breakroom-restock-case",
-      "title": "Breakroom Restock Case",
-      "description": "The breakroom staples in one carton — a tin of ground coffee, a sleeve of paper cups, stir sticks, sugar, creamer and napkins — enough to keep a small team caffeinated and fed for a month. MOQ 1 case. Put it on a standing order and the breakroom never runs dry.",
-      "status": "active",
-      "productType": "Breakroom & cleaning",
-      "vendor": "Worksmith Supply Co.",
-      "tags": ["breakroom", "coffee", "supplies", "consumable"],
-      "categoryHandles": ["breakroom"],
-      "collectionHandles": ["keep-it-stocked", "new-in"],
-      "seoTitle": "Breakroom Restock Case | Worksmith Supply",
-      "seoDescription": "A breakroom restock carton — coffee, cups, stir sticks, sugar, creamer and napkins. One month for a small team.",
-      "variants": [
+            "handle": "ballpoint-pens-box",
+            "title": "Retractable Ballpoint Pens — Box of 50",
+            "description": "Smooth 1.0 mm medium-point retractable ballpoints with a cushioned grip and a click that survives a year of meetings. A box is 50 pens. MOQ 2 boxes — enough to stock the supply drawer and the ones that walk off. Pick your ink.",
+            "status": "active",
+            "productType": "Writing",
+            "vendor": "Worksmith Supply Co.",
+            "tags": [
+                "writing",
+                "pens",
+                "ballpoint",
+                "consumable"
+            ],
+            "categoryHandles": [
+                "writing"
+            ],
+            "collectionHandles": [
+                "best-sellers",
+                "workspace-essentials"
+            ],
+            "seoTitle": "Retractable Ballpoint Pens, Box of 50 | Worksmith Supply",
+            "seoDescription": "Smooth 1.0 mm medium-point retractable ballpoint pens with a cushioned grip, box of 50. Black, blue or assorted.",
+            "options": [
+                {
+                    "name": "Ink",
+                    "displayType": "dropdown",
+                    "values": [
+                        {
+                            "value": "Black"
+                        },
+                        {
+                            "value": "Blue"
+                        },
+                        {
+                            "value": "Assorted"
+                        }
+                    ]
+                }
+            ],
+            "variants": [
+                {
+                    "sku": "WSS-WRT-PEN-BLK",
+                    "priceCents": 1800,
+                    "isDefault": true,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Ink": "Black"
+                    }
+                },
+                {
+                    "sku": "WSS-WRT-PEN-BLU",
+                    "priceCents": 1800,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Ink": "Blue"
+                    }
+                },
+                {
+                    "sku": "WSS-WRT-PEN-AST",
+                    "priceCents": 2000,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Ink": "Assorted"
+                    }
+                }
+            ],
+            "images": [
+                {
+                    "assetId": "prod-pens",
+                    "isPrimary": true,
+                    "alt": "A box of fifty retractable ballpoint pens"
+                }
+            ]
+        },
         {
-          "sku": "WSS-BRK-RESTOCK",
-          "priceCents": 6800,
-          "isDefault": true,
-          "inventoryPolicy": "continue"
-        }
-      ],
-      "images": [
+            "handle": "wirebound-notebooks-case",
+            "title": "Wirebound Notebooks — Case of 24",
+            "description": "College-ruled wirebound notebooks, 70 sheets of 20 lb paper that does not bleed through, with a poly cover that survives a bag. A case is 24 books. MOQ 1 case. The pad every desk, meeting room and new hire goes through.",
+            "status": "active",
+            "productType": "Writing",
+            "vendor": "Worksmith Supply Co.",
+            "tags": [
+                "writing",
+                "notebooks",
+                "paper",
+                "consumable"
+            ],
+            "categoryHandles": [
+                "writing"
+            ],
+            "collectionHandles": [
+                "workspace-essentials",
+                "new-in"
+            ],
+            "seoTitle": "Wirebound Notebooks, Case of 24 | Worksmith Supply",
+            "seoDescription": "College-ruled wirebound notebooks, 70 sheets, poly cover, case of 24. The everyday pad for any office.",
+            "variants": [
+                {
+                    "sku": "WSS-WRT-NBK-24",
+                    "priceCents": 4600,
+                    "isDefault": true,
+                    "inventoryPolicy": "continue"
+                }
+            ],
+            "images": [
+                {
+                    "assetId": "prod-notebooks",
+                    "isPrimary": true,
+                    "alt": "Wirebound Notebooks — Case of 24"
+                }
+            ]
+        },
         {
-          "assetId": "prod-breakroom",
-          "isPrimary": true,
-          "alt": "Breakroom Restock Case"
-        }
-      ]
-    },
-    {
-      "handle": "office-starter-bundle",
-      "title": "Office Starter Bundle",
-      "description": "Everything a new office or satellite desk runs out of first — a carton of copier paper, a box of pens, a case of notebooks, a desk organiser set and a case of disinfecting wipes, packed together and priced below the sum of its boxes. MOQ 1 bundle. The fastest way to stock a workspace from empty.",
-      "status": "active",
-      "productType": "Bundle",
-      "vendor": "Worksmith Supply Co.",
-      "tags": ["bundle", "starter", "office-setup", "kit"],
-      "categoryHandles": ["paper-ink"],
-      "collectionHandles": ["new-office-setup", "workspace-essentials"],
-      "seoTitle": "Office Starter Bundle | Worksmith Supply",
-      "seoDescription": "A curated starter bundle — paper, pens, notebooks, a desk organiser and wipes, priced below the sum of its boxes.",
-      "variants": [
+            "handle": "laser-toner-box",
+            "title": "Laser Toner Cartridges — Box of 2",
+            "description": "High-quality compatible black laser toner that drops straight into the workhorse mono printers most offices run, at a fraction of the branded-cartridge price. A box is 2 cartridges. MOQ 1 box. Pick standard or high-yield for the heavy printers.",
+            "status": "active",
+            "productType": "Ink & toner",
+            "vendor": "Worksmith Supply Co.",
+            "tags": [
+                "toner",
+                "ink",
+                "printing",
+                "consumable"
+            ],
+            "categoryHandles": [
+                "paper-ink"
+            ],
+            "collectionHandles": [
+                "best-sellers",
+                "keep-it-stocked"
+            ],
+            "seoTitle": "Laser Toner Cartridges, Box of 2 | Worksmith Supply",
+            "seoDescription": "Compatible black laser toner cartridges, box of 2, standard or high-yield. Fits the workhorse mono office printers.",
+            "options": [
+                {
+                    "name": "Yield",
+                    "displayType": "dropdown",
+                    "values": [
+                        {
+                            "value": "Standard"
+                        },
+                        {
+                            "value": "High-yield"
+                        }
+                    ]
+                }
+            ],
+            "variants": [
+                {
+                    "sku": "WSS-INK-TONER-STD",
+                    "priceCents": 6400,
+                    "isDefault": true,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Yield": "Standard"
+                    }
+                },
+                {
+                    "sku": "WSS-INK-TONER-HY",
+                    "priceCents": 9800,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Yield": "High-yield"
+                    }
+                }
+            ],
+            "images": [
+                {
+                    "assetId": "prod-toner",
+                    "isPrimary": true,
+                    "alt": "A box of laser toner cartridges"
+                }
+            ]
+        },
         {
-          "sku": "WSS-KIT-STARTER",
-          "priceCents": 17900,
-          "isDefault": true,
-          "inventoryPolicy": "continue"
-        }
-      ],
-      "images": [
+            "handle": "desk-organiser-case",
+            "title": "Desk Organiser Sets — Case of 6",
+            "description": "A five-piece steel-mesh desk set — pen cup, letter tray, sorter, memo holder and clip caddy — that turns a cluttered desk into one someone can actually work at. A case is 6 sets. MOQ 1 case. Ideal for a new-hire fit-out or a whole-floor refresh.",
+            "status": "active",
+            "productType": "Furniture",
+            "vendor": "Worksmith Supply Co.",
+            "tags": [
+                "furniture",
+                "desk",
+                "organiser",
+                "accessories"
+            ],
+            "categoryHandles": [
+                "furniture"
+            ],
+            "collectionHandles": [
+                "workspace-essentials",
+                "furniture-fitout"
+            ],
+            "seoTitle": "Desk Organiser Sets, Case of 6 | Worksmith Supply",
+            "seoDescription": "Five-piece steel-mesh desk organiser sets, case of 6. Pen cup, trays, sorter and caddy for a tidy desk.",
+            "variants": [
+                {
+                    "sku": "WSS-FUR-ORG-6",
+                    "priceCents": 8400,
+                    "isDefault": true,
+                    "inventoryPolicy": "continue"
+                }
+            ],
+            "images": [
+                {
+                    "assetId": "prod-organiser",
+                    "isPrimary": true,
+                    "alt": "Desk Organiser Sets — Case of 6"
+                }
+            ]
+        },
         {
-          "assetId": "prod-starter-kit",
-          "isPrimary": true,
-          "alt": "Office Starter Bundle"
+            "handle": "ergonomic-task-chair",
+            "title": "Ergonomic Mesh Task Chair — Carton of 1",
+            "description": "A breathable mesh-back task chair with adjustable lumbar, seat height and armrests — the chair a team can sit in for eight hours without a physio bill. Ships one to a carton, assembled in minutes. MOQ 4 chairs — enough to fit out a room. Pick the frame color.",
+            "status": "active",
+            "productType": "Furniture",
+            "vendor": "Worksmith Supply Co.",
+            "tags": [
+                "furniture",
+                "chair",
+                "ergonomic",
+                "seating"
+            ],
+            "categoryHandles": [
+                "furniture"
+            ],
+            "collectionHandles": [
+                "furniture-fitout",
+                "new-in"
+            ],
+            "seoTitle": "Ergonomic Mesh Task Chair | Worksmith Supply",
+            "seoDescription": "A breathable mesh-back ergonomic task chair with adjustable lumbar, height and arms. Sold by the carton, MOQ 4.",
+            "options": [
+                {
+                    "name": "Color",
+                    "displayType": "dropdown",
+                    "values": [
+                        {
+                            "value": "Black"
+                        },
+                        {
+                            "value": "Grey"
+                        }
+                    ]
+                }
+            ],
+            "variants": [
+                {
+                    "sku": "WSS-FUR-CHAIR-BLK",
+                    "priceCents": 13900,
+                    "isDefault": true,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Black"
+                    }
+                },
+                {
+                    "sku": "WSS-FUR-CHAIR-GRY",
+                    "priceCents": 13900,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Grey"
+                    }
+                }
+            ],
+            "images": [
+                {
+                    "assetId": "prod-chair",
+                    "isPrimary": true,
+                    "alt": "A boxed ergonomic mesh task chair"
+                }
+            ]
+        },
+        {
+            "handle": "dry-erase-whiteboards-case",
+            "title": "Dry-Erase Whiteboards — Case of 2",
+            "description": "Magnetic dry-erase boards with an aluminium frame and a marker tray, wiping clean with no ghosting after months of stand-ups. A case is 2 boards. MOQ 1 case. Pick the size that fits the wall — a huddle room or a whole planning wall.",
+            "status": "active",
+            "productType": "Furniture",
+            "vendor": "Worksmith Supply Co.",
+            "tags": [
+                "furniture",
+                "whiteboard",
+                "dry-erase",
+                "meeting-room"
+            ],
+            "categoryHandles": [
+                "furniture"
+            ],
+            "collectionHandles": [
+                "furniture-fitout"
+            ],
+            "seoTitle": "Dry-Erase Whiteboards, Case of 2 | Worksmith Supply",
+            "seoDescription": "Magnetic dry-erase whiteboards with aluminium frame and marker tray, case of 2. 3x2 ft or 4x3 ft.",
+            "options": [
+                {
+                    "name": "Size",
+                    "displayType": "dropdown",
+                    "values": [
+                        {
+                            "value": "3 x 2 ft"
+                        },
+                        {
+                            "value": "4 x 3 ft"
+                        }
+                    ]
+                }
+            ],
+            "variants": [
+                {
+                    "sku": "WSS-FUR-WB-32",
+                    "priceCents": 7800,
+                    "isDefault": true,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Size": "3 x 2 ft"
+                    }
+                },
+                {
+                    "sku": "WSS-FUR-WB-43",
+                    "priceCents": 11200,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Size": "4 x 3 ft"
+                    }
+                }
+            ],
+            "images": [
+                {
+                    "assetId": "prod-whiteboard",
+                    "isPrimary": true,
+                    "alt": "A case of dry-erase whiteboards"
+                }
+            ]
+        },
+        {
+            "handle": "disinfecting-wipes-case",
+            "title": "Disinfecting Wipes — Case of 12",
+            "description": "Alcohol-free disinfecting wipes that clean desks, keyboards, phones and door handles without leaving a film — 75 wipes a canister, a case of 12. MOQ 2 cases. The line a shared office burns through fastest, and the one you never want to run short of.",
+            "status": "active",
+            "productType": "Breakroom & cleaning",
+            "vendor": "Worksmith Supply Co.",
+            "tags": [
+                "breakroom",
+                "cleaning",
+                "wipes",
+                "consumable"
+            ],
+            "categoryHandles": [
+                "breakroom"
+            ],
+            "collectionHandles": [
+                "keep-it-stocked",
+                "best-sellers"
+            ],
+            "seoTitle": "Disinfecting Wipes, Case of 12 | Worksmith Supply",
+            "seoDescription": "Alcohol-free disinfecting wipes, 75 per canister, case of 12. Cleans desks, keyboards and shared surfaces.",
+            "variants": [
+                {
+                    "sku": "WSS-BRK-WIPES-12",
+                    "priceCents": 5400,
+                    "isDefault": true,
+                    "inventoryPolicy": "continue"
+                }
+            ],
+            "images": [
+                {
+                    "assetId": "prod-wipes",
+                    "isPrimary": true,
+                    "alt": "Disinfecting Wipes — Case of 12"
+                }
+            ]
+        },
+        {
+            "handle": "breakroom-restock-case",
+            "title": "Breakroom Restock Case",
+            "description": "The breakroom staples in one carton — a tin of ground coffee, a sleeve of paper cups, stir sticks, sugar, creamer and napkins — enough to keep a small team caffeinated and fed for a month. MOQ 1 case. Put it on a standing order and the breakroom never runs dry.",
+            "status": "active",
+            "productType": "Breakroom & cleaning",
+            "vendor": "Worksmith Supply Co.",
+            "tags": [
+                "breakroom",
+                "coffee",
+                "supplies",
+                "consumable"
+            ],
+            "categoryHandles": [
+                "breakroom"
+            ],
+            "collectionHandles": [
+                "keep-it-stocked",
+                "new-in"
+            ],
+            "seoTitle": "Breakroom Restock Case | Worksmith Supply",
+            "seoDescription": "A breakroom restock carton — coffee, cups, stir sticks, sugar, creamer and napkins. One month for a small team.",
+            "variants": [
+                {
+                    "sku": "WSS-BRK-RESTOCK",
+                    "priceCents": 6800,
+                    "isDefault": true,
+                    "inventoryPolicy": "continue"
+                }
+            ],
+            "images": [
+                {
+                    "assetId": "prod-breakroom",
+                    "isPrimary": true,
+                    "alt": "Breakroom Restock Case"
+                }
+            ]
+        },
+        {
+            "handle": "office-starter-bundle",
+            "title": "Office Starter Bundle",
+            "description": "Everything a new office or satellite desk runs out of first — a carton of copier paper, a box of pens, a case of notebooks, a desk organiser set and a case of disinfecting wipes, packed together and priced below the sum of its boxes. MOQ 1 bundle. The fastest way to stock a workspace from empty.",
+            "status": "active",
+            "productType": "Bundle",
+            "vendor": "Worksmith Supply Co.",
+            "tags": [
+                "bundle",
+                "starter",
+                "office-setup",
+                "kit"
+            ],
+            "categoryHandles": [
+                "paper-ink"
+            ],
+            "collectionHandles": [
+                "new-office-setup",
+                "workspace-essentials"
+            ],
+            "seoTitle": "Office Starter Bundle | Worksmith Supply",
+            "seoDescription": "A curated starter bundle — paper, pens, notebooks, a desk organiser and wipes, priced below the sum of its boxes.",
+            "variants": [
+                {
+                    "sku": "WSS-KIT-STARTER",
+                    "priceCents": 17900,
+                    "isDefault": true,
+                    "inventoryPolicy": "continue"
+                }
+            ],
+            "images": [
+                {
+                    "assetId": "prod-starter-kit",
+                    "isPrimary": true,
+                    "alt": "Office Starter Bundle"
+                }
+            ]
         }
-      ]
-    }
-  ]
+    ]
 }

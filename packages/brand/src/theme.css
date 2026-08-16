@@ -196,7 +196,7 @@
  * a lightness where NEITHER ink reached 4.5:1 — white landed 3.5-4.5, dark 3.6-4.3.
  * No ink could fix those, so the HUES moved one step deeper (the -500s became
  * -600s) and kept white. `partner` moved with them: `chat` landing on violet-600
- * would have made the two modules the same colour, so partner went to violet-700
+ * would have made the two modules the same color, so partner went to violet-700
  * and kept the "one notch deeper than chat" relationship its own line describes.
  *
  * Every module hue clears AA on its solid fill (lowest 4.52) with ONE deliberate
@@ -304,7 +304,7 @@
      its own. Aliased rather than copied: sparx Ember is defined once, above, and
      a literal here would be a second copy to keep in sync.
      It previously carried Builder's indigo, which made a platform pane and a
-     Builder pane the same colour — never a decision, just an unowned default.
+     Builder pane the same color — never a decision, just an unowned default.
      Builder keeps indigo; that split from brand primary IS deliberate. */
   --color-module-platform: var(--color-primary);
   --color-module-platform-content: var(--color-primary-content);
@@ -384,7 +384,7 @@
      its own. Aliased rather than copied: sparx Ember is defined once, above, and
      a literal here would be a second copy to keep in sync.
      It previously carried Builder's indigo, which made a platform pane and a
-     Builder pane the same colour — never a decision, just an unowned default.
+     Builder pane the same color — never a decision, just an unowned default.
      Builder keeps indigo; that split from brand primary IS deliberate. */
   --color-module-platform: var(--color-primary);
   --color-module-platform-content: var(--color-primary-content);
@@ -404,7 +404,7 @@
  *
  * Repoints --color-module for a subtree from an ATTRIBUTE, so a component can
  * shift the active-module hue by rendering `data-module="commerce"` and nothing
- * else. No inline `style`, no JS colour table — the mapping lives here, beside
+ * else. No inline `style`, no JS color table — the mapping lives here, beside
  * the tokens it maps, and is the only place that knows a module's hue.
  *
  * This is what BOTH the workbench's <ModuleScope> and @sparx/ui's
@@ -512,9 +512,9 @@
  * ONE definition of the platform's focus treatment, for every sparx-owned app —
  * workbench, web, market and admin all `@import` this file.
  *
- * Why it exists: silicaui's plugin emits colour utilities for `bg-`, `text-` and
+ * Why it exists: silicaui's plugin emits color utilities for `bg-`, `text-` and
  * `border-` only. There is no `ring-<color>`, and the apps deliberately do NOT
- * bridge colours into Tailwind's own `@theme` namespace (colour is owned
+ * bridge colors into Tailwind's own `@theme` namespace (color is owned
  * entirely by the silica plugin). So a branded focus ring could only be spelled
  * `focus-visible:ring-2 focus-visible:ring-[var(--color-primary)]` — and it was,
  * at 43 call sites, every one a place the treatment would have to be edited

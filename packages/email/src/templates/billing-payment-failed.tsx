@@ -8,6 +8,7 @@ import {
   EmailParagraph,
   EmailSectionLabel,
   EmailTimeline,
+  usePlatform,
   type TimelineRow,
 } from '../components';
 
@@ -37,15 +38,18 @@ export function BillingPaymentFailedEmail({
   attemptedOnLabel,
   retries,
 }: BillingPaymentFailedEmailProps) {
+  const platform = usePlatform();
   return (
     <PlatformEmailLayout
       preview="Update your payment method to keep your sites online."
-      mastheadRight="billing@sparx.email"
+      mastheadRight={platform.billingEmail ?? undefined}
       footerLinks={[
         { label: 'Update payment', href: updateUrl },
-        { label: 'Billing history', href: 'https://sparx.works/settings/billing' },
+        ...(platform.appUrl
+          ? [{ label: 'Billing history', href: `${platform.appUrl}/settings/billing` }]
+          : []),
       ]}
-      footerReason="You're receiving this because a payment on your sparx account needs attention."
+      footerReason={`You're receiving this because a payment on your ${platform.name} account needs attention.`}
     >
       <EmailDisplayHeading>Action needed</EmailDisplayHeading>
 
@@ -56,9 +60,9 @@ export function BillingPaymentFailedEmail({
 
       <EmailParagraph>
         Hi {accountName ?? 'there'}, we tried to charge
-        {card ? ` your ${card.brandLabel} ending in ${card.last4}` : ' the card on file'} for your
-        sparx subscription{attemptedOnLabel ? ` on ${attemptedOnLabel}` : ''}, and it was declined.
-        This usually means the card expired, hit a limit, or was replaced by your bank —
+        {card ? ` your ${card.brandLabel} ending in ${card.last4}` : ' the card on file'} for your{' '}
+        {platform.name} subscription{attemptedOnLabel ? ` on ${attemptedOnLabel}` : ''}, and it was
+        declined. This usually means the card expired, hit a limit, or was replaced by your bank —
         nothing&rsquo;s wrong on your end.
       </EmailParagraph>
 
@@ -91,4 +95,5 @@ export function BillingPaymentFailedEmail({
   );
 }
 
-export const billingPaymentFailedSubject = 'There was a problem with your sparx payment';
+export const billingPaymentFailedSubject = (platform: string) =>
+  `There was a problem with your ${platform} payment`;

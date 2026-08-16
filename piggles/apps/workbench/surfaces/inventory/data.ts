@@ -53,90 +53,90 @@ import { api } from '../../lib/api/client';
  * one.
  */
 export interface StockLevel {
-  variantId: string;
-  /** The product code. Null only on a variant saved without one. */
-  sku: string | null;
-  productId: string;
-  productTitle: string | null;
-  warehouseId: string;
-  warehouseCode: string;
-  warehouseName: string;
-  /** What is physically there. Only ever changed through the movement ledger. */
-  onHand: number;
-  /** Spoken for by baskets and orders that have not shipped. */
-  allocated: number;
-  /** The server's `onHand − allocated`. NOT what a shopper can buy — see `sellable`. */
-  available: number;
-  reorderPoint: number | null;
-  reorderQuantity: number | null;
-  /** How long a restock takes to arrive. The other half of a reorder point:
-   *  "reorder at 5" only means something against how long you then wait. */
-  leadTimeDays: number | null;
-  /** Units deliberately held back from your website as a cushion. */
-  safetyBuffer: number;
-  /** The standard cost, typed in. `avgCostCents` is the moving average the
-   *  system recomputes from costed deliveries. */
-  unitCostCents: number | null;
-  avgCostCents: number | null;
-  updatedAt: string;
-  /** When the QUANTITY was last established — NOT when the row was last touched.
-   *  Editing a reorder point moves `updatedAt` and leaves this alone, which is
-   *  exactly why the freshness hint reads this one. */
-  asOf: string;
-  /** Seconds since `asOf`, worked out on the server so a browser with a wrong
-   *  clock cannot paint a whole list as stale. */
-  ageSeconds: number;
+    variantId: string;
+    /** The product code. Null only on a variant saved without one. */
+    sku: string | null;
+    productId: string;
+    productTitle: string | null;
+    warehouseId: string;
+    warehouseCode: string;
+    warehouseName: string;
+    /** What is physically there. Only ever changed through the movement ledger. */
+    onHand: number;
+    /** Spoken for by baskets and orders that have not shipped. */
+    allocated: number;
+    /** The server's `onHand − allocated`. NOT what a shopper can buy — see `sellable`. */
+    available: number;
+    reorderPoint: number | null;
+    reorderQuantity: number | null;
+    /** How long a restock takes to arrive. The other half of a reorder point:
+     *  "reorder at 5" only means something against how long you then wait. */
+    leadTimeDays: number | null;
+    /** Units deliberately held back from your website as a cushion. */
+    safetyBuffer: number;
+    /** The standard cost, typed in. `avgCostCents` is the moving average the
+     *  system recomputes from costed deliveries. */
+    unitCostCents: number | null;
+    avgCostCents: number | null;
+    updatedAt: string;
+    /** When the QUANTITY was last established — NOT when the row was last touched.
+     *  Editing a reorder point moves `updatedAt` and leaves this alone, which is
+     *  exactly why the freshness hint reads this one. */
+    asOf: string;
+    /** Seconds since `asOf`, worked out on the server so a browser with a wrong
+     *  clock cannot paint a whole list as stale. */
+    ageSeconds: number;
 }
 
 /** A place stock is kept — a warehouse, a shop floor, a van. */
 export interface StockLocation {
-  id: string;
-  name: string;
-  code: string;
-  type: string;
-  city: string | null;
-  region: string | null;
-  country: string | null;
-  isActive: boolean;
+    id: string;
+    name: string;
+    code: string;
+    type: string;
+    city: string | null;
+    region: string | null;
+    country: string | null;
+    isActive: boolean;
 }
 
 /** One hold against stock — the itemisation of a level's `allocated` count. */
 export interface StockHold {
-  id: string;
-  variantId: string;
-  variantSku: string | null;
-  warehouseId: string;
-  warehouseName: string | null;
-  warehouseCode: string | null;
-  quantity: number;
-  /** `cart` | `order` | `subscription`. */
-  holderType: string;
-  holderId: string;
-  status: string;
-  /** When a basket hold lapses on its own. Null on an order hold, which does not. */
-  expiresAt: string | null;
-  createdAt: string;
-  releasedAt: string | null;
+    id: string;
+    variantId: string;
+    variantSku: string | null;
+    warehouseId: string;
+    warehouseName: string | null;
+    warehouseCode: string | null;
+    quantity: number;
+    /** `cart` | `order` | `subscription`. */
+    holderType: string;
+    holderId: string;
+    status: string;
+    /** When a basket hold lapses on its own. Null on an order hold, which does not. */
+    expiresAt: string | null;
+    createdAt: string;
+    releasedAt: string | null;
 }
 
 /** One line of the append-only stock ledger. */
 export interface StockMovement {
-  id: string;
-  variantId: string;
-  variantSku: string | null;
-  warehouseId: string;
-  warehouseName: string | null;
-  warehouseCode: string | null;
-  /** Signed change to on-hand. */
-  delta: number;
-  balanceAfter: number | null;
-  reason: string;
-  referenceType: string | null;
-  referenceId: string | null;
-  actorType: string;
-  actorId: string | null;
-  note: string | null;
-  createdAt: string;
+    id: string;
+    variantId: string;
+    variantSku: string | null;
+    warehouseId: string;
+    warehouseName: string | null;
+    warehouseCode: string | null;
+    /** Signed change to on-hand. */
+    delta: number;
+    balanceAfter: number | null;
+    reason: string;
+    referenceType: string | null;
+    referenceId: string | null;
+    actorType: string;
+    actorId: string | null;
+    note: string | null;
+    createdAt: string;
 }
 
 /* ── Query keys ─────────────────────────────────────────────────────────── */
@@ -145,25 +145,25 @@ export type StockSortKey = 'updatedAt' | 'available' | 'sku' | 'product';
 export type SortDirection = 'asc' | 'desc';
 
 export interface StockQuery {
-  q?: string;
-  /** Narrow to one location. Undefined means everywhere. */
-  warehouseId?: string;
-  /** Only what is at or below its reorder point. */
-  lowStockOnly?: boolean;
-  sortBy: StockSortKey;
-  order: SortDirection;
-  take: number;
-  skip: number;
+    q?: string;
+    /** Narrow to one location. Undefined means everywhere. */
+    warehouseId?: string;
+    /** Only what is at or below its reorder point. */
+    lowStockOnly?: boolean;
+    sortBy: StockSortKey;
+    order: SortDirection;
+    take: number;
+    skip: number;
 }
 
 export const stockKeys = {
-  all: ['inventory', 'stock'] as const,
-  levels: (query: StockQuery) => [...stockKeys.all, 'levels', query] as const,
-  item: (variantId: string) => [...stockKeys.all, 'item', variantId] as const,
-  itemPart: (variantId: string, part: string) => [...stockKeys.item(variantId), part] as const,
-  /** Spelled to match the key commerce/products-data.ts uses, so the two share
-   *  one cache entry rather than fetching the same list twice. */
-  locations: () => ['inventory', 'locations'] as const,
+    all: ['inventory', 'stock'] as const,
+    levels: (query: StockQuery) => [...stockKeys.all, 'levels', query] as const,
+    item: (variantId: string) => [...stockKeys.all, 'item', variantId] as const,
+    itemPart: (variantId: string, part: string) => [...stockKeys.item(variantId), part] as const,
+    /** Spelled to match the key commerce/products-data.ts uses, so the two share
+     *  one cache entry rather than fetching the same list twice. */
+    locations: () => ['inventory', 'locations'] as const,
 };
 
 /* ── Reads ──────────────────────────────────────────────────────────────── */
@@ -177,22 +177,22 @@ export const stockKeys = {
  * out of stock" with "the scarcest of the fifty rows you happen to be holding".
  */
 export function useStockLevels(query: StockQuery) {
-  return useQuery({
-    queryKey: stockKeys.levels(query),
-    queryFn: () =>
-      api.list<StockLevel>('/v1/inventory', {
-        ...(query.q ? { q: query.q } : {}),
-        ...(query.warehouseId ? { warehouse_id: query.warehouseId } : {}),
-        ...(query.lowStockOnly ? { low_stock_only: true } : {}),
-        sort_by: query.sortBy,
-        order: query.order,
-        take: query.take,
-        skip: query.skip,
-      }),
-    // Keeps the current window on screen while the next one loads, so paging
-    // and re-sorting don't blink the table out to an empty state and back.
-    placeholderData: (previous) => previous,
-  });
+    return useQuery({
+        queryKey: stockKeys.levels(query),
+        queryFn: () =>
+            api.list<StockLevel>('/v1/inventory', {
+                ...(query.q ? { q: query.q } : {}),
+                ...(query.warehouseId ? { warehouse_id: query.warehouseId } : {}),
+                ...(query.lowStockOnly ? { low_stock_only: true } : {}),
+                sort_by: query.sortBy,
+                order: query.order,
+                take: query.take,
+                skip: query.skip,
+            }),
+        // Keeps the current window on screen while the next one loads, so paging
+        // and re-sorting don't blink the table out to an empty state and back.
+        placeholderData: (previous) => previous,
+    });
 }
 
 /**
@@ -203,36 +203,36 @@ export function useStockLevels(query: StockQuery) {
  * paged item pane, never a loop over warehouses.
  */
 export function useStockItem(variantId: string) {
-  return useQuery({
-    queryKey: stockKeys.item(variantId),
-    queryFn: () => api.list<StockLevel>('/v1/inventory', { variant_id: variantId, take: 200 }),
-    // A 404 means the variant is gone, which is an answer rather than a fault —
-    // retrying it three times just delays saying so.
-    retry: (failureCount, error) =>
-      error instanceof ApiError && error.status === 404 ? false : failureCount < 2,
-  });
+    return useQuery({
+        queryKey: stockKeys.item(variantId),
+        queryFn: () => api.list<StockLevel>('/v1/inventory', { variant_id: variantId, take: 200 }),
+        // A 404 means the variant is gone, which is an answer rather than a fault —
+        // retrying it three times just delays saying so.
+        retry: (failureCount, error) =>
+            error instanceof ApiError && error.status === 404 ? false : failureCount < 2,
+    });
 }
 
 /** What is holding this sku's stock right now. */
 export function useStockHolds(variantId: string) {
-  return useQuery({
-    queryKey: stockKeys.itemPart(variantId, 'holds'),
-    queryFn: () =>
-      api.list<StockHold>('/v1/inventory/reservations', {
-        variant_id: variantId,
-        status: 'active',
-        take: 100,
-      }),
-  });
+    return useQuery({
+        queryKey: stockKeys.itemPart(variantId, 'holds'),
+        queryFn: () =>
+            api.list<StockHold>('/v1/inventory/reservations', {
+                variant_id: variantId,
+                status: 'active',
+                take: 100,
+            }),
+    });
 }
 
 /** What has happened to this sku's counts lately, newest first. */
 export function useStockHistory(variantId: string) {
-  return useQuery({
-    queryKey: stockKeys.itemPart(variantId, 'history'),
-    queryFn: () =>
-      api.list<StockMovement>('/v1/inventory/movements', { variant_id: variantId, take: 50 }),
-  });
+    return useQuery({
+        queryKey: stockKeys.itemPart(variantId, 'history'),
+        queryFn: () =>
+            api.list<StockMovement>('/v1/inventory/movements', { variant_id: variantId, take: 50 }),
+    });
 }
 
 /**
@@ -244,11 +244,11 @@ export function useStockHistory(variantId: string) {
  * be given by knowing Portland exists.
  */
 export function useStockLocations() {
-  return useQuery({
-    queryKey: stockKeys.locations(),
-    queryFn: () => api.list<StockLocation>('/v1/inventory/locations', { take: 250 }),
-    staleTime: 5 * 60_000,
-  });
+    return useQuery({
+        queryKey: stockKeys.locations(),
+        queryFn: () => api.list<StockLocation>('/v1/inventory/locations', { take: 250 }),
+        staleTime: 5 * 60_000,
+    });
 }
 
 /* ── Invalidation ───────────────────────────────────────────────────────── */
@@ -263,15 +263,15 @@ export function useStockLocations() {
  * a stale one with no indication which is true.
  */
 export function useInvalidateStock() {
-  const queryClient = useQueryClient();
+    const queryClient = useQueryClient();
 
-  return (variantId?: string, productId?: string) => {
-    void queryClient.invalidateQueries({ queryKey: stockKeys.all });
-    if (variantId) void queryClient.invalidateQueries({ queryKey: stockKeys.item(variantId) });
-    if (productId) {
-      void queryClient.invalidateQueries({ queryKey: ['commerce', 'products', productId] });
-    }
-  };
+    return (variantId?: string, productId?: string) => {
+        void queryClient.invalidateQueries({ queryKey: stockKeys.all });
+        if (variantId) void queryClient.invalidateQueries({ queryKey: stockKeys.item(variantId) });
+        if (productId) {
+            void queryClient.invalidateQueries({ queryKey: ['commerce', 'products', productId] });
+        }
+    };
 }
 
 /* ── Writes ─────────────────────────────────────────────────────────────── */
@@ -286,79 +286,79 @@ export function useInvalidateStock() {
  * under a row lock, so a sale landing mid-count cannot be overwritten.
  */
 export function useRecordCount() {
-  const invalidate = useInvalidateStock();
-  return useMutation({
-    mutationFn: (input: {
-      variantId: string;
-      productId?: string;
-      warehouseId: string;
-      onHand: number;
-      note?: string;
-    }) =>
-      api.patch<{ onHand: number; available: number }>(`/v1/inventory/${input.variantId}`, {
-        warehouseId: input.warehouseId,
-        onHand: input.onHand,
-        reason: 'recount',
-        ...(input.note ? { note: input.note } : {}),
-      }),
-    onSuccess: (_result, input) => {
-      invalidate(input.variantId, input.productId);
-    },
-  });
+    const invalidate = useInvalidateStock();
+    return useMutation({
+        mutationFn: (input: {
+            variantId: string;
+            productId?: string;
+            warehouseId: string;
+            onHand: number;
+            note?: string;
+        }) =>
+            api.patch<{ onHand: number; available: number }>(`/v1/inventory/${input.variantId}`, {
+                warehouseId: input.warehouseId,
+                onHand: input.onHand,
+                reason: 'recount',
+                ...(input.note ? { note: input.note } : {}),
+            }),
+        onSuccess: (_result, input) => {
+            invalidate(input.variantId, input.productId);
+        },
+    });
 }
 
 /** When to reorder this sku at this place, how many to get, and how long it
  *  takes to arrive. All three together, because a trigger without a lead time
  *  is a guess. */
 export function useSetReorderRule() {
-  const invalidate = useInvalidateStock();
-  return useMutation({
-    mutationFn: (input: {
-      variantId: string;
-      productId?: string;
-      warehouseId: string;
-      reorderPoint: number;
-      reorderQuantity: number;
-      leadTimeDays?: number;
-    }) =>
-      api.post('/v1/inventory/reorder-policy', {
-        variantId: input.variantId,
-        warehouseId: input.warehouseId,
-        reorderPoint: input.reorderPoint,
-        reorderQuantity: input.reorderQuantity,
-        ...(input.leadTimeDays != null ? { leadTimeDays: input.leadTimeDays } : {}),
-      }),
-    onSuccess: (_result, input) => {
-      invalidate(input.variantId, input.productId);
-    },
-  });
+    const invalidate = useInvalidateStock();
+    return useMutation({
+        mutationFn: (input: {
+            variantId: string;
+            productId?: string;
+            warehouseId: string;
+            reorderPoint: number;
+            reorderQuantity: number;
+            leadTimeDays?: number;
+        }) =>
+            api.post('/v1/inventory/reorder-policy', {
+                variantId: input.variantId,
+                warehouseId: input.warehouseId,
+                reorderPoint: input.reorderPoint,
+                reorderQuantity: input.reorderQuantity,
+                ...(input.leadTimeDays != null ? { leadTimeDays: input.leadTimeDays } : {}),
+            }),
+        onSuccess: (_result, input) => {
+            invalidate(input.variantId, input.productId);
+        },
+    });
 }
 
 /** How many units to hold back from your website as a cushion. */
 export function useSetSafetyBuffer() {
-  const invalidate = useInvalidateStock();
-  return useMutation({
-    mutationFn: (input: {
-      variantId: string;
-      productId?: string;
-      warehouseId: string;
-      safetyBuffer: number;
-    }) =>
-      api.post('/v1/inventory/safety-buffer', {
-        variantId: input.variantId,
-        warehouseId: input.warehouseId,
-        safetyBuffer: input.safetyBuffer,
-      }),
-    onSuccess: (_result, input) => {
-      invalidate(input.variantId, input.productId);
-    },
-  });
+    const invalidate = useInvalidateStock();
+    return useMutation({
+        mutationFn: (input: {
+            variantId: string;
+            productId?: string;
+            warehouseId: string;
+            safetyBuffer: number;
+        }) =>
+            api.post('/v1/inventory/safety-buffer', {
+                variantId: input.variantId,
+                warehouseId: input.warehouseId,
+                safetyBuffer: input.safetyBuffer,
+            }),
+        onSuccess: (_result, input) => {
+            invalidate(input.variantId, input.productId);
+        },
+    });
 }
 
 /* ── Saying what a number means ─────────────────────────────────────────── */
 
 /**
- * The colour a value's MEANING resolves to, handed straight to a silicaui
+ * The color a value's MEANING resolves to, handed straight to a silicaui
  * `color` prop.
  *
  * The five semantics carry state — is this good, bad, or worth a second look.
@@ -370,13 +370,13 @@ export function useSetSafetyBuffer() {
  * what neutral has to be earned against.
  */
 export type Tone =
-  | 'success'
-  | 'warning'
-  | 'danger'
-  | 'info'
-  | 'neutral'
-  | 'module-inventory'
-  | 'module-crm';
+    | 'success'
+    | 'warning'
+    | 'danger'
+    | 'info'
+    | 'neutral'
+    | 'module-inventory'
+    | 'module-crm';
 
 /**
  * How many a shopper could actually buy right now.
@@ -388,16 +388,16 @@ export type Tone =
  * because `available` is a documented public field integrators already read.
  */
 export function sellable(level: {
-  onHand: number;
-  allocated: number;
-  safetyBuffer: number;
+    onHand: number;
+    allocated: number;
+    safetyBuffer: number;
 }): number {
-  return Math.max(0, level.onHand - level.allocated - level.safetyBuffer);
+    return Math.max(0, level.onHand - level.allocated - level.safetyBuffer);
 }
 
 export interface StockState {
-  label: string;
-  tone: Tone;
+    label: string;
+    tone: Tone;
 }
 
 /**
@@ -407,81 +407,81 @@ export interface StockState {
  * plentiful while every unit is already spoken for or held back.
  */
 export function levelState(level: {
-  onHand: number;
-  allocated: number;
-  safetyBuffer: number;
-  reorderPoint: number | null;
+    onHand: number;
+    allocated: number;
+    safetyBuffer: number;
+    reorderPoint: number | null;
 }): StockState {
-  const canSell = sellable(level);
-  if (canSell <= 0) return { label: 'None to sell', tone: 'danger' };
-  if (level.reorderPoint !== null && canSell <= level.reorderPoint) {
-    return { label: 'Running low', tone: 'warning' };
-  }
-  return { label: 'In stock', tone: 'success' };
+    const canSell = sellable(level);
+    if (canSell <= 0) return { label: 'None to sell', tone: 'danger' };
+    if (level.reorderPoint !== null && canSell <= level.reorderPoint) {
+        return { label: 'Running low', tone: 'warning' };
+    }
+    return { label: 'In stock', tone: 'success' };
 }
 
 /** The worst state across a set of levels — what the sku as a whole is like. */
 export function overallState(levels: StockLevel[]): StockState {
-  if (levels.length === 0) return { label: 'Not counted', tone: 'info' };
-  const states = levels.map(levelState);
-  if (states.some((state) => state.tone === 'danger')) {
-    return states.every((state) => state.tone === 'danger')
-      ? { label: 'None to sell', tone: 'danger' }
-      : { label: 'Out somewhere', tone: 'danger' };
-  }
-  if (states.some((state) => state.tone === 'warning')) {
-    return { label: 'Running low', tone: 'warning' };
-  }
-  return { label: 'In stock', tone: 'success' };
+    if (levels.length === 0) return { label: 'Not counted', tone: 'info' };
+    const states = levels.map(levelState);
+    if (states.some((state) => state.tone === 'danger')) {
+        return states.every((state) => state.tone === 'danger')
+            ? { label: 'None to sell', tone: 'danger' }
+            : { label: 'Out somewhere', tone: 'danger' };
+    }
+    if (states.some((state) => state.tone === 'warning')) {
+        return { label: 'Running low', tone: 'warning' };
+    }
+    return { label: 'In stock', tone: 'success' };
 }
 
 /** The ledger's stored reason said in plain words. The stored words are the
  *  engineer's ("sync", "transfer_out"); these are the shop's. */
 export function movementReason(reason: string): string {
-  switch (reason) {
-    case 'sale':
-      return 'Sold';
-    case 'return':
-      return 'Came back from a customer';
-    case 'cancel':
-      return 'Put back after a cancelled order';
-    case 'recount':
-      return 'Counted';
-    case 'loss':
-      return 'Lost';
-    case 'damage':
-      return 'Damaged';
-    case 'transfer_in':
-      return 'Arrived from another location';
-    case 'transfer_out':
-      return 'Sent to another location';
-    case 'receive':
-      return 'Received from a supplier';
-    case 'return_to_supplier':
-      return 'Sent back to the supplier';
-    case 'reserve':
-      return 'Put aside for an order';
-    case 'release':
-      return 'Freed up again';
-    case 'sync':
-      return 'Corrected by a connected system';
-    default:
-      return 'Changed by hand';
-  }
+    switch (reason) {
+        case 'sale':
+            return 'Sold';
+        case 'return':
+            return 'Came back from a customer';
+        case 'cancel':
+            return 'Put back after a cancelled order';
+        case 'recount':
+            return 'Counted';
+        case 'loss':
+            return 'Lost';
+        case 'damage':
+            return 'Damaged';
+        case 'transfer_in':
+            return 'Arrived from another location';
+        case 'transfer_out':
+            return 'Sent to another location';
+        case 'receive':
+            return 'Received from a supplier';
+        case 'return_to_supplier':
+            return 'Sent back to the supplier';
+        case 'reserve':
+            return 'Put aside for an order';
+        case 'release':
+            return 'Freed up again';
+        case 'sync':
+            return 'Corrected by a connected system';
+        default:
+            return 'Changed by hand';
+    }
 }
 
 /** What is holding a unit, in plain words. */
 export function holderLabel(holderType: string): string {
-  switch (holderType) {
-    case 'cart':
-      return 'In someone’s basket';
-    case 'order':
-      return 'On an order not yet shipped';
-    case 'subscription':
-      return 'Held for a repeating order';
-    default:
-      return 'Held';
-  }
+    switch (holderType) {
+        case 'cart':
+            return 'In someone’s basket';
+        case 'order':
+            return 'On an order not yet shipped';
+        case 'subscription':
+            return 'Held for a repeating order';
+        default:
+            return 'Held';
+    }
 }
 
 /* ── Errors + formatting ────────────────────────────────────────────────── */
@@ -493,30 +493,30 @@ export function holderLabel(holderType: string): string {
  * sentence, so it falls back to the caller's wording.
  */
 export function stockErrorMessage(error: unknown, fallback: string): string {
-  if (error instanceof ApiError && error.status >= 400 && error.status < 500) {
-    return error.message;
-  }
-  return fallback;
+    if (error instanceof ApiError && error.status >= 400 && error.status < 500) {
+        return error.message;
+    }
+    return fallback;
 }
 
 /** True when the sku behind this pane no longer exists — a different problem
  *  from "the server is unreachable", and it deserves different words. */
 export function isNotFound(error: unknown): boolean {
-  return error instanceof ApiError && error.status === 404;
+    return error instanceof ApiError && error.status === 404;
 }
 
 export function formatCents(cents: number, currency = 'USD'): string {
-  return new Intl.NumberFormat(undefined, { style: 'currency', currency }).format(cents / 100);
+    return new Intl.NumberFormat(undefined, { style: 'currency', currency }).format(cents / 100);
 }
 
 export function plural(count: number, one: string, many: string): string {
-  return `${String(count)} ${count === 1 ? one : many}`;
+    return `${String(count)} ${count === 1 ? one : many}`;
 }
 
 /** How a location is named on screen. The code is what is printed on the shelf
  *  labels, so it earns its place beside the name. */
 export function locationLabel(level: { warehouseName: string; warehouseCode: string }): string {
-  return level.warehouseName === level.warehouseCode
-    ? level.warehouseName
-    : `${level.warehouseName} (${level.warehouseCode})`;
+    return level.warehouseName === level.warehouseCode
+        ? level.warehouseName
+        : `${level.warehouseName} (${level.warehouseCode})`;
 }

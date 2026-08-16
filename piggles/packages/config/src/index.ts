@@ -9,7 +9,7 @@
 // `brand === 'piggles' ? … : …` anywhere, the value belongs in this package.
 //
 // What is NOT here, deliberately:
-//   • Colour — that is `@piggles/brand`, which owns the tokens and the six group
+//   • Color — that is `@piggles/brand`, which owns the tokens and the six group
 //     hues. This package owns which GROUP an app is in; brand owns what that
 //     group looks like.
 //   • Entitlement — nothing here answers "did they pay for this". Every app is

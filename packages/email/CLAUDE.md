@@ -12,10 +12,15 @@ and the mail silently never arrives.
 
 ## Two audiences, two chassis — never cross them
 
-- **PLATFORM email = sparx → the account owner / partner / staff.** Redesigned on the
-  **"Signal"** system: `PlatformEmailLayout` (`templates/_layout.tsx`) — a solid
-  sparx-ink masthead + the structural block kit. Always sparx-branded (these sends
-  pass NO tenant brand → `defaultBrand`). This is what "our emails" means.
+- **PLATFORM email = the platform → the account owner / partner / staff.** Redesigned
+  on the **"Signal"** system: `PlatformEmailLayout` (`templates/_layout.tsx`) — a solid
+  ink masthead + the structural block kit. These sends pass no TENANT brand, so the
+  palette is `signal`'s. **They are not "always sparx-branded" — that was true until
+  2026-08-16 and is the multi-brand leak this package was carrying.** The sending
+  PRODUCT's name, URL, billing address and console origin arrive on
+  `brand.platform`, set by email-worker from the tenant's `platform_brand`, and are
+  read via `usePlatformName()` / `usePlatform()` / `platformNameOf()` (subjects).
+  See RULE below. This is what "our emails" means.
 - **TENANT email = a tenant → their own customer** (order/shipping/appointment,
   forms, careers, chat). Builder-authored silica node-trees (rendered by key), OR the
   legacy coded `EmailLayout` (brand-driven, per-tenant). **A dedicated tenant-brand
@@ -26,6 +31,38 @@ The **5 coded templates still on legacy `EmailLayout`** are tenant-facing on pur
 `form-submission-notification`, `form-submission-confirmation`, `job-application-received`,
 `job-application-confirmation`, `chat-notification`. `EmailLayout` also serves
 `renderAuthoredEmail` (broadcasts) — leave it alone until the tenant pass.
+
+## RULE: a template never writes the platform's name
+
+**No template may contain the string `sparx`** — not in body copy, not in a
+subject, not in a `preview` / `footerReason`, not in a `mastheadRight`, not in a
+`footerLinks` href, and above all not as a wordmark drawn in JSX. WizeWorks runs
+two products on one platform and ONE email worker drains the queue for both, so a
+literal there reaches the other brand's customer.
+
+| You need                            | Use                                                    |
+| ----------------------------------- | ------------------------------------------------------ |
+| the product's name, in a component  | `usePlatformName()`                                    |
+| its URL / billing address / console | `usePlatform()` → `.url` `.billingEmail` `.appUrl`     |
+| the product's name, in a SUBJECT    | subjects take `platform: string`; `send.tsx` passes it |
+| the wordmark                        | `<PlatformWordmark>` — never hand-drawn                |
+
+Anything nullable (`url`, `billingEmail`, `appUrl`) is null when the brand has
+published none: **omit the line, never invent one.** A guessed URL is a link to a
+404 and a guessed address bounces a customer's reply.
+
+The **six sparx-PRODUCT templates are the exception**, and only because they are
+ABOUT sparx: `market-settlement-report`, `partner-welcome`,
+`partner-application-received`, `partner-earnings`, and the two
+`job-application-*` (WizeWorks' own careers page). A Piggles tenant never
+receives one — there is no Piggles marketplace or partner programme
+(piggles/CLAUDE.md, "A sparx PRODUCT is not a Piggles capability"). They are
+listed by name in `SPARX_OWN_PRODUCTS` in `every-template.test.ts`; adding to
+that list needs the same argument.
+
+`every-template.test.ts` renders EVERY template a second time with a second
+brand and asserts the string never appears. That test is the enforcement — 110
+literals across 29 files had accumulated with nothing checking.
 
 ## The Signal design system (platform templates)
 
@@ -118,16 +155,23 @@ fail the business write or trigger a Pub/Sub retry loop of an already-done job:
 - **Auth contexts have no ambient tenant.** `user.tenantId` is a custom field better-auth
   doesn't surface in callback types → read it via `user as unknown as { tenantId?: string }`,
   fallback `?? ''`, exactly like `sendResetPassword` does.
-- **`from` defaults** to `SPARX_EMAIL_FROM` / `sparx <noreply@sparx.email>`; the
-  worker resolves per-tenant BRAND (colors/logo) from `propertyId` when present — but
-  platform templates ignore brand and render sparx.
+- **`from`** is `SPARX_EMAIL_FROM` / `sparx <noreply@sparx.email>` with the SENDING
+  brand's display name substituted by `platformFrom()` (`@wizeworks/brand-core`).
+  The address is shared on purpose — one Mailgun domain serves both brands, so it
+  cannot move until Piggles has DNS of its own; only the name in front of it does.
+  The worker resolves per-tenant BRAND (colors/logo) from `propertyId` when present,
+  and overlays `brand.platform` on EVERY send, branded or not — the footer's legal
+  line and the masthead state who WE are, which a fully-branded shop needs exactly
+  as much as an unbranded one.
 
 ## Test gates (keep green)
 
 - **`every-template.test.ts`** — renders EVERY template with realistic props and asserts
   no `{{`, `undefined`, `NaN`, `[object Object]`, that html contains `sparx.works`, and
   pins `IDS.length`. Adding a template without a CASES entry is a COMPILE error (the map
-  is typed off `TemplateId`); the count assertion catches a silent drop.
+  is typed off `TemplateId`); the count assertion catches a silent drop. It then renders
+  every template AGAIN under a second brand and asserts the first one's name appears
+  nowhere — see the RULE above.
 - **`templates.test.ts`** — per-template subject + key-phrase assertions. When you
   redesign a template, **preserve its subject and any test-pinned phrase** (e.g.
   welcome-merchant must keep "Your site is live on sparx"; the footer must contain

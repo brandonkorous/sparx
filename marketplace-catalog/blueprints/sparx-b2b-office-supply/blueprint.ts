@@ -14,69 +14,69 @@ import assets from './assets.json' with { type: 'json' };
 import emails from './emails.json' with { type: 'json' };
 
 const blueprint = {
-  key: 'sparx-b2b-office-supply',
-  version: '1.4.0',
-  name: 'sparx — Office Supply (B2B / Wholesale)',
-  summary:
-    'A complete, working wholesale shop for a workplace-supplies distributor: a real trade catalogue sold by the box and case — paper & ink, writing, furniture and breakroom supplies — with categories, collections, a bespoke trade PDP (per-box pricing, volume breaks, net-30), and a full merchandised home page. Clean corporate theme — cool slate ground, confident blue, teal accent. Shipped as Worksmith Supply Co.',
-  vertical: 'b2b',
-  preview: 'media/preview.png',
-  requiresModules: ['builder', 'commerce', 'cms', 'crm', 'email'],
+    key: 'sparx-b2b-office-supply',
+    version: '1.4.0',
+    name: 'sparx — Office Supply (B2B / Wholesale)',
+    summary:
+        'A complete, working wholesale shop for a workplace-supplies distributor: a real trade catalogue sold by the box and case — paper & ink, writing, furniture and breakroom supplies — with categories, collections, a bespoke trade PDP (per-box pricing, volume breaks, net-30), and a full merchandised home page. Clean corporate theme — cool slate ground, confident blue, teal accent. Shipped as Worksmith Supply Co.',
+    vertical: 'b2b',
+    preview: 'media/preview.png',
+    requiresModules: ['builder', 'commerce', 'cms', 'crm', 'email'],
 
-  // Identity only (business name + tagline + fonts + the theme's hex colours). The look
-  // itself rides site.theme + the theme decl below; the installing tenant rebrands the name.
-  brand: {
-    businessName: 'Worksmith Supply Co.',
-    tagline: 'Everything the office runs on, one account, one invoice.',
-    colors: {
-      primary: '#08569a',
-      primaryForeground: '#f4f9ff',
-      accent: '#007177',
-      secondary: '#455160',
-    },
-    fonts: {
-      heading: 'Space Grotesk',
-      body: 'Inter',
-    },
-  },
-
-  // The provisioned SiteTheme the installer creates + applies — the bespoke template
-  // look as a tenant-editable saved theme (base preset = the template's own theme key,
-  // plus its brand snapshot).
-  theme: {
-    name: 'b2b-office-supply',
-    basePresetKey: 'b2b-office-supply',
-    presentation: {
-      v: 2,
-      containerWidth: '1152px',
-    },
+    // Identity only (business name + tagline + fonts + the theme's hex colors). The look
+    // itself rides site.theme + the theme decl below; the installing tenant rebrands the name.
     brand: {
-      colorPrimary: '#08569a',
-      colorAccent: '#007177',
-      colorSecondary: '#455160',
-      fontHeading: 'Space Grotesk',
-      fontBody: 'Inter',
-      tokens: {},
+        businessName: 'Worksmith Supply Co.',
+        tagline: 'Everything the office runs on, one account, one invoice.',
+        colors: {
+            primary: '#08569a',
+            primaryForeground: '#f4f9ff',
+            accent: '#007177',
+            secondary: '#455160',
+        },
+        fonts: {
+            heading: 'Space Grotesk',
+            body: 'Inter',
+        },
     },
-    apply: true,
-  },
 
-  assets,
-  contentTypes: [],
-  authors,
-  content,
-  commerce,
+    // The provisioned SiteTheme the installer creates + applies — the bespoke template
+    // look as a tenant-editable saved theme (base preset = the template's own theme key,
+    // plus its brand snapshot).
+    theme: {
+        name: 'b2b-office-supply',
+        basePresetKey: 'b2b-office-supply',
+        presentation: {
+            v: 2,
+            containerWidth: '1152px',
+        },
+        brand: {
+            colorPrimary: '#08569a',
+            colorAccent: '#007177',
+            colorSecondary: '#455160',
+            fontHeading: 'Space Grotesk',
+            fontBody: 'Inter',
+            tokens: {},
+        },
+        apply: true,
+    },
 
-  // A shop's brand-voiced MARKETING starters (a welcome + a win-back), tokenized so a fork
-  // re-themes to the tenant and installed as DRAFTS — the platform's keyed transactional
-  // defaults (order/shipping/dunning) are separate and never duplicated here. Content
-  // templates ship an empty set.
-  emails,
-  sequences: [],
+    assets,
+    contentTypes: [],
+    authors,
+    content,
+    commerce,
 
-  // The composed distinct site (frame + a template-specific home + standard commerce/
-  // cms/about/contact pages + the /journal index), in the bespoke theme, fully stamped.
-  site,
+    // A shop's brand-voiced MARKETING starters (a welcome + a win-back), tokenized so a fork
+    // re-themes to the tenant and installed as DRAFTS — the platform's keyed transactional
+    // defaults (order/shipping/dunning) are separate and never duplicated here. Content
+    // templates ship an empty set.
+    emails,
+    sequences: [],
+
+    // The composed distinct site (frame + a template-specific home + standard commerce/
+    // cms/about/contact pages + the /journal index), in the bespoke theme, fully stamped.
+    site,
 };
 
 export default blueprint;

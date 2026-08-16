@@ -18,24 +18,24 @@ const SectionTypeRef = z.union([SectionTypeEnum, CustomSectionTypeSchema]);
 // service resolves which it is and applies the right path; an unknown slug is
 // rejected there.
 export const SelectThemeInput = z.object({
-  themeKey: z
-    .string()
-    .min(1)
-    .max(63)
-    .regex(/^[a-z0-9][a-z0-9-]*$/, 'Use lowercase letters, numbers, and internal hyphens.'),
+    themeKey: z
+        .string()
+        .min(1)
+        .max(63)
+        .regex(/^[a-z0-9][a-z0-9-]*$/, 'Use lowercase letters, numbers, and internal hyphens.'),
 });
 export type SelectThemeInput = z.infer<typeof SelectThemeInput>;
 
 export const UpdateSettingsInput = z.object({
-  settings: SiteSettings.optional(),
-  appearancePolicy: AppearancePolicy.optional(),
-  // Site identity imagery — a MediaAsset id (from upload_image / set_image_from_url),
-  // or null to clear (a non-primary site then inherits the tenant base). Written
-  // scope-aware: the primary site → the tenant brand, a non-primary site → its
-  // brand_override — the same split as colors/fonts. Omit a field to leave it as-is.
-  logoLightMediaId: z.string().uuid().nullable().optional(),
-  logoDarkMediaId: z.string().uuid().nullable().optional(),
-  faviconMediaId: z.string().uuid().nullable().optional(),
+    settings: SiteSettings.optional(),
+    appearancePolicy: AppearancePolicy.optional(),
+    // Site identity imagery — a MediaAsset id (from upload_image / set_image_from_url),
+    // or null to clear (a non-primary site then inherits the tenant base). Written
+    // scope-aware: the primary site → the tenant brand, a non-primary site → its
+    // brand_override — the same split as colors/fonts. Omit a field to leave it as-is.
+    logoLightMediaId: z.string().uuid().nullable().optional(),
+    logoDarkMediaId: z.string().uuid().nullable().optional(),
+    faviconMediaId: z.string().uuid().nullable().optional(),
 });
 export type UpdateSettingsInput = z.infer<typeof UpdateSettingsInput>;
 
@@ -46,9 +46,9 @@ export const LayoutKey = z.string().min(1).max(255);
 // Resolve-or-create a (targetId, key) page layout. `key` defaults to a target's
 // single "default" layout; `name` is humanized from the target when omitted.
 export const CreatePageLayoutInput = z.object({
-  targetId: TargetId,
-  key: LayoutKey.default('default'),
-  name: z.string().min(1).max(255).optional(),
+    targetId: TargetId,
+    key: LayoutKey.default('default'),
+    name: z.string().min(1).max(255).optional(),
 });
 export type CreatePageLayoutInput = z.infer<typeof CreatePageLayoutInput>;
 
@@ -56,13 +56,13 @@ export type CreatePageLayoutInput = z.infer<typeof CreatePageLayoutInput>;
 // copy the code-defined DEFAULT_TEMPLATES[targetId] rows into it (targets without
 // a code default just get an empty layout).
 export const MaterializePageLayoutInput = z.object({
-  targetId: TargetId,
-  key: LayoutKey.default('default'),
+    targetId: TargetId,
+    key: LayoutKey.default('default'),
 });
 export type MaterializePageLayoutInput = z.infer<typeof MaterializePageLayoutInput>;
 
 export const ListPageLayoutsQuery = z.object({
-  targetId: TargetId.optional(),
+    targetId: TargetId.optional(),
 });
 export type ListPageLayoutsQuery = z.infer<typeof ListPageLayoutsQuery>;
 
@@ -71,48 +71,48 @@ export type ListPageLayoutsQuery = z.infer<typeof ListPageLayoutsQuery>;
 // from the name when omitted — the service guarantees it's unique within the
 // target (suffixing `-2`, `-3`, … on collision).
 export const InstantiateLayoutInput = z.object({
-  targetId: TargetId,
-  templateId: z.string().min(1).max(120),
-  name: z.string().min(1).max(255).optional(),
-  key: LayoutKey.optional(),
+    targetId: TargetId,
+    templateId: z.string().min(1).max(120),
+    name: z.string().min(1).max(255).optional(),
+    key: LayoutKey.optional(),
 });
 export type InstantiateLayoutInput = z.infer<typeof InstantiateLayoutInput>;
 
 // Rename a page layout — the tenant-facing label only. The `key` is immutable
 // (it's the snapshot/resolver identity), so it is NOT editable here.
 export const RenamePageLayoutInput = z.object({
-  name: z.string().min(1).max(255),
+    name: z.string().min(1).max(255),
 });
 export type RenamePageLayoutInput = z.infer<typeof RenamePageLayoutInput>;
 
 export const CreateSectionInput = z.object({
-  // Target layout. Address by `pageLayoutId` (preferred) or by `targetId` (+
-  // `key`, default 'default') — e.g. 'commerce:product' / 'site:home'. The
-  // service requires one of the two.
-  pageLayoutId: Uuid.optional(),
-  targetId: TargetId.optional(),
-  key: LayoutKey.optional(),
-  sectionType: SectionTypeRef,
-  // Optional initial config; defaults are filled from the section schema.
-  config: z.record(z.string(), z.unknown()).optional(),
-  // Insert position; appended to the end when omitted.
-  position: z.number().int().min(0).optional(),
+    // Target layout. Address by `pageLayoutId` (preferred) or by `targetId` (+
+    // `key`, default 'default') — e.g. 'commerce:product' / 'site:home'. The
+    // service requires one of the two.
+    pageLayoutId: Uuid.optional(),
+    targetId: TargetId.optional(),
+    key: LayoutKey.optional(),
+    sectionType: SectionTypeRef,
+    // Optional initial config; defaults are filled from the section schema.
+    config: z.record(z.string(), z.unknown()).optional(),
+    // Insert position; appended to the end when omitted.
+    position: z.number().int().min(0).optional(),
 });
 export type CreateSectionInput = z.infer<typeof CreateSectionInput>;
 
 export const UpdateSectionInput = z.object({
-  config: z.record(z.string(), z.unknown()).optional(),
-  visible: z.boolean().optional(),
+    config: z.record(z.string(), z.unknown()).optional(),
+    visible: z.boolean().optional(),
 });
 export type UpdateSectionInput = z.infer<typeof UpdateSectionInput>;
 
 export const ReorderSectionsInput = z.object({
-  // Target layout — `pageLayoutId` (preferred) or `targetId` (+ `key`, default
-  // 'default'). The service requires one of the two.
-  pageLayoutId: Uuid.optional(),
-  targetId: TargetId.optional(),
-  key: LayoutKey.optional(),
-  orderedIds: z.array(Uuid).min(1),
+    // Target layout — `pageLayoutId` (preferred) or `targetId` (+ `key`, default
+    // 'default'). The service requires one of the two.
+    pageLayoutId: Uuid.optional(),
+    targetId: TargetId.optional(),
+    key: LayoutKey.optional(),
+    orderedIds: z.array(Uuid).min(1),
 });
 export type ReorderSectionsInput = z.infer<typeof ReorderSectionsInput>;
 
@@ -120,42 +120,42 @@ export type ReorderSectionsInput = z.infer<typeof ReorderSectionsInput>;
 // SB-owned assignment of a layout to a target's default or a specific record.
 // `itemRef` = the owning module's STABLE record id (product/collection/entry id).
 export const SetLayoutDefaultInput = z.object({
-  targetId: TargetId,
-  pageLayoutId: Uuid,
+    targetId: TargetId,
+    pageLayoutId: Uuid,
 });
 export type SetLayoutDefaultInput = z.infer<typeof SetLayoutDefaultInput>;
 
 export const AssignLayoutInput = z.object({
-  targetId: TargetId,
-  itemRef: z.string().min(1).max(255),
-  pageLayoutId: Uuid,
+    targetId: TargetId,
+    itemRef: z.string().min(1).max(255),
+    pageLayoutId: Uuid,
 });
 export type AssignLayoutInput = z.infer<typeof AssignLayoutInput>;
 
 export const UpsertLayoutInput = z.object({
-  slot: LayoutSlot,
-  navigationMenuId: OptionalUuid,
-  config: z.record(z.string(), z.unknown()).optional(),
-  visible: z.boolean().optional(),
+    slot: LayoutSlot,
+    navigationMenuId: OptionalUuid,
+    config: z.record(z.string(), z.unknown()).optional(),
+    visible: z.boolean().optional(),
 });
 export type UpsertLayoutInput = z.infer<typeof UpsertLayoutInput>;
 
 export const PublishInput = z.object({
-  note: z.string().max(500).optional(),
+    note: z.string().max(500).optional(),
 });
 export type PublishInput = z.infer<typeof PublishInput>;
 
 export const RollbackInput = z.object({
-  versionId: Uuid,
+    versionId: Uuid,
 });
 export type RollbackInput = z.infer<typeof RollbackInput>;
 
 export const ScheduleInput = z.object({
-  scheduledAt: z.string().datetime(),
-  note: z.string().max(500).optional(),
-  // Optional saved theme to apply to the draft before this scheduled publish
-  // snapshots — seasonal/holiday theme swaps (docs/36 Brand+Theme tier).
-  themeId: Uuid.optional(),
+    scheduledAt: z.string().datetime(),
+    note: z.string().max(500).optional(),
+    // Optional saved theme to apply to the draft before this scheduled publish
+    // snapshots — seasonal/holiday theme swaps (docs/36 Brand+Theme tier).
+    themeId: Uuid.optional(),
 });
 export type ScheduleInput = z.infer<typeof ScheduleInput>;
 
@@ -163,42 +163,42 @@ export type ScheduleInput = z.infer<typeof ScheduleInput>;
 // A tenant's NAMED theme — the tenant's own library, distinct from the
 // read-only platform presets. `presentation` is the v2 surface overlay;
 // `basePresetKey` is the preset it layers on; `brand` is the captured identity
-// "look" (colours/fonts/shape) so the theme is a self-contained snapshot.
+// "look" (colors/fonts/shape) so the theme is a self-contained snapshot.
 export const SavedThemeName = z.string().min(1).max(120);
 
-// Hex (#rrggbb) or a CSS colour keyword — permissive; the v2 compiler reads each
+// Hex (#rrggbb) or a CSS color keyword — permissive; the v2 compiler reads each
 // slot defensively. Lengths/tokens mirror the brand record (docs/33 §3).
 const ThemeColor = z.string().max(32);
 
-// The brand identity captured into a saved theme: colour identity, typography,
+// The brand identity captured into a saved theme: color identity, typography,
 // and the shape/rhythm/effect token doc. All fields optional/nullable — a theme
 // snapshots whatever the brand had; absent/null means "no override for that slot".
 export const SavedThemeBrand = z
-  .object({
-    colorPrimary: ThemeColor.nullable(),
-    colorPrimaryForeground: ThemeColor.nullable(),
-    colorAccent: ThemeColor.nullable(),
-    colorAccentForeground: ThemeColor.nullable(),
-    colorSecondary: ThemeColor.nullable(),
-    colorSecondaryForeground: ThemeColor.nullable(),
-    fontHeading: z.string().max(127).nullable(),
-    fontBody: z.string().max(127).nullable(),
-    tokens: z.record(z.string(), z.unknown()).nullable(),
-  })
-  .partial();
+    .object({
+        colorPrimary: ThemeColor.nullable(),
+        colorPrimaryForeground: ThemeColor.nullable(),
+        colorAccent: ThemeColor.nullable(),
+        colorAccentForeground: ThemeColor.nullable(),
+        colorSecondary: ThemeColor.nullable(),
+        colorSecondaryForeground: ThemeColor.nullable(),
+        fontHeading: z.string().max(127).nullable(),
+        fontBody: z.string().max(127).nullable(),
+        tokens: z.record(z.string(), z.unknown()).nullable(),
+    })
+    .partial();
 export type SavedThemeBrand = z.infer<typeof SavedThemeBrand>;
 
 export const CreateSavedThemeInput = z.object({
-  name: SavedThemeName,
-  basePresetKey: ThemeKey,
-  presentation: PresentationOverlay.default({}),
-  brand: SavedThemeBrand.optional(),
+    name: SavedThemeName,
+    basePresetKey: ThemeKey,
+    presentation: PresentationOverlay.default({}),
+    brand: SavedThemeBrand.optional(),
 });
 export type CreateSavedThemeInput = z.infer<typeof CreateSavedThemeInput>;
 
 export const UpdateSavedThemeInput = z.object({
-  name: SavedThemeName.optional(),
-  presentation: PresentationOverlay.optional(),
-  brand: SavedThemeBrand.optional(),
+    name: SavedThemeName.optional(),
+    presentation: PresentationOverlay.optional(),
+    brand: SavedThemeBrand.optional(),
 });
 export type UpdateSavedThemeInput = z.infer<typeof UpdateSavedThemeInput>;

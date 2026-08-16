@@ -7,7 +7,7 @@ import { PigglesMascot } from '@piggles/mascot/react';
 // Two small cards floated over the artwork's clear top-left corner — "Bookings ·
 // 6 today" and "Invoices · $1,250 · Paid" — wearing their apps' hues. The idea
 // was that two cards from two different apps say "these live together" faster
-// than the line above them can be read, and show the six-colour system working
+// than the line above them can be read, and show the six-color system working
 // before anybody has an account to see it in.
 //
 // They were removed on Brandon's call (2026-08-15) and the call is right. The
@@ -50,20 +50,20 @@ import { PigglesMascot } from '@piggles/mascot/react';
 // the same design, so keep any replacement cut the same way.
 
 export function ProductGlimpse() {
-  return (
-    // `aria-hidden` because she is decoration: the three claims above her carry
-    // the meaning and she agrees with them, which is the standing rule for the
-    // mascot everywhere (DESIGN.md — never the only indicator of anything).
-    <div aria-hidden className="mt-8 hidden sm:block">
-      <PigglesMascot
-        pose="laptop-coffee"
-        // She IS the panel here — the column decides her width, not one of the
-        // four fixed sizes. `sizes` is required with `fill` for that reason:
-        // sized by the column, not by the viewport, since the panel is roughly
-        // half of a 72rem shell at `lg` and full width below it.
-        size="fill"
-        sizes="(min-width: 1024px) 38rem, 100vw"
-      />
-    </div>
-  );
+    return (
+        // `aria-hidden` because she is decoration: the three claims above her carry
+        // the meaning and she agrees with them, which is the standing rule for the
+        // mascot everywhere (DESIGN.md — never the only indicator of anything).
+        <div aria-hidden className="mt-8 hidden sm:block">
+            <PigglesMascot
+                pose="laptop-coffee"
+                // She IS the panel here — the column decides her width, not one of the
+                // four fixed sizes. `sizes` is required with `fill` for that reason:
+                // sized by the column, not by the viewport, since the panel is roughly
+                // half of a 72rem shell at `lg` and full width below it.
+                size="fill"
+                sizes="(min-width: 1024px) 38rem, 100vw"
+            />
+        </div>
+    );
 }

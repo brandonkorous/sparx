@@ -20,7 +20,7 @@
  * flat slab divided only by hairlines.
  *
  * The tab strip has to move with it or the whole thing comes apart. The active
- * tab is deliberately the same colour as the pane below it, so tab and content
+ * tab is deliberately the same color as the pane below it, so tab and content
  * read as one continuous surface with the strip cut away — that is the entire
  * trick that makes a dock look like a dock. Leave the active tab on base-100
  * while the pane goes to base-200 and it detaches into a floating chip. So:
@@ -72,7 +72,7 @@
  * dock, so tabs are the primary drag handle and their edges have to be legible.
  * Inactive tabs sit on the strip's own recessed background; the active tab is
  * lifted to the pane surface (base-100) so it visually joins the content below
- * it, and takes a module-coloured bar along its top edge.
+ * it, and takes a module-colored bar along its top edge.
  *
  * The accent bar CANNOT live on .dv-tab itself: <ModuleScope> renders INSIDE the
  * tab (dockview owns the tab element), so --color-module is set on a descendant
@@ -90,7 +90,7 @@
   max-width: 15rem;
   background-color: transparent;
   /* Tabs sit flush, so a separator HERE lands between the inner element's own
-     module-coloured left and right edges — three hairlines per junction, the
+     module-colored left and right edges — three hairlines per junction, the
      middle one neutral and loudest, which read as "the left border is missing"
      on every tab but the first. The separator now comes from the module edges
      themselves; this is deliberately borderless. */

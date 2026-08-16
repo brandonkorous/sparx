@@ -6,6 +6,7 @@ import {
   EmailDisplayHeading,
   EmailFinePrint,
   EmailParagraph,
+  usePlatformName,
 } from '../components';
 
 /**
@@ -37,6 +38,7 @@ export function SocialConnectionExpiredEmail({
   scheduledCount = 0,
   reconnectUrl,
 }: SocialConnectionExpiredEmailProps) {
+  const product = usePlatformName();
   const label = accountName ? `${accountName} (${platformName})` : platformName;
 
   return (
@@ -46,9 +48,9 @@ export function SocialConnectionExpiredEmail({
     >
       <EmailDisplayHeading>{platformName} needs reconnecting</EmailDisplayHeading>
 
-      <EmailAlert tone="warn" title={`sparx can no longer post to ${label}`}>
-        The permission this account gave sparx ran out, or it was removed from the platform&apos;s
-        own settings.
+      <EmailAlert tone="warn" title={`${product} can no longer post to ${label}`}>
+        The permission this account gave {product} ran out, or it was removed from the
+        platform&apos;s own settings.
       </EmailAlert>
 
       <EmailParagraph>

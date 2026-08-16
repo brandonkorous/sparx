@@ -53,8 +53,9 @@ function summarize(html: string, max = 200): string {
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
-/** The site's public base URL — its canonical domain, else its `.sparx.zone` subdomain.
- *  Best-effort: without one the seed simply carries no link and the person adds it. */
+/** The site's public base URL — the canonical host on record, whichever zone the
+ *  tenant's brand mints in. Best-effort: without one the seed simply carries no
+ *  link and the person adds it. */
 async function siteBaseUrl(
   tx: Parameters<Parameters<typeof withTenant>[1]>[0],
   propertyId: string | null
@@ -71,8 +72,14 @@ async function siteBaseUrl(
     orderBy: [{ isCanonical: 'desc' }, { type: 'asc' }],
     select: { host: true },
   });
-  const host = domain?.host ?? `${property.slug}.sparx.zone`;
-  return { base: `https://${host}`, propertyId: property.id };
+  // No constructed fallback. Every property has a Domain row from the moment it
+  // is provisioned, so `null` here means the row is genuinely missing — and
+  // `${slug}.sparx.zone` was not a recovery from that, it was a guess that named
+  // one brand's zone for tenants of every brand. Returning null lets the caller
+  // skip the link; inventing a host mails somebody a dead one on the wrong
+  // platform.
+  if (!domain?.host) return { base: null, propertyId: property.id };
+  return { base: `https://${domain.host}`, propertyId: property.id };
 }
 
 /**

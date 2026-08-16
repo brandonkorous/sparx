@@ -47,6 +47,7 @@ COPY piggles/packages/ui/package.json piggles/packages/ui/
 # the template packages; onboarding's blueprint step pulls the schema family.
 COPY packages/attribution/package.json packages/attribution/
 COPY packages/auth/package.json packages/auth/
+COPY packages/brand-core/package.json packages/brand-core/
 # The address table. The invite + consent pages build absolute links
 # through it (accountOrigin/appOrigin), during the SERVER render.
 COPY packages/links/package.json packages/links/
@@ -94,6 +95,7 @@ COPY piggles/packages/mascot piggles/packages/mascot
 COPY piggles/packages/ui piggles/packages/ui
 COPY packages/attribution packages/attribution
 COPY packages/auth packages/auth
+COPY packages/brand-core packages/brand-core
 COPY packages/links packages/links
 COPY packages/silica-corrections packages/silica-corrections
 COPY packages/automation-schemas packages/automation-schemas

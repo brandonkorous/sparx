@@ -1,345 +1,375 @@
 {
-  "policies": [
-    {
-      "handle": "nail-standard",
-      "name": "Standard booking",
-      "depositType": "none",
-      "cancellationWindowHours": 24,
-      "reminderOffsetsMin": [1440, 120],
-      "policyText": "Please give us at least 24 hours’ notice to change or cancel. We send a reminder the day before and two hours ahead."
-    }
-  ],
-  "resources": [
-    {
-      "handle": "lena",
-      "name": "Lena Ohno",
-      "kind": "staff",
-      "skillTags": ["manicure", "gel", "art", "pedicure"],
-      "windows": [
+    "policies": [
         {
-          "dayOfWeek": 2,
-          "startMinute": 600,
-          "endMinute": 1140
-        },
-        {
-          "dayOfWeek": 3,
-          "startMinute": 600,
-          "endMinute": 1140
-        },
-        {
-          "dayOfWeek": 4,
-          "startMinute": 600,
-          "endMinute": 1140
-        },
-        {
-          "dayOfWeek": 5,
-          "startMinute": 600,
-          "endMinute": 1140
-        },
-        {
-          "dayOfWeek": 6,
-          "startMinute": 540,
-          "endMinute": 1080
+            "handle": "nail-standard",
+            "name": "Standard booking",
+            "depositType": "none",
+            "cancellationWindowHours": 24,
+            "reminderOffsetsMin": [
+                1440,
+                120
+            ],
+            "policyText": "Please give us at least 24 hours’ notice to change or cancel. We send a reminder the day before and two hours ahead."
         }
-      ]
-    },
-    {
-      "handle": "cai",
-      "name": "Cai Fontaine",
-      "kind": "staff",
-      "skillTags": ["manicure", "gel", "pedicure"],
-      "windows": [
+    ],
+    "resources": [
         {
-          "dayOfWeek": 3,
-          "startMinute": 600,
-          "endMinute": 1140
+            "handle": "lena",
+            "name": "Lena Ohno",
+            "kind": "staff",
+            "skillTags": [
+                "manicure",
+                "gel",
+                "art",
+                "pedicure"
+            ],
+            "windows": [
+                {
+                    "dayOfWeek": 2,
+                    "startMinute": 600,
+                    "endMinute": 1140
+                },
+                {
+                    "dayOfWeek": 3,
+                    "startMinute": 600,
+                    "endMinute": 1140
+                },
+                {
+                    "dayOfWeek": 4,
+                    "startMinute": 600,
+                    "endMinute": 1140
+                },
+                {
+                    "dayOfWeek": 5,
+                    "startMinute": 600,
+                    "endMinute": 1140
+                },
+                {
+                    "dayOfWeek": 6,
+                    "startMinute": 540,
+                    "endMinute": 1080
+                }
+            ]
         },
         {
-          "dayOfWeek": 4,
-          "startMinute": 600,
-          "endMinute": 1140
+            "handle": "cai",
+            "name": "Cai Fontaine",
+            "kind": "staff",
+            "skillTags": [
+                "manicure",
+                "gel",
+                "pedicure"
+            ],
+            "windows": [
+                {
+                    "dayOfWeek": 3,
+                    "startMinute": 600,
+                    "endMinute": 1140
+                },
+                {
+                    "dayOfWeek": 4,
+                    "startMinute": 600,
+                    "endMinute": 1140
+                },
+                {
+                    "dayOfWeek": 5,
+                    "startMinute": 600,
+                    "endMinute": 1140
+                },
+                {
+                    "dayOfWeek": 6,
+                    "startMinute": 540,
+                    "endMinute": 1080
+                },
+                {
+                    "dayOfWeek": 0,
+                    "startMinute": 660,
+                    "endMinute": 960
+                }
+            ]
         },
         {
-          "dayOfWeek": 5,
-          "startMinute": 600,
-          "endMinute": 1140
+            "handle": "rosa",
+            "name": "Rosa Márquez",
+            "kind": "staff",
+            "skillTags": [
+                "manicure",
+                "gel",
+                "art"
+            ],
+            "windows": [
+                {
+                    "dayOfWeek": 2,
+                    "startMinute": 600,
+                    "endMinute": 1140
+                },
+                {
+                    "dayOfWeek": 4,
+                    "startMinute": 600,
+                    "endMinute": 1140
+                },
+                {
+                    "dayOfWeek": 5,
+                    "startMinute": 600,
+                    "endMinute": 1140
+                },
+                {
+                    "dayOfWeek": 0,
+                    "startMinute": 660,
+                    "endMinute": 960
+                }
+            ]
         },
         {
-          "dayOfWeek": 6,
-          "startMinute": 540,
-          "endMinute": 1080
+            "handle": "station-one",
+            "name": "Station One",
+            "kind": "table",
+            "skillTags": [],
+            "windows": [
+                {
+                    "dayOfWeek": 2,
+                    "startMinute": 600,
+                    "endMinute": 1140
+                },
+                {
+                    "dayOfWeek": 3,
+                    "startMinute": 600,
+                    "endMinute": 1140
+                },
+                {
+                    "dayOfWeek": 4,
+                    "startMinute": 600,
+                    "endMinute": 1140
+                },
+                {
+                    "dayOfWeek": 5,
+                    "startMinute": 600,
+                    "endMinute": 1140
+                },
+                {
+                    "dayOfWeek": 6,
+                    "startMinute": 540,
+                    "endMinute": 1080
+                },
+                {
+                    "dayOfWeek": 0,
+                    "startMinute": 660,
+                    "endMinute": 960
+                }
+            ]
         },
         {
-          "dayOfWeek": 0,
-          "startMinute": 660,
-          "endMinute": 960
+            "handle": "station-two",
+            "name": "Station Two",
+            "kind": "table",
+            "skillTags": [],
+            "windows": [
+                {
+                    "dayOfWeek": 2,
+                    "startMinute": 600,
+                    "endMinute": 1140
+                },
+                {
+                    "dayOfWeek": 3,
+                    "startMinute": 600,
+                    "endMinute": 1140
+                },
+                {
+                    "dayOfWeek": 4,
+                    "startMinute": 600,
+                    "endMinute": 1140
+                },
+                {
+                    "dayOfWeek": 5,
+                    "startMinute": 600,
+                    "endMinute": 1140
+                },
+                {
+                    "dayOfWeek": 6,
+                    "startMinute": 540,
+                    "endMinute": 1080
+                },
+                {
+                    "dayOfWeek": 0,
+                    "startMinute": 660,
+                    "endMinute": 960
+                }
+            ]
         }
-      ]
-    },
-    {
-      "handle": "rosa",
-      "name": "Rosa Márquez",
-      "kind": "staff",
-      "skillTags": ["manicure", "gel", "art"],
-      "windows": [
+    ],
+    "services": [
         {
-          "dayOfWeek": 2,
-          "startMinute": 600,
-          "endMinute": 1140
+            "handle": "classic-manicure",
+            "name": "Classic manicure",
+            "description": "A shape, tidy cuticles, a nourishing treatment and a flawless polish.",
+            "durationMinutes": 30,
+            "priceCents": 3500,
+            "assignmentStrategy": "customer_choice",
+            "resourceRequirements": [
+                {
+                    "role": "tech",
+                    "kind": "staff",
+                    "skillTags": [
+                        "manicure"
+                    ],
+                    "count": 1
+                },
+                {
+                    "role": "station",
+                    "kind": "table",
+                    "skillTags": [],
+                    "count": 1
+                }
+            ],
+            "policyHandle": "nail-standard"
         },
         {
-          "dayOfWeek": 4,
-          "startMinute": 600,
-          "endMinute": 1140
+            "handle": "gel-manicure",
+            "name": "Gel manicure",
+            "description": "A long-wear gel color, cured to a high-gloss finish that lasts two weeks plus.",
+            "durationMinutes": 45,
+            "priceCents": 5000,
+            "bufferAfterMin": 5,
+            "assignmentStrategy": "customer_choice",
+            "resourceRequirements": [
+                {
+                    "role": "tech",
+                    "kind": "staff",
+                    "skillTags": [
+                        "gel"
+                    ],
+                    "count": 1
+                },
+                {
+                    "role": "station",
+                    "kind": "table",
+                    "skillTags": [],
+                    "count": 1
+                }
+            ],
+            "policyHandle": "nail-standard"
         },
         {
-          "dayOfWeek": 5,
-          "startMinute": 600,
-          "endMinute": 1140
+            "handle": "builder-gel",
+            "name": "Builder-gel set",
+            "description": "A sculpted overlay for length and strength on your own nails — subtle, natural, sturdy.",
+            "durationMinutes": 75,
+            "priceCents": 7500,
+            "bufferAfterMin": 10,
+            "assignmentStrategy": "customer_choice",
+            "resourceRequirements": [
+                {
+                    "role": "tech",
+                    "kind": "staff",
+                    "skillTags": [
+                        "gel"
+                    ],
+                    "count": 1
+                },
+                {
+                    "role": "station",
+                    "kind": "table",
+                    "skillTags": [],
+                    "count": 1
+                }
+            ],
+            "policyHandle": "nail-standard"
         },
         {
-          "dayOfWeek": 0,
-          "startMinute": 660,
-          "endMinute": 960
+            "handle": "classic-pedicure",
+            "name": "Classic pedicure",
+            "description": "A soak, shape and smooth, a light massage and a polished finish.",
+            "durationMinutes": 45,
+            "priceCents": 5500,
+            "assignmentStrategy": "customer_choice",
+            "resourceRequirements": [
+                {
+                    "role": "tech",
+                    "kind": "staff",
+                    "skillTags": [
+                        "pedicure"
+                    ],
+                    "count": 1
+                }
+            ],
+            "policyHandle": "nail-standard"
+        },
+        {
+            "handle": "gel-pedicure",
+            "name": "Gel pedicure",
+            "description": "The classic pedicure, finished in long-wear gel for a glossy color that stays put.",
+            "durationMinutes": 60,
+            "priceCents": 7000,
+            "bufferAfterMin": 5,
+            "assignmentStrategy": "customer_choice",
+            "resourceRequirements": [
+                {
+                    "role": "tech",
+                    "kind": "staff",
+                    "skillTags": [
+                        "pedicure"
+                    ],
+                    "count": 1
+                }
+            ],
+            "policyHandle": "nail-standard"
+        },
+        {
+            "handle": "nail-art",
+            "name": "Nail art (per nail)",
+            "description": "Hand-painted, per-nail detail — fine lines, negative space or a chrome accent, added to any set.",
+            "durationMinutes": 30,
+            "priceCents": 1500,
+            "assignmentStrategy": "customer_choice",
+            "resourceRequirements": [
+                {
+                    "role": "tech",
+                    "kind": "staff",
+                    "skillTags": [
+                        "art"
+                    ],
+                    "count": 1
+                },
+                {
+                    "role": "station",
+                    "kind": "table",
+                    "skillTags": [],
+                    "count": 1
+                }
+            ],
+            "policyHandle": "nail-standard"
+        },
+        {
+            "handle": "soak-off",
+            "name": "Soak-off removal",
+            "description": "Gentle, no-damage removal of an existing gel or builder set, cuticles conditioned to finish.",
+            "durationMinutes": 20,
+            "priceCents": 1500,
+            "assignmentStrategy": "any_available",
+            "resourceRequirements": [
+                {
+                    "role": "tech",
+                    "kind": "staff",
+                    "skillTags": [
+                        "manicure"
+                    ],
+                    "count": 1
+                },
+                {
+                    "role": "station",
+                    "kind": "table",
+                    "skillTags": [],
+                    "count": 1
+                }
+            ],
+            "policyHandle": "nail-standard"
         }
-      ]
-    },
-    {
-      "handle": "station-one",
-      "name": "Station One",
-      "kind": "table",
-      "skillTags": [],
-      "windows": [
+    ],
+    "locations": [
         {
-          "dayOfWeek": 2,
-          "startMinute": 600,
-          "endMinute": 1140
-        },
-        {
-          "dayOfWeek": 3,
-          "startMinute": 600,
-          "endMinute": 1140
-        },
-        {
-          "dayOfWeek": 4,
-          "startMinute": 600,
-          "endMinute": 1140
-        },
-        {
-          "dayOfWeek": 5,
-          "startMinute": 600,
-          "endMinute": 1140
-        },
-        {
-          "dayOfWeek": 6,
-          "startMinute": 540,
-          "endMinute": 1080
-        },
-        {
-          "dayOfWeek": 0,
-          "startMinute": 660,
-          "endMinute": 960
+            "handle": "premises",
+            "name": "Lacquer",
+            "timezone": "UTC"
         }
-      ]
-    },
-    {
-      "handle": "station-two",
-      "name": "Station Two",
-      "kind": "table",
-      "skillTags": [],
-      "windows": [
-        {
-          "dayOfWeek": 2,
-          "startMinute": 600,
-          "endMinute": 1140
-        },
-        {
-          "dayOfWeek": 3,
-          "startMinute": 600,
-          "endMinute": 1140
-        },
-        {
-          "dayOfWeek": 4,
-          "startMinute": 600,
-          "endMinute": 1140
-        },
-        {
-          "dayOfWeek": 5,
-          "startMinute": 600,
-          "endMinute": 1140
-        },
-        {
-          "dayOfWeek": 6,
-          "startMinute": 540,
-          "endMinute": 1080
-        },
-        {
-          "dayOfWeek": 0,
-          "startMinute": 660,
-          "endMinute": 960
-        }
-      ]
-    }
-  ],
-  "services": [
-    {
-      "handle": "classic-manicure",
-      "name": "Classic manicure",
-      "description": "A shape, tidy cuticles, a nourishing treatment and a flawless polish.",
-      "durationMinutes": 30,
-      "priceCents": 3500,
-      "assignmentStrategy": "customer_choice",
-      "resourceRequirements": [
-        {
-          "role": "tech",
-          "kind": "staff",
-          "skillTags": ["manicure"],
-          "count": 1
-        },
-        {
-          "role": "station",
-          "kind": "table",
-          "skillTags": [],
-          "count": 1
-        }
-      ],
-      "policyHandle": "nail-standard"
-    },
-    {
-      "handle": "gel-manicure",
-      "name": "Gel manicure",
-      "description": "A long-wear gel colour, cured to a high-gloss finish that lasts two weeks plus.",
-      "durationMinutes": 45,
-      "priceCents": 5000,
-      "bufferAfterMin": 5,
-      "assignmentStrategy": "customer_choice",
-      "resourceRequirements": [
-        {
-          "role": "tech",
-          "kind": "staff",
-          "skillTags": ["gel"],
-          "count": 1
-        },
-        {
-          "role": "station",
-          "kind": "table",
-          "skillTags": [],
-          "count": 1
-        }
-      ],
-      "policyHandle": "nail-standard"
-    },
-    {
-      "handle": "builder-gel",
-      "name": "Builder-gel set",
-      "description": "A sculpted overlay for length and strength on your own nails — subtle, natural, sturdy.",
-      "durationMinutes": 75,
-      "priceCents": 7500,
-      "bufferAfterMin": 10,
-      "assignmentStrategy": "customer_choice",
-      "resourceRequirements": [
-        {
-          "role": "tech",
-          "kind": "staff",
-          "skillTags": ["gel"],
-          "count": 1
-        },
-        {
-          "role": "station",
-          "kind": "table",
-          "skillTags": [],
-          "count": 1
-        }
-      ],
-      "policyHandle": "nail-standard"
-    },
-    {
-      "handle": "classic-pedicure",
-      "name": "Classic pedicure",
-      "description": "A soak, shape and smooth, a light massage and a polished finish.",
-      "durationMinutes": 45,
-      "priceCents": 5500,
-      "assignmentStrategy": "customer_choice",
-      "resourceRequirements": [
-        {
-          "role": "tech",
-          "kind": "staff",
-          "skillTags": ["pedicure"],
-          "count": 1
-        }
-      ],
-      "policyHandle": "nail-standard"
-    },
-    {
-      "handle": "gel-pedicure",
-      "name": "Gel pedicure",
-      "description": "The classic pedicure, finished in long-wear gel for a glossy colour that stays put.",
-      "durationMinutes": 60,
-      "priceCents": 7000,
-      "bufferAfterMin": 5,
-      "assignmentStrategy": "customer_choice",
-      "resourceRequirements": [
-        {
-          "role": "tech",
-          "kind": "staff",
-          "skillTags": ["pedicure"],
-          "count": 1
-        }
-      ],
-      "policyHandle": "nail-standard"
-    },
-    {
-      "handle": "nail-art",
-      "name": "Nail art (per nail)",
-      "description": "Hand-painted, per-nail detail — fine lines, negative space or a chrome accent, added to any set.",
-      "durationMinutes": 30,
-      "priceCents": 1500,
-      "assignmentStrategy": "customer_choice",
-      "resourceRequirements": [
-        {
-          "role": "tech",
-          "kind": "staff",
-          "skillTags": ["art"],
-          "count": 1
-        },
-        {
-          "role": "station",
-          "kind": "table",
-          "skillTags": [],
-          "count": 1
-        }
-      ],
-      "policyHandle": "nail-standard"
-    },
-    {
-      "handle": "soak-off",
-      "name": "Soak-off removal",
-      "description": "Gentle, no-damage removal of an existing gel or builder set, cuticles conditioned to finish.",
-      "durationMinutes": 20,
-      "priceCents": 1500,
-      "assignmentStrategy": "any_available",
-      "resourceRequirements": [
-        {
-          "role": "tech",
-          "kind": "staff",
-          "skillTags": ["manicure"],
-          "count": 1
-        },
-        {
-          "role": "station",
-          "kind": "table",
-          "skillTags": [],
-          "count": 1
-        }
-      ],
-      "policyHandle": "nail-standard"
-    }
-  ],
-  "locations": [
-    {
-      "handle": "premises",
-      "name": "Lacquer",
-      "timezone": "UTC"
-    }
-  ]
+    ]
 }

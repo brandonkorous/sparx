@@ -15,7 +15,7 @@ import { getModuleColor } from './primitives';
  *
  * The three tones are the movement's DIRECTION, not the module's identity —
  * stock coming in, stock going out, and the counted line the arithmetic starts
- * from. Direction is a state axis, so it wears semantic colours (DESIGN.md §3);
+ * from. Direction is a state axis, so it wears semantic colors (DESIGN.md §3);
  * amber stays the module's own identity and is spent on the turn.
  */
 export const M = getModuleColor('inventory');
@@ -26,13 +26,13 @@ export const M = getModuleColor('inventory');
 export type Flow = 'in' | 'out' | 'count';
 
 const FLOW_TONE: Record<Flow, string> = {
-  in: 'text-success',
-  out: 'text-error',
-  count: 'text-base-content',
+    in: 'text-success',
+    out: 'text-error',
+    count: 'text-base-content',
 };
 
 export function flowTone(flow: Flow): string {
-  return FLOW_TONE[flow];
+    return FLOW_TONE[flow];
 }
 
 /**
@@ -45,59 +45,59 @@ export function flowTone(flow: Flow): string {
  * exactly the thing being sold.
  */
 export function LedgerLine({
-  what,
-  when,
-  qty,
-  flow = 'out',
-  note,
-  emphasis,
-  running,
+    what,
+    when,
+    qty,
+    flow = 'out',
+    note,
+    emphasis,
+    running,
 }: {
-  what: ReactNode;
-  /** The day, or the count of events this line collapses ("3 deliveries"). */
-  when?: string;
-  /** Rendered as written, sign included — the sign is the reader's cue. */
-  qty: string;
-  flow?: Flow;
-  note?: string;
-  /** A subtotal — the running balance owns the row. */
-  emphasis?: boolean;
-  /** The figure this line ARRIVES at, shown alongside a subtotal. */
-  running?: string;
+    what: ReactNode;
+    /** The day, or the count of events this line collapses ("3 deliveries"). */
+    when?: string;
+    /** Rendered as written, sign included — the sign is the reader's cue. */
+    qty: string;
+    flow?: Flow;
+    note?: string;
+    /** A subtotal — the running balance owns the row. */
+    emphasis?: boolean;
+    /** The figure this line ARRIVES at, shown alongside a subtotal. */
+    running?: string;
 }) {
-  return (
-    <div
-      className={[
-        'flex items-baseline justify-between gap-6',
-        emphasis ? 'border-base-300 mt-1 border-t pt-3.5 pb-1' : 'py-2',
-      ].join(' ')}
-    >
-      <span className="flex min-w-0 flex-wrap items-baseline gap-x-2.5">
-        <Text as="span" className={emphasis ? 'font-medium' : undefined}>
-          {what}
-        </Text>
-        {when ? (
-          <Text as="span" className="font-mono">
-            {when}
-          </Text>
-        ) : null}
-        {note ? (
-          <Text as="span" className="font-mono">
-            · {note}
-          </Text>
-        ) : null}
-      </span>
-      <span
-        className={[
-          'shrink-0 tabular-nums',
-          emphasis ? 'text-2xl font-medium' : 'text-md',
-          emphasis ? '' : flowTone(flow),
-        ]
-          .filter(Boolean)
-          .join(' ')}
-      >
-        {running ?? qty}
-      </span>
-    </div>
-  );
+    return (
+        <div
+            className={[
+                'flex items-baseline justify-between gap-6',
+                emphasis ? 'border-base-300 mt-1 border-t pt-3.5 pb-1' : 'py-2',
+            ].join(' ')}
+        >
+            <span className="flex min-w-0 flex-wrap items-baseline gap-x-2.5">
+                <Text as="span" className={emphasis ? 'font-medium' : undefined}>
+                    {what}
+                </Text>
+                {when ? (
+                    <Text as="span" className="font-mono">
+                        {when}
+                    </Text>
+                ) : null}
+                {note ? (
+                    <Text as="span" className="font-mono">
+                        · {note}
+                    </Text>
+                ) : null}
+            </span>
+            <span
+                className={[
+                    'shrink-0 tabular-nums',
+                    emphasis ? 'text-2xl font-medium' : 'text-md',
+                    emphasis ? '' : flowTone(flow),
+                ]
+                    .filter(Boolean)
+                    .join(' ')}
+            >
+                {running ?? qty}
+            </span>
+        </div>
+    );
 }

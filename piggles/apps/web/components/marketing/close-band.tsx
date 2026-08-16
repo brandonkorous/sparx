@@ -12,11 +12,11 @@ import { PigglesMascot } from '@piggles/mascot/react';
 // together and anything dropped in here is correct without being told.
 //
 // Two consequences that look like style choices and are not:
-//   • The second button asks for `outline` and NO colour. Uncoloured it resolves
+//   • The second button asks for `outline` and NO color. Uncolored it resolves
 //     to `base-content`, which the island has already flipped to light (14.8:1).
 //     Pinning `neutral` fails in both themes.
 //   • The note is `text-primary`, not `text-accent`. Accent is `#8F4656` here —
-//     a surface, not a colour to read — and measured 2.44:1 against 6.56:1.
+//     a surface, not a color to read — and measured 2.44:1 against 6.56:1.
 
 export function CloseBand({
   heading,

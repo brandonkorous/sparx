@@ -35,11 +35,11 @@
 // here and the nodes the catalog factories mint are the same module instance.
 
 import {
-  atom,
-  bind,
-  el,
-  repeat,
-  type Node,
+    atom,
+    bind,
+    el,
+    repeat,
+    type Node,
 } from '../../../packages/silica-catalog/node_modules/@wizeworks/silicaui-html/dist/index.js';
 
 import { visibleWhen } from '../../../packages/silica-catalog/src/conditional';
@@ -49,7 +49,7 @@ import { PLACEHOLDER_IMAGE } from '../../../packages/silica-catalog/src/placehol
 // ── Bound field primitives ────────────────────────────────────────────────────
 //
 // Each returns ONE bound node the routed post fills. `className` is the whole visual
-// decision, so a template controls scale, weight and colour while the bind stays correct.
+// decision, so a template controls scale, weight and color while the bind stays correct.
 // Every key here is what `postToBuilderRecord` + `projectByline` project — do not invent
 // field keys (an unknown key resolves to nothing, silently).
 
@@ -57,44 +57,44 @@ import { PLACEHOLDER_IMAGE } from '../../../packages/silica-catalog/src/placehol
  *  `category`, so a post filed under nothing renders no empty rubric. A bundle-level device
  *  (see the header): the house palette bans it, a tenant's own site does not. */
 export function articleRubric(className: string): Node {
-  return visibleWhen(bind(el('span', className, { text: 'Section' }), 'category'), 'category');
+    return visibleWhen(bind(el('span', className, { text: 'Section' }), 'category'), 'category');
 }
 
 /** The post title, bound to `title`. The article heading is the page's ONE `<h1>` — pass
  *  `tag: 'h1'` on the main title and `h2`/`h3` for any secondary echo. */
 export function articleTitle(tag: 'h1' | 'h2' | 'h3', className: string): Node {
-  return bind(el(tag, className, { text: 'Post title' }), 'title');
+    return bind(el(tag, className, { text: 'Post title' }), 'title');
 }
 
 /** The standfirst — the post's excerpt as the lede paragraph, bound to `excerpt`. */
 export function articleStandfirst(className: string): Node {
-  return bind(
-    el('p', className, { text: 'The short summary of this post, written in the CMS.' }),
-    'excerpt'
-  );
+    return bind(
+        el('p', className, { text: 'The short summary of this post, written in the CMS.' }),
+        'excerpt'
+    );
 }
 
 /** The publication date, bound to `date`. Metadata, not an eyebrow — a fact about the
  *  post, placed wherever the byline sits. */
 export function articleDate(className: string): Node {
-  return bind(el('span', className, { text: 'Published date' }), 'date');
+    return bind(el('span', className, { text: 'Published date' }), 'date');
 }
 
 /** The author's name, bound to `authorName`, gated so a post with no author shows nothing. */
 export function articleAuthorName(className: string): Node {
-  return visibleWhen(
-    bind(el('span', className, { text: 'Author name' }), 'authorName'),
-    'authorName'
-  );
+    return visibleWhen(
+        bind(el('span', className, { text: 'Author name' }), 'authorName'),
+        'authorName'
+    );
 }
 
 /** The author's portrait, bound to `authorAvatar` (a `{url,alt}` the storefront resolves).
  *  Gated on the same field, so no author means no empty avatar frame. */
 export function articleAuthorAvatar(className: string): Node {
-  return visibleWhen(
-    bind(atom('Image', className, { src: PLACEHOLDER_IMAGE, alt: '' }), 'authorAvatar'),
-    'authorAvatar'
-  );
+    return visibleWhen(
+        bind(atom('Image', className, { src: PLACEHOLDER_IMAGE, alt: '' }), 'authorAvatar'),
+        'authorAvatar'
+    );
 }
 
 /** The post's featured image, bound to `featuredImage`. `PLACEHOLDER_IMAGE` shows only on
@@ -104,14 +104,14 @@ export function articleAuthorAvatar(className: string): Node {
  *  only while this file is @source-scanned and emits NOTHING once stamped into a tenant's
  *  tree (the sweep flags it `class-no-css`). Use `aspect-video` / `aspect-square`. */
 export function articleFeaturedImage(className: string, alt = ''): Node {
-  return bind(atom('Image', className, { src: PLACEHOLDER_IMAGE, alt }), 'featuredImage');
+    return bind(atom('Image', className, { src: PLACEHOLDER_IMAGE, alt }), 'featuredImage');
 }
 
 /** The written body — the pinned `cms.article-body` host core, which the platform fills
  *  with the routed post's rich-text document. NOT a binding: the body is a document, not a
  *  scalar, so it renders through the core exactly as `cms.ts` `articleBody()` does. */
 export function articleBodyCore(className = 'w-full'): Node {
-  return hostCore(HOST_KEYS.cmsArticleBody, className);
+    return hostCore(HOST_KEYS.cmsArticleBody, className);
 }
 
 /**
@@ -120,29 +120,29 @@ export function articleBodyCore(className = 'w-full'): Node {
  * genuinely something to say about who wrote this. Classes carry the whole look.
  */
 export function articleAuthorCard(opts: {
-  cardClass: string;
-  avatarClass: string;
-  bodyClass?: string;
-  nameClass: string;
-  bioClass: string;
+    cardClass: string;
+    avatarClass: string;
+    bodyClass?: string;
+    nameClass: string;
+    bioClass: string;
 }): Node {
-  return visibleWhen(
-    el('div', opts.cardClass, {
-      children: [
-        visibleWhen(
-          bind(atom('Image', opts.avatarClass, { src: PLACEHOLDER_IMAGE, alt: '' }), 'authorAvatar'),
-          'authorAvatar'
-        ),
-        el('div', opts.bodyClass ?? 'flex flex-col gap-1', {
-          children: [
-            bind(el('span', opts.nameClass, { text: 'Author name' }), 'authorName'),
-            bind(el('p', opts.bioClass, { text: 'About the author.' }), 'authorBio'),
-          ],
+    return visibleWhen(
+        el('div', opts.cardClass, {
+            children: [
+                visibleWhen(
+                    bind(atom('Image', opts.avatarClass, { src: PLACEHOLDER_IMAGE, alt: '' }), 'authorAvatar'),
+                    'authorAvatar'
+                ),
+                el('div', opts.bodyClass ?? 'flex flex-col gap-1', {
+                    children: [
+                        bind(el('span', opts.nameClass, { text: 'Author name' }), 'authorName'),
+                        bind(el('p', opts.bioClass, { text: 'About the author.' }), 'authorBio'),
+                    ],
+                }),
+            ],
         }),
-      ],
-    }),
-    'authorBio'
-  );
+        'authorBio'
+    );
 }
 
 // ── Page assembly ─────────────────────────────────────────────────────────────
@@ -164,64 +164,64 @@ export function articleAuthorCard(opts: {
  * which the record route owns). Pass `back: null` for a template that ends its own way.
  */
 export function articlePage(
-  header: Node,
-  opts: { bodyClass?: string; foot?: Node | null; back?: Node | null; backHref?: string } = {}
+    header: Node,
+    opts: { bodyClass?: string; foot?: Node | null; back?: Node | null; backHref?: string } = {}
 ): Node {
-  const back =
-    opts.back === null
-      ? null
-      : (opts.back ?? defaultKeepReading(opts.backHref ?? '/journal'));
-  return repeat(
-    el('div', 'flex flex-col', {
-      children: [
-        header,
-        articleBodyBand(opts.bodyClass),
-        ...(opts.foot ? [opts.foot] : []),
-        ...(back ? [back] : []),
-      ],
-    }),
-    'blog_post'
-  );
+    const back =
+        opts.back === null
+            ? null
+            : (opts.back ?? defaultKeepReading(opts.backHref ?? '/journal'));
+    return repeat(
+        el('div', 'flex flex-col', {
+            children: [
+                header,
+                articleBodyBand(opts.bodyClass),
+                ...(opts.foot ? [opts.foot] : []),
+                ...(back ? [back] : []),
+            ],
+        }),
+        'blog_post'
+    );
 }
 
 /** The body band — the article-body core on a prose measure. `max-w-3xl`, not the page's
  *  wider measure: this band is nothing but body text, and a line past ~75 characters is
  *  measurably harder to read (the same call `cms.ts` `articleBody` makes). */
 function articleBodyBand(bodyClass?: string): Node {
-  return el('section', 'w-full @container bg-base-100 text-base-content', {
-    children: [
-      el('div', bodyClass ?? 'mx-auto w-full max-w-3xl px-6 pb-20 @2xl:pb-24', {
-        children: [articleBodyCore('w-full')],
-      }),
-    ],
-  });
+    return el('section', 'w-full @container bg-base-100 text-base-content', {
+        children: [
+            el('div', bodyClass ?? 'mx-auto w-full max-w-3xl px-6 pb-20 @2xl:pb-24', {
+                children: [articleBodyCore('w-full')],
+            }),
+        ],
+    });
 }
 
 /** The default way out — a link back to the article index. A reader who finishes a post is
  *  otherwise at a dead end; this points at `/journal` (the bundle's index singleton), never
  *  `/blog` (the record route owns that segment and a singleton there 404s). */
 function defaultKeepReading(href: string): Node {
-  return el('section', 'w-full @container bg-base-200 text-base-content', {
-    children: [
-      el('div', 'mx-auto w-full max-w-5xl px-6 py-16', {
+    return el('section', 'w-full @container bg-base-200 text-base-content', {
         children: [
-          el('div', 'flex flex-col gap-6', {
-            children: [
-              el('h2', 'text-2xl font-bold tracking-tight text-base-content @2xl:text-3xl', {
-                text: 'Keep reading',
-              }),
-              el('div', undefined, {
+            el('div', 'mx-auto w-full max-w-5xl px-6 py-16', {
                 children: [
-                  el('a', 'btn btn-primary btn-lg', {
-                    attrs: { href },
-                    text: 'More stories',
-                  }),
+                    el('div', 'flex flex-col gap-6', {
+                        children: [
+                            el('h2', 'text-2xl font-bold tracking-tight text-base-content @2xl:text-3xl', {
+                                text: 'Keep reading',
+                            }),
+                            el('div', undefined, {
+                                children: [
+                                    el('a', 'btn btn-primary btn-lg', {
+                                        attrs: { href },
+                                        text: 'More stories',
+                                    }),
+                                ],
+                            }),
+                        ],
+                    }),
                 ],
-              }),
-            ],
-          }),
+            }),
         ],
-      }),
-    ],
-  });
+    });
 }

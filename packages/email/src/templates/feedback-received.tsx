@@ -5,6 +5,7 @@ import {
   EmailFinePrint,
   EmailParagraph,
   EmailSectionLabel,
+  usePlatformName,
 } from '../components';
 
 export interface FeedbackReceivedEmailProps {
@@ -21,16 +22,17 @@ export function FeedbackReceivedEmail({
   recipientName,
   feedbackTitle,
 }: FeedbackReceivedEmailProps) {
+  const platform = usePlatformName();
   return (
     <PlatformEmailLayout
       preview="Thanks — we got your feedback"
-      footerReason="You're receiving this because you submitted feedback in your sparx dashboard."
+      footerReason={`You're receiving this because you submitted feedback in your ${platform} dashboard.`}
     >
       <EmailDisplayHeading>Thanks — we got it</EmailDisplayHeading>
       <EmailParagraph>
         {recipientName ? `Hi ${recipientName}, ` : ''}thanks for taking the time to share this with
-        us. A real person on the sparx team reads every piece of feedback, and we&apos;ll follow up
-        here if there&apos;s more to say.
+        us. A real person on the {platform} team reads every piece of feedback, and we&apos;ll
+        follow here if there&apos;s more to say.
       </EmailParagraph>
 
       <EmailSectionLabel>What you sent</EmailSectionLabel>

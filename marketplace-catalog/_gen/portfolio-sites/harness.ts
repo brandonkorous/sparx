@@ -35,11 +35,11 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import {
-  pageBody,
-  stampTree,
-  el,
-  type Node,
-  type Theme,
+    pageBody,
+    stampTree,
+    el,
+    type Node,
+    type Theme,
 } from '../../../packages/silica-catalog/node_modules/@wizeworks/silicaui-html/dist/index.js';
 
 import { starterFrame } from '../../../packages/silica-catalog/src/site';
@@ -69,59 +69,59 @@ export type PortfolioPageKey = 'home' | 'work' | 'project' | 'about' | 'contact'
 /** One portfolio template's authored spec. The home/work/project/about/contact bodies are
  *  the DISTINCT part; everything else follows the shared shape so the six stay uniform. */
 export interface PortfolioSiteSpec {
-  /** The `portfolio-<persona>` slug — the key into `PORTFOLIO_THEME_BY_SLUG`. */
-  slug: string;
-  /** The bundle key / directory name (`sparx-<slug>`). */
-  key: string;
-  /** Marketplace card identity. */
-  name: string;
-  summary: string;
-  tagline: string;
-  /** The industry facet + card badge (e.g. 'Product & UX designer'). */
-  industry: string;
-  /** A validation-consistency list, not an install gate — a portfolio leans on builder + cms
-   *  (+ email for the contact-driven marketing starter). */
-  requiresModules: string[];
-  /** Sort weight on the marketplace grid. */
-  sortWeight: number;
-  /** IDENTITY ONLY — the person's name + tagline. Colours + fonts derive from the bespoke
-   *  theme (below), never hand-typed, so the card can never drift from the look. */
-  brand: { businessName: string; tagline: string };
-  /** Site-chrome shape for this template — which navbar/footer the frame starts on and
-   *  whether the bar carries a filled CTA. The nav is ALWAYS Work / About / Contact (a
-   *  portfolio's real destinations), fed to the frame as an explicit `navLinks` override. */
-  chrome?: { navbar?: NavbarVariant; footer?: FooterVariant; showCta?: boolean };
-  /** REAL, person-voiced search title + description per page, so the shipped starter's link
-   *  previews read like the real portfolio from the first install. `home` (and usually
-   *  `about`) should always be authored here; the rest fall back to the composed standard. */
-  seo?: Partial<Record<PortfolioPageKey, { title: string; description: string }>>;
-  /** The home page's section sequence — the template's own distinct beats. */
-  home: Node[];
-  /** BESPOKE work-index sections shown ABOVE the live `blogPostGrid()` (the sanctioned,
-   *  linkable `cms.blog_post` repeat) — the template's own "Selected work" masthead. The grid
-   *  is ALWAYS appended, so the index stays live + linkable no matter the masthead. Omit for
-   *  the neutral default masthead. */
-  work?: Node[];
-  /** The BESPOKE case-study PAGE — a `cms.blog_post` collection template, authored self-scoped
-   *  with the shared `template-sites/article.ts` kit (`articlePage(header, { backHref: '/work' })`).
-   *  Lands at `/blog/:slug`, `isDefault`, so every project wears THIS design. */
-  project: Node;
-  /** The About page body (defaults to a neutral two-band about if omitted). */
-  about?: Node[];
-  /** The Contact page body (defaults to a neutral reach-out prompt if omitted). */
-  contact?: Node[];
-  /** AuthorDecl[] — the byline persona(s) the projects reference by `authorSlug`. A portfolio
-   *  usually ships ONE author (the person), so the case-study byline resolves to a real name +
-   *  portrait + bio. */
-  authors?: unknown[];
-  /** ContentEntryDecl[] — the PROJECTS, as `blog_post` records (the work the portfolio shows). */
-  content: unknown[];
-  /** AssetDecl[] — every image URL the bundle references, each with alt. */
-  assets: unknown[];
-  /** EmailDecl[] — optional brand-voiced MARKETING starters (unkeyed; the platform's keyed
-   *  transactional defaults are separate). A portfolio may ship one "let's work together"
-   *  note or none. */
-  emails?: unknown[];
+    /** The `portfolio-<persona>` slug — the key into `PORTFOLIO_THEME_BY_SLUG`. */
+    slug: string;
+    /** The bundle key / directory name (`sparx-<slug>`). */
+    key: string;
+    /** Marketplace card identity. */
+    name: string;
+    summary: string;
+    tagline: string;
+    /** The industry facet + card badge (e.g. 'Product & UX designer'). */
+    industry: string;
+    /** A validation-consistency list, not an install gate — a portfolio leans on builder + cms
+     *  (+ email for the contact-driven marketing starter). */
+    requiresModules: string[];
+    /** Sort weight on the marketplace grid. */
+    sortWeight: number;
+    /** IDENTITY ONLY — the person's name + tagline. Colors + fonts derive from the bespoke
+     *  theme (below), never hand-typed, so the card can never drift from the look. */
+    brand: { businessName: string; tagline: string };
+    /** Site-chrome shape for this template — which navbar/footer the frame starts on and
+     *  whether the bar carries a filled CTA. The nav is ALWAYS Work / About / Contact (a
+     *  portfolio's real destinations), fed to the frame as an explicit `navLinks` override. */
+    chrome?: { navbar?: NavbarVariant; footer?: FooterVariant; showCta?: boolean };
+    /** REAL, person-voiced search title + description per page, so the shipped starter's link
+     *  previews read like the real portfolio from the first install. `home` (and usually
+     *  `about`) should always be authored here; the rest fall back to the composed standard. */
+    seo?: Partial<Record<PortfolioPageKey, { title: string; description: string }>>;
+    /** The home page's section sequence — the template's own distinct beats. */
+    home: Node[];
+    /** BESPOKE work-index sections shown ABOVE the live `blogPostGrid()` (the sanctioned,
+     *  linkable `cms.blog_post` repeat) — the template's own "Selected work" masthead. The grid
+     *  is ALWAYS appended, so the index stays live + linkable no matter the masthead. Omit for
+     *  the neutral default masthead. */
+    work?: Node[];
+    /** The BESPOKE case-study PAGE — a `cms.blog_post` collection template, authored self-scoped
+     *  with the shared `template-sites/article.ts` kit (`articlePage(header, { backHref: '/work' })`).
+     *  Lands at `/blog/:slug`, `isDefault`, so every project wears THIS design. */
+    project: Node;
+    /** The About page body (defaults to a neutral two-band about if omitted). */
+    about?: Node[];
+    /** The Contact page body (defaults to a neutral reach-out prompt if omitted). */
+    contact?: Node[];
+    /** AuthorDecl[] — the byline persona(s) the projects reference by `authorSlug`. A portfolio
+     *  usually ships ONE author (the person), so the case-study byline resolves to a real name +
+     *  portrait + bio. */
+    authors?: unknown[];
+    /** ContentEntryDecl[] — the PROJECTS, as `blog_post` records (the work the portfolio shows). */
+    content: unknown[];
+    /** AssetDecl[] — every image URL the bundle references, each with alt. */
+    assets: unknown[];
+    /** EmailDecl[] — optional brand-voiced MARKETING starters (unkeyed; the platform's keyed
+     *  transactional defaults are separate). A portfolio may ship one "let's work together"
+     *  note or none. */
+    emails?: unknown[];
 }
 
 // ── Small page-projection helpers (portfolio copies of the harness's private ones) ──
@@ -129,112 +129,112 @@ export interface PortfolioSiteSpec {
 /** One singleton page, projected to the SiteDecl shape the loader validates. Home is the one
  *  page with no slug. Every root is fully STAMPED so the studio opens live, editable trees. */
 function singleton(
-  name: string,
-  slug: string,
-  root: Node,
-  seo?: { title: string; description: string }
+    name: string,
+    slug: string,
+    root: Node,
+    seo?: { title: string; description: string }
 ): Record<string, unknown> {
-  return {
-    name,
-    kind: 'singleton',
-    ...(slug ? { slug } : {}),
-    ...(seo ? { seoTitle: seo.title, seoDescription: seo.description } : {}),
-    root: stampTree(root),
-  };
+    return {
+        name,
+        kind: 'singleton',
+        ...(slug ? { slug } : {}),
+        ...(seo ? { seoTitle: seo.title, seoDescription: seo.description } : {}),
+        root: stampTree(root),
+    };
 }
 
 /** One record-template page (NO slug — the installer derives `/blog/:slug` from the
  *  `recordType`). `isDefault` makes the published bespoke case-study win over the starter. */
 function collectionPage(
-  name: string,
-  recordType: string,
-  root: Node,
-  seo?: { title: string; description: string }
+    name: string,
+    recordType: string,
+    root: Node,
+    seo?: { title: string; description: string }
 ): Record<string, unknown> {
-  return {
-    name,
-    kind: 'collection',
-    recordType,
-    isDefault: true,
-    ...(seo ? { seoTitle: seo.title, seoDescription: seo.description } : {}),
-    root: stampTree(root),
-  };
+    return {
+        name,
+        kind: 'collection',
+        recordType,
+        isDefault: true,
+        ...(seo ? { seoTitle: seo.title, seoDescription: seo.description } : {}),
+        root: stampTree(root),
+    };
 }
 
 /** Per-page search title + description for the five portfolio pages. The template's own
  *  `spec.seo` wins per page; the rest fall back to composed, person-voiced copy. Each entry is
  *  DISTINCT within the site (the SEO lint flags two pages sharing a title/description). */
 function portfolioSeo(
-  spec: PortfolioSiteSpec
+    spec: PortfolioSiteSpec
 ): Record<PortfolioPageKey, { title: string; description: string }> {
-  const bn = spec.brand.businessName;
-  const ind = spec.industry;
-  const composed: Record<PortfolioPageKey, { title: string; description: string }> = {
-    home: { title: bn, description: `${bn} — ${ind.toLowerCase()}. Selected work, and how to get in touch.` },
-    work: {
-      title: `Work — ${bn}`,
-      description: `Selected projects and case studies by ${bn} — the work, the thinking, and the outcome.`,
-    },
-    about: {
-      title: `About — ${bn}`,
-      description: `Who ${bn} is and how they work — background, approach, and the tools of the trade.`,
-    },
-    contact: {
-      title: `Contact — ${bn}`,
-      description: `Start a project with ${bn} — availability, what a good brief looks like, and where to reach them.`,
-    },
-    // The project template is a record template — per-project title/description at runtime.
-    // This page-level pair is only the studio fallback for the template itself.
-    project: {
-      title: `Project — ${bn}`,
-      description: `A project by ${bn} — the brief, the process, and the result, in one case study.`,
-    },
-  };
-  const out = { ...composed };
-  for (const [key, value] of Object.entries(spec.seo ?? {})) {
-    if (value) out[key as PortfolioPageKey] = value;
-  }
-  return out;
+    const bn = spec.brand.businessName;
+    const ind = spec.industry;
+    const composed: Record<PortfolioPageKey, { title: string; description: string }> = {
+        home: { title: bn, description: `${bn} — ${ind.toLowerCase()}. Selected work, and how to get in touch.` },
+        work: {
+            title: `Work — ${bn}`,
+            description: `Selected projects and case studies by ${bn} — the work, the thinking, and the outcome.`,
+        },
+        about: {
+            title: `About — ${bn}`,
+            description: `Who ${bn} is and how they work — background, approach, and the tools of the trade.`,
+        },
+        contact: {
+            title: `Contact — ${bn}`,
+            description: `Start a project with ${bn} — availability, what a good brief looks like, and where to reach them.`,
+        },
+        // The project template is a record template — per-project title/description at runtime.
+        // This page-level pair is only the studio fallback for the template itself.
+        project: {
+            title: `Project — ${bn}`,
+            description: `A project by ${bn} — the brief, the process, and the result, in one case study.`,
+        },
+    };
+    const out = { ...composed };
+    for (const [key, value] of Object.entries(spec.seo ?? {})) {
+        if (value) out[key as PortfolioPageKey] = value;
+    }
+    return out;
 }
 
 /** A neutral default work-index masthead — used when a spec doesn't author its own. */
 function defaultWorkMasthead(): Node[] {
-  return [
-    el('section', 'bg-base-200 @container px-6 py-16 @3xl:py-20', {
-      children: [
-        el('div', 'mx-auto flex w-full max-w-5xl flex-col gap-4', {
-          children: [
-            el('h1', 'text-4xl font-bold tracking-tight text-base-content @2xl:text-5xl', {
-              text: 'Selected work',
-            }),
-            el('p', 'max-w-2xl text-lg leading-relaxed text-base-content', {
-              text: 'A selection of recent projects. Each one opens to the full story — the brief, the work, and the result.',
-            }),
-          ],
+    return [
+        el('section', 'bg-base-200 @container px-6 py-16 @3xl:py-20', {
+            children: [
+                el('div', 'mx-auto flex w-full max-w-5xl flex-col gap-4', {
+                    children: [
+                        el('h1', 'text-4xl font-bold tracking-tight text-base-content @2xl:text-5xl', {
+                            text: 'Selected work',
+                        }),
+                        el('p', 'max-w-2xl text-lg leading-relaxed text-base-content', {
+                            text: 'A selection of recent projects. Each one opens to the full story — the brief, the work, and the result.',
+                        }),
+                    ],
+                }),
+            ],
         }),
-      ],
-    }),
-  ];
+    ];
 }
 
 /** A neutral default About body — used when a spec doesn't author its own. */
 function defaultAbout(spec: PortfolioSiteSpec): Node[] {
-  return [
-    el('section', 'bg-base-100 @container px-6 py-20', {
-      children: [
-        el('div', 'mx-auto flex w-full max-w-3xl flex-col gap-6', {
-          children: [
-            el('h1', 'text-4xl font-bold tracking-tight text-base-content @2xl:text-5xl', {
-              text: `About ${spec.brand.businessName}`,
-            }),
-            el('p', 'text-lg leading-relaxed text-base-content', {
-              text: 'This is your story — who you are, what you make, and the work you want more of. Replace this with a few honest sentences; the people who find you here want to know the person behind the work.',
-            }),
-          ],
+    return [
+        el('section', 'bg-base-100 @container px-6 py-20', {
+            children: [
+                el('div', 'mx-auto flex w-full max-w-3xl flex-col gap-6', {
+                    children: [
+                        el('h1', 'text-4xl font-bold tracking-tight text-base-content @2xl:text-5xl', {
+                            text: `About ${spec.brand.businessName}`,
+                        }),
+                        el('p', 'text-lg leading-relaxed text-base-content', {
+                            text: 'This is your story — who you are, what you make, and the work you want more of. Replace this with a few honest sentences; the people who find you here want to know the person behind the work.',
+                        }),
+                    ],
+                }),
+            ],
         }),
-      ],
-    }),
-  ];
+    ];
 }
 
 /** The Contact page — the maker's own channels (each hidden until set in Site settings)
@@ -244,13 +244,13 @@ function defaultAbout(spec: PortfolioSiteSpec): Node[] {
  *  domain, shipped live, as the one and only way to commission the person whose
  *  portfolio it is. See shared/contact-section.ts. */
 function defaultContact(): Node[] {
-  return [
-    contactSection({
-      heading: 'Get in touch',
-      intro: 'Available for select projects. Tell me a little about what you have in mind and I will get back to you.',
-      submitLabel: 'Send enquiry',
-    }),
-  ];
+    return [
+        contactSection({
+            heading: 'Get in touch',
+            intro: 'Available for select projects. Tell me a little about what you have in mind and I will get back to you.',
+            submitLabel: 'Send enquiry',
+        }),
+    ];
 }
 
 // ── Site composition ────────────────────────────────────────────────────────────
@@ -260,46 +260,46 @@ function defaultContact(): Node[] {
  *  ship-ready token bag. The frame is chrome with NO commerce/cms module links and an
  *  explicit Work / About / Contact nav. */
 export function composePortfolioSite(spec: PortfolioSiteSpec): Record<string, unknown> {
-  const rawTheme = PORTFOLIO_THEME_BY_SLUG[spec.slug];
-  if (!rawTheme) throw new Error(`portfolio-harness: no theme for slug "${spec.slug}"`);
-  const theme = resolveSparxTheme(rawTheme);
+    const rawTheme = PORTFOLIO_THEME_BY_SLUG[spec.slug];
+    if (!rawTheme) throw new Error(`portfolio-harness: no theme for slug "${spec.slug}"`);
+    const theme = resolveSparxTheme(rawTheme);
 
-  // A portfolio's chrome: no commerce, no scheduling, no cms nav link — an explicit
-  // Work / About / Contact nav instead (the `navLinks` seam), so the header/footer never
-  // invite a visitor into a Shop / Journal / Search route this site does not ship.
-  const frameRoot = starterFrame({
-    commerceEnabled: false,
-    schedulingEnabled: false,
-    cmsEnabled: false,
-    navLinks: [
-      ['Work', '/work'],
-      ['About', '/about'],
-      ['Contact', '/contact'],
-    ],
-    navbar: spec.chrome?.navbar ?? 'brandLeft',
-    footer: spec.chrome?.footer ?? 'columns',
-    showCta: spec.chrome?.showCta ?? true,
-  }).root as Node;
+    // A portfolio's chrome: no commerce, no scheduling, no cms nav link — an explicit
+    // Work / About / Contact nav instead (the `navLinks` seam), so the header/footer never
+    // invite a visitor into a Shop / Journal / Search route this site does not ship.
+    const frameRoot = starterFrame({
+        commerceEnabled: false,
+        schedulingEnabled: false,
+        cmsEnabled: false,
+        navLinks: [
+            ['Work', '/work'],
+            ['About', '/about'],
+            ['Contact', '/contact'],
+        ],
+        navbar: spec.chrome?.navbar ?? 'brandLeft',
+        footer: spec.chrome?.footer ?? 'columns',
+        showCta: spec.chrome?.showCta ?? true,
+    }).root as Node;
 
-  const seo = portfolioSeo(spec);
-  // Work: the template's own masthead over the live, linkable post grid (blogPostGrid — the
-  // one sanctioned `cms.blog_post` repeat whose cards link to `/blog/:slug`).
-  const workBody = pageBody([...(spec.work ?? defaultWorkMasthead()), blogPostGrid()]);
+    const seo = portfolioSeo(spec);
+    // Work: the template's own masthead over the live, linkable post grid (blogPostGrid — the
+    // one sanctioned `cms.blog_post` repeat whose cards link to `/blog/:slug`).
+    const workBody = pageBody([...(spec.work ?? defaultWorkMasthead()), blogPostGrid()]);
 
-  const pages = [
-    singleton('Home', '', pageBody(spec.home), seo.home),
-    singleton('Work', 'work', workBody, seo.work),
-    singleton('About', 'about', pageBody(spec.about ?? defaultAbout(spec)), seo.about),
-    // Each portfolio authors its own Contact copy as a `contactSection(…)` call — see
-    // the template harness note: shared shape, per-template words.
-    singleton('Contact', 'contact', pageBody(spec.contact ?? defaultContact()), seo.contact),
-    // The BESPOKE case-study detail — a `cms.blog_post` collection page (`isDefault`) the
-    // installer lands at `/blog/:slug`, so every project wears the template's own design.
-    // Appended last so the ordinary pages keep their positions.
-    collectionPage('Project', 'cms.blog_post', spec.project, seo.project),
-  ];
+    const pages = [
+        singleton('Home', '', pageBody(spec.home), seo.home),
+        singleton('Work', 'work', workBody, seo.work),
+        singleton('About', 'about', pageBody(spec.about ?? defaultAbout(spec)), seo.about),
+        // Each portfolio authors its own Contact copy as a `contactSection(…)` call — see
+        // the template harness note: shared shape, per-template words.
+        singleton('Contact', 'contact', pageBody(spec.contact ?? defaultContact()), seo.contact),
+        // The BESPOKE case-study detail — a `cms.blog_post` collection page (`isDefault`) the
+        // installer lands at `/blog/:slug`, so every project wears the template's own design.
+        // Appended last so the ordinary pages keep their positions.
+        collectionPage('Project', 'cms.blog_post', spec.project, seo.project),
+    ];
 
-  return { frame: { root: frameRoot }, pages, theme };
+    return { frame: { root: frameRoot }, pages, theme };
 }
 
 // ── Bundle emission ──────────────────────────────────────────────────────────────
@@ -307,29 +307,29 @@ export function composePortfolioSite(spec: PortfolioSiteSpec): Record<string, un
 /** colorToHex, fail-fast — a theme role that won't resolve is a generator bug worth stopping
  *  on, not a silent `#000000`. */
 function hex(value: string | undefined, ctx: string): string {
-  const out = colorToHex(value ?? null);
-  if (!out) throw new Error(`portfolio-harness: ${ctx} did not resolve to hex (got ${value})`);
-  return out;
+    const out = colorToHex(value ?? null);
+    if (!out) throw new Error(`portfolio-harness: ${ctx} did not resolve to hex (got ${value})`);
+    return out;
 }
 
 /** First family name in a silica font stack (`"Fraunces", serif` → `Fraunces`). */
 function firstFamily(stack: string | undefined): string | undefined {
-  const first = stack?.split(',')[0]?.trim().replace(/^['"]|['"]$/g, '');
-  return first || undefined;
+    const first = stack?.split(',')[0]?.trim().replace(/^['"]|['"]$/g, '');
+    return first || undefined;
 }
 
 /** The `heading`/`body` font families a theme states, reading its raw `.fonts` object. */
 function faces(theme: Theme): { heading: string; body: string } {
-  const fonts = (theme as { fonts?: { sans?: { family?: string }; head?: { family?: string } } })
-    .fonts;
-  const tokens = (theme as { tokens?: Record<string, string> }).tokens ?? {};
-  const body = fonts?.sans?.family ?? firstFamily(tokens['--font-sans']) ?? 'Inter';
-  const heading =
-    fonts?.head?.family ??
-    firstFamily(tokens['--font-head']) ??
-    firstFamily(tokens['--font-heading']) ??
-    body;
-  return { heading, body };
+    const fonts = (theme as { fonts?: { sans?: { family?: string }; head?: { family?: string } } })
+        .fonts;
+    const tokens = (theme as { tokens?: Record<string, string> }).tokens ?? {};
+    const body = fonts?.sans?.family ?? firstFamily(tokens['--font-sans']) ?? 'Inter';
+    const heading =
+        fonts?.head?.family ??
+        firstFamily(tokens['--font-head']) ??
+        firstFamily(tokens['--font-heading']) ??
+        body;
+    return { heading, body };
 }
 
 const json = (value: unknown): string => JSON.stringify(value, null, 2) + '\n';
@@ -337,15 +337,15 @@ const json = (value: unknown): string => JSON.stringify(value, null, 2) + '\n';
 /** The emitted, PURE-DATA blueprint.ts (sibling-JSON imports only — never `@sparx/*`). A
  *  portfolio ships NO commerce, so there is no `commerce.json` import or field. */
 function blueprintTs(opts: {
-  key: string;
-  name: string;
-  summary: string;
-  requiresModules: string[];
-  brand: unknown;
-  theme: unknown;
-  hasEmails: boolean;
+    key: string;
+    name: string;
+    summary: string;
+    requiresModules: string[];
+    brand: unknown;
+    theme: unknown;
+    hasEmails: boolean;
 }): string {
-  return `// ${opts.name}: a personal-portfolio SITE TEMPLATE, composed distinct — its own home,
+    return `// ${opts.name}: a personal-portfolio SITE TEMPLATE, composed distinct — its own home,
 // a live work index, a bespoke case-study page, about + contact — dressed in the bespoke
 // theme its persona pins.
 //
@@ -356,9 +356,8 @@ function blueprintTs(opts: {
 import site from './site.json' with { type: 'json' };
 import content from './content.json' with { type: 'json' };
 import authors from './authors.json' with { type: 'json' };
-import assets from './assets.json' with { type: 'json' };${
-    opts.hasEmails ? `\nimport emails from './emails.json' with { type: 'json' };` : ''
-  }
+import assets from './assets.json' with { type: 'json' };${opts.hasEmails ? `\nimport emails from './emails.json' with { type: 'json' };` : ''
+        }
 
 const blueprint = {
   key: ${JSON.stringify(opts.key)},
@@ -369,7 +368,7 @@ const blueprint = {
   preview: 'media/preview.png',
   requiresModules: ${JSON.stringify(opts.requiresModules)},
 
-  // Identity only (person's name + tagline + fonts + the theme's hex colours). The look
+  // Identity only (person's name + tagline + fonts + the theme's hex colors). The look
   // itself rides site.theme + the theme decl below; the installing tenant rebrands the name.
   brand: ${JSON.stringify(opts.brand, null, 2)},
 
@@ -399,39 +398,39 @@ export default blueprint;
 /** The hand-maintained-shaped manifest (sparx.json). Emitted here for the first build; it
  *  survives regens afterward (like media/). */
 function manifestJson(opts: {
-  key: string;
-  name: string;
-  summary: string;
-  tagline: string;
-  industry: string;
-  accent: string;
-  sortWeight: number;
+    key: string;
+    name: string;
+    summary: string;
+    tagline: string;
+    industry: string;
+    accent: string;
+    sortWeight: number;
 }): unknown {
-  return {
-    schemaVersion: 1,
-    category: 'blueprint',
-    slug: opts.key,
-    name: opts.name,
-    version: BUNDLE_VERSION,
-    tagline: opts.tagline,
-    description: opts.summary,
-    payload: 'blueprint.ts',
-    facets: {
-      vertical: 'content',
-      industry: opts.industry,
-    },
-    pricing: { model: 'free', priceCents: 0 },
-    // A validation-consistency list, not an install gate — a portfolio's content is
-    // independent of a tenant's active modules.
-    requires: { modules: ['builder', 'cms', 'email'] },
-    media: [
-      { file: 'media/icon.png', kind: 'icon', alt: `${opts.name} icon` },
-      { file: 'media/preview.png', kind: 'preview', alt: `${opts.name} — home page preview` },
-    ],
-    author: { displayName: 'sparx' },
-    accent: opts.accent,
-    sortWeight: opts.sortWeight,
-  };
+    return {
+        schemaVersion: 1,
+        category: 'blueprint',
+        slug: opts.key,
+        name: opts.name,
+        version: BUNDLE_VERSION,
+        tagline: opts.tagline,
+        description: opts.summary,
+        payload: 'blueprint.ts',
+        facets: {
+            vertical: 'content',
+            industry: opts.industry,
+        },
+        pricing: { model: 'free', priceCents: 0 },
+        // A validation-consistency list, not an install gate — a portfolio's content is
+        // independent of a tenant's active modules.
+        requires: { modules: ['builder', 'cms', 'email'] },
+        media: [
+            { file: 'media/icon.png', kind: 'icon', alt: `${opts.name} icon` },
+            { file: 'media/preview.png', kind: 'preview', alt: `${opts.name} — home page preview` },
+        ],
+        author: { displayName: 'sparx' },
+        accent: opts.accent,
+        sortWeight: opts.sortWeight,
+    };
 }
 
 // ── Marketing-email starter ──────────────────────────────────────────────────────
@@ -442,111 +441,111 @@ function manifestJson(opts: {
 // duplicated here.
 
 /** Build ONE silica `EmailDocument` (body → section → heading / paragraphs / button), with the
- *  `*Auto` colour flags so it re-themes light/dark per tenant. Node ids namespaced per email. */
+ *  `*Auto` color flags so it re-themes light/dark per tenant. Node ids namespaced per email. */
 /** The default MARKETING starter for a portfolio — a warm welcome for a new subscriber, a
  *  draft on install. Person-voiced but persona-neutral (it reads right for a designer, a
  *  photographer or a writer alike); the CTA points at the site's live `/work`. */
 function portfolioEmails(_spec: PortfolioSiteSpec): Record<string, unknown>[] {
-  return [
-    {
-      name: 'Welcome',
-      publish: false,
-      doc: blueprintEmailDoc({
-        subject: 'Thanks for subscribing to {{site.name}}',
-        preheader: 'A quick hello, and where to see the work.',
-        heading: 'Hello, {{customer.firstName}}',
-        paragraphs: [
-          'Thanks for subscribing to {{site.name}}. I’ll send the occasional note when there’s new work worth sharing — no noise, and never often.',
-        ],
-        highlight: {
-          title: 'Start with the selected work',
-          body: 'Have a look through recent projects. If something sparks an idea, I’d love to hear about it.',
+    return [
+        {
+            name: 'Welcome',
+            publish: false,
+            doc: blueprintEmailDoc({
+                subject: 'Thanks for subscribing to {{site.name}}',
+                preheader: 'A quick hello, and where to see the work.',
+                heading: 'Hello, {{customer.firstName}}',
+                paragraphs: [
+                    'Thanks for subscribing to {{site.name}}. I’ll send the occasional note when there’s new work worth sharing — no noise, and never often.',
+                ],
+                highlight: {
+                    title: 'Start with the selected work',
+                    body: 'Have a look through recent projects. If something sparks an idea, I’d love to hear about it.',
+                },
+                button: { label: 'See the work', href: '{{site.url}}/work' },
+            }),
         },
-        button: { label: 'See the work', href: '{{site.url}}/work' },
-      }),
-    },
-  ];
+    ];
 }
 
 /** Build every part of one portfolio bundle and write it to `blueprints/<key>/`. Returns the
  *  resolved theme (light tokens) so a caller can render a preview against the exact look the
  *  bundle ships. */
 export async function emitPortfolioBundle(
-  spec: PortfolioSiteSpec
+    spec: PortfolioSiteSpec
 ): Promise<{ dir: string; theme: Theme }> {
-  const rawTheme = PORTFOLIO_THEME_BY_SLUG[spec.slug];
-  if (!rawTheme) throw new Error(`portfolio-harness: no theme for slug "${spec.slug}"`);
-  const resolved = resolveSparxTheme(rawTheme);
-  const light = resolved.tokens ?? {};
-  const { heading, body } = faces(rawTheme);
+    const rawTheme = PORTFOLIO_THEME_BY_SLUG[spec.slug];
+    if (!rawTheme) throw new Error(`portfolio-harness: no theme for slug "${spec.slug}"`);
+    const resolved = resolveSparxTheme(rawTheme);
+    const light = resolved.tokens ?? {};
+    const { heading, body } = faces(rawTheme);
 
-  const primary = hex(light['--color-primary'], `${spec.key} primary`);
-  const primaryForeground = hex(light['--color-primary-content'], `${spec.key} primary-content`);
-  const accent = hex(light['--color-accent'], `${spec.key} accent`);
-  const secondary = hex(light['--color-secondary'], `${spec.key} secondary`);
+    const primary = hex(light['--color-primary'], `${spec.key} primary`);
+    const primaryForeground = hex(light['--color-primary-content'], `${spec.key} primary-content`);
+    const accent = hex(light['--color-accent'], `${spec.key} accent`);
+    const secondary = hex(light['--color-secondary'], `${spec.key} secondary`);
 
-  const brand = {
-    businessName: spec.brand.businessName,
-    tagline: spec.brand.tagline,
-    colors: { primary, primaryForeground, accent, secondary },
-    fonts: { heading, body },
-  };
+    const brand = {
+        businessName: spec.brand.businessName,
+        tagline: spec.brand.tagline,
+        colors: { primary, primaryForeground, accent, secondary },
+        fonts: { heading, body },
+    };
 
-  const themeDecl = {
-    name: spec.slug,
-    basePresetKey: spec.slug,
-    presentation: { v: 2, containerWidth: '1152px' },
-    brand: {
-      colorPrimary: primary,
-      colorAccent: accent,
-      colorSecondary: secondary,
-      fontHeading: heading,
-      fontBody: body,
-      tokens: {},
-    },
-    apply: true,
-  };
+    const themeDecl = {
+        name: spec.slug,
+        basePresetKey: spec.slug,
+        presentation: { v: 2, containerWidth: '1152px' },
+        brand: {
+            colorPrimary: primary,
+            colorAccent: accent,
+            colorSecondary: secondary,
+            fontHeading: heading,
+            fontBody: body,
+            tokens: {},
+        },
+        apply: true,
+    };
 
-  const site = composePortfolioSite(spec);
-  // A portfolio greets a new subscriber with one brand-voiced starter (a draft on install)
-  // unless the spec authors its own. The platform's keyed transactional defaults are separate.
-  const emailList = (spec.emails ?? portfolioEmails(spec)) as unknown[];
-  const hasEmails = emailList.length > 0;
+    const site = composePortfolioSite(spec);
+    // A portfolio greets a new subscriber with one brand-voiced starter (a draft on install)
+    // unless the spec authors its own. The platform's keyed transactional defaults are separate.
+    const emailList = (spec.emails ?? portfolioEmails(spec)) as unknown[];
+    const hasEmails = emailList.length > 0;
 
-  const dir = join(blueprintsDir, spec.key);
-  await fs.mkdir(join(dir, 'media'), { recursive: true });
+    const dir = join(blueprintsDir, spec.key);
+    await fs.mkdir(join(dir, 'media'), { recursive: true });
 
-  await fs.writeFile(join(dir, 'site.json'), json(site));
-  await fs.writeFile(join(dir, 'authors.json'), json(spec.authors ?? []));
-  await fs.writeFile(join(dir, 'content.json'), json(spec.content));
-  await fs.writeFile(join(dir, 'assets.json'), json(spec.assets));
-  if (hasEmails) await fs.writeFile(join(dir, 'emails.json'), json(emailList));
-  await fs.writeFile(
-    join(dir, 'blueprint.ts'),
-    blueprintTs({
-      key: spec.key,
-      name: spec.name,
-      summary: spec.summary,
-      requiresModules: spec.requiresModules,
-      brand,
-      theme: themeDecl,
-      hasEmails,
-    })
-  );
-  await fs.writeFile(
-    join(dir, 'sparx.json'),
-    json(
-      manifestJson({
-        key: spec.key,
-        name: spec.name,
-        summary: spec.summary,
-        tagline: spec.tagline,
-        industry: spec.industry,
-        accent: primary,
-        sortWeight: spec.sortWeight,
-      })
-    )
-  );
+    await fs.writeFile(join(dir, 'site.json'), json(site));
+    await fs.writeFile(join(dir, 'authors.json'), json(spec.authors ?? []));
+    await fs.writeFile(join(dir, 'content.json'), json(spec.content));
+    await fs.writeFile(join(dir, 'assets.json'), json(spec.assets));
+    if (hasEmails) await fs.writeFile(join(dir, 'emails.json'), json(emailList));
+    await fs.writeFile(
+        join(dir, 'blueprint.ts'),
+        blueprintTs({
+            key: spec.key,
+            name: spec.name,
+            summary: spec.summary,
+            requiresModules: spec.requiresModules,
+            brand,
+            theme: themeDecl,
+            hasEmails,
+        })
+    );
+    await fs.writeFile(
+        join(dir, 'sparx.json'),
+        json(
+            manifestJson({
+                key: spec.key,
+                name: spec.name,
+                summary: spec.summary,
+                tagline: spec.tagline,
+                industry: spec.industry,
+                accent: primary,
+                sortWeight: spec.sortWeight,
+            })
+        )
+    );
 
-  return { dir, theme: resolved };
+    return { dir, theme: resolved };
 }

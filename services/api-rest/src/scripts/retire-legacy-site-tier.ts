@@ -71,12 +71,12 @@ const ONLY_TENANT = process.argv.find((a) => a.startsWith('--tenant='))?.slice('
 const REPAIR_THEMES = process.argv.includes('--repair-theme-units');
 
 interface Target {
-  tenantId: string;
-  tenantSlug: string;
-  propertyId: string;
-  propertySlug: string;
-  pages: { name: string; slug: string | null; published: boolean }[];
-  layouts: number;
+    tenantId: string;
+    tenantSlug: string;
+    propertyId: string;
+    propertySlug: string;
+    pages: { name: string; slug: string | null; published: boolean }[];
+    layouts: number;
 }
 
 /**
@@ -89,89 +89,89 @@ interface Target {
  * this task is for.
  */
 async function findTargets(): Promise<Target[]> {
-  const tenants = await prisma.tenant.findMany({
-    select: { id: true, slug: true },
-    ...(ONLY_TENANT ? { where: { slug: ONLY_TENANT } } : {}),
-  });
-  const targets: Target[] = [];
-
-  for (const tenant of tenants) {
-    const found = await withTenant({ tenantId: tenant.id }, async (tx) => {
-      const properties = await tx.property.findMany({
-        where: { tenantId: tenant.id },
+    const tenants = await prisma.tenant.findMany({
         select: { id: true, slug: true },
-      });
-      const out: Target[] = [];
-      for (const property of properties) {
-        const pages = await tx.builderPage.findMany({
-          where: { propertyId: property.id },
-          select: {
-            name: true,
-            slug: true,
-            publishedAt: true,
-            silicaDraftTree: true,
-            silicaPublishedTree: true,
-          },
-          orderBy: [{ position: 'asc' }],
-        });
-        if (pages.length === 0) continue;
-        const anySilica = pages.some(
-          (p) => p.silicaDraftTree != null || p.silicaPublishedTree != null
-        );
-        if (anySilica) continue;
-        out.push({
-          tenantId: tenant.id,
-          tenantSlug: tenant.slug,
-          propertyId: property.id,
-          propertySlug: property.slug,
-          pages: pages.map((p) => ({
-            name: p.name,
-            slug: p.slug,
-            published: p.publishedAt != null,
-          })),
-          layouts: await tx.builderLayout.count({ where: { propertyId: property.id } }),
-        });
-      }
-      return out;
+        ...(ONLY_TENANT ? { where: { slug: ONLY_TENANT } } : {}),
     });
-    targets.push(...found);
-  }
-  return targets;
+    const targets: Target[] = [];
+
+    for (const tenant of tenants) {
+        const found = await withTenant({ tenantId: tenant.id }, async (tx) => {
+            const properties = await tx.property.findMany({
+                where: { tenantId: tenant.id },
+                select: { id: true, slug: true },
+            });
+            const out: Target[] = [];
+            for (const property of properties) {
+                const pages = await tx.builderPage.findMany({
+                    where: { propertyId: property.id },
+                    select: {
+                        name: true,
+                        slug: true,
+                        publishedAt: true,
+                        silicaDraftTree: true,
+                        silicaPublishedTree: true,
+                    },
+                    orderBy: [{ position: 'asc' }],
+                });
+                if (pages.length === 0) continue;
+                const anySilica = pages.some(
+                    (p) => p.silicaDraftTree != null || p.silicaPublishedTree != null
+                );
+                if (anySilica) continue;
+                out.push({
+                    tenantId: tenant.id,
+                    tenantSlug: tenant.slug,
+                    propertyId: property.id,
+                    propertySlug: property.slug,
+                    pages: pages.map((p) => ({
+                        name: p.name,
+                        slug: p.slug,
+                        published: p.publishedAt != null,
+                    })),
+                    layouts: await tx.builderLayout.count({ where: { propertyId: property.id } }),
+                });
+            }
+            return out;
+        });
+        targets.push(...found);
+    }
+    return targets;
 }
 
 /** The module flags that decide which pages the starter composes. */
 async function moduleFlags(tenantId: string) {
-  const [commerceEnabled, schedulingEnabled, cmsEnabled] = await Promise.all([
-    isModuleEnabled(tenantId, 'commerce').catch(() => true),
-    isModuleEnabled(tenantId, 'scheduling').catch(() => false),
-    isModuleEnabled(tenantId, 'cms').catch(() => false),
-  ]);
-  return { commerceEnabled, schedulingEnabled, cmsEnabled };
+    const [commerceEnabled, schedulingEnabled, cmsEnabled] = await Promise.all([
+        isModuleEnabled(tenantId, 'commerce').catch(() => true),
+        isModuleEnabled(tenantId, 'scheduling').catch(() => false),
+        isModuleEnabled(tenantId, 'cms').catch(() => false),
+    ]);
+    return { commerceEnabled, schedulingEnabled, cmsEnabled };
 }
 
 async function retire(target: Target): Promise<void> {
-  const ctx: PropertyContext = { tenantId: target.tenantId, propertyId: target.propertyId };
-  const flags = await moduleFlags(target.tenantId);
+    const ctx: PropertyContext = { tenantId: target.tenantId, propertyId: target.propertyId };
+    const flags = await moduleFlags(target.tenantId);
 
-  const theme = await withTenant({ tenantId: target.tenantId }, async (tx) => {
-    return effectiveTheme(tx, ctx);
-  });
+    const theme = await withTenant({ tenantId: target.tenantId }, async (tx) => {
+        return effectiveTheme(tx, ctx);
+    });
 
-  // The rows go in their own transaction, BEFORE the seed. `sync` opens its own
-  // (`withTenant` inside the service), so wrapping both here would nest one transaction
-  // inside another — and the delete has to be committed before `sync` reconciles, or it
-  // reads the rows it is meant to replace and collides on `(tenant, property, slug)`.
-  await withTenant({ tenantId: target.tenantId }, async (tx) => {
-    await tx.builderPage.deleteMany({ where: { propertyId: target.propertyId } });
-    await tx.builderLayout.deleteMany({ where: { propertyId: target.propertyId } });
-  });
+    // The rows go in their own transaction, BEFORE the seed. `sync` opens its own
+    // (`withTenant` inside the service), so wrapping both here would nest one transaction
+    // inside another — and the delete has to be committed before `sync` reconciles, or it
+    // reads the rows it is meant to replace and collides on `(tenant, property, slug)`.
+    await withTenant({ tenantId: target.tenantId }, async (tx) => {
+        await tx.builderPage.deleteMany({ where: { propertyId: target.propertyId } });
+        await tx.builderLayout.deleteMany({ where: { propertyId: target.propertyId } });
+    });
 
-  // `BASE_SILICA_THEME` only if the brand compile failed outright — the same fallback
-  // `resolveEmailBrand` uses, so a tenant whose brand cannot be read gets one platform
-  // default rather than two different ones depending on which subsystem asked.
-  const site = starterSite(theme ?? BASE_SILICA_THEME, flags);
-  await siteService.sync(ctx, site, { allowReplace: true });
-  await siteService.publish(ctx);
+    // `BASE_SILICA_THEME` only if the brand compile failed outright — the same fallback
+    // `resolveEmailBrand` uses, so a tenant whose brand cannot be read gets one platform
+    // default rather than two different ones depending on which subsystem asked.
+    const site = starterSite(theme ?? BASE_SILICA_THEME, flags);
+    await siteService.sync(ctx, site, { allowReplace: true });
+    await siteService.publish(ctx);
 }
 
 /** silica's `md` multiplier for each density lever — `calc(var(--size-field) * 10)` is
@@ -191,16 +191,16 @@ type Lever = keyof typeof MD_MULTIPLIER;
  *  preset that acquired a height by any route is repaired, and a legitimately dense
  *  theme is never rewritten. */
 function heightNotUnit(raw: unknown): number | null {
-  if (typeof raw !== 'string') return null;
-  const rem = /^([\d.]+)rem$/.exec(raw.trim());
-  if (!rem) return null;
-  const n = Number(rem[1]);
-  return Number.isFinite(n) && n >= 1 ? n : null;
+    if (typeof raw !== 'string') return null;
+    const rem = /^([\d.]+)rem$/.exec(raw.trim());
+    if (!rem) return null;
+    const n = Number(rem[1]);
+    return Number.isFinite(n) && n >= 1 ? n : null;
 }
 
 /** A height in rem → the unit that reproduces it at `md`, trimmed of float noise. */
 function toUnit(height: number, lever: Lever): string {
-  return `${Number((height / MD_MULTIPLIER[lever]).toFixed(4))}rem`;
+    return `${Number((height / MD_MULTIPLIER[lever]).toFixed(4))}rem`;
 }
 
 /**
@@ -214,162 +214,162 @@ function toUnit(height: number, lever: Lever): string {
  * snapshot: a code fix cannot reach a value that was already written, and the storefront
  * serves the snapshot.
  *
- * Rewrites ONLY these two tokens. Colours, radii, fonts, depth and container width are
+ * Rewrites ONLY these two tokens. Colors, radii, fonts, depth and container width are
  * the author's and are left exactly as stored.
  */
 async function repairThemeUnits(): Promise<void> {
-  const tenants = await prisma.tenant.findMany({
-    select: { id: true, slug: true },
-    ...(ONLY_TENANT ? { where: { slug: ONLY_TENANT } } : {}),
-  });
-  let scanned = 0;
-  let fixed = 0;
+    const tenants = await prisma.tenant.findMany({
+        select: { id: true, slug: true },
+        ...(ONLY_TENANT ? { where: { slug: ONLY_TENANT } } : {}),
+    });
+    let scanned = 0;
+    let fixed = 0;
 
-  for (const tenant of tenants) {
-    const configs = await withTenant({ tenantId: tenant.id }, (tx) =>
-      tx.siteConfig.findMany({ select: { propertyId: true, draftSettings: true } })
-    );
+    for (const tenant of tenants) {
+        const configs = await withTenant({ tenantId: tenant.id }, (tx) =>
+            tx.siteConfig.findMany({ select: { propertyId: true, draftSettings: true } })
+        );
 
-    for (const config of configs) {
-      scanned += 1;
-      const settings = config.draftSettings as {
-        themePreset?: { v2?: { shared?: Record<string, unknown> } };
-      } | null;
-      const shared = settings?.themePreset?.v2?.shared;
-      if (!shared) continue;
+        for (const config of configs) {
+            scanned += 1;
+            const settings = config.draftSettings as {
+                themePreset?: { v2?: { shared?: Record<string, unknown> } };
+            } | null;
+            const shared = settings?.themePreset?.v2?.shared;
+            if (!shared) continue;
 
-      const repairs: { lever: Lever; from: string; to: string }[] = [];
-      for (const lever of ['sizeField', 'sizeSelector'] as const) {
-        const height = heightNotUnit(shared[lever]);
-        if (height === null) continue;
-        repairs.push({ lever, from: String(shared[lever]), to: toUnit(height, lever) });
-      }
-      if (repairs.length === 0) continue;
+            const repairs: { lever: Lever; from: string; to: string }[] = [];
+            for (const lever of ['sizeField', 'sizeSelector'] as const) {
+                const height = heightNotUnit(shared[lever]);
+                if (height === null) continue;
+                repairs.push({ lever, from: String(shared[lever]), to: toUnit(height, lever) });
+            }
+            if (repairs.length === 0) continue;
 
-      fixed += 1;
-      for (const r of repairs) {
-        console.log(`  ${tenant.slug.padEnd(20)} ${r.lever.padEnd(13)} ${r.from} → ${r.to}`);
-      }
-      if (!APPLY) continue;
+            fixed += 1;
+            for (const r of repairs) {
+                console.log(`  ${tenant.slug.padEnd(20)} ${r.lever.padEnd(13)} ${r.from} → ${r.to}`);
+            }
+            if (!APPLY) continue;
 
-      const nextShared = { ...shared };
-      for (const r of repairs) nextShared[r.lever] = r.to;
-      // `shared` was reached through `settings`, so both are non-null here.
-      const preset = settings.themePreset;
-      const nextSettings = {
-        ...settings,
-        themePreset: { ...preset, v2: { ...preset?.v2, shared: nextShared } },
-      };
+            const nextShared = { ...shared };
+            for (const r of repairs) nextShared[r.lever] = r.to;
+            // `shared` was reached through `settings`, so both are non-null here.
+            const preset = settings.themePreset;
+            const nextSettings = {
+                ...settings,
+                themePreset: { ...preset, v2: { ...preset?.v2, shared: nextShared } },
+            };
 
-      await withTenant({ tenantId: tenant.id }, async (tx) => {
-        await tx.siteConfig.update({
-          where: { propertyId: config.propertyId },
-          // The settings blob is free-form JSON; Prisma's InputJsonValue cannot see that
-          // through the spread, so the cast states what the column already is.
-          data: { draftSettings: nextSettings as Prisma.InputJsonValue },
-        });
+            await withTenant({ tenantId: tenant.id }, async (tx) => {
+                await tx.siteConfig.update({
+                    where: { propertyId: config.propertyId },
+                    // The settings blob is free-form JSON; Prisma's InputJsonValue cannot see that
+                    // through the spread, so the cast states what the column already is.
+                    data: { draftSettings: nextSettings as Prisma.InputJsonValue },
+                });
 
-        // The compiled snapshot, re-derived from the now-correct preset. `ignoreAuthored`
-        // because the stored theme IS the stale thing — the normal short-circuit would
-        // hand it straight back.
-        const ctx: PropertyContext = { tenantId: tenant.id, propertyId: config.propertyId };
-        const fresh = (await effectiveTheme(tx, ctx, { ignoreAuthored: true })) as {
-          tokens?: Record<string, string>;
-        } | null;
-        const site = await tx.builderSite.findUnique({
-          where: { propertyId: config.propertyId },
-          select: { silicaDraftTheme: true, silicaPublishedTheme: true },
-        });
-        if (!fresh?.tokens || !site) return;
+                // The compiled snapshot, re-derived from the now-correct preset. `ignoreAuthored`
+                // because the stored theme IS the stale thing — the normal short-circuit would
+                // hand it straight back.
+                const ctx: PropertyContext = { tenantId: tenant.id, propertyId: config.propertyId };
+                const fresh = (await effectiveTheme(tx, ctx, { ignoreAuthored: true })) as {
+                    tokens?: Record<string, string>;
+                } | null;
+                const site = await tx.builderSite.findUnique({
+                    where: { propertyId: config.propertyId },
+                    select: { silicaDraftTheme: true, silicaPublishedTheme: true },
+                });
+                if (!fresh?.tokens || !site) return;
 
-        const patch = (theme: unknown): unknown => {
-          const t = theme as { tokens?: Record<string, string> } | null;
-          if (!t?.tokens) return theme;
-          return {
-            ...t,
-            tokens: {
-              ...t.tokens,
-              '--size-field': fresh.tokens!['--size-field'] ?? t.tokens['--size-field'],
-              '--size-selector': fresh.tokens!['--size-selector'] ?? t.tokens['--size-selector'],
-            },
-          };
-        };
-        await tx.builderSite.update({
-          where: { propertyId: config.propertyId },
-          data: {
-            ...(site.silicaDraftTheme
-              ? { silicaDraftTheme: patch(site.silicaDraftTheme) as object }
-              : {}),
-            ...(site.silicaPublishedTheme
-              ? { silicaPublishedTheme: patch(site.silicaPublishedTheme) as object }
-              : {}),
-          },
-        });
-      });
+                const patch = (theme: unknown): unknown => {
+                    const t = theme as { tokens?: Record<string, string> } | null;
+                    if (!t?.tokens) return theme;
+                    return {
+                        ...t,
+                        tokens: {
+                            ...t.tokens,
+                            '--size-field': fresh.tokens!['--size-field'] ?? t.tokens['--size-field'],
+                            '--size-selector': fresh.tokens!['--size-selector'] ?? t.tokens['--size-selector'],
+                        },
+                    };
+                };
+                await tx.builderSite.update({
+                    where: { propertyId: config.propertyId },
+                    data: {
+                        ...(site.silicaDraftTheme
+                            ? { silicaDraftTheme: patch(site.silicaDraftTheme) as object }
+                            : {}),
+                        ...(site.silicaPublishedTheme
+                            ? { silicaPublishedTheme: patch(site.silicaPublishedTheme) as object }
+                            : {}),
+                    },
+                });
+            });
+        }
     }
-  }
 
-  console.log(
-    `\n${scanned} site configs scanned · ${fixed} carrying a control height where a density unit belongs.`
-  );
-  if (fixed > 0 && !APPLY) console.log('Re-run with --apply to write.');
+    console.log(
+        `\n${scanned} site configs scanned · ${fixed} carrying a control height where a density unit belongs.`
+    );
+    if (fixed > 0 && !APPLY) console.log('Re-run with --apply to write.');
 }
 
 async function main() {
-  if (REPAIR_THEMES) {
-    console.log(APPLY ? 'APPLYING theme repair.\n' : 'DRY RUN — nothing written.\n');
-    await repairThemeUnits();
-    return;
-  }
-
-  const targets = await findTargets();
-
-  console.log(
-    APPLY ? 'APPLYING — this deletes authored content.\n' : 'DRY RUN — nothing written.\n'
-  );
-  if (ONLY_TENANT) console.log(`filtered to tenant: ${ONLY_TENANT}\n`);
-
-  if (targets.length === 0) {
-    console.log('No legacy-only properties found. Nothing to do.');
-    return;
-  }
-
-  const totalPages = targets.reduce((n, t) => n + t.pages.length, 0);
-  const totalPublished = targets.reduce((n, t) => n + t.pages.filter((p) => p.published).length, 0);
-  console.log(
-    `${targets.length} legacy-only properties · ${totalPages} pages (${totalPublished} published) would be DELETED and re-seeded.\n`
-  );
-
-  for (const t of targets) {
-    console.log(
-      `${t.tenantSlug} / ${t.propertySlug}   (${t.pages.length} pages, ${t.layouts} layouts)`
-    );
-    for (const p of t.pages) {
-      const where = p.slug ?? '(home)';
-      console.log(
-        `    ${p.published ? 'published' : 'draft    '}  ${where.padEnd(22)} ${JSON.stringify(p.name)}`
-      );
+    if (REPAIR_THEMES) {
+        console.log(APPLY ? 'APPLYING theme repair.\n' : 'DRY RUN — nothing written.\n');
+        await repairThemeUnits();
+        return;
     }
-    console.log('');
-  }
 
-  if (!APPLY) {
-    console.log('Re-run with --apply to write. Nothing above has been changed.');
-    return;
-  }
+    const targets = await findTargets();
 
-  let done = 0;
-  for (const t of targets) {
-    await retire(t);
-    done += 1;
-    console.log(`re-seeded  ${t.tenantSlug} / ${t.propertySlug}   (${done}/${targets.length})`);
-  }
-  console.log(`\nDone. ${done} properties are now on silica and published.`);
+    console.log(
+        APPLY ? 'APPLYING — this deletes authored content.\n' : 'DRY RUN — nothing written.\n'
+    );
+    if (ONLY_TENANT) console.log(`filtered to tenant: ${ONLY_TENANT}\n`);
+
+    if (targets.length === 0) {
+        console.log('No legacy-only properties found. Nothing to do.');
+        return;
+    }
+
+    const totalPages = targets.reduce((n, t) => n + t.pages.length, 0);
+    const totalPublished = targets.reduce((n, t) => n + t.pages.filter((p) => p.published).length, 0);
+    console.log(
+        `${targets.length} legacy-only properties · ${totalPages} pages (${totalPublished} published) would be DELETED and re-seeded.\n`
+    );
+
+    for (const t of targets) {
+        console.log(
+            `${t.tenantSlug} / ${t.propertySlug}   (${t.pages.length} pages, ${t.layouts} layouts)`
+        );
+        for (const p of t.pages) {
+            const where = p.slug ?? '(home)';
+            console.log(
+                `    ${p.published ? 'published' : 'draft    '}  ${where.padEnd(22)} ${JSON.stringify(p.name)}`
+            );
+        }
+        console.log('');
+    }
+
+    if (!APPLY) {
+        console.log('Re-run with --apply to write. Nothing above has been changed.');
+        return;
+    }
+
+    let done = 0;
+    for (const t of targets) {
+        await retire(t);
+        done += 1;
+        console.log(`re-seeded  ${t.tenantSlug} / ${t.propertySlug}   (${done}/${targets.length})`);
+    }
+    console.log(`\nDone. ${done} properties are now on silica and published.`);
 }
 
 main()
-  .catch((err) => {
-    console.error(err);
-    process.exitCode = 1;
-  })
-  .finally(() => prisma.$disconnect());
+    .catch((err) => {
+        console.error(err);
+        process.exitCode = 1;
+    })
+    .finally(() => prisma.$disconnect());

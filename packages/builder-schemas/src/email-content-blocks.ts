@@ -13,7 +13,7 @@
 //   · `EmailEditor.insert` re-stamps EVERY node id in the inserted subtree
 //     (`stampIds` recurses), so the kit's authored `def-` ids never collide, even
 //     when the same block is dropped twice.
-//   · every colour here is a silica neutral default paired with its `*Auto` flag,
+//   · every color here is a silica neutral default paired with its `*Auto` flag,
 //     so the editor's `setColorDefaults` (and the send's brand pass) repaint each
 //     one from the tenant's own theme — a dropped block lands in the tenant's brand.
 //
@@ -23,59 +23,59 @@
 
 import type { EmailNode, EmailPaletteItem } from '@wizeworks/silicaui-builder/email';
 import {
-  actionLink,
-  button,
-  calloutCard,
-  copyBlock,
-  detailPanel,
-  heading,
-  para,
+    actionLink,
+    button,
+    calloutCard,
+    copyBlock,
+    detailPanel,
+    heading,
+    para,
 } from './silica-email-kit';
 
 /** A palette entry is a key + presentation + a `make()` that returns a FRESH node
  *  subtree each call (silica stamps ids on insert). Keys are `sx-` prefixed so they
  *  never clash with silica's built-in catalog keys. */
 function block(
-  key: string,
-  label: string,
-  hint: string,
-  icon: EmailPaletteItem['icon'],
-  make: () => EmailNode
+    key: string,
+    label: string,
+    hint: string,
+    icon: EmailPaletteItem['icon'],
+    make: () => EmailNode
 ): EmailPaletteItem {
-  return { key: `sx-${key}`, label, hint, icon, make };
+    return { key: `sx-${key}`, label, hint, icon, make };
 }
 
 export const EMAIL_CONTENT_BLOCKS: EmailPaletteItem[] = [
-  block('text-block', 'Text block', 'A heading, a line of copy, and a button', 'stack', () =>
-    copyBlock([
-      heading('Add a heading'),
-      para('Write a line or two that gets to the point — what this is, and what to do next.'),
-      button('Take action', '#'),
-    ])
-  ),
-  block(
-    'summary-card',
-    'Summary card',
-    'A bordered card with a status and key details',
-    'box',
-    () =>
-      detailPanel(
-        [
-          { label: 'The main thing', value: 'The one detail that matters most', emphasize: true },
-          { label: 'A detail', value: 'A supporting line' },
-          { label: 'Another detail', value: 'One more, if useful' },
-        ],
-        { status: { label: '✓ All set', role: 'success' } }
-      )
-  ),
-  block('cta', 'Call to action', 'A primary button with a quiet secondary link', 'button', () =>
-    copyBlock([button('Get started', '#', 'center'), actionLink('Or see how it works', '#')])
-  ),
-  block('callout', 'Callout', 'A tinted card that draws the eye to one message', 'label', () =>
-    calloutCard([
-      heading('Something worth noticing'),
-      para('Use this to highlight a promotion, a heads-up, or the single next step.'),
-      button('Learn more', '#'),
-    ])
-  ),
+    block('text-block', 'Text block', 'A heading, a line of copy, and a button', 'stack', () =>
+        copyBlock([
+            heading('Add a heading'),
+            para('Write a line or two that gets to the point — what this is, and what to do next.'),
+            button('Take action', '#'),
+        ])
+    ),
+    block(
+        'summary-card',
+        'Summary card',
+        'A bordered card with a status and key details',
+        'box',
+        () =>
+            detailPanel(
+                [
+                    { label: 'The main thing', value: 'The one detail that matters most', emphasize: true },
+                    { label: 'A detail', value: 'A supporting line' },
+                    { label: 'Another detail', value: 'One more, if useful' },
+                ],
+                { status: { label: '✓ All set', role: 'success' } }
+            )
+    ),
+    block('cta', 'Call to action', 'A primary button with a quiet secondary link', 'button', () =>
+        copyBlock([button('Get started', '#', 'center'), actionLink('Or see how it works', '#')])
+    ),
+    block('callout', 'Callout', 'A tinted card that draws the eye to one message', 'label', () =>
+        calloutCard([
+            heading('Something worth noticing'),
+            para('Use this to highlight a promotion, a heads-up, or the single next step.'),
+            button('Learn more', '#'),
+        ])
+    ),
 ];

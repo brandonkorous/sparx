@@ -16,6 +16,7 @@ import {
 import { buttonClasses } from '@wizeworks/silicaui-react/server';
 import { Logo } from '@piggles/brand/react';
 import { accountUrl } from '@piggles/config';
+import { ThemeToggle } from './theme-toggle';
 
 // The site header. Solid, not laid over the hero.
 //
@@ -24,7 +25,7 @@ import { accountUrl } from '@piggles/config';
 // bar that reads over one of them is unreadable over the next. The header sits
 // on `base-100` above the footage instead. It also means the wordmark keeps its
 // own ink and the mark keeps its pink — a logo knocked out to white over video is
-// a logo that stopped being the brand colour.
+// a logo that stopped being the brand color.
 
 const LINKS = [
   { href: '/apps', label: 'Apps' },
@@ -57,7 +58,7 @@ export function SiteHeader() {
     // and the alternative (a floating pill that appears on scroll) is a second
     // component that can disagree with this one about what the primary action is.
     // `bg-base-100` is opaque on purpose: a translucent bar over the module-tinted
-    // bento gives the brand six different header colours on the way down.
+    // bento gives the brand six different header colors on the way down.
     <header className="bg-base-100 border-base-300 sticky top-0 z-50 border-b">
       <Navbar className="mx-auto max-w-7xl px-6">
         <NavbarStart>
@@ -75,6 +76,11 @@ export function SiteHeader() {
         </NavbarCenter>
 
         <NavbarEnd className="items-center gap-2">
+          {/* Before the two actions, not after: it is chrome, and putting it
+              on the outside edge would make the last thing on the bar something
+              other than the thing the bar is for. Visible at every width — a
+              person who reads in dark mode reads in dark mode on a phone. */}
+          <ThemeToggle />
           {/* Real anchors carrying `buttonClasses`, NOT `<Button render={<a/>}>`.
               Both work here — this is a client component — but the render form
               hands jsx-a11y an empty `<a>` whose text lives in a sibling prop,

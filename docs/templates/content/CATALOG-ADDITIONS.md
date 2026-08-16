@@ -133,7 +133,7 @@ confirm each clears the sweep:
 - **serif-across / serif-head + sans-body** — `broadsheet` (New Yorker), `runway` (Vogue), `quad` (Harvard).
 - **no registered accent** — `runway` (B/W, chroma from photography only; sweep must treat as intentional, like SKIMS did).
 - **dark content grounds** — `amplitude` (Rolling Stone), `expanse` (Nat Geo), `console` (PlayStation), `amp` (Sony) — the content set's first dark defaults; confirm readable ink + accent AA on near-black.
-- **two-brand-colour** — `quad` navy primary + crimson accent (the prior single-accent themes never stressed a two-colour chassis).
+- **two-brand-color** — `quad` navy primary + crimson accent (the prior single-accent themes never stressed a two-color chassis).
 - **duotone neon** — `amp` magenta + cyan (Sony) on dark.
 - **AAA-civic** — `agency` federal-blue at AAA + severity accents + the accessibility gate (§H).
 - **light single-accent** — `dispatch` emerald (TechCrunch), `podium` coral (TED).

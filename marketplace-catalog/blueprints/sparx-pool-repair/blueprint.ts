@@ -10,71 +10,71 @@ import emails from './emails.json' with { type: 'json' };
 import assets from './assets.json' with { type: 'json' };
 
 const blueprint = {
-  key: 'sparx-pool-repair',
-  version: '1.3.0',
-  name: 'sparx — Pool & Spa (Repair)',
-  summary:
-    'A deep, technical pool & spa REPAIR site — a navy-teal palette with a bright cyan signal accent, built around online booking. Homeowners book a service call, a free repair estimate or a specialist consult in about a minute; three technicians carry their own skills and hours as dispatchable resources. Leads with certified techs, all makes & models and upfront diagnostics. Ships as "AquaTech Pool & Spa", an equipment-and-renovation specialist.',
-  vertical: 'services',
-  preview: 'media/preview.png',
-  requiresModules: ['builder', 'scheduling', 'crm', 'email'],
+    key: 'sparx-pool-repair',
+    version: '1.3.0',
+    name: 'sparx — Pool & Spa (Repair)',
+    summary:
+        'A deep, technical pool & spa REPAIR site — a navy-teal palette with a bright cyan signal accent, built around online booking. Homeowners book a service call, a free repair estimate or a specialist consult in about a minute; three technicians carry their own skills and hours as dispatchable resources. Leads with certified techs, all makes & models and upfront diagnostics. Ships as "AquaTech Pool & Spa", an equipment-and-renovation specialist.',
+    vertical: 'services',
+    preview: 'media/preview.png',
+    requiresModules: ['builder', 'scheduling', 'crm', 'email'],
 
-  // Identity only (business name + tagline + fonts + the theme's hex colours). The look
-  // rides site.theme + the theme decl below; the installing tenant rebrands the name.
-  brand: {
-    businessName: 'AquaTech Pool & Spa',
-    tagline: 'We fix what others can’t.',
-    colors: {
-      primary: '#005a81',
-      primaryForeground: '#f2fafe',
-      accent: '#00bfc9',
-      secondary: '#303c47',
-    },
-    fonts: {
-      heading: 'Space Grotesk',
-      body: 'Inter',
-    },
-  },
-
-  // The provisioned SiteTheme the installer creates + applies — an editable saved theme
-  // over a foundation base + the template's brand snapshot. The LIVE storefront look is
-  // site.theme (the flat bespoke tokens), written last.
-  theme: {
-    name: 'aquatech',
-    basePresetKey: 'apex',
-    presentation: {
-      v: 2,
-      containerWidth: '1152px',
-    },
+    // Identity only (business name + tagline + fonts + the theme's hex colors). The look
+    // rides site.theme + the theme decl below; the installing tenant rebrands the name.
     brand: {
-      colorPrimary: '#005a81',
-      colorAccent: '#00bfc9',
-      colorSecondary: '#303c47',
-      fontHeading: 'Space Grotesk',
-      fontBody: 'Inter',
-      tokens: {},
+        businessName: 'AquaTech Pool & Spa',
+        tagline: 'We fix what others can’t.',
+        colors: {
+            primary: '#005a81',
+            primaryForeground: '#f2fafe',
+            accent: '#00bfc9',
+            secondary: '#303c47',
+        },
+        fonts: {
+            heading: 'Space Grotesk',
+            body: 'Inter',
+        },
     },
-    apply: true,
-  },
 
-  assets,
-  contentTypes: [],
+    // The provisioned SiteTheme the installer creates + applies — an editable saved theme
+    // over a foundation base + the template's brand snapshot. The LIVE storefront look is
+    // site.theme (the flat bespoke tokens), written last.
+    theme: {
+        name: 'aquatech',
+        basePresetKey: 'apex',
+        presentation: {
+            v: 2,
+            containerWidth: '1152px',
+        },
+        brand: {
+            colorPrimary: '#005a81',
+            colorAccent: '#00bfc9',
+            colorSecondary: '#303c47',
+            fontHeading: 'Space Grotesk',
+            fontBody: 'Inter',
+            tokens: {},
+        },
+        apply: true,
+    },
 
-  // The booking spine — policies, bookable resources (staff/rooms/stations) with weekly
-  // hours, and the service menu. The installer's scheduling slice replays it into a live
-  // booking flow that the site's /book page renders.
-  scheduling,
+    assets,
+    contentTypes: [],
 
-  // Brand-voiced MARKETING starters (a welcome + a come-back), installed as DRAFTS the
-  // tenant switches on. The transactional booking sends — confirmation, reminder,
-  // reschedule, cancellation, waitlist — are platform KEYED defaults, so they are covered
-  // on email-module activation and are deliberately NOT duplicated here.
-  emails,
-  sequences: [],
+    // The booking spine — policies, bookable resources (staff/rooms/stations) with weekly
+    // hours, and the service menu. The installer's scheduling slice replays it into a live
+    // booking flow that the site's /book page renders.
+    scheduling,
 
-  // The composed distinct site (frame + Home + Book + About + Contact) in the bespoke
-  // theme, fully stamped.
-  site,
+    // Brand-voiced MARKETING starters (a welcome + a come-back), installed as DRAFTS the
+    // tenant switches on. The transactional booking sends — confirmation, reminder,
+    // reschedule, cancellation, waitlist — are platform KEYED defaults, so they are covered
+    // on email-module activation and are deliberately NOT duplicated here.
+    emails,
+    sequences: [],
+
+    // The composed distinct site (frame + Home + Book + About + Contact) in the bespoke
+    // theme, fully stamped.
+    site,
 };
 
 export default blueprint;

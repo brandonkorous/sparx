@@ -23,12 +23,12 @@ export type ExpenseKind = (typeof EXPENSE_KINDS)[number];
 /** What produced an expense row. Only `manual` is freely editable — a derived row
  *  is corrected at its source, or the next derivation overwrites the edit. */
 export const EXPENSE_SOURCES = [
-  'manual',
-  'recurring',
-  'imported',
-  'labor',
-  'sparx_bill',
-  'api',
+    'manual',
+    'recurring',
+    'imported',
+    'labor',
+    'sparx_bill',
+    'api',
 ] as const;
 export const expenseSourceSchema = z.enum(EXPENSE_SOURCES);
 export type ExpenseSource = (typeof EXPENSE_SOURCES)[number];
@@ -48,13 +48,13 @@ export const recurringCadenceSchema = z.enum(RECURRING_CADENCES);
 export type RecurringCadence = (typeof RECURRING_CADENCES)[number];
 
 export const ACCOUNTING_PROVIDERS = [
-  'quickbooks_online',
-  'quickbooks_desktop',
-  'xero',
-  'sage50',
-  'freshbooks',
-  'wave',
-  'csv',
+    'quickbooks_online',
+    'quickbooks_desktop',
+    'xero',
+    'sage50',
+    'freshbooks',
+    'wave',
+    'csv',
 ] as const;
 export const accountingProviderSchema = z.enum(ACCOUNTING_PROVIDERS);
 export type AccountingProvider = (typeof ACCOUNTING_PROVIDERS)[number];
@@ -72,22 +72,22 @@ const amountCents = z.int();
 /** ISO-4217, upper-cased on the way in so 'usd' and 'USD' are one currency rather
  *  than two that never sum together. */
 const currency = z
-  .string()
-  .length(3)
-  .transform((value) => value.toUpperCase());
+    .string()
+    .length(3)
+    .transform((value) => value.toUpperCase());
 
 /** A hex swatch the tenant chose for their own category. User-picked data, not a
  *  design token — the same shape `SchedulingResource.color` already stores. */
-const hexColor = z.string().regex(/^#[0-9a-fA-F]{6}$/, 'Use a 6-digit hex colour like #4F46E5');
+const hexColor = z.string().regex(/^#[0-9a-fA-F]{6}$/, 'Use a 6-digit hex color like #4F46E5');
 
 /* ── Categories ────────────────────────────────────────────────────────────── */
 
 export const createCategorySchema = z.object({
-  name: z.string().trim().min(1).max(120),
-  kind: expenseKindSchema.default('operating'),
-  color: hexColor.nullish(),
-  exportCode: z.string().trim().max(60).nullish(),
-  sortOrder: z.int().default(0),
+    name: z.string().trim().min(1).max(120),
+    kind: expenseKindSchema.default('operating'),
+    color: hexColor.nullish(),
+    exportCode: z.string().trim().max(60).nullish(),
+    sortOrder: z.int().default(0),
 });
 export type CreateCategoryInput = z.infer<typeof createCategorySchema>;
 
@@ -97,16 +97,16 @@ export type UpdateCategoryInput = z.infer<typeof updateCategorySchema>;
 /* ── Vendors ───────────────────────────────────────────────────────────────── */
 
 export const createVendorSchema = z.object({
-  name: z.string().trim().min(1).max(200),
-  supplierId: uuid.nullish(),
-  companyId: uuid.nullish(),
-  email: z.email().max(255).nullish(),
-  phone: z.string().trim().max(40).nullish(),
-  website: z.url().nullish(),
-  address: z.string().trim().nullish(),
-  accountRef: z.string().trim().max(120).nullish(),
-  paymentTerms: z.string().trim().max(20).nullish(),
-  notes: z.string().trim().nullish(),
+    name: z.string().trim().min(1).max(200),
+    supplierId: uuid.nullish(),
+    companyId: uuid.nullish(),
+    email: z.email().max(255).nullish(),
+    phone: z.string().trim().max(40).nullish(),
+    website: z.url().nullish(),
+    address: z.string().trim().nullish(),
+    accountRef: z.string().trim().max(120).nullish(),
+    paymentTerms: z.string().trim().max(20).nullish(),
+    notes: z.string().trim().nullish(),
 });
 export type CreateVendorInput = z.infer<typeof createVendorSchema>;
 
@@ -116,62 +116,62 @@ export type UpdateVendorInput = z.infer<typeof updateVendorSchema>;
 /* ── Allocations ───────────────────────────────────────────────────────────── */
 
 export const allocationInputSchema = z.object({
-  targetType: allocationTargetSchema,
-  targetId: uuid,
-  targetLabel: z.string().trim().max(200).nullish(),
-  amountCents,
+    targetType: allocationTargetSchema,
+    targetId: uuid,
+    targetLabel: z.string().trim().max(200).nullish(),
+    amountCents,
 });
 export type AllocationInput = z.infer<typeof allocationInputSchema>;
 
 /* ── Expenses ──────────────────────────────────────────────────────────────── */
 
 export const createExpenseSchema = z.object({
-  propertyId: uuid.nullish(),
-  categoryId: uuid,
-  vendorId: uuid.nullish(),
-  description: z.string().trim().min(1).max(300),
-  amountCents,
-  currency: currency.default('USD'),
-  taxCents: z.int().min(0).default(0),
-  incurredAt: z.coerce.date(),
-  paidAt: z.coerce.date().nullish(),
-  dueAt: z.coerce.date().nullish(),
-  paymentMethod: paymentMethodSchema.nullish(),
-  reference: z.string().trim().max(120).nullish(),
-  notes: z.string().trim().nullish(),
+    propertyId: uuid.nullish(),
+    categoryId: uuid,
+    vendorId: uuid.nullish(),
+    description: z.string().trim().min(1).max(300),
+    amountCents,
+    currency: currency.default('USD'),
+    taxCents: z.int().min(0).default(0),
+    incurredAt: z.coerce.date(),
+    paidAt: z.coerce.date().nullish(),
+    dueAt: z.coerce.date().nullish(),
+    paymentMethod: paymentMethodSchema.nullish(),
+    reference: z.string().trim().max(120).nullish(),
+    notes: z.string().trim().nullish(),
 
-  /**
-   * Where the spend went. The service writes a single row when the caller names
-   * one job, so the common case stays one click — but this is the ONLY path from
-   * spend to a job. There is deliberately no `orderId` shortcut: a second path is
-   * how half the spend goes missing from the report that joins the other one.
-   */
-  allocations: z.array(allocationInputSchema).default([]),
-  attachmentAssetIds: z.array(uuid).default([]),
+    /**
+     * Where the spend went. The service writes a single row when the caller names
+     * one job, so the common case stays one click — but this is the ONLY path from
+     * spend to a job. There is deliberately no `orderId` shortcut: a second path is
+     * how half the spend goes missing from the report that joins the other one.
+     */
+    allocations: z.array(allocationInputSchema).default([]),
+    attachmentAssetIds: z.array(uuid).default([]),
 });
 export type CreateExpenseInput = z.infer<typeof createExpenseSchema>;
 
 export const updateExpenseSchema = createExpenseSchema
-  .partial()
-  .extend({ id: uuid })
-  // `allocations` is a full REPLACE when present and untouched when absent —
-  // a partial merge would make "remove the last allocation" unexpressible.
-  .describe('Allocations, when present, replace the existing set in full');
+    .partial()
+    .extend({ id: uuid })
+    // `allocations` is a full REPLACE when present and untouched when absent —
+    // a partial merge would make "remove the last allocation" unexpressible.
+    .describe('Allocations, when present, replace the existing set in full');
 export type UpdateExpenseInput = z.infer<typeof updateExpenseSchema>;
 
 export const listExpensesSchema = z.object({
-  propertyId: uuid.nullish(),
-  categoryId: uuid.nullish(),
-  vendorId: uuid.nullish(),
-  source: expenseSourceSchema.nullish(),
-  /** Filter on `incurredAt` — the period the cost belongs to, never `paidAt`. */
-  from: z.coerce.date().nullish(),
-  to: z.coerce.date().nullish(),
-  /** true = only unpaid (the payables view); false = only paid. */
-  unpaidOnly: z.boolean().nullish(),
-  search: z.string().trim().max(200).nullish(),
-  limit: z.int().min(1).max(200).default(50),
-  cursor: uuid.nullish(),
+    propertyId: uuid.nullish(),
+    categoryId: uuid.nullish(),
+    vendorId: uuid.nullish(),
+    source: expenseSourceSchema.nullish(),
+    /** Filter on `incurredAt` — the period the cost belongs to, never `paidAt`. */
+    from: z.coerce.date().nullish(),
+    to: z.coerce.date().nullish(),
+    /** true = only unpaid (the payables view); false = only paid. */
+    unpaidOnly: z.boolean().nullish(),
+    search: z.string().trim().max(200).nullish(),
+    limit: z.int().min(1).max(200).default(50),
+    cursor: uuid.nullish(),
 });
 // NOTE: this is the SERVICE contract — real numbers, real booleans. It is not
 // safe to hand `request.query` to directly, because every value there is a
@@ -184,48 +184,48 @@ export type ListExpensesInput = z.infer<typeof listExpensesSchema>;
 /* ── Recurring ─────────────────────────────────────────────────────────────── */
 
 export const createRecurringSchema = z
-  .object({
-    propertyId: uuid.nullish(),
-    name: z.string().trim().min(1).max(200),
-    categoryId: uuid,
-    vendorId: uuid.nullish(),
-    amountCents,
-    currency: currency.default('USD'),
-    cadence: recurringCadenceSchema,
-    dayOfMonth: z.int().min(1).max(31).nullish(),
-    startsOn: z.coerce.date(),
-    endsOn: z.coerce.date().nullish(),
-    autoGenerate: z.boolean().default(true),
-    isActive: z.boolean().default(true),
-    notes: z.string().trim().nullish(),
-  })
-  .refine((value) => !value.endsOn || value.endsOn >= value.startsOn, {
-    message: 'The end date cannot be before the start date',
-    path: ['endsOn'],
-  });
+    .object({
+        propertyId: uuid.nullish(),
+        name: z.string().trim().min(1).max(200),
+        categoryId: uuid,
+        vendorId: uuid.nullish(),
+        amountCents,
+        currency: currency.default('USD'),
+        cadence: recurringCadenceSchema,
+        dayOfMonth: z.int().min(1).max(31).nullish(),
+        startsOn: z.coerce.date(),
+        endsOn: z.coerce.date().nullish(),
+        autoGenerate: z.boolean().default(true),
+        isActive: z.boolean().default(true),
+        notes: z.string().trim().nullish(),
+    })
+    .refine((value) => !value.endsOn || value.endsOn >= value.startsOn, {
+        message: 'The end date cannot be before the start date',
+        path: ['endsOn'],
+    });
 export type CreateRecurringInput = z.infer<typeof createRecurringSchema>;
 
 /** `.partial()` is unavailable on a refined object, so the update shape restates
  *  the fields and keeps the same cross-field rule. */
 export const updateRecurringSchema = z
-  .object({
-    id: uuid,
-    propertyId: uuid.nullish(),
-    name: z.string().trim().min(1).max(200).optional(),
-    categoryId: uuid.optional(),
-    vendorId: uuid.nullish(),
-    amountCents: amountCents.optional(),
-    currency: currency.optional(),
-    cadence: recurringCadenceSchema.optional(),
-    dayOfMonth: z.int().min(1).max(31).nullish(),
-    startsOn: z.coerce.date().optional(),
-    endsOn: z.coerce.date().nullish(),
-    autoGenerate: z.boolean().optional(),
-    isActive: z.boolean().optional(),
-    notes: z.string().trim().nullish(),
-  })
-  .refine((value) => !value.endsOn || !value.startsOn || value.endsOn >= value.startsOn, {
-    message: 'The end date cannot be before the start date',
-    path: ['endsOn'],
-  });
+    .object({
+        id: uuid,
+        propertyId: uuid.nullish(),
+        name: z.string().trim().min(1).max(200).optional(),
+        categoryId: uuid.optional(),
+        vendorId: uuid.nullish(),
+        amountCents: amountCents.optional(),
+        currency: currency.optional(),
+        cadence: recurringCadenceSchema.optional(),
+        dayOfMonth: z.int().min(1).max(31).nullish(),
+        startsOn: z.coerce.date().optional(),
+        endsOn: z.coerce.date().nullish(),
+        autoGenerate: z.boolean().optional(),
+        isActive: z.boolean().optional(),
+        notes: z.string().trim().nullish(),
+    })
+    .refine((value) => !value.endsOn || !value.startsOn || value.endsOn >= value.startsOn, {
+        message: 'The end date cannot be before the start date',
+        path: ['endsOn'],
+    });
 export type UpdateRecurringInput = z.infer<typeof updateRecurringSchema>;

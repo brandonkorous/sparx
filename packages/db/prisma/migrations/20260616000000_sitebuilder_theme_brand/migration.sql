@@ -1,5 +1,5 @@
 -- Saved themes capture a brand "look" (docs/33 / docs/36 Brand+Theme tier): the
--- theme's own identity colours, fonts, and shape/feel tokens — so a named theme
+-- theme's own identity colors, fonts, and shape/feel tokens — so a named theme
 -- is a self-contained snapshot, not just a presentation overlay. Applying the
 -- theme writes these onto the tenant brand (the dashboard does that via /v1/brand;
 -- this column only stores the snapshot).

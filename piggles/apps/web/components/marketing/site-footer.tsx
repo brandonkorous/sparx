@@ -37,7 +37,7 @@ import { GROUP_COPY } from './groups';
 //   3. **No hierarchy.** Fifteen links, three nav links and a credit line, all
 //      the same weight. The group headings now wear their hue and carry their
 //      icon, which is the same wayfinding the rail uses — a person who has used
-//      the product for a week reads this footer by colour.
+//      the product for a week reads this footer by color.
 //
 // One thing that has NOT changed and must not: every one of the fifteen is a
 // real link. Trimming the index to "popular apps" would quietly undo the reason

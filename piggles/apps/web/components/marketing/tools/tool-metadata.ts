@@ -18,26 +18,26 @@ import type { PigglesTool } from './registry';
  * without the page losing anything.
  */
 export function toolMetadata(tool: PigglesTool, searchTitle: string): Metadata {
-  const url = `https://${PRODUCT.hosts.marketing}/tools/${tool.slug}`;
+    const url = `https://${PRODUCT.hosts.marketing}/tools/${tool.slug}`;
 
-  return {
-    title: searchTitle,
-    description: tool.description,
-    keywords: tool.keywords,
-    alternates: { canonical: `/tools/${tool.slug}` },
-    openGraph: {
-      title: `${searchTitle} · ${PRODUCT.name}`,
-      description: tool.tagline,
-      url,
-      siteName: PRODUCT.name,
-      type: 'website',
-    },
-    twitter: {
-      card: 'summary_large_image',
-      title: `${searchTitle} · ${PRODUCT.name}`,
-      description: tool.tagline,
-    },
-  };
+    return {
+        title: searchTitle,
+        description: tool.description,
+        keywords: tool.keywords,
+        alternates: { canonical: `/tools/${tool.slug}` },
+        openGraph: {
+            title: `${searchTitle} · ${PRODUCT.name}`,
+            description: tool.tagline,
+            url,
+            siteName: PRODUCT.name,
+            type: 'website',
+        },
+        twitter: {
+            card: 'summary_large_image',
+            title: `${searchTitle} · ${PRODUCT.name}`,
+            description: tool.tagline,
+        },
+    };
 }
 
 /**
@@ -51,25 +51,25 @@ export function toolMetadata(tool: PigglesTool, searchTitle: string): Metadata {
  * page either stops ranking or starts shouting jargon at a florist.
  */
 export const TOOL_SEARCH_TITLES: Record<string, string> = {
-  favicon: 'Free favicon generator',
-  'qr-code': 'Free QR code generator',
-  'utm-builder': 'Free UTM link builder',
-  'og-image': 'Free Open Graph image generator',
-  'email-signature': 'Free email signature generator',
-  invoice: 'Free invoice generator',
-  'email-deliverability': 'Free SPF, DKIM and DMARC checker',
-  'meta-tags': 'Free meta tag generator and search preview',
-  'color-palette': 'Free colour palette generator',
-  'margin-calculator': 'Free margin and markup calculator',
-  quote: 'Free quote and estimate generator',
-  'structured-data': 'Free structured data (JSON-LD) generator',
-  'contrast-checker': 'Free WCAG colour contrast checker',
-  barcode: 'Free barcode generator',
-  'digital-card': 'Free digital business card and vCard generator',
-  'privacy-policy': 'Free privacy policy generator',
-  'domain-checker': 'Free domain availability checker',
+    favicon: 'Free favicon generator',
+    'qr-code': 'Free QR code generator',
+    'utm-builder': 'Free UTM link builder',
+    'og-image': 'Free Open Graph image generator',
+    'email-signature': 'Free email signature generator',
+    invoice: 'Free invoice generator',
+    'email-deliverability': 'Free SPF, DKIM and DMARC checker',
+    'meta-tags': 'Free meta tag generator and search preview',
+    'color-palette': 'Free color palette generator',
+    'margin-calculator': 'Free margin and markup calculator',
+    quote: 'Free quote and estimate generator',
+    'structured-data': 'Free structured data (JSON-LD) generator',
+    'contrast-checker': 'Free WCAG color contrast checker',
+    barcode: 'Free barcode generator',
+    'digital-card': 'Free digital business card and vCard generator',
+    'privacy-policy': 'Free privacy policy generator',
+    'domain-checker': 'Free domain availability checker',
 };
 
 export function searchTitleFor(tool: PigglesTool): string {
-  return TOOL_SEARCH_TITLES[tool.slug] ?? tool.name;
+    return TOOL_SEARCH_TITLES[tool.slug] ?? tool.name;
 }

@@ -39,7 +39,7 @@ model CommerceSiteSettings {
 }
 
 // PRESENTATION-only token overrides applied on top of @sparx/ui's storefront
-// variants. Brand IDENTITY (primary/accent colour, typography, logo, favicon)
+// variants. Brand IDENTITY (primary/accent color, typography, logo, favicon)
 // is owned by the tenant-level TenantBrand (docs/30 §6) and read live + overlaid
 // at render — it is NOT mirrored here. The former identity columns
 // (color_primary/_primary_foreground/_accent, font_heading/_body,
@@ -66,7 +66,7 @@ model CommerceSiteTheme {
   //
   // Widened rather than converted to hex on the way in: OKLCH is the authored
   // truth (silica resolves `-content` pairs and AA contrast in that space), and
-  // down-converting here would store a lossy second version of a colour the
+  // down-converting here would store a lossy second version of a color the
   // storefront never reads from this table anyway — it renders the silica theme.
   // 32 covers the longest form these emit with room to spare.
   colorBackground String? @map("color_background") @db.VarChar(32)

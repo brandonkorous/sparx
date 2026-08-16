@@ -1,406 +1,426 @@
 [
-  {
-    "typeKey": "blog_post",
-    "slug": "atlas-trading-dashboard",
-    "status": "published",
-    "authorSlug": "sasha-rourke",
-    "categories": ["Product design"],
-    "tags": ["Fintech", "Design systems"],
-    "body": {
-      "title": "Rebuilding the Atlas trading dashboard",
-      "excerpt": "A dense pro-trader dashboard, rebuilt from the information architecture up — then codified into the component library the whole product now runs on.",
-      "featuredImage": {
-        "$asset": "ledger-atlas"
-      },
-      "body": {
-        "type": "doc",
-        "content": [
-          {
-            "type": "paragraph",
-            "content": [
-              {
-                "type": "text",
-                "text": "Role: Lead product designer. Timeline: five months. Team: two engineers, one PM, and me. Atlas is a trading platform for professionals who live in the product all day — and their dashboard had grown, screen by screen, into something nobody could take in at a glance."
-              }
-            ]
-          },
-          {
-            "type": "heading",
-            "attrs": {
-              "level": 2
+    {
+        "typeKey": "blog_post",
+        "slug": "atlas-trading-dashboard",
+        "status": "published",
+        "authorSlug": "sasha-rourke",
+        "categories": [
+            "Product design"
+        ],
+        "tags": [
+            "Fintech",
+            "Design systems"
+        ],
+        "body": {
+            "title": "Rebuilding the Atlas trading dashboard",
+            "excerpt": "A dense pro-trader dashboard, rebuilt from the information architecture up — then codified into the component library the whole product now runs on.",
+            "featuredImage": {
+                "$asset": "ledger-atlas"
             },
-            "content": [
-              {
-                "type": "text",
-                "text": "The problem"
-              }
-            ]
-          },
-          {
-            "type": "paragraph",
-            "content": [
-              {
-                "type": "text",
-                "text": "Support tickets told the story: traders were missing price alerts, opening the wrong positions, and asking where features had gone. Nothing was broken, exactly — there was just too much on screen, arranged by which team shipped it rather than by what a trader needs to see first."
-              }
-            ]
-          },
-          {
-            "type": "paragraph",
-            "content": [
-              {
-                "type": "text",
-                "text": "I started by mapping every element on the dashboard to a real question a trader asks — “where is my money”, “what changed”, “what do I do next” — and found that a third of the interface answered no question at all."
-              }
-            ]
-          },
-          {
-            "type": "heading",
-            "attrs": {
-              "level": 2
+            "body": {
+                "type": "doc",
+                "content": [
+                    {
+                        "type": "paragraph",
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "Role: Lead product designer. Timeline: five months. Team: two engineers, one PM, and me. Atlas is a trading platform for professionals who live in the product all day — and their dashboard had grown, screen by screen, into something nobody could take in at a glance."
+                            }
+                        ]
+                    },
+                    {
+                        "type": "heading",
+                        "attrs": {
+                            "level": 2
+                        },
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "The problem"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "paragraph",
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "Support tickets told the story: traders were missing price alerts, opening the wrong positions, and asking where features had gone. Nothing was broken, exactly — there was just too much on screen, arranged by which team shipped it rather than by what a trader needs to see first."
+                            }
+                        ]
+                    },
+                    {
+                        "type": "paragraph",
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "I started by mapping every element on the dashboard to a real question a trader asks — “where is my money”, “what changed”, “what do I do next” — and found that a third of the interface answered no question at all."
+                            }
+                        ]
+                    },
+                    {
+                        "type": "heading",
+                        "attrs": {
+                            "level": 2
+                        },
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "What we did"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "paragraph",
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "We rebuilt the layout around those three questions, in that order: positions and P&L up top, a live change feed in the middle, and actions where the eye lands last. Density stayed high — pros want density — but it became legible density, with a clear type scale and a single accent doing the signalling."
+                            }
+                        ]
+                    },
+                    {
+                        "type": "paragraph",
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "Then we codified it. Every element became a token or a component in a shared library, documented with the rules for when to use it, so the next feature would extend the system instead of fighting it."
+                            }
+                        ]
+                    },
+                    {
+                        "type": "heading",
+                        "attrs": {
+                            "level": 2
+                        },
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "The outcome"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "paragraph",
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "Support tickets about the dashboard fell 38% in the first quarter after launch. Just as important, the team shipped the next three features on top of the new system with no design debt — the library held. The dashboard is now the reference every other Atlas surface is being rebuilt against."
+                            }
+                        ]
+                    }
+                ]
+            }
+        }
+    },
+    {
+        "typeKey": "blog_post",
+        "slug": "northwind-booking-flow",
+        "status": "published",
+        "authorSlug": "sasha-rourke",
+        "categories": [
+            "UX"
+        ],
+        "tags": [
+            "Healthcare",
+            "Service design"
+        ],
+        "body": {
+            "title": "A booking flow patients actually finish",
+            "excerpt": "Northwind’s appointment booking lost people at every step. We cut it to three, wrote it in plain language, and tested it with real patients.",
+            "featuredImage": {
+                "$asset": "ledger-north"
             },
-            "content": [
-              {
-                "type": "text",
-                "text": "What we did"
-              }
-            ]
-          },
-          {
-            "type": "paragraph",
-            "content": [
-              {
-                "type": "text",
-                "text": "We rebuilt the layout around those three questions, in that order: positions and P&L up top, a live change feed in the middle, and actions where the eye lands last. Density stayed high — pros want density — but it became legible density, with a clear type scale and a single accent doing the signalling."
-              }
-            ]
-          },
-          {
-            "type": "paragraph",
-            "content": [
-              {
-                "type": "text",
-                "text": "Then we codified it. Every element became a token or a component in a shared library, documented with the rules for when to use it, so the next feature would extend the system instead of fighting it."
-              }
-            ]
-          },
-          {
-            "type": "heading",
-            "attrs": {
-              "level": 2
+            "body": {
+                "type": "doc",
+                "content": [
+                    {
+                        "type": "paragraph",
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "Role: UX and service design. Timeline: three months. Northwind Health runs a network of clinics, and its online booking was the first thing most patients ever touched. It was also where most of them gave up."
+                            }
+                        ]
+                    },
+                    {
+                        "type": "heading",
+                        "attrs": {
+                            "level": 2
+                        },
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "The problem"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "paragraph",
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "The old flow had nine steps and asked for insurance details before it showed a single available time. Analytics showed people dropping at every stage; the call centre picked up the slack, and the phones were always busy. The flow had been designed around the clinic’s data model, not the patient’s question, which is simply: when can I be seen?"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "heading",
+                        "attrs": {
+                            "level": 2
+                        },
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "What we did"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "paragraph",
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "We rebuilt it around that question. Three steps: pick a reason, pick a time, confirm who you are. Everything the clinic needed but the patient didn’t care about moved to the end or got inferred. We rewrote every label in plain language — no “member ID”, no “provider”, just words a worried person reads correctly on the first pass."
+                            }
+                        ]
+                    },
+                    {
+                        "type": "paragraph",
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "Then we tested it, with eight real patients across two rounds, and fixed the three places they hesitated before it ever shipped."
+                            }
+                        ]
+                    },
+                    {
+                        "type": "heading",
+                        "attrs": {
+                            "level": 2
+                        },
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "The outcome"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "paragraph",
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "Booking completion rose 61%, and call-centre volume for appointments dropped enough that the clinics reassigned two staff to follow-up care. The plain-language pass turned out to matter as much as the step count — the words were doing the work."
+                            }
+                        ]
+                    }
+                ]
+            }
+        }
+    },
+    {
+        "typeKey": "blog_post",
+        "slug": "kiln-design-system",
+        "status": "published",
+        "authorSlug": "sasha-rourke",
+        "categories": [
+            "Design systems"
+        ],
+        "tags": [
+            "Design systems",
+            "Team enablement"
+        ],
+        "body": {
+            "title": "One system, five product teams",
+            "excerpt": "Kiln’s five squads were each rebuilding the same buttons. I built the shared system — and, more importantly, made teams want to adopt it.",
+            "featuredImage": {
+                "$asset": "ledger-kiln"
             },
-            "content": [
-              {
-                "type": "text",
-                "text": "The outcome"
-              }
-            ]
-          },
-          {
-            "type": "paragraph",
-            "content": [
-              {
-                "type": "text",
-                "text": "Support tickets about the dashboard fell 38% in the first quarter after launch. Just as important, the team shipped the next three features on top of the new system with no design debt — the library held. The dashboard is now the reference every other Atlas surface is being rebuilt against."
-              }
-            ]
-          }
-        ]
-      }
+            "body": {
+                "type": "doc",
+                "content": [
+                    {
+                        "type": "paragraph",
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "Role: Design systems lead. Timeline: six months, then ongoing. Kiln had grown to five product squads, and every one of them had quietly built its own version of the same components. The product looked like five products."
+                            }
+                        ]
+                    },
+                    {
+                        "type": "heading",
+                        "attrs": {
+                            "level": 2
+                        },
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "The problem"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "paragraph",
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "A design system had been attempted before and ignored — it existed as a Figma file nobody opened, because adopting it was more work than not adopting it. The technical problem was easy; the human one was the whole job."
+                            }
+                        ]
+                    },
+                    {
+                        "type": "heading",
+                        "attrs": {
+                            "level": 2
+                        },
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "What we did"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "paragraph",
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "I built the system as tokens first — color, type, spacing, radius — so a team could get 80% of the look by changing nothing but their theme file. Then components on top, each shipped in both Figma and code, so a designer and an engineer were never working from different sources. And documentation that answered “which one do I use” in one screen, because that is the question people actually have."
+                            }
+                        ]
+                    },
+                    {
+                        "type": "paragraph",
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "The adoption lever was making the system the path of least resistance: new screens started from system components by default, and I sat with each squad for a sprint to migrate their first flow together."
+                            }
+                        ]
+                    },
+                    {
+                        "type": "heading",
+                        "attrs": {
+                            "level": 2
+                        },
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "The outcome"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "paragraph",
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "Teams now ship a new screen about four times faster than before, and the product reads as one product again. The system has its own small backlog and two contributors from other squads — the surest sign it’s alive rather than imposed."
+                            }
+                        ]
+                    }
+                ]
+            }
+        }
+    },
+    {
+        "typeKey": "blog_post",
+        "slug": "fathom-onboarding",
+        "status": "published",
+        "authorSlug": "sasha-rourke",
+        "categories": [
+            "Product design"
+        ],
+        "tags": [
+            "Onboarding",
+            "Activation"
+        ],
+        "body": {
+            "title": "Getting Fathom users to their first win faster",
+            "excerpt": "Fathom’s analytics product was powerful and impenetrable. We designed an onboarding that got new users to a real insight in under five minutes.",
+            "featuredImage": {
+                "$asset": "ledger-fathom"
+            },
+            "body": {
+                "type": "doc",
+                "content": [
+                    {
+                        "type": "paragraph",
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "Role: Product designer. Timeline: two months. Fathom is a product-analytics tool, and its power was also its problem: a blank, capable canvas that new users stared at without knowing where to begin."
+                            }
+                        ]
+                    },
+                    {
+                        "type": "heading",
+                        "attrs": {
+                            "level": 2
+                        },
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "The problem"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "paragraph",
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "Activation data was blunt but clear — people who built one useful report in their first session stuck around; people who didn’t, left. Most didn’t, because the distance from empty state to first insight was too far and completely unguided."
+                            }
+                        ]
+                    },
+                    {
+                        "type": "heading",
+                        "attrs": {
+                            "level": 2
+                        },
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "What we did"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "paragraph",
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "We designed a short, skippable onboarding that used the user’s own connected data, not a demo dataset, to walk them to one real report about their own product. A checklist made progress visible, each step produced something they could keep, and the whole thing got out of the way the moment they wanted to explore on their own."
+                            }
+                        ]
+                    },
+                    {
+                        "type": "heading",
+                        "attrs": {
+                            "level": 2
+                        },
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "The outcome"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "paragraph",
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "New users now reach a saved, useful report in a median of just under five minutes, and week-one activation rose by roughly a third. The onboarding is the tenant’s first taste of the product doing something for them — and it earns the exploration that follows."
+                            }
+                        ]
+                    }
+                ]
+            }
+        }
     }
-  },
-  {
-    "typeKey": "blog_post",
-    "slug": "northwind-booking-flow",
-    "status": "published",
-    "authorSlug": "sasha-rourke",
-    "categories": ["UX"],
-    "tags": ["Healthcare", "Service design"],
-    "body": {
-      "title": "A booking flow patients actually finish",
-      "excerpt": "Northwind’s appointment booking lost people at every step. We cut it to three, wrote it in plain language, and tested it with real patients.",
-      "featuredImage": {
-        "$asset": "ledger-north"
-      },
-      "body": {
-        "type": "doc",
-        "content": [
-          {
-            "type": "paragraph",
-            "content": [
-              {
-                "type": "text",
-                "text": "Role: UX and service design. Timeline: three months. Northwind Health runs a network of clinics, and its online booking was the first thing most patients ever touched. It was also where most of them gave up."
-              }
-            ]
-          },
-          {
-            "type": "heading",
-            "attrs": {
-              "level": 2
-            },
-            "content": [
-              {
-                "type": "text",
-                "text": "The problem"
-              }
-            ]
-          },
-          {
-            "type": "paragraph",
-            "content": [
-              {
-                "type": "text",
-                "text": "The old flow had nine steps and asked for insurance details before it showed a single available time. Analytics showed people dropping at every stage; the call centre picked up the slack, and the phones were always busy. The flow had been designed around the clinic’s data model, not the patient’s question, which is simply: when can I be seen?"
-              }
-            ]
-          },
-          {
-            "type": "heading",
-            "attrs": {
-              "level": 2
-            },
-            "content": [
-              {
-                "type": "text",
-                "text": "What we did"
-              }
-            ]
-          },
-          {
-            "type": "paragraph",
-            "content": [
-              {
-                "type": "text",
-                "text": "We rebuilt it around that question. Three steps: pick a reason, pick a time, confirm who you are. Everything the clinic needed but the patient didn’t care about moved to the end or got inferred. We rewrote every label in plain language — no “member ID”, no “provider”, just words a worried person reads correctly on the first pass."
-              }
-            ]
-          },
-          {
-            "type": "paragraph",
-            "content": [
-              {
-                "type": "text",
-                "text": "Then we tested it, with eight real patients across two rounds, and fixed the three places they hesitated before it ever shipped."
-              }
-            ]
-          },
-          {
-            "type": "heading",
-            "attrs": {
-              "level": 2
-            },
-            "content": [
-              {
-                "type": "text",
-                "text": "The outcome"
-              }
-            ]
-          },
-          {
-            "type": "paragraph",
-            "content": [
-              {
-                "type": "text",
-                "text": "Booking completion rose 61%, and call-centre volume for appointments dropped enough that the clinics reassigned two staff to follow-up care. The plain-language pass turned out to matter as much as the step count — the words were doing the work."
-              }
-            ]
-          }
-        ]
-      }
-    }
-  },
-  {
-    "typeKey": "blog_post",
-    "slug": "kiln-design-system",
-    "status": "published",
-    "authorSlug": "sasha-rourke",
-    "categories": ["Design systems"],
-    "tags": ["Design systems", "Team enablement"],
-    "body": {
-      "title": "One system, five product teams",
-      "excerpt": "Kiln’s five squads were each rebuilding the same buttons. I built the shared system — and, more importantly, made teams want to adopt it.",
-      "featuredImage": {
-        "$asset": "ledger-kiln"
-      },
-      "body": {
-        "type": "doc",
-        "content": [
-          {
-            "type": "paragraph",
-            "content": [
-              {
-                "type": "text",
-                "text": "Role: Design systems lead. Timeline: six months, then ongoing. Kiln had grown to five product squads, and every one of them had quietly built its own version of the same components. The product looked like five products."
-              }
-            ]
-          },
-          {
-            "type": "heading",
-            "attrs": {
-              "level": 2
-            },
-            "content": [
-              {
-                "type": "text",
-                "text": "The problem"
-              }
-            ]
-          },
-          {
-            "type": "paragraph",
-            "content": [
-              {
-                "type": "text",
-                "text": "A design system had been attempted before and ignored — it existed as a Figma file nobody opened, because adopting it was more work than not adopting it. The technical problem was easy; the human one was the whole job."
-              }
-            ]
-          },
-          {
-            "type": "heading",
-            "attrs": {
-              "level": 2
-            },
-            "content": [
-              {
-                "type": "text",
-                "text": "What we did"
-              }
-            ]
-          },
-          {
-            "type": "paragraph",
-            "content": [
-              {
-                "type": "text",
-                "text": "I built the system as tokens first — colour, type, spacing, radius — so a team could get 80% of the look by changing nothing but their theme file. Then components on top, each shipped in both Figma and code, so a designer and an engineer were never working from different sources. And documentation that answered “which one do I use” in one screen, because that is the question people actually have."
-              }
-            ]
-          },
-          {
-            "type": "paragraph",
-            "content": [
-              {
-                "type": "text",
-                "text": "The adoption lever was making the system the path of least resistance: new screens started from system components by default, and I sat with each squad for a sprint to migrate their first flow together."
-              }
-            ]
-          },
-          {
-            "type": "heading",
-            "attrs": {
-              "level": 2
-            },
-            "content": [
-              {
-                "type": "text",
-                "text": "The outcome"
-              }
-            ]
-          },
-          {
-            "type": "paragraph",
-            "content": [
-              {
-                "type": "text",
-                "text": "Teams now ship a new screen about four times faster than before, and the product reads as one product again. The system has its own small backlog and two contributors from other squads — the surest sign it’s alive rather than imposed."
-              }
-            ]
-          }
-        ]
-      }
-    }
-  },
-  {
-    "typeKey": "blog_post",
-    "slug": "fathom-onboarding",
-    "status": "published",
-    "authorSlug": "sasha-rourke",
-    "categories": ["Product design"],
-    "tags": ["Onboarding", "Activation"],
-    "body": {
-      "title": "Getting Fathom users to their first win faster",
-      "excerpt": "Fathom’s analytics product was powerful and impenetrable. We designed an onboarding that got new users to a real insight in under five minutes.",
-      "featuredImage": {
-        "$asset": "ledger-fathom"
-      },
-      "body": {
-        "type": "doc",
-        "content": [
-          {
-            "type": "paragraph",
-            "content": [
-              {
-                "type": "text",
-                "text": "Role: Product designer. Timeline: two months. Fathom is a product-analytics tool, and its power was also its problem: a blank, capable canvas that new users stared at without knowing where to begin."
-              }
-            ]
-          },
-          {
-            "type": "heading",
-            "attrs": {
-              "level": 2
-            },
-            "content": [
-              {
-                "type": "text",
-                "text": "The problem"
-              }
-            ]
-          },
-          {
-            "type": "paragraph",
-            "content": [
-              {
-                "type": "text",
-                "text": "Activation data was blunt but clear — people who built one useful report in their first session stuck around; people who didn’t, left. Most didn’t, because the distance from empty state to first insight was too far and completely unguided."
-              }
-            ]
-          },
-          {
-            "type": "heading",
-            "attrs": {
-              "level": 2
-            },
-            "content": [
-              {
-                "type": "text",
-                "text": "What we did"
-              }
-            ]
-          },
-          {
-            "type": "paragraph",
-            "content": [
-              {
-                "type": "text",
-                "text": "We designed a short, skippable onboarding that used the user’s own connected data, not a demo dataset, to walk them to one real report about their own product. A checklist made progress visible, each step produced something they could keep, and the whole thing got out of the way the moment they wanted to explore on their own."
-              }
-            ]
-          },
-          {
-            "type": "heading",
-            "attrs": {
-              "level": 2
-            },
-            "content": [
-              {
-                "type": "text",
-                "text": "The outcome"
-              }
-            ]
-          },
-          {
-            "type": "paragraph",
-            "content": [
-              {
-                "type": "text",
-                "text": "New users now reach a saved, useful report in a median of just under five minutes, and week-one activation rose by roughly a third. The onboarding is the tenant’s first taste of the product doing something for them — and it earns the exploration that follows."
-              }
-            ]
-          }
-        ]
-      }
-    }
-  }
 ]

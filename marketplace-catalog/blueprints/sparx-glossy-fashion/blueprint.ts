@@ -14,69 +14,69 @@ import assets from './assets.json' with { type: 'json' };
 import emails from './emails.json' with { type: 'json' };
 
 const blueprint = {
-  key: 'sparx-glossy-fashion',
-  version: '1.4.0',
-  name: 'sparx — Glossy Fashion',
-  summary:
-    'An image-first, editorial-luxury template for a style & design magazine — a full-bleed cover story, an editorial feed, a lookbook of looks, image-led department tiles and a bespoke photo-story article page, in a pure black-and-white serif theme where the photograph supplies every colour. Modelled on the high-fashion glossy archetype; shipped as Mode & Object. Ships a light object edit (accessories, ceramics, a print) to demonstrate content + commerce together.',
-  vertical: 'content',
-  preview: 'media/preview.png',
-  requiresModules: ['builder', 'commerce', 'cms', 'crm', 'email'],
+    key: 'sparx-glossy-fashion',
+    version: '1.4.0',
+    name: 'sparx — Glossy Fashion',
+    summary:
+        'An image-first, editorial-luxury template for a style & design magazine — a full-bleed cover story, an editorial feed, a lookbook of looks, image-led department tiles and a bespoke photo-story article page, in a pure black-and-white serif theme where the photograph supplies every color. Modelled on the high-fashion glossy archetype; shipped as Mode & Object. Ships a light object edit (accessories, ceramics, a print) to demonstrate content + commerce together.',
+    vertical: 'content',
+    preview: 'media/preview.png',
+    requiresModules: ['builder', 'commerce', 'cms', 'crm', 'email'],
 
-  // Identity only (business name + tagline + fonts + the theme's hex colours). The look
-  // itself rides site.theme + the theme decl below; the installing tenant rebrands the name.
-  brand: {
-    businessName: 'Mode & Object',
-    tagline: 'Style, looked at closely.',
-    colors: {
-      primary: '#030303',
-      primaryForeground: '#f8f8f8',
-      accent: '#626367',
-      secondary: '#4c4d4f',
-    },
-    fonts: {
-      heading: 'Playfair Display',
-      body: 'Inter',
-    },
-  },
-
-  // The provisioned SiteTheme the installer creates + applies — the bespoke template
-  // look as a tenant-editable saved theme (base preset = the template's own theme key,
-  // plus its brand snapshot).
-  theme: {
-    name: 'glossy-fashion',
-    basePresetKey: 'glossy-fashion',
-    presentation: {
-      v: 2,
-      containerWidth: '1152px',
-    },
+    // Identity only (business name + tagline + fonts + the theme's hex colors). The look
+    // itself rides site.theme + the theme decl below; the installing tenant rebrands the name.
     brand: {
-      colorPrimary: '#030303',
-      colorAccent: '#626367',
-      colorSecondary: '#4c4d4f',
-      fontHeading: 'Playfair Display',
-      fontBody: 'Inter',
-      tokens: {},
+        businessName: 'Mode & Object',
+        tagline: 'Style, looked at closely.',
+        colors: {
+            primary: '#030303',
+            primaryForeground: '#f8f8f8',
+            accent: '#626367',
+            secondary: '#4c4d4f',
+        },
+        fonts: {
+            heading: 'Playfair Display',
+            body: 'Inter',
+        },
     },
-    apply: true,
-  },
 
-  assets,
-  contentTypes: [],
-  authors,
-  content,
-  commerce,
+    // The provisioned SiteTheme the installer creates + applies — the bespoke template
+    // look as a tenant-editable saved theme (base preset = the template's own theme key,
+    // plus its brand snapshot).
+    theme: {
+        name: 'glossy-fashion',
+        basePresetKey: 'glossy-fashion',
+        presentation: {
+            v: 2,
+            containerWidth: '1152px',
+        },
+        brand: {
+            colorPrimary: '#030303',
+            colorAccent: '#626367',
+            colorSecondary: '#4c4d4f',
+            fontHeading: 'Playfair Display',
+            fontBody: 'Inter',
+            tokens: {},
+        },
+        apply: true,
+    },
 
-  // A shop's brand-voiced MARKETING starters (a welcome + a win-back), tokenized so a fork
-  // re-themes to the tenant and installed as DRAFTS — the platform's keyed transactional
-  // defaults (order/shipping/dunning) are separate and never duplicated here. Content
-  // templates ship an empty set.
-  emails,
-  sequences: [],
+    assets,
+    contentTypes: [],
+    authors,
+    content,
+    commerce,
 
-  // The composed distinct site (frame + a template-specific home + standard commerce/
-  // cms/about/contact pages + the /journal index), in the bespoke theme, fully stamped.
-  site,
+    // A shop's brand-voiced MARKETING starters (a welcome + a win-back), tokenized so a fork
+    // re-themes to the tenant and installed as DRAFTS — the platform's keyed transactional
+    // defaults (order/shipping/dunning) are separate and never duplicated here. Content
+    // templates ship an empty set.
+    emails,
+    sequences: [],
+
+    // The composed distinct site (frame + a template-specific home + standard commerce/
+    // cms/about/contact pages + the /journal index), in the bespoke theme, fully stamped.
+    site,
 };
 
 export default blueprint;

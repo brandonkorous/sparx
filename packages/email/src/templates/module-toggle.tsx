@@ -5,6 +5,7 @@ import {
   EmailDisplayHeading,
   EmailFinePrint,
   EmailParagraph,
+  usePlatformName,
 } from '../components';
 
 export interface ModuleToggleEmailProps {
@@ -26,12 +27,13 @@ export function ModuleToggleEmail({
   moduleName,
   dashboardUrl,
 }: ModuleToggleEmailProps) {
+  const platform = usePlatformName();
   const hi = accountName ? `Hi ${accountName}, ` : '';
   return (
     <PlatformEmailLayout
       preview={enabled ? `${moduleName} is now on` : `${moduleName} has been turned off`}
       footerLinks={[{ label: 'Manage modules', href: dashboardUrl }]}
-      footerReason="You're receiving this because a module on your sparx account changed."
+      footerReason={`You're receiving this because a module on your ${platform} account changed.`}
     >
       {enabled ? (
         <>

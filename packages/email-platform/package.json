@@ -33,6 +33,7 @@
     "@sparx/db": "workspace:*",
     "@sparx/email": "workspace:*",
     "@sparx/events": "workspace:*",
+    "@wizeworks/brand-core": "workspace:*",
     "@sparx/silica-catalog": "workspace:*",
     "@sparx/site-themes": "workspace:*",
     "@sparx/ui": "workspace:*",

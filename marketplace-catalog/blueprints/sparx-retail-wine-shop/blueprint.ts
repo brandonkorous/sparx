@@ -14,69 +14,69 @@ import assets from './assets.json' with { type: 'json' };
 import emails from './emails.json' with { type: 'json' };
 
 const blueprint = {
-  key: 'sparx-retail-wine-shop',
-  version: '1.4.0',
-  name: 'sparx — Natural Wine Shop',
-  summary:
-    'A complete, working shop for a natural-wine bottle shop: a real catalogue of low-intervention bottles — a pét-nat, a skin-contact orange, a chillable red, a mineral white, a dry rosé, a magnum, a mixed six and a non-alc — with categories, collections, a bespoke bottle-shop PDP and a fully merchandised home page. Low-lit cellar theme — deep plum-charcoal ground, warm cream ink, a wine-garnet primary and a brass accent. Shipped as Sediment.',
-  vertical: 'retail',
-  preview: 'media/preview.png',
-  requiresModules: ['builder', 'commerce', 'cms', 'crm', 'email'],
+    key: 'sparx-retail-wine-shop',
+    version: '1.4.0',
+    name: 'sparx — Natural Wine Shop',
+    summary:
+        'A complete, working shop for a natural-wine bottle shop: a real catalogue of low-intervention bottles — a pét-nat, a skin-contact orange, a chillable red, a mineral white, a dry rosé, a magnum, a mixed six and a non-alc — with categories, collections, a bespoke bottle-shop PDP and a fully merchandised home page. Low-lit cellar theme — deep plum-charcoal ground, warm cream ink, a wine-garnet primary and a brass accent. Shipped as Sediment.',
+    vertical: 'retail',
+    preview: 'media/preview.png',
+    requiresModules: ['builder', 'commerce', 'cms', 'crm', 'email'],
 
-  // Identity only (business name + tagline + fonts + the theme's hex colours). The look
-  // itself rides site.theme + the theme decl below; the installing tenant rebrands the name.
-  brand: {
-    businessName: 'Sediment',
-    tagline: 'Wine made by people, not factories.',
-    colors: {
-      primary: '#f58393',
-      primaryForeground: '#130809',
-      accent: '#fcbe62',
-      secondary: '#d9b69b',
-    },
-    fonts: {
-      heading: 'Spectral',
-      body: 'Karla',
-    },
-  },
-
-  // The provisioned SiteTheme the installer creates + applies — the bespoke template
-  // look as a tenant-editable saved theme (base preset = the template's own theme key,
-  // plus its brand snapshot).
-  theme: {
-    name: 'retail-wine-shop',
-    basePresetKey: 'retail-wine-shop',
-    presentation: {
-      v: 2,
-      containerWidth: '1152px',
-    },
+    // Identity only (business name + tagline + fonts + the theme's hex colors). The look
+    // itself rides site.theme + the theme decl below; the installing tenant rebrands the name.
     brand: {
-      colorPrimary: '#f58393',
-      colorAccent: '#fcbe62',
-      colorSecondary: '#d9b69b',
-      fontHeading: 'Spectral',
-      fontBody: 'Karla',
-      tokens: {},
+        businessName: 'Sediment',
+        tagline: 'Wine made by people, not factories.',
+        colors: {
+            primary: '#f58393',
+            primaryForeground: '#130809',
+            accent: '#fcbe62',
+            secondary: '#d9b69b',
+        },
+        fonts: {
+            heading: 'Spectral',
+            body: 'Karla',
+        },
     },
-    apply: true,
-  },
 
-  assets,
-  contentTypes: [],
-  authors,
-  content,
-  commerce,
+    // The provisioned SiteTheme the installer creates + applies — the bespoke template
+    // look as a tenant-editable saved theme (base preset = the template's own theme key,
+    // plus its brand snapshot).
+    theme: {
+        name: 'retail-wine-shop',
+        basePresetKey: 'retail-wine-shop',
+        presentation: {
+            v: 2,
+            containerWidth: '1152px',
+        },
+        brand: {
+            colorPrimary: '#f58393',
+            colorAccent: '#fcbe62',
+            colorSecondary: '#d9b69b',
+            fontHeading: 'Spectral',
+            fontBody: 'Karla',
+            tokens: {},
+        },
+        apply: true,
+    },
 
-  // A shop's brand-voiced MARKETING starters (a welcome + a win-back), tokenized so a fork
-  // re-themes to the tenant and installed as DRAFTS — the platform's keyed transactional
-  // defaults (order/shipping/dunning) are separate and never duplicated here. Content
-  // templates ship an empty set.
-  emails,
-  sequences: [],
+    assets,
+    contentTypes: [],
+    authors,
+    content,
+    commerce,
 
-  // The composed distinct site (frame + a template-specific home + standard commerce/
-  // cms/about/contact pages + the /journal index), in the bespoke theme, fully stamped.
-  site,
+    // A shop's brand-voiced MARKETING starters (a welcome + a win-back), tokenized so a fork
+    // re-themes to the tenant and installed as DRAFTS — the platform's keyed transactional
+    // defaults (order/shipping/dunning) are separate and never duplicated here. Content
+    // templates ship an empty set.
+    emails,
+    sequences: [],
+
+    // The composed distinct site (frame + a template-specific home + standard commerce/
+    // cms/about/contact pages + the /journal index), in the bespoke theme, fully stamped.
+    site,
 };
 
 export default blueprint;

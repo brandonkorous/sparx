@@ -32,13 +32,9 @@ import { audienceScope } from './audience-scope';
 import { resolveEmailBrand } from './brand-service';
 import { resolveEmailTracking } from './email-tracking-service';
 import { get as getSettings } from './settings-service';
-
-const FALLBACK_FROM = 'sparx <noreply@sparx.email>';
-
-function buildFrom(fromName: string | null, fromAddress: string | null): string {
-  if (!fromAddress) return process.env.SPARX_EMAIL_FROM ?? FALLBACK_FROM;
-  return fromName ? `${fromName} <${fromAddress}>` : fromAddress;
-}
+// The From lives in its own module because BOTH send paths need it and both had
+// their own identical copy — including the copy of the bug.
+import { buildTenantFrom } from './platform-sender';
 
 /** The published body of a Builder email (docs/52 §6, docs/120). Read straight from
  *  the shared `builder_emails` table (RLS-scoped) — no @sparx/builder dependency, the
@@ -325,7 +321,7 @@ async function enqueueAndMark(
   }
 
   const campaignTag = `bcast_${id}`;
-  const from = buildFrom(settings.fromName, settings.fromAddress);
+  const from = await buildTenantFrom(ctx.tenantId, settings.fromName, settings.fromAddress);
   const variables = { broadcast_id: id, campaign: campaignTag };
 
   const buildPayload = () =>

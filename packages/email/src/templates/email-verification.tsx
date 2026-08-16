@@ -6,6 +6,7 @@ import {
   EmailFallbackLink,
   EmailFinePrint,
   EmailParagraph,
+  usePlatformName,
 } from '../components';
 
 export interface EmailVerificationEmailProps {
@@ -27,16 +28,17 @@ export function EmailVerificationEmail({
   intro,
   outro,
 }: EmailVerificationEmailProps) {
+  const platform = usePlatformName();
   return (
     <PlatformEmailLayout
-      preview="Confirm your sparx email"
-      footerReason="You're receiving this because this address was used to create a sparx account."
+      preview={`Confirm your ${platform} email`}
+      footerReason={`You're receiving this because this address was used to create a ${platform} account.`}
     >
       <EmailDisplayHeading>Confirm your email</EmailDisplayHeading>
       <EmailParagraph>{name ? `Hi ${name},` : 'Hi there,'}</EmailParagraph>
       {intro ? <EmailParagraph>{intro}</EmailParagraph> : null}
       <EmailParagraph>
-        Thanks for creating a sparx account. Confirm this email address to unlock everything —
+        Thanks for creating a {platform} account. Confirm this email address to unlock everything —
         connecting a custom domain, going live, and sending email. The link expires in{' '}
         {expiresInMinutes} minutes.
       </EmailParagraph>
@@ -44,10 +46,10 @@ export function EmailVerificationEmail({
       {outro ? <EmailParagraph>{outro}</EmailParagraph> : null}
       <EmailFallbackLink url={verifyUrl} />
       <EmailFinePrint>
-        If you didn&apos;t create a sparx account, you can safely ignore this email.
+        If you didn&apos;t create a {platform} account, you can safely ignore this email.
       </EmailFinePrint>
     </PlatformEmailLayout>
   );
 }
 
-export const emailVerificationSubject = 'Confirm your sparx email';
+export const emailVerificationSubject = (platform: string) => `Confirm your ${platform} email`;

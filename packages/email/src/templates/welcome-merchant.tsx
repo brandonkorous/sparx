@@ -6,6 +6,7 @@ import {
   EmailLead,
   EmailParagraph,
   EmailSteps,
+  usePlatform,
 } from '../components';
 
 export interface WelcomeMerchantEmailProps {
@@ -30,24 +31,32 @@ export function WelcomeMerchantEmail({
   intro,
   outro,
 }: WelcomeMerchantEmailProps) {
+  const platform = usePlatform();
   return (
     <PlatformEmailLayout
       preview="Your account's ready — three quick steps and you're online."
-      footerLinks={[
-        { label: 'Help center', href: 'https://sparx.works/help' },
-        { label: 'Getting started', href: 'https://sparx.works/docs' },
-      ]}
-      footerReason="You're receiving this because you created a sparx account."
+      footerLinks={
+        platform.url
+          ? [
+              { label: 'Help center', href: `${platform.url}/help` },
+              { label: 'Getting started', href: `${platform.url}/docs` },
+            ]
+          : undefined
+      }
+      footerReason={`You're receiving this because you created a ${platform.name} account.`}
     >
-      <EmailDisplayHeading>Welcome to sparx{name ? `, ${name}` : ''}.</EmailDisplayHeading>
+      <EmailDisplayHeading>
+        Welcome to {platform.name}
+        {name ? `, ${name}` : ''}.
+      </EmailDisplayHeading>
       <EmailLead>
         Everything you need to run your business online — a website, a store, a mailing list — now
         lives in one place.
       </EmailLead>
       {intro ? <EmailParagraph>{intro}</EmailParagraph> : null}
       <EmailParagraph>
-        Your site is live on sparx. There&rsquo;s no rush, but here&rsquo;s the quickest path to
-        getting it ready — most people are up and running in about ten minutes.
+        Your site is live on {platform.name}. There&rsquo;s no rush, but here&rsquo;s the quickest
+        path to getting it ready — most people are up and running in about ten minutes.
       </EmailParagraph>
 
       <EmailSteps
@@ -78,4 +87,4 @@ export function WelcomeMerchantEmail({
   );
 }
 
-export const welcomeMerchantSubject = 'Welcome to sparx';
+export const welcomeMerchantSubject = (platform: string) => `Welcome to ${platform}`;

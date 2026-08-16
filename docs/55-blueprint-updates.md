@@ -10,7 +10,7 @@
 
 A tenant installs a blueprint (docs/54): it stamps a whole themed presence — brand, a
 `SiteTheme`, content, a commerce catalog, builder pages + the site layout, tenant
-components, and marketing emails. The tenant then **edits** some or all of it: re-colours the
+components, and marketing emails. The tenant then **edits** some or all of it: re-colors the
 theme, rewrites the home hero, renames products, edits a blog post. Later the blueprint's
 **author ships a new version** — fixes a layout bug, adds an email, restyles a section. The
 catalog now carries `v1.2` while the tenant installed `v1.0`.
@@ -219,7 +219,7 @@ comparison:
 - `presentation` — the Token Model v2 overlay, a nested token map; merge **per token path**
   (deep). A tenant who changed `color.accent` keeps it; every other token the author changed
   (`radius.lg`, `space.section`, …) fast-forwards in automatically.
-- `brand` (the saved "look": colours, fonts, shape tokens) — merge **per field**.
+- `brand` (the saved "look": colors, fonts, shape tokens) — merge **per field**.
 
 Apply writes the merged theme via `savedThemeService.update(ctx, themeId, { basePresetKey?,
 presentation, brand, name })`, re-applies it to the working draft (`apply` +
@@ -227,7 +227,7 @@ presentation, brand, name })`, re-applies it to the working draft (`apply` +
 storefront's `--st-*` tokens refresh. **No tenant theme edit is lost**; the tenant's tweaks ride
 through untouched while the author's improvements land — exactly U1+U5 at token granularity.
 
-**Brand identity** (`TenantBrand`: `businessName`, brand colours, fonts, logos) is stamped at
+**Brand identity** (`TenantBrand`: `businessName`, brand colors, fonts, logos) is stamped at
 install from `blueprint.brand` and is the kind of thing a tenant almost always personalizes, so
 it is merged the same way and **defaults hard to keeping the tenant's value** — the author's
 palette only fills fields the tenant never set.

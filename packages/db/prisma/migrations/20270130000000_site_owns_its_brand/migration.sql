@@ -13,7 +13,7 @@
 -- Confirmed in prod on 2026-07-31 against the WizeWorks tenant. A logo, dark
 -- logo and favicon attached to the `wize.works` site alone came back on
 -- `silicaui.wizeworks.sparx.zone` too — same three media ids — along with the
--- primary's freshly-applied theme colour and heading font. Two unrelated web
+-- primary's freshly-applied theme color and heading font. Two unrelated web
 -- properties, one wearing the other's wordmark.
 --
 -- The code fix (this migration's companion) makes every site — the primary

@@ -5,14 +5,14 @@
 // ── WHY THESE FOLD NOW WHEN THEY DID NOT BEFORE ─────────────────────────────
 //
 // The rail used to be fifteen apps and nothing else, and a heading over them
-// would have been a label explaining what the colours already said. Favourites
+// would have been a label explaining what the colors already said. Favourites
 // and recent now sit ABOVE the apps, so the rail got longer, and folding is what
 // pays for them.
 //
 // Two rules keep it from becoming the thing it was avoided for:
 //   • a group holding ONE app renders bare — a heading over a single row is an
 //     eyebrow (root CLAUDE.md RULE #2);
-//   • the headings are named for what you do there, never the colour key
+//   • the headings are named for what you do there, never the color key
 //     (`web`, `run`) — see GROUP_TERMS in @piggles/config.
 //
 // ── THE HEADING IS A ROW, NOT A LABEL ───────────────────────────────────────
@@ -41,95 +41,95 @@ import type { useAttention } from '@/lib/console/home-data';
 import type { ConsoleNavApp } from '@/lib/console/nav';
 
 interface AppGroupsProps {
-  nav: ConsoleNavApp[];
-  browsing: string | null;
-  expanded: boolean;
-  attention: ReturnType<typeof useAttention>;
-  onBrowse: (appId: string) => void;
+    nav: ConsoleNavApp[];
+    browsing: string | null;
+    expanded: boolean;
+    attention: ReturnType<typeof useAttention>;
+    onBrowse: (appId: string) => void;
 }
 
 export function AppGroups({ nav, browsing, expanded, attention, onBrowse }: AppGroupsProps) {
-  const [folded, setFolded] = useState<Set<string>>(() => foldedGroups());
+    const [folded, setFolded] = useState<Set<string>>(() => foldedGroups());
 
-  // Group ORDER comes from @piggles/brand, not from first appearance, so
-  // reordering the registry cannot silently reshuffle the rail's families.
-  const sections = PIGGLES_GROUPS.map((group) => ({
-    group,
-    apps: nav.filter((entry) => entry.group === group),
-  })).filter((section) => section.apps.length > 0);
+    // Group ORDER comes from @piggles/brand, not from first appearance, so
+    // reordering the registry cannot silently reshuffle the rail's families.
+    const sections = PIGGLES_GROUPS.map((group) => ({
+        group,
+        apps: nav.filter((entry) => entry.group === group),
+    })).filter((section) => section.apps.length > 0);
 
-  /** One app. `indented` sits it under a heading so it reads as a child of it. */
-  const row = (entry: ConsoleNavApp, indented: boolean) => (
-    <AppScope key={entry.app.id} app={entry.app.id} className={indented ? 'ps-3' : undefined}>
-      <Tooltip content={entry.app.purpose} side="right">
-        <SidebarItem
-          data-tour={`app-${entry.app.id}`}
-          icon={<Icon glyph={entry.icon} className="text-module size-5" aria-hidden />}
-          aria-label={entry.label}
-          active={browsing === entry.app.id}
-          // `aria-current` marks what is being BROWSED. Not aria-pressed: this is
-          // a navigation position, not a toggle.
-          aria-current={browsing === entry.app.id ? 'true' : undefined}
-          onClick={() => {
-            onBrowse(entry.app.id);
-          }}
-          trailing={<WaitingBadge count={appWaiting(entry, attention)} />}
-        >
-          {entry.label}
-        </SidebarItem>
-      </Tooltip>
-    </AppScope>
-  );
-
-  // Collapsed: one flat column, every app, no headings and no folding.
-  if (!expanded) {
-    return (
-      <SidebarGroup>
-        {sections.flatMap((section) => section.apps).map((entry) => row(entry, false))}
-      </SidebarGroup>
+    /** One app. `indented` sits it under a heading so it reads as a child of it. */
+    const row = (entry: ConsoleNavApp, indented: boolean) => (
+        <AppScope key={entry.app.id} app={entry.app.id} className={indented ? 'ps-3' : undefined}>
+            <Tooltip content={entry.app.purpose} side="right">
+                <SidebarItem
+                    data-tour={`app-${entry.app.id}`}
+                    icon={<Icon glyph={entry.icon} className="text-module size-5" aria-hidden />}
+                    aria-label={entry.label}
+                    active={browsing === entry.app.id}
+                    // `aria-current` marks what is being BROWSED. Not aria-pressed: this is
+                    // a navigation position, not a toggle.
+                    aria-current={browsing === entry.app.id ? 'true' : undefined}
+                    onClick={() => {
+                        onBrowse(entry.app.id);
+                    }}
+                    trailing={<WaitingBadge count={appWaiting(entry, attention)} />}
+                >
+                    {entry.label}
+                </SidebarItem>
+            </Tooltip>
+        </AppScope>
     );
-  }
 
-  return (
-    <>
-      {sections.map((section) => {
-        const title = section.apps.length > 1 ? groupTerm(section.group) : undefined;
-        if (!title) {
-          return (
-            <SidebarGroup key={section.group}>
-              {section.apps.map((entry) => row(entry, false))}
-            </SidebarGroup>
-          );
-        }
-
-        const shut = folded.has(section.group);
+    // Collapsed: one flat column, every app, no headings and no folding.
+    if (!expanded) {
         return (
-          <SidebarGroup key={section.group}>
-            <SidebarItem
-              icon={
-                <Icon
-                  glyph={faChevronDown}
-                  className={`size-4 transition-transform ${shut ? '-rotate-90' : ''}`}
-                  aria-hidden
-                />
-              }
-              aria-expanded={!shut}
-              onClick={() => {
-                setFolded(setGroupFolded(section.group, !shut));
-              }}
-              // Rolled up from the apps inside, folded or open. Folded because
-              // you cannot see the rows; open because a total that disappears
-              // when you expand is a different answer to the same question.
-              trailing={<WaitingBadge count={groupWaiting(section.apps, attention)} />}
-            >
-              {title}
-            </SidebarItem>
-            {shut ? null : section.apps.map((entry) => row(entry, true))}
-          </SidebarGroup>
+            <SidebarGroup>
+                {sections.flatMap((section) => section.apps).map((entry) => row(entry, false))}
+            </SidebarGroup>
         );
-      })}
-    </>
-  );
+    }
+
+    return (
+        <>
+            {sections.map((section) => {
+                const title = section.apps.length > 1 ? groupTerm(section.group) : undefined;
+                if (!title) {
+                    return (
+                        <SidebarGroup key={section.group}>
+                            {section.apps.map((entry) => row(entry, false))}
+                        </SidebarGroup>
+                    );
+                }
+
+                const shut = folded.has(section.group);
+                return (
+                    <SidebarGroup key={section.group}>
+                        <SidebarItem
+                            icon={
+                                <Icon
+                                    glyph={faChevronDown}
+                                    className={`size-4 transition-transform ${shut ? '-rotate-90' : ''}`}
+                                    aria-hidden
+                                />
+                            }
+                            aria-expanded={!shut}
+                            onClick={() => {
+                                setFolded(setGroupFolded(section.group, !shut));
+                            }}
+                            // Rolled up from the apps inside, folded or open. Folded because
+                            // you cannot see the rows; open because a total that disappears
+                            // when you expand is a different answer to the same question.
+                            trailing={<WaitingBadge count={groupWaiting(section.apps, attention)} />}
+                        >
+                            {title}
+                        </SidebarItem>
+                        {shut ? null : section.apps.map((entry) => row(entry, true))}
+                    </SidebarGroup>
+                );
+            })}
+        </>
+    );
 }
 
 export type { PigglesGroup };

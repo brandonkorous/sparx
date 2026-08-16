@@ -1,4 +1,4 @@
--- commerce_site_themes: widen the two colour columns from VarChar(7) to VarChar(32).
+-- commerce_site_themes: widen the two color columns from VarChar(7) to VarChar(32).
 --
 -- WHY. These were sized for `#RRGGBB` when every sparx theme token was a hex triplet.
 -- The first-party theme catalog is authored in OKLCH — `oklch(99.5% 0.003 200)` is 22

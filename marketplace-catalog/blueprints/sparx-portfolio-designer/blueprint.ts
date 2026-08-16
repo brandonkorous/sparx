@@ -13,65 +13,65 @@ import assets from './assets.json' with { type: 'json' };
 import emails from './emails.json' with { type: 'json' };
 
 const blueprint = {
-  key: 'sparx-portfolio-designer',
-  version: '1.2.0',
-  name: 'sparx — Designer Portfolio',
-  summary:
-    'A hire-me portfolio for a product / UX / design-systems designer: a plain-spoken statement hero, selected work as outcome-led rows, a short “how I work” band, and case-study pages that walk the brief, the work and the result. Restraint over decoration — the typography and the thinking do the work. Dressed in a cool near-white theme carried by one electric signal-blue. Shipped as Sasha Rourke.',
-  vertical: 'content',
-  preview: 'media/preview.png',
-  requiresModules: ['builder', 'cms', 'email'],
+    key: 'sparx-portfolio-designer',
+    version: '1.2.0',
+    name: 'sparx — Designer Portfolio',
+    summary:
+        'A hire-me portfolio for a product / UX / design-systems designer: a plain-spoken statement hero, selected work as outcome-led rows, a short “how I work” band, and case-study pages that walk the brief, the work and the result. Restraint over decoration — the typography and the thinking do the work. Dressed in a cool near-white theme carried by one electric signal-blue. Shipped as Sasha Rourke.',
+    vertical: 'content',
+    preview: 'media/preview.png',
+    requiresModules: ['builder', 'cms', 'email'],
 
-  // Identity only (person's name + tagline + fonts + the theme's hex colours). The look
-  // itself rides site.theme + the theme decl below; the installing tenant rebrands the name.
-  brand: {
-    businessName: 'Sasha Rourke',
-    tagline: 'Product designer who ships.',
-    colors: {
-      primary: '#005bd2',
-      primaryForeground: '#f4f9ff',
-      accent: '#005bd2',
-      secondary: '#444e5e',
-    },
-    fonts: {
-      heading: 'Space Grotesk',
-      body: 'Inter',
-    },
-  },
-
-  // The provisioned SiteTheme the installer creates + applies — the bespoke portfolio look
-  // as a tenant-editable saved theme (base preset = the template's own theme key, plus its
-  // brand snapshot).
-  theme: {
-    name: 'portfolio-designer',
-    basePresetKey: 'portfolio-designer',
-    presentation: {
-      v: 2,
-      containerWidth: '1152px',
-    },
+    // Identity only (person's name + tagline + fonts + the theme's hex colors). The look
+    // itself rides site.theme + the theme decl below; the installing tenant rebrands the name.
     brand: {
-      colorPrimary: '#005bd2',
-      colorAccent: '#005bd2',
-      colorSecondary: '#444e5e',
-      fontHeading: 'Space Grotesk',
-      fontBody: 'Inter',
-      tokens: {},
+        businessName: 'Sasha Rourke',
+        tagline: 'Product designer who ships.',
+        colors: {
+            primary: '#005bd2',
+            primaryForeground: '#f4f9ff',
+            accent: '#005bd2',
+            secondary: '#444e5e',
+        },
+        fonts: {
+            heading: 'Space Grotesk',
+            body: 'Inter',
+        },
     },
-    apply: true,
-  },
 
-  assets,
-  contentTypes: [],
-  authors,
-  content,
+    // The provisioned SiteTheme the installer creates + applies — the bespoke portfolio look
+    // as a tenant-editable saved theme (base preset = the template's own theme key, plus its
+    // brand snapshot).
+    theme: {
+        name: 'portfolio-designer',
+        basePresetKey: 'portfolio-designer',
+        presentation: {
+            v: 2,
+            containerWidth: '1152px',
+        },
+        brand: {
+            colorPrimary: '#005bd2',
+            colorAccent: '#005bd2',
+            colorSecondary: '#444e5e',
+            fontHeading: 'Space Grotesk',
+            fontBody: 'Inter',
+            tokens: {},
+        },
+        apply: true,
+    },
 
-  // A portfolio has no commerce. The projects are CMS `blog_post` records (see content).
-  emails,
-  sequences: [],
+    assets,
+    contentTypes: [],
+    authors,
+    content,
 
-  // The composed distinct site (frame + home + a live /work index + about/contact + the
-  // /blog/:slug case-study template), in the bespoke theme, fully stamped.
-  site,
+    // A portfolio has no commerce. The projects are CMS `blog_post` records (see content).
+    emails,
+    sequences: [],
+
+    // The composed distinct site (frame + home + a live /work index + about/contact + the
+    // /blog/:slug case-study template), in the bespoke theme, fully stamped.
+    site,
 };
 
 export default blueprint;

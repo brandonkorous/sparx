@@ -169,7 +169,7 @@ function OwnRow({
 }
 
 /**
- * Three dots of a look, so the shelf is scannable by colour before it is read.
+ * Three dots of a look, so the shelf is scannable by color before it is read.
  *
  * The classes are the ordinary token ones — they resolve to THIS look because the
  * button above carries `data-look` and the stylesheet scopes that look's tokens to

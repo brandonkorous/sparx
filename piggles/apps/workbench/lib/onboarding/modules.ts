@@ -209,7 +209,10 @@ export const SWITCHBOARD_MODULES: SwitchboardModule[] = [
     desc: 'Widget, AI replies, inbox',
     price: 19,
     elsewhere: 74,
-    long: 'A themed chat widget on every page, an AI first responder that answers product and policy questions from your own catalog, and a staff inbox for everything it escalates. Leads from sparx.market route here too.',
+    // No marketplace sentence. sparx.market is a sparx PRODUCT, not a Piggles
+    // capability, and the fork inherited the copy naming it — piggles/CLAUDE.md
+    // RULE #0. Renaming it would offer a listing nobody can sign up for.
+    long: 'A themed chat widget on every page, an AI first responder that answers product and policy questions from your own catalog, and a staff inbox for everything it escalates.',
     feats: [
       'Site widget in your theme',
       'AI answers from your own catalog',

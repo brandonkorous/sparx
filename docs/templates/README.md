@@ -35,7 +35,7 @@ of twenty near-identical grids. It is a better basis than picking abstract desig
 ## The rules (binding for every template here)
 
 1. **Structure & aesthetic, not identity.** We mimic layout, rhythm, PDP anatomy,
-   nav, type feel and colour mood. We NEVER copy a brand's logo, name, trademarks,
+   nav, type feel and color mood. We NEVER copy a brand's logo, name, trademarks,
    product photography, or literal brand palette. Every template ships sparx
    branding, our own example business, and royalty-free / original imagery.
 2. **Tenant sites get full design freedom.** These are tenant blueprints, so the
@@ -56,7 +56,7 @@ of twenty near-identical grids. It is a better basis than picking abstract desig
 Each row is a distinct design language. Folder holds the design doc + screenshots.
 `sparx slug` is the eventual blueprint key (`sparx-<slug>`); the theme direction is
 finalised in the design doc (an existing preset from the 20, or a bespoke one that
-echoes the reference's colour mood).
+echoes the reference's color mood).
 
 | #   | Reference        | Archetype                          | Example business (ours)               | sparx slug          | Bespoke theme                      | Status         |
 | --- | ---------------- | ---------------------------------- | ------------------------------------- | ------------------- | ---------------------------------- | -------------- |
@@ -64,11 +64,11 @@ echoes the reference's colour mood).
 | 2   | Gymshark         | Bold athletic DTC                  | **Threshold** — endurance cycling     | `bold-athletic`     | `velodrome` (dark chrome + hi-vis) | ✅ doc ☐ build |
 | 3   | Allbirds         | Natural / sustainable clean        | eco everyday housewares               | `natural-clean`     | `sage-oat` (tinted-paper)          | ✅ doc ☐ build |
 | 4   | Kith             | Streetwear editorial grid          | **Atelier Nord** — design furniture   | `editorial-grid`    | `atelier` (mono + serif display)   | ✅ doc ☐ build |
-| 5   | Bombas           | Playful colourful mission          | **Rally** — pet supplies + giveback   | `playful-mission`   | `romp` (bright marigold + bands)   | ✅ doc ☐ build |
+| 5   | Bombas           | Playful colorful mission           | **Rally** — pet supplies + giveback   | `playful-mission`   | `romp` (bright marigold + bands)   | ✅ doc ☐ build |
 | 6   | Bokksu           | Warm subscription / food editorial | **Latitude Coffee Club** — sub + shop | `warm-subscription` | `roastery` (cream + terracotta)    | ✅ doc ☐ build |
 | 7   | Victoria Beckham | High-fashion luxury serif          | **Vérane** — jewellery + fragrance    | `couture-serif`     | `maison` (serif-across, pure B/W)  | ✅ doc ☐ build |
 | 8   | DJI              | Tech / cinematic product           | **Aphelion** — premium audio          | `tech-cinematic`    | `flux` (true-dark + electric blue) | ✅ doc ☐ build |
-| 9   | Sephora → Huda   | Beauty counter grid                | **Maeve** — colour cosmetics          | `beauty-counter`    | `gloss` (blush + magenta)          | ✅ doc ☐ build |
+| 9   | Sephora → Huda   | Beauty counter grid                | **Maeve** — color cosmetics           | `beauty-counter`    | `gloss` (blush + magenta)          | ✅ doc ☐ build |
 | 10  | Fashion Nova     | Dense fast-fashion catalog         | **Voltage** — apparel                 | `catalog-dense`     | `voltage` (bright + sale-red)      | ✅ doc ☐ build |
 
 Consolidated Phase-2 catalog additions the ten docs converge on: [CATALOG-ADDITIONS.md](CATALOG-ADDITIONS.md).

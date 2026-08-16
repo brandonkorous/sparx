@@ -1,449 +1,543 @@
 {
-  "categories": [
-    {
-      "handle": "cleaning-chemicals",
-      "name": "Cleaning chemicals",
-      "description": "Concentrates, disinfectants, glass cleaner and hand soap.",
-      "featured": true
-    },
-    {
-      "handle": "paper-tissue",
-      "name": "Paper & tissue",
-      "description": "Roll towels and bath tissue by the case.",
-      "featured": true
-    },
-    {
-      "handle": "liners",
-      "name": "Can liners",
-      "description": "Low-density liners by the carton.",
-      "featured": true
-    },
-    {
-      "handle": "tools",
-      "name": "Tools & equipment",
-      "description": "Microfibre, floor pads and supply kits.",
-      "featured": true
-    }
-  ],
-  "collections": [
-    {
-      "handle": "new-account-essentials",
-      "name": "New-account essentials",
-      "description": "The core supply program every building starts with.",
-      "type": "manual",
-      "featured": true,
-      "productHandles": [
-        "facility-starter-kit",
-        "multi-surface-concentrate",
-        "disinfectant-cleaner",
-        "hardwound-paper-towels",
-        "toilet-tissue",
-        "can-liners"
-      ]
-    },
-    {
-      "handle": "best-sellers",
-      "name": "Best sellers",
-      "description": "The cases every closet reorders.",
-      "type": "manual",
-      "featured": true,
-      "productHandles": [
-        "multi-surface-concentrate",
-        "disinfectant-cleaner",
-        "hardwound-paper-towels",
-        "toilet-tissue",
-        "can-liners",
-        "microfibre-cloths"
-      ]
-    },
-    {
-      "handle": "restroom-program",
-      "name": "Restroom program",
-      "description": "Soap, tissue, towels and disinfectant for a full restroom.",
-      "type": "manual",
-      "featured": false,
-      "productHandles": [
-        "foam-hand-soap",
-        "toilet-tissue",
-        "hardwound-paper-towels",
-        "disinfectant-cleaner"
-      ]
-    },
-    {
-      "handle": "floor-care",
-      "name": "Floor care",
-      "description": "Pads and concentrate for machine floor work.",
-      "type": "manual",
-      "featured": false,
-      "productHandles": ["floor-pads", "multi-surface-concentrate"]
-    }
-  ],
-  "products": [
-    {
-      "handle": "multi-surface-concentrate",
-      "title": "Multi-Surface Cleaner Concentrate",
-      "description": "A neutral-pH concentrate for floors, walls and hard surfaces — no rinse, no residue, safe on finished floors. One gallon dilutes up to 1:64, making 64 gallons of ready-to-use cleaner, so the cost per bottle at the mop is pennies. Case of 4 one-gallon jugs. Minimum order 1 case.",
-      "status": "active",
-      "productType": "Cleaning chemical",
-      "vendor": "Saniworx",
-      "tags": ["chemical", "concentrate", "floor-care", "neutral-ph"],
-      "categoryHandles": ["cleaning-chemicals"],
-      "collectionHandles": ["best-sellers", "new-account-essentials"],
-      "seoTitle": "Multi-Surface Cleaner Concentrate — case of 4 gallons | Saniworx",
-      "seoDescription": "Neutral-pH no-rinse floor and surface concentrate, dilutes 1:64. Case of 4 one-gallon jugs at trade pricing.",
-      "options": [
+    "categories": [
         {
-          "name": "Format",
-          "displayType": "dropdown",
-          "values": [
-            {
-              "value": "Case of 4 (1 gal)"
-            },
-            {
-              "value": "5-gallon drum"
-            }
-          ]
-        }
-      ],
-      "variants": [
-        {
-          "sku": "SANI-MSC-CS4",
-          "priceCents": 5800,
-          "isDefault": true,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Format": "Case of 4 (1 gal)"
-          }
+            "handle": "cleaning-chemicals",
+            "name": "Cleaning chemicals",
+            "description": "Concentrates, disinfectants, glass cleaner and hand soap.",
+            "featured": true
         },
         {
-          "sku": "SANI-MSC-DRM",
-          "priceCents": 13200,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Format": "5-gallon drum"
-          }
-        }
-      ],
-      "images": [
-        {
-          "assetId": "prod-multi-surface",
-          "isPrimary": true,
-          "alt": "A case of multi-surface cleaner concentrate gallons"
-        }
-      ]
-    },
-    {
-      "handle": "disinfectant-cleaner",
-      "title": "Disinfectant Cleaner",
-      "description": "A one-step, EPA-registered disinfectant cleaner that cleans and kills 99.9% of common bacteria and viruses on hard non-porous surfaces in one pass — restrooms, break rooms, high-touch points. Case of 12 quart bottles with trigger sprayers. Minimum order 1 case. SDS on file.",
-      "status": "active",
-      "productType": "Cleaning chemical",
-      "vendor": "Saniworx",
-      "tags": ["chemical", "disinfectant", "restroom", "epa-registered"],
-      "categoryHandles": ["cleaning-chemicals"],
-      "collectionHandles": ["best-sellers", "restroom-program", "new-account-essentials"],
-      "seoTitle": "Disinfectant Cleaner — case of 12 quarts | Saniworx",
-      "seoDescription": "One-step EPA-registered disinfectant cleaner, kills 99.9% of common germs. Case of 12 quart bottles.",
-      "variants": [
-        {
-          "sku": "SANI-DIS-CS12",
-          "priceCents": 4600,
-          "isDefault": true,
-          "inventoryPolicy": "continue"
-        }
-      ],
-      "images": [
-        {
-          "assetId": "prod-disinfectant",
-          "isPrimary": true,
-          "alt": "A case of disinfectant cleaner bottles"
-        }
-      ]
-    },
-    {
-      "handle": "glass-cleaner-concentrate",
-      "title": "Glass & Surface Cleaner Concentrate",
-      "description": "A fast-drying, streak-free glass and surface concentrate for windows, mirrors, stainless and displays. Dilutes 1:20 into a spray bottle, so one case refills a cart for weeks. Case of 4 one-gallon jugs. Minimum order 1 case.",
-      "status": "active",
-      "productType": "Cleaning chemical",
-      "vendor": "Saniworx",
-      "tags": ["chemical", "concentrate", "glass"],
-      "categoryHandles": ["cleaning-chemicals"],
-      "collectionHandles": ["best-sellers"],
-      "seoTitle": "Glass & Surface Cleaner Concentrate — case of 4 gallons | Saniworx",
-      "seoDescription": "Streak-free glass and surface concentrate, dilutes 1:20. Case of 4 one-gallon jugs at trade pricing.",
-      "variants": [
-        {
-          "sku": "SANI-GLS-CS4",
-          "priceCents": 3600,
-          "isDefault": true,
-          "inventoryPolicy": "continue"
-        }
-      ],
-      "images": [
-        {
-          "assetId": "prod-glass-cleaner",
-          "isPrimary": true,
-          "alt": "A case of glass and surface cleaner concentrate"
-        }
-      ]
-    },
-    {
-      "handle": "foam-hand-soap",
-      "title": "Foaming Hand Soap",
-      "description": "A mild, dye-free foaming hand soap that stretches further than lotion soap — gentle on skin for high-traffic restrooms, and refills standard bulk dispensers. Case of 4 one-gallon refills. Minimum order 1 case.",
-      "status": "active",
-      "productType": "Restroom supply",
-      "vendor": "Saniworx",
-      "tags": ["restroom", "hand-soap", "refill"],
-      "categoryHandles": ["cleaning-chemicals"],
-      "collectionHandles": ["restroom-program", "new-account-essentials"],
-      "seoTitle": "Foaming Hand Soap — case of 4 gallons | Saniworx",
-      "seoDescription": "Mild dye-free foaming hand soap for bulk dispensers. Case of 4 one-gallon refills at trade pricing.",
-      "variants": [
-        {
-          "sku": "SANI-SOAP-CS4",
-          "priceCents": 6400,
-          "isDefault": true,
-          "inventoryPolicy": "continue"
-        }
-      ],
-      "images": [
-        {
-          "assetId": "prod-hand-soap",
-          "isPrimary": true,
-          "alt": "A case of gallon hand soap refills"
-        }
-      ]
-    },
-    {
-      "handle": "hardwound-paper-towels",
-      "title": "Hardwound Roll Paper Towels",
-      "description": "Natural-kraft hardwound roll towels for high-traffic restrooms and break rooms — 800 feet per roll, so a case lasts and fits standard hands-free dispensers. Case of 12 rolls (9,600 ft total). Minimum order 1 case.",
-      "status": "active",
-      "productType": "Paper",
-      "vendor": "Saniworx",
-      "tags": ["paper", "towels", "restroom"],
-      "categoryHandles": ["paper-tissue"],
-      "collectionHandles": ["best-sellers", "restroom-program", "new-account-essentials"],
-      "seoTitle": "Hardwound Roll Paper Towels — case of 12 rolls | Saniworx",
-      "seoDescription": "Natural hardwound roll towels, 800 ft per roll, for hands-free dispensers. Case of 12 rolls.",
-      "variants": [
-        {
-          "sku": "SANI-PT-CS12",
-          "priceCents": 3800,
-          "isDefault": true,
-          "inventoryPolicy": "continue"
-        }
-      ],
-      "images": [
-        {
-          "assetId": "prod-paper-towels",
-          "isPrimary": true,
-          "alt": "A case of hardwound roll paper towels"
-        }
-      ]
-    },
-    {
-      "handle": "toilet-tissue",
-      "title": "Two-Ply Toilet Tissue",
-      "description": "Soft-yet-durable two-ply standard-roll bath tissue, 500 sheets per roll — the everyday reorder for restrooms of any size, fitting standard and multi-roll dispensers. Case of 48 rolls. Minimum order 1 case.",
-      "status": "active",
-      "productType": "Paper",
-      "vendor": "Saniworx",
-      "tags": ["paper", "tissue", "restroom"],
-      "categoryHandles": ["paper-tissue"],
-      "collectionHandles": ["best-sellers", "restroom-program", "new-account-essentials"],
-      "seoTitle": "Two-Ply Toilet Tissue — case of 48 rolls | Saniworx",
-      "seoDescription": "Two-ply standard-roll bath tissue, 500 sheets per roll. Case of 48 rolls at trade pricing.",
-      "variants": [
-        {
-          "sku": "SANI-TT-CS48",
-          "priceCents": 5400,
-          "isDefault": true,
-          "inventoryPolicy": "continue"
-        }
-      ],
-      "images": [
-        {
-          "assetId": "prod-toilet-tissue",
-          "isPrimary": true,
-          "alt": "A case of two-ply toilet tissue rolls"
-        }
-      ]
-    },
-    {
-      "handle": "can-liners",
-      "title": "Low-Density Can Liners",
-      "description": "Puncture-resistant low-density liners for general waste — strong enough for break-room and restroom bins without tearing at the pull. Sold by the carton; pick your can size below. Minimum order 1 carton.",
-      "status": "active",
-      "productType": "Can liner",
-      "vendor": "Saniworx",
-      "tags": ["liners", "waste", "low-density"],
-      "categoryHandles": ["liners"],
-      "collectionHandles": ["best-sellers", "new-account-essentials"],
-      "seoTitle": "Low-Density Can Liners — by the carton | Saniworx",
-      "seoDescription": "Puncture-resistant low-density can liners in 33, 45 and 55 gallon sizes, sold by the carton.",
-      "options": [
-        {
-          "name": "Size",
-          "displayType": "dropdown",
-          "values": [
-            {
-              "value": "33 gal — carton of 500"
-            },
-            {
-              "value": "45 gal — carton of 250"
-            },
-            {
-              "value": "55 gal — carton of 200"
-            }
-          ]
-        }
-      ],
-      "variants": [
-        {
-          "sku": "SANI-LIN-33",
-          "priceCents": 4600,
-          "isDefault": true,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Size": "33 gal — carton of 500"
-          }
+            "handle": "paper-tissue",
+            "name": "Paper & tissue",
+            "description": "Roll towels and bath tissue by the case.",
+            "featured": true
         },
         {
-          "sku": "SANI-LIN-45",
-          "priceCents": 5200,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Size": "45 gal — carton of 250"
-          }
+            "handle": "liners",
+            "name": "Can liners",
+            "description": "Low-density liners by the carton.",
+            "featured": true
         },
         {
-          "sku": "SANI-LIN-55",
-          "priceCents": 5800,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Size": "55 gal — carton of 200"
-          }
+            "handle": "tools",
+            "name": "Tools & equipment",
+            "description": "Microfibre, floor pads and supply kits.",
+            "featured": true
         }
-      ],
-      "images": [
+    ],
+    "collections": [
         {
-          "assetId": "prod-liners",
-          "isPrimary": true,
-          "alt": "A carton of low-density trash can liners"
-        }
-      ]
-    },
-    {
-      "handle": "microfibre-cloths",
-      "title": "Microfibre Cleaning Cloths",
-      "description": "Colour-coded 16-inch microfibre cloths that lift dust and grime with water alone — launderable up to 200 washes, so the cost per use undercuts disposable wipes fast. Pack of 50 cloths. Minimum order 1 pack.",
-      "status": "active",
-      "productType": "Cleaning tool",
-      "vendor": "Saniworx",
-      "tags": ["tools", "microfibre", "reusable"],
-      "categoryHandles": ["tools"],
-      "collectionHandles": ["best-sellers"],
-      "seoTitle": "Microfibre Cleaning Cloths — pack of 50 | Saniworx",
-      "seoDescription": "Colour-coded 16-inch microfibre cloths, launderable to 200 washes. Pack of 50 at trade pricing.",
-      "variants": [
-        {
-          "sku": "SANI-MF-PK50",
-          "priceCents": 3200,
-          "isDefault": true,
-          "inventoryPolicy": "continue"
-        }
-      ],
-      "images": [
-        {
-          "assetId": "prod-microfibre",
-          "isPrimary": true,
-          "alt": "A stack of folded microfibre cleaning cloths"
-        }
-      ]
-    },
-    {
-      "handle": "floor-pads",
-      "title": "Floor Machine Pads",
-      "description": "Full-cycle floor pads for buffing, scrubbing and stripping — consistent cut and long life on rotary and orbital machines. Case of 5 pads; pick your machine size below. Minimum order 1 case.",
-      "status": "active",
-      "productType": "Floor-care equipment",
-      "vendor": "Saniworx",
-      "tags": ["tools", "floor-care", "pads"],
-      "categoryHandles": ["tools"],
-      "collectionHandles": ["floor-care"],
-      "seoTitle": "Floor Machine Pads — case of 5 | Saniworx",
-      "seoDescription": "Full-cycle floor buffing and scrubbing pads for rotary and orbital machines. Case of 5, 17 or 20 inch.",
-      "options": [
-        {
-          "name": "Size",
-          "displayType": "dropdown",
-          "values": [
-            {
-              "value": "17 inch"
-            },
-            {
-              "value": "20 inch"
-            }
-          ]
-        }
-      ],
-      "variants": [
-        {
-          "sku": "SANI-PAD-17",
-          "priceCents": 2800,
-          "isDefault": true,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Size": "17 inch"
-          }
+            "handle": "new-account-essentials",
+            "name": "New-account essentials",
+            "description": "The core supply program every building starts with.",
+            "type": "manual",
+            "featured": true,
+            "productHandles": [
+                "facility-starter-kit",
+                "multi-surface-concentrate",
+                "disinfectant-cleaner",
+                "hardwound-paper-towels",
+                "toilet-tissue",
+                "can-liners"
+            ]
         },
         {
-          "sku": "SANI-PAD-20",
-          "priceCents": 3200,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Size": "20 inch"
-          }
-        }
-      ],
-      "images": [
+            "handle": "best-sellers",
+            "name": "Best sellers",
+            "description": "The cases every closet reorders.",
+            "type": "manual",
+            "featured": true,
+            "productHandles": [
+                "multi-surface-concentrate",
+                "disinfectant-cleaner",
+                "hardwound-paper-towels",
+                "toilet-tissue",
+                "can-liners",
+                "microfibre-cloths"
+            ]
+        },
         {
-          "assetId": "prod-floor-pads",
-          "isPrimary": true,
-          "alt": "A case of floor machine buffing pads"
-        }
-      ]
-    },
-    {
-      "handle": "facility-starter-kit",
-      "title": "Facility Starter Kit",
-      "description": "Everything a new account needs to stand up a supply closet in one order: a case of multi-surface concentrate, a case of disinfectant, a case of paper towels, a case of toilet tissue, a carton of 33-gallon liners and a pack of microfibre cloths — matched so nothing runs out first. One SKU, one delivery. Minimum order 1 kit.",
-      "status": "active",
-      "productType": "Supply kit",
-      "vendor": "Saniworx",
-      "tags": ["kit", "starter", "bundle"],
-      "categoryHandles": ["tools"],
-      "collectionHandles": ["new-account-essentials"],
-      "seoTitle": "Facility Starter Kit — stand up a supply closet in one order | Saniworx",
-      "seoDescription": "A matched starter kit — concentrate, disinfectant, towels, tissue, liners and cloths. One SKU, one delivery.",
-      "variants": [
+            "handle": "restroom-program",
+            "name": "Restroom program",
+            "description": "Soap, tissue, towels and disinfectant for a full restroom.",
+            "type": "manual",
+            "featured": false,
+            "productHandles": [
+                "foam-hand-soap",
+                "toilet-tissue",
+                "hardwound-paper-towels",
+                "disinfectant-cleaner"
+            ]
+        },
         {
-          "sku": "SANI-KIT-START",
-          "priceCents": 18900,
-          "isDefault": true,
-          "inventoryPolicy": "continue"
+            "handle": "floor-care",
+            "name": "Floor care",
+            "description": "Pads and concentrate for machine floor work.",
+            "type": "manual",
+            "featured": false,
+            "productHandles": [
+                "floor-pads",
+                "multi-surface-concentrate"
+            ]
         }
-      ],
-      "images": [
+    ],
+    "products": [
         {
-          "assetId": "prod-starter-kit",
-          "isPrimary": true,
-          "alt": "A facility starter kit of cleaning chemicals, paper and tools"
+            "handle": "multi-surface-concentrate",
+            "title": "Multi-Surface Cleaner Concentrate",
+            "description": "A neutral-pH concentrate for floors, walls and hard surfaces — no rinse, no residue, safe on finished floors. One gallon dilutes up to 1:64, making 64 gallons of ready-to-use cleaner, so the cost per bottle at the mop is pennies. Case of 4 one-gallon jugs. Minimum order 1 case.",
+            "status": "active",
+            "productType": "Cleaning chemical",
+            "vendor": "Saniworx",
+            "tags": [
+                "chemical",
+                "concentrate",
+                "floor-care",
+                "neutral-ph"
+            ],
+            "categoryHandles": [
+                "cleaning-chemicals"
+            ],
+            "collectionHandles": [
+                "best-sellers",
+                "new-account-essentials"
+            ],
+            "seoTitle": "Multi-Surface Cleaner Concentrate — case of 4 gallons | Saniworx",
+            "seoDescription": "Neutral-pH no-rinse floor and surface concentrate, dilutes 1:64. Case of 4 one-gallon jugs at trade pricing.",
+            "options": [
+                {
+                    "name": "Format",
+                    "displayType": "dropdown",
+                    "values": [
+                        {
+                            "value": "Case of 4 (1 gal)"
+                        },
+                        {
+                            "value": "5-gallon drum"
+                        }
+                    ]
+                }
+            ],
+            "variants": [
+                {
+                    "sku": "SANI-MSC-CS4",
+                    "priceCents": 5800,
+                    "isDefault": true,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Format": "Case of 4 (1 gal)"
+                    }
+                },
+                {
+                    "sku": "SANI-MSC-DRM",
+                    "priceCents": 13200,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Format": "5-gallon drum"
+                    }
+                }
+            ],
+            "images": [
+                {
+                    "assetId": "prod-multi-surface",
+                    "isPrimary": true,
+                    "alt": "A case of multi-surface cleaner concentrate gallons"
+                }
+            ]
+        },
+        {
+            "handle": "disinfectant-cleaner",
+            "title": "Disinfectant Cleaner",
+            "description": "A one-step, EPA-registered disinfectant cleaner that cleans and kills 99.9% of common bacteria and viruses on hard non-porous surfaces in one pass — restrooms, break rooms, high-touch points. Case of 12 quart bottles with trigger sprayers. Minimum order 1 case. SDS on file.",
+            "status": "active",
+            "productType": "Cleaning chemical",
+            "vendor": "Saniworx",
+            "tags": [
+                "chemical",
+                "disinfectant",
+                "restroom",
+                "epa-registered"
+            ],
+            "categoryHandles": [
+                "cleaning-chemicals"
+            ],
+            "collectionHandles": [
+                "best-sellers",
+                "restroom-program",
+                "new-account-essentials"
+            ],
+            "seoTitle": "Disinfectant Cleaner — case of 12 quarts | Saniworx",
+            "seoDescription": "One-step EPA-registered disinfectant cleaner, kills 99.9% of common germs. Case of 12 quart bottles.",
+            "variants": [
+                {
+                    "sku": "SANI-DIS-CS12",
+                    "priceCents": 4600,
+                    "isDefault": true,
+                    "inventoryPolicy": "continue"
+                }
+            ],
+            "images": [
+                {
+                    "assetId": "prod-disinfectant",
+                    "isPrimary": true,
+                    "alt": "A case of disinfectant cleaner bottles"
+                }
+            ]
+        },
+        {
+            "handle": "glass-cleaner-concentrate",
+            "title": "Glass & Surface Cleaner Concentrate",
+            "description": "A fast-drying, streak-free glass and surface concentrate for windows, mirrors, stainless and displays. Dilutes 1:20 into a spray bottle, so one case refills a cart for weeks. Case of 4 one-gallon jugs. Minimum order 1 case.",
+            "status": "active",
+            "productType": "Cleaning chemical",
+            "vendor": "Saniworx",
+            "tags": [
+                "chemical",
+                "concentrate",
+                "glass"
+            ],
+            "categoryHandles": [
+                "cleaning-chemicals"
+            ],
+            "collectionHandles": [
+                "best-sellers"
+            ],
+            "seoTitle": "Glass & Surface Cleaner Concentrate — case of 4 gallons | Saniworx",
+            "seoDescription": "Streak-free glass and surface concentrate, dilutes 1:20. Case of 4 one-gallon jugs at trade pricing.",
+            "variants": [
+                {
+                    "sku": "SANI-GLS-CS4",
+                    "priceCents": 3600,
+                    "isDefault": true,
+                    "inventoryPolicy": "continue"
+                }
+            ],
+            "images": [
+                {
+                    "assetId": "prod-glass-cleaner",
+                    "isPrimary": true,
+                    "alt": "A case of glass and surface cleaner concentrate"
+                }
+            ]
+        },
+        {
+            "handle": "foam-hand-soap",
+            "title": "Foaming Hand Soap",
+            "description": "A mild, dye-free foaming hand soap that stretches further than lotion soap — gentle on skin for high-traffic restrooms, and refills standard bulk dispensers. Case of 4 one-gallon refills. Minimum order 1 case.",
+            "status": "active",
+            "productType": "Restroom supply",
+            "vendor": "Saniworx",
+            "tags": [
+                "restroom",
+                "hand-soap",
+                "refill"
+            ],
+            "categoryHandles": [
+                "cleaning-chemicals"
+            ],
+            "collectionHandles": [
+                "restroom-program",
+                "new-account-essentials"
+            ],
+            "seoTitle": "Foaming Hand Soap — case of 4 gallons | Saniworx",
+            "seoDescription": "Mild dye-free foaming hand soap for bulk dispensers. Case of 4 one-gallon refills at trade pricing.",
+            "variants": [
+                {
+                    "sku": "SANI-SOAP-CS4",
+                    "priceCents": 6400,
+                    "isDefault": true,
+                    "inventoryPolicy": "continue"
+                }
+            ],
+            "images": [
+                {
+                    "assetId": "prod-hand-soap",
+                    "isPrimary": true,
+                    "alt": "A case of gallon hand soap refills"
+                }
+            ]
+        },
+        {
+            "handle": "hardwound-paper-towels",
+            "title": "Hardwound Roll Paper Towels",
+            "description": "Natural-kraft hardwound roll towels for high-traffic restrooms and break rooms — 800 feet per roll, so a case lasts and fits standard hands-free dispensers. Case of 12 rolls (9,600 ft total). Minimum order 1 case.",
+            "status": "active",
+            "productType": "Paper",
+            "vendor": "Saniworx",
+            "tags": [
+                "paper",
+                "towels",
+                "restroom"
+            ],
+            "categoryHandles": [
+                "paper-tissue"
+            ],
+            "collectionHandles": [
+                "best-sellers",
+                "restroom-program",
+                "new-account-essentials"
+            ],
+            "seoTitle": "Hardwound Roll Paper Towels — case of 12 rolls | Saniworx",
+            "seoDescription": "Natural hardwound roll towels, 800 ft per roll, for hands-free dispensers. Case of 12 rolls.",
+            "variants": [
+                {
+                    "sku": "SANI-PT-CS12",
+                    "priceCents": 3800,
+                    "isDefault": true,
+                    "inventoryPolicy": "continue"
+                }
+            ],
+            "images": [
+                {
+                    "assetId": "prod-paper-towels",
+                    "isPrimary": true,
+                    "alt": "A case of hardwound roll paper towels"
+                }
+            ]
+        },
+        {
+            "handle": "toilet-tissue",
+            "title": "Two-Ply Toilet Tissue",
+            "description": "Soft-yet-durable two-ply standard-roll bath tissue, 500 sheets per roll — the everyday reorder for restrooms of any size, fitting standard and multi-roll dispensers. Case of 48 rolls. Minimum order 1 case.",
+            "status": "active",
+            "productType": "Paper",
+            "vendor": "Saniworx",
+            "tags": [
+                "paper",
+                "tissue",
+                "restroom"
+            ],
+            "categoryHandles": [
+                "paper-tissue"
+            ],
+            "collectionHandles": [
+                "best-sellers",
+                "restroom-program",
+                "new-account-essentials"
+            ],
+            "seoTitle": "Two-Ply Toilet Tissue — case of 48 rolls | Saniworx",
+            "seoDescription": "Two-ply standard-roll bath tissue, 500 sheets per roll. Case of 48 rolls at trade pricing.",
+            "variants": [
+                {
+                    "sku": "SANI-TT-CS48",
+                    "priceCents": 5400,
+                    "isDefault": true,
+                    "inventoryPolicy": "continue"
+                }
+            ],
+            "images": [
+                {
+                    "assetId": "prod-toilet-tissue",
+                    "isPrimary": true,
+                    "alt": "A case of two-ply toilet tissue rolls"
+                }
+            ]
+        },
+        {
+            "handle": "can-liners",
+            "title": "Low-Density Can Liners",
+            "description": "Puncture-resistant low-density liners for general waste — strong enough for break-room and restroom bins without tearing at the pull. Sold by the carton; pick your can size below. Minimum order 1 carton.",
+            "status": "active",
+            "productType": "Can liner",
+            "vendor": "Saniworx",
+            "tags": [
+                "liners",
+                "waste",
+                "low-density"
+            ],
+            "categoryHandles": [
+                "liners"
+            ],
+            "collectionHandles": [
+                "best-sellers",
+                "new-account-essentials"
+            ],
+            "seoTitle": "Low-Density Can Liners — by the carton | Saniworx",
+            "seoDescription": "Puncture-resistant low-density can liners in 33, 45 and 55 gallon sizes, sold by the carton.",
+            "options": [
+                {
+                    "name": "Size",
+                    "displayType": "dropdown",
+                    "values": [
+                        {
+                            "value": "33 gal — carton of 500"
+                        },
+                        {
+                            "value": "45 gal — carton of 250"
+                        },
+                        {
+                            "value": "55 gal — carton of 200"
+                        }
+                    ]
+                }
+            ],
+            "variants": [
+                {
+                    "sku": "SANI-LIN-33",
+                    "priceCents": 4600,
+                    "isDefault": true,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Size": "33 gal — carton of 500"
+                    }
+                },
+                {
+                    "sku": "SANI-LIN-45",
+                    "priceCents": 5200,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Size": "45 gal — carton of 250"
+                    }
+                },
+                {
+                    "sku": "SANI-LIN-55",
+                    "priceCents": 5800,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Size": "55 gal — carton of 200"
+                    }
+                }
+            ],
+            "images": [
+                {
+                    "assetId": "prod-liners",
+                    "isPrimary": true,
+                    "alt": "A carton of low-density trash can liners"
+                }
+            ]
+        },
+        {
+            "handle": "microfibre-cloths",
+            "title": "Microfibre Cleaning Cloths",
+            "description": "Color-coded 16-inch microfibre cloths that lift dust and grime with water alone — launderable up to 200 washes, so the cost per use undercuts disposable wipes fast. Pack of 50 cloths. Minimum order 1 pack.",
+            "status": "active",
+            "productType": "Cleaning tool",
+            "vendor": "Saniworx",
+            "tags": [
+                "tools",
+                "microfibre",
+                "reusable"
+            ],
+            "categoryHandles": [
+                "tools"
+            ],
+            "collectionHandles": [
+                "best-sellers"
+            ],
+            "seoTitle": "Microfibre Cleaning Cloths — pack of 50 | Saniworx",
+            "seoDescription": "Color-coded 16-inch microfibre cloths, launderable to 200 washes. Pack of 50 at trade pricing.",
+            "variants": [
+                {
+                    "sku": "SANI-MF-PK50",
+                    "priceCents": 3200,
+                    "isDefault": true,
+                    "inventoryPolicy": "continue"
+                }
+            ],
+            "images": [
+                {
+                    "assetId": "prod-microfibre",
+                    "isPrimary": true,
+                    "alt": "A stack of folded microfibre cleaning cloths"
+                }
+            ]
+        },
+        {
+            "handle": "floor-pads",
+            "title": "Floor Machine Pads",
+            "description": "Full-cycle floor pads for buffing, scrubbing and stripping — consistent cut and long life on rotary and orbital machines. Case of 5 pads; pick your machine size below. Minimum order 1 case.",
+            "status": "active",
+            "productType": "Floor-care equipment",
+            "vendor": "Saniworx",
+            "tags": [
+                "tools",
+                "floor-care",
+                "pads"
+            ],
+            "categoryHandles": [
+                "tools"
+            ],
+            "collectionHandles": [
+                "floor-care"
+            ],
+            "seoTitle": "Floor Machine Pads — case of 5 | Saniworx",
+            "seoDescription": "Full-cycle floor buffing and scrubbing pads for rotary and orbital machines. Case of 5, 17 or 20 inch.",
+            "options": [
+                {
+                    "name": "Size",
+                    "displayType": "dropdown",
+                    "values": [
+                        {
+                            "value": "17 inch"
+                        },
+                        {
+                            "value": "20 inch"
+                        }
+                    ]
+                }
+            ],
+            "variants": [
+                {
+                    "sku": "SANI-PAD-17",
+                    "priceCents": 2800,
+                    "isDefault": true,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Size": "17 inch"
+                    }
+                },
+                {
+                    "sku": "SANI-PAD-20",
+                    "priceCents": 3200,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Size": "20 inch"
+                    }
+                }
+            ],
+            "images": [
+                {
+                    "assetId": "prod-floor-pads",
+                    "isPrimary": true,
+                    "alt": "A case of floor machine buffing pads"
+                }
+            ]
+        },
+        {
+            "handle": "facility-starter-kit",
+            "title": "Facility Starter Kit",
+            "description": "Everything a new account needs to stand up a supply closet in one order: a case of multi-surface concentrate, a case of disinfectant, a case of paper towels, a case of toilet tissue, a carton of 33-gallon liners and a pack of microfibre cloths — matched so nothing runs out first. One SKU, one delivery. Minimum order 1 kit.",
+            "status": "active",
+            "productType": "Supply kit",
+            "vendor": "Saniworx",
+            "tags": [
+                "kit",
+                "starter",
+                "bundle"
+            ],
+            "categoryHandles": [
+                "tools"
+            ],
+            "collectionHandles": [
+                "new-account-essentials"
+            ],
+            "seoTitle": "Facility Starter Kit — stand up a supply closet in one order | Saniworx",
+            "seoDescription": "A matched starter kit — concentrate, disinfectant, towels, tissue, liners and cloths. One SKU, one delivery.",
+            "variants": [
+                {
+                    "sku": "SANI-KIT-START",
+                    "priceCents": 18900,
+                    "isDefault": true,
+                    "inventoryPolicy": "continue"
+                }
+            ],
+            "images": [
+                {
+                    "assetId": "prod-starter-kit",
+                    "isPrimary": true,
+                    "alt": "A facility starter kit of cleaning chemicals, paper and tools"
+                }
+            ]
         }
-      ]
-    }
-  ]
+    ]
 }

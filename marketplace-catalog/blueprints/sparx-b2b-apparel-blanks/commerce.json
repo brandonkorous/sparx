@@ -1,1774 +1,1879 @@
 {
-  "categories": [
-    {
-      "handle": "tees",
-      "name": "Tees",
-      "description": "Short- and long-sleeve tees and tanks.",
-      "featured": true
-    },
-    {
-      "handle": "fleece",
-      "name": "Fleece",
-      "description": "Hoodies and crewneck sweatshirts.",
-      "featured": true
-    },
-    {
-      "handle": "headwear",
-      "name": "Headwear",
-      "description": "Structured and unstructured caps.",
-      "featured": true
-    },
-    {
-      "handle": "bags",
-      "name": "Bags",
-      "description": "Canvas totes and carriers.",
-      "featured": true
-    }
-  ],
-  "collections": [
-    {
-      "handle": "new-blanks",
-      "name": "New this season",
-      "description": "The latest stock added to the catalogue.",
-      "type": "manual",
-      "featured": true,
-      "productHandles": [
-        "ringspun-tee",
-        "tank-top",
-        "pullover-hoodie",
-        "structured-cap",
-        "cotton-tote"
-      ]
-    },
-    {
-      "handle": "best-sellers",
-      "name": "Best sellers",
-      "description": "The core blanks shops reorder most.",
-      "type": "manual",
-      "featured": true,
-      "productHandles": ["heavyweight-tee", "pullover-hoodie", "structured-cap"]
-    },
-    {
-      "handle": "core-tees",
-      "name": "Core tees",
-      "description": "The everyday tee and tank program.",
-      "type": "manual",
-      "featured": false,
-      "productHandles": ["heavyweight-tee", "ringspun-tee", "long-sleeve-tee", "tank-top"]
-    },
-    {
-      "handle": "fleece-weights",
-      "name": "Fleece",
-      "description": "Hoodies and crewnecks by weight.",
-      "type": "manual",
-      "featured": false,
-      "productHandles": ["pullover-hoodie", "crewneck-sweatshirt"]
-    },
-    {
-      "handle": "headwear-bags",
-      "name": "Headwear & bags",
-      "description": "The finishing pieces for a merch line.",
-      "type": "manual",
-      "featured": false,
-      "productHandles": ["structured-cap", "cotton-tote"]
-    },
-    {
-      "handle": "print-ready-kit",
-      "name": "Print-ready starter kit",
-      "description": "A tee, a hoodie and a tote to start a first run.",
-      "type": "manual",
-      "featured": false,
-      "productHandles": ["heavyweight-tee", "pullover-hoodie", "cotton-tote"]
-    }
-  ],
-  "products": [
-    {
-      "handle": "heavyweight-tee",
-      "title": "Heavyweight Tee",
-      "description": "A 6.0 oz ring-spun cotton tee with real body — the blank for retail-quality merch, heavy prints and anything that has to feel like more than a promo shirt. Side-seamed, shoulder-taped, with a tight, smooth face that lays ink down flat.",
-      "status": "active",
-      "productType": "T-shirt",
-      "vendor": "Blankstock",
-      "tags": ["tee", "heavyweight", "6oz", "ring-spun", "screenprint"],
-      "categoryHandles": ["tees"],
-      "collectionHandles": ["best-sellers", "core-tees", "print-ready-kit"],
-      "seoTitle": "Heavyweight Tee — 6.0 oz blank for decorators | Blankstock",
-      "seoDescription": "A 6.0 oz ring-spun, side-seamed blank tee built for retail-quality prints. Sold by the case, priced per unit.",
-      "options": [
+    "categories": [
         {
-          "name": "Color",
-          "displayType": "swatch",
-          "values": [
-            {
-              "value": "White"
-            },
-            {
-              "value": "Black"
-            },
-            {
-              "value": "Heather Grey"
-            },
-            {
-              "value": "Navy"
-            },
-            {
-              "value": "Sand"
-            }
-          ]
+            "handle": "tees",
+            "name": "Tees",
+            "description": "Short- and long-sleeve tees and tanks.",
+            "featured": true
         },
         {
-          "name": "Size",
-          "displayType": "dropdown",
-          "values": [
-            {
-              "value": "S"
-            },
-            {
-              "value": "M"
-            },
-            {
-              "value": "L"
-            },
-            {
-              "value": "XL"
-            },
-            {
-              "value": "2XL"
-            }
-          ]
+            "handle": "fleece",
+            "name": "Fleece",
+            "description": "Hoodies and crewneck sweatshirts.",
+            "featured": true
+        },
+        {
+            "handle": "headwear",
+            "name": "Headwear",
+            "description": "Structured and unstructured caps.",
+            "featured": true
+        },
+        {
+            "handle": "bags",
+            "name": "Bags",
+            "description": "Canvas totes and carriers.",
+            "featured": true
         }
-      ],
-      "variants": [
+    ],
+    "collections": [
         {
-          "sku": "BLK-HWT-WHT-S",
-          "priceCents": 650,
-          "isDefault": true,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "White",
-            "Size": "S"
-          }
+            "handle": "new-blanks",
+            "name": "New this season",
+            "description": "The latest stock added to the catalogue.",
+            "type": "manual",
+            "featured": true,
+            "productHandles": [
+                "ringspun-tee",
+                "tank-top",
+                "pullover-hoodie",
+                "structured-cap",
+                "cotton-tote"
+            ]
         },
         {
-          "sku": "BLK-HWT-WHT-M",
-          "priceCents": 650,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "White",
-            "Size": "M"
-          }
+            "handle": "best-sellers",
+            "name": "Best sellers",
+            "description": "The core blanks shops reorder most.",
+            "type": "manual",
+            "featured": true,
+            "productHandles": [
+                "heavyweight-tee",
+                "pullover-hoodie",
+                "structured-cap"
+            ]
         },
         {
-          "sku": "BLK-HWT-WHT-L",
-          "priceCents": 650,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "White",
-            "Size": "L"
-          }
+            "handle": "core-tees",
+            "name": "Core tees",
+            "description": "The everyday tee and tank program.",
+            "type": "manual",
+            "featured": false,
+            "productHandles": [
+                "heavyweight-tee",
+                "ringspun-tee",
+                "long-sleeve-tee",
+                "tank-top"
+            ]
         },
         {
-          "sku": "BLK-HWT-WHT-XL",
-          "priceCents": 650,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "White",
-            "Size": "XL"
-          }
+            "handle": "fleece-weights",
+            "name": "Fleece",
+            "description": "Hoodies and crewnecks by weight.",
+            "type": "manual",
+            "featured": false,
+            "productHandles": [
+                "pullover-hoodie",
+                "crewneck-sweatshirt"
+            ]
         },
         {
-          "sku": "BLK-HWT-WHT-2XL",
-          "priceCents": 850,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "White",
-            "Size": "2XL"
-          }
+            "handle": "headwear-bags",
+            "name": "Headwear & bags",
+            "description": "The finishing pieces for a merch line.",
+            "type": "manual",
+            "featured": false,
+            "productHandles": [
+                "structured-cap",
+                "cotton-tote"
+            ]
         },
         {
-          "sku": "BLK-HWT-BLK-S",
-          "priceCents": 650,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "Black",
-            "Size": "S"
-          }
-        },
-        {
-          "sku": "BLK-HWT-BLK-M",
-          "priceCents": 650,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "Black",
-            "Size": "M"
-          }
-        },
-        {
-          "sku": "BLK-HWT-BLK-L",
-          "priceCents": 650,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "Black",
-            "Size": "L"
-          }
-        },
-        {
-          "sku": "BLK-HWT-BLK-XL",
-          "priceCents": 650,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "Black",
-            "Size": "XL"
-          }
-        },
-        {
-          "sku": "BLK-HWT-BLK-2XL",
-          "priceCents": 850,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "Black",
-            "Size": "2XL"
-          }
-        },
-        {
-          "sku": "BLK-HWT-HGR-S",
-          "priceCents": 650,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "Heather Grey",
-            "Size": "S"
-          }
-        },
-        {
-          "sku": "BLK-HWT-HGR-M",
-          "priceCents": 650,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "Heather Grey",
-            "Size": "M"
-          }
-        },
-        {
-          "sku": "BLK-HWT-HGR-L",
-          "priceCents": 650,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "Heather Grey",
-            "Size": "L"
-          }
-        },
-        {
-          "sku": "BLK-HWT-HGR-XL",
-          "priceCents": 650,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "Heather Grey",
-            "Size": "XL"
-          }
-        },
-        {
-          "sku": "BLK-HWT-HGR-2XL",
-          "priceCents": 850,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "Heather Grey",
-            "Size": "2XL"
-          }
-        },
-        {
-          "sku": "BLK-HWT-NVY-S",
-          "priceCents": 650,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "Navy",
-            "Size": "S"
-          }
-        },
-        {
-          "sku": "BLK-HWT-NVY-M",
-          "priceCents": 650,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "Navy",
-            "Size": "M"
-          }
-        },
-        {
-          "sku": "BLK-HWT-NVY-L",
-          "priceCents": 650,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "Navy",
-            "Size": "L"
-          }
-        },
-        {
-          "sku": "BLK-HWT-NVY-XL",
-          "priceCents": 650,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "Navy",
-            "Size": "XL"
-          }
-        },
-        {
-          "sku": "BLK-HWT-NVY-2XL",
-          "priceCents": 850,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "Navy",
-            "Size": "2XL"
-          }
-        },
-        {
-          "sku": "BLK-HWT-SND-S",
-          "priceCents": 650,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "Sand",
-            "Size": "S"
-          }
-        },
-        {
-          "sku": "BLK-HWT-SND-M",
-          "priceCents": 650,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "Sand",
-            "Size": "M"
-          }
-        },
-        {
-          "sku": "BLK-HWT-SND-L",
-          "priceCents": 650,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "Sand",
-            "Size": "L"
-          }
-        },
-        {
-          "sku": "BLK-HWT-SND-XL",
-          "priceCents": 650,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "Sand",
-            "Size": "XL"
-          }
-        },
-        {
-          "sku": "BLK-HWT-SND-2XL",
-          "priceCents": 850,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "Sand",
-            "Size": "2XL"
-          }
+            "handle": "print-ready-kit",
+            "name": "Print-ready starter kit",
+            "description": "A tee, a hoodie and a tote to start a first run.",
+            "type": "manual",
+            "featured": false,
+            "productHandles": [
+                "heavyweight-tee",
+                "pullover-hoodie",
+                "cotton-tote"
+            ]
         }
-      ],
-      "images": [
+    ],
+    "products": [
         {
-          "assetId": "prod-heavyweight-tee",
-          "isPrimary": true,
-          "alt": "Heavyweight Tee"
+            "handle": "heavyweight-tee",
+            "title": "Heavyweight Tee",
+            "description": "A 6.0 oz ring-spun cotton tee with real body — the blank for retail-quality merch, heavy prints and anything that has to feel like more than a promo shirt. Side-seamed, shoulder-taped, with a tight, smooth face that lays ink down flat.",
+            "status": "active",
+            "productType": "T-shirt",
+            "vendor": "Blankstock",
+            "tags": [
+                "tee",
+                "heavyweight",
+                "6oz",
+                "ring-spun",
+                "screenprint"
+            ],
+            "categoryHandles": [
+                "tees"
+            ],
+            "collectionHandles": [
+                "best-sellers",
+                "core-tees",
+                "print-ready-kit"
+            ],
+            "seoTitle": "Heavyweight Tee — 6.0 oz blank for decorators | Blankstock",
+            "seoDescription": "A 6.0 oz ring-spun, side-seamed blank tee built for retail-quality prints. Sold by the case, priced per unit.",
+            "options": [
+                {
+                    "name": "Color",
+                    "displayType": "swatch",
+                    "values": [
+                        {
+                            "value": "White"
+                        },
+                        {
+                            "value": "Black"
+                        },
+                        {
+                            "value": "Heather Grey"
+                        },
+                        {
+                            "value": "Navy"
+                        },
+                        {
+                            "value": "Sand"
+                        }
+                    ]
+                },
+                {
+                    "name": "Size",
+                    "displayType": "dropdown",
+                    "values": [
+                        {
+                            "value": "S"
+                        },
+                        {
+                            "value": "M"
+                        },
+                        {
+                            "value": "L"
+                        },
+                        {
+                            "value": "XL"
+                        },
+                        {
+                            "value": "2XL"
+                        }
+                    ]
+                }
+            ],
+            "variants": [
+                {
+                    "sku": "BLK-HWT-WHT-S",
+                    "priceCents": 650,
+                    "isDefault": true,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "White",
+                        "Size": "S"
+                    }
+                },
+                {
+                    "sku": "BLK-HWT-WHT-M",
+                    "priceCents": 650,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "White",
+                        "Size": "M"
+                    }
+                },
+                {
+                    "sku": "BLK-HWT-WHT-L",
+                    "priceCents": 650,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "White",
+                        "Size": "L"
+                    }
+                },
+                {
+                    "sku": "BLK-HWT-WHT-XL",
+                    "priceCents": 650,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "White",
+                        "Size": "XL"
+                    }
+                },
+                {
+                    "sku": "BLK-HWT-WHT-2XL",
+                    "priceCents": 850,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "White",
+                        "Size": "2XL"
+                    }
+                },
+                {
+                    "sku": "BLK-HWT-BLK-S",
+                    "priceCents": 650,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Black",
+                        "Size": "S"
+                    }
+                },
+                {
+                    "sku": "BLK-HWT-BLK-M",
+                    "priceCents": 650,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Black",
+                        "Size": "M"
+                    }
+                },
+                {
+                    "sku": "BLK-HWT-BLK-L",
+                    "priceCents": 650,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Black",
+                        "Size": "L"
+                    }
+                },
+                {
+                    "sku": "BLK-HWT-BLK-XL",
+                    "priceCents": 650,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Black",
+                        "Size": "XL"
+                    }
+                },
+                {
+                    "sku": "BLK-HWT-BLK-2XL",
+                    "priceCents": 850,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Black",
+                        "Size": "2XL"
+                    }
+                },
+                {
+                    "sku": "BLK-HWT-HGR-S",
+                    "priceCents": 650,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Heather Grey",
+                        "Size": "S"
+                    }
+                },
+                {
+                    "sku": "BLK-HWT-HGR-M",
+                    "priceCents": 650,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Heather Grey",
+                        "Size": "M"
+                    }
+                },
+                {
+                    "sku": "BLK-HWT-HGR-L",
+                    "priceCents": 650,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Heather Grey",
+                        "Size": "L"
+                    }
+                },
+                {
+                    "sku": "BLK-HWT-HGR-XL",
+                    "priceCents": 650,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Heather Grey",
+                        "Size": "XL"
+                    }
+                },
+                {
+                    "sku": "BLK-HWT-HGR-2XL",
+                    "priceCents": 850,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Heather Grey",
+                        "Size": "2XL"
+                    }
+                },
+                {
+                    "sku": "BLK-HWT-NVY-S",
+                    "priceCents": 650,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Navy",
+                        "Size": "S"
+                    }
+                },
+                {
+                    "sku": "BLK-HWT-NVY-M",
+                    "priceCents": 650,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Navy",
+                        "Size": "M"
+                    }
+                },
+                {
+                    "sku": "BLK-HWT-NVY-L",
+                    "priceCents": 650,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Navy",
+                        "Size": "L"
+                    }
+                },
+                {
+                    "sku": "BLK-HWT-NVY-XL",
+                    "priceCents": 650,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Navy",
+                        "Size": "XL"
+                    }
+                },
+                {
+                    "sku": "BLK-HWT-NVY-2XL",
+                    "priceCents": 850,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Navy",
+                        "Size": "2XL"
+                    }
+                },
+                {
+                    "sku": "BLK-HWT-SND-S",
+                    "priceCents": 650,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Sand",
+                        "Size": "S"
+                    }
+                },
+                {
+                    "sku": "BLK-HWT-SND-M",
+                    "priceCents": 650,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Sand",
+                        "Size": "M"
+                    }
+                },
+                {
+                    "sku": "BLK-HWT-SND-L",
+                    "priceCents": 650,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Sand",
+                        "Size": "L"
+                    }
+                },
+                {
+                    "sku": "BLK-HWT-SND-XL",
+                    "priceCents": 650,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Sand",
+                        "Size": "XL"
+                    }
+                },
+                {
+                    "sku": "BLK-HWT-SND-2XL",
+                    "priceCents": 850,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Sand",
+                        "Size": "2XL"
+                    }
+                }
+            ],
+            "images": [
+                {
+                    "assetId": "prod-heavyweight-tee",
+                    "isPrimary": true,
+                    "alt": "Heavyweight Tee"
+                }
+            ]
+        },
+        {
+            "handle": "ringspun-tee",
+            "title": "Ringspun Tee",
+            "description": "A 4.3 oz combed ring-spun tee — soft, light and fashion-fit, the everyday blank for fine-line prints and DTG. Thinner than the heavyweight without going sheer, with a smooth face that holds detail. The volume workhorse of the shelf.",
+            "status": "active",
+            "productType": "T-shirt",
+            "vendor": "Blankstock",
+            "tags": [
+                "tee",
+                "ringspun",
+                "4.3oz",
+                "dtg",
+                "fashion-fit"
+            ],
+            "categoryHandles": [
+                "tees"
+            ],
+            "collectionHandles": [
+                "new-blanks",
+                "core-tees"
+            ],
+            "seoTitle": "Ringspun Tee — 4.3 oz soft blank for DTG & fine prints | Blankstock",
+            "seoDescription": "A soft 4.3 oz combed ring-spun blank tee, fashion-fit, ideal for DTG and fine-line prints. Priced per unit.",
+            "options": [
+                {
+                    "name": "Color",
+                    "displayType": "swatch",
+                    "values": [
+                        {
+                            "value": "White"
+                        },
+                        {
+                            "value": "Black"
+                        },
+                        {
+                            "value": "Heather Grey"
+                        },
+                        {
+                            "value": "Navy"
+                        },
+                        {
+                            "value": "Sand"
+                        }
+                    ]
+                },
+                {
+                    "name": "Size",
+                    "displayType": "dropdown",
+                    "values": [
+                        {
+                            "value": "S"
+                        },
+                        {
+                            "value": "M"
+                        },
+                        {
+                            "value": "L"
+                        },
+                        {
+                            "value": "XL"
+                        },
+                        {
+                            "value": "2XL"
+                        }
+                    ]
+                }
+            ],
+            "variants": [
+                {
+                    "sku": "BLK-RST-WHT-S",
+                    "priceCents": 475,
+                    "isDefault": true,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "White",
+                        "Size": "S"
+                    }
+                },
+                {
+                    "sku": "BLK-RST-WHT-M",
+                    "priceCents": 475,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "White",
+                        "Size": "M"
+                    }
+                },
+                {
+                    "sku": "BLK-RST-WHT-L",
+                    "priceCents": 475,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "White",
+                        "Size": "L"
+                    }
+                },
+                {
+                    "sku": "BLK-RST-WHT-XL",
+                    "priceCents": 475,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "White",
+                        "Size": "XL"
+                    }
+                },
+                {
+                    "sku": "BLK-RST-WHT-2XL",
+                    "priceCents": 675,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "White",
+                        "Size": "2XL"
+                    }
+                },
+                {
+                    "sku": "BLK-RST-BLK-S",
+                    "priceCents": 475,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Black",
+                        "Size": "S"
+                    }
+                },
+                {
+                    "sku": "BLK-RST-BLK-M",
+                    "priceCents": 475,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Black",
+                        "Size": "M"
+                    }
+                },
+                {
+                    "sku": "BLK-RST-BLK-L",
+                    "priceCents": 475,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Black",
+                        "Size": "L"
+                    }
+                },
+                {
+                    "sku": "BLK-RST-BLK-XL",
+                    "priceCents": 475,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Black",
+                        "Size": "XL"
+                    }
+                },
+                {
+                    "sku": "BLK-RST-BLK-2XL",
+                    "priceCents": 675,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Black",
+                        "Size": "2XL"
+                    }
+                },
+                {
+                    "sku": "BLK-RST-HGR-S",
+                    "priceCents": 475,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Heather Grey",
+                        "Size": "S"
+                    }
+                },
+                {
+                    "sku": "BLK-RST-HGR-M",
+                    "priceCents": 475,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Heather Grey",
+                        "Size": "M"
+                    }
+                },
+                {
+                    "sku": "BLK-RST-HGR-L",
+                    "priceCents": 475,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Heather Grey",
+                        "Size": "L"
+                    }
+                },
+                {
+                    "sku": "BLK-RST-HGR-XL",
+                    "priceCents": 475,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Heather Grey",
+                        "Size": "XL"
+                    }
+                },
+                {
+                    "sku": "BLK-RST-HGR-2XL",
+                    "priceCents": 675,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Heather Grey",
+                        "Size": "2XL"
+                    }
+                },
+                {
+                    "sku": "BLK-RST-NVY-S",
+                    "priceCents": 475,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Navy",
+                        "Size": "S"
+                    }
+                },
+                {
+                    "sku": "BLK-RST-NVY-M",
+                    "priceCents": 475,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Navy",
+                        "Size": "M"
+                    }
+                },
+                {
+                    "sku": "BLK-RST-NVY-L",
+                    "priceCents": 475,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Navy",
+                        "Size": "L"
+                    }
+                },
+                {
+                    "sku": "BLK-RST-NVY-XL",
+                    "priceCents": 475,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Navy",
+                        "Size": "XL"
+                    }
+                },
+                {
+                    "sku": "BLK-RST-NVY-2XL",
+                    "priceCents": 675,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Navy",
+                        "Size": "2XL"
+                    }
+                },
+                {
+                    "sku": "BLK-RST-SND-S",
+                    "priceCents": 475,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Sand",
+                        "Size": "S"
+                    }
+                },
+                {
+                    "sku": "BLK-RST-SND-M",
+                    "priceCents": 475,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Sand",
+                        "Size": "M"
+                    }
+                },
+                {
+                    "sku": "BLK-RST-SND-L",
+                    "priceCents": 475,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Sand",
+                        "Size": "L"
+                    }
+                },
+                {
+                    "sku": "BLK-RST-SND-XL",
+                    "priceCents": 475,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Sand",
+                        "Size": "XL"
+                    }
+                },
+                {
+                    "sku": "BLK-RST-SND-2XL",
+                    "priceCents": 675,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Sand",
+                        "Size": "2XL"
+                    }
+                }
+            ],
+            "images": [
+                {
+                    "assetId": "prod-ringspun-tee",
+                    "isPrimary": true,
+                    "alt": "Ringspun Tee"
+                }
+            ]
+        },
+        {
+            "handle": "long-sleeve-tee",
+            "title": "Long-Sleeve Tee",
+            "description": "A 5.5 oz long-sleeve tee with rib cuffs that hold their shape through a wash — a print surface front, back and down both sleeves. Side-seamed and set-in, the same clean face as the heavyweight for full-coverage jobs.",
+            "status": "active",
+            "productType": "T-shirt",
+            "vendor": "Blankstock",
+            "tags": [
+                "tee",
+                "long-sleeve",
+                "5.5oz",
+                "ring-spun"
+            ],
+            "categoryHandles": [
+                "tees"
+            ],
+            "collectionHandles": [
+                "core-tees"
+            ],
+            "seoTitle": "Long-Sleeve Tee — 5.5 oz blank | Blankstock",
+            "seoDescription": "A 5.5 oz side-seamed long-sleeve blank with rib cuffs and a clean print face front, back and sleeves.",
+            "options": [
+                {
+                    "name": "Color",
+                    "displayType": "swatch",
+                    "values": [
+                        {
+                            "value": "White"
+                        },
+                        {
+                            "value": "Black"
+                        },
+                        {
+                            "value": "Heather Grey"
+                        },
+                        {
+                            "value": "Navy"
+                        }
+                    ]
+                },
+                {
+                    "name": "Size",
+                    "displayType": "dropdown",
+                    "values": [
+                        {
+                            "value": "S"
+                        },
+                        {
+                            "value": "M"
+                        },
+                        {
+                            "value": "L"
+                        },
+                        {
+                            "value": "XL"
+                        },
+                        {
+                            "value": "2XL"
+                        }
+                    ]
+                }
+            ],
+            "variants": [
+                {
+                    "sku": "BLK-LST-WHT-S",
+                    "priceCents": 850,
+                    "isDefault": true,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "White",
+                        "Size": "S"
+                    }
+                },
+                {
+                    "sku": "BLK-LST-WHT-M",
+                    "priceCents": 850,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "White",
+                        "Size": "M"
+                    }
+                },
+                {
+                    "sku": "BLK-LST-WHT-L",
+                    "priceCents": 850,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "White",
+                        "Size": "L"
+                    }
+                },
+                {
+                    "sku": "BLK-LST-WHT-XL",
+                    "priceCents": 850,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "White",
+                        "Size": "XL"
+                    }
+                },
+                {
+                    "sku": "BLK-LST-WHT-2XL",
+                    "priceCents": 1050,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "White",
+                        "Size": "2XL"
+                    }
+                },
+                {
+                    "sku": "BLK-LST-BLK-S",
+                    "priceCents": 850,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Black",
+                        "Size": "S"
+                    }
+                },
+                {
+                    "sku": "BLK-LST-BLK-M",
+                    "priceCents": 850,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Black",
+                        "Size": "M"
+                    }
+                },
+                {
+                    "sku": "BLK-LST-BLK-L",
+                    "priceCents": 850,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Black",
+                        "Size": "L"
+                    }
+                },
+                {
+                    "sku": "BLK-LST-BLK-XL",
+                    "priceCents": 850,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Black",
+                        "Size": "XL"
+                    }
+                },
+                {
+                    "sku": "BLK-LST-BLK-2XL",
+                    "priceCents": 1050,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Black",
+                        "Size": "2XL"
+                    }
+                },
+                {
+                    "sku": "BLK-LST-HGR-S",
+                    "priceCents": 850,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Heather Grey",
+                        "Size": "S"
+                    }
+                },
+                {
+                    "sku": "BLK-LST-HGR-M",
+                    "priceCents": 850,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Heather Grey",
+                        "Size": "M"
+                    }
+                },
+                {
+                    "sku": "BLK-LST-HGR-L",
+                    "priceCents": 850,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Heather Grey",
+                        "Size": "L"
+                    }
+                },
+                {
+                    "sku": "BLK-LST-HGR-XL",
+                    "priceCents": 850,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Heather Grey",
+                        "Size": "XL"
+                    }
+                },
+                {
+                    "sku": "BLK-LST-HGR-2XL",
+                    "priceCents": 1050,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Heather Grey",
+                        "Size": "2XL"
+                    }
+                },
+                {
+                    "sku": "BLK-LST-NVY-S",
+                    "priceCents": 850,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Navy",
+                        "Size": "S"
+                    }
+                },
+                {
+                    "sku": "BLK-LST-NVY-M",
+                    "priceCents": 850,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Navy",
+                        "Size": "M"
+                    }
+                },
+                {
+                    "sku": "BLK-LST-NVY-L",
+                    "priceCents": 850,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Navy",
+                        "Size": "L"
+                    }
+                },
+                {
+                    "sku": "BLK-LST-NVY-XL",
+                    "priceCents": 850,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Navy",
+                        "Size": "XL"
+                    }
+                },
+                {
+                    "sku": "BLK-LST-NVY-2XL",
+                    "priceCents": 1050,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Navy",
+                        "Size": "2XL"
+                    }
+                }
+            ],
+            "images": [
+                {
+                    "assetId": "prod-longsleeve-tee",
+                    "isPrimary": true,
+                    "alt": "Long-Sleeve Tee"
+                }
+            ]
+        },
+        {
+            "handle": "tank-top",
+            "title": "Tank Top",
+            "description": "A 4.2 oz ring-spun tank with a clean, deep armhole and bound neck and straps — the summer-drop and gym blank. Smooth face for a crisp front print, side-seamed so it sits flat on the platen.",
+            "status": "active",
+            "productType": "Tank top",
+            "vendor": "Blankstock",
+            "tags": [
+                "tank",
+                "4.2oz",
+                "ring-spun",
+                "summer"
+            ],
+            "categoryHandles": [
+                "tees"
+            ],
+            "collectionHandles": [
+                "new-blanks",
+                "core-tees"
+            ],
+            "seoTitle": "Tank Top — 4.2 oz ring-spun blank | Blankstock",
+            "seoDescription": "A 4.2 oz side-seamed ring-spun blank tank with bound neck and straps — the summer and gym blank.",
+            "options": [
+                {
+                    "name": "Color",
+                    "displayType": "swatch",
+                    "values": [
+                        {
+                            "value": "White"
+                        },
+                        {
+                            "value": "Black"
+                        },
+                        {
+                            "value": "Heather Grey"
+                        },
+                        {
+                            "value": "Navy"
+                        }
+                    ]
+                },
+                {
+                    "name": "Size",
+                    "displayType": "dropdown",
+                    "values": [
+                        {
+                            "value": "S"
+                        },
+                        {
+                            "value": "M"
+                        },
+                        {
+                            "value": "L"
+                        },
+                        {
+                            "value": "XL"
+                        },
+                        {
+                            "value": "2XL"
+                        }
+                    ]
+                }
+            ],
+            "variants": [
+                {
+                    "sku": "BLK-TNK-WHT-S",
+                    "priceCents": 525,
+                    "isDefault": true,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "White",
+                        "Size": "S"
+                    }
+                },
+                {
+                    "sku": "BLK-TNK-WHT-M",
+                    "priceCents": 525,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "White",
+                        "Size": "M"
+                    }
+                },
+                {
+                    "sku": "BLK-TNK-WHT-L",
+                    "priceCents": 525,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "White",
+                        "Size": "L"
+                    }
+                },
+                {
+                    "sku": "BLK-TNK-WHT-XL",
+                    "priceCents": 525,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "White",
+                        "Size": "XL"
+                    }
+                },
+                {
+                    "sku": "BLK-TNK-WHT-2XL",
+                    "priceCents": 725,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "White",
+                        "Size": "2XL"
+                    }
+                },
+                {
+                    "sku": "BLK-TNK-BLK-S",
+                    "priceCents": 525,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Black",
+                        "Size": "S"
+                    }
+                },
+                {
+                    "sku": "BLK-TNK-BLK-M",
+                    "priceCents": 525,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Black",
+                        "Size": "M"
+                    }
+                },
+                {
+                    "sku": "BLK-TNK-BLK-L",
+                    "priceCents": 525,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Black",
+                        "Size": "L"
+                    }
+                },
+                {
+                    "sku": "BLK-TNK-BLK-XL",
+                    "priceCents": 525,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Black",
+                        "Size": "XL"
+                    }
+                },
+                {
+                    "sku": "BLK-TNK-BLK-2XL",
+                    "priceCents": 725,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Black",
+                        "Size": "2XL"
+                    }
+                },
+                {
+                    "sku": "BLK-TNK-HGR-S",
+                    "priceCents": 525,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Heather Grey",
+                        "Size": "S"
+                    }
+                },
+                {
+                    "sku": "BLK-TNK-HGR-M",
+                    "priceCents": 525,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Heather Grey",
+                        "Size": "M"
+                    }
+                },
+                {
+                    "sku": "BLK-TNK-HGR-L",
+                    "priceCents": 525,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Heather Grey",
+                        "Size": "L"
+                    }
+                },
+                {
+                    "sku": "BLK-TNK-HGR-XL",
+                    "priceCents": 525,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Heather Grey",
+                        "Size": "XL"
+                    }
+                },
+                {
+                    "sku": "BLK-TNK-HGR-2XL",
+                    "priceCents": 725,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Heather Grey",
+                        "Size": "2XL"
+                    }
+                },
+                {
+                    "sku": "BLK-TNK-NVY-S",
+                    "priceCents": 525,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Navy",
+                        "Size": "S"
+                    }
+                },
+                {
+                    "sku": "BLK-TNK-NVY-M",
+                    "priceCents": 525,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Navy",
+                        "Size": "M"
+                    }
+                },
+                {
+                    "sku": "BLK-TNK-NVY-L",
+                    "priceCents": 525,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Navy",
+                        "Size": "L"
+                    }
+                },
+                {
+                    "sku": "BLK-TNK-NVY-XL",
+                    "priceCents": 525,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Navy",
+                        "Size": "XL"
+                    }
+                },
+                {
+                    "sku": "BLK-TNK-NVY-2XL",
+                    "priceCents": 725,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Navy",
+                        "Size": "2XL"
+                    }
+                }
+            ],
+            "images": [
+                {
+                    "assetId": "prod-tank",
+                    "isPrimary": true,
+                    "alt": "Tank Top"
+                }
+            ]
+        },
+        {
+            "handle": "pullover-hoodie",
+            "title": "Pullover Hoodie",
+            "description": "An 8.5 oz fleece pullover hoodie — brushed inside, dense enough for a heavy front print, with a double-lined hood, split kangaroo pocket and rib cuffs and hem. The blank that carries a whole winter drop.",
+            "status": "active",
+            "productType": "Hoodie",
+            "vendor": "Blankstock",
+            "tags": [
+                "hoodie",
+                "fleece",
+                "8.5oz",
+                "pullover"
+            ],
+            "categoryHandles": [
+                "fleece"
+            ],
+            "collectionHandles": [
+                "best-sellers",
+                "new-blanks",
+                "fleece-weights",
+                "print-ready-kit"
+            ],
+            "seoTitle": "Pullover Hoodie — 8.5 oz fleece blank | Blankstock",
+            "seoDescription": "An 8.5 oz brushed-fleece pullover hoodie blank with a double-lined hood — built for heavy front prints.",
+            "options": [
+                {
+                    "name": "Color",
+                    "displayType": "swatch",
+                    "values": [
+                        {
+                            "value": "Black"
+                        },
+                        {
+                            "value": "Heather Grey"
+                        },
+                        {
+                            "value": "Navy"
+                        },
+                        {
+                            "value": "Maroon"
+                        }
+                    ]
+                },
+                {
+                    "name": "Size",
+                    "displayType": "dropdown",
+                    "values": [
+                        {
+                            "value": "S"
+                        },
+                        {
+                            "value": "M"
+                        },
+                        {
+                            "value": "L"
+                        },
+                        {
+                            "value": "XL"
+                        },
+                        {
+                            "value": "2XL"
+                        }
+                    ]
+                }
+            ],
+            "variants": [
+                {
+                    "sku": "BLK-HOOD-BLK-S",
+                    "priceCents": 1800,
+                    "isDefault": true,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Black",
+                        "Size": "S"
+                    }
+                },
+                {
+                    "sku": "BLK-HOOD-BLK-M",
+                    "priceCents": 1800,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Black",
+                        "Size": "M"
+                    }
+                },
+                {
+                    "sku": "BLK-HOOD-BLK-L",
+                    "priceCents": 1800,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Black",
+                        "Size": "L"
+                    }
+                },
+                {
+                    "sku": "BLK-HOOD-BLK-XL",
+                    "priceCents": 1800,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Black",
+                        "Size": "XL"
+                    }
+                },
+                {
+                    "sku": "BLK-HOOD-BLK-2XL",
+                    "priceCents": 2000,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Black",
+                        "Size": "2XL"
+                    }
+                },
+                {
+                    "sku": "BLK-HOOD-HGR-S",
+                    "priceCents": 1800,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Heather Grey",
+                        "Size": "S"
+                    }
+                },
+                {
+                    "sku": "BLK-HOOD-HGR-M",
+                    "priceCents": 1800,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Heather Grey",
+                        "Size": "M"
+                    }
+                },
+                {
+                    "sku": "BLK-HOOD-HGR-L",
+                    "priceCents": 1800,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Heather Grey",
+                        "Size": "L"
+                    }
+                },
+                {
+                    "sku": "BLK-HOOD-HGR-XL",
+                    "priceCents": 1800,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Heather Grey",
+                        "Size": "XL"
+                    }
+                },
+                {
+                    "sku": "BLK-HOOD-HGR-2XL",
+                    "priceCents": 2000,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Heather Grey",
+                        "Size": "2XL"
+                    }
+                },
+                {
+                    "sku": "BLK-HOOD-NVY-S",
+                    "priceCents": 1800,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Navy",
+                        "Size": "S"
+                    }
+                },
+                {
+                    "sku": "BLK-HOOD-NVY-M",
+                    "priceCents": 1800,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Navy",
+                        "Size": "M"
+                    }
+                },
+                {
+                    "sku": "BLK-HOOD-NVY-L",
+                    "priceCents": 1800,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Navy",
+                        "Size": "L"
+                    }
+                },
+                {
+                    "sku": "BLK-HOOD-NVY-XL",
+                    "priceCents": 1800,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Navy",
+                        "Size": "XL"
+                    }
+                },
+                {
+                    "sku": "BLK-HOOD-NVY-2XL",
+                    "priceCents": 2000,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Navy",
+                        "Size": "2XL"
+                    }
+                },
+                {
+                    "sku": "BLK-HOOD-MRN-S",
+                    "priceCents": 1800,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Maroon",
+                        "Size": "S"
+                    }
+                },
+                {
+                    "sku": "BLK-HOOD-MRN-M",
+                    "priceCents": 1800,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Maroon",
+                        "Size": "M"
+                    }
+                },
+                {
+                    "sku": "BLK-HOOD-MRN-L",
+                    "priceCents": 1800,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Maroon",
+                        "Size": "L"
+                    }
+                },
+                {
+                    "sku": "BLK-HOOD-MRN-XL",
+                    "priceCents": 1800,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Maroon",
+                        "Size": "XL"
+                    }
+                },
+                {
+                    "sku": "BLK-HOOD-MRN-2XL",
+                    "priceCents": 2000,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Maroon",
+                        "Size": "2XL"
+                    }
+                }
+            ],
+            "images": [
+                {
+                    "assetId": "prod-hoodie",
+                    "isPrimary": true,
+                    "alt": "Pullover Hoodie"
+                }
+            ]
+        },
+        {
+            "handle": "crewneck-sweatshirt",
+            "title": "Crewneck Sweatshirt",
+            "description": "An 8.0 oz fleece crewneck — the clean-canvas fleece, no hood, no pocket, just a smooth brushed-back panel front and back for embroidery or a big print. Set-in sleeves, rib collar, cuffs and hem that keep their shape.",
+            "status": "active",
+            "productType": "Sweatshirt",
+            "vendor": "Blankstock",
+            "tags": [
+                "crewneck",
+                "fleece",
+                "8oz",
+                "embroidery"
+            ],
+            "categoryHandles": [
+                "fleece"
+            ],
+            "collectionHandles": [
+                "fleece-weights"
+            ],
+            "seoTitle": "Crewneck Sweatshirt — 8.0 oz fleece blank | Blankstock",
+            "seoDescription": "An 8.0 oz brushed-fleece crewneck blank — a clean front and back panel for embroidery or a big print.",
+            "options": [
+                {
+                    "name": "Color",
+                    "displayType": "swatch",
+                    "values": [
+                        {
+                            "value": "Black"
+                        },
+                        {
+                            "value": "Heather Grey"
+                        },
+                        {
+                            "value": "Navy"
+                        },
+                        {
+                            "value": "Maroon"
+                        }
+                    ]
+                },
+                {
+                    "name": "Size",
+                    "displayType": "dropdown",
+                    "values": [
+                        {
+                            "value": "S"
+                        },
+                        {
+                            "value": "M"
+                        },
+                        {
+                            "value": "L"
+                        },
+                        {
+                            "value": "XL"
+                        },
+                        {
+                            "value": "2XL"
+                        }
+                    ]
+                }
+            ],
+            "variants": [
+                {
+                    "sku": "BLK-CREW-BLK-S",
+                    "priceCents": 1500,
+                    "isDefault": true,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Black",
+                        "Size": "S"
+                    }
+                },
+                {
+                    "sku": "BLK-CREW-BLK-M",
+                    "priceCents": 1500,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Black",
+                        "Size": "M"
+                    }
+                },
+                {
+                    "sku": "BLK-CREW-BLK-L",
+                    "priceCents": 1500,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Black",
+                        "Size": "L"
+                    }
+                },
+                {
+                    "sku": "BLK-CREW-BLK-XL",
+                    "priceCents": 1500,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Black",
+                        "Size": "XL"
+                    }
+                },
+                {
+                    "sku": "BLK-CREW-BLK-2XL",
+                    "priceCents": 1700,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Black",
+                        "Size": "2XL"
+                    }
+                },
+                {
+                    "sku": "BLK-CREW-HGR-S",
+                    "priceCents": 1500,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Heather Grey",
+                        "Size": "S"
+                    }
+                },
+                {
+                    "sku": "BLK-CREW-HGR-M",
+                    "priceCents": 1500,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Heather Grey",
+                        "Size": "M"
+                    }
+                },
+                {
+                    "sku": "BLK-CREW-HGR-L",
+                    "priceCents": 1500,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Heather Grey",
+                        "Size": "L"
+                    }
+                },
+                {
+                    "sku": "BLK-CREW-HGR-XL",
+                    "priceCents": 1500,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Heather Grey",
+                        "Size": "XL"
+                    }
+                },
+                {
+                    "sku": "BLK-CREW-HGR-2XL",
+                    "priceCents": 1700,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Heather Grey",
+                        "Size": "2XL"
+                    }
+                },
+                {
+                    "sku": "BLK-CREW-NVY-S",
+                    "priceCents": 1500,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Navy",
+                        "Size": "S"
+                    }
+                },
+                {
+                    "sku": "BLK-CREW-NVY-M",
+                    "priceCents": 1500,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Navy",
+                        "Size": "M"
+                    }
+                },
+                {
+                    "sku": "BLK-CREW-NVY-L",
+                    "priceCents": 1500,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Navy",
+                        "Size": "L"
+                    }
+                },
+                {
+                    "sku": "BLK-CREW-NVY-XL",
+                    "priceCents": 1500,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Navy",
+                        "Size": "XL"
+                    }
+                },
+                {
+                    "sku": "BLK-CREW-NVY-2XL",
+                    "priceCents": 1700,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Navy",
+                        "Size": "2XL"
+                    }
+                },
+                {
+                    "sku": "BLK-CREW-MRN-S",
+                    "priceCents": 1500,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Maroon",
+                        "Size": "S"
+                    }
+                },
+                {
+                    "sku": "BLK-CREW-MRN-M",
+                    "priceCents": 1500,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Maroon",
+                        "Size": "M"
+                    }
+                },
+                {
+                    "sku": "BLK-CREW-MRN-L",
+                    "priceCents": 1500,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Maroon",
+                        "Size": "L"
+                    }
+                },
+                {
+                    "sku": "BLK-CREW-MRN-XL",
+                    "priceCents": 1500,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Maroon",
+                        "Size": "XL"
+                    }
+                },
+                {
+                    "sku": "BLK-CREW-MRN-2XL",
+                    "priceCents": 1700,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Maroon",
+                        "Size": "2XL"
+                    }
+                }
+            ],
+            "images": [
+                {
+                    "assetId": "prod-crewneck",
+                    "isPrimary": true,
+                    "alt": "Crewneck Sweatshirt"
+                }
+            ]
+        },
+        {
+            "handle": "structured-cap",
+            "title": "Structured Cap",
+            "description": "A structured six-panel cap with a mid-profile crown that stands up for a clean embroidery face, a pre-curved visor and an adjustable snap back that fits one size to most. The headwear blank that finishes a merch line.",
+            "status": "active",
+            "productType": "Headwear",
+            "vendor": "Blankstock",
+            "tags": [
+                "cap",
+                "headwear",
+                "structured",
+                "embroidery",
+                "snapback"
+            ],
+            "categoryHandles": [
+                "headwear"
+            ],
+            "collectionHandles": [
+                "new-blanks",
+                "best-sellers",
+                "headwear-bags"
+            ],
+            "seoTitle": "Structured Cap — six-panel blank for embroidery | Blankstock",
+            "seoDescription": "A structured mid-profile six-panel blank cap with a snap back — a clean, firm face for embroidery.",
+            "options": [
+                {
+                    "name": "Color",
+                    "displayType": "swatch",
+                    "values": [
+                        {
+                            "value": "Black"
+                        },
+                        {
+                            "value": "Navy"
+                        },
+                        {
+                            "value": "Khaki"
+                        },
+                        {
+                            "value": "White"
+                        }
+                    ]
+                }
+            ],
+            "variants": [
+                {
+                    "sku": "BLK-CAP-BLK",
+                    "priceCents": 750,
+                    "isDefault": true,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Black"
+                    }
+                },
+                {
+                    "sku": "BLK-CAP-NVY",
+                    "priceCents": 750,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Navy"
+                    }
+                },
+                {
+                    "sku": "BLK-CAP-KHK",
+                    "priceCents": 750,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Khaki"
+                    }
+                },
+                {
+                    "sku": "BLK-CAP-WHT",
+                    "priceCents": 750,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "White"
+                    }
+                }
+            ],
+            "images": [
+                {
+                    "assetId": "prod-cap",
+                    "isPrimary": true,
+                    "alt": "Structured Cap"
+                }
+            ]
+        },
+        {
+            "handle": "cotton-tote",
+            "title": "Cotton Tote",
+            "description": "A 6 oz cotton canvas tote with reinforced handles and a flat, boxy front — a large, forgiving print area for a one-color logo or a full-bleed job. The add-on blank that lifts an order value and moves at events.",
+            "status": "active",
+            "productType": "Bag",
+            "vendor": "Blankstock",
+            "tags": [
+                "tote",
+                "bag",
+                "canvas",
+                "6oz"
+            ],
+            "categoryHandles": [
+                "bags"
+            ],
+            "collectionHandles": [
+                "new-blanks",
+                "headwear-bags",
+                "print-ready-kit"
+            ],
+            "seoTitle": "Cotton Tote — 6 oz canvas blank | Blankstock",
+            "seoDescription": "A 6 oz cotton canvas blank tote with reinforced handles and a large flat print area. Priced per unit.",
+            "options": [
+                {
+                    "name": "Color",
+                    "displayType": "swatch",
+                    "values": [
+                        {
+                            "value": "Natural"
+                        },
+                        {
+                            "value": "Black"
+                        }
+                    ]
+                }
+            ],
+            "variants": [
+                {
+                    "sku": "BLK-TOTE-NAT",
+                    "priceCents": 400,
+                    "isDefault": true,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Natural"
+                    }
+                },
+                {
+                    "sku": "BLK-TOTE-BLK",
+                    "priceCents": 400,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Black"
+                    }
+                }
+            ],
+            "images": [
+                {
+                    "assetId": "prod-tote",
+                    "isPrimary": true,
+                    "alt": "Cotton Tote"
+                }
+            ]
         }
-      ]
-    },
-    {
-      "handle": "ringspun-tee",
-      "title": "Ringspun Tee",
-      "description": "A 4.3 oz combed ring-spun tee — soft, light and fashion-fit, the everyday blank for fine-line prints and DTG. Thinner than the heavyweight without going sheer, with a smooth face that holds detail. The volume workhorse of the shelf.",
-      "status": "active",
-      "productType": "T-shirt",
-      "vendor": "Blankstock",
-      "tags": ["tee", "ringspun", "4.3oz", "dtg", "fashion-fit"],
-      "categoryHandles": ["tees"],
-      "collectionHandles": ["new-blanks", "core-tees"],
-      "seoTitle": "Ringspun Tee — 4.3 oz soft blank for DTG & fine prints | Blankstock",
-      "seoDescription": "A soft 4.3 oz combed ring-spun blank tee, fashion-fit, ideal for DTG and fine-line prints. Priced per unit.",
-      "options": [
-        {
-          "name": "Color",
-          "displayType": "swatch",
-          "values": [
-            {
-              "value": "White"
-            },
-            {
-              "value": "Black"
-            },
-            {
-              "value": "Heather Grey"
-            },
-            {
-              "value": "Navy"
-            },
-            {
-              "value": "Sand"
-            }
-          ]
-        },
-        {
-          "name": "Size",
-          "displayType": "dropdown",
-          "values": [
-            {
-              "value": "S"
-            },
-            {
-              "value": "M"
-            },
-            {
-              "value": "L"
-            },
-            {
-              "value": "XL"
-            },
-            {
-              "value": "2XL"
-            }
-          ]
-        }
-      ],
-      "variants": [
-        {
-          "sku": "BLK-RST-WHT-S",
-          "priceCents": 475,
-          "isDefault": true,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "White",
-            "Size": "S"
-          }
-        },
-        {
-          "sku": "BLK-RST-WHT-M",
-          "priceCents": 475,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "White",
-            "Size": "M"
-          }
-        },
-        {
-          "sku": "BLK-RST-WHT-L",
-          "priceCents": 475,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "White",
-            "Size": "L"
-          }
-        },
-        {
-          "sku": "BLK-RST-WHT-XL",
-          "priceCents": 475,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "White",
-            "Size": "XL"
-          }
-        },
-        {
-          "sku": "BLK-RST-WHT-2XL",
-          "priceCents": 675,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "White",
-            "Size": "2XL"
-          }
-        },
-        {
-          "sku": "BLK-RST-BLK-S",
-          "priceCents": 475,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "Black",
-            "Size": "S"
-          }
-        },
-        {
-          "sku": "BLK-RST-BLK-M",
-          "priceCents": 475,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "Black",
-            "Size": "M"
-          }
-        },
-        {
-          "sku": "BLK-RST-BLK-L",
-          "priceCents": 475,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "Black",
-            "Size": "L"
-          }
-        },
-        {
-          "sku": "BLK-RST-BLK-XL",
-          "priceCents": 475,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "Black",
-            "Size": "XL"
-          }
-        },
-        {
-          "sku": "BLK-RST-BLK-2XL",
-          "priceCents": 675,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "Black",
-            "Size": "2XL"
-          }
-        },
-        {
-          "sku": "BLK-RST-HGR-S",
-          "priceCents": 475,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "Heather Grey",
-            "Size": "S"
-          }
-        },
-        {
-          "sku": "BLK-RST-HGR-M",
-          "priceCents": 475,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "Heather Grey",
-            "Size": "M"
-          }
-        },
-        {
-          "sku": "BLK-RST-HGR-L",
-          "priceCents": 475,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "Heather Grey",
-            "Size": "L"
-          }
-        },
-        {
-          "sku": "BLK-RST-HGR-XL",
-          "priceCents": 475,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "Heather Grey",
-            "Size": "XL"
-          }
-        },
-        {
-          "sku": "BLK-RST-HGR-2XL",
-          "priceCents": 675,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "Heather Grey",
-            "Size": "2XL"
-          }
-        },
-        {
-          "sku": "BLK-RST-NVY-S",
-          "priceCents": 475,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "Navy",
-            "Size": "S"
-          }
-        },
-        {
-          "sku": "BLK-RST-NVY-M",
-          "priceCents": 475,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "Navy",
-            "Size": "M"
-          }
-        },
-        {
-          "sku": "BLK-RST-NVY-L",
-          "priceCents": 475,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "Navy",
-            "Size": "L"
-          }
-        },
-        {
-          "sku": "BLK-RST-NVY-XL",
-          "priceCents": 475,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "Navy",
-            "Size": "XL"
-          }
-        },
-        {
-          "sku": "BLK-RST-NVY-2XL",
-          "priceCents": 675,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "Navy",
-            "Size": "2XL"
-          }
-        },
-        {
-          "sku": "BLK-RST-SND-S",
-          "priceCents": 475,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "Sand",
-            "Size": "S"
-          }
-        },
-        {
-          "sku": "BLK-RST-SND-M",
-          "priceCents": 475,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "Sand",
-            "Size": "M"
-          }
-        },
-        {
-          "sku": "BLK-RST-SND-L",
-          "priceCents": 475,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "Sand",
-            "Size": "L"
-          }
-        },
-        {
-          "sku": "BLK-RST-SND-XL",
-          "priceCents": 475,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "Sand",
-            "Size": "XL"
-          }
-        },
-        {
-          "sku": "BLK-RST-SND-2XL",
-          "priceCents": 675,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "Sand",
-            "Size": "2XL"
-          }
-        }
-      ],
-      "images": [
-        {
-          "assetId": "prod-ringspun-tee",
-          "isPrimary": true,
-          "alt": "Ringspun Tee"
-        }
-      ]
-    },
-    {
-      "handle": "long-sleeve-tee",
-      "title": "Long-Sleeve Tee",
-      "description": "A 5.5 oz long-sleeve tee with rib cuffs that hold their shape through a wash — a print surface front, back and down both sleeves. Side-seamed and set-in, the same clean face as the heavyweight for full-coverage jobs.",
-      "status": "active",
-      "productType": "T-shirt",
-      "vendor": "Blankstock",
-      "tags": ["tee", "long-sleeve", "5.5oz", "ring-spun"],
-      "categoryHandles": ["tees"],
-      "collectionHandles": ["core-tees"],
-      "seoTitle": "Long-Sleeve Tee — 5.5 oz blank | Blankstock",
-      "seoDescription": "A 5.5 oz side-seamed long-sleeve blank with rib cuffs and a clean print face front, back and sleeves.",
-      "options": [
-        {
-          "name": "Color",
-          "displayType": "swatch",
-          "values": [
-            {
-              "value": "White"
-            },
-            {
-              "value": "Black"
-            },
-            {
-              "value": "Heather Grey"
-            },
-            {
-              "value": "Navy"
-            }
-          ]
-        },
-        {
-          "name": "Size",
-          "displayType": "dropdown",
-          "values": [
-            {
-              "value": "S"
-            },
-            {
-              "value": "M"
-            },
-            {
-              "value": "L"
-            },
-            {
-              "value": "XL"
-            },
-            {
-              "value": "2XL"
-            }
-          ]
-        }
-      ],
-      "variants": [
-        {
-          "sku": "BLK-LST-WHT-S",
-          "priceCents": 850,
-          "isDefault": true,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "White",
-            "Size": "S"
-          }
-        },
-        {
-          "sku": "BLK-LST-WHT-M",
-          "priceCents": 850,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "White",
-            "Size": "M"
-          }
-        },
-        {
-          "sku": "BLK-LST-WHT-L",
-          "priceCents": 850,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "White",
-            "Size": "L"
-          }
-        },
-        {
-          "sku": "BLK-LST-WHT-XL",
-          "priceCents": 850,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "White",
-            "Size": "XL"
-          }
-        },
-        {
-          "sku": "BLK-LST-WHT-2XL",
-          "priceCents": 1050,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "White",
-            "Size": "2XL"
-          }
-        },
-        {
-          "sku": "BLK-LST-BLK-S",
-          "priceCents": 850,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "Black",
-            "Size": "S"
-          }
-        },
-        {
-          "sku": "BLK-LST-BLK-M",
-          "priceCents": 850,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "Black",
-            "Size": "M"
-          }
-        },
-        {
-          "sku": "BLK-LST-BLK-L",
-          "priceCents": 850,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "Black",
-            "Size": "L"
-          }
-        },
-        {
-          "sku": "BLK-LST-BLK-XL",
-          "priceCents": 850,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "Black",
-            "Size": "XL"
-          }
-        },
-        {
-          "sku": "BLK-LST-BLK-2XL",
-          "priceCents": 1050,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "Black",
-            "Size": "2XL"
-          }
-        },
-        {
-          "sku": "BLK-LST-HGR-S",
-          "priceCents": 850,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "Heather Grey",
-            "Size": "S"
-          }
-        },
-        {
-          "sku": "BLK-LST-HGR-M",
-          "priceCents": 850,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "Heather Grey",
-            "Size": "M"
-          }
-        },
-        {
-          "sku": "BLK-LST-HGR-L",
-          "priceCents": 850,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "Heather Grey",
-            "Size": "L"
-          }
-        },
-        {
-          "sku": "BLK-LST-HGR-XL",
-          "priceCents": 850,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "Heather Grey",
-            "Size": "XL"
-          }
-        },
-        {
-          "sku": "BLK-LST-HGR-2XL",
-          "priceCents": 1050,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "Heather Grey",
-            "Size": "2XL"
-          }
-        },
-        {
-          "sku": "BLK-LST-NVY-S",
-          "priceCents": 850,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "Navy",
-            "Size": "S"
-          }
-        },
-        {
-          "sku": "BLK-LST-NVY-M",
-          "priceCents": 850,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "Navy",
-            "Size": "M"
-          }
-        },
-        {
-          "sku": "BLK-LST-NVY-L",
-          "priceCents": 850,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "Navy",
-            "Size": "L"
-          }
-        },
-        {
-          "sku": "BLK-LST-NVY-XL",
-          "priceCents": 850,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "Navy",
-            "Size": "XL"
-          }
-        },
-        {
-          "sku": "BLK-LST-NVY-2XL",
-          "priceCents": 1050,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "Navy",
-            "Size": "2XL"
-          }
-        }
-      ],
-      "images": [
-        {
-          "assetId": "prod-longsleeve-tee",
-          "isPrimary": true,
-          "alt": "Long-Sleeve Tee"
-        }
-      ]
-    },
-    {
-      "handle": "tank-top",
-      "title": "Tank Top",
-      "description": "A 4.2 oz ring-spun tank with a clean, deep armhole and bound neck and straps — the summer-drop and gym blank. Smooth face for a crisp front print, side-seamed so it sits flat on the platen.",
-      "status": "active",
-      "productType": "Tank top",
-      "vendor": "Blankstock",
-      "tags": ["tank", "4.2oz", "ring-spun", "summer"],
-      "categoryHandles": ["tees"],
-      "collectionHandles": ["new-blanks", "core-tees"],
-      "seoTitle": "Tank Top — 4.2 oz ring-spun blank | Blankstock",
-      "seoDescription": "A 4.2 oz side-seamed ring-spun blank tank with bound neck and straps — the summer and gym blank.",
-      "options": [
-        {
-          "name": "Color",
-          "displayType": "swatch",
-          "values": [
-            {
-              "value": "White"
-            },
-            {
-              "value": "Black"
-            },
-            {
-              "value": "Heather Grey"
-            },
-            {
-              "value": "Navy"
-            }
-          ]
-        },
-        {
-          "name": "Size",
-          "displayType": "dropdown",
-          "values": [
-            {
-              "value": "S"
-            },
-            {
-              "value": "M"
-            },
-            {
-              "value": "L"
-            },
-            {
-              "value": "XL"
-            },
-            {
-              "value": "2XL"
-            }
-          ]
-        }
-      ],
-      "variants": [
-        {
-          "sku": "BLK-TNK-WHT-S",
-          "priceCents": 525,
-          "isDefault": true,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "White",
-            "Size": "S"
-          }
-        },
-        {
-          "sku": "BLK-TNK-WHT-M",
-          "priceCents": 525,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "White",
-            "Size": "M"
-          }
-        },
-        {
-          "sku": "BLK-TNK-WHT-L",
-          "priceCents": 525,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "White",
-            "Size": "L"
-          }
-        },
-        {
-          "sku": "BLK-TNK-WHT-XL",
-          "priceCents": 525,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "White",
-            "Size": "XL"
-          }
-        },
-        {
-          "sku": "BLK-TNK-WHT-2XL",
-          "priceCents": 725,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "White",
-            "Size": "2XL"
-          }
-        },
-        {
-          "sku": "BLK-TNK-BLK-S",
-          "priceCents": 525,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "Black",
-            "Size": "S"
-          }
-        },
-        {
-          "sku": "BLK-TNK-BLK-M",
-          "priceCents": 525,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "Black",
-            "Size": "M"
-          }
-        },
-        {
-          "sku": "BLK-TNK-BLK-L",
-          "priceCents": 525,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "Black",
-            "Size": "L"
-          }
-        },
-        {
-          "sku": "BLK-TNK-BLK-XL",
-          "priceCents": 525,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "Black",
-            "Size": "XL"
-          }
-        },
-        {
-          "sku": "BLK-TNK-BLK-2XL",
-          "priceCents": 725,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "Black",
-            "Size": "2XL"
-          }
-        },
-        {
-          "sku": "BLK-TNK-HGR-S",
-          "priceCents": 525,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "Heather Grey",
-            "Size": "S"
-          }
-        },
-        {
-          "sku": "BLK-TNK-HGR-M",
-          "priceCents": 525,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "Heather Grey",
-            "Size": "M"
-          }
-        },
-        {
-          "sku": "BLK-TNK-HGR-L",
-          "priceCents": 525,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "Heather Grey",
-            "Size": "L"
-          }
-        },
-        {
-          "sku": "BLK-TNK-HGR-XL",
-          "priceCents": 525,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "Heather Grey",
-            "Size": "XL"
-          }
-        },
-        {
-          "sku": "BLK-TNK-HGR-2XL",
-          "priceCents": 725,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "Heather Grey",
-            "Size": "2XL"
-          }
-        },
-        {
-          "sku": "BLK-TNK-NVY-S",
-          "priceCents": 525,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "Navy",
-            "Size": "S"
-          }
-        },
-        {
-          "sku": "BLK-TNK-NVY-M",
-          "priceCents": 525,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "Navy",
-            "Size": "M"
-          }
-        },
-        {
-          "sku": "BLK-TNK-NVY-L",
-          "priceCents": 525,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "Navy",
-            "Size": "L"
-          }
-        },
-        {
-          "sku": "BLK-TNK-NVY-XL",
-          "priceCents": 525,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "Navy",
-            "Size": "XL"
-          }
-        },
-        {
-          "sku": "BLK-TNK-NVY-2XL",
-          "priceCents": 725,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "Navy",
-            "Size": "2XL"
-          }
-        }
-      ],
-      "images": [
-        {
-          "assetId": "prod-tank",
-          "isPrimary": true,
-          "alt": "Tank Top"
-        }
-      ]
-    },
-    {
-      "handle": "pullover-hoodie",
-      "title": "Pullover Hoodie",
-      "description": "An 8.5 oz fleece pullover hoodie — brushed inside, dense enough for a heavy front print, with a double-lined hood, split kangaroo pocket and rib cuffs and hem. The blank that carries a whole winter drop.",
-      "status": "active",
-      "productType": "Hoodie",
-      "vendor": "Blankstock",
-      "tags": ["hoodie", "fleece", "8.5oz", "pullover"],
-      "categoryHandles": ["fleece"],
-      "collectionHandles": ["best-sellers", "new-blanks", "fleece-weights", "print-ready-kit"],
-      "seoTitle": "Pullover Hoodie — 8.5 oz fleece blank | Blankstock",
-      "seoDescription": "An 8.5 oz brushed-fleece pullover hoodie blank with a double-lined hood — built for heavy front prints.",
-      "options": [
-        {
-          "name": "Color",
-          "displayType": "swatch",
-          "values": [
-            {
-              "value": "Black"
-            },
-            {
-              "value": "Heather Grey"
-            },
-            {
-              "value": "Navy"
-            },
-            {
-              "value": "Maroon"
-            }
-          ]
-        },
-        {
-          "name": "Size",
-          "displayType": "dropdown",
-          "values": [
-            {
-              "value": "S"
-            },
-            {
-              "value": "M"
-            },
-            {
-              "value": "L"
-            },
-            {
-              "value": "XL"
-            },
-            {
-              "value": "2XL"
-            }
-          ]
-        }
-      ],
-      "variants": [
-        {
-          "sku": "BLK-HOOD-BLK-S",
-          "priceCents": 1800,
-          "isDefault": true,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "Black",
-            "Size": "S"
-          }
-        },
-        {
-          "sku": "BLK-HOOD-BLK-M",
-          "priceCents": 1800,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "Black",
-            "Size": "M"
-          }
-        },
-        {
-          "sku": "BLK-HOOD-BLK-L",
-          "priceCents": 1800,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "Black",
-            "Size": "L"
-          }
-        },
-        {
-          "sku": "BLK-HOOD-BLK-XL",
-          "priceCents": 1800,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "Black",
-            "Size": "XL"
-          }
-        },
-        {
-          "sku": "BLK-HOOD-BLK-2XL",
-          "priceCents": 2000,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "Black",
-            "Size": "2XL"
-          }
-        },
-        {
-          "sku": "BLK-HOOD-HGR-S",
-          "priceCents": 1800,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "Heather Grey",
-            "Size": "S"
-          }
-        },
-        {
-          "sku": "BLK-HOOD-HGR-M",
-          "priceCents": 1800,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "Heather Grey",
-            "Size": "M"
-          }
-        },
-        {
-          "sku": "BLK-HOOD-HGR-L",
-          "priceCents": 1800,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "Heather Grey",
-            "Size": "L"
-          }
-        },
-        {
-          "sku": "BLK-HOOD-HGR-XL",
-          "priceCents": 1800,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "Heather Grey",
-            "Size": "XL"
-          }
-        },
-        {
-          "sku": "BLK-HOOD-HGR-2XL",
-          "priceCents": 2000,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "Heather Grey",
-            "Size": "2XL"
-          }
-        },
-        {
-          "sku": "BLK-HOOD-NVY-S",
-          "priceCents": 1800,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "Navy",
-            "Size": "S"
-          }
-        },
-        {
-          "sku": "BLK-HOOD-NVY-M",
-          "priceCents": 1800,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "Navy",
-            "Size": "M"
-          }
-        },
-        {
-          "sku": "BLK-HOOD-NVY-L",
-          "priceCents": 1800,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "Navy",
-            "Size": "L"
-          }
-        },
-        {
-          "sku": "BLK-HOOD-NVY-XL",
-          "priceCents": 1800,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "Navy",
-            "Size": "XL"
-          }
-        },
-        {
-          "sku": "BLK-HOOD-NVY-2XL",
-          "priceCents": 2000,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "Navy",
-            "Size": "2XL"
-          }
-        },
-        {
-          "sku": "BLK-HOOD-MRN-S",
-          "priceCents": 1800,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "Maroon",
-            "Size": "S"
-          }
-        },
-        {
-          "sku": "BLK-HOOD-MRN-M",
-          "priceCents": 1800,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "Maroon",
-            "Size": "M"
-          }
-        },
-        {
-          "sku": "BLK-HOOD-MRN-L",
-          "priceCents": 1800,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "Maroon",
-            "Size": "L"
-          }
-        },
-        {
-          "sku": "BLK-HOOD-MRN-XL",
-          "priceCents": 1800,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "Maroon",
-            "Size": "XL"
-          }
-        },
-        {
-          "sku": "BLK-HOOD-MRN-2XL",
-          "priceCents": 2000,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "Maroon",
-            "Size": "2XL"
-          }
-        }
-      ],
-      "images": [
-        {
-          "assetId": "prod-hoodie",
-          "isPrimary": true,
-          "alt": "Pullover Hoodie"
-        }
-      ]
-    },
-    {
-      "handle": "crewneck-sweatshirt",
-      "title": "Crewneck Sweatshirt",
-      "description": "An 8.0 oz fleece crewneck — the clean-canvas fleece, no hood, no pocket, just a smooth brushed-back panel front and back for embroidery or a big print. Set-in sleeves, rib collar, cuffs and hem that keep their shape.",
-      "status": "active",
-      "productType": "Sweatshirt",
-      "vendor": "Blankstock",
-      "tags": ["crewneck", "fleece", "8oz", "embroidery"],
-      "categoryHandles": ["fleece"],
-      "collectionHandles": ["fleece-weights"],
-      "seoTitle": "Crewneck Sweatshirt — 8.0 oz fleece blank | Blankstock",
-      "seoDescription": "An 8.0 oz brushed-fleece crewneck blank — a clean front and back panel for embroidery or a big print.",
-      "options": [
-        {
-          "name": "Color",
-          "displayType": "swatch",
-          "values": [
-            {
-              "value": "Black"
-            },
-            {
-              "value": "Heather Grey"
-            },
-            {
-              "value": "Navy"
-            },
-            {
-              "value": "Maroon"
-            }
-          ]
-        },
-        {
-          "name": "Size",
-          "displayType": "dropdown",
-          "values": [
-            {
-              "value": "S"
-            },
-            {
-              "value": "M"
-            },
-            {
-              "value": "L"
-            },
-            {
-              "value": "XL"
-            },
-            {
-              "value": "2XL"
-            }
-          ]
-        }
-      ],
-      "variants": [
-        {
-          "sku": "BLK-CREW-BLK-S",
-          "priceCents": 1500,
-          "isDefault": true,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "Black",
-            "Size": "S"
-          }
-        },
-        {
-          "sku": "BLK-CREW-BLK-M",
-          "priceCents": 1500,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "Black",
-            "Size": "M"
-          }
-        },
-        {
-          "sku": "BLK-CREW-BLK-L",
-          "priceCents": 1500,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "Black",
-            "Size": "L"
-          }
-        },
-        {
-          "sku": "BLK-CREW-BLK-XL",
-          "priceCents": 1500,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "Black",
-            "Size": "XL"
-          }
-        },
-        {
-          "sku": "BLK-CREW-BLK-2XL",
-          "priceCents": 1700,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "Black",
-            "Size": "2XL"
-          }
-        },
-        {
-          "sku": "BLK-CREW-HGR-S",
-          "priceCents": 1500,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "Heather Grey",
-            "Size": "S"
-          }
-        },
-        {
-          "sku": "BLK-CREW-HGR-M",
-          "priceCents": 1500,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "Heather Grey",
-            "Size": "M"
-          }
-        },
-        {
-          "sku": "BLK-CREW-HGR-L",
-          "priceCents": 1500,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "Heather Grey",
-            "Size": "L"
-          }
-        },
-        {
-          "sku": "BLK-CREW-HGR-XL",
-          "priceCents": 1500,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "Heather Grey",
-            "Size": "XL"
-          }
-        },
-        {
-          "sku": "BLK-CREW-HGR-2XL",
-          "priceCents": 1700,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "Heather Grey",
-            "Size": "2XL"
-          }
-        },
-        {
-          "sku": "BLK-CREW-NVY-S",
-          "priceCents": 1500,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "Navy",
-            "Size": "S"
-          }
-        },
-        {
-          "sku": "BLK-CREW-NVY-M",
-          "priceCents": 1500,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "Navy",
-            "Size": "M"
-          }
-        },
-        {
-          "sku": "BLK-CREW-NVY-L",
-          "priceCents": 1500,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "Navy",
-            "Size": "L"
-          }
-        },
-        {
-          "sku": "BLK-CREW-NVY-XL",
-          "priceCents": 1500,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "Navy",
-            "Size": "XL"
-          }
-        },
-        {
-          "sku": "BLK-CREW-NVY-2XL",
-          "priceCents": 1700,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "Navy",
-            "Size": "2XL"
-          }
-        },
-        {
-          "sku": "BLK-CREW-MRN-S",
-          "priceCents": 1500,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "Maroon",
-            "Size": "S"
-          }
-        },
-        {
-          "sku": "BLK-CREW-MRN-M",
-          "priceCents": 1500,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "Maroon",
-            "Size": "M"
-          }
-        },
-        {
-          "sku": "BLK-CREW-MRN-L",
-          "priceCents": 1500,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "Maroon",
-            "Size": "L"
-          }
-        },
-        {
-          "sku": "BLK-CREW-MRN-XL",
-          "priceCents": 1500,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "Maroon",
-            "Size": "XL"
-          }
-        },
-        {
-          "sku": "BLK-CREW-MRN-2XL",
-          "priceCents": 1700,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "Maroon",
-            "Size": "2XL"
-          }
-        }
-      ],
-      "images": [
-        {
-          "assetId": "prod-crewneck",
-          "isPrimary": true,
-          "alt": "Crewneck Sweatshirt"
-        }
-      ]
-    },
-    {
-      "handle": "structured-cap",
-      "title": "Structured Cap",
-      "description": "A structured six-panel cap with a mid-profile crown that stands up for a clean embroidery face, a pre-curved visor and an adjustable snap back that fits one size to most. The headwear blank that finishes a merch line.",
-      "status": "active",
-      "productType": "Headwear",
-      "vendor": "Blankstock",
-      "tags": ["cap", "headwear", "structured", "embroidery", "snapback"],
-      "categoryHandles": ["headwear"],
-      "collectionHandles": ["new-blanks", "best-sellers", "headwear-bags"],
-      "seoTitle": "Structured Cap — six-panel blank for embroidery | Blankstock",
-      "seoDescription": "A structured mid-profile six-panel blank cap with a snap back — a clean, firm face for embroidery.",
-      "options": [
-        {
-          "name": "Color",
-          "displayType": "swatch",
-          "values": [
-            {
-              "value": "Black"
-            },
-            {
-              "value": "Navy"
-            },
-            {
-              "value": "Khaki"
-            },
-            {
-              "value": "White"
-            }
-          ]
-        }
-      ],
-      "variants": [
-        {
-          "sku": "BLK-CAP-BLK",
-          "priceCents": 750,
-          "isDefault": true,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "Black"
-          }
-        },
-        {
-          "sku": "BLK-CAP-NVY",
-          "priceCents": 750,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "Navy"
-          }
-        },
-        {
-          "sku": "BLK-CAP-KHK",
-          "priceCents": 750,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "Khaki"
-          }
-        },
-        {
-          "sku": "BLK-CAP-WHT",
-          "priceCents": 750,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "White"
-          }
-        }
-      ],
-      "images": [
-        {
-          "assetId": "prod-cap",
-          "isPrimary": true,
-          "alt": "Structured Cap"
-        }
-      ]
-    },
-    {
-      "handle": "cotton-tote",
-      "title": "Cotton Tote",
-      "description": "A 6 oz cotton canvas tote with reinforced handles and a flat, boxy front — a large, forgiving print area for a one-colour logo or a full-bleed job. The add-on blank that lifts an order value and moves at events.",
-      "status": "active",
-      "productType": "Bag",
-      "vendor": "Blankstock",
-      "tags": ["tote", "bag", "canvas", "6oz"],
-      "categoryHandles": ["bags"],
-      "collectionHandles": ["new-blanks", "headwear-bags", "print-ready-kit"],
-      "seoTitle": "Cotton Tote — 6 oz canvas blank | Blankstock",
-      "seoDescription": "A 6 oz cotton canvas blank tote with reinforced handles and a large flat print area. Priced per unit.",
-      "options": [
-        {
-          "name": "Color",
-          "displayType": "swatch",
-          "values": [
-            {
-              "value": "Natural"
-            },
-            {
-              "value": "Black"
-            }
-          ]
-        }
-      ],
-      "variants": [
-        {
-          "sku": "BLK-TOTE-NAT",
-          "priceCents": 400,
-          "isDefault": true,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "Natural"
-          }
-        },
-        {
-          "sku": "BLK-TOTE-BLK",
-          "priceCents": 400,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Color": "Black"
-          }
-        }
-      ],
-      "images": [
-        {
-          "assetId": "prod-tote",
-          "isPrimary": true,
-          "alt": "Cotton Tote"
-        }
-      ]
-    }
-  ]
+    ]
 }

@@ -10,7 +10,7 @@ import { getModuleColor } from './primitives';
  * is imported from `finance-money` rather than re-picked, and that import is the
  * point rather than a shortcut: this page's whole argument is that hours become
  * the wages line in Finance, so the two pages must render that line in the same
- * colour or the claim is contradicted by the pixels making it. A visitor who
+ * color or the claim is contradicted by the pixels making it. A visitor who
  * signs up then meets the same blue on the real timesheet.
  *
  * THE OTHER RULE THIS FILE ENFORCES: an hour nobody can price is NOT zero.
@@ -28,50 +28,50 @@ export const M = getModuleColor('staff');
  * your labour numbers are sloppy would be an unfortunate demonstration.
  */
 export function HourRow({
-  who,
-  detail,
-  hours,
-  cost,
-  emphasis,
-  tone,
+    who,
+    detail,
+    hours,
+    cost,
+    emphasis,
+    tone,
 }: {
-  who: ReactNode;
-  /** The rate, or what the time was spent on. */
-  detail?: string;
-  hours?: string;
-  cost: ReactNode;
-  /** The totalled line — bigger, and it owns the row. */
-  emphasis?: boolean;
-  tone?: string;
+    who: ReactNode;
+    /** The rate, or what the time was spent on. */
+    detail?: string;
+    hours?: string;
+    cost: ReactNode;
+    /** The totalled line — bigger, and it owns the row. */
+    emphasis?: boolean;
+    tone?: string;
 }) {
-  return (
-    <div className="flex items-baseline justify-between gap-6 py-2.5">
-      <span className="flex min-w-0 flex-col">
-        <Text as="span" className={emphasis ? 'font-medium' : undefined}>
-          {who}
-        </Text>
-        {detail ? <Text className="text-sm">{detail}</Text> : null}
-      </span>
-      <span className="flex shrink-0 items-baseline gap-5">
-        {hours ? (
-          <Text as="span" className="font-mono tabular-nums">
-            {hours}
-          </Text>
-        ) : null}
-        <span
-          className={[
-            'min-w-[8ch] text-right font-medium tabular-nums',
-            emphasis ? 'text-2xl' : 'text-md',
-            tone ?? '',
-          ]
-            .filter(Boolean)
-            .join(' ')}
-        >
-          {cost}
-        </span>
-      </span>
-    </div>
-  );
+    return (
+        <div className="flex items-baseline justify-between gap-6 py-2.5">
+            <span className="flex min-w-0 flex-col">
+                <Text as="span" className={emphasis ? 'font-medium' : undefined}>
+                    {who}
+                </Text>
+                {detail ? <Text className="text-sm">{detail}</Text> : null}
+            </span>
+            <span className="flex shrink-0 items-baseline gap-5">
+                {hours ? (
+                    <Text as="span" className="font-mono tabular-nums">
+                        {hours}
+                    </Text>
+                ) : null}
+                <span
+                    className={[
+                        'min-w-[8ch] text-right font-medium tabular-nums',
+                        emphasis ? 'text-2xl' : 'text-md',
+                        tone ?? '',
+                    ]
+                        .filter(Boolean)
+                        .join(' ')}
+                >
+                    {cost}
+                </span>
+            </span>
+        </div>
+    );
 }
 
 /**
@@ -83,25 +83,25 @@ export function HourRow({
  * because it is indistinguishable from labour that genuinely cost nothing.
  */
 export function Unpriced({ children }: { children: ReactNode }) {
-  return (
-    <Badge color="error" size="sm" className="shrink-0 tabular-nums">
-      {children}
-    </Badge>
-  );
+    return (
+        <Badge color="error" size="sm" className="shrink-0 tabular-nums">
+            {children}
+        </Badge>
+    );
 }
 
 /** A state badge on a row — approved, waiting, on the clock. State is its own
- *  colour axis and never the module's identity hue. */
+ *  color axis and never the module's identity hue. */
 export function HourState({
-  tone,
-  children,
+    tone,
+    children,
 }: {
-  tone: 'success' | 'warning' | 'info';
-  children: ReactNode;
+    tone: 'success' | 'warning' | 'info';
+    children: ReactNode;
 }) {
-  return (
-    <Badge color={tone} variant={tone === 'info' ? 'solid' : 'soft'} size="sm">
-      {children}
-    </Badge>
-  );
+    return (
+        <Badge color={tone} variant={tone === 'info' ? 'solid' : 'soft'} size="sm">
+            {children}
+        </Badge>
+    );
 }

@@ -10,71 +10,71 @@ import emails from './emails.json' with { type: 'json' };
 import assets from './assets.json' with { type: 'json' };
 
 const blueprint = {
-  key: 'sparx-dayspa-botanical',
-  version: '1.3.0',
-  name: 'sparx — Day Spa (Botanical)',
-  summary:
-    'A warm, botanical day-spa site — an oat-and-cream palette, a deep eucalyptus primary and a soft serif, with unhurried, restorative copy and natural light carrying the page. Installs a working booking flow: a real treatment menu (Swedish, deep-tissue and hot-stone massage, aromatherapy facial, body scrub, couples massage and a sauna session), three therapists booked by name with their own hours, three treatment rooms, and a cancellation policy. Ships as "Verdure", a calm garden sanctuary.',
-  vertical: 'services',
-  preview: 'media/preview.png',
-  requiresModules: ['builder', 'scheduling', 'crm', 'email'],
+    key: 'sparx-dayspa-botanical',
+    version: '1.3.0',
+    name: 'sparx — Day Spa (Botanical)',
+    summary:
+        'A warm, botanical day-spa site — an oat-and-cream palette, a deep eucalyptus primary and a soft serif, with unhurried, restorative copy and natural light carrying the page. Installs a working booking flow: a real treatment menu (Swedish, deep-tissue and hot-stone massage, aromatherapy facial, body scrub, couples massage and a sauna session), three therapists booked by name with their own hours, three treatment rooms, and a cancellation policy. Ships as "Verdure", a calm garden sanctuary.',
+    vertical: 'services',
+    preview: 'media/preview.png',
+    requiresModules: ['builder', 'scheduling', 'crm', 'email'],
 
-  // Identity only (business name + tagline + fonts + the theme's hex colours). The look
-  // rides site.theme + the theme decl below; the installing tenant rebrands the name.
-  brand: {
-    businessName: 'Verdure',
-    tagline: 'Restorative treatments, quietly done.',
-    colors: {
-      primary: '#365541',
-      primaryForeground: '#f3fbf5',
-      accent: '#b87252',
-      secondary: '#51453e',
-    },
-    fonts: {
-      heading: 'Fraunces',
-      body: 'Nunito',
-    },
-  },
-
-  // The provisioned SiteTheme the installer creates + applies — an editable saved theme
-  // over a foundation base + the template's brand snapshot. The LIVE storefront look is
-  // site.theme (the flat bespoke tokens), written last.
-  theme: {
-    name: 'verdure',
-    basePresetKey: 'apex',
-    presentation: {
-      v: 2,
-      containerWidth: '1152px',
-    },
+    // Identity only (business name + tagline + fonts + the theme's hex colors). The look
+    // rides site.theme + the theme decl below; the installing tenant rebrands the name.
     brand: {
-      colorPrimary: '#365541',
-      colorAccent: '#b87252',
-      colorSecondary: '#51453e',
-      fontHeading: 'Fraunces',
-      fontBody: 'Nunito',
-      tokens: {},
+        businessName: 'Verdure',
+        tagline: 'Restorative treatments, quietly done.',
+        colors: {
+            primary: '#365541',
+            primaryForeground: '#f3fbf5',
+            accent: '#b87252',
+            secondary: '#51453e',
+        },
+        fonts: {
+            heading: 'Fraunces',
+            body: 'Nunito',
+        },
     },
-    apply: true,
-  },
 
-  assets,
-  contentTypes: [],
+    // The provisioned SiteTheme the installer creates + applies — an editable saved theme
+    // over a foundation base + the template's brand snapshot. The LIVE storefront look is
+    // site.theme (the flat bespoke tokens), written last.
+    theme: {
+        name: 'verdure',
+        basePresetKey: 'apex',
+        presentation: {
+            v: 2,
+            containerWidth: '1152px',
+        },
+        brand: {
+            colorPrimary: '#365541',
+            colorAccent: '#b87252',
+            colorSecondary: '#51453e',
+            fontHeading: 'Fraunces',
+            fontBody: 'Nunito',
+            tokens: {},
+        },
+        apply: true,
+    },
 
-  // The booking spine — policies, bookable resources (staff/rooms/stations) with weekly
-  // hours, and the service menu. The installer's scheduling slice replays it into a live
-  // booking flow that the site's /book page renders.
-  scheduling,
+    assets,
+    contentTypes: [],
 
-  // Brand-voiced MARKETING starters (a welcome + a come-back), installed as DRAFTS the
-  // tenant switches on. The transactional booking sends — confirmation, reminder,
-  // reschedule, cancellation, waitlist — are platform KEYED defaults, so they are covered
-  // on email-module activation and are deliberately NOT duplicated here.
-  emails,
-  sequences: [],
+    // The booking spine — policies, bookable resources (staff/rooms/stations) with weekly
+    // hours, and the service menu. The installer's scheduling slice replays it into a live
+    // booking flow that the site's /book page renders.
+    scheduling,
 
-  // The composed distinct site (frame + Home + Book + About + Contact) in the bespoke
-  // theme, fully stamped.
-  site,
+    // Brand-voiced MARKETING starters (a welcome + a come-back), installed as DRAFTS the
+    // tenant switches on. The transactional booking sends — confirmation, reminder,
+    // reschedule, cancellation, waitlist — are platform KEYED defaults, so they are covered
+    // on email-module activation and are deliberately NOT duplicated here.
+    emails,
+    sequences: [],
+
+    // The composed distinct site (frame + Home + Book + About + Contact) in the bespoke
+    // theme, fully stamped.
+    site,
 };
 
 export default blueprint;

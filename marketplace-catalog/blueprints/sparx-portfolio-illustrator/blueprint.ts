@@ -13,65 +13,65 @@ import assets from './assets.json' with { type: 'json' };
 import emails from './emails.json' with { type: 'json' };
 
 const blueprint = {
-  key: 'sparx-portfolio-illustrator',
-  version: '1.2.0',
-  name: 'sparx — Illustrator Portfolio',
-  summary:
-    'A personality-first portfolio for an illustrator: a loud two-tone hero, a dense playful work wall of tiled pieces that tilt on hover, a warm “hi, I’m me” band, and case-study pages that walk the brief, the making and where it ran. The palette IS the brand — warm riso-cream carried by a coral primary and a cobalt accent, expressive Syne display. Shipped as Pilar Ortega.',
-  vertical: 'content',
-  preview: 'media/preview.png',
-  requiresModules: ['builder', 'cms', 'email'],
+    key: 'sparx-portfolio-illustrator',
+    version: '1.2.0',
+    name: 'sparx — Illustrator Portfolio',
+    summary:
+        'A personality-first portfolio for an illustrator: a loud two-tone hero, a dense playful work wall of tiled pieces that tilt on hover, a warm “hi, I’m me” band, and case-study pages that walk the brief, the making and where it ran. The palette IS the brand — warm riso-cream carried by a coral primary and a cobalt accent, expressive Syne display. Shipped as Pilar Ortega.',
+    vertical: 'content',
+    preview: 'media/preview.png',
+    requiresModules: ['builder', 'cms', 'email'],
 
-  // Identity only (person's name + tagline + fonts + the theme's hex colours). The look
-  // itself rides site.theme + the theme decl below; the installing tenant rebrands the name.
-  brand: {
-    businessName: 'Pilar Ortega',
-    tagline: 'Loud pictures for good stories.',
-    colors: {
-      primary: '#cc2823',
-      primaryForeground: '#fff6f5',
-      accent: '#1a51bd',
-      secondary: '#444171',
-    },
-    fonts: {
-      heading: 'Syne',
-      body: 'Work Sans',
-    },
-  },
-
-  // The provisioned SiteTheme the installer creates + applies — the bespoke portfolio look
-  // as a tenant-editable saved theme (base preset = the template's own theme key, plus its
-  // brand snapshot).
-  theme: {
-    name: 'portfolio-illustrator',
-    basePresetKey: 'portfolio-illustrator',
-    presentation: {
-      v: 2,
-      containerWidth: '1152px',
-    },
+    // Identity only (person's name + tagline + fonts + the theme's hex colors). The look
+    // itself rides site.theme + the theme decl below; the installing tenant rebrands the name.
     brand: {
-      colorPrimary: '#cc2823',
-      colorAccent: '#1a51bd',
-      colorSecondary: '#444171',
-      fontHeading: 'Syne',
-      fontBody: 'Work Sans',
-      tokens: {},
+        businessName: 'Pilar Ortega',
+        tagline: 'Loud pictures for good stories.',
+        colors: {
+            primary: '#cc2823',
+            primaryForeground: '#fff6f5',
+            accent: '#1a51bd',
+            secondary: '#444171',
+        },
+        fonts: {
+            heading: 'Syne',
+            body: 'Work Sans',
+        },
     },
-    apply: true,
-  },
 
-  assets,
-  contentTypes: [],
-  authors,
-  content,
+    // The provisioned SiteTheme the installer creates + applies — the bespoke portfolio look
+    // as a tenant-editable saved theme (base preset = the template's own theme key, plus its
+    // brand snapshot).
+    theme: {
+        name: 'portfolio-illustrator',
+        basePresetKey: 'portfolio-illustrator',
+        presentation: {
+            v: 2,
+            containerWidth: '1152px',
+        },
+        brand: {
+            colorPrimary: '#cc2823',
+            colorAccent: '#1a51bd',
+            colorSecondary: '#444171',
+            fontHeading: 'Syne',
+            fontBody: 'Work Sans',
+            tokens: {},
+        },
+        apply: true,
+    },
 
-  // A portfolio has no commerce. The projects are CMS `blog_post` records (see content).
-  emails,
-  sequences: [],
+    assets,
+    contentTypes: [],
+    authors,
+    content,
 
-  // The composed distinct site (frame + home + a live /work index + about/contact + the
-  // /blog/:slug case-study template), in the bespoke theme, fully stamped.
-  site,
+    // A portfolio has no commerce. The projects are CMS `blog_post` records (see content).
+    emails,
+    sequences: [],
+
+    // The composed distinct site (frame + home + a live /work index + about/contact + the
+    // /blog/:slug case-study template), in the bespoke theme, fully stamped.
+    site,
 };
 
 export default blueprint;

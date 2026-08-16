@@ -11,6 +11,7 @@
 // reach for — an op that can mean anything cannot be described in an undo label.
 
 import type { DataBinding, Theme } from '@wizeworks/silicaui-html';
+import type { EmailNode } from '@wizeworks/silicaui-builder/email';
 import type { AddressableNode } from '../tree/walk';
 import type { FrameChoice, PageSeo } from '../documents/types';
 
@@ -28,6 +29,22 @@ export type TreeOp =
   | { kind: 'node.setAttr'; id: string; key: string; value: string | number | boolean | undefined }
   | { kind: 'node.setData'; id: string; value: DataBinding | undefined }
   | { kind: 'node.setLocked'; id: string; value: 'host' | 'author' | undefined };
+
+/**
+ * Edits to an EMAIL tree.
+ *
+ * A separate union from `TreeOp` because it is a separate vocabulary, not a
+ * dialect of one: an email node has no class, no tag and no attributes, and its
+ * children arrays are typed per kind. One `email.patch` covers every visual
+ * decision, since each of them is a named field rather than a class string.
+ */
+export type EmailTreeOp =
+  | { kind: 'email.insert'; parentId: string; index: number; node: EmailNode }
+  | { kind: 'email.remove'; id: string }
+  | { kind: 'email.move'; id: string; parentId: string; index: number }
+  | { kind: 'email.replace'; id: string; node: EmailNode }
+  | { kind: 'email.patch'; id: string; patch: Readonly<Record<string, unknown>> }
+  | { kind: 'email.setData'; id: string; value: DataBinding | undefined };
 
 /** Edits to a document's own fields — never to its tree. */
 export type FieldOp =
@@ -48,7 +65,7 @@ export type ThemeOp =
   | { kind: 'theme.setName'; value: string }
   | { kind: 'theme.replace'; value: Theme };
 
-export type StudioOp = TreeOp | FieldOp | ThemeOp;
+export type StudioOp = TreeOp | EmailTreeOp | FieldOp | ThemeOp;
 
 export function isTreeOp(op: StudioOp): op is TreeOp {
   return op.kind.startsWith('node.');
@@ -56,6 +73,25 @@ export function isTreeOp(op: StudioOp): op is TreeOp {
 
 export function isThemeOp(op: StudioOp): op is ThemeOp {
   return op.kind.startsWith('theme.');
+}
+
+/**
+ * Listed rather than prefix-matched, unlike its two siblings above.
+ * `email.setSubject` and `email.setPreheader` are FIELD ops that share the
+ * prefix, so `startsWith('email.')` would route a subject edit into the tree
+ * applier, which would refuse it — a rename that silently stopped working.
+ */
+const EMAIL_TREE_KINDS = new Set<string>([
+  'email.insert',
+  'email.remove',
+  'email.move',
+  'email.replace',
+  'email.patch',
+  'email.setData',
+]);
+
+export function isEmailTreeOp(op: StudioOp): op is EmailTreeOp {
+  return EMAIL_TREE_KINDS.has(op.kind);
 }
 
 /**

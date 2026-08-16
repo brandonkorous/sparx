@@ -33,79 +33,79 @@ import type { Tone } from './data';
 
 /** What everything on hand is worth, at what it cost you and at what it sells for. */
 export interface ValuationSummary {
-  totalUnits: number;
-  totalAllocated: number;
-  totalAvailable: number;
-  totalCostCents: number;
-  totalRetailCents: number;
-  currency: string;
+    totalUnits: number;
+    totalAllocated: number;
+    totalAvailable: number;
+    totalCostCents: number;
+    totalRetailCents: number;
+    currency: string;
 }
 
 /** How many of your products look healthy, thin, or sold out — counted over
  *  what a shopper can actually buy, not raw on-hand. */
 export interface StockStatusSummary {
-  skuCount: number;
-  outOfStock: number;
-  lowStock: number;
-  healthy: number;
+    skuCount: number;
+    outOfStock: number;
+    lowStock: number;
+    healthy: number;
 }
 
 /** One place's share of the total: how much is kept there. */
 export interface LocationValue {
-  warehouseId: string;
-  name: string;
-  type: string;
-  skuCount: number;
-  onHand: number;
-  available: number;
+    warehouseId: string;
+    name: string;
+    type: string;
+    skuCount: number;
+    onHand: number;
+    available: number;
 }
 
 /** How your connected stock feeds are doing, in one line. */
 export interface SourcesHealth {
-  total: number;
-  active: number;
-  paused: number;
-  error: number;
-  lastSyncAt: string | null;
+    total: number;
+    active: number;
+    paused: number;
+    error: number;
+    lastSyncAt: string | null;
 }
 
 /** One product/place that needs attention on the overview. */
 export interface LowOrOutItem {
-  variantId: string;
-  warehouseId: string;
-  sku: string;
-  title: string;
-  location: string;
-  onHand: number;
-  available: number;
-  status: 'out' | 'low';
+    variantId: string;
+    warehouseId: string;
+    sku: string;
+    title: string;
+    location: string;
+    onHand: number;
+    available: number;
+    status: 'out' | 'low';
 }
 
 export interface InventorySummary {
-  valuation: ValuationSummary;
-  stockStatus: StockStatusSummary;
-  byLocation: LocationValue[];
-  sources: SourcesHealth;
-  lowOrOut: LowOrOutItem[];
-  lowStockThreshold: number;
+    valuation: ValuationSummary;
+    stockStatus: StockStatusSummary;
+    byLocation: LocationValue[];
+    sources: SourcesHealth;
+    lowOrOut: LowOrOutItem[];
+    lowStockThreshold: number;
 }
 
 /** How fast stock sells through, over a chosen window. */
 export interface TurnoverReport {
-  range: { from: string; to: string };
-  periodDays: number;
-  /** What the goods you sold in the window had cost you. */
-  cogsCents: number;
-  unitsSold: number;
-  /** The average value tied up in stock across the window. */
-  avgInventoryValueCents: number;
-  /** Times the whole of your stock sold through, over the window. */
-  turnover: number;
-  /** The same, scaled to a full year — "sells through N times a year". */
-  turnoverAnnualized: number;
-  /** How many days of stock you hold at that selling rate. Null when nothing
-   *  sold, because you cannot divide by a standstill. */
-  daysInventoryOutstanding: number | null;
+    range: { from: string; to: string };
+    periodDays: number;
+    /** What the goods you sold in the window had cost you. */
+    cogsCents: number;
+    unitsSold: number;
+    /** The average value tied up in stock across the window. */
+    avgInventoryValueCents: number;
+    /** Times the whole of your stock sold through, over the window. */
+    turnover: number;
+    /** The same, scaled to a full year — "sells through N times a year". */
+    turnoverAnnualized: number;
+    /** How many days of stock you hold at that selling rate. Null when nothing
+     *  sold, because you cannot divide by a standstill. */
+    daysInventoryOutstanding: number | null;
 }
 
 export type AgingBucketKey = '0-30' | '31-60' | '61-90' | '90+' | 'never';
@@ -113,29 +113,29 @@ export type AgingBucketKey = '0-30' | '31-60' | '61-90' | '90+' | 'never';
 /** One age band: how many levels, units and pounds of stock last sold that long
  *  ago (or never). */
 export interface AgingBucket {
-  bucket: AgingBucketKey;
-  levels: number;
-  units: number;
-  costCents: number;
+    bucket: AgingBucketKey;
+    levels: number;
+    units: number;
+    costCents: number;
 }
 
 /** One product sitting still — the money in it and how long since it last sold. */
 export interface DeadStockItem {
-  variantId: string;
-  warehouseId: string;
-  sku: string | null;
-  title: string | null;
-  warehouseCode: string;
-  onHand: number;
-  costCents: number;
-  lastSaleAt: string | null;
-  daysSinceLastSale: number | null;
+    variantId: string;
+    warehouseId: string;
+    sku: string | null;
+    title: string | null;
+    warehouseCode: string;
+    onHand: number;
+    costCents: number;
+    lastSaleAt: string | null;
+    daysSinceLastSale: number | null;
 }
 
 export interface AgingReport {
-  deadStockDays: number;
-  buckets: AgingBucket[];
-  deadStock: DeadStockItem[];
+    deadStockDays: number;
+    buckets: AgingBucket[];
+    deadStock: DeadStockItem[];
 }
 
 /* ── Date range for the turnover window ──────────────────────────────────── */
@@ -147,44 +147,44 @@ export interface AgingReport {
  * one more thing between them and the number.
  */
 export interface RangePreset {
-  days: number;
-  label: string;
+    days: number;
+    label: string;
 }
 
 export const RANGE_PRESETS: RangePreset[] = [
-  { days: 7, label: 'Last 7 days' },
-  { days: 30, label: 'Last 30 days' },
-  { days: 90, label: 'Last 90 days' },
-  { days: 365, label: 'Last 12 months' },
+    { days: 7, label: 'Last 7 days' },
+    { days: 30, label: 'Last 30 days' },
+    { days: 90, label: 'Last 90 days' },
+    { days: 365, label: 'Last 12 months' },
 ];
 
 /** The from/to the turnover endpoint wants, worked out from a preset's length.
  *  `to` is now, so the window always ends today. */
 export function rangeForDays(days: number): { from: string; to: string } {
-  const to = new Date();
-  const from = new Date(to.getTime() - days * 24 * 60 * 60 * 1000);
-  return { from: from.toISOString(), to: to.toISOString() };
+    const to = new Date();
+    const from = new Date(to.getTime() - days * 24 * 60 * 60 * 1000);
+    return { from: from.toISOString(), to: to.toISOString() };
 }
 
 /* ── Query keys ──────────────────────────────────────────────────────────── */
 
 export const reportKeys = {
-  all: ['inventory', 'reports'] as const,
-  summary: () => [...reportKeys.all, 'summary'] as const,
-  turnover: (range: { from: string; to: string }) =>
-    [...reportKeys.all, 'turnover', range] as const,
-  aging: (filter: { warehouseId: string; deadStockDays: number }) =>
-    [...reportKeys.all, 'aging', filter] as const,
+    all: ['inventory', 'reports'] as const,
+    summary: () => [...reportKeys.all, 'summary'] as const,
+    turnover: (range: { from: string; to: string }) =>
+        [...reportKeys.all, 'turnover', range] as const,
+    aging: (filter: { warehouseId: string; deadStockDays: number }) =>
+        [...reportKeys.all, 'aging', filter] as const,
 };
 
 /* ── Reads ───────────────────────────────────────────────────────────────── */
 
 /** The headline: valuation, stock health, value by location, feed health. */
 export function useInventorySummary() {
-  return useQuery({
-    queryKey: reportKeys.summary(),
-    queryFn: () => api.get<InventorySummary>('/v1/inventory/reports/summary'),
-  });
+    return useQuery({
+        queryKey: reportKeys.summary(),
+        queryFn: () => api.get<InventorySummary>('/v1/inventory/reports/summary'),
+    });
 }
 
 /**
@@ -195,15 +195,15 @@ export function useInventorySummary() {
  * to a spinner and back.
  */
 export function useTurnoverReport(range: { from: string; to: string }) {
-  return useQuery({
-    queryKey: reportKeys.turnover(range),
-    queryFn: () =>
-      api.get<TurnoverReport>('/v1/inventory/reports/turnover', {
-        from: range.from,
-        to: range.to,
-      }),
-    placeholderData: (previous) => previous,
-  });
+    return useQuery({
+        queryKey: reportKeys.turnover(range),
+        queryFn: () =>
+            api.get<TurnoverReport>('/v1/inventory/reports/turnover', {
+                from: range.from,
+                to: range.to,
+            }),
+        placeholderData: (previous) => previous,
+    });
 }
 
 /**
@@ -216,16 +216,16 @@ export function useTurnoverReport(range: { from: string; to: string }) {
  * every dusty line.
  */
 export function useAgingReport(filter: { warehouseId: string; deadStockDays: number }) {
-  return useQuery({
-    queryKey: reportKeys.aging(filter),
-    queryFn: () =>
-      api.get<AgingReport>('/v1/inventory/reports/aging', {
-        ...(filter.warehouseId ? { warehouse_id: filter.warehouseId } : {}),
-        dead_stock_days: filter.deadStockDays,
-        take: 10,
-      }),
-    placeholderData: (previous) => previous,
-  });
+    return useQuery({
+        queryKey: reportKeys.aging(filter),
+        queryFn: () =>
+            api.get<AgingReport>('/v1/inventory/reports/aging', {
+                ...(filter.warehouseId ? { warehouse_id: filter.warehouseId } : {}),
+                dead_stock_days: filter.deadStockDays,
+                take: 10,
+            }),
+        placeholderData: (previous) => previous,
+    });
 }
 
 /* ── Saying what the numbers mean, in shop words ─────────────────────────── */
@@ -234,48 +234,48 @@ export function useAgingReport(filter: { warehouseId: string; deadStockDays: num
  *  '90+' and 'never' bands totalled. Computed from the full buckets (not the
  *  capped list) so the headline figure is the real total. */
 export function deadStockValueCents(report: AgingReport): number {
-  return report.buckets
-    .filter((b) => b.bucket === '90+' || b.bucket === 'never')
-    .reduce((sum, b) => sum + b.costCents, 0);
+    return report.buckets
+        .filter((b) => b.bucket === '90+' || b.bucket === 'never')
+        .reduce((sum, b) => sum + b.costCents, 0);
 }
 
 /** How many product/place levels are in that dead-stock money. */
 export function deadStockLevelCount(report: AgingReport): number {
-  return report.buckets
-    .filter((b) => b.bucket === '90+' || b.bucket === 'never')
-    .reduce((sum, b) => sum + b.levels, 0);
+    return report.buckets
+        .filter((b) => b.bucket === '90+' || b.bucket === 'never')
+        .reduce((sum, b) => sum + b.levels, 0);
 }
 
 /** An age band said the way an owner would say it. */
 export function agingBucketLabel(bucket: AgingBucketKey): string {
-  switch (bucket) {
-    case '0-30':
-      return 'Sold in the last month';
-    case '31-60':
-      return 'Last sold 1–2 months ago';
-    case '61-90':
-      return 'Last sold 2–3 months ago';
-    case '90+':
-      return 'Not sold in over 3 months';
-    case 'never':
-      return 'Never sold';
-  }
+    switch (bucket) {
+        case '0-30':
+            return 'Sold in the last month';
+        case '31-60':
+            return 'Last sold 1–2 months ago';
+        case '61-90':
+            return 'Last sold 2–3 months ago';
+        case '90+':
+            return 'Not sold in over 3 months';
+        case 'never':
+            return 'Never sold';
+    }
 }
 
 /** Older stock is money working less hard, so the bands warm from calm to
  *  alarming as they age. */
 export function agingBucketTone(bucket: AgingBucketKey): Tone {
-  switch (bucket) {
-    case '0-30':
-      return 'success';
-    case '31-60':
-      return 'info';
-    case '61-90':
-      return 'warning';
-    case '90+':
-    case 'never':
-      return 'danger';
-  }
+    switch (bucket) {
+        case '0-30':
+            return 'success';
+        case '31-60':
+            return 'info';
+        case '61-90':
+            return 'warning';
+        case '90+':
+        case 'never':
+            return 'danger';
+    }
 }
 
 /**
@@ -286,19 +286,19 @@ export function agingBucketTone(bucket: AgingBucketKey): Tone {
  * implies. A standstill (nothing sold) is its own answer, not a zero.
  */
 export function turnoverHeadline(report: TurnoverReport): { value: string; meaning: string } {
-  if (report.unitsSold === 0) {
-    return {
-      value: 'None sold',
-      meaning: 'Nothing sold in this period, so there is no selling pace to measure yet.',
-    };
-  }
-  const times = report.turnoverAnnualized;
-  const value = times >= 10 ? `${Math.round(times)}×` : `${times.toFixed(1)}×`;
-  const meaning =
-    report.daysInventoryOutstanding === null
-      ? 'How many times a year your stock sells through at this pace.'
-      : `About ${String(report.daysInventoryOutstanding)} days of stock on hand at this selling pace.`;
-  return { value, meaning };
+    if (report.unitsSold === 0) {
+        return {
+            value: 'None sold',
+            meaning: 'Nothing sold in this period, so there is no selling pace to measure yet.',
+        };
+    }
+    const times = report.turnoverAnnualized;
+    const value = times >= 10 ? `${Math.round(times)}×` : `${times.toFixed(1)}×`;
+    const meaning =
+        report.daysInventoryOutstanding === null
+            ? 'How many times a year your stock sells through at this pace.'
+            : `About ${String(report.daysInventoryOutstanding)} days of stock on hand at this selling pace.`;
+    return { value, meaning };
 }
 
 /* ── Shrinkage: what left without being sold (docs/146 Phase 1) ──────────── */
@@ -311,81 +311,81 @@ export function turnoverHeadline(report: TurnoverReport): { value: string; meani
  * is the read that gathers them and prices them.
  */
 export interface ShrinkageByReason {
-  reason: string;
-  units: number;
-  valueCents: number;
-  movements: number;
+    reason: string;
+    units: number;
+    valueCents: number;
+    movements: number;
 }
 
 export interface ShrinkageByWarehouse {
-  warehouseId: string;
-  warehouseName: string | null;
-  warehouseCode: string | null;
-  units: number;
-  valueCents: number;
+    warehouseId: string;
+    warehouseName: string | null;
+    warehouseCode: string | null;
+    units: number;
+    valueCents: number;
 }
 
 export interface ShrinkageTopVariant {
-  variantId: string;
-  variantSku: string | null;
-  productTitle: string | null;
-  units: number;
-  valueCents: number;
-  movements: number;
+    variantId: string;
+    variantSku: string | null;
+    productTitle: string | null;
+    units: number;
+    valueCents: number;
+    movements: number;
 }
 
 export interface ShrinkagePeriod {
-  /** First of the month, ISO date. */
-  period: string;
-  units: number;
-  valueCents: number;
+    /** First of the month, ISO date. */
+    period: string;
+    units: number;
+    valueCents: number;
 }
 
 export interface ShrinkageReport {
-  from: string;
-  to: string;
-  totalUnits: number;
-  totalValueCents: number;
-  /** Stock FOUND by counts in the same period — reported beside the losses
-   *  rather than subtracted from them. A business that finds as much as it
-   *  loses has a counting problem, not a theft problem, and netting the two to
-   *  zero would say it has neither. */
-  recountGainUnits: number;
-  recountGainValueCents: number;
-  /** Losses as a share of what the stock is worth today. Null when there is no
-   *  stock to compare against — a new tenant's "infinity%" helps nobody. */
-  percentOfValuation: number | null;
-  currentValuationCents: number;
-  byReason: ShrinkageByReason[];
-  byWarehouse: ShrinkageByWarehouse[];
-  topVariants: ShrinkageTopVariant[];
-  byPeriod: ShrinkagePeriod[];
+    from: string;
+    to: string;
+    totalUnits: number;
+    totalValueCents: number;
+    /** Stock FOUND by counts in the same period — reported beside the losses
+     *  rather than subtracted from them. A business that finds as much as it
+     *  loses has a counting problem, not a theft problem, and netting the two to
+     *  zero would say it has neither. */
+    recountGainUnits: number;
+    recountGainValueCents: number;
+    /** Losses as a share of what the stock is worth today. Null when there is no
+     *  stock to compare against — a new tenant's "infinity%" helps nobody. */
+    percentOfValuation: number | null;
+    currentValuationCents: number;
+    byReason: ShrinkageByReason[];
+    byWarehouse: ShrinkageByWarehouse[];
+    topVariants: ShrinkageTopVariant[];
+    byPeriod: ShrinkagePeriod[];
 }
 
 export function useShrinkageReport(range: { from: string; to: string }, warehouseId?: string) {
-  return useQuery({
-    queryKey: ['inventory', 'reports', 'shrinkage', range, warehouseId ?? null] as const,
-    queryFn: () =>
-      api.get<ShrinkageReport>('/v1/inventory/reports/shrinkage', {
-        from: range.from,
-        to: range.to,
-        ...(warehouseId ? { warehouse_id: warehouseId } : {}),
-      }),
-  });
+    return useQuery({
+        queryKey: ['inventory', 'reports', 'shrinkage', range, warehouseId ?? null] as const,
+        queryFn: () =>
+            api.get<ShrinkageReport>('/v1/inventory/reports/shrinkage', {
+                from: range.from,
+                to: range.to,
+                ...(warehouseId ? { warehouse_id: warehouseId } : {}),
+            }),
+    });
 }
 
 /** A write-off reason in the shop's words, not the engineer's stored value. */
 export function shrinkageReasonLabel(reason: string): string {
-  switch (reason) {
-    case 'loss':
-      return 'Gone missing';
-    case 'damage':
-      return 'Damaged or broken';
-    case 'recount':
-      return 'Found short when counted';
-    default:
-      return reason;
-  }
+    switch (reason) {
+        case 'loss':
+            return 'Gone missing';
+        case 'damage':
+            return 'Damaged or broken';
+        case 'recount':
+            return 'Found short when counted';
+        default:
+            return reason;
+    }
 }
 
 /**
@@ -393,12 +393,12 @@ export function shrinkageReasonLabel(reason: string): string {
  *
  * Anchored to what the industry actually reports: 1–5% a year is the normal
  * band, so under 1% is genuinely good and above 5% is outside what most
- * businesses live with. Colouring a 1.2% rate red would make the number useless
+ * businesses live with. Coloring a 1.2% rate red would make the number useless
  * to the people it is for.
  */
 export function shrinkageTone(percentOfValuation: number | null): Tone {
-  if (percentOfValuation === null) return 'neutral';
-  if (percentOfValuation < 1) return 'success';
-  if (percentOfValuation <= 5) return 'warning';
-  return 'danger';
+    if (percentOfValuation === null) return 'neutral';
+    if (percentOfValuation < 1) return 'success';
+    if (percentOfValuation <= 5) return 'warning';
+    return 'danger';
 }

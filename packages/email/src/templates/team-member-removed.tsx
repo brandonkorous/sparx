@@ -1,6 +1,11 @@
 import * as React from 'react';
 import { PlatformEmailLayout } from './_layout';
-import { EmailDisplayHeading, EmailFinePrint, EmailParagraph } from '../components';
+import {
+  EmailDisplayHeading,
+  EmailFinePrint,
+  EmailParagraph,
+  usePlatformName,
+} from '../components';
 
 export interface TeamMemberRemovedEmailProps {
   /** The removed member's name (falls back to "there"). */
@@ -12,21 +17,23 @@ export interface TeamMemberRemovedEmailProps {
 // PLATFORM email (sparx → the REMOVED member) — their access to a workspace was
 // revoked. A no-CTA courtesy notice so access changes are never silent.
 export function TeamMemberRemovedEmail({ memberName, orgName }: TeamMemberRemovedEmailProps) {
+  const platform = usePlatformName();
   return (
     <PlatformEmailLayout
       preview={`Your access to ${orgName} was removed`}
-      footerReason={`You're receiving this because your access to ${orgName} on sparx changed.`}
+      footerReason={`You're receiving this because your access to ${orgName} on ${platform} changed.`}
     >
       <EmailDisplayHeading>Your access was removed</EmailDisplayHeading>
       <EmailParagraph>
-        {memberName ? `Hi ${memberName}, ` : ''}your access to <strong>{orgName}</strong> on sparx
+        {memberName ? `Hi ${memberName}, ` : ''}your access to <strong>{orgName}</strong> on{' '}
+        {platform}
         has been removed, so you&apos;ll no longer be able to sign in to that workspace.
       </EmailParagraph>
       <EmailParagraph>
         If you think this was a mistake, reach out to whoever manages {orgName} — they can invite
         you again.
       </EmailParagraph>
-      <EmailFinePrint>Any other sparx workspaces you belong to are unaffected.</EmailFinePrint>
+      <EmailFinePrint>Any other {platform} workspaces you belong to are unaffected.</EmailFinePrint>
     </PlatformEmailLayout>
   );
 }

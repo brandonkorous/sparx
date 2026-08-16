@@ -46,7 +46,11 @@ export const MOCKUP_CATALOG: PlatformCatalogEntry[] = [
     tags: ['browser', 'window', 'chrome', 'mockup', 'frame', 'screenshot', 'preview'],
     // The Browser atom (st-mockup-browser) renders the dots + address bar; the content
     // slot is just the screenshot the tenant swaps.
-    tree: atom('Browser', 'w-full max-w-3xl', { url: 'app.sparx.works' }, [
+    // The address is placeholder copy the tenant overwrites with their own —
+    // so it must not be a real host belonging to the platform. It read
+    // `app.sparx.works`, which every tenant of every brand dropped onto their
+    // own page pre-filled with one company's console URL.
+    tree: atom('Browser', 'w-full max-w-3xl', { url: 'yoursite.com' }, [
       atom('Image', 'w-full', { ratio: 'wide', alt: 'Screenshot' }),
     ]),
   }),

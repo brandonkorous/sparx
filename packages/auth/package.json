@@ -39,6 +39,7 @@
     "@sparx/email": "workspace:*",
     "@sparx/events": "workspace:*",
     "@sparx/legal": "workspace:*",
+    "@wizeworks/brand-core": "workspace:*",
     "@sparx/legal-seed": "workspace:*",
     "@sparx/links": "workspace:*",
     "@sparx/modules": "workspace:*",

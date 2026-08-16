@@ -11,8 +11,10 @@
 
 import {
   faChartColumn,
+  faClockRotateLeft,
   faCube,
   faEnvelope,
+  faEye,
   faFileLines,
   faGlobe,
   faInbox,
@@ -27,11 +29,13 @@ import { BlueprintsListSurface } from '../../../surfaces/builder/blueprints-list
 import { BlueprintDetailSurface } from '../../../surfaces/builder/blueprint-detail';
 import { SavedPiecesListSurface } from '../../../surfaces/builder/saved-pieces-list';
 import { SavedPieceDetailSurface } from '../../../surfaces/builder/saved-piece-detail';
-import { EmailEditorSurface } from '../../../surfaces/builder/email/email-editor';
+import { EmailPaneSurface } from '../../../surfaces/studio/email-pane';
 import { ThemePaneSurface } from '../../../surfaces/studio/theme-pane';
 import { LayoutPaneSurface } from '../../../surfaces/studio/layout-pane';
 import { PagePaneSurface } from '../../../surfaces/studio/page-pane';
 import { PiecePaneSurface } from '../../../surfaces/studio/piece-pane';
+import { HistoryPaneSurface } from '../../../surfaces/studio/history-pane';
+import { PreviewPaneSurface } from '../../../surfaces/studio/preview-pane';
 import { FormSubmissionsListSurface } from '../../../surfaces/builder/form-submissions-list';
 import { SubmissionDetailSurface } from '../../../surfaces/builder/submission-detail';
 import { PageResultsSurface } from '../../../surfaces/builder/page-results';
@@ -69,10 +73,10 @@ export const BUILDER_SURFACES: SurfaceDefinition[] = [
     module: 'builder',
     icon: faPalette,
     order: 4,
-    keywords: ['theme', 'colours', 'colors', 'fonts', 'brand', 'style', 'look'],
+    keywords: ['theme', 'colors', 'colors', 'fonts', 'brand', 'style', 'look'],
     // A theme is TENANT-wide and reusable across sites, so this is its own pane
     // rather than a mode inside the page editor — open it beside a page and a
-    // colour change repaints that page as it is dragged.
+    // color change repaints that page as it is dragged.
     component: ThemePaneSurface,
   },
   {
@@ -101,14 +105,39 @@ export const BUILDER_SURFACES: SurfaceDefinition[] = [
   },
   {
     key: 'builder.email',
-    title: 'Email designs',
+    title: 'Email design',
     module: 'builder',
     icon: faEnvelope,
     order: 6,
     keywords: ['newsletter', 'template', 'campaign design', 'email'],
-    // The email studio — silica `<EmailBuilder>` with a built-in switcher +
-    // new/rename/delete/fork/publish. One surface, no separate list.
-    component: EmailEditorSurface,
+    // ONE email, opened with `{ emailId }` — several can be open at once, because
+    // each is its own document with its own undo and its own Publish. Opened with
+    // no email it asks which one, rather than showing a blank canvas.
+    component: EmailPaneSurface,
+  },
+  {
+    key: 'builder.history',
+    title: 'History',
+    module: 'builder',
+    icon: faClockRotateLeft,
+    keywords: ['versions', 'undo', 'restore', 'earlier', 'put back', 'previous'],
+    // ONE document's history, opened BESIDE it with `{ docKind, docId }` from the clock
+    // button in that document's own toolbar. Unlisted: a history with no document is a
+    // pane whose only content is an instruction to go and open one.
+    listed: false,
+    component: HistoryPaneSurface,
+  },
+  {
+    key: 'builder.preview',
+    title: 'Preview',
+    module: 'builder',
+    icon: faEye,
+    keywords: ['preview', 'see it', 'visitor', 'live view', 'check'],
+    // The real page, served by the real storefront, in a pane BESIDE the canvas —
+    // and an email as the email-safe markup a recipient gets. Unlisted for the same
+    // reason as History: without a document it can only tell you to open one.
+    listed: false,
+    component: PreviewPaneSurface,
   },
 
   /* ── Design ────────────────────────────────────────────────────────────── */

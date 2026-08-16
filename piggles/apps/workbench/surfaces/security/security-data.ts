@@ -26,6 +26,7 @@
 import { useMutation, useQuery, useQueryClient } from '@sparx/query';
 import { authClient } from '@sparx/auth/client';
 import { api } from '../../lib/api/client';
+import { productName } from '../../lib/product';
 
 /* ── Sessions (Better Auth) ─────────────────────────────────────────────────
    `listSessions` hands back the raw session rows: a token (the id we revoke
@@ -195,8 +196,12 @@ export interface TwoFactorSetup {
 export function useEnableTwoFactor() {
   return useMutation({
     mutationFn: async (password: string): Promise<TwoFactorSetup> => {
+      // `issuer` is what the authenticator app labels the entry, and it
+      // is baked into the QR at enrollment — nobody can correct it later.
+      // The platform's default is the default brand's name, so without
+      // this a Piggles owner would find another product in their app.
       const { data, error } = await authClient.twoFactor.enable(
-        password === '' ? {} : { password }
+        password === '' ? { issuer: productName() } : { password, issuer: productName() }
       );
       if (error) {
         throw new Error(
@@ -311,7 +316,7 @@ export function useActivity(limit: number) {
 
 /* ── Display helpers ────────────────────────────────────────────────────── */
 
-/** State is its own colour axis: an activity row's tone comes from what KIND of
+/** State is its own color axis: an activity row's tone comes from what KIND of
  *  change it was, so a wall of history becomes scannable — removals read red,
  *  new things read green, edits read blue. Derived from the action verb because
  *  every module names its actions the same way (`crm.customer.created`,

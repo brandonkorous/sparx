@@ -1,516 +1,627 @@
 {
-  "categories": [
-    {
-      "handle": "records",
-      "name": "Vinyl records",
-      "description": "New pressings and hand-picked reissues across every genre.",
-      "featured": true
-    },
-    {
-      "handle": "gear",
-      "name": "Turntables & gear",
-      "description": "Decks, slipmats and record-care kit.",
-      "featured": true
-    },
-    {
-      "handle": "merch",
-      "name": "Merch",
-      "description": "Totes and shop goods.",
-      "featured": true
-    },
-    {
-      "handle": "subscription",
-      "name": "Subscription",
-      "description": "A record in the mail every month.",
-      "featured": true
-    }
-  ],
-  "collections": [
-    {
-      "handle": "new-arrivals",
-      "name": "New arrivals",
-      "description": "What landed in the racks this month.",
-      "type": "manual",
-      "featured": true,
-      "productHandles": [
-        "neon-meridian",
-        "paper-cathedral",
-        "midnight-ledger",
-        "static-gospel",
-        "chrome-orchard"
-      ]
-    },
-    {
-      "handle": "staff-picks",
-      "name": "Staff picks",
-      "description": "The records we can’t stop playing behind the counter.",
-      "type": "manual",
-      "featured": true,
-      "productHandles": ["midnight-ledger", "static-gospel", "neon-meridian", "wax-club"]
-    },
-    {
-      "handle": "best-sellers",
-      "name": "Best sellers",
-      "description": "What walks out the door the fastest.",
-      "type": "manual",
-      "featured": true,
-      "productHandles": ["paper-cathedral", "wax-club", "tt-01-turntable", "crate-digger-tote"]
-    },
-    {
-      "handle": "jazz-soul",
-      "name": "Jazz & soul",
-      "description": "Late-night sessions and gritty soul.",
-      "type": "manual",
-      "featured": false,
-      "productHandles": ["midnight-ledger", "static-gospel"]
-    },
-    {
-      "handle": "electronic",
-      "name": "Electronic & post-punk",
-      "description": "Synths, motorik pulses and colour wax.",
-      "type": "manual",
-      "featured": false,
-      "productHandles": ["neon-meridian", "chrome-orchard"]
-    },
-    {
-      "handle": "starter-kit",
-      "name": "Starter kit",
-      "description": "New to vinyl? Deck, mat and cleaning kit to get going.",
-      "type": "manual",
-      "featured": false,
-      "productHandles": ["tt-01-turntable", "cork-slipmat", "groove-care-kit"]
-    }
-  ],
-  "products": [
-    {
-      "handle": "neon-meridian",
-      "title": "Neon Meridian — Violet Transit",
-      "description": "A neon-lit debut of widescreen synth-pop — arpeggios that sprint, choruses built for the drive home, and a low end you’ll feel through the floor. Sequenced as one continuous night, side A to side B, the way the band meant it.",
-      "status": "active",
-      "productType": "Vinyl record",
-      "vendor": "Violet Transit",
-      "tags": ["electronic", "synth-pop", "new-arrival", "colour-vinyl"],
-      "categoryHandles": ["records"],
-      "collectionHandles": ["new-arrivals", "staff-picks", "electronic"],
-      "seoTitle": "Violet Transit — Neon Meridian (LP) | Third Side Records",
-      "seoDescription": "The widescreen synth-pop debut from Violet Transit, on 180g vinyl. Limited colour pressing available.",
-      "options": [
+    "categories": [
         {
-          "name": "Edition",
-          "displayType": "dropdown",
-          "values": [
-            {
-              "value": "Standard black 180g"
-            },
-            {
-              "value": "Limited colour"
-            }
-          ]
-        }
-      ],
-      "variants": [
-        {
-          "sku": "TSR-LP-NEON-BLK",
-          "priceCents": 2800,
-          "isDefault": true,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Edition": "Standard black 180g"
-          }
+            "handle": "records",
+            "name": "Vinyl records",
+            "description": "New pressings and hand-picked reissues across every genre.",
+            "featured": true
         },
         {
-          "sku": "TSR-LP-NEON-COL",
-          "priceCents": 3300,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Edition": "Limited colour"
-          }
-        }
-      ],
-      "images": [
-        {
-          "assetId": "prod-neon-meridian",
-          "isPrimary": true,
-          "alt": "Neon Meridian LP sleeve"
-        }
-      ]
-    },
-    {
-      "handle": "paper-cathedral",
-      "title": "Paper Cathedral — The Hollow Coast",
-      "description": "Big, reverb-soaked indie rock that builds like weather — quiet verses, guitars that break the roof off by the last chorus. The kind of record you put on loud with the windows open. Their best yet, and it isn’t close.",
-      "status": "active",
-      "productType": "Vinyl record",
-      "vendor": "The Hollow Coast",
-      "tags": ["indie-rock", "alternative", "new-arrival"],
-      "categoryHandles": ["records"],
-      "collectionHandles": ["new-arrivals", "best-sellers"],
-      "seoTitle": "The Hollow Coast — Paper Cathedral (LP) | Third Side Records",
-      "seoDescription": "Reverb-soaked indie rock from The Hollow Coast, pressed on 180g vinyl.",
-      "options": [
-        {
-          "name": "Edition",
-          "displayType": "dropdown",
-          "values": [
-            {
-              "value": "Standard black 180g"
-            },
-            {
-              "value": "Limited colour"
-            }
-          ]
-        }
-      ],
-      "variants": [
-        {
-          "sku": "TSR-LP-PAPER-BLK",
-          "priceCents": 2600,
-          "isDefault": true,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Edition": "Standard black 180g"
-          }
+            "handle": "gear",
+            "name": "Turntables & gear",
+            "description": "Decks, slipmats and record-care kit.",
+            "featured": true
         },
         {
-          "sku": "TSR-LP-PAPER-COL",
-          "priceCents": 3100,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Edition": "Limited colour"
-          }
-        }
-      ],
-      "images": [
-        {
-          "assetId": "prod-paper-cathedral",
-          "isPrimary": true,
-          "alt": "Paper Cathedral LP sleeve"
-        }
-      ]
-    },
-    {
-      "handle": "midnight-ledger",
-      "title": "Midnight Ledger — Cole Ambrose Trio",
-      "description": "A late-night piano-trio session cut straight to tape — brushed drums, a walking bass you can lean on, and playing that leaves room to breathe. An audiophile 180g pressing that rewards a good stylus and a quiet room.",
-      "status": "active",
-      "productType": "Vinyl record",
-      "vendor": "Cole Ambrose Trio",
-      "tags": ["jazz", "audiophile", "reissue"],
-      "categoryHandles": ["records"],
-      "collectionHandles": ["new-arrivals", "staff-picks", "jazz-soul"],
-      "seoTitle": "Cole Ambrose Trio — Midnight Ledger (LP) | Third Side Records",
-      "seoDescription": "A late-night piano-trio session on audiophile 180g vinyl. Brushed drums, walking bass, room to breathe.",
-      "options": [
-        {
-          "name": "Edition",
-          "displayType": "dropdown",
-          "values": [
-            {
-              "value": "Standard black 180g"
-            },
-            {
-              "value": "Limited colour"
-            }
-          ]
-        }
-      ],
-      "variants": [
-        {
-          "sku": "TSR-LP-MIDNIGHT-BLK",
-          "priceCents": 3400,
-          "isDefault": true,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Edition": "Standard black 180g"
-          }
+            "handle": "merch",
+            "name": "Merch",
+            "description": "Totes and shop goods.",
+            "featured": true
         },
         {
-          "sku": "TSR-LP-MIDNIGHT-COL",
-          "priceCents": 3900,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Edition": "Limited colour"
-          }
+            "handle": "subscription",
+            "name": "Subscription",
+            "description": "A record in the mail every month.",
+            "featured": true
         }
-      ],
-      "images": [
+    ],
+    "collections": [
         {
-          "assetId": "prod-midnight-ledger",
-          "isPrimary": true,
-          "alt": "Midnight Ledger LP sleeve"
-        }
-      ]
-    },
-    {
-      "handle": "static-gospel",
-      "title": "Static Gospel — Rue Delacroix",
-      "description": "Soul with grit under its fingernails — horns that punch, an organ that simmers, and a voice that sounds like it’s been up all night and has something to tell you. Warm, analogue, and impossible to sit still to.",
-      "status": "active",
-      "productType": "Vinyl record",
-      "vendor": "Rue Delacroix",
-      "tags": ["soul", "funk", "new-arrival"],
-      "categoryHandles": ["records"],
-      "collectionHandles": ["new-arrivals", "staff-picks", "jazz-soul"],
-      "seoTitle": "Rue Delacroix — Static Gospel (LP) | Third Side Records",
-      "seoDescription": "Gritty, horn-driven soul from Rue Delacroix on 180g vinyl.",
-      "options": [
-        {
-          "name": "Edition",
-          "displayType": "dropdown",
-          "values": [
-            {
-              "value": "Standard black 180g"
-            },
-            {
-              "value": "Limited colour"
-            }
-          ]
-        }
-      ],
-      "variants": [
-        {
-          "sku": "TSR-LP-STATIC-BLK",
-          "priceCents": 2700,
-          "isDefault": true,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Edition": "Standard black 180g"
-          }
+            "handle": "new-arrivals",
+            "name": "New arrivals",
+            "description": "What landed in the racks this month.",
+            "type": "manual",
+            "featured": true,
+            "productHandles": [
+                "neon-meridian",
+                "paper-cathedral",
+                "midnight-ledger",
+                "static-gospel",
+                "chrome-orchard"
+            ]
         },
         {
-          "sku": "TSR-LP-STATIC-COL",
-          "priceCents": 3200,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Edition": "Limited colour"
-          }
-        }
-      ],
-      "images": [
-        {
-          "assetId": "prod-static-gospel",
-          "isPrimary": true,
-          "alt": "Static Gospel LP sleeve"
-        }
-      ]
-    },
-    {
-      "handle": "chrome-orchard",
-      "title": "Chrome Orchard — Fever Signal",
-      "description": "Angular post-punk with a pulse — motorik drums, a bassline that never lets up, and guitars filed to a point. Ten tracks, not a spare second among them. Play it once and you’ll flip it straight back over.",
-      "status": "active",
-      "productType": "Vinyl record",
-      "vendor": "Fever Signal",
-      "tags": ["post-punk", "alternative", "colour-vinyl"],
-      "categoryHandles": ["records"],
-      "collectionHandles": ["new-arrivals", "electronic"],
-      "seoTitle": "Fever Signal — Chrome Orchard (LP) | Third Side Records",
-      "seoDescription": "Angular, motorik post-punk from Fever Signal on 180g vinyl. Limited colour pressing available.",
-      "options": [
-        {
-          "name": "Edition",
-          "displayType": "dropdown",
-          "values": [
-            {
-              "value": "Standard black 180g"
-            },
-            {
-              "value": "Limited colour"
-            }
-          ]
-        }
-      ],
-      "variants": [
-        {
-          "sku": "TSR-LP-CHROME-BLK",
-          "priceCents": 2900,
-          "isDefault": true,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Edition": "Standard black 180g"
-          }
+            "handle": "staff-picks",
+            "name": "Staff picks",
+            "description": "The records we can’t stop playing behind the counter.",
+            "type": "manual",
+            "featured": true,
+            "productHandles": [
+                "midnight-ledger",
+                "static-gospel",
+                "neon-meridian",
+                "wax-club"
+            ]
         },
         {
-          "sku": "TSR-LP-CHROME-COL",
-          "priceCents": 3400,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Edition": "Limited colour"
-          }
-        }
-      ],
-      "images": [
-        {
-          "assetId": "prod-chrome-orchard",
-          "isPrimary": true,
-          "alt": "Chrome Orchard LP sleeve"
-        }
-      ]
-    },
-    {
-      "handle": "tt-01-turntable",
-      "title": "Third Side TT-01 Belt-Drive Turntable",
-      "description": "The deck we set up for people getting back into records — a belt-drive turntable with a pre-mounted cartridge and a built-in preamp, so it plugs straight into powered speakers or an amp with no fuss. Solid plinth, adjustable feet, and a counterweight that’s actually easy to set. Sounds far better than it has any right to at the price.",
-      "status": "active",
-      "productType": "Equipment",
-      "vendor": "Third Side Records",
-      "tags": ["gear", "turntable", "belt-drive"],
-      "categoryHandles": ["gear"],
-      "collectionHandles": ["best-sellers", "starter-kit"],
-      "seoTitle": "Third Side TT-01 Belt-Drive Turntable | Third Side Records",
-      "seoDescription": "A belt-drive turntable with a pre-mounted cartridge and built-in preamp — plug-and-play into powered speakers or an amp.",
-      "variants": [
-        {
-          "sku": "TSR-GEAR-TT01",
-          "priceCents": 34900,
-          "isDefault": true,
-          "inventoryPolicy": "continue"
-        }
-      ],
-      "images": [
-        {
-          "assetId": "prod-turntable",
-          "isPrimary": true,
-          "alt": "The Third Side belt-drive turntable"
-        }
-      ]
-    },
-    {
-      "handle": "cork-slipmat",
-      "title": "Cork Slipmat",
-      "description": "A natural cork slipmat that grips the record and tightens up the low end — a small upgrade you’ll hear on the first play. Fits any standard 12-inch platter. Cheap enough to buy two and keep one clean.",
-      "status": "active",
-      "productType": "Equipment",
-      "vendor": "Third Side Records",
-      "tags": ["gear", "slipmat", "accessory"],
-      "categoryHandles": ["gear"],
-      "collectionHandles": ["starter-kit"],
-      "seoTitle": "Cork Slipmat — turntable accessory | Third Side Records",
-      "seoDescription": "A natural cork slipmat that grips the record and tightens the low end. Fits any 12-inch platter.",
-      "variants": [
-        {
-          "sku": "TSR-GEAR-MAT",
-          "priceCents": 1800,
-          "isDefault": true,
-          "inventoryPolicy": "continue"
-        }
-      ],
-      "images": [
-        {
-          "assetId": "prod-slipmat",
-          "isPrimary": true,
-          "alt": "A cork turntable slipmat"
-        }
-      ]
-    },
-    {
-      "handle": "groove-care-kit",
-      "title": "Groove Care Cleaning Kit",
-      "description": "Everything to keep your records quiet — an anti-static carbon-fibre brush, a bottle of alcohol-free cleaning fluid, and a microfibre cloth, in a tin that lives next to the deck. Two minutes before a play and the pops and crackle mostly disappear.",
-      "status": "active",
-      "productType": "Equipment",
-      "vendor": "Third Side Records",
-      "tags": ["gear", "cleaning", "care"],
-      "categoryHandles": ["gear"],
-      "collectionHandles": ["starter-kit"],
-      "seoTitle": "Groove Care Cleaning Kit — record care | Third Side Records",
-      "seoDescription": "An anti-static brush, alcohol-free fluid and a microfibre cloth to keep your records quiet.",
-      "variants": [
-        {
-          "sku": "TSR-GEAR-CARE",
-          "priceCents": 3400,
-          "isDefault": true,
-          "inventoryPolicy": "continue"
-        }
-      ],
-      "images": [
-        {
-          "assetId": "prod-cleaning-kit",
-          "isPrimary": true,
-          "alt": "A record-cleaning kit with brush and fluid"
-        }
-      ]
-    },
-    {
-      "handle": "crate-digger-tote",
-      "title": "Crate-Digger Canvas Tote",
-      "description": "A heavy 16oz canvas tote sized to carry a dozen LPs home without the corners going soft — flat bottom, reinforced straps, screen-printed with the shop mark. The bag you’ll grab on the way out the door every time.",
-      "status": "active",
-      "productType": "Merch",
-      "vendor": "Third Side Records",
-      "tags": ["merch", "tote", "canvas"],
-      "categoryHandles": ["merch"],
-      "collectionHandles": ["best-sellers"],
-      "seoTitle": "Crate-Digger Canvas Tote | Third Side Records",
-      "seoDescription": "A heavy 16oz canvas tote sized to carry a dozen LPs home, screen-printed with the shop mark.",
-      "variants": [
-        {
-          "sku": "TSR-MERCH-TOTE",
-          "priceCents": 2200,
-          "isDefault": true,
-          "inventoryPolicy": "continue"
-        }
-      ],
-      "images": [
-        {
-          "assetId": "prod-tote",
-          "isPrimary": true,
-          "alt": "A canvas crate-digger tote bag"
-        }
-      ]
-    },
-    {
-      "handle": "wax-club",
-      "title": "Wax Club — Monthly Vinyl Subscription",
-      "description": "One record in the mail every month, chosen by the people behind the counter to match the genres you love — a new pressing or a reissue we think you should hear, with the liner-note card that tells you why. Skip a month, change your taste, or cancel any time. The easiest way to keep the crate growing.",
-      "status": "active",
-      "productType": "Subscription",
-      "vendor": "Third Side Records",
-      "tags": ["subscription", "wax-club", "gift"],
-      "categoryHandles": ["subscription"],
-      "collectionHandles": ["best-sellers", "staff-picks"],
-      "seoTitle": "Wax Club — Monthly Vinyl Subscription | Third Side Records",
-      "seoDescription": "A hand-picked record in the mail every month, matched to your taste. Skip, swap or cancel any time.",
-      "options": [
-        {
-          "name": "Plan",
-          "displayType": "dropdown",
-          "values": [
-            {
-              "value": "One record"
-            },
-            {
-              "value": "Two records"
-            }
-          ]
-        }
-      ],
-      "variants": [
-        {
-          "sku": "TSR-SUB-1",
-          "priceCents": 3200,
-          "isDefault": true,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Plan": "One record"
-          }
+            "handle": "best-sellers",
+            "name": "Best sellers",
+            "description": "What walks out the door the fastest.",
+            "type": "manual",
+            "featured": true,
+            "productHandles": [
+                "paper-cathedral",
+                "wax-club",
+                "tt-01-turntable",
+                "crate-digger-tote"
+            ]
         },
         {
-          "sku": "TSR-SUB-2",
-          "priceCents": 5800,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Plan": "Two records"
-          }
-        }
-      ],
-      "images": [
+            "handle": "jazz-soul",
+            "name": "Jazz & soul",
+            "description": "Late-night sessions and gritty soul.",
+            "type": "manual",
+            "featured": false,
+            "productHandles": [
+                "midnight-ledger",
+                "static-gospel"
+            ]
+        },
         {
-          "assetId": "prod-wax-club",
-          "isPrimary": true,
-          "alt": "A stack of subscription LPs wrapped for the month"
+            "handle": "electronic",
+            "name": "Electronic & post-punk",
+            "description": "Synths, motorik pulses and color wax.",
+            "type": "manual",
+            "featured": false,
+            "productHandles": [
+                "neon-meridian",
+                "chrome-orchard"
+            ]
+        },
+        {
+            "handle": "starter-kit",
+            "name": "Starter kit",
+            "description": "New to vinyl? Deck, mat and cleaning kit to get going.",
+            "type": "manual",
+            "featured": false,
+            "productHandles": [
+                "tt-01-turntable",
+                "cork-slipmat",
+                "groove-care-kit"
+            ]
         }
-      ]
-    }
-  ]
+    ],
+    "products": [
+        {
+            "handle": "neon-meridian",
+            "title": "Neon Meridian — Violet Transit",
+            "description": "A neon-lit debut of widescreen synth-pop — arpeggios that sprint, choruses built for the drive home, and a low end you’ll feel through the floor. Sequenced as one continuous night, side A to side B, the way the band meant it.",
+            "status": "active",
+            "productType": "Vinyl record",
+            "vendor": "Violet Transit",
+            "tags": [
+                "electronic",
+                "synth-pop",
+                "new-arrival",
+                "color-vinyl"
+            ],
+            "categoryHandles": [
+                "records"
+            ],
+            "collectionHandles": [
+                "new-arrivals",
+                "staff-picks",
+                "electronic"
+            ],
+            "seoTitle": "Violet Transit — Neon Meridian (LP) | Third Side Records",
+            "seoDescription": "The widescreen synth-pop debut from Violet Transit, on 180g vinyl. Limited color pressing available.",
+            "options": [
+                {
+                    "name": "Edition",
+                    "displayType": "dropdown",
+                    "values": [
+                        {
+                            "value": "Standard black 180g"
+                        },
+                        {
+                            "value": "Limited color"
+                        }
+                    ]
+                }
+            ],
+            "variants": [
+                {
+                    "sku": "TSR-LP-NEON-BLK",
+                    "priceCents": 2800,
+                    "isDefault": true,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Edition": "Standard black 180g"
+                    }
+                },
+                {
+                    "sku": "TSR-LP-NEON-COL",
+                    "priceCents": 3300,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Edition": "Limited color"
+                    }
+                }
+            ],
+            "images": [
+                {
+                    "assetId": "prod-neon-meridian",
+                    "isPrimary": true,
+                    "alt": "Neon Meridian LP sleeve"
+                }
+            ]
+        },
+        {
+            "handle": "paper-cathedral",
+            "title": "Paper Cathedral — The Hollow Coast",
+            "description": "Big, reverb-soaked indie rock that builds like weather — quiet verses, guitars that break the roof off by the last chorus. The kind of record you put on loud with the windows open. Their best yet, and it isn’t close.",
+            "status": "active",
+            "productType": "Vinyl record",
+            "vendor": "The Hollow Coast",
+            "tags": [
+                "indie-rock",
+                "alternative",
+                "new-arrival"
+            ],
+            "categoryHandles": [
+                "records"
+            ],
+            "collectionHandles": [
+                "new-arrivals",
+                "best-sellers"
+            ],
+            "seoTitle": "The Hollow Coast — Paper Cathedral (LP) | Third Side Records",
+            "seoDescription": "Reverb-soaked indie rock from The Hollow Coast, pressed on 180g vinyl.",
+            "options": [
+                {
+                    "name": "Edition",
+                    "displayType": "dropdown",
+                    "values": [
+                        {
+                            "value": "Standard black 180g"
+                        },
+                        {
+                            "value": "Limited color"
+                        }
+                    ]
+                }
+            ],
+            "variants": [
+                {
+                    "sku": "TSR-LP-PAPER-BLK",
+                    "priceCents": 2600,
+                    "isDefault": true,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Edition": "Standard black 180g"
+                    }
+                },
+                {
+                    "sku": "TSR-LP-PAPER-COL",
+                    "priceCents": 3100,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Edition": "Limited color"
+                    }
+                }
+            ],
+            "images": [
+                {
+                    "assetId": "prod-paper-cathedral",
+                    "isPrimary": true,
+                    "alt": "Paper Cathedral LP sleeve"
+                }
+            ]
+        },
+        {
+            "handle": "midnight-ledger",
+            "title": "Midnight Ledger — Cole Ambrose Trio",
+            "description": "A late-night piano-trio session cut straight to tape — brushed drums, a walking bass you can lean on, and playing that leaves room to breathe. An audiophile 180g pressing that rewards a good stylus and a quiet room.",
+            "status": "active",
+            "productType": "Vinyl record",
+            "vendor": "Cole Ambrose Trio",
+            "tags": [
+                "jazz",
+                "audiophile",
+                "reissue"
+            ],
+            "categoryHandles": [
+                "records"
+            ],
+            "collectionHandles": [
+                "new-arrivals",
+                "staff-picks",
+                "jazz-soul"
+            ],
+            "seoTitle": "Cole Ambrose Trio — Midnight Ledger (LP) | Third Side Records",
+            "seoDescription": "A late-night piano-trio session on audiophile 180g vinyl. Brushed drums, walking bass, room to breathe.",
+            "options": [
+                {
+                    "name": "Edition",
+                    "displayType": "dropdown",
+                    "values": [
+                        {
+                            "value": "Standard black 180g"
+                        },
+                        {
+                            "value": "Limited color"
+                        }
+                    ]
+                }
+            ],
+            "variants": [
+                {
+                    "sku": "TSR-LP-MIDNIGHT-BLK",
+                    "priceCents": 3400,
+                    "isDefault": true,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Edition": "Standard black 180g"
+                    }
+                },
+                {
+                    "sku": "TSR-LP-MIDNIGHT-COL",
+                    "priceCents": 3900,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Edition": "Limited color"
+                    }
+                }
+            ],
+            "images": [
+                {
+                    "assetId": "prod-midnight-ledger",
+                    "isPrimary": true,
+                    "alt": "Midnight Ledger LP sleeve"
+                }
+            ]
+        },
+        {
+            "handle": "static-gospel",
+            "title": "Static Gospel — Rue Delacroix",
+            "description": "Soul with grit under its fingernails — horns that punch, an organ that simmers, and a voice that sounds like it’s been up all night and has something to tell you. Warm, analogue, and impossible to sit still to.",
+            "status": "active",
+            "productType": "Vinyl record",
+            "vendor": "Rue Delacroix",
+            "tags": [
+                "soul",
+                "funk",
+                "new-arrival"
+            ],
+            "categoryHandles": [
+                "records"
+            ],
+            "collectionHandles": [
+                "new-arrivals",
+                "staff-picks",
+                "jazz-soul"
+            ],
+            "seoTitle": "Rue Delacroix — Static Gospel (LP) | Third Side Records",
+            "seoDescription": "Gritty, horn-driven soul from Rue Delacroix on 180g vinyl.",
+            "options": [
+                {
+                    "name": "Edition",
+                    "displayType": "dropdown",
+                    "values": [
+                        {
+                            "value": "Standard black 180g"
+                        },
+                        {
+                            "value": "Limited color"
+                        }
+                    ]
+                }
+            ],
+            "variants": [
+                {
+                    "sku": "TSR-LP-STATIC-BLK",
+                    "priceCents": 2700,
+                    "isDefault": true,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Edition": "Standard black 180g"
+                    }
+                },
+                {
+                    "sku": "TSR-LP-STATIC-COL",
+                    "priceCents": 3200,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Edition": "Limited color"
+                    }
+                }
+            ],
+            "images": [
+                {
+                    "assetId": "prod-static-gospel",
+                    "isPrimary": true,
+                    "alt": "Static Gospel LP sleeve"
+                }
+            ]
+        },
+        {
+            "handle": "chrome-orchard",
+            "title": "Chrome Orchard — Fever Signal",
+            "description": "Angular post-punk with a pulse — motorik drums, a bassline that never lets up, and guitars filed to a point. Ten tracks, not a spare second among them. Play it once and you’ll flip it straight back over.",
+            "status": "active",
+            "productType": "Vinyl record",
+            "vendor": "Fever Signal",
+            "tags": [
+                "post-punk",
+                "alternative",
+                "color-vinyl"
+            ],
+            "categoryHandles": [
+                "records"
+            ],
+            "collectionHandles": [
+                "new-arrivals",
+                "electronic"
+            ],
+            "seoTitle": "Fever Signal — Chrome Orchard (LP) | Third Side Records",
+            "seoDescription": "Angular, motorik post-punk from Fever Signal on 180g vinyl. Limited color pressing available.",
+            "options": [
+                {
+                    "name": "Edition",
+                    "displayType": "dropdown",
+                    "values": [
+                        {
+                            "value": "Standard black 180g"
+                        },
+                        {
+                            "value": "Limited color"
+                        }
+                    ]
+                }
+            ],
+            "variants": [
+                {
+                    "sku": "TSR-LP-CHROME-BLK",
+                    "priceCents": 2900,
+                    "isDefault": true,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Edition": "Standard black 180g"
+                    }
+                },
+                {
+                    "sku": "TSR-LP-CHROME-COL",
+                    "priceCents": 3400,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Edition": "Limited color"
+                    }
+                }
+            ],
+            "images": [
+                {
+                    "assetId": "prod-chrome-orchard",
+                    "isPrimary": true,
+                    "alt": "Chrome Orchard LP sleeve"
+                }
+            ]
+        },
+        {
+            "handle": "tt-01-turntable",
+            "title": "Third Side TT-01 Belt-Drive Turntable",
+            "description": "The deck we set up for people getting back into records — a belt-drive turntable with a pre-mounted cartridge and a built-in preamp, so it plugs straight into powered speakers or an amp with no fuss. Solid plinth, adjustable feet, and a counterweight that’s actually easy to set. Sounds far better than it has any right to at the price.",
+            "status": "active",
+            "productType": "Equipment",
+            "vendor": "Third Side Records",
+            "tags": [
+                "gear",
+                "turntable",
+                "belt-drive"
+            ],
+            "categoryHandles": [
+                "gear"
+            ],
+            "collectionHandles": [
+                "best-sellers",
+                "starter-kit"
+            ],
+            "seoTitle": "Third Side TT-01 Belt-Drive Turntable | Third Side Records",
+            "seoDescription": "A belt-drive turntable with a pre-mounted cartridge and built-in preamp — plug-and-play into powered speakers or an amp.",
+            "variants": [
+                {
+                    "sku": "TSR-GEAR-TT01",
+                    "priceCents": 34900,
+                    "isDefault": true,
+                    "inventoryPolicy": "continue"
+                }
+            ],
+            "images": [
+                {
+                    "assetId": "prod-turntable",
+                    "isPrimary": true,
+                    "alt": "The Third Side belt-drive turntable"
+                }
+            ]
+        },
+        {
+            "handle": "cork-slipmat",
+            "title": "Cork Slipmat",
+            "description": "A natural cork slipmat that grips the record and tightens up the low end — a small upgrade you’ll hear on the first play. Fits any standard 12-inch platter. Cheap enough to buy two and keep one clean.",
+            "status": "active",
+            "productType": "Equipment",
+            "vendor": "Third Side Records",
+            "tags": [
+                "gear",
+                "slipmat",
+                "accessory"
+            ],
+            "categoryHandles": [
+                "gear"
+            ],
+            "collectionHandles": [
+                "starter-kit"
+            ],
+            "seoTitle": "Cork Slipmat — turntable accessory | Third Side Records",
+            "seoDescription": "A natural cork slipmat that grips the record and tightens the low end. Fits any 12-inch platter.",
+            "variants": [
+                {
+                    "sku": "TSR-GEAR-MAT",
+                    "priceCents": 1800,
+                    "isDefault": true,
+                    "inventoryPolicy": "continue"
+                }
+            ],
+            "images": [
+                {
+                    "assetId": "prod-slipmat",
+                    "isPrimary": true,
+                    "alt": "A cork turntable slipmat"
+                }
+            ]
+        },
+        {
+            "handle": "groove-care-kit",
+            "title": "Groove Care Cleaning Kit",
+            "description": "Everything to keep your records quiet — an anti-static carbon-fibre brush, a bottle of alcohol-free cleaning fluid, and a microfibre cloth, in a tin that lives next to the deck. Two minutes before a play and the pops and crackle mostly disappear.",
+            "status": "active",
+            "productType": "Equipment",
+            "vendor": "Third Side Records",
+            "tags": [
+                "gear",
+                "cleaning",
+                "care"
+            ],
+            "categoryHandles": [
+                "gear"
+            ],
+            "collectionHandles": [
+                "starter-kit"
+            ],
+            "seoTitle": "Groove Care Cleaning Kit — record care | Third Side Records",
+            "seoDescription": "An anti-static brush, alcohol-free fluid and a microfibre cloth to keep your records quiet.",
+            "variants": [
+                {
+                    "sku": "TSR-GEAR-CARE",
+                    "priceCents": 3400,
+                    "isDefault": true,
+                    "inventoryPolicy": "continue"
+                }
+            ],
+            "images": [
+                {
+                    "assetId": "prod-cleaning-kit",
+                    "isPrimary": true,
+                    "alt": "A record-cleaning kit with brush and fluid"
+                }
+            ]
+        },
+        {
+            "handle": "crate-digger-tote",
+            "title": "Crate-Digger Canvas Tote",
+            "description": "A heavy 16oz canvas tote sized to carry a dozen LPs home without the corners going soft — flat bottom, reinforced straps, screen-printed with the shop mark. The bag you’ll grab on the way out the door every time.",
+            "status": "active",
+            "productType": "Merch",
+            "vendor": "Third Side Records",
+            "tags": [
+                "merch",
+                "tote",
+                "canvas"
+            ],
+            "categoryHandles": [
+                "merch"
+            ],
+            "collectionHandles": [
+                "best-sellers"
+            ],
+            "seoTitle": "Crate-Digger Canvas Tote | Third Side Records",
+            "seoDescription": "A heavy 16oz canvas tote sized to carry a dozen LPs home, screen-printed with the shop mark.",
+            "variants": [
+                {
+                    "sku": "TSR-MERCH-TOTE",
+                    "priceCents": 2200,
+                    "isDefault": true,
+                    "inventoryPolicy": "continue"
+                }
+            ],
+            "images": [
+                {
+                    "assetId": "prod-tote",
+                    "isPrimary": true,
+                    "alt": "A canvas crate-digger tote bag"
+                }
+            ]
+        },
+        {
+            "handle": "wax-club",
+            "title": "Wax Club — Monthly Vinyl Subscription",
+            "description": "One record in the mail every month, chosen by the people behind the counter to match the genres you love — a new pressing or a reissue we think you should hear, with the liner-note card that tells you why. Skip a month, change your taste, or cancel any time. The easiest way to keep the crate growing.",
+            "status": "active",
+            "productType": "Subscription",
+            "vendor": "Third Side Records",
+            "tags": [
+                "subscription",
+                "wax-club",
+                "gift"
+            ],
+            "categoryHandles": [
+                "subscription"
+            ],
+            "collectionHandles": [
+                "best-sellers",
+                "staff-picks"
+            ],
+            "seoTitle": "Wax Club — Monthly Vinyl Subscription | Third Side Records",
+            "seoDescription": "A hand-picked record in the mail every month, matched to your taste. Skip, swap or cancel any time.",
+            "options": [
+                {
+                    "name": "Plan",
+                    "displayType": "dropdown",
+                    "values": [
+                        {
+                            "value": "One record"
+                        },
+                        {
+                            "value": "Two records"
+                        }
+                    ]
+                }
+            ],
+            "variants": [
+                {
+                    "sku": "TSR-SUB-1",
+                    "priceCents": 3200,
+                    "isDefault": true,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Plan": "One record"
+                    }
+                },
+                {
+                    "sku": "TSR-SUB-2",
+                    "priceCents": 5800,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Plan": "Two records"
+                    }
+                }
+            ],
+            "images": [
+                {
+                    "assetId": "prod-wax-club",
+                    "isPrimary": true,
+                    "alt": "A stack of subscription LPs wrapped for the month"
+                }
+            ]
+        }
+    ]
 }

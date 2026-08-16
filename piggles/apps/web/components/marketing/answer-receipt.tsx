@@ -40,7 +40,7 @@ function verdict(runs: number) {
   return `Answer number ${runs}. Still $49.`;
 }
 
-const ROW = 'border-secondary-content/25 flex items-baseline justify-between gap-4 border-b py-3';
+const ROW = 'border-base-content/25 flex items-baseline justify-between gap-4 border-b py-3';
 
 function Row({ label, note, group }: { label: string; note: string; group?: PigglesGroup }) {
   return (
@@ -74,9 +74,14 @@ export function AnswerReceipt({
     // number, and announcing $49 alone is the one reading that means nothing.
     // `grow` so the panel fills its column and its CTA lands level with the
     // button in the column beside it.
+    // A theme ISLAND, not `bg-secondary`. That utility is a navy panel only
+    // because `--color-secondary` is dark in the LIGHT theme; it is #d7dbe3 in
+    // the dark one, so once the site carries a theme toggle this panel went pale
+    // and the `text-primary` verdict line went with it.
     <div
       aria-live="polite"
-      className="bg-secondary text-secondary-content rounded-box flex grow flex-col p-6 sm:p-8"
+      data-theme="dark"
+      className="bg-base-200 rounded-box flex grow flex-col p-6 sm:p-8"
     >
       <p className="font-heading text-3xl font-black sm:text-4xl">
         {name.trim() || 'Your business'}

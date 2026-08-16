@@ -20,8 +20,9 @@ import {
 } from '../../lib/studio/page-data';
 import { useActiveSiteId } from '../../lib/api/shell-data';
 
-/** A stored row as the engine's document. */
-function toDoc(row: PageRow, propertyId: string): PageDoc {
+/** A stored row as the engine's document. Exported so a restore can rebuild the
+ *  document from the server and hand it to whatever pane is holding it. */
+export function toPageDoc(row: PageRow, propertyId: string): PageDoc {
   return {
     kind: 'page',
     id: row.id,
@@ -72,7 +73,7 @@ function useOpenPage(row: PageRow | null, propertyId: string | null) {
       setStore(null);
       return;
     }
-    setStore(session.open(toDoc(row, propertyId)));
+    setStore(session.open(toPageDoc(row, propertyId)));
   }, [session, row, propertyId]);
 
   return store;

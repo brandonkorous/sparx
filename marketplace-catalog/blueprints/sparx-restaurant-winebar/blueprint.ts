@@ -10,71 +10,71 @@ import emails from './emails.json' with { type: 'json' };
 import assets from './assets.json' with { type: 'json' };
 
 const blueprint = {
-  key: 'sparx-restaurant-winebar',
-  version: '1.3.0',
-  name: 'sparx — Wine bar',
-  summary:
-    'A complete, working site for an evening wine bar: a real by-the-glass and small-plates menu, and a live reservations flow (tables and bar stools as bookable resources, party-size reservation services, evening hours, a relaxed cancellation policy) on the /reserve page. Moody low-lit theme — charcoal-wine ground, a lit burgundy, a brass accent. Pages: Home, Menu, Reserve, About, Visit. Shipped as Decant.',
-  vertical: 'services',
-  preview: 'media/preview.png',
-  requiresModules: ['builder', 'scheduling', 'crm', 'email'],
+    key: 'sparx-restaurant-winebar',
+    version: '1.3.0',
+    name: 'sparx — Wine bar',
+    summary:
+        'A complete, working site for an evening wine bar: a real by-the-glass and small-plates menu, and a live reservations flow (tables and bar stools as bookable resources, party-size reservation services, evening hours, a relaxed cancellation policy) on the /reserve page. Moody low-lit theme — charcoal-wine ground, a lit burgundy, a brass accent. Pages: Home, Menu, Reserve, About, Visit. Shipped as Decant.',
+    vertical: 'services',
+    preview: 'media/preview.png',
+    requiresModules: ['builder', 'scheduling', 'crm', 'email'],
 
-  // Identity only (business name + tagline + fonts + the theme's hex colours). The look
-  // rides site.theme + the theme decl below; the installing tenant rebrands the name.
-  brand: {
-    businessName: 'Decant',
-    tagline: 'A wine bar.',
-    colors: {
-      primary: '#d3646b',
-      primaryForeground: '#130808',
-      accent: '#eeb154',
-      secondary: '#d3b99b',
-    },
-    fonts: {
-      heading: 'Spectral',
-      body: 'Inter',
-    },
-  },
-
-  // The provisioned SiteTheme the installer creates + applies — an editable saved theme
-  // over a foundation base + the template's brand snapshot. The LIVE storefront look is
-  // site.theme (the flat bespoke tokens), written last.
-  theme: {
-    name: 'decant-bar',
-    basePresetKey: 'apex',
-    presentation: {
-      v: 2,
-      containerWidth: '1152px',
-    },
+    // Identity only (business name + tagline + fonts + the theme's hex colors). The look
+    // rides site.theme + the theme decl below; the installing tenant rebrands the name.
     brand: {
-      colorPrimary: '#d3646b',
-      colorAccent: '#eeb154',
-      colorSecondary: '#d3b99b',
-      fontHeading: 'Spectral',
-      fontBody: 'Inter',
-      tokens: {},
+        businessName: 'Decant',
+        tagline: 'A wine bar.',
+        colors: {
+            primary: '#d3646b',
+            primaryForeground: '#130808',
+            accent: '#eeb154',
+            secondary: '#d3b99b',
+        },
+        fonts: {
+            heading: 'Spectral',
+            body: 'Inter',
+        },
     },
-    apply: true,
-  },
 
-  assets,
-  contentTypes: [],
+    // The provisioned SiteTheme the installer creates + applies — an editable saved theme
+    // over a foundation base + the template's brand snapshot. The LIVE storefront look is
+    // site.theme (the flat bespoke tokens), written last.
+    theme: {
+        name: 'decant-bar',
+        basePresetKey: 'apex',
+        presentation: {
+            v: 2,
+            containerWidth: '1152px',
+        },
+        brand: {
+            colorPrimary: '#d3646b',
+            colorAccent: '#eeb154',
+            colorSecondary: '#d3b99b',
+            fontHeading: 'Spectral',
+            fontBody: 'Inter',
+            tokens: {},
+        },
+        apply: true,
+    },
 
-  // The booking spine — policies, bookable resources (staff/rooms/stations) with weekly
-  // hours, and the service menu. The installer's scheduling slice replays it into a live
-  // booking flow that the site's /book page renders.
-  scheduling,
+    assets,
+    contentTypes: [],
 
-  // Brand-voiced MARKETING starters (a welcome + a come-back), installed as DRAFTS the
-  // tenant switches on. The transactional booking sends — confirmation, reminder,
-  // reschedule, cancellation, waitlist — are platform KEYED defaults, so they are covered
-  // on email-module activation and are deliberately NOT duplicated here.
-  emails,
-  sequences: [],
+    // The booking spine — policies, bookable resources (staff/rooms/stations) with weekly
+    // hours, and the service menu. The installer's scheduling slice replays it into a live
+    // booking flow that the site's /book page renders.
+    scheduling,
 
-  // The composed distinct site (frame + Home + Book + About + Contact) in the bespoke
-  // theme, fully stamped.
-  site,
+    // Brand-voiced MARKETING starters (a welcome + a come-back), installed as DRAFTS the
+    // tenant switches on. The transactional booking sends — confirmation, reminder,
+    // reschedule, cancellation, waitlist — are platform KEYED defaults, so they are covered
+    // on email-module activation and are deliberately NOT duplicated here.
+    emails,
+    sequences: [],
+
+    // The composed distinct site (frame + Home + Book + About + Contact) in the bespoke
+    // theme, fully stamped.
+    site,
 };
 
 export default blueprint;

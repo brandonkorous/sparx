@@ -28,6 +28,7 @@ COPY apps/workbench/package.json apps/workbench/
 COPY packages/app-kit/package.json packages/app-kit/
 COPY packages/api-client/package.json packages/api-client/
 COPY packages/auth/package.json packages/auth/
+COPY packages/brand-core/package.json packages/brand-core/
 COPY packages/brand/package.json packages/brand/
 # The address table. Pure data, no dependencies of its own — but the catch-all
 # route resolves paths through it during the SERVER render, so a missing copy is
@@ -98,6 +99,7 @@ RUN --mount=type=cache,id=pnpm,target=/root/.local/share/pnpm/store \
 COPY packages/app-kit packages/app-kit
 COPY packages/api-client packages/api-client
 COPY packages/auth packages/auth
+COPY packages/brand-core packages/brand-core
 COPY packages/brand packages/brand
 COPY packages/links packages/links
 COPY packages/migration packages/migration

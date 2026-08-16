@@ -1,15 +1,24 @@
 // The identity contract. The first test is the bug this package exists for.
 
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
-import { DEFAULT_PLATFORM_BRAND, normalizeBrandKey, platformBrandIdentity } from './index';
+import {
+  DEFAULT_PLATFORM_BRAND,
+  normalizeBrandKey,
+  platformBrandIdentity,
+  platformFrom,
+} from './index';
 
 const TOUCHED = [
   'SPARX_BRAND_NAME',
   'SPARX_SUPPORT_NAME',
   'SPARX_SUPPORT_EMAIL',
+  'SPARX_BRAND_URL',
+  'SPARX_EMAIL_FROM',
   'PIGGLES_BRAND_NAME',
   'PIGGLES_SUPPORT_NAME',
   'PIGGLES_SUPPORT_EMAIL',
+  'PIGGLES_BRAND_URL',
+  'PIGGLES_EMAIL_FROM',
 ] as const;
 
 let saved: Record<string, string | undefined>;
@@ -79,5 +88,45 @@ describe('platformBrandIdentity', () => {
   it('never throws — an email worker must not stop over a display name', () => {
     expect(() => platformBrandIdentity(undefined)).not.toThrow();
     expect(() => platformBrandIdentity('a brand nobody configured')).not.toThrow();
+  });
+
+  it('carries a public home only when one is configured', () => {
+    // The legal line at the foot of every platform email. Absent renders
+    // nothing, which is right — a guessed URL is a link to a 404.
+    expect(platformBrandIdentity('piggles').siteUrl).toBeNull();
+    process.env.PIGGLES_BRAND_URL = 'https://meetpiggles.com';
+    expect(platformBrandIdentity('piggles').siteUrl).toBe('https://meetpiggles.com');
+  });
+});
+
+describe('platformFrom', () => {
+  const FALLBACK = 'sparx <noreply@sparx.email>';
+
+  it('keeps the deliverable address and corrects only the name', () => {
+    // Both brands send through one Mailgun domain. The address has to stay;
+    // "sparx" in front of it does not.
+    process.env.PIGGLES_BRAND_NAME = 'Piggles';
+    const from = platformFrom(platformBrandIdentity('piggles'), FALLBACK);
+    expect(from).toBe('Piggles <noreply@sparx.email>');
+    expect(from).not.toMatch(/^sparx /);
+  });
+
+  it('takes the brand’s own sending identity whole when it has one', () => {
+    process.env.PIGGLES_EMAIL_FROM = 'Piggles <hello@meetpiggles.com>';
+    expect(platformFrom(platformBrandIdentity('piggles'), FALLBACK)).toBe(
+      'Piggles <hello@meetpiggles.com>'
+    );
+  });
+
+  it('accepts a bare address with no angle brackets', () => {
+    process.env.PIGGLES_BRAND_NAME = 'Piggles';
+    expect(platformFrom(platformBrandIdentity('piggles'), 'noreply@sparx.email')).toBe(
+      'Piggles <noreply@sparx.email>'
+    );
+  });
+
+  it('leaves the default brand’s own From untouched', () => {
+    process.env.SPARX_BRAND_NAME = 'sparx';
+    expect(platformFrom(platformBrandIdentity('sparx'), FALLBACK)).toBe(FALLBACK);
   });
 });

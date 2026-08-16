@@ -16,42 +16,42 @@ import type { PipelineTemplate } from './pipeline';
 export const TICKET_PIPELINE_SLUG = 'support';
 
 export const DEFAULT_TICKET_PIPELINE_TEMPLATE: PipelineTemplate = {
-  name: 'Support Queue',
-  slug: TICKET_PIPELINE_SLUG,
-  isDefault: true,
-  objectKey: 'ticket',
-  stages: [
-    // Probability is meaningless on a ticket and stays 0 throughout; it is a
-    // sales-forecast field that the shared Pipeline table carries. Colours are
-    // the workbench's own module-neutral defaults, overridable per tenant.
-    { name: 'New', sortOrder: 0, probability: 0, stageType: 'open', color: '#0EA5E9' },
-    { name: 'In Progress', sortOrder: 1, probability: 0, stageType: 'open', color: '#6366F1' },
-    {
-      name: 'Waiting on Customer',
-      sortOrder: 2,
-      probability: 0,
-      stageType: 'open',
-      color: '#F59E0B',
-    },
-    { name: 'Resolved', sortOrder: 3, probability: 0, stageType: 'resolved', color: '#10B981' },
-    { name: 'Closed', sortOrder: 4, probability: 0, stageType: 'closed', color: '#94A3B8' },
-  ],
+    name: 'Support Queue',
+    slug: TICKET_PIPELINE_SLUG,
+    isDefault: true,
+    objectKey: 'ticket',
+    stages: [
+        // Probability is meaningless on a ticket and stays 0 throughout; it is a
+        // sales-forecast field that the shared Pipeline table carries. Colors are
+        // the workbench's own module-neutral defaults, overridable per tenant.
+        { name: 'New', sortOrder: 0, probability: 0, stageType: 'open', color: '#0EA5E9' },
+        { name: 'In Progress', sortOrder: 1, probability: 0, stageType: 'open', color: '#6366F1' },
+        {
+            name: 'Waiting on Customer',
+            sortOrder: 2,
+            probability: 0,
+            stageType: 'open',
+            color: '#F59E0B',
+        },
+        { name: 'Resolved', sortOrder: 3, probability: 0, stageType: 'resolved', color: '#10B981' },
+        { name: 'Closed', sortOrder: 4, probability: 0, stageType: 'closed', color: '#94A3B8' },
+    ],
 };
 
 export interface SlaTargetTemplate {
-  priority: 'low' | 'medium' | 'high' | 'urgent';
-  firstResponseMinutes: number | null;
-  resolutionMinutes: number | null;
+    priority: 'low' | 'medium' | 'high' | 'urgent';
+    firstResponseMinutes: number | null;
+    resolutionMinutes: number | null;
 }
 
 export interface SlaPolicyTemplate {
-  name: string;
-  description: string;
-  isDefault: boolean;
-  timezone: string;
-  businessHours: { day: number; startMinute: number; endMinute: number }[];
-  warnAtPercent: number;
-  targets: SlaTargetTemplate[];
+    name: string;
+    description: string;
+    isDefault: boolean;
+    timezone: string;
+    businessHours: { day: number; startMinute: number; endMinute: number }[];
+    warnAtPercent: number;
+    targets: SlaTargetTemplate[];
 }
 
 /**
@@ -73,26 +73,26 @@ export interface SlaPolicyTemplate {
  * red is stop looking at it.
  */
 export const DEFAULT_SLA_POLICY_TEMPLATE: SlaPolicyTemplate = {
-  name: 'Standard Support',
-  description: 'Weekday business hours. Edit the hours and targets to match how your team works.',
-  isDefault: true,
-  timezone: 'UTC',
-  businessHours: [
-    { day: 1, startMinute: 540, endMinute: 1020 },
-    { day: 2, startMinute: 540, endMinute: 1020 },
-    { day: 3, startMinute: 540, endMinute: 1020 },
-    { day: 4, startMinute: 540, endMinute: 1020 },
-    { day: 5, startMinute: 540, endMinute: 1020 },
-  ],
-  warnAtPercent: 80,
-  targets: [
-    // Business minutes, so "1 day" is one WORKING day (480 minutes), not 24
-    // hours of wall clock that mostly elapses while the office is dark.
-    { priority: 'urgent', firstResponseMinutes: 60, resolutionMinutes: 480 },
-    { priority: 'high', firstResponseMinutes: 240, resolutionMinutes: 960 },
-    { priority: 'medium', firstResponseMinutes: 480, resolutionMinutes: 2400 },
-    // No promise on low priority, expressed as the absence of one rather than
-    // a number nobody intends to meet.
-    { priority: 'low', firstResponseMinutes: null, resolutionMinutes: null },
-  ],
+    name: 'Standard Support',
+    description: 'Weekday business hours. Edit the hours and targets to match how your team works.',
+    isDefault: true,
+    timezone: 'UTC',
+    businessHours: [
+        { day: 1, startMinute: 540, endMinute: 1020 },
+        { day: 2, startMinute: 540, endMinute: 1020 },
+        { day: 3, startMinute: 540, endMinute: 1020 },
+        { day: 4, startMinute: 540, endMinute: 1020 },
+        { day: 5, startMinute: 540, endMinute: 1020 },
+    ],
+    warnAtPercent: 80,
+    targets: [
+        // Business minutes, so "1 day" is one WORKING day (480 minutes), not 24
+        // hours of wall clock that mostly elapses while the office is dark.
+        { priority: 'urgent', firstResponseMinutes: 60, resolutionMinutes: 480 },
+        { priority: 'high', firstResponseMinutes: 240, resolutionMinutes: 960 },
+        { priority: 'medium', firstResponseMinutes: 480, resolutionMinutes: 2400 },
+        // No promise on low priority, expressed as the absence of one rather than
+        // a number nobody intends to meet.
+        { priority: 'low', firstResponseMinutes: null, resolutionMinutes: null },
+    ],
 };

@@ -1,38 +1,44 @@
 {
-  "schemaVersion": 1,
-  "category": "blueprint",
-  "slug": "sparx-glossy-fashion",
-  "name": "Glossy Fashion",
-  "version": "1.4.0",
-  "tagline": "An image-first editorial template for a magazine of style and taste.",
-  "description": "An image-first, editorial-luxury template for a style & design magazine — a full-bleed cover story, an editorial feed, a lookbook of looks, image-led department tiles and a bespoke photo-story article page, in a pure black-and-white serif theme where the photograph supplies every colour. Modelled on the high-fashion glossy archetype; shipped as Mode & Object. Ships a light object edit (accessories, ceramics, a print) to demonstrate content + commerce together.",
-  "payload": "blueprint.ts",
-  "facets": {
-    "vertical": "content",
-    "industry": "Style, fashion & design"
-  },
-  "pricing": {
-    "model": "free",
-    "priceCents": 0
-  },
-  "requires": {
-    "modules": ["builder", "commerce", "cms", "crm", "email"]
-  },
-  "media": [
-    {
-      "file": "media/icon.png",
-      "kind": "icon",
-      "alt": "Glossy Fashion icon"
+    "schemaVersion": 1,
+    "category": "blueprint",
+    "slug": "sparx-glossy-fashion",
+    "name": "Glossy Fashion",
+    "version": "1.4.0",
+    "tagline": "An image-first editorial template for a magazine of style and taste.",
+    "description": "An image-first, editorial-luxury template for a style & design magazine — a full-bleed cover story, an editorial feed, a lookbook of looks, image-led department tiles and a bespoke photo-story article page, in a pure black-and-white serif theme where the photograph supplies every color. Modelled on the high-fashion glossy archetype; shipped as Mode & Object. Ships a light object edit (accessories, ceramics, a print) to demonstrate content + commerce together.",
+    "payload": "blueprint.ts",
+    "facets": {
+        "vertical": "content",
+        "industry": "Style, fashion & design"
     },
-    {
-      "file": "media/preview.png",
-      "kind": "preview",
-      "alt": "Glossy Fashion — home page preview"
-    }
-  ],
-  "author": {
-    "displayName": "WizeWorks"
-  },
-  "accent": "#030303",
-  "sortWeight": 100
+    "pricing": {
+        "model": "free",
+        "priceCents": 0
+    },
+    "requires": {
+        "modules": [
+            "builder",
+            "commerce",
+            "cms",
+            "crm",
+            "email"
+        ]
+    },
+    "media": [
+        {
+            "file": "media/icon.png",
+            "kind": "icon",
+            "alt": "Glossy Fashion icon"
+        },
+        {
+            "file": "media/preview.png",
+            "kind": "preview",
+            "alt": "Glossy Fashion — home page preview"
+        }
+    ],
+    "author": {
+        "displayName": "WizeWorks"
+    },
+    "accent": "#030303",
+    "sortWeight": 100
 }

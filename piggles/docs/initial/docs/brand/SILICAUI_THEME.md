@@ -122,7 +122,7 @@ lightest of the three in both themes** — raised surfaces catch more light.
 
 **Corrected — dark `error`.** It was `#F06B6B`, which measures **ΔE 14.3** against the
 dark `primary` `#FF7C91` — close enough that a Delete button and the brand read as the
-same colour. `#EF4444` measures ΔE 32.2 and still clears AA on the same ink at 4.98:1.
+same color. `#EF4444` measures ΔE 32.2 and still clears AA on the same ink at 4.98:1.
 Any future dark `error` must be checked against the dark pink, not just against its own
 content token: every lighter rose fails this test.
 
@@ -257,7 +257,7 @@ It also does product work: because every app ships enabled, the Piggles rail is 
 day one, so it needs a spine that sparx's gradually-filling rail does not.
 
 `Money` is lime-700 rather than a money-green: at `#15803D` it measured ΔE 7.3 against
-`success`, which would have made the Money app and a success badge the same colour.
+`success`, which would have made the Money app and a success badge the same color.
 
 Group hues are **theme-independent** — a saturated hue reads on either canvas, and the
 tinted rendering comes from SilicaUI's universal `soft` treatment at paint time, so

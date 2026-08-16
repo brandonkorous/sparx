@@ -343,19 +343,19 @@ Question raised: "why is the builder not rendering the email like our preview do
 that silicaui's fault?" **Answer: not silicaui's fault.** The divergence was two things,
 one ours (now fixed), one a genuine silica gap.
 
-**How brand colour reaches the canvas (verified end-to-end in silicaui 0.33):** every
+**How brand color reaches the canvas (verified end-to-end in silicaui 0.33):** every
 default-email node carries `*Auto` flags + optional `*Role` (`silica-email-kit.ts`).
 silica's `EmailBuilder` runs `editor.setColorDefaults(resolveEmailColorDefaults(theme))`
 on every `theme` change, which **repaints every node still on its default** (`<field>Auto
 === true`), resolving each node's role via `AUTO_COLOR_FIELDS` (button bg → `primary`,
 section bg → `base100`, …). Those defaults are **identical** to the send's
-`applyBrandColors` (`@sparx/email/silica/brand-colors.ts`) role map. So canvas colour ==
-send colour **iff** `resolveEmailColorDefaults(canvasTheme)` == `roleMap(sendBrand)`.
+`applyBrandColors` (`@sparx/email/silica/brand-colors.ts`) role map. So canvas color ==
+send color **iff** `resolveEmailColorDefaults(canvasTheme)` == `roleMap(sendBrand)`.
 `resolveEmailColorDefaults` reads `--color-{primary,base-100/200/300,base-content,success,
 warning,info,error,…}` off the theme tokens (`silicaui-html` `colorValue`), and
 `compiledToSilicaTheme` emits all of them.
 
-**Fix 1 — colour parity (ours).** The compiled theme's semantic tokens
+**Fix 1 — color parity (ours).** The compiled theme's semantic tokens
 (`--color-success` etc.) differ from the send's **FIXED** semantic constants (a success is
 green for everyone). The email studio now overlays `EMAIL_SEMANTIC_TOKENS` (= the send's
 `SEMANTIC`, duplicated with a keep-in-sync note) onto the canvas theme, so the status cues
@@ -397,10 +397,10 @@ propertyId, footerLinks)` resolves the active site's brand (`resolveEmailBrand`,
 
 The catalog was bumped `^0.33.0 → ^0.34.0` (all 11 `@wizeworks/silicaui*` entries) and
 installed. **Net: the edit canvas now shows the full email — brand bar, wordmark, branded
-body (colours + semantic status), and the legal footer — matching the Preview/send, with
+body (colors + semantic status), and the legal footer — matching the Preview/send, with
 the frame still un-deletable and always current-brand.**
 
-## 8. Live-send quality pass (2026-07-26) — spacing, footer, canvas colours
+## 8. Live-send quality pass (2026-07-26) — spacing, footer, canvas colors
 
 A real test-send to a Gmail inbox (Template tenant) surfaced three defects the canvas
 diagnosis had partly hidden. All fixed + verified by rendering the redesigned bodies with
@@ -417,14 +417,14 @@ a real Playwright screenshot (ember-brand tenant, full compliance) before shippi
    them. Fixed: both now take `footerLinks`, and the routes resolve them
    (`resolveEmailFooterLinks`) and pass them through. `builder-email-service.ts` +
    `services/api-rest/src/routes/v1/builder/emails.ts`.
-3. **Canvas colours fell to silica's neutral defaults entirely** (black button, dark
+3. **Canvas colors fell to silica's neutral defaults entirely** (black button, dark
    status — not just the button). Root cause: the canvas theme came from the site PAGE
    theme (`compileThemeForTenant`), which for this site resolved to nothing → silica's
    `DEFAULT_EMAIL_COLORS`. Fixed: the `/v1/builder/emails/frame` endpoint now returns
    `{ frame, colors }` where `colors` is the send's OWN role→hex map
    (`emailBrandColorDefaults` = `applyBrandColors`'s `roleMap`); the studio builds the
    canvas theme from `colors`, so `resolveEmailColorDefaults(canvasTheme)` === the send
-   map and the canvas repaints in exactly the inbox colours. Endpoint response +
+   map and the canvas repaints in exactly the inbox colors. Endpoint response +
    `buildFrame`→`buildChrome`, workbench `useEmailFrame`→`useEmailChrome`.
 
 **Rollout to existing tenants.** The `copyBlock` change alters every body's fingerprint,
@@ -502,7 +502,7 @@ site, and the emails should align to the site").
 used, a rule keyed to that exact hex — as a `bgcolor="…"` attribute or a `color: …`
 inline-style substring — overrides it to the brand's dark counterpart. Because the light
 hexes come from the same role map the projector paints with, the selectors match by
-construction; brand hues that don't shift and the fixed semantic colours emit no rule
+construction; brand hues that don't shift and the fixed semantic colors emit no rule
 and survive.
 
 **Wiring.**
@@ -534,9 +534,9 @@ dark — so the owner sees the exact dark theme a dark-mode client renders, rega
 their own OS. `darkModeRules`/`buildDarkModeCss` split in `dark-mode.ts`; `darkCss` on the
 preview response → `EmailPreview` → `previewSrcDoc` in the studio.
 
-**Known refinement (not blocking):** the fixed semantic status colours (success green,
+**Known refinement (not blocking):** the fixed semantic status colors (success green,
 etc.) are NOT remapped for dark — the theme system models no dark semantics, so remapping
-would mean inventing colours. On a dark surface a mid-dark green reads dimmer than ideal;
+would mean inventing colors. On a dark surface a mid-dark green reads dimmer than ideal;
 lightening semantics in dark is a follow-up once the theme system carries dark semantics.
 Gmail / Outlook.com force-invert regardless — dark mode remains progressive enhancement.
 
@@ -610,7 +610,7 @@ note) **does not exist** in 0.34.2 — it's a silicaui ask, not something to bui
 
 **Two silica guarantees make it safe + on-brand for free:** `EmailEditor.insert` runs
 `stampIds` which RECURSES over the whole inserted subtree, so a composed block's authored
-`def-` ids never collide (even dropped twice); and every colour is a neutral default
+`def-` ids never collide (even dropped twice); and every color is a neutral default
 paired with its `*Auto` flag, so `setColorDefaults` (editor) and the send's brand pass
 repaint each block in the tenant's own theme. Copy is deliberately placeholder — a
 starting layout to overwrite, carrying no data binding (the author personalizes via the

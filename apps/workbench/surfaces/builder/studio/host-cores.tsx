@@ -27,12 +27,12 @@
 import type { BuilderHost } from '@wizeworks/silicaui-builder/react';
 import type { HostNode } from '@wizeworks/silicaui-html';
 import {
-  HOST_COMPONENTS,
-  HOST_KEYS,
-  frameEmbedSrc,
-  frameRatioClass,
-  mapEmbedSrc,
-  type HostComponentMeta,
+    HOST_COMPONENTS,
+    HOST_KEYS,
+    frameEmbedSrc,
+    frameRatioClass,
+    mapEmbedSrc,
+    type HostComponentMeta,
 } from '@sparx/silica-catalog';
 
 // `HostRenderCtx` isn't re-exported by the builder, so derive the exact hook
@@ -41,21 +41,21 @@ type RenderHostNode = NonNullable<BuilderHost['renderHostNode']>;
 
 /** A neutral placeholder bar, sized by width class. */
 function Bar({ w = 'w-full' }: { w?: string }) {
-  return <div className={`bg-base-content/10 h-3 rounded ${w}`} />;
+    return <div className={`bg-base-content/10 h-3 rounded ${w}`} />;
 }
 
 /** The frame every skeleton sits in — a labelled dashed card that reads as "a live
  *  region your customers see here" without pretending to be interactive. */
 function CoreFrame({ label, children }: { label: string; children: React.ReactNode }) {
-  return (
-    <div className="border-base-content/25 bg-base-100 rounded-lg border border-dashed p-6">
-      <div className="mb-4 flex items-center gap-2 text-sm font-medium">
-        <span className="bg-primary inline-block size-2 rounded-full" />
-        {label} · live region
-      </div>
-      {children}
-    </div>
-  );
+    return (
+        <div className="border-base-content/25 bg-base-100 rounded-lg border border-dashed p-6">
+            <div className="mb-4 flex items-center gap-2 text-sm font-medium">
+                <span className="bg-primary inline-block size-2 rounded-full" />
+                {label} · live region
+            </div>
+            {children}
+        </div>
+    );
 }
 
 /** The tenant's real brand mark — logo and/or name, exactly as the live site's
@@ -63,30 +63,30 @@ function CoreFrame({ label, children }: { label: string; children: React.ReactNo
  *  `buildPreviewRoot` overlays. Degrades: logo-only with no logo → the name; no name
  *  → "Your site". Never an empty tile. */
 function BrandMark({ root, node }: { root: unknown; node: HostNode }) {
-  const identity = (root as { site?: { identity?: { name?: unknown; logo?: unknown } } })?.site
-    ?.identity;
-  const name = typeof identity?.name === 'string' && identity.name ? identity.name : 'Your site';
-  const logo = identity?.logo as { url?: unknown } | null | undefined;
-  const logoUrl = typeof logo?.url === 'string' && logo.url ? logo.url : null;
-  const show =
-    node.props?.show === 'logo' || node.props?.show === 'name' ? node.props.show : 'both';
-  // Mirror the live site's degradation: "logo only" with no logo would render an
-  // empty box, so fall back to the name.
-  const mode = show === 'logo' && !logoUrl ? 'name' : show;
+    const identity = (root as { site?: { identity?: { name?: unknown; logo?: unknown } } })?.site
+        ?.identity;
+    const name = typeof identity?.name === 'string' && identity.name ? identity.name : 'Your site';
+    const logo = identity?.logo as { url?: unknown } | null | undefined;
+    const logoUrl = typeof logo?.url === 'string' && logo.url ? logo.url : null;
+    const show =
+        node.props?.show === 'logo' || node.props?.show === 'name' ? node.props.show : 'both';
+    // Mirror the live site's degradation: "logo only" with no logo would render an
+    // empty box, so fall back to the name.
+    const mode = show === 'logo' && !logoUrl ? 'name' : show;
 
-  return (
-    <span className="inline-flex items-center gap-2.5">
-      {logoUrl && (mode === 'logo' || mode === 'both') ? (
-        // A raw <img>, not next/image: an arbitrary tenant media URL (usually an SVG),
-        // which the optimizer can't process. Decorative here — the name renders
-        // alongside in "both" — so alt is empty.
-        <img src={logoUrl} alt="" className="h-8 w-auto object-contain" />
-      ) : null}
-      {mode === 'name' || mode === 'both' ? (
-        <span className="text-lg font-semibold">{name}</span>
-      ) : null}
-    </span>
-  );
+    return (
+        <span className="inline-flex items-center gap-2.5">
+            {logoUrl && (mode === 'logo' || mode === 'both') ? (
+                // A raw <img>, not next/image: an arbitrary tenant media URL (usually an SVG),
+                // which the optimizer can't process. Decorative here — the name renders
+                // alongside in "both" — so alt is empty.
+                <img src={logoUrl} alt="" className="h-8 w-auto object-contain" />
+            ) : null}
+            {mode === 'name' || mode === 'both' ? (
+                <span className="text-lg font-semibold">{name}</span>
+            ) : null}
+        </span>
+    );
 }
 
 /** The light/dark switch at its real size — the live site mounts an icon button, so
@@ -101,23 +101,23 @@ function BrandMark({ root, node }: { root: unknown; node: HostNode }) {
  *  `hint` when it builds palette rows, so "the palette hint says so" — which this comment
  *  used to claim — was never true.) Same call the Builder-path `ThemeToggle` node makes. */
 function ThemeToggleMark({ hint }: { hint: string }) {
-  return (
-    <span className="btn btn-ghost btn-sm" title={hint}>
-      <svg
-        width="18"
-        height="18"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        aria-hidden="true"
-      >
-        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
-      </svg>
-    </span>
-  );
+    return (
+        <span className="btn btn-ghost btn-sm" title={hint}>
+            <svg
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden="true"
+            >
+                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+            </svg>
+        </span>
+    );
 }
 
 /** The legal-links column at its real size — a heading plus the links themselves.
@@ -129,19 +129,19 @@ function ThemeToggleMark({ hint }: { hint: string }) {
  *  whatever they've published (and nothing at all until they publish one) — the `title`
  *  says so, and it is the only place that does; the palette drops the hint. */
 function LegalLinksColumn({ heading, hint }: { heading: string; hint: string }) {
-  return (
-    // Its own flex column rather than `display:contents`, which generates no box and
-    // so would swallow the tooltip. Nesting a column inside the node's own column
-    // costs nothing visually.
-    <span className="flex flex-col gap-3" title={hint}>
-      {heading ? <h3 className="text-sm font-semibold">{heading}</h3> : null}
-      {['Privacy Policy', 'Terms of Service', 'Cookie Policy'].map((label) => (
-        <span key={label} className="text-sm">
-          {label}
+    return (
+        // Its own flex column rather than `display:contents`, which generates no box and
+        // so would swallow the tooltip. Nesting a column inside the node's own column
+        // costs nothing visually.
+        <span className="flex flex-col gap-3" title={hint}>
+            {heading ? <h3 className="text-sm font-semibold">{heading}</h3> : null}
+            {['Privacy Policy', 'Terms of Service', 'Cookie Policy'].map((label) => (
+                <span key={label} className="text-sm">
+                    {label}
+                </span>
+            ))}
         </span>
-      ))}
-    </span>
-  );
+    );
 }
 
 /** The page-links pager at its real size — Prev, a short run of numbers with the
@@ -152,17 +152,17 @@ function LegalLinksColumn({ heading, hint }: { heading: string; hint: string }) 
  *  canvas would make an author think they had placed it wrong. So the canvas shows
  *  the shape it takes when it does appear, and the `title` says what decides that. */
 function PagerMark({ hint }: { hint: string }) {
-  return (
-    <span className="flex flex-wrap items-center justify-center gap-2" title={hint}>
-      <span className="btn btn-ghost btn-sm">← Prev</span>
-      {['1', '2', '3'].map((n) => (
-        <span key={n} className={n === '1' ? 'btn btn-primary btn-sm' : 'btn btn-ghost btn-sm'}>
-          {n}
+    return (
+        <span className="flex flex-wrap items-center justify-center gap-2" title={hint}>
+            <span className="btn btn-ghost btn-sm">← Prev</span>
+            {['1', '2', '3'].map((n) => (
+                <span key={n} className={n === '1' ? 'btn btn-primary btn-sm' : 'btn btn-ghost btn-sm'}>
+                    {n}
+                </span>
+            ))}
+            <span className="btn btn-ghost btn-sm">Next →</span>
         </span>
-      ))}
-      <span className="btn btn-ghost btn-sm">Next →</span>
-    </span>
-  );
+    );
 }
 
 /**
@@ -181,37 +181,37 @@ function PagerMark({ hint }: { hint: string }) {
  * the live site until their field is filled in, so a silent grey box here would read as
  * "placed wrong" when the truth is "not finished yet". It says which, and it names WHERE
  * to fix it — the props live under the inspector's **Settings** tab, not on Design, and
- * an author who is told to "open the block" looks at Design and finds colours. (An earlier
+ * an author who is told to "open the block" looks at Design and finds colors. (An earlier
  * version pointed at a "Map panel" / "Embed panel", neither of which exists.) The
  * pre-publish check states the same problem in its own, longer words; these two are
  * deliberately consistent rather than shared, because one is a caption inside a sized box
  * and the other is a finding with room to explain.
  */
 function FrameMark({ node, meta }: { node: HostNode; meta?: HostComponentMeta }) {
-  const props = node.props ?? {};
-  const isMap = node.component === HOST_KEYS.siteMap;
-  const resolved = isMap
-    ? mapEmbedSrc(props.location, props.zoom) !== null
-    : frameEmbedSrc(props.url) !== null;
+    const props = node.props ?? {};
+    const isMap = node.component === HOST_KEYS.siteMap;
+    const resolved = isMap
+        ? mapEmbedSrc(props.location, props.zoom) !== null
+        : frameEmbedSrc(props.url) !== null;
 
-  return (
-    <span
-      className={`rounded-box bg-base-200 text-base-content flex w-full items-center justify-center border p-6 text-center ${frameRatioClass(
-        props.ratio
-      )} ${resolved ? 'border-base-300' : 'border-base-content/25 border-dashed'}`}
-      title={meta?.hint ?? node.component}
-    >
-      <span className="text-sm font-medium">
-        {resolved
-          ? isMap
-            ? 'Your map shows here'
-            : 'Your embed shows here'
-          : isMap
-            ? 'Type your address under Settings to show the map here'
-            : 'Paste a link under Settings to show it here'}
-      </span>
-    </span>
-  );
+    return (
+        <span
+            className={`rounded-box bg-base-200 text-base-content flex w-full items-center justify-center border p-6 text-center ${frameRatioClass(
+                props.ratio
+            )} ${resolved ? 'border-base-300' : 'border-base-content/25 border-dashed'}`}
+            title={meta?.hint ?? node.component}
+        >
+            <span className="text-sm font-medium">
+                {resolved
+                    ? isMap
+                        ? 'Your map shows here'
+                        : 'Your embed shows here'
+                    : isMap
+                        ? 'Type your address under Settings to show the map here'
+                        : 'Paste a link under Settings to show it here'}
+            </span>
+        </span>
+    );
 }
 
 /** Build the studio's `renderHostNode`, closing over the canvas resolver root so the
@@ -219,40 +219,40 @@ function FrameMark({ node, meta }: { node: HostNode; meta?: HostComponentMeta })
  *  skeleton keyed by its `component`; a registered-but-unhandled key still renders a
  *  labelled frame, so a new core is always at least legible. */
 export function makeRenderHostNode(root: unknown): RenderHostNode {
-  return function renderHostNode(node) {
-    const meta = HOST_COMPONENTS.find((c) => c.key === node.component);
-    const label = meta?.label ?? node.component;
-    // Chrome cores draw at their real size — a dashed CoreFrame in a navbar row or a
-    // footer column misrepresents their footprint badly enough to make the surrounding
-    // layout unstylable. See the header note.
-    if (node.component === HOST_KEYS.siteBrand) {
-      return <BrandMark root={root} node={node} />;
-    }
-    if (node.component === HOST_KEYS.siteThemeToggle) {
-      return <ThemeToggleMark hint={meta?.hint ?? label} />;
-    }
-    if (node.component === HOST_KEYS.sitePagination) {
-      return <PagerMark hint={meta?.hint ?? label} />;
-    }
-    if (node.component === HOST_KEYS.siteMap || node.component === HOST_KEYS.siteEmbed) {
-      return <FrameMark node={node} {...(meta ? { meta } : {})} />;
-    }
-    if (node.component === HOST_KEYS.siteLegalLinks) {
-      return (
-        <LegalLinksColumn
-          heading={typeof node.props?.heading === 'string' ? node.props.heading : 'Legal'}
-          hint={meta?.hint ?? label}
-        />
-      );
-    }
-    return (
-      <CoreFrame label={label}>
-        <div className="space-y-3">
-          <Bar w="w-1/2" />
-          <Bar w="w-full" />
-          <Bar w="w-3/4" />
-        </div>
-      </CoreFrame>
-    );
-  };
+    return function renderHostNode(node) {
+        const meta = HOST_COMPONENTS.find((c) => c.key === node.component);
+        const label = meta?.label ?? node.component;
+        // Chrome cores draw at their real size — a dashed CoreFrame in a navbar row or a
+        // footer column misrepresents their footprint badly enough to make the surrounding
+        // layout unstylable. See the header note.
+        if (node.component === HOST_KEYS.siteBrand) {
+            return <BrandMark root={root} node={node} />;
+        }
+        if (node.component === HOST_KEYS.siteThemeToggle) {
+            return <ThemeToggleMark hint={meta?.hint ?? label} />;
+        }
+        if (node.component === HOST_KEYS.sitePagination) {
+            return <PagerMark hint={meta?.hint ?? label} />;
+        }
+        if (node.component === HOST_KEYS.siteMap || node.component === HOST_KEYS.siteEmbed) {
+            return <FrameMark node={node} {...(meta ? { meta } : {})} />;
+        }
+        if (node.component === HOST_KEYS.siteLegalLinks) {
+            return (
+                <LegalLinksColumn
+                    heading={typeof node.props?.heading === 'string' ? node.props.heading : 'Legal'}
+                    hint={meta?.hint ?? label}
+                />
+            );
+        }
+        return (
+            <CoreFrame label={label}>
+                <div className="space-y-3">
+                    <Bar w="w-1/2" />
+                    <Bar w="w-full" />
+                    <Bar w="w-3/4" />
+                </div>
+            </CoreFrame>
+        );
+    };
 }

@@ -25,7 +25,7 @@
 @import 'tailwindcss';
 @import '@piggles/brand/theme.css';
 
-/* The registered colour roles. This list REPLACES silicaui's default set, so
+/* The registered color roles. This list REPLACES silicaui's default set, so
  * every built-in still wanted is re-listed — `neutral` included.
  *
  * Beyond the defaults:
@@ -34,7 +34,7 @@
  *   • `module`   — the active-app bridge. `data-app` / `data-group` /
  *                  `data-module` repoint `--color-module`, and registering the
  *                  NAME is what makes `color="module"` resolve through silica's
- *                  normal colour machinery.
+ *                  normal color machinery.
  *   • `group-*`  — so a rail or launcher can reach a group hue directly
  *                  (`bg-group-sell`) rather than only through the bridge.
  *

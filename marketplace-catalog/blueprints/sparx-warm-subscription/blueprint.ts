@@ -14,69 +14,69 @@ import assets from './assets.json' with { type: 'json' };
 import emails from './emails.json' with { type: 'json' };
 
 const blueprint = {
-  key: 'sparx-warm-subscription',
-  version: '1.4.0',
-  name: 'sparx — Warm Subscription',
-  summary:
-    'A warm, editorial storefront for a subscription food & drink brand — a full-bleed cream-and-terracotta hero over a "how the club works" trio, provenance editorial bands, shoppable carousels, a static subscription plan-selector and an inclusion list, in a bespoke warm `roastery` theme with an espresso footer island. Modelled on the warm-subscription / food-editorial archetype; shipped as Latitude Coffee Club, a single-origin coffee subscription and roastery.',
-  vertical: 'retail',
-  preview: 'media/preview.png',
-  requiresModules: ['builder', 'commerce', 'cms', 'crm', 'email'],
+    key: 'sparx-warm-subscription',
+    version: '1.4.0',
+    name: 'sparx — Warm Subscription',
+    summary:
+        'A warm, editorial storefront for a subscription food & drink brand — a full-bleed cream-and-terracotta hero over a "how the club works" trio, provenance editorial bands, shoppable carousels, a static subscription plan-selector and an inclusion list, in a bespoke warm `roastery` theme with an espresso footer island. Modelled on the warm-subscription / food-editorial archetype; shipped as Latitude Coffee Club, a single-origin coffee subscription and roastery.',
+    vertical: 'retail',
+    preview: 'media/preview.png',
+    requiresModules: ['builder', 'commerce', 'cms', 'crm', 'email'],
 
-  // Identity only (business name + tagline + fonts + the theme's hex colours). The look
-  // itself rides site.theme + the theme decl below; the installing tenant rebrands the name.
-  brand: {
-    businessName: 'Latitude Coffee Club',
-    tagline: 'A new origin at your door each month.',
-    colors: {
-      primary: '#aa3606',
-      primaryForeground: '#fff6f4',
-      accent: '#d78951',
-      secondary: '#3a4e3a',
-    },
-    fonts: {
-      heading: 'Cormorant Garamond',
-      body: 'Karla',
-    },
-  },
-
-  // The provisioned SiteTheme the installer creates + applies — the bespoke template
-  // look as a tenant-editable saved theme (base preset = the template's own theme key,
-  // plus its brand snapshot).
-  theme: {
-    name: 'warm-subscription',
-    basePresetKey: 'warm-subscription',
-    presentation: {
-      v: 2,
-      containerWidth: '1152px',
-    },
+    // Identity only (business name + tagline + fonts + the theme's hex colors). The look
+    // itself rides site.theme + the theme decl below; the installing tenant rebrands the name.
     brand: {
-      colorPrimary: '#aa3606',
-      colorAccent: '#d78951',
-      colorSecondary: '#3a4e3a',
-      fontHeading: 'Cormorant Garamond',
-      fontBody: 'Karla',
-      tokens: {},
+        businessName: 'Latitude Coffee Club',
+        tagline: 'A new origin at your door each month.',
+        colors: {
+            primary: '#aa3606',
+            primaryForeground: '#fff6f4',
+            accent: '#d78951',
+            secondary: '#3a4e3a',
+        },
+        fonts: {
+            heading: 'Cormorant Garamond',
+            body: 'Karla',
+        },
     },
-    apply: true,
-  },
 
-  assets,
-  contentTypes: [],
-  authors,
-  content,
-  commerce,
+    // The provisioned SiteTheme the installer creates + applies — the bespoke template
+    // look as a tenant-editable saved theme (base preset = the template's own theme key,
+    // plus its brand snapshot).
+    theme: {
+        name: 'warm-subscription',
+        basePresetKey: 'warm-subscription',
+        presentation: {
+            v: 2,
+            containerWidth: '1152px',
+        },
+        brand: {
+            colorPrimary: '#aa3606',
+            colorAccent: '#d78951',
+            colorSecondary: '#3a4e3a',
+            fontHeading: 'Cormorant Garamond',
+            fontBody: 'Karla',
+            tokens: {},
+        },
+        apply: true,
+    },
 
-  // A shop's brand-voiced MARKETING starters (a welcome + a win-back), tokenized so a fork
-  // re-themes to the tenant and installed as DRAFTS — the platform's keyed transactional
-  // defaults (order/shipping/dunning) are separate and never duplicated here. Content
-  // templates ship an empty set.
-  emails,
-  sequences: [],
+    assets,
+    contentTypes: [],
+    authors,
+    content,
+    commerce,
 
-  // The composed distinct site (frame + a template-specific home + standard commerce/
-  // cms/about/contact pages + the /journal index), in the bespoke theme, fully stamped.
-  site,
+    // A shop's brand-voiced MARKETING starters (a welcome + a win-back), tokenized so a fork
+    // re-themes to the tenant and installed as DRAFTS — the platform's keyed transactional
+    // defaults (order/shipping/dunning) are separate and never duplicated here. Content
+    // templates ship an empty set.
+    emails,
+    sequences: [],
+
+    // The composed distinct site (frame + a template-specific home + standard commerce/
+    // cms/about/contact pages + the /journal index), in the bespoke theme, fully stamped.
+    site,
 };
 
 export default blueprint;

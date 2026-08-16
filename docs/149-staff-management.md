@@ -12,7 +12,7 @@ Last Updated: 2026-08-16
 >
 > **Clicking it found seven defects that every static check had passed** — §11 lists them.
 > Four were invisible to typecheck, lint and 84 green tests by construction: a silently
-> skipped module tile, an unregistered colour, a dropped field, and a site filter that
+> skipped module tile, an unregistered color, a dropped field, and a site filter that
 > turned 7h 30m into a confident 0h. This is [[feedback_test_as_a_business_owner]]
 > earning its place again.
 >
@@ -188,7 +188,7 @@ registered in `catalog/staff.ts`, addressed under `/team/*`. Keys are `staff.peo
 - **Schedule** — shifts by day/week, per site.
 - **Time off** — the request queue.
 - **Certifications** — everything expiring, soonest first. This is the surface that
-  earns the module for a regulated trade, and it wants real semantic colour: expired is
+  earns the module for a regulated trade, and it wants real semantic color: expired is
   `danger`, expiring inside the lead time is `warning`.
 
 ## 6. Events
@@ -321,7 +321,7 @@ registered in `catalog/staff.ts`, addressed under `/team/*`. Keys are `staff.peo
 
    Two surfaces carry the module's convictions rather than just its data. **Timesheets**
    renders an uncostable person as `N hours unpriced` in solid `error` and labels the
-   period total "so far", never `$0.00`. **Certifications** is the colour argument:
+   period total "so far", never `$0.00`. **Certifications** is the color argument:
    expired is solid `error`, inside the item's own lead window is `warning`, and a
    qualification that never expires is `info` labelled "No expiry" — a real answer that
    must never sort to the top of a list about what needs attention.
@@ -333,7 +333,7 @@ registered in `catalog/staff.ts`, addressed under `/team/*`. Keys are `staff.peo
    window and nothing upstream can see both halves; the table's CHECK would otherwise
    answer with a constraint violation instead of a sentence.
 
-10. ~~**Marketing**~~ — **done.** Catalog tile (label **"Team"**, $29), all four colour
+10. ~~**Marketing**~~ — **done.** Catalog tile (label **"Team"**, $29), all four color
     maps, `ContactRound`, the megamenu column (Accounts & service, not Commerce — a
     landscaping firm with nine crew and no online sales is exactly the buyer), the pricing
     ledger row and feature card, both `ELSEWHERE_MONTHLY` maps at $60, the platform page,
@@ -502,8 +502,8 @@ absent behaves exactly like a thing that is fine** — and that shape will recur
    anywhere. This is [[feedback_module_slug_stale_lists]] a third time.
 
 2. **Both hues rendered grey.** `module-finance` and `module-staff` were defined in
-   `@sparx/brand/theme.css` but never added to the `@plugin '@wizeworks/silicaui'` colour
-   list in `apps/workbench/app/globals.css`. An unregistered colour emits **no class at
+   `@sparx/brand/theme.css` but never added to the `@plugin '@wizeworks/silicaui'` color
+   list in `apps/workbench/app/globals.css`. An unregistered color emits **no class at
    all**, so `bg-module-staff` resolves to nothing and the element quietly falls back to
    the chassis — the exact monochrome failure RULE #4 exists to stop, arriving by
    omission rather than by choice. A token is necessary and not sufficient; the plugin

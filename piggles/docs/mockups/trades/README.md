@@ -25,7 +25,7 @@ layout is legible with an empty folder and fills in one image at a time.
 ## The spec every render shares
 
 1. **Square canvas, transparent background.** No baked ground shadow implying a
-   floor colour — a soft contact shadow only. The card ground changes per
+   floor color — a soft contact shadow only. The card ground changes per
    treatment and a hard shadow pins it to one.
 2. **Same character scale.** Her head the same size in every image. The catalog
    stores a per-pose `subject` fraction because this drifts between batches;

@@ -58,7 +58,7 @@ model Property {
   // (TenantBrand stays the default/source of truth). A partial override:
   // { businessName?, colorPrimary?, colorPrimaryForeground?, colorAccent?,
   //   logoMediaId? } — any absent/null field falls back to the tenant brand.
-  // Presentation-only identity (display name + theme colours + logo), NOT a full
+  // Presentation-only identity (display name + theme colors + logo), NOT a full
   // brand fork; merged over the tenant brand in the public tenant payload.
   brandOverride Json? @map("brand_override")
 

@@ -9,7 +9,7 @@ inside the CRM record device). Those are device fixtures. These are the design.
 
 ## Why these exist
 
-The marketing site was built entirely from type, colour and rendered UI mockups.
+The marketing site was built entirely from type, color and rendered UI mockups.
 That is a real gap, not a stylistic position: a visitor scanning a page takes in
 the pictures long before the prose, and a page with none asks them to read their
 way to the point. Most won't.
@@ -59,7 +59,7 @@ Fetched 2026-08-03 at 800×600 (dpr 2), `?auto=compress&cs=tinysrgb&fit=crop`.
 | `counter-handover.jpg` | Café worker handing a bag to a customer    | [6684768](https://www.pexels.com/photo/6684768/) |
 | `workshop-plans.jpg`   | Two makers over drawings at a bench        | [7484152](https://www.pexels.com/photo/7484152/) |
 | `craft-bench.jpg`      | Artisans collaborating in a studio         | [7167029](https://www.pexels.com/photo/7167029/) |
-| `colour-consult.jpg`   | Stylist showing colour samples to a client | [7819732](https://www.pexels.com/photo/7819732/) |
+| `color-consult.jpg`    | Stylist showing color samples to a client  | [7819732](https://www.pexels.com/photo/7819732/) |
 
-`salon-welcome`, `craft-bench` and `colour-consult` are staged and unused so far —
+`salon-welcome`, `craft-bench` and `color-consult` are staged and unused so far —
 available for the remaining module pages.

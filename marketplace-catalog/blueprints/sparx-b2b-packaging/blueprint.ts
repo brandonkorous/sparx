@@ -14,69 +14,69 @@ import assets from './assets.json' with { type: 'json' };
 import emails from './emails.json' with { type: 'json' };
 
 const blueprint = {
-  key: 'sparx-b2b-packaging',
-  version: '1.4.0',
-  name: 'sparx — Packaging Supplies (Wholesale)',
-  summary:
-    'A complete, working wholesale shop for a packaging & shipping-supplies distributor: a real trade catalogue priced by the case, bundle and roll — boxes, mailers, tape, cushioning, void-fill, stretch wrap, labels and a starter kit — with pack quantities and MOQs, a bespoke trade PDP with bulk breaks, and a home page that sells the account (bulk tiers, next-day dispatch, net-30). Kraft-industrial theme — corrugated tan, deep warehouse blue, safety-orange accent. Shipped as Boxwell Supply.',
-  vertical: 'b2b',
-  preview: 'media/preview.png',
-  requiresModules: ['builder', 'commerce', 'cms', 'crm', 'email'],
+    key: 'sparx-b2b-packaging',
+    version: '1.4.0',
+    name: 'sparx — Packaging Supplies (Wholesale)',
+    summary:
+        'A complete, working wholesale shop for a packaging & shipping-supplies distributor: a real trade catalogue priced by the case, bundle and roll — boxes, mailers, tape, cushioning, void-fill, stretch wrap, labels and a starter kit — with pack quantities and MOQs, a bespoke trade PDP with bulk breaks, and a home page that sells the account (bulk tiers, next-day dispatch, net-30). Kraft-industrial theme — corrugated tan, deep warehouse blue, safety-orange accent. Shipped as Boxwell Supply.',
+    vertical: 'b2b',
+    preview: 'media/preview.png',
+    requiresModules: ['builder', 'commerce', 'cms', 'crm', 'email'],
 
-  // Identity only (business name + tagline + fonts + the theme's hex colours). The look
-  // itself rides site.theme + the theme decl below; the installing tenant rebrands the name.
-  brand: {
-    businessName: 'Boxwell Supply',
-    tagline: 'Ships today, priced by the pallet.',
-    colors: {
-      primary: '#004479',
-      primaryForeground: '#f3f9ff',
-      accent: '#af3900',
-      secondary: '#3c4958',
-    },
-    fonts: {
-      heading: 'Archivo',
-      body: 'IBM Plex Sans',
-    },
-  },
-
-  // The provisioned SiteTheme the installer creates + applies — the bespoke template
-  // look as a tenant-editable saved theme (base preset = the template's own theme key,
-  // plus its brand snapshot).
-  theme: {
-    name: 'b2b-packaging',
-    basePresetKey: 'b2b-packaging',
-    presentation: {
-      v: 2,
-      containerWidth: '1152px',
-    },
+    // Identity only (business name + tagline + fonts + the theme's hex colors). The look
+    // itself rides site.theme + the theme decl below; the installing tenant rebrands the name.
     brand: {
-      colorPrimary: '#004479',
-      colorAccent: '#af3900',
-      colorSecondary: '#3c4958',
-      fontHeading: 'Archivo',
-      fontBody: 'IBM Plex Sans',
-      tokens: {},
+        businessName: 'Boxwell Supply',
+        tagline: 'Ships today, priced by the pallet.',
+        colors: {
+            primary: '#004479',
+            primaryForeground: '#f3f9ff',
+            accent: '#af3900',
+            secondary: '#3c4958',
+        },
+        fonts: {
+            heading: 'Archivo',
+            body: 'IBM Plex Sans',
+        },
     },
-    apply: true,
-  },
 
-  assets,
-  contentTypes: [],
-  authors,
-  content,
-  commerce,
+    // The provisioned SiteTheme the installer creates + applies — the bespoke template
+    // look as a tenant-editable saved theme (base preset = the template's own theme key,
+    // plus its brand snapshot).
+    theme: {
+        name: 'b2b-packaging',
+        basePresetKey: 'b2b-packaging',
+        presentation: {
+            v: 2,
+            containerWidth: '1152px',
+        },
+        brand: {
+            colorPrimary: '#004479',
+            colorAccent: '#af3900',
+            colorSecondary: '#3c4958',
+            fontHeading: 'Archivo',
+            fontBody: 'IBM Plex Sans',
+            tokens: {},
+        },
+        apply: true,
+    },
 
-  // A shop's brand-voiced MARKETING starters (a welcome + a win-back), tokenized so a fork
-  // re-themes to the tenant and installed as DRAFTS — the platform's keyed transactional
-  // defaults (order/shipping/dunning) are separate and never duplicated here. Content
-  // templates ship an empty set.
-  emails,
-  sequences: [],
+    assets,
+    contentTypes: [],
+    authors,
+    content,
+    commerce,
 
-  // The composed distinct site (frame + a template-specific home + standard commerce/
-  // cms/about/contact pages + the /journal index), in the bespoke theme, fully stamped.
-  site,
+    // A shop's brand-voiced MARKETING starters (a welcome + a win-back), tokenized so a fork
+    // re-themes to the tenant and installed as DRAFTS — the platform's keyed transactional
+    // defaults (order/shipping/dunning) are separate and never duplicated here. Content
+    // templates ship an empty set.
+    emails,
+    sequences: [],
+
+    // The composed distinct site (frame + a template-specific home + standard commerce/
+    // cms/about/contact pages + the /journal index), in the bespoke theme, fully stamped.
+    site,
 };
 
 export default blueprint;

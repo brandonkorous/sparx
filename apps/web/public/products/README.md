@@ -19,7 +19,7 @@ separate and equally deliberate thing, and it lives in
 [`../scenes/`](../scenes/README.md) behind the shared `<PhotoBand>` section.
 An earlier version of this file claimed the marketing pages carry no photography
 by design. **That was wrong and has been reversed:** pages built only from type,
-colour and UI mockups ask a visitor to read their way to the point, and most
+color and UI mockups ask a visitor to read their way to the point, and most
 won't. The rule that still stands is about the KIND of photograph — real people
 doing real work, never generic business stock — not about whether to use any.
 
@@ -57,9 +57,9 @@ rules out most otherwise-good photographs:
 - **The product fills the frame.** A wide room shot becomes a grey smudge. Two
   candidates were rejected for this — a bedroom scene standing in for a pillow,
   and a honey jar lost on a large table.
-- **Bright and in colour.** Two dark, low-key dog photographs and one black-and-white
+- **Bright and in color.** Two dark, low-key dog photographs and one black-and-white
   one were rejected: at thumbnail size they were featureless blobs, and the mono
-  shot sat oddly among nine colour images.
+  shot sat oddly among nine color images.
 - **No readable text or third-party branding.** Two pendant shots were rejected
   for carrying an engraved slogan.
 

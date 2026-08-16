@@ -837,8 +837,14 @@ async function resolvePropertyBaseUrl(
     orderBy: [{ isCanonical: 'desc' }, { type: 'asc' }],
     select: { host: true },
   });
-  const host = domain?.host ?? `${property.slug}.sparx.zone`;
-  return `https://${host}`;
+  // No constructed fallback. Every property has a Domain row from the moment it
+  // is provisioned, so `null` here means the row is genuinely missing — and
+  // `${slug}.sparx.zone` was not a recovery from that, it was a guess that named
+  // one brand's zone for tenants of every brand. Returning null lets the caller
+  // skip the link; inventing a host mails somebody a dead one on the wrong
+  // platform.
+  if (!domain?.host) return null;
+  return `https://${domain.host}`;
 }
 
 function asRecord(value: unknown): Record<string, unknown> {

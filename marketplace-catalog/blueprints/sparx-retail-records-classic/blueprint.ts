@@ -14,69 +14,69 @@ import assets from './assets.json' with { type: 'json' };
 import emails from './emails.json' with { type: 'json' };
 
 const blueprint = {
-  key: 'sparx-retail-records-classic',
-  version: '1.4.0',
-  name: 'sparx — Record Shop (Vintage)',
-  summary:
-    'A complete, working shop for a warm neighbourhood record store: a real catalogue of vinyl LPs across the classic genres, a walnut turntable, a felt slipmat, a cleaning kit, a canvas tote and a monthly vinyl subscription, with categories, collections, a bespoke record-counter PDP and a full merchandised home page. Warm, nostalgic theme — faded-paper ground, burnt-sienna primary, dusty-teal accent, a vintage display serif. Shipped as Sunset Sounds.',
-  vertical: 'retail',
-  preview: 'media/preview.png',
-  requiresModules: ['builder', 'commerce', 'cms', 'crm', 'email'],
+    key: 'sparx-retail-records-classic',
+    version: '1.4.0',
+    name: 'sparx — Record Shop (Vintage)',
+    summary:
+        'A complete, working shop for a warm neighbourhood record store: a real catalogue of vinyl LPs across the classic genres, a walnut turntable, a felt slipmat, a cleaning kit, a canvas tote and a monthly vinyl subscription, with categories, collections, a bespoke record-counter PDP and a full merchandised home page. Warm, nostalgic theme — faded-paper ground, burnt-sienna primary, dusty-teal accent, a vintage display serif. Shipped as Sunset Sounds.',
+    vertical: 'retail',
+    preview: 'media/preview.png',
+    requiresModules: ['builder', 'commerce', 'cms', 'crm', 'email'],
 
-  // Identity only (business name + tagline + fonts + the theme's hex colours). The look
-  // itself rides site.theme + the theme decl below; the installing tenant rebrands the name.
-  brand: {
-    businessName: 'Sunset Sounds',
-    tagline: 'Records, the way they were meant to be sold.',
-    colors: {
-      primary: '#98370c',
-      primaryForeground: '#fff6f3',
-      accent: '#00646d',
-      secondary: '#62422d',
-    },
-    fonts: {
-      heading: 'DM Serif Display',
-      body: 'Karla',
-    },
-  },
-
-  // The provisioned SiteTheme the installer creates + applies — the bespoke template
-  // look as a tenant-editable saved theme (base preset = the template's own theme key,
-  // plus its brand snapshot).
-  theme: {
-    name: 'retail-records-classic',
-    basePresetKey: 'retail-records-classic',
-    presentation: {
-      v: 2,
-      containerWidth: '1152px',
-    },
+    // Identity only (business name + tagline + fonts + the theme's hex colors). The look
+    // itself rides site.theme + the theme decl below; the installing tenant rebrands the name.
     brand: {
-      colorPrimary: '#98370c',
-      colorAccent: '#00646d',
-      colorSecondary: '#62422d',
-      fontHeading: 'DM Serif Display',
-      fontBody: 'Karla',
-      tokens: {},
+        businessName: 'Sunset Sounds',
+        tagline: 'Records, the way they were meant to be sold.',
+        colors: {
+            primary: '#98370c',
+            primaryForeground: '#fff6f3',
+            accent: '#00646d',
+            secondary: '#62422d',
+        },
+        fonts: {
+            heading: 'DM Serif Display',
+            body: 'Karla',
+        },
     },
-    apply: true,
-  },
 
-  assets,
-  contentTypes: [],
-  authors,
-  content,
-  commerce,
+    // The provisioned SiteTheme the installer creates + applies — the bespoke template
+    // look as a tenant-editable saved theme (base preset = the template's own theme key,
+    // plus its brand snapshot).
+    theme: {
+        name: 'retail-records-classic',
+        basePresetKey: 'retail-records-classic',
+        presentation: {
+            v: 2,
+            containerWidth: '1152px',
+        },
+        brand: {
+            colorPrimary: '#98370c',
+            colorAccent: '#00646d',
+            colorSecondary: '#62422d',
+            fontHeading: 'DM Serif Display',
+            fontBody: 'Karla',
+            tokens: {},
+        },
+        apply: true,
+    },
 
-  // A shop's brand-voiced MARKETING starters (a welcome + a win-back), tokenized so a fork
-  // re-themes to the tenant and installed as DRAFTS — the platform's keyed transactional
-  // defaults (order/shipping/dunning) are separate and never duplicated here. Content
-  // templates ship an empty set.
-  emails,
-  sequences: [],
+    assets,
+    contentTypes: [],
+    authors,
+    content,
+    commerce,
 
-  // The composed distinct site (frame + a template-specific home + standard commerce/
-  // cms/about/contact pages + the /journal index), in the bespoke theme, fully stamped.
-  site,
+    // A shop's brand-voiced MARKETING starters (a welcome + a win-back), tokenized so a fork
+    // re-themes to the tenant and installed as DRAFTS — the platform's keyed transactional
+    // defaults (order/shipping/dunning) are separate and never duplicated here. Content
+    // templates ship an empty set.
+    emails,
+    sequences: [],
+
+    // The composed distinct site (frame + a template-specific home + standard commerce/
+    // cms/about/contact pages + the /journal index), in the bespoke theme, fully stamped.
+    site,
 };
 
 export default blueprint;

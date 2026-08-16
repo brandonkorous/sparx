@@ -6,9 +6,9 @@
     <title>Sparx — Sentence (Direction G mockup)</title>
     <!--
       Landing-page direction "G — Sentence".
-      The whole hero is one composed sentence. Each coloured slot is a live
+      The whole hero is one composed sentence. Each colored slot is a live
       picker: clicking it cycles the word, and the plan + price below follow.
-      Colours/type are the locked Sparx tokens (docs/sparx-design-tokens.css).
+      Colors/type are the locked Sparx tokens (docs/sparx-design-tokens.css).
       Standalone mockup — no build step, just open in a browser.
     -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -38,7 +38,11 @@
       }
 
       body {
-        font-family: 'Geist', system-ui, -apple-system, sans-serif;
+        font-family:
+          'Geist',
+          system-ui,
+          -apple-system,
+          sans-serif;
         color: var(--ink);
         background: var(--bg);
         -webkit-font-smoothing: antialiased;
@@ -272,7 +276,7 @@
     </main>
 
     <script>
-      // ── Sparx tokens (per-module colour families) ──────────────
+      // ── Sparx tokens (per-module color families) ──────────────
       const COLORS = {
         indigo: { base: '#6366F1', tint: '#eef2ff', text: '#4338ca' },
         commerce: { base: '#F97316', tint: '#fff7ed', text: '#c2410c' },
@@ -284,7 +288,7 @@
         dropship: { base: '#10B981', tint: '#ecfdf5', text: '#065f46' },
       };
 
-      // ── modules: display name, monthly price, colour family ────
+      // ── modules: display name, monthly price, color family ────
       const MODS = {
         builder: { name: 'Builder', price: 49, color: 'indigo' },
         commerce: { name: 'Commerce', price: 49, color: 'commerce' },

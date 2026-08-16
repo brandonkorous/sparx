@@ -1,8 +1,8 @@
 import {
-  faCloudUpload,
-  faDownload,
-  faEyeSlash,
-  faShieldCheck,
+    faCloudUpload,
+    faDownload,
+    faEyeSlash,
+    faShieldCheck,
 } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import type { PigglesIcon } from '@piggles/ui';
@@ -41,60 +41,60 @@ import { PRODUCT } from '@piggles/config';
 // facts, not four panels.
 
 const ASSURANCES: { icon: PigglesIcon; title: string; body: string }[] = [
-  {
-    icon: faShieldCheck,
-    title: 'Kept separate',
-    body: 'Enforced by the database, not just the app.',
-  },
-  {
-    icon: faCloudUpload,
-    title: 'Backed up continuously',
-    body: 'Somewhere other than the live system.',
-  },
-  {
-    icon: faDownload,
-    title: 'Yours to take with you',
-    body: 'Export the lot, whenever you like.',
-  },
-  {
-    icon: faEyeSlash,
-    title: 'Never used to train AI',
-    body: 'Not a model, not anonymised, not ever.',
-  },
+    {
+        icon: faShieldCheck,
+        title: 'Kept separate',
+        body: 'Enforced by the database, not just the app.',
+    },
+    {
+        icon: faCloudUpload,
+        title: 'Backed up continuously',
+        body: 'Somewhere other than the live system.',
+    },
+    {
+        icon: faDownload,
+        title: 'Yours to take with you',
+        body: 'Export the lot, whenever you like.',
+    },
+    {
+        icon: faEyeSlash,
+        title: 'Never used to train AI',
+        body: 'Not a model, not anonymised, not ever.',
+    },
 ];
 
 export function Assurances() {
-  return (
-    <section aria-label={`How ${PRODUCT.name} treats your data`} className="bg-base-100 mt-10">
-      <div className="mx-auto w-full max-w-6xl px-6 py-8 lg:px-10">
-        {/* `divide-x` from `sm` up only — stacked on a phone the rules would be
+    return (
+        <section aria-label={`How ${PRODUCT.name} treats your data`} className="bg-base-100 mt-10">
+            <div className="mx-auto w-full max-w-6xl px-6 py-8 lg:px-10">
+                {/* `divide-x` from `sm` up only — stacked on a phone the rules would be
             horizontal lines between rows, which reads as four separate things
             again rather than one band. */}
-        <ul className="sm:divide-base-300 grid gap-8 sm:grid-cols-2 sm:gap-0 sm:divide-x lg:grid-cols-4">
-          {ASSURANCES.map(({ icon, title, body }) => (
-            <li key={title} className="flex items-start gap-3 sm:px-6 sm:first:pl-0 sm:last:pr-0">
-              {/* Brand pink, and the only colour in the band. These four are one
-                  category — trust — so a different hue each would be colour
+                <ul className="sm:divide-base-300 grid gap-8 sm:grid-cols-2 sm:gap-0 sm:divide-x lg:grid-cols-4">
+                    {ASSURANCES.map(({ icon, title, body }) => (
+                        <li key={title} className="flex items-start gap-3 sm:px-6 sm:first:pl-0 sm:last:pr-0">
+                            {/* Brand pink, and the only color in the band. These four are one
+                  category — trust — so a different hue each would be color
                   applied as decoration rather than as meaning (root RULE #4).
                   `shrink-0` because a two-line title must not squeeze the glyph. */}
-              <Icon glyph={icon} className="text-primary mt-0.5 size-6 shrink-0" aria-hidden />
-              <div>
-                <h2 className="text-base font-bold">{title}</h2>
-                <p className="mt-0.5 text-base">{body}</p>
-              </div>
-            </li>
-          ))}
-        </ul>
+                            <Icon glyph={icon} className="text-primary mt-0.5 size-6 shrink-0" aria-hidden />
+                            <div>
+                                <h2 className="text-base font-bold">{title}</h2>
+                                <p className="mt-0.5 text-base">{body}</p>
+                            </div>
+                        </li>
+                    ))}
+                </ul>
 
-        <p className="mt-8 text-base">
-          <a
-            href={`https://${PRODUCT.hosts.marketing}/trust`}
-            className="text-primary font-semibold underline underline-offset-4"
-          >
-            The whole story, in plain words
-          </a>
-        </p>
-      </div>
-    </section>
-  );
+                <p className="mt-8 text-base">
+                    <a
+                        href={`https://${PRODUCT.hosts.marketing}/trust`}
+                        className="text-primary font-semibold underline underline-offset-4"
+                    >
+                        The whole story, in plain words
+                    </a>
+                </p>
+            </div>
+        </section>
+    );
 }

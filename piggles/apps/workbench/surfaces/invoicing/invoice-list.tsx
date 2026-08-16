@@ -19,15 +19,15 @@ import { useState } from 'react';
 import { PaneWaiting } from '../../components/pane-waiting';
 import { useQuery } from '@sparx/query';
 import {
-  Badge,
-  Button,
-  Card,
-  EmptyState,
-  Filter,
-  FilterItem,
-  SearchInput,
-  Table,
-  ToolbarSeparator,
+    Badge,
+    Button,
+    Card,
+    EmptyState,
+    Filter,
+    FilterItem,
+    SearchInput,
+    Table,
+    ToolbarSeparator,
 } from '@wizeworks/silicaui-react';
 import { faArrowDown, faArrowUp, faFileText, faPlus } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
@@ -38,11 +38,11 @@ import { RefreshButton } from '../../components/refresh-button';
 import { api } from '../../lib/api/client';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import {
-  describeDue,
-  formatMoney,
-  normalizeDocument,
-  statusTone,
-  type BillingDocument,
+    describeDue,
+    formatMoney,
+    normalizeDocument,
+    statusTone,
+    type BillingDocument,
 } from './types';
 
 /**
@@ -63,129 +63,129 @@ type SortKey = 'number' | 'customer' | 'status' | 'dueAt' | 'total' | 'balance';
 type SortDir = 'asc' | 'desc';
 
 const STATUS_FILTERS = [
-  { value: 'all', label: 'All' },
-  { value: 'unpaid', label: 'Unpaid' },
-  { value: 'overdue', label: 'Late' },
-  { value: 'paid', label: 'Paid' },
+    { value: 'all', label: 'All' },
+    { value: 'unpaid', label: 'Unpaid' },
+    { value: 'overdue', label: 'Late' },
+    { value: 'paid', label: 'Paid' },
 ] as const;
 
 function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
-  if (event.altKey) return 'window';
-  if (event.shiftKey) return 'beside';
-  return 'tab';
+    if (event.altKey) return 'window';
+    if (event.shiftKey) return 'beside';
+    return 'tab';
 }
 
 export function InvoiceListSurface({ ctx }: { ctx: SurfaceContext }) {
-  const [search, setSearch] = useState('');
-  const [status, setStatus] = useState('all');
-  // Due soonest first — the question a receivables list exists to answer, and
-  // the reason the endpoint needed a real `order` param rather than the
-  // platform's usual hardcoded 'desc'.
-  const [sort, setSort] = useState<{ key: SortKey; dir: SortDir }>({ key: 'dueAt', dir: 'asc' });
+    const [search, setSearch] = useState('');
+    const [status, setStatus] = useState('all');
+    // Due soonest first — the question a receivables list exists to answer, and
+    // the reason the endpoint needed a real `order` param rather than the
+    // platform's usual hardcoded 'desc'.
+    const [sort, setSort] = useState<{ key: SortKey; dir: SortDir }>({ key: 'dueAt', dir: 'asc' });
 
-  const [pageSize, setPageSize] = useState<PageSize>(50);
-  const [page, setPage] = useState(1);
-  // How many rows the current window has grown to. "Load more" raises this;
-  // anything that changes WHICH rows match resets it.
-  const [take, setTake] = useState<number>(50);
+    const [pageSize, setPageSize] = useState<PageSize>(50);
+    const [page, setPage] = useState(1);
+    // How many rows the current window has grown to. "Load more" raises this;
+    // anything that changes WHICH rows match resets it.
+    const [take, setTake] = useState<number>(50);
 
-  const activeStatus = status;
-  const skip = (page - 1) * pageSize;
+    const activeStatus = status;
+    const skip = (page - 1) * pageSize;
 
-  /**
-   * One query for the whole visible window, rather than accumulating pages in
-   * component state.
-   *
-   * "Load more" widens `take` and refetches, so what is on screen is always
-   * exactly one server answer. Accumulating would mean merging pages, deduping
-   * them, and deciding what happens to already-loaded rows when the sort
-   * changes underneath — three ways to show a list that never existed in the
-   * database. Refetching 100 rows to add 50 is a few KB of JSON against a
-   * correctness guarantee, which is a trade worth making every time.
-   */
-  const { data, isLoading, isFetching, dataUpdatedAt, error, refetch } = useQuery({
-    queryKey: [
-      'invoicing',
-      'documents',
-      { q: search, status: activeStatus, sort: sort.key, dir: sort.dir, take, skip },
-    ],
-    queryFn: () =>
-      api
-        .list<BillingDocument>('/v1/invoicing/documents', {
-          ...(search ? { q: search } : {}),
-          ...(activeStatus === 'all' ? {} : { status: activeStatus }),
-          sort_by: sort.key,
-          order: sort.dir,
-          take,
-          skip,
-        })
-        .then((result) => ({
-          items: result.items.map(normalizeDocument),
-          total: result.total,
-        })),
-    // Keeps the previous window on screen while the next one loads, so paging
-    // and re-sorting don't blink the table out to an empty state and back.
-    placeholderData: (previous) => previous,
-  });
+    /**
+     * One query for the whole visible window, rather than accumulating pages in
+     * component state.
+     *
+     * "Load more" widens `take` and refetches, so what is on screen is always
+     * exactly one server answer. Accumulating would mean merging pages, deduping
+     * them, and deciding what happens to already-loaded rows when the sort
+     * changes underneath — three ways to show a list that never existed in the
+     * database. Refetching 100 rows to add 50 is a few KB of JSON against a
+     * correctness guarantee, which is a trade worth making every time.
+     */
+    const { data, isLoading, isFetching, dataUpdatedAt, error, refetch } = useQuery({
+        queryKey: [
+            'invoicing',
+            'documents',
+            { q: search, status: activeStatus, sort: sort.key, dir: sort.dir, take, skip },
+        ],
+        queryFn: () =>
+            api
+                .list<BillingDocument>('/v1/invoicing/documents', {
+                    ...(search ? { q: search } : {}),
+                    ...(activeStatus === 'all' ? {} : { status: activeStatus }),
+                    sort_by: sort.key,
+                    order: sort.dir,
+                    take,
+                    skip,
+                })
+                .then((result) => ({
+                    items: result.items.map(normalizeDocument),
+                    total: result.total,
+                })),
+        // Keeps the previous window on screen while the next one loads, so paging
+        // and re-sorting don't blink the table out to an empty state and back.
+        placeholderData: (previous) => previous,
+    });
 
-  const rows = data?.items ?? [];
-  const total = data?.total;
+    const rows = data?.items ?? [];
+    const total = data?.total;
 
-  /** Anything that changes which rows match has to return to the first window —
-   *  staying on page 5 of a result set that now has two pages shows nothing. */
-  const resetWindow = () => {
-    setPage(1);
-    setTake(pageSize);
-  };
+    /** Anything that changes which rows match has to return to the first window —
+     *  staying on page 5 of a result set that now has two pages shows nothing. */
+    const resetWindow = () => {
+        setPage(1);
+        setTake(pageSize);
+    };
 
-  const toggleSort = (key: SortKey) => {
-    setSort((current) =>
-      current.key === key
-        ? { key, dir: current.dir === 'asc' ? 'desc' : 'asc' }
-        : // Text ascends, money descends. Two exceptions, both because the
-          // useful direction is "most urgent first": dueAt ascending is
-          // soonest-due, and status ascending is overdue-then-unpaid (the
-          // column sorts on a generated urgency rank, not the status text).
-          { key, dir: key === 'total' || key === 'balance' ? 'desc' : 'asc' }
+    const toggleSort = (key: SortKey) => {
+        setSort((current) =>
+            current.key === key
+                ? { key, dir: current.dir === 'asc' ? 'desc' : 'asc' }
+                : // Text ascends, money descends. Two exceptions, both because the
+                // useful direction is "most urgent first": dueAt ascending is
+                // soonest-due, and status ascending is overdue-then-unpaid (the
+                // column sorts on a generated urgency rank, not the status text).
+                { key, dir: key === 'total' || key === 'balance' ? 'desc' : 'asc' }
+        );
+        resetWindow();
+    };
+
+    const header = (key: SortKey, label: string, extra = '') => (
+        <th
+            className={extra}
+            aria-sort={sort.key === key ? (sort.dir === 'asc' ? 'ascending' : 'descending') : 'none'}
+        >
+            <button
+                type="button"
+                className="link link-hover inline-flex items-center gap-1"
+                onClick={() => {
+                    toggleSort(key);
+                }}
+            >
+                {label}
+                {sort.key === key ? (
+                    sort.dir === 'asc' ? (
+                        <Icon glyph={faArrowUp} className="size-3" aria-hidden />
+                    ) : (
+                        <Icon glyph={faArrowDown} className="size-3" aria-hidden />
+                    )
+                ) : null}
+            </button>
+        </th>
     );
-    resetWindow();
-  };
 
-  const header = (key: SortKey, label: string, extra = '') => (
-    <th
-      className={extra}
-      aria-sort={sort.key === key ? (sort.dir === 'asc' ? 'ascending' : 'descending') : 'none'}
-    >
-      <button
-        type="button"
-        className="link link-hover inline-flex items-center gap-1"
-        onClick={() => {
-          toggleSort(key);
-        }}
-      >
-        {label}
-        {sort.key === key ? (
-          sort.dir === 'asc' ? (
-            <Icon glyph={faArrowUp} className="size-3" aria-hidden />
-          ) : (
-            <Icon glyph={faArrowDown} className="size-3" aria-hidden />
-          )
-        ) : null}
-      </button>
-    </th>
-  );
-
-  return (
-    // Surfaces, not one slab. The pane is base-200; the toolbar and the table
-    // are base-100 cards lifted onto it, separated by the gap between them
-    // rather than by hairline rules. Padding lives on the pane so the cards
-    // themselves stay full-bleed — a table wants its rows edge to edge.
-    //
-    // The gutter shrinks to nothing under 30rem: in a pane docked beside an
-    // editor, 12px a side is real column width, and at that size the surfaces
-    // already read apart by colour alone.
-    <div className={PANE_SHELL}>
-      {/* silicaui's Toolbar, not a hand-rolled flex row: it brings the bar's
+    return (
+        // Surfaces, not one slab. The pane is base-200; the toolbar and the table
+        // are base-100 cards lifted onto it, separated by the gap between them
+        // rather than by hairline rules. Padding lives on the pane so the cards
+        // themselves stay full-bleed — a table wants its rows edge to edge.
+        //
+        // The gutter shrinks to nothing under 30rem: in a pane docked beside an
+        // editor, 12px a side is real column width, and at that size the surfaces
+        // already read apart by color alone.
+        <div className={PANE_SHELL}>
+            {/* silicaui's Toolbar, not a hand-rolled flex row: it brings the bar's
           height, gap, alignment and — the part you can't see — roving arrow-key
           focus, so the whole bar is one tab stop that you then arrow across.
           The previous row was three controls of three different heights with a
@@ -196,62 +196,62 @@ export function InvoiceListSurface({ ctx }: { ctx: SurfaceContext }) {
           the .input-group element that actually lays out — which is why search
           swallowed the entire row (measured: 1208px) and pushed everything else
           onto a second line. */}
-      <PaneToolbar label="Invoice list controls" wrap>
-        <div className="max-w-xs min-w-0 flex-1">
-          <SearchInput
-            size="sm"
-            aria-label="Search invoices"
-            placeholder="Search invoices…"
-            value={search}
-            onValueChange={(next) => {
-              setSearch(next);
-              resetWindow();
-            }}
-          />
-        </div>
+            <PaneToolbar label="Invoice list controls" wrap>
+                <div className="max-w-xs min-w-0 flex-1">
+                    <SearchInput
+                        size="sm"
+                        aria-label="Search invoices"
+                        placeholder="Search invoices…"
+                        value={search}
+                        onValueChange={(next) => {
+                            setSearch(next);
+                            resetWindow();
+                        }}
+                    />
+                </div>
 
-        <ToolbarSeparator className="hidden @xl:block" />
+                <ToolbarSeparator className="hidden @xl:block" />
 
-        {/* Filter, not ToggleGroup. Both would work the control, but this IS a
+                {/* Filter, not ToggleGroup. Both would work the control, but this IS a
             faceted filter — single-select chips with radio semantics — and the
             component says so, which buys the module accent on the chosen chip
             and drops the `string[]` juggling a multi-select control forced on a
             question that only ever has one answer.
             `showReset={false}` because "All" already IS the reset; a × beside it
             would be two controls for one idea. */}
-        <Filter
-          color="module"
-          value={status}
-          onValueChange={(next) => {
-            setStatus(next ?? 'all');
-            resetWindow();
-          }}
-          showReset={false}
-          aria-label="Filter by status"
-        >
-          {STATUS_FILTERS.map((filter) => (
-            <FilterItem key={filter.value} value={filter.value}>
-              {filter.label}
-            </FilterItem>
-          ))}
-        </Filter>
+                <Filter
+                    color="module"
+                    value={status}
+                    onValueChange={(next) => {
+                        setStatus(next ?? 'all');
+                        resetWindow();
+                    }}
+                    showReset={false}
+                    aria-label="Filter by status"
+                >
+                    {STATUS_FILTERS.map((filter) => (
+                        <FilterItem key={filter.value} value={filter.value}>
+                            {filter.label}
+                        </FilterItem>
+                    ))}
+                </Filter>
 
-        {/* ml-auto, not a flex-1 spacer div — the same result without a phantom
+                {/* ml-auto, not a flex-1 spacer div — the same result without a phantom
             element in the middle of the bar's focus order. */}
-        <Button
-          color="module"
-          size="sm"
-          className="ml-auto"
-          title="New invoice — hold Shift to open alongside, Alt for a new window"
-          onClick={(event) => {
-            ctx.open('invoicing.invoice.edit', { id: 'new' }, { target: targetFor(event) });
-          }}
-        >
-          <Icon glyph={faPlus} className="size-4" aria-hidden />
-          <span className="hidden @lg:inline">New invoice</span>
-        </Button>
+                <Button
+                    color="module"
+                    size="sm"
+                    className="ml-auto"
+                    title="New invoice — hold Shift to open alongside, Alt for a new window"
+                    onClick={(event) => {
+                        ctx.open('invoicing.invoice.edit', { id: 'new' }, { target: targetFor(event) });
+                    }}
+                >
+                    <Icon glyph={faPlus} className="size-4" aria-hidden />
+                    <span className="hidden @lg:inline">New invoice</span>
+                </Button>
 
-        {/* ALWAYS the last child of a list toolbar — see RefreshButton. Inside
+                {/* ALWAYS the last child of a list toolbar — see RefreshButton. Inside
             the Toolbar rather than beside it, so it joins the roving arrow-key
             focus instead of becoming a stray extra tab stop.
 
@@ -260,149 +260,149 @@ export function InvoiceListSurface({ ctx }: { ctx: SurfaceContext }) {
             — this must also invalidate ['invoicing','aging']. Refreshing the
             rows while "Outstanding" kept an older figure would be the pane
             disagreeing with itself. */}
-        <RefreshButton
-          isFetching={isFetching}
-          updatedAt={data ? dataUpdatedAt : undefined}
-          onRefresh={() => {
-            void refetch();
-          }}
-        />
-      </PaneToolbar>
+                <RefreshButton
+                    isFetching={isFetching}
+                    updatedAt={data ? dataUpdatedAt : undefined}
+                    onRefresh={() => {
+                        void refetch();
+                    }}
+                />
+            </PaneToolbar>
 
-      <Card className="min-h-0 flex-1 overflow-y-auto">
-        {error ? (
-          <EmptyState
-            title="Could not load invoices"
-            description="Something went wrong reaching the server. It may be temporary — try again in a moment."
-          />
-        ) : isLoading ? (
-          <PaneWaiting label="Loading invoices…" />
-        ) : rows.length === 0 ? (
-          <ListEmptyState
-            filtered={Boolean(search) || activeStatus !== 'all'}
-            noResults={{
-              icon: <Icon glyph={faFileText} className="size-6" aria-hidden />,
-              title: 'Nothing matches those filters',
-              description: 'Try a different word, or switch back to All.',
-            }}
-            firstRun={{
-              title: 'No invoices yet',
-              description: 'When you create your first invoice it will show up here.',
-            }}
-          />
-        ) : (
-          <Table size="sm" hover>
-            <thead>
-              <tr>
-                {header('number', 'Number')}
-                {header('customer', 'Customer', 'hidden @lg:table-cell')}
-                {header('dueAt', 'Due', 'hidden @2xl:table-cell')}
-                {header('status', 'Status')}
-                {header('total', 'Total', 'hidden @3xl:table-cell text-right')}
-                {header('balance', 'Balance', 'text-right')}
-              </tr>
-            </thead>
-            <tbody>
-              {rows.map((doc) => {
-                const due = describeDue(doc.dueAt, doc.overdueDays);
-                return (
-                  <tr
-                    key={doc.id}
-                    className="cursor-pointer"
-                    tabIndex={0}
-                    role="button"
-                    onClick={(event) => {
-                      ctx.open(
-                        'invoicing.invoice.edit',
-                        { id: doc.id },
-                        { target: targetFor(event) }
-                      );
-                    }}
-                    onKeyDown={(event) => {
-                      if (event.key !== 'Enter' && event.key !== ' ') return;
-                      event.preventDefault();
-                      ctx.open(
-                        'invoicing.invoice.edit',
-                        { id: doc.id },
-                        { target: targetFor(event) }
-                      );
-                    }}
-                  >
-                    <td className="font-mono text-sm">{doc.number ?? 'Draft'}</td>
-                    <td className="hidden max-w-48 truncate @lg:table-cell">
-                      {/* Server-resolved: the frozen bill-to where the document
+            <Card className="min-h-0 flex-1 overflow-y-auto">
+                {error ? (
+                    <EmptyState
+                        title="Could not load invoices"
+                        description="Something went wrong reaching the server. It may be temporary — try again in a moment."
+                    />
+                ) : isLoading ? (
+                    <PaneWaiting label="Loading invoices…" />
+                ) : rows.length === 0 ? (
+                    <ListEmptyState
+                        filtered={Boolean(search) || activeStatus !== 'all'}
+                        noResults={{
+                            icon: <Icon glyph={faFileText} className="size-6" aria-hidden />,
+                            title: 'Nothing matches those filters',
+                            description: 'Try a different word, or switch back to All.',
+                        }}
+                        firstRun={{
+                            title: 'No invoices yet',
+                            description: 'When you create your first invoice it will show up here.',
+                        }}
+                    />
+                ) : (
+                    <Table size="sm" hover>
+                        <thead>
+                            <tr>
+                                {header('number', 'Number')}
+                                {header('customer', 'Customer', 'hidden @lg:table-cell')}
+                                {header('dueAt', 'Due', 'hidden @2xl:table-cell')}
+                                {header('status', 'Status')}
+                                {header('total', 'Total', 'hidden @3xl:table-cell text-right')}
+                                {header('balance', 'Balance', 'text-right')}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {rows.map((doc) => {
+                                const due = describeDue(doc.dueAt, doc.overdueDays);
+                                return (
+                                    <tr
+                                        key={doc.id}
+                                        className="cursor-pointer"
+                                        tabIndex={0}
+                                        role="button"
+                                        onClick={(event) => {
+                                            ctx.open(
+                                                'invoicing.invoice.edit',
+                                                { id: doc.id },
+                                                { target: targetFor(event) }
+                                            );
+                                        }}
+                                        onKeyDown={(event) => {
+                                            if (event.key !== 'Enter' && event.key !== ' ') return;
+                                            event.preventDefault();
+                                            ctx.open(
+                                                'invoicing.invoice.edit',
+                                                { id: doc.id },
+                                                { target: targetFor(event) }
+                                            );
+                                        }}
+                                    >
+                                        <td className="font-mono text-sm">{doc.number ?? 'Draft'}</td>
+                                        <td className="hidden max-w-48 truncate @lg:table-cell">
+                                            {/* Server-resolved: the frozen bill-to where the document
                           has one, otherwise the live customer or account. */}
-                      {doc.billedToName ?? doc.billTo?.name ?? '—'}
-                    </td>
-                    <td
-                      className={[
-                        'hidden text-sm @2xl:table-cell',
-                        due.tone === 'danger'
-                          ? 'text-danger font-medium'
-                          : due.tone === 'warning'
-                            ? 'text-warning'
-                            : '',
-                      ].join(' ')}
-                      title={due.title}
-                    >
-                      {due.label}
-                    </td>
-                    <td>
-                      <Badge color={statusTone(doc.status)} variant="soft" size="sm">
-                        {doc.status}
-                      </Badge>
-                    </td>
-                    <td className="hidden text-right tabular-nums @3xl:table-cell">
-                      {formatMoney(doc.total, doc.currency)}
-                    </td>
-                    <td
-                      className={[
-                        'text-right tabular-nums',
-                        doc.balance > 0 ? 'font-medium' : '',
-                      ].join(' ')}
-                    >
-                      {formatMoney(doc.balance, doc.currency)}
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </Table>
-        )}
-      </Card>
+                                            {doc.billedToName ?? doc.billTo?.name ?? '—'}
+                                        </td>
+                                        <td
+                                            className={[
+                                                'hidden text-sm @2xl:table-cell',
+                                                due.tone === 'danger'
+                                                    ? 'text-danger font-medium'
+                                                    : due.tone === 'warning'
+                                                        ? 'text-warning'
+                                                        : '',
+                                            ].join(' ')}
+                                            title={due.title}
+                                        >
+                                            {due.label}
+                                        </td>
+                                        <td>
+                                            <Badge color={statusTone(doc.status)} variant="soft" size="sm">
+                                                {doc.status}
+                                            </Badge>
+                                        </td>
+                                        <td className="hidden text-right tabular-nums @3xl:table-cell">
+                                            {formatMoney(doc.total, doc.currency)}
+                                        </td>
+                                        <td
+                                            className={[
+                                                'text-right tabular-nums',
+                                                doc.balance > 0 ? 'font-medium' : '',
+                                            ].join(' ')}
+                                        >
+                                            {formatMoney(doc.balance, doc.currency)}
+                                        </td>
+                                    </tr>
+                                );
+                            })}
+                        </tbody>
+                    </Table>
+                )}
+            </Card>
 
-      {/* Sits on the pane, not in a card — it describes the table rather than
+            {/* Sits on the pane, not in a card — it describes the table rather than
           being part of it, which is exactly what the recessed surface says. */}
-      <div className="shrink-0">
-        <ListPagination
-          shown={rows.length}
-          firstRow={rows.length === 0 ? 0 : skip + 1}
-          total={total}
-          page={page}
-          pageSize={pageSize}
-          canLoadMore={take < MAX_TAKE}
-          busy={isFetching}
-          onLoadMore={() => {
-            setTake((current) => Math.min(current + pageSize, MAX_TAKE));
-          }}
-          onPageChange={(next) => {
-            setPage(next);
-            // A jump REPLACES the window, so any growth from "load more"
-            // belongs to the window you just left, not the one you land on.
-            setTake(pageSize);
-          }}
-          onPageSizeChange={(size) => {
-            setPageSize(size);
-            setPage(1);
-            setTake(size);
-          }}
-        />
-        {/* The open gestures, and only where there is a pointer to do them
+            <div className="shrink-0">
+                <ListPagination
+                    shown={rows.length}
+                    firstRow={rows.length === 0 ? 0 : skip + 1}
+                    total={total}
+                    page={page}
+                    pageSize={pageSize}
+                    canLoadMore={take < MAX_TAKE}
+                    busy={isFetching}
+                    onLoadMore={() => {
+                        setTake((current) => Math.min(current + pageSize, MAX_TAKE));
+                    }}
+                    onPageChange={(next) => {
+                        setPage(next);
+                        // A jump REPLACES the window, so any growth from "load more"
+                        // belongs to the window you just left, not the one you land on.
+                        setTake(pageSize);
+                    }}
+                    onPageSizeChange={(size) => {
+                        setPageSize(size);
+                        setPage(1);
+                        setTake(size);
+                    }}
+                />
+                {/* The open gestures, and only where there is a pointer to do them
             with — on the stack these three modifiers do not exist. */}
-        <p className="hidden px-1 pb-1 text-sm @xl:block">
-          Click to open · Shift-click alongside · Alt-click new window
-        </p>
-      </div>
-    </div>
-  );
+                <p className="hidden px-1 pb-1 text-sm @xl:block">
+                    Click to open · Shift-click alongside · Alt-click new window
+                </p>
+            </div>
+        </div>
+    );
 }

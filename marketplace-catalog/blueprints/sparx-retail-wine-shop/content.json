@@ -1,215 +1,215 @@
 [
-  {
-    "typeKey": "blog_post",
-    "slug": "what-natural-wine-actually-means",
-    "status": "published",
-    "body": {
-      "title": "What natural wine actually means",
-      "excerpt": "It is not a legal term and it is not a marketing sticker. Here is what we mean by it when we put a bottle on the shelf.",
-      "featuredImage": {
-        "$asset": "post-natural"
-      },
-      "body": {
-        "type": "doc",
-        "content": [
-          {
-            "type": "paragraph",
-            "content": [
-              {
-                "type": "text",
-                "text": "“Natural wine” gets used to sell a lot of things, and it has no legal definition, so it is worth saying plainly what we mean by it. For us it is a spectrum with two ends: how the grapes are farmed, and how little is done to the juice once it is picked. A bottle earns its place on our shelf by sitting well down both."
-              }
-            ]
-          },
-          {
-            "type": "heading",
-            "attrs": {
-              "level": 2
+    {
+        "typeKey": "blog_post",
+        "slug": "what-natural-wine-actually-means",
+        "status": "published",
+        "body": {
+            "title": "What natural wine actually means",
+            "excerpt": "It is not a legal term and it is not a marketing sticker. Here is what we mean by it when we put a bottle on the shelf.",
+            "featuredImage": {
+                "$asset": "post-natural"
             },
-            "content": [
-              {
-                "type": "text",
-                "text": "In the vineyard"
-              }
-            ]
-          },
-          {
-            "type": "paragraph",
-            "content": [
-              {
-                "type": "text",
-                "text": "It starts with organic or biodynamic farming — no synthetic herbicides, pesticides or fertilisers — and usually with a small grower who picks by hand and actually walks their own rows. Healthy fruit off living soil is the whole game; you cannot fix bad farming in the cellar, and the best natural winemakers barely try to."
-              }
-            ]
-          },
-          {
-            "type": "heading",
-            "attrs": {
-              "level": 2
+            "body": {
+                "type": "doc",
+                "content": [
+                    {
+                        "type": "paragraph",
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "“Natural wine” gets used to sell a lot of things, and it has no legal definition, so it is worth saying plainly what we mean by it. For us it is a spectrum with two ends: how the grapes are farmed, and how little is done to the juice once it is picked. A bottle earns its place on our shelf by sitting well down both."
+                            }
+                        ]
+                    },
+                    {
+                        "type": "heading",
+                        "attrs": {
+                            "level": 2
+                        },
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "In the vineyard"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "paragraph",
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "It starts with organic or biodynamic farming — no synthetic herbicides, pesticides or fertilisers — and usually with a small grower who picks by hand and actually walks their own rows. Healthy fruit off living soil is the whole game; you cannot fix bad farming in the cellar, and the best natural winemakers barely try to."
+                            }
+                        ]
+                    },
+                    {
+                        "type": "heading",
+                        "attrs": {
+                            "level": 2
+                        },
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "In the cellar"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "paragraph",
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "Then, as little intervention as the wine allows. Fermentation with the wild yeast that arrives on the grapes, rather than a packet of lab yeast chosen for a predictable flavour. No added acid, color, tannin or sugar. No fining or heavy filtering to strip it clear. And little or no added sulphur — a touch at bottling is fine and often sensible; drowning the wine in it is not."
+                            }
+                        ]
+                    },
+                    {
+                        "type": "paragraph",
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "What you get for all that restraint is wine that tastes of a specific place and a specific year, and that moves in the glass as you drink it. It can be a little wilder than you are used to. That is not a fault to apologise for — it is the point."
+                            }
+                        ]
+                    }
+                ]
+            }
+        }
+    },
+    {
+        "typeKey": "blog_post",
+        "slug": "what-to-pour-with-dinner",
+        "status": "published",
+        "body": {
+            "title": "What to pour with dinner",
+            "excerpt": "Forget the rules about red with meat. A few honest pairings that actually work, and one trick that covers almost everything.",
+            "featuredImage": {
+                "$asset": "post-pairings"
             },
-            "content": [
-              {
-                "type": "text",
-                "text": "In the cellar"
-              }
-            ]
-          },
-          {
-            "type": "paragraph",
-            "content": [
-              {
-                "type": "text",
-                "text": "Then, as little intervention as the wine allows. Fermentation with the wild yeast that arrives on the grapes, rather than a packet of lab yeast chosen for a predictable flavour. No added acid, colour, tannin or sugar. No fining or heavy filtering to strip it clear. And little or no added sulphur — a touch at bottling is fine and often sensible; drowning the wine in it is not."
-              }
-            ]
-          },
-          {
-            "type": "paragraph",
-            "content": [
-              {
-                "type": "text",
-                "text": "What you get for all that restraint is wine that tastes of a specific place and a specific year, and that moves in the glass as you drink it. It can be a little wilder than you are used to. That is not a fault to apologise for — it is the point."
-              }
-            ]
-          }
-        ]
-      }
+            "body": {
+                "type": "doc",
+                "content": [
+                    {
+                        "type": "paragraph",
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "Wine pairing has been made far more precious than it needs to be. The old rules — red with meat, white with fish — get you maybe half of the way and steer you wrong the rest. Here is how we actually think about it behind the counter."
+                            }
+                        ]
+                    },
+                    {
+                        "type": "heading",
+                        "attrs": {
+                            "level": 2
+                        },
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "Match the weight, then the mood"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "paragraph",
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "The one trick that covers most of it: match the weight of the wine to the weight of the food. A delicate white flatters a delicate plate; a big magnum of red wants a roast. After that, look for a bridge — something acidic, herbal or savoury in the glass that echoes something on the plate. A saline mineral white next to oysters is not a coincidence, it is a rhyme."
+                            }
+                        ]
+                    },
+                    {
+                        "type": "heading",
+                        "attrs": {
+                            "level": 2
+                        },
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "A few that never miss"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "paragraph",
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "Skin-contact orange with anything spiced, roasted or full of umami — curry, roast chicken, a hard cheese. A chillable red with pizza, charcuterie or a tomato-heavy anything. Dry rosé with a summer salad or grilled fish. Pét-nat with fried food, full stop; the fizz and acidity cut straight through the fat. And when in doubt, a bright natural white does more work than any single bottle has a right to."
+                            }
+                        ]
+                    }
+                ]
+            }
+        }
+    },
+    {
+        "typeKey": "blog_post",
+        "slug": "how-to-taste-a-bottle",
+        "status": "published",
+        "body": {
+            "title": "How to taste a bottle, without the ceremony",
+            "excerpt": "Swirling and sniffing looks like a performance. It is actually just a quick way to figure out whether you like something — here is the whole method.",
+            "featuredImage": {
+                "$asset": "post-tasting"
+            },
+            "body": {
+                "type": "doc",
+                "content": [
+                    {
+                        "type": "paragraph",
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "The swirling and sniffing can look like a performance, but stripped of the theatre it is just a fast, useful way to work out what a wine is doing and whether you like it. You can do the whole thing in twenty seconds and nobody has to know you are doing it."
+                            }
+                        ]
+                    },
+                    {
+                        "type": "heading",
+                        "attrs": {
+                            "level": 2
+                        },
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "Look, smell, taste"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "paragraph",
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "Look first — color tells you about age and style before you have tasted a thing; a red going brick at the rim has some age on it, a cloudy white is probably unfiltered and natural. Then smell: swirl once to wake it up and take a short sniff. You are not naming twelve fruits, just noticing whether it smells fresh and alive or tired and flat. Then taste, and let it sit on your tongue for a second before you swallow."
+                            }
+                        ]
+                    },
+                    {
+                        "type": "heading",
+                        "attrs": {
+                            "level": 2
+                        },
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "The three things worth noticing"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "paragraph",
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "Acidity is what makes your mouth water — it is freshness, and natural wine usually has it in spades. Tannin is the grippy, drying feeling, mostly in reds and oranges; it is texture, not a flaw. And length is simply how long the flavour hangs around after you swallow — the longer, generally, the better the wine. That is genuinely most of it. Notice those three, decide if you would pour a second glass, and you are tasting like a pro."
+                            }
+                        ]
+                    }
+                ]
+            }
+        }
     }
-  },
-  {
-    "typeKey": "blog_post",
-    "slug": "what-to-pour-with-dinner",
-    "status": "published",
-    "body": {
-      "title": "What to pour with dinner",
-      "excerpt": "Forget the rules about red with meat. A few honest pairings that actually work, and one trick that covers almost everything.",
-      "featuredImage": {
-        "$asset": "post-pairings"
-      },
-      "body": {
-        "type": "doc",
-        "content": [
-          {
-            "type": "paragraph",
-            "content": [
-              {
-                "type": "text",
-                "text": "Wine pairing has been made far more precious than it needs to be. The old rules — red with meat, white with fish — get you maybe half of the way and steer you wrong the rest. Here is how we actually think about it behind the counter."
-              }
-            ]
-          },
-          {
-            "type": "heading",
-            "attrs": {
-              "level": 2
-            },
-            "content": [
-              {
-                "type": "text",
-                "text": "Match the weight, then the mood"
-              }
-            ]
-          },
-          {
-            "type": "paragraph",
-            "content": [
-              {
-                "type": "text",
-                "text": "The one trick that covers most of it: match the weight of the wine to the weight of the food. A delicate white flatters a delicate plate; a big magnum of red wants a roast. After that, look for a bridge — something acidic, herbal or savoury in the glass that echoes something on the plate. A saline mineral white next to oysters is not a coincidence, it is a rhyme."
-              }
-            ]
-          },
-          {
-            "type": "heading",
-            "attrs": {
-              "level": 2
-            },
-            "content": [
-              {
-                "type": "text",
-                "text": "A few that never miss"
-              }
-            ]
-          },
-          {
-            "type": "paragraph",
-            "content": [
-              {
-                "type": "text",
-                "text": "Skin-contact orange with anything spiced, roasted or full of umami — curry, roast chicken, a hard cheese. A chillable red with pizza, charcuterie or a tomato-heavy anything. Dry rosé with a summer salad or grilled fish. Pét-nat with fried food, full stop; the fizz and acidity cut straight through the fat. And when in doubt, a bright natural white does more work than any single bottle has a right to."
-              }
-            ]
-          }
-        ]
-      }
-    }
-  },
-  {
-    "typeKey": "blog_post",
-    "slug": "how-to-taste-a-bottle",
-    "status": "published",
-    "body": {
-      "title": "How to taste a bottle, without the ceremony",
-      "excerpt": "Swirling and sniffing looks like a performance. It is actually just a quick way to figure out whether you like something — here is the whole method.",
-      "featuredImage": {
-        "$asset": "post-tasting"
-      },
-      "body": {
-        "type": "doc",
-        "content": [
-          {
-            "type": "paragraph",
-            "content": [
-              {
-                "type": "text",
-                "text": "The swirling and sniffing can look like a performance, but stripped of the theatre it is just a fast, useful way to work out what a wine is doing and whether you like it. You can do the whole thing in twenty seconds and nobody has to know you are doing it."
-              }
-            ]
-          },
-          {
-            "type": "heading",
-            "attrs": {
-              "level": 2
-            },
-            "content": [
-              {
-                "type": "text",
-                "text": "Look, smell, taste"
-              }
-            ]
-          },
-          {
-            "type": "paragraph",
-            "content": [
-              {
-                "type": "text",
-                "text": "Look first — colour tells you about age and style before you have tasted a thing; a red going brick at the rim has some age on it, a cloudy white is probably unfiltered and natural. Then smell: swirl once to wake it up and take a short sniff. You are not naming twelve fruits, just noticing whether it smells fresh and alive or tired and flat. Then taste, and let it sit on your tongue for a second before you swallow."
-              }
-            ]
-          },
-          {
-            "type": "heading",
-            "attrs": {
-              "level": 2
-            },
-            "content": [
-              {
-                "type": "text",
-                "text": "The three things worth noticing"
-              }
-            ]
-          },
-          {
-            "type": "paragraph",
-            "content": [
-              {
-                "type": "text",
-                "text": "Acidity is what makes your mouth water — it is freshness, and natural wine usually has it in spades. Tannin is the grippy, drying feeling, mostly in reds and oranges; it is texture, not a flaw. And length is simply how long the flavour hangs around after you swallow — the longer, generally, the better the wine. That is genuinely most of it. Notice those three, decide if you would pour a second glass, and you are tasting like a pro."
-              }
-            ]
-          }
-        ]
-      }
-    }
-  }
 ]

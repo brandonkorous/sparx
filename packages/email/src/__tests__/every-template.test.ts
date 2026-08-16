@@ -69,3 +69,106 @@ describe('every coded template renders', () => {
     expect(IDS.length).toBe(36);
   });
 });
+
+// ── The second brand ────────────────────────────────────────────────────────
+//
+// WizeWorks runs two products on one platform and one email worker drains the
+// queue for both. Until 2026-08-16 every coded template named exactly one of
+// them — in its masthead, its footer, its subject line and its body copy — so a
+// Piggles owner's password reset arrived under sparx's wordmark, signed with
+// sparx's name, from "sparx <noreply@…>".
+//
+// The check above pins the DEFAULT rendering. This one pins the other one, and
+// it is the assertion that would have failed before the fix. `platform` is
+// supplied by whoever resolves the send (email-worker, from the tenant's
+// `platform_brand`); here it is supplied directly.
+
+/** Templates that name sparx because sparx is what they are ABOUT — its
+ *  marketplace, its partner programme, its own job ads. A Piggles tenant never
+ *  receives one: there is no Piggles marketplace to settle from and no Piggles
+ *  partner programme to be welcomed to (piggles/CLAUDE.md, "A sparx PRODUCT is
+ *  not a Piggles capability"). Renaming them would produce a grammatical
+ *  sentence about a product nobody can sign up for, which is worse than the
+ *  leak because nothing then looks wrong. */
+const SPARX_OWN_PRODUCTS = new Set<TemplateId>([
+  'market-settlement-report',
+  'partner-welcome',
+  'partner-application-received',
+  'partner-earnings',
+  'job-application-received',
+  'job-application-confirmation',
+]);
+
+const OTHER_BRAND = {
+  platform: {
+    name: 'Piggles',
+    url: 'https://meetpiggles.com',
+    accentChars: 0,
+    billingEmail: 'support@meetpiggles.com',
+    appUrl: 'https://mypiggles.com',
+  },
+};
+
+/**
+ * Strip absolute URLs before asserting.
+ *
+ * Every URL in a rendered email arrives as a PROP — the caller built it with
+ * `appOrigin(brand)` and it is that call's business to be right, not the
+ * template's. The fixtures pass sparx URLs because the fixtures were written for
+ * sparx. What is being asserted here is that the template contributes no name of
+ * its own, so the two concerns are separated rather than conflated.
+ */
+const withoutUrls = (s: string) => s.replace(/https?:\/\/\S+/g, '');
+
+describe('every coded template speaks as the sending brand', () => {
+  const ids = IDS.filter((id) => !SPARX_OWN_PRODUCTS.has(id));
+
+  it.each(ids)('%s names no other company', async (template) => {
+    const out = await _renderTemplateForTest(
+      {
+        template,
+        to: 'someone@example.test',
+        props: CASES[template],
+      } as Parameters<typeof _renderTemplateForTest>[0],
+      { brand: OTHER_BRAND }
+    );
+
+    for (const body of [out.html, out.text, out.subject]) {
+      expect(withoutUrls(body).toLowerCase(), 'the other brand leaked').not.toContain('sparx');
+    }
+  });
+
+  it('lets the sender name the From, and keeps the address it is given', async () => {
+    // One Mailgun domain serves both brands, so the ADDRESS stays sparx's until
+    // Piggles has DNS of its own — a deliverability fact, not a leak. The
+    // display name in front of it is presentation, and does move.
+    const out = await _renderTemplateForTest(
+      {
+        template: 'password-reset',
+        to: 'someone@example.test',
+        props: CASES['password-reset'],
+      } as Parameters<typeof _renderTemplateForTest>[0],
+      { brand: OTHER_BRAND, from: 'Piggles <noreply@sparx.email>' }
+    );
+
+    expect(out.from).toBe('Piggles <noreply@sparx.email>');
+  });
+
+  it('puts the sending brand where the other one used to be', async () => {
+    const out = await _renderTemplateForTest(
+      {
+        template: 'password-reset',
+        to: 'someone@example.test',
+        props: CASES['password-reset'],
+      } as Parameters<typeof _renderTemplateForTest>[0],
+      { brand: OTHER_BRAND }
+    );
+
+    // The masthead wordmark, the body copy, the subject and the footer's legal
+    // line — the four places the name appears, each of which was a literal.
+    expect(out.html).toContain('Piggles');
+    expect(out.subject).toBe('Set your Piggles password');
+    expect(out.html).toContain('meetpiggles.com');
+    expect(out.html).toContain('WizeWorks'); // the operator, correct for both
+  });
+});

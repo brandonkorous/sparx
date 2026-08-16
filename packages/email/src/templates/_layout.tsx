@@ -10,7 +10,14 @@ import {
   Row,
   Section,
 } from '@react-email/components';
-import { EmailDivider, EmailMuted, EmailWordmark, useBrand } from '../components';
+import {
+  EmailDivider,
+  EmailMuted,
+  EmailWordmark,
+  PlatformWordmark,
+  useBrand,
+  usePlatform,
+} from '../components';
 import { colors, signal, spacing } from '../components/tokens';
 
 // Shared email frame — the platform (bucket-B) twin of the silica redesign's frame
@@ -22,6 +29,12 @@ import { colors, signal, spacing } from '../components/tokens';
 // Hand-rolled HTML/CSS via @react-email/components: the rendered output is
 // table-based markup that survives every popular mail client. Brand colors +
 // fonts come from the BrandContext (per-tenant); spacing is fixed.
+
+/** `https://meetpiggles.com/` → `meetpiggles.com`. The footer's legal line reads
+ *  as a name, not as a link, so the scheme is noise. */
+function displayHost(url: string | null): string | null {
+  return url ? url.replace(/^https?:\/\//, '').replace(/\/+$/, '') : null;
+}
 
 interface EmailLayoutProps {
   preview: string;
@@ -38,6 +51,15 @@ interface EmailLayoutProps {
 
 export function EmailLayout({ preview, children, footerNote, header = true }: EmailLayoutProps) {
   const brand = useBrand();
+  const platform = usePlatform();
+  const platformHost = displayHost(platform.url);
+  // `siteName` is the TENANT's shop name — but `defaultBrand` seeds it with the
+  // platform's own, so an unbranded send would otherwise sign itself with
+  // whichever brand that default was written for. The flag is the only way to
+  // tell "no name" from "a shop that happens to be called this", and it is the
+  // same distinction the wordmark makes.
+  const senderName =
+    brand.siteNameIsPlatformDefault || !brand.siteName ? platform.name : brand.siteName;
   return (
     <Html lang="en">
       <Head />
@@ -93,10 +115,10 @@ export function EmailLayout({ preview, children, footerNote, header = true }: Em
 
             {/* Tiered footer: a tagline line over a legal line, both muted. */}
             <EmailMuted style={{ margin: 0 }}>
-              {footerNote ?? `${brand.siteName ?? 'sparx'} · Sent with sparx`}
+              {footerNote ?? `${senderName} · Sent with ${platform.name}`}
             </EmailMuted>
             <EmailMuted style={{ margin: `${spacing.xs}px 0 0`, color: colors.textMuted }}>
-              WizeWorks · sparx.works
+              {platformHost ? `WizeWorks · ${platformHost}` : 'WizeWorks'}
             </EmailMuted>
           </Section>
         </Container>
@@ -113,11 +135,17 @@ export function EmailLayout({ preview, children, footerNote, header = true }: Em
 // in a later pass) so this change is scoped to platform email with zero regression
 // risk to tenant sends.
 //
-// Chrome: a solid sparx-INK masthead carrying the wordmark (white "spar" + Ember
-// "x") — a real brand moment, not a 4px hairline bar — then the body, then a
-// footer well with optional quick links + the legal line. Always sparx-branded
-// (platform emails pass no tenant brand), so colors come from `signal`, not the
-// per-tenant BrandContext. Every value inlined; table-based; 600px single column.
+// Chrome: a solid INK masthead carrying the sending product's wordmark — a real
+// brand moment, not a 4px hairline bar — then the body, then a footer well with
+// optional quick links + the legal line. Every value inlined; table-based; 600px
+// single column.
+//
+// The masthead used to be the literal JSX `spar<span>x</span>`, which made every
+// platform email sparx's regardless of who it was going to — a Piggles owner's
+// password reset arrived under another company's mark. The NAME and the URL now
+// come from `brand.platform` (email-worker resolves it from the tenant's
+// `platform_brand`); the PALETTE is still `signal`, and still sparx's, which is
+// the open design question tracked as B5.1 in piggles/docs/migration.
 
 export interface PlatformFooterLink {
   label: string;
@@ -153,6 +181,8 @@ export function PlatformEmailLayout({
   footerLinks,
   footerReason,
 }: PlatformEmailLayoutProps) {
+  const platform = usePlatform();
+  const platformHost = displayHost(platform.url);
   return (
     <Html lang="en">
       <Head />
@@ -180,17 +210,16 @@ export function PlatformEmailLayout({
           <Section style={{ backgroundColor: signal.ink, padding: '20px 32px' }}>
             <Row>
               <Column style={{ verticalAlign: 'middle' }}>
-                <span
+                <PlatformWordmark
+                  inkColor="#ffffff"
+                  accentColor={signal.ember}
                   style={{
                     fontFamily: signal.font,
                     fontSize: 22,
                     fontWeight: 800,
                     letterSpacing: '-0.03em',
-                    color: '#ffffff',
                   }}
-                >
-                  spar<span style={{ color: signal.ember }}>x</span>
-                </span>
+                />
               </Column>
               {mastheadRight ? (
                 <Column style={{ verticalAlign: 'middle', textAlign: 'right' }}>
@@ -235,7 +264,7 @@ export function PlatformEmailLayout({
             <EmailMuted
               style={{ margin: `${footerReason ? signal.space.xs : 0}px 0 0`, color: signal.meta }}
             >
-              WizeWorks, Inc. · sparx.works
+              {platformHost ? `WizeWorks, Inc. · ${platformHost}` : 'WizeWorks, Inc.'}
             </EmailMuted>
           </Section>
         </Container>

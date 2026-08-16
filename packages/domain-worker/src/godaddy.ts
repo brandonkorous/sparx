@@ -9,6 +9,7 @@
 // call GoDaddy. At that point this copy of buildSparxDnsRecords should be
 // deleted in favour of the contract's.
 
+import { platformBrandIdentity } from '@wizeworks/brand-core';
 import { env } from './env.js';
 
 const IS_PROD = env.NODE_ENV === 'production';
@@ -59,6 +60,13 @@ async function gd(method: string, path: string, body?: unknown): Promise<void> {
   }
 }
 
+/** The shared ingress, under the brand's OWN name — `customers.piggles.site`
+ *  for a Piggles tenant, `customers.sparx.zone` for a sparx one. Same address. */
+export function cnameTargetFor(brand?: string | null): string {
+  const zone = platformBrandIdentity(brand).zoneDomain;
+  return zone ? `customers.${zone}` : env.SPARX_CNAME_TARGET;
+}
+
 export async function configureDNS(domain: string, records: DnsRecord[]): Promise<void> {
   await gd('PUT', `/v1/domains/${encodeURIComponent(domain)}/records`, records);
 }
@@ -68,8 +76,12 @@ export async function configureDNS(domain: string, records: DnsRecord[]): Promis
 // (`include:mailgun.org`), `mx._domainkey` DKIM, and DMARC at domain
 // verification. Seeding SPF here too would put a second `v=spf1` record on the
 // domain — an SPF permerror. The old SPF/DKIM/DMARC/MX set was Postal-era.
-export function buildSparxDnsRecords(): DnsRecord[] {
-  const cnameTarget = env.SPARX_CNAME_TARGET;
+// `brand` is the TENANT's, not the deployment's: one worker drains the queue for
+// every brand, and a customer must never be told to point their own domain at
+// another company's hostname. Absent → the deployment default, which is right for
+// the brand that deployment was set up for and is all there ever was before.
+export function buildSparxDnsRecords(brand?: string | null): DnsRecord[] {
+  const cnameTarget = cnameTargetFor(brand);
   return [
     { type: 'CNAME', name: '@', data: cnameTarget, ttl: 3600 },
     { type: 'CNAME', name: 'www', data: cnameTarget, ttl: 3600 },

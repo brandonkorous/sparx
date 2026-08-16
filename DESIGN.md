@@ -226,7 +226,7 @@ Two consequences to hold:
 - **`color="module-finance"`, `-partner`, `-platform`, `-storefront` never work anywhere.** They are
   valid `ModuleScope` identities but are in no app's `@plugin` list.
 - **`color="module"` would be dead in `apps/market`** — the bridge name itself is unregistered there.
-  Currently latent, not a live bug: market uses no module colours at all today. It becomes real the
+  Currently latent, not a live bug: market uses no module colors at all today. It becomes real the
   first time someone adds one, and it will fail silently, so register `module` there before you do.
 
 **So prefer the scope, not the literal:**
@@ -245,9 +245,9 @@ subtree, and only from the 15 — and never in `apps/market`.
 
 ### 1.4 Focus rings: use `focus-ring`, never a hand-built one
 
-The plugin emits colour utilities for **`bg-`, `text-` and `border-` only.** There is no
+The plugin emits color utilities for **`bg-`, `text-` and `border-` only.** There is no
 `ring-<color>`, `outline-<color>`, `fill-`, `stroke-` or `divide-<color>`, and the apps deliberately
-do **not** bridge colours into Tailwind's own `@theme` namespace — colour is owned entirely by the
+do **not** bridge colors into Tailwind's own `@theme` namespace — color is owned entirely by the
 silica plugin. So a branded ring could only be spelled `ring-[var(--color-primary)]`, and it was, at
 **43 call sites**.
 
@@ -276,7 +276,7 @@ Two implementation notes worth keeping:
   file (verified with the CLI: the class is simply never emitted). Ordinary rules survive the
   import, which is what lets all four apps share one definition.
 
-Still open upstream: silicaui emitting **3 of ~12** colour-utility prefixes is a real gap for every
+Still open upstream: silicaui emitting **3 of ~12** color-utility prefixes is a real gap for every
 consumer, worth filing as the full set. Note it would _not_ have collapsed those 43 sites — you'd
 have written `ring-primary` 43 times instead. Only the shared class achieves single-point-of-change.
 
@@ -344,12 +344,12 @@ carry it on the panel.
 
 ### 2.3 The headline rule
 
-**If every row says it, it cannot be the headline.** Before you assign a colour, check that the
+**If every row says it, it cannot be the headline.** Before you assign a color, check that the
 biggest element in a repeating row is the thing that _differs_ between rows. A list where every item
-leads with the same words has thrown away its own hierarchy — and no amount of colour fixes that,
+leads with the same words has thrown away its own hierarchy — and no amount of color fixes that,
 because the repeated label is exactly what shouldn't be emphasised.
 
-Demote the repeat to a small coloured badge; promote the distinguishing value (a time, a name, an
+Demote the repeat to a small colored badge; promote the distinguishing value (a time, a name, an
 amount) to full weight. Worked through in §5.1 move 3.
 
 ### 2.4 A page is a tone sequence, not an alternation
@@ -372,7 +372,7 @@ the same six-tone axis (`page`, `surface`, `dark`, `primary`, `neutral`, `accent
 - **Ration painted bands to roughly one or two per page**, and spend them on the page's sharpest
   claim and its money moment. A page where every band is painted is the same failure in brighter
   paint.
-- **Don't fight the content's own hues.** Most sections already carry colour — a semantic ramp, a set
+- **Don't fight the content's own hues.** Most sections already carry color — a semantic ramp, a set
   of module chips — and painting the ground under them kills it. `/commerce`'s fee ladder is inked
   `error`/`info`/`success`, so it takes `accent` cyan; red on ember is mud. Pick the band tone that
   is _furthest_ from what the section already says.
@@ -424,12 +424,12 @@ any route; it names which layers specifically.
 
 **And on a module page, layer 5 is mandatory too — one section painted in that module's own hue, on
 top of 1–4.** A page that exists to sell Commerce or CRM and never once paints a section in that
-module's colour has left its own identity to badges and spark glyphs. Five layers is the floor for
+module's color has left its own identity to badges and spark glyphs. Five layers is the floor for
 `/commerce`, `/crm`, `/cms`, `/b2b`, `/email`, `/builder` and the rest; four is the floor for
 everything else (`/pricing`, `/partners`, `/customers`, `/for/*`, the tool pages).
 
 Layer 5 is a fill at section scale, which is the one place a module hue works unreservedly — as ink
-on a light band the same colour measures ~2.2:1 and is unusable. See §1.2 and the `soft` defect in
+on a light band the same color measures ~2.2:1 and is unusable. See §1.2 and the `soft` defect in
 §7.1.
 
 That distinction is the whole point, because layers 1–3 are all greys. A page can reach a count of
@@ -438,8 +438,8 @@ which is not hypothetical, it is exactly what `/commerce` was when it got called
 is not optional and cannot be substituted by a dark band.** If a page has no painted semantic
 section, it fails, whatever else it has.
 
-**Why layers and not just "more colour."** Depth is what makes a page read as built rather than
-assembled. A single flat plane with different-coloured text on it reads as a document; sections that
+**Why layers and not just "more color."** Depth is what makes a page read as built rather than
+assembled. A single flat plane with different-colored text on it reads as a document; sections that
 sit at visibly different heights read as a product, because the eye gets structure before it gets
 words. It also makes every other rule easier: a card needs a surface to lift off, a painted band
 needs a ground to float on, and a photograph needs an edge to end at.
@@ -599,7 +599,7 @@ Before a surface is done, look at it and count. Any **yes** is a fail.
 - [ ] In a repeating row, is the largest element the thing that's **identical** across rows? _(§2.3.)_
 - [ ] Is the selected tab distinguishable only by a hairline? _(§2.2 — use a filled variant.)_
 - [ ] Is the action this surface exists for an `outline` or `ghost` button? _(§5.1 move 2.)_
-- [ ] **Did adding colour let me delete any words?** If not, I probably decorated rather than
+- [ ] **Did adding color let me delete any words?** If not, I probably decorated rather than
       designed. _(§5.2.)_
 - [ ] Would this screen be indistinguishable from a different module's screen in a screenshot?
 
@@ -732,8 +732,8 @@ Use these names in review.
   two identically-inked labels. State you have to read is state you haven't signalled. §2.2.
 - **Timid primary** — the action a surface exists for rendered `outline` or `ghost`. Users believe
   the styling over the label; understating it reads as "maybe don't." §5.1.
-- **Decorated, not designed** — colour was added and nothing could be deleted. If the explanatory
-  sentence is still doing the work, the colour isn't. §5.2.
+- **Decorated, not designed** — color was added and nothing could be deleted. If the explanatory
+  sentence is still doing the work, the color isn't. §5.2.
 - **Forked language** — inventing a separate rule set for "marketing" or "the console." There is one
   system; variance is a token override. See Scope.
 - **The grey/white ladder** — a page whose whole tone rhythm is two surfaces alternating. Every

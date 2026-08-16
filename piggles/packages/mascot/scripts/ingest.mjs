@@ -92,7 +92,7 @@ const ACTIVE_BATCHES = ['01', '02', '03', '04', '05', '07'];
  *  browser, in a satori OG route, and in an email — none of which can resolve a
  *  bundler's static import. Three copies of ~600KB is the price of that. */
 const TARGETS = ['web', 'account', 'workbench'].map((app) =>
-  join(PIGGLES_ROOT, 'apps', app, 'public', 'mascot')
+    join(PIGGLES_ROOT, 'apps', app, 'public', 'mascot')
 );
 
 /** Longest edge of a shipped asset, after trimming. 1200px is 2× the largest
@@ -119,70 +119,70 @@ const WEBP = { quality: 82, effort: 6, alphaQuality: 100 };
  *  planned pose. Read whichever exists, and treat an entry with a file path as
  *  available regardless of what it says about itself. */
 function normalise(manifest, batch) {
-  const entries = manifest.catalog ?? manifest.assets ?? [];
-  return entries.map((entry) => {
-    const png = entry.png ?? entry.formats?.png;
-    const webp = entry.webp ?? entry.formats?.webp;
-    return {
-      // 02 prefixes every id with the character's name; 01 does not. The bare
-      // form is canonical — `pose="wave"` reads correctly at the call site and
-      // `pose="piggles-wave"` inside a <PigglesMascot> does not.
-      id: String(entry.id).replace(/^piggles-/, ''),
-      batch,
-      category: entry.category ?? 'core',
-      alt: entry.alt ?? '',
-      // 01 carries staging notes the later batches drop. Neither is load-bearing,
-      // so both get a sane default rather than becoming required.
-      anchor: entry.anchor ?? 'bottom',
-      energy: entry.energy ?? 'friendly',
-      intent: entry.intent ?? entry.uses ?? [],
-      source: png ? join(BATCH_ROOT, batch, png.replace(/^\.\//, '')) : null,
-      // The master is the PNG. WebP is only ever a derivative, and re-encoding a
-      // lossy source is how a soft gradient picks up banding.
-      hasArt: Boolean(png ?? webp),
-    };
-  });
+    const entries = manifest.catalog ?? manifest.assets ?? [];
+    return entries.map((entry) => {
+        const png = entry.png ?? entry.formats?.png;
+        const webp = entry.webp ?? entry.formats?.webp;
+        return {
+            // 02 prefixes every id with the character's name; 01 does not. The bare
+            // form is canonical — `pose="wave"` reads correctly at the call site and
+            // `pose="piggles-wave"` inside a <PigglesMascot> does not.
+            id: String(entry.id).replace(/^piggles-/, ''),
+            batch,
+            category: entry.category ?? 'core',
+            alt: entry.alt ?? '',
+            // 01 carries staging notes the later batches drop. Neither is load-bearing,
+            // so both get a sane default rather than becoming required.
+            anchor: entry.anchor ?? 'bottom',
+            energy: entry.energy ?? 'friendly',
+            intent: entry.intent ?? entry.uses ?? [],
+            source: png ? join(BATCH_ROOT, batch, png.replace(/^\.\//, '')) : null,
+            // The master is the PNG. WebP is only ever a derivative, and re-encoding a
+            // lossy source is how a soft gradient picks up banding.
+            hasArt: Boolean(png ?? webp),
+        };
+    });
 }
 
 // ── image pipeline ───────────────────────────────────────────────────────────
 
 /** The alpha bounding box of the artwork. sharp's own `.trim()` works from a
- *  background COLOUR and is unreliable on a soft transparent edge, so this walks
+ *  background COLOR and is unreliable on a soft transparent edge, so this walks
  *  the alpha channel directly — the same measurement the placement comments in
  *  `apps/account/components/product-glimpse.tsx` depend on. */
 async function boundingBox(file) {
-  const { data, info } = await sharp(file)
-    .ensureAlpha()
-    .raw()
-    .toBuffer({ resolveWithObject: true });
+    const { data, info } = await sharp(file)
+        .ensureAlpha()
+        .raw()
+        .toBuffer({ resolveWithObject: true });
 
-  let left = info.width;
-  let top = info.height;
-  let right = -1;
-  let bottom = -1;
+    let left = info.width;
+    let top = info.height;
+    let right = -1;
+    let bottom = -1;
 
-  for (let y = 0; y < info.height; y++) {
-    for (let x = 0; x < info.width; x++) {
-      if (data[(y * info.width + x) * 4 + 3] <= ALPHA_FLOOR) continue;
-      if (x < left) left = x;
-      if (x > right) right = x;
-      if (y < top) top = y;
-      if (y > bottom) bottom = y;
+    for (let y = 0; y < info.height; y++) {
+        for (let x = 0; x < info.width; x++) {
+            if (data[(y * info.width + x) * 4 + 3] <= ALPHA_FLOOR) continue;
+            if (x < left) left = x;
+            if (x > right) right = x;
+            if (y < top) top = y;
+            if (y > bottom) bottom = y;
+        }
     }
-  }
 
-  if (right < 0) throw new Error(`${basename(file)} is fully transparent`);
+    if (right < 0) throw new Error(`${basename(file)} is fully transparent`);
 
-  const padded = {
-    left: Math.max(0, left - PAD),
-    top: Math.max(0, top - PAD),
-  };
-  return {
-    ...padded,
-    width: Math.min(info.width, right + 1 + PAD) - padded.left,
-    height: Math.min(info.height, bottom + 1 + PAD) - padded.top,
-    canvas: { width: info.width, height: info.height },
-  };
+    const padded = {
+        left: Math.max(0, left - PAD),
+        top: Math.max(0, top - PAD),
+    };
+    return {
+        ...padded,
+        width: Math.min(info.width, right + 1 + PAD) - padded.left,
+        height: Math.min(info.height, bottom + 1 + PAD) - padded.top,
+        canvas: { width: info.width, height: info.height },
+    };
 }
 
 /** Is this pixel Piggles herself, rather than the furniture around her?
@@ -223,14 +223,14 @@ async function boundingBox(file) {
  *  rejects props and leaves skin alone, which is the only evidence that
  *  distinguishes a tighter detector from a broken one. */
 function isSkin(r, g, b, a) {
-  if (a < 200 || r < 180) return false;
-  const max = Math.max(r, g, b);
-  const min = Math.min(r, g, b);
-  if (max !== r) return false;
-  const saturation = (max - min) / max;
-  if (saturation < 0.2 || saturation > 0.62) return false;
-  // Wood, bread and cream are all yellower than skin — g and b diverge.
-  return Math.abs(g - b) <= 18;
+    if (a < 200 || r < 180) return false;
+    const max = Math.max(r, g, b);
+    const min = Math.min(r, g, b);
+    if (max !== r) return false;
+    const saturation = (max - min) / max;
+    if (saturation < 0.2 || saturation > 0.62) return false;
+    // Wood, bread and cream are all yellower than skin — g and b diverge.
+    return Math.abs(g - b) <= 18;
 }
 
 /** What fraction of the artwork's height the CHARACTER occupies.
@@ -258,72 +258,72 @@ function isSkin(r, g, b, a) {
  *  Trimming the tails costs nothing real: her head and her trotters are hundreds
  *  of pixels wide at those rows. */
 async function subjectSpan(file, box, height) {
-  const { data, info } = await sharp(file)
-    .extract({ left: box.left, top: box.top, width: box.width, height: box.height })
-    .ensureAlpha()
-    .raw()
-    .toBuffer({ resolveWithObject: true });
+    const { data, info } = await sharp(file)
+        .extract({ left: box.left, top: box.top, width: box.width, height: box.height })
+        .ensureAlpha()
+        .raw()
+        .toBuffer({ resolveWithObject: true });
 
-  const perRow = new Array(info.height).fill(0);
-  let total = 0;
-  for (let y = 0; y < info.height; y++) {
-    for (let x = 0; x < info.width; x++) {
-      const i = (y * info.width + x) * 4;
-      if (isSkin(data[i], data[i + 1], data[i + 2], data[i + 3])) {
-        perRow[y]++;
-        total++;
-      }
+    const perRow = new Array(info.height).fill(0);
+    let total = 0;
+    for (let y = 0; y < info.height; y++) {
+        for (let x = 0; x < info.width; x++) {
+            const i = (y * info.width + x) * 4;
+            if (isSkin(data[i], data[i + 1], data[i + 2], data[i + 3])) {
+                perRow[y]++;
+                total++;
+            }
+        }
     }
-  }
 
-  // No skin at all means the detector is wrong for this cut, not that she is
-  // absent. Fall back to the whole frame — which is the old behaviour, so the
-  // pose renders as it always did instead of vanishing or filling the screen.
-  if (total === 0) {
-    console.warn(`  ! ${basename(file)}: no skin detected, subject falls back to the full frame`);
-    return 1;
-  }
-
-  const cut = total * 0.015;
-  let acc = 0;
-  let top = 0;
-  let bottom = info.height - 1;
-  for (let y = 0; y < info.height; y++) {
-    acc += perRow[y];
-    if (acc >= cut) {
-      top = y;
-      break;
+    // No skin at all means the detector is wrong for this cut, not that she is
+    // absent. Fall back to the whole frame — which is the old behaviour, so the
+    // pose renders as it always did instead of vanishing or filling the screen.
+    if (total === 0) {
+        console.warn(`  ! ${basename(file)}: no skin detected, subject falls back to the full frame`);
+        return 1;
     }
-  }
-  acc = 0;
-  for (let y = info.height - 1; y >= 0; y--) {
-    acc += perRow[y];
-    if (acc >= cut) {
-      bottom = y;
-      break;
-    }
-  }
 
-  // Reported against the SHIPPED height, so the component can multiply straight
-  // through without knowing anything about the trim.
-  return Math.round(((bottom - top + 1) / info.height) * height) / height;
+    const cut = total * 0.015;
+    let acc = 0;
+    let top = 0;
+    let bottom = info.height - 1;
+    for (let y = 0; y < info.height; y++) {
+        acc += perRow[y];
+        if (acc >= cut) {
+            top = y;
+            break;
+        }
+    }
+    acc = 0;
+    for (let y = info.height - 1; y >= 0; y--) {
+        acc += perRow[y];
+        if (acc >= cut) {
+            bottom = y;
+            break;
+        }
+    }
+
+    // Reported against the SHIPPED height, so the component can multiply straight
+    // through without knowing anything about the trim.
+    return Math.round(((bottom - top + 1) / info.height) * height) / height;
 }
 
 async function build(entry) {
-  const box = await boundingBox(entry.source);
-  const scale = Math.min(1, MAX_EDGE / Math.max(box.width, box.height));
-  const width = Math.round(box.width * scale);
-  const height = Math.round(box.height * scale);
+    const box = await boundingBox(entry.source);
+    const scale = Math.min(1, MAX_EDGE / Math.max(box.width, box.height));
+    const width = Math.round(box.width * scale);
+    const height = Math.round(box.height * scale);
 
-  const buffer = await sharp(entry.source)
-    .extract({ left: box.left, top: box.top, width: box.width, height: box.height })
-    .resize(width, height, { fit: 'fill' })
-    .webp(WEBP)
-    .toBuffer();
+    const buffer = await sharp(entry.source)
+        .extract({ left: box.left, top: box.top, width: box.width, height: box.height })
+        .resize(width, height, { fit: 'fill' })
+        .webp(WEBP)
+        .toBuffer();
 
-  const subject = await subjectSpan(entry.source, box, height);
+    const subject = await subjectSpan(entry.source, box, height);
 
-  return { ...entry, width, height, subject, buffer, canvas: box.canvas };
+    return { ...entry, width, height, subject, buffer, canvas: box.canvas };
 }
 
 // ── catalog emission ─────────────────────────────────────────────────────────
@@ -345,12 +345,12 @@ const list = (values) => `[${values.map(quote).join(', ')}]`;
  *  `no-redundant-type-constituents` fails on it — and a generated file that does
  *  not lint is a generated file somebody hand-edits. */
 const unionOf = (poses) =>
-  poses.length ? poses.map((pose) => quote(pose.id)).join(' | ') : 'never';
+    poses.length ? poses.map((pose) => quote(pose.id)).join(' | ') : 'never';
 
 function emitCatalog(available, planned) {
-  const poses = available
-    .map(
-      (pose) => `  '${pose.id}': {
+    const poses = available
+        .map(
+            (pose) => `  '${pose.id}': {
     id: '${pose.id}',
     batch: '${pose.batch}',
     category: ${quote(pose.category)},
@@ -363,21 +363,21 @@ function emitCatalog(available, planned) {
     height: ${pose.height},
     subject: ${pose.subject.toFixed(4)},
   },`
-    )
-    .join('\n');
+        )
+        .join('\n');
 
-  const roadmap = planned
-    .map(
-      (pose) => `  '${pose.id}': {
+    const roadmap = planned
+        .map(
+            (pose) => `  '${pose.id}': {
     id: '${pose.id}',
     category: ${quote(pose.category)},
     alt: ${quote(pose.alt)},
     intent: ${list(pose.intent)},
   },`
-    )
-    .join('\n');
+        )
+        .join('\n');
 
-  return `// GENERATED by scripts/ingest.mjs — do not edit.
+    return `// GENERATED by scripts/ingest.mjs — do not edit.
 //
 // Source of truth: the batch manifests under piggles/images/mascot/. To change a
 // pose's metadata, edit the manifest and re-run \`pnpm --filter @piggles/mascot
@@ -460,31 +460,31 @@ const seen = new Map();
 const roadmap = new Map();
 
 for (const batch of ACTIVE_BATCHES) {
-  const manifest = JSON.parse(await readFile(join(BATCH_ROOT, batch, 'manifest.json'), 'utf8'));
-  for (const entry of normalise(manifest, batch)) {
-    if (entry.hasArt) {
-      // A COLLIDING ID DOES NOT DISCARD ART. Every delivered cut ships and is
-      // reachable; the later batch keeps the bare id so no call site changes,
-      // and the earlier one is re-keyed `<id>-<batch>`.
-      //
-      // It used to just overwrite, which meant batch 04's `workshop` was drawn,
-      // paid for, sitting in the repo, and unreachable — and the app served a
-      // DIFFERENT picture at the same URL the moment 07 landed.
-      if (seen.has(entry.id)) {
-        const earlier = seen.get(entry.id);
-        const rekeyed = `${earlier.id}-${earlier.batch}`;
-        if (seen.has(rekeyed)) throw new Error(`re-key collision: ${rekeyed} already exists`);
-        seen.set(rekeyed, { ...earlier, id: rekeyed });
-        console.log(
-          `  ${entry.id}: batch ${batch} takes the id; batch ${earlier.batch} ships as ${rekeyed}`
-        );
-      }
-      seen.set(entry.id, entry);
-      roadmap.delete(entry.id);
-    } else if (!seen.has(entry.id)) {
-      roadmap.set(entry.id, entry);
+    const manifest = JSON.parse(await readFile(join(BATCH_ROOT, batch, 'manifest.json'), 'utf8'));
+    for (const entry of normalise(manifest, batch)) {
+        if (entry.hasArt) {
+            // A COLLIDING ID DOES NOT DISCARD ART. Every delivered cut ships and is
+            // reachable; the later batch keeps the bare id so no call site changes,
+            // and the earlier one is re-keyed `<id>-<batch>`.
+            //
+            // It used to just overwrite, which meant batch 04's `workshop` was drawn,
+            // paid for, sitting in the repo, and unreachable — and the app served a
+            // DIFFERENT picture at the same URL the moment 07 landed.
+            if (seen.has(entry.id)) {
+                const earlier = seen.get(entry.id);
+                const rekeyed = `${earlier.id}-${earlier.batch}`;
+                if (seen.has(rekeyed)) throw new Error(`re-key collision: ${rekeyed} already exists`);
+                seen.set(rekeyed, { ...earlier, id: rekeyed });
+                console.log(
+                    `  ${entry.id}: batch ${batch} takes the id; batch ${earlier.batch} ships as ${rekeyed}`
+                );
+            }
+            seen.set(entry.id, entry);
+            roadmap.delete(entry.id);
+        } else if (!seen.has(entry.id)) {
+            roadmap.set(entry.id, entry);
+        }
     }
-  }
 }
 
 const available = [];
@@ -497,9 +497,9 @@ const planned = [...roadmap.values()].sort((a, b) => a.id.localeCompare(b.id));
 // retired upstream has to disappear from the apps too, and a merge would leave it
 // serving forever with nothing referencing it.
 for (const dir of TARGETS) {
-  await rm(dir, { recursive: true, force: true });
-  await mkdir(dir, { recursive: true });
-  for (const pose of available) await writeFile(join(dir, `${pose.id}.webp`), pose.buffer);
+    await rm(dir, { recursive: true, force: true });
+    await mkdir(dir, { recursive: true });
+    for (const pose of available) await writeFile(join(dir, `${pose.id}.webp`), pose.buffer);
 }
 
 // Formatted here rather than left to `pnpm format`, so that re-running the ingest
@@ -508,25 +508,25 @@ for (const dir of TARGETS) {
 const catalogPath = join(PACKAGE_ROOT, 'src', 'catalog.ts');
 await mkdir(join(PACKAGE_ROOT, 'src'), { recursive: true });
 await writeFile(
-  catalogPath,
-  await prettier.format(emitCatalog(available, planned), {
-    ...(await prettier.resolveConfig(catalogPath)),
-    parser: 'typescript',
-  }),
-  'utf8'
+    catalogPath,
+    await prettier.format(emitCatalog(available, planned), {
+        ...(await prettier.resolveConfig(catalogPath)),
+        parser: 'typescript',
+    }),
+    'utf8'
 );
 
 const total = available.reduce((sum, pose) => sum + pose.buffer.length, 0);
 for (const pose of available) {
-  const digest = createHash('sha256').update(pose.buffer).digest('hex').slice(0, 8);
-  console.log(
-    `  ${pose.id.padEnd(12)} ${String(pose.canvas.width).padStart(4)}×${String(pose.canvas.height).padEnd(4)}` +
-      ` → ${String(pose.width).padStart(4)}×${String(pose.height).padEnd(4)}` +
-      ` ${String(Math.round(pose.buffer.length / 1024)).padStart(3)}KB  ${digest}`
-  );
+    const digest = createHash('sha256').update(pose.buffer).digest('hex').slice(0, 8);
+    console.log(
+        `  ${pose.id.padEnd(12)} ${String(pose.canvas.width).padStart(4)}×${String(pose.canvas.height).padEnd(4)}` +
+        ` → ${String(pose.width).padStart(4)}×${String(pose.height).padEnd(4)}` +
+        ` ${String(Math.round(pose.buffer.length / 1024)).padStart(3)}KB  ${digest}`
+    );
 }
 console.log(
-  `\n${available.length} poses (${Math.round(total / 1024)}KB) → ${TARGETS.length} apps, ` +
+    `\n${available.length} poses (${Math.round(total / 1024)}KB) → ${TARGETS.length} apps, ` +
     `${planned.length} planned. Batches: ${ACTIVE_BATCHES.join(', ')}.`
 );
 
@@ -534,8 +534,8 @@ console.log(
 // INPUT. A stale copy of the assets somewhere else is how the two Piggles cuts end
 // up on one screen after all.
 const strays = (await readdir(join(PIGGLES_ROOT, 'apps'), { withFileTypes: true }))
-  .filter((d) => d.isDirectory())
-  .filter((d) => !TARGETS.some((t) => t.includes(join('apps', d.name, 'public'))));
+    .filter((d) => d.isDirectory())
+    .filter((d) => !TARGETS.some((t) => t.includes(join('apps', d.name, 'public'))));
 if (strays.length) {
-  console.log(`\nNote: ${strays.map((d) => d.name).join(', ')} not in TARGETS — no assets copied.`);
+    console.log(`\nNote: ${strays.map((d) => d.name).join(', ')} not in TARGETS — no assets copied.`);
 }

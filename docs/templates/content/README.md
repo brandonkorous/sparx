@@ -29,7 +29,7 @@ news grids.
 Identical to the commerce set:
 
 1. **Structure & aesthetic, not identity.** We mimic layout, rhythm, article anatomy,
-   nav, type feel and colour mood. We NEVER copy a publisher's logo, name, trademarks,
+   nav, type feel and color mood. We NEVER copy a publisher's logo, name, trademarks,
    photography, or literal brand palette. Every template ships sparx branding, our own
    example business, and royalty-free / original imagery.
 2. **Tenant sites get full design freedom.** These are tenant blueprints, so the

@@ -255,7 +255,7 @@ tokens.light: { colorPrimary: "#4F46E5", colorAccent: "#7C3AED",
 ```
 
 Those feed the `--st-*` bridge that `--color-*` reads. **Any tenant switching themes keeps the old
-theme's primary colour and fonts** unless something else overwrites them. It had to be corrected by
+theme's primary color and fonts** unless something else overwrites them. It had to be corrected by
 hand with `update_site_settings`. `apply_saved_theme` should clear or rewrite the v1 overlay.
 
 **2. `update_site_settings.settings` replaces wholesale, not per-key.** Sending `{tokens}` alone
@@ -278,7 +278,7 @@ constraint — see [brand §10](04-brand-and-visual-identity.md).
 
 | Area    | Gap                                                                                   |
 | ------- | ------------------------------------------------------------------------------------- |
-| Colors  | Tenant-named colours (`hue-1 … hue-12`) — in flight; blocks the eight industry hues   |
+| Colors  | Tenant-named colors (`hue-1 … hue-12`) — in flight; blocks the eight industry hues    |
 | Fonts   | Whether `Instrument Serif` + `Geist` resolve from theme data alone — verify on render |
 | Builder | Asymmetric splits, full-bleed bands, visible-grid sections                            |
 | Imagery | AVIF + `srcset`, per-image alt/dimension enforcement                                  |
@@ -334,7 +334,7 @@ Everything below is **draft**. Nothing has been published; `wize.works` still se
 4. Resolve the slug convention; re-check every href.
 5. Render and eyeball light + dark, desktop + 375px. Verify **Instrument Serif and Geist actually
    resolve** from theme data — that is still unverified.
-6. Swap the industries grid onto the eight hues once the tenant-named-colour capability lands.
+6. Swap the industries grid onto the eight hues once the tenant-named-color capability lands.
 7. Publish layout + pages **together**, then `publish_site`.
 
 Blocked on Brandon: pricing numbers, kanNINJA + AGCONN hues, a real product screenshot.

@@ -60,7 +60,7 @@ Five words, and what each one means in a design decision.
 
 One letter carries the identity — the same move sparx makes with its "x", which gives a family
 resemblance without imitation. The `z` is the right letter because it is the name's own quirk: it
-is what makes it _Wize_ and not _Wise_. Colouring the whole "ize" was the original brief; it was
+is what makes it _Wize_ and not _Wise_. Coloring the whole "ize" was the original brief; it was
 built and rejected — it splits the read into "W-ize-Works" and dilutes a one-letter idea across
 three.
 
@@ -68,8 +68,8 @@ three.
 | -------------------- | --------------------------------------------------- |
 | `wordmark.svg`       | Light surfaces — ink `#191713`, z in pine `#1B5E43` |
 | `wordmark-dark.svg`  | Dark surfaces — bone `#F2EFE8`, z in `#3FA47B`      |
-| `wordmark-black.svg` | One-colour black; the z drops to 50% opacity        |
-| `wordmark-white.svg` | One-colour white; same treatment                    |
+| `wordmark-black.svg` | One-color black; the z drops to 50% opacity         |
+| `wordmark-white.svg` | One-color white; same treatment                     |
 
 3492 × 798, ratio **0.229**. **Minimum width 92px** (≈20px cap-height) — verified legible.
 Clear space: the cap-height of the W on all sides.
@@ -95,8 +95,8 @@ the same typographic family as the wordmark instead of inventing a second one fo
 | ---------------- | ----------------------------------- |
 | `icon.svg`       | Light surfaces — pine tile, paper W |
 | `icon-dark.svg`  | Dark surfaces                       |
-| `icon-black.svg` | One-colour black tile, white W      |
-| `icon-white.svg` | One-colour white tile, black W      |
+| `icon-black.svg` | One-color black tile, white W       |
+| `icon-white.svg` | One-color white tile, black W       |
 
 1183 × 1183. Legible to **16px**.
 
@@ -117,7 +117,7 @@ which holds the platform's own marks and is unreachable from a tenant
 
 - Never "Wizeworks", "WIZEWORKS", "wize works", or "Wize Works" in brand text.
 - Never re-set the wordmark in live text — it is outlined artwork. The `z` is a path, not a span.
-- Never recolour the `z` to anything but pine, or drop it to ink in a colour context.
+- Never recolor the `z` to anything but pine, or drop it to ink in a color context.
 - Never place the wordmark on a photograph without a solid backing plate.
 - Never stretch, condense, or re-track. The ratio is fixed at 0.229.
 

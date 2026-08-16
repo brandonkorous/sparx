@@ -34,60 +34,60 @@
 // components and blueprints already run on.
 
 import {
-  categoryInfo,
-  listIntegrationDescriptors,
-  type IntegrationDescriptor,
+    categoryInfo,
+    listIntegrationDescriptors,
+    type IntegrationDescriptor,
 } from '@sparx/integrations';
 
 export interface FirstPartyIntegration {
-  slug: string;
-  name: string;
-  /** Resolves the real adapter at connect time. Category-qualified, because a slug is
-   *  unique only WITHIN a category — `meta` is both a sales channel and a social
-   *  account, and they are different integrations. */
-  providerSlug: string;
-  /** The card's category label — human copy ("Card payments"), taken from the same
-   *  category definition the Integrations panel renders, so the two cannot disagree. */
-  kind: string;
-  scopes: string[];
-  accent: string;
-  tagline: string;
-  description: string;
-  sortWeight: number;
+    slug: string;
+    name: string;
+    /** Resolves the real adapter at connect time. Category-qualified, because a slug is
+     *  unique only WITHIN a category — `meta` is both a sales channel and a social
+     *  account, and they are different integrations. */
+    providerSlug: string;
+    /** The card's category label — human copy ("Card payments"), taken from the same
+     *  category definition the Integrations panel renders, so the two cannot disagree. */
+    kind: string;
+    scopes: string[];
+    accent: string;
+    tagline: string;
+    description: string;
+    sortWeight: number;
 }
 
 /** The card's accent chip, keyed on CATEGORY rather than vendor — so the shelf reads
- *  as a set of related things instead of a wall of borrowed brand colours, and a
+ *  as a set of related things instead of a wall of borrowed brand colors, and a
  *  contributor's integration inherits the right chip without supplying one. */
 const CATEGORY_ACCENT: Record<string, string> = {
-  payments: '#f97316',
-  shipping: '#0891b2',
-  tax: '#65a30d',
-  sales_channels: '#7c2d12',
-  social: '#be123c',
-  dropship: '#0369a1',
-  ai: '#4f46e5',
+    payments: '#f97316',
+    shipping: '#0891b2',
+    tax: '#65a30d',
+    sales_channels: '#7c2d12',
+    social: '#be123c',
+    dropship: '#0369a1',
+    ai: '#4f46e5',
 };
 
 const ACCENT_FALLBACK = '#6b7280';
 
 function toListing(descriptor: IntegrationDescriptor): FirstPartyIntegration {
-  const info = categoryInfo(descriptor.category);
-  return {
-    // Category-qualified so two categories can each carry a `meta` or a `pinterest`
-    // without colliding on the marketplace's unique slug.
-    slug: `${descriptor.category}-${descriptor.slug}`,
-    name: descriptor.name,
-    providerSlug: `${descriptor.category}:${descriptor.slug}`,
-    kind: info.label,
-    // Capabilities double as the listing's scopes — they are already the plain-language
-    // statement of what connecting this lets sparx do.
-    scopes: [...descriptor.capabilities],
-    accent: CATEGORY_ACCENT[descriptor.category] ?? ACCENT_FALLBACK,
-    tagline: descriptor.blurb,
-    description: descriptor.blurb,
-    sortWeight: descriptor.sortWeight ?? 0,
-  };
+    const info = categoryInfo(descriptor.category);
+    return {
+        // Category-qualified so two categories can each carry a `meta` or a `pinterest`
+        // without colliding on the marketplace's unique slug.
+        slug: `${descriptor.category}-${descriptor.slug}`,
+        name: descriptor.name,
+        providerSlug: `${descriptor.category}:${descriptor.slug}`,
+        kind: info.label,
+        // Capabilities double as the listing's scopes — they are already the plain-language
+        // statement of what connecting this lets sparx do.
+        scopes: [...descriptor.capabilities],
+        accent: CATEGORY_ACCENT[descriptor.category] ?? ACCENT_FALLBACK,
+        tagline: descriptor.blurb,
+        description: descriptor.blurb,
+        sortWeight: descriptor.sortWeight ?? 0,
+    };
 }
 
 /**
@@ -102,7 +102,7 @@ function toListing(descriptor: IntegrationDescriptor): FirstPartyIntegration {
  * them is what kept four finished bundles invisible for months.
  */
 export function firstPartyIntegrations(): FirstPartyIntegration[] {
-  return listIntegrationDescriptors()
-    .filter((d) => d.publisher === 'sparx')
-    .map(toListing);
+    return listIntegrationDescriptors()
+        .filter((d) => d.publisher === 'sparx')
+        .map(toListing);
 }

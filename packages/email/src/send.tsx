@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { render } from '@react-email/render';
 import { getEmailProvider } from './providers';
-import { BrandProvider, type BrandTokens } from './components';
+import { BrandProvider, platformNameOf, type BrandTokens } from './components';
 import { EmailLayout } from './templates/_layout';
 import type { DeliveryResult, SendableEmail } from './types';
 import {
@@ -191,8 +191,11 @@ import {
 const DEFAULT_FROM_ENV = 'SPARX_EMAIL_FROM';
 const FALLBACK_FROM = 'sparx <noreply@sparx.email>';
 
-function defaultFrom(): string {
-  return process.env[DEFAULT_FROM_ENV] ?? FALLBACK_FROM;
+/** `override` is the SENDING BRAND's From, which the caller resolves because only
+ *  it knows the tenant. Absent → the platform-wide address, which names one
+ *  brand and is right for exactly that brand's mail. */
+function defaultFrom(override?: string): string {
+  return override ?? process.env[DEFAULT_FROM_ENV] ?? FALLBACK_FROM;
 }
 
 // Platform + auth/operational templates only (docs/93). Tenant→customer emails
@@ -519,6 +522,16 @@ export interface RenderTemplateOptions {
   /** Per-tenant brand. When omitted, the sparx defaults render. Platform
    *  emails (OTP/2FA, system) intentionally pass no brand. */
   brand?: Partial<BrandTokens>;
+  /**
+   * The `From` for this send when the caller does not name one — the SENDING
+   * brand's, resolved by whoever knows the tenant (`platformFrom` in
+   * `@wizeworks/brand-core`).
+   *
+   * Omitted, the platform-wide `SPARX_EMAIL_FROM` applies, which puts one
+   * brand's name in a second brand's customer's inbox. An explicit `input.from`
+   * still wins over both.
+   */
+  from?: string;
 }
 
 export async function renderTemplate(
@@ -531,6 +544,11 @@ export async function renderTemplate(
     <BrandProvider brand={opts.brand}>{node}</BrandProvider>
   );
 
+  // Subjects are strings, not components, so they cannot read the context the
+  // body reads — this is the same value, resolved once for the ones that name
+  // the product. Every one of them said "sparx" regardless of who was sending.
+  const platform = platformNameOf(opts.brand);
+
   switch (input.template) {
     case 'password-reset': {
       const element = wrap(<PasswordResetEmail {...input.props} />);
@@ -539,10 +557,10 @@ export async function renderTemplate(
         render(element, { plainText: true }),
       ]);
       return {
-        from: input.from ?? defaultFrom(),
+        from: input.from ?? defaultFrom(opts.from),
         to: input.to,
         replyTo: input.replyTo,
-        subject: passwordResetSubject,
+        subject: passwordResetSubject(platform),
         html,
         text,
         templateId: 'password-reset',
@@ -555,10 +573,10 @@ export async function renderTemplate(
         render(element, { plainText: true }),
       ]);
       return {
-        from: input.from ?? defaultFrom(),
+        from: input.from ?? defaultFrom(opts.from),
         to: input.to,
         replyTo: input.replyTo,
-        subject: welcomeMerchantSubject,
+        subject: welcomeMerchantSubject(platform),
         html,
         text,
         templateId: 'welcome-merchant',
@@ -571,7 +589,7 @@ export async function renderTemplate(
         render(element, { plainText: true }),
       ]);
       return {
-        from: input.from ?? defaultFrom(),
+        from: input.from ?? defaultFrom(opts.from),
         to: input.to,
         replyTo: input.replyTo,
         subject: partnerWelcomeSubject,
@@ -587,10 +605,10 @@ export async function renderTemplate(
         render(element, { plainText: true }),
       ]);
       return {
-        from: input.from ?? defaultFrom(),
+        from: input.from ?? defaultFrom(opts.from),
         to: input.to,
         replyTo: input.replyTo,
-        subject: emailVerificationSubject,
+        subject: emailVerificationSubject(platform),
         html,
         text,
         templateId: 'email-verification',
@@ -603,10 +621,10 @@ export async function renderTemplate(
         render(element, { plainText: true }),
       ]);
       return {
-        from: input.from ?? defaultFrom(),
+        from: input.from ?? defaultFrom(opts.from),
         to: input.to,
         replyTo: input.replyTo,
-        subject: magicLinkSubject,
+        subject: magicLinkSubject(platform),
         html,
         text,
         templateId: 'magic-link',
@@ -619,10 +637,10 @@ export async function renderTemplate(
         render(element, { plainText: true }),
       ]);
       return {
-        from: input.from ?? defaultFrom(),
+        from: input.from ?? defaultFrom(opts.from),
         to: input.to,
         replyTo: input.replyTo,
-        subject: loginOtpSubject,
+        subject: loginOtpSubject(platform),
         html,
         text,
         templateId: 'login-otp',
@@ -635,7 +653,7 @@ export async function renderTemplate(
         render(element, { plainText: true }),
       ]);
       return {
-        from: input.from ?? defaultFrom(),
+        from: input.from ?? defaultFrom(opts.from),
         to: input.to,
         replyTo: input.replyTo,
         subject: domainRenewalReminderSubject(input.props.domainName, input.props.daysUntilExpiry),
@@ -651,7 +669,7 @@ export async function renderTemplate(
         render(element, { plainText: true }),
       ]);
       return {
-        from: input.from ?? defaultFrom(),
+        from: input.from ?? defaultFrom(opts.from),
         to: input.to,
         replyTo: input.replyTo,
         subject: chatNotificationSubject(input.props.customerName),
@@ -667,7 +685,7 @@ export async function renderTemplate(
         render(element, { plainText: true }),
       ]);
       return {
-        from: input.from ?? defaultFrom(),
+        from: input.from ?? defaultFrom(opts.from),
         to: input.to,
         replyTo: input.replyTo,
         subject: marketSettlementReportSubject(input.props.periodLabel),
@@ -683,7 +701,7 @@ export async function renderTemplate(
         render(element, { plainText: true }),
       ]);
       return {
-        from: input.from ?? defaultFrom(),
+        from: input.from ?? defaultFrom(opts.from),
         to: input.to,
         replyTo: input.replyTo,
         subject: feedbackResponseSubject(input.props.feedbackTitle),
@@ -699,7 +717,7 @@ export async function renderTemplate(
         render(element, { plainText: true }),
       ]);
       return {
-        from: input.from ?? defaultFrom(),
+        from: input.from ?? defaultFrom(opts.from),
         to: input.to,
         replyTo: input.replyTo,
         subject: jobApplicationReceivedSubject(input.props.roleTitle),
@@ -715,7 +733,7 @@ export async function renderTemplate(
         render(element, { plainText: true }),
       ]);
       return {
-        from: input.from ?? defaultFrom(),
+        from: input.from ?? defaultFrom(opts.from),
         to: input.to,
         replyTo: input.replyTo,
         subject: jobApplicationConfirmationSubject(input.props.roleTitle),
@@ -731,10 +749,10 @@ export async function renderTemplate(
         render(element, { plainText: true }),
       ]);
       return {
-        from: input.from ?? defaultFrom(),
+        from: input.from ?? defaultFrom(opts.from),
         to: input.to,
         replyTo: input.replyTo,
-        subject: teamInvitationSubject(input.props.orgName),
+        subject: teamInvitationSubject(input.props.orgName, platform),
         html,
         text,
         templateId: 'team-invitation',
@@ -747,7 +765,7 @@ export async function renderTemplate(
         render(element, { plainText: true }),
       ]);
       return {
-        from: input.from ?? defaultFrom(),
+        from: input.from ?? defaultFrom(opts.from),
         to: input.to,
         replyTo: input.replyTo,
         subject: formSubmissionNotificationSubject(input.props.formName),
@@ -763,7 +781,7 @@ export async function renderTemplate(
         render(element, { plainText: true }),
       ]);
       return {
-        from: input.from ?? defaultFrom(),
+        from: input.from ?? defaultFrom(opts.from),
         to: input.to,
         replyTo: input.replyTo,
         subject: formSubmissionConfirmationSubject(input.props.subject),
@@ -779,10 +797,10 @@ export async function renderTemplate(
         render(element, { plainText: true }),
       ]);
       return {
-        from: input.from ?? defaultFrom(),
+        from: input.from ?? defaultFrom(opts.from),
         to: input.to,
         replyTo: input.replyTo,
-        subject: billingReceiptSubject,
+        subject: billingReceiptSubject(platform),
         html,
         text,
         templateId: 'billing-receipt',
@@ -795,10 +813,10 @@ export async function renderTemplate(
         render(element, { plainText: true }),
       ]);
       return {
-        from: input.from ?? defaultFrom(),
+        from: input.from ?? defaultFrom(opts.from),
         to: input.to,
         replyTo: input.replyTo,
-        subject: billingPaymentFailedSubject,
+        subject: billingPaymentFailedSubject(platform),
         html,
         text,
         templateId: 'billing-payment-failed',
@@ -811,10 +829,10 @@ export async function renderTemplate(
         render(element, { plainText: true }),
       ]);
       return {
-        from: input.from ?? defaultFrom(),
+        from: input.from ?? defaultFrom(opts.from),
         to: input.to,
         replyTo: input.replyTo,
-        subject: billingTrialEndingSubject,
+        subject: billingTrialEndingSubject(platform),
         html,
         text,
         templateId: 'billing-trial-ending',
@@ -827,10 +845,10 @@ export async function renderTemplate(
         render(element, { plainText: true }),
       ]);
       return {
-        from: input.from ?? defaultFrom(),
+        from: input.from ?? defaultFrom(opts.from),
         to: input.to,
         replyTo: input.replyTo,
-        subject: subscriptionUpdateSubject(input.props.kind, input.props.planLabel),
+        subject: subscriptionUpdateSubject(input.props.kind, input.props.planLabel, platform),
         html,
         text,
         templateId: 'subscription-update',
@@ -843,7 +861,7 @@ export async function renderTemplate(
         render(element, { plainText: true }),
       ]);
       return {
-        from: input.from ?? defaultFrom(),
+        from: input.from ?? defaultFrom(opts.from),
         to: input.to,
         replyTo: input.replyTo,
         subject: domainLiveSubject(input.props.domainName),
@@ -859,7 +877,7 @@ export async function renderTemplate(
         render(element, { plainText: true }),
       ]);
       return {
-        from: input.from ?? defaultFrom(),
+        from: input.from ?? defaultFrom(opts.from),
         to: input.to,
         replyTo: input.replyTo,
         subject: domainExpiredSubject(input.props.domainName),
@@ -875,7 +893,7 @@ export async function renderTemplate(
         render(element, { plainText: true }),
       ]);
       return {
-        from: input.from ?? defaultFrom(),
+        from: input.from ?? defaultFrom(opts.from),
         to: input.to,
         replyTo: input.replyTo,
         subject: emailDomainVerifiedSubject(input.props.domainName),
@@ -891,7 +909,7 @@ export async function renderTemplate(
         render(element, { plainText: true }),
       ]);
       return {
-        from: input.from ?? defaultFrom(),
+        from: input.from ?? defaultFrom(opts.from),
         to: input.to,
         replyTo: input.replyTo,
         subject: documentSignatureRequestSubject(
@@ -910,10 +928,13 @@ export async function renderTemplate(
         render(element, { plainText: true }),
       ]);
       return {
-        from: input.from ?? defaultFrom(),
+        from: input.from ?? defaultFrom(opts.from),
         to: input.to,
         replyTo: input.replyTo,
-        subject: invitationAcceptedSubject(input.props.inviteeName ?? input.props.inviteeEmail),
+        subject: invitationAcceptedSubject(
+          input.props.inviteeName ?? input.props.inviteeEmail,
+          platform
+        ),
         html,
         text,
         templateId: 'invitation-accepted',
@@ -926,7 +947,7 @@ export async function renderTemplate(
         render(element, { plainText: true }),
       ]);
       return {
-        from: input.from ?? defaultFrom(),
+        from: input.from ?? defaultFrom(opts.from),
         to: input.to,
         replyTo: input.replyTo,
         subject: teamMemberRemovedSubject(input.props.orgName),
@@ -942,7 +963,7 @@ export async function renderTemplate(
         render(element, { plainText: true }),
       ]);
       return {
-        from: input.from ?? defaultFrom(),
+        from: input.from ?? defaultFrom(opts.from),
         to: input.to,
         replyTo: input.replyTo,
         subject: teamRoleChangedSubject(input.props.orgName),
@@ -958,7 +979,7 @@ export async function renderTemplate(
         render(element, { plainText: true }),
       ]);
       return {
-        from: input.from ?? defaultFrom(),
+        from: input.from ?? defaultFrom(opts.from),
         to: input.to,
         replyTo: input.replyTo,
         subject: moduleToggleSubject(input.props.enabled, input.props.moduleName),
@@ -974,7 +995,7 @@ export async function renderTemplate(
         render(element, { plainText: true }),
       ]);
       return {
-        from: input.from ?? defaultFrom(),
+        from: input.from ?? defaultFrom(opts.from),
         to: input.to,
         replyTo: input.replyTo,
         subject: partnerApplicationReceivedSubject(input.props.applicantName),
@@ -990,7 +1011,7 @@ export async function renderTemplate(
         render(element, { plainText: true }),
       ]);
       return {
-        from: input.from ?? defaultFrom(),
+        from: input.from ?? defaultFrom(opts.from),
         to: input.to,
         replyTo: input.replyTo,
         subject: partnerEarningsSubject(input.props.kind, input.props.amountLabel),
@@ -1006,10 +1027,10 @@ export async function renderTemplate(
         render(element, { plainText: true }),
       ]);
       return {
-        from: input.from ?? defaultFrom(),
+        from: input.from ?? defaultFrom(opts.from),
         to: input.to,
         replyTo: input.replyTo,
-        subject: passwordChangedSubject,
+        subject: passwordChangedSubject(platform),
         html,
         text,
         templateId: 'password-changed',
@@ -1022,10 +1043,10 @@ export async function renderTemplate(
         render(element, { plainText: true }),
       ]);
       return {
-        from: input.from ?? defaultFrom(),
+        from: input.from ?? defaultFrom(opts.from),
         to: input.to,
         replyTo: input.replyTo,
-        subject: twoFactorChangedSubject(input.props.enabled),
+        subject: twoFactorChangedSubject(input.props.enabled, platform),
         html,
         text,
         templateId: 'two-factor-changed',
@@ -1038,10 +1059,10 @@ export async function renderTemplate(
         render(element, { plainText: true }),
       ]);
       return {
-        from: input.from ?? defaultFrom(),
+        from: input.from ?? defaultFrom(opts.from),
         to: input.to,
         replyTo: input.replyTo,
-        subject: newDeviceSigninSubject,
+        subject: newDeviceSigninSubject(platform),
         html,
         text,
         templateId: 'new-device-signin',
@@ -1054,7 +1075,7 @@ export async function renderTemplate(
         render(element, { plainText: true }),
       ]);
       return {
-        from: input.from ?? defaultFrom(),
+        from: input.from ?? defaultFrom(opts.from),
         to: input.to,
         replyTo: input.replyTo,
         subject: feedbackReceivedSubject(input.props.feedbackTitle),
@@ -1070,7 +1091,7 @@ export async function renderTemplate(
         render(element, { plainText: true }),
       ]);
       return {
-        from: input.from ?? defaultFrom(),
+        from: input.from ?? defaultFrom(opts.from),
         to: input.to,
         replyTo: input.replyTo,
         subject: socialPostFailedSubject(
@@ -1089,7 +1110,7 @@ export async function renderTemplate(
         render(element, { plainText: true }),
       ]);
       return {
-        from: input.from ?? defaultFrom(),
+        from: input.from ?? defaultFrom(opts.from),
         to: input.to,
         replyTo: input.replyTo,
         subject: socialConnectionExpiredSubject(input.props.platformName),
@@ -1105,7 +1126,7 @@ export async function renderTemplate(
         render(element, { plainText: true }),
       ]);
       return {
-        from: input.from ?? defaultFrom(),
+        from: input.from ?? defaultFrom(opts.from),
         to: input.to,
         replyTo: input.replyTo,
         subject: inventoryReportSubject(input.props.scheduleName, input.props.periodLabel),

@@ -6,278 +6,278 @@
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import {
-  publishService,
-  savedThemeService,
-  scheduleService,
-  themeService,
+    publishService,
+    savedThemeService,
+    scheduleService,
+    themeService,
 } from '../../src/services/index.js';
 import { SitebuilderNotFoundError } from '../../src/errors.js';
 import {
-  addSecondaryProperty,
-  disposeTestContext,
-  makeTestContext,
-  readPropertyBrandOverride,
-  readSilicaDraftTheme,
-  readTenantBrand,
-  type TestContext,
+    addSecondaryProperty,
+    disposeTestContext,
+    makeTestContext,
+    readPropertyBrandOverride,
+    readSilicaDraftTheme,
+    readTenantBrand,
+    type TestContext,
 } from '../helpers.js';
 
 const MISSING_ID = '00000000-0000-0000-0000-000000000000';
 
 describe('sitebuilder saved themes', () => {
-  let test: TestContext;
-  let summerId: string;
+    let test: TestContext;
+    let summerId: string;
 
-  beforeAll(async () => {
-    test = await makeTestContext('owner');
-  });
-
-  afterAll(async () => {
-    await disposeTestContext(test);
-  });
-
-  it('create — saves a named presentation variant + brand snapshot; list is sorted by name', async () => {
-    const summer = await savedThemeService.create(test.ctx, {
-      name: 'Summer',
-      basePresetKey: 'clinic',
-      presentation: { containerWidth: '1200px' },
-      brand: { colorPrimary: '#ff5a1f', fontHeading: 'Poppins' },
-    });
-    summerId = summer.id;
-    expect(summer.name).toBe('Summer');
-    expect(summer.basePresetKey).toBe('clinic');
-    expect(summer.presentation.containerWidth).toBe('1200px');
-    // The captured brand "look" round-trips (docs/33 self-contained themes).
-    expect(summer.brand?.colorPrimary).toBe('#ff5a1f');
-    expect(summer.brand?.fontHeading).toBe('Poppins');
-
-    await savedThemeService.create(test.ctx, {
-      name: 'Holiday',
-      basePresetKey: 'kitchen',
-      presentation: { containerWidth: '1320px' },
-      brand: { colorPrimary: '#0a7d2b' },
+    beforeAll(async () => {
+        test = await makeTestContext('owner');
     });
 
-    const list = await savedThemeService.list(test.ctx);
-    expect(list.map((t) => t.name)).toEqual(['Holiday', 'Summer']);
-  });
-
-  it('update — renames and replaces the presentation + brand', async () => {
-    const updated = await savedThemeService.update(test.ctx, summerId, {
-      name: 'Summer Sale',
-      presentation: { containerWidth: '1280px' },
-      brand: { colorPrimary: '#2f7d32' },
+    afterAll(async () => {
+        await disposeTestContext(test);
     });
-    expect(updated.name).toBe('Summer Sale');
-    expect(updated.presentation.containerWidth).toBe('1280px');
-    // Brand edits write back into the snapshot ("select and tweak").
-    expect(updated.brand?.colorPrimary).toBe('#2f7d32');
-  });
 
-  it('apply — loads the saved theme into the working draft (theme + presentation + brand), no publish', async () => {
-    const result = await savedThemeService.apply(test.ctx, summerId);
-    expect(result).toEqual({ ok: true, themeKey: 'clinic', silicaTheme: true });
+    it('create — saves a named presentation variant + brand snapshot; list is sorted by name', async () => {
+        const summer = await savedThemeService.create(test.ctx, {
+            name: 'Summer',
+            basePresetKey: 'clinic',
+            presentation: { containerWidth: '1200px' },
+            brand: { colorPrimary: '#ff5a1f', fontHeading: 'Poppins' },
+        });
+        summerId = summer.id;
+        expect(summer.name).toBe('Summer');
+        expect(summer.basePresetKey).toBe('clinic');
+        expect(summer.presentation.containerWidth).toBe('1200px');
+        // The captured brand "look" round-trips (docs/33 self-contained themes).
+        expect(summer.brand?.colorPrimary).toBe('#ff5a1f');
+        expect(summer.brand?.fontHeading).toBe('Poppins');
 
-    const config = await themeService.getConfig(test.ctx);
-    expect(config.themeKey).toBe('clinic');
-    const draft = config.draftSettings as {
-      presentation?: { containerWidth?: string };
-      activeSavedThemeId?: string;
-    };
-    expect(draft.presentation?.containerWidth).toBe('1280px');
-    // The applied theme is pinned so the dashboard rail restores the selection.
-    expect(draft.activeSavedThemeId).toBe(summerId);
-    // Apply also lands the captured brand look — on THIS SITE's own override, even
-    // though it is the primary (a headless apply must colour the site, not just
-    // stage its surfaces, or the theme "doesn't apply" in the brand designer).
-    const row = await readPropertyBrandOverride(test.tenant.tenantId, test.ctx.propertyId);
-    expect((row?.brandOverride as { colorPrimary?: string } | null)?.colorPrimary).toBe('#2f7d32');
-    // The tenant BASE is the default an UNBRANDED site inherits — never a site's
-    // own storage. Writing the primary's theme there is what recoloured every
-    // sibling site that had no override of its own.
-    const base = await readTenantBrand(test.tenant.tenantId);
-    expect(base?.colorPrimary ?? null).toBeNull();
-    // Not published — apply only stages the draft.
-    expect(config.publishedVersionId).toBeNull();
-  });
+        await savedThemeService.create(test.ctx, {
+            name: 'Holiday',
+            basePresetKey: 'kitchen',
+            presentation: { containerWidth: '1320px' },
+            brand: { colorPrimary: '#0a7d2b' },
+        });
 
-  // THE regression test for "the tenant picked a theme and the live site ignored it".
-  // Everything asserted above (theme_key, presentation, brand_override) feeds the
-  // BUILDER's preview, which derives a theme from the brand columns. The storefront
-  // derives nothing — it renders `silica theme ?? BASE_SILICA_THEME`. So every
-  // assertion above passed for months while the visitor saw the platform default.
-  // Assert the column the storefront actually reads, and assert the VALUE, because a
-  // theme row that exists but carries the wrong primary fails in exactly the same way
-  // to the only person who matters.
-  it('apply — writes the look through to the silica theme the storefront renders', async () => {
-    const theme = await readSilicaDraftTheme(test.tenant.tenantId, test.ctx.propertyId);
-    expect(theme).not.toBeNull();
-    // The saved theme's captured primary (#2f7d32, set by the `update` test above) —
-    // not the preset's, and not sparx Ember. This is the whole point of applying it.
-    expect(theme?.tokens?.['--color-primary']).toBe('#2f7d32');
-    // A `-content` ink is measured for it, so text on a primary fill stays readable
-    // instead of inheriting whatever the base theme happened to pair with Ember.
-    expect(theme?.tokens?.['--color-primary-content']).toBeTruthy();
-    // Both palettes, so a site with the `toggle` appearance policy is themed in dark
-    // too rather than falling back to base for half its visitors.
-    expect(theme?.dark?.['--color-primary']).toBeTruthy();
-  });
-
-  it('scheduled publish — applies the schedule’s theme before snapshotting', async () => {
-    const holiday = (await savedThemeService.list(test.ctx)).find((t) => t.name === 'Holiday');
-    expect(holiday).toBeTruthy();
-
-    const scheduled = await scheduleService.schedule(test.ctx, {
-      scheduledAt: new Date(Date.now() - 1000).toISOString(),
-      note: 'go live for the holidays',
-      themeId: holiday!.id,
+        const list = await savedThemeService.list(test.ctx);
+        expect(list.map((t) => t.name)).toEqual(['Holiday', 'Summer']);
     });
-    expect(scheduled.status).toBe('pending');
 
-    const result = await scheduleService.processDueSchedule(test.ctx, scheduled.id);
-    expect(result.status).toBe('published');
-    // The schedule pointed at the Holiday theme (kitchen) — the published
-    // version carries it, even though the draft was on clinic from the apply test.
-    expect(result.version?.themeKey).toBe('kitchen');
+    it('update — renames and replaces the presentation + brand', async () => {
+        const updated = await savedThemeService.update(test.ctx, summerId, {
+            name: 'Summer Sale',
+            presentation: { containerWidth: '1280px' },
+            brand: { colorPrimary: '#2f7d32' },
+        });
+        expect(updated.name).toBe('Summer Sale');
+        expect(updated.presentation.containerWidth).toBe('1280px');
+        // Brand edits write back into the snapshot ("select and tweak").
+        expect(updated.brand?.colorPrimary).toBe('#2f7d32');
+    });
 
-    const config = await themeService.getConfig(test.ctx);
-    expect(config.themeKey).toBe('kitchen');
+    it('apply — loads the saved theme into the working draft (theme + presentation + brand), no publish', async () => {
+        const result = await savedThemeService.apply(test.ctx, summerId);
+        expect(result).toEqual({ ok: true, themeKey: 'clinic', silicaTheme: true });
 
-    // The Holiday theme captured its own brand; the scheduled swap applies it to
-    // the tenant brand, so the storefront — which compiles brand live — recolours
-    // (not just the surface overlay). compiledV2 reflects the applied primary.
-    const snapshot = await publishService.getPublishedSnapshot(test.ctx);
-    expect(snapshot?.compiledV2?.light.primary).toBe('#0a7d2b');
-  });
+        const config = await themeService.getConfig(test.ctx);
+        expect(config.themeKey).toBe('clinic');
+        const draft = config.draftSettings as {
+            presentation?: { containerWidth?: string };
+            activeSavedThemeId?: string;
+        };
+        expect(draft.presentation?.containerWidth).toBe('1280px');
+        // The applied theme is pinned so the dashboard rail restores the selection.
+        expect(draft.activeSavedThemeId).toBe(summerId);
+        // Apply also lands the captured brand look — on THIS SITE's own override, even
+        // though it is the primary (a headless apply must color the site, not just
+        // stage its surfaces, or the theme "doesn't apply" in the brand designer).
+        const row = await readPropertyBrandOverride(test.tenant.tenantId, test.ctx.propertyId);
+        expect((row?.brandOverride as { colorPrimary?: string } | null)?.colorPrimary).toBe('#2f7d32');
+        // The tenant BASE is the default an UNBRANDED site inherits — never a site's
+        // own storage. Writing the primary's theme there is what recolored every
+        // sibling site that had no override of its own.
+        const base = await readTenantBrand(test.tenant.tenantId);
+        expect(base?.colorPrimary ?? null).toBeNull();
+        // Not published — apply only stages the draft.
+        expect(config.publishedVersionId).toBeNull();
+    });
 
-  it('remove — deletes the variant', async () => {
-    const removed = await savedThemeService.remove(test.ctx, summerId);
-    expect(removed.id).toBe(summerId);
-    const list = await savedThemeService.list(test.ctx);
-    expect(list.map((t) => t.name)).toEqual(['Holiday']);
-  });
+    // THE regression test for "the tenant picked a theme and the live site ignored it".
+    // Everything asserted above (theme_key, presentation, brand_override) feeds the
+    // BUILDER's preview, which derives a theme from the brand columns. The storefront
+    // derives nothing — it renders `silica theme ?? BASE_SILICA_THEME`. So every
+    // assertion above passed for months while the visitor saw the platform default.
+    // Assert the column the storefront actually reads, and assert the VALUE, because a
+    // theme row that exists but carries the wrong primary fails in exactly the same way
+    // to the only person who matters.
+    it('apply — writes the look through to the silica theme the storefront renders', async () => {
+        const theme = await readSilicaDraftTheme(test.tenant.tenantId, test.ctx.propertyId);
+        expect(theme).not.toBeNull();
+        // The saved theme's captured primary (#2f7d32, set by the `update` test above) —
+        // not the preset's, and not sparx Ember. This is the whole point of applying it.
+        expect(theme?.tokens?.['--color-primary']).toBe('#2f7d32');
+        // A `-content` ink is measured for it, so text on a primary fill stays readable
+        // instead of inheriting whatever the base theme happened to pair with Ember.
+        expect(theme?.tokens?.['--color-primary-content']).toBeTruthy();
+        // Both palettes, so a site with the `toggle` appearance policy is themed in dark
+        // too rather than falling back to base for half its visitors.
+        expect(theme?.dark?.['--color-primary']).toBeTruthy();
+    });
 
-  it('ownership — update/apply/remove of an unknown id rejects (RLS → NotFound)', async () => {
-    await expect(
-      savedThemeService.update(test.ctx, MISSING_ID, { name: 'x' })
-    ).rejects.toBeInstanceOf(SitebuilderNotFoundError);
-    await expect(savedThemeService.apply(test.ctx, MISSING_ID)).rejects.toBeInstanceOf(
-      SitebuilderNotFoundError
-    );
-    await expect(savedThemeService.remove(test.ctx, MISSING_ID)).rejects.toBeInstanceOf(
-      SitebuilderNotFoundError
-    );
-  });
+    it('scheduled publish — applies the schedule’s theme before snapshotting', async () => {
+        const holiday = (await savedThemeService.list(test.ctx)).find((t) => t.name === 'Holiday');
+        expect(holiday).toBeTruthy();
+
+        const scheduled = await scheduleService.schedule(test.ctx, {
+            scheduledAt: new Date(Date.now() - 1000).toISOString(),
+            note: 'go live for the holidays',
+            themeId: holiday!.id,
+        });
+        expect(scheduled.status).toBe('pending');
+
+        const result = await scheduleService.processDueSchedule(test.ctx, scheduled.id);
+        expect(result.status).toBe('published');
+        // The schedule pointed at the Holiday theme (kitchen) — the published
+        // version carries it, even though the draft was on clinic from the apply test.
+        expect(result.version?.themeKey).toBe('kitchen');
+
+        const config = await themeService.getConfig(test.ctx);
+        expect(config.themeKey).toBe('kitchen');
+
+        // The Holiday theme captured its own brand; the scheduled swap applies it to
+        // the tenant brand, so the storefront — which compiles brand live — recolors
+        // (not just the surface overlay). compiledV2 reflects the applied primary.
+        const snapshot = await publishService.getPublishedSnapshot(test.ctx);
+        expect(snapshot?.compiledV2?.light.primary).toBe('#0a7d2b');
+    });
+
+    it('remove — deletes the variant', async () => {
+        const removed = await savedThemeService.remove(test.ctx, summerId);
+        expect(removed.id).toBe(summerId);
+        const list = await savedThemeService.list(test.ctx);
+        expect(list.map((t) => t.name)).toEqual(['Holiday']);
+    });
+
+    it('ownership — update/apply/remove of an unknown id rejects (RLS → NotFound)', async () => {
+        await expect(
+            savedThemeService.update(test.ctx, MISSING_ID, { name: 'x' })
+        ).rejects.toBeInstanceOf(SitebuilderNotFoundError);
+        await expect(savedThemeService.apply(test.ctx, MISSING_ID)).rejects.toBeInstanceOf(
+            SitebuilderNotFoundError
+        );
+        await expect(savedThemeService.remove(test.ctx, MISSING_ID)).rejects.toBeInstanceOf(
+            SitebuilderNotFoundError
+        );
+    });
 });
 
 describe('sitebuilder saved theme apply — brand scope (docs/49)', () => {
-  let test: TestContext;
+    let test: TestContext;
 
-  beforeAll(async () => {
-    test = await makeTestContext('owner');
-  });
-
-  afterAll(async () => {
-    await disposeTestContext(test);
-  });
-
-  it('non-primary site — the theme brand lands on the site override, not the tenant base', async () => {
-    // A distinctive brand so the assertions can't pass by coincidence.
-    const theme = await savedThemeService.create(test.ctx, {
-      name: 'Sitewear',
-      basePresetKey: 'garage',
-      presentation: { containerWidth: '1100px' },
-      brand: { colorPrimary: '#123456', fontBody: 'Georgia' },
+    beforeAll(async () => {
+        test = await makeTestContext('owner');
     });
-    // The fresh tenant hasn't applied anything to its primary site, so its base
-    // brand is empty — the negative assertion below proves the non-primary apply
-    // left it that way.
-    const baseBefore = await readTenantBrand(test.tenant.tenantId);
 
-    const secondary = await addSecondaryProperty(test);
-    const result = await savedThemeService.apply(secondary.ctx, theme.id);
-    expect(result).toEqual({ ok: true, themeKey: 'garage', silicaTheme: true });
+    afterAll(async () => {
+        await disposeTestContext(test);
+    });
 
-    // The site's OWN override carries the theme brand (recolours only this site)…
-    const row = await readPropertyBrandOverride(test.tenant.tenantId, secondary.propertyId);
-    const override = row?.brandOverride as { colorPrimary?: string; fontBody?: string } | null;
-    expect(override?.colorPrimary).toBe('#123456');
-    expect(override?.fontBody).toBe('Georgia');
+    it('non-primary site — the theme brand lands on the site override, not the tenant base', async () => {
+        // A distinctive brand so the assertions can't pass by coincidence.
+        const theme = await savedThemeService.create(test.ctx, {
+            name: 'Sitewear',
+            basePresetKey: 'garage',
+            presentation: { containerWidth: '1100px' },
+            brand: { colorPrimary: '#123456', fontBody: 'Georgia' },
+        });
+        // The fresh tenant hasn't applied anything to its primary site, so its base
+        // brand is empty — the negative assertion below proves the non-primary apply
+        // left it that way.
+        const baseBefore = await readTenantBrand(test.tenant.tenantId);
 
-    // …and the tenant BASE brand is untouched, so sibling sites don't recolour.
-    const baseAfter = await readTenantBrand(test.tenant.tenantId);
-    expect(baseAfter?.colorPrimary ?? null).toBe(baseBefore?.colorPrimary ?? null);
-  });
+        const secondary = await addSecondaryProperty(test);
+        const result = await savedThemeService.apply(secondary.ctx, theme.id);
+        expect(result).toEqual({ ok: true, themeKey: 'garage', silicaTheme: true });
+
+        // The site's OWN override carries the theme brand (recolors only this site)…
+        const row = await readPropertyBrandOverride(test.tenant.tenantId, secondary.propertyId);
+        const override = row?.brandOverride as { colorPrimary?: string; fontBody?: string } | null;
+        expect(override?.colorPrimary).toBe('#123456');
+        expect(override?.fontBody).toBe('Georgia');
+
+        // …and the tenant BASE brand is untouched, so sibling sites don't recolor.
+        const baseAfter = await readTenantBrand(test.tenant.tenantId);
+        expect(baseAfter?.colorPrimary ?? null).toBe(baseBefore?.colorPrimary ?? null);
+    });
 });
 
 describe('sitebuilder update_site_settings — identity media (logo/favicon)', () => {
-  let test: TestContext;
-  const LOGO = '11111111-1111-1111-8111-111111111111';
-  const FAVICON = '22222222-2222-2222-8222-222222222222';
+    let test: TestContext;
+    const LOGO = '11111111-1111-1111-8111-111111111111';
+    const FAVICON = '22222222-2222-2222-8222-222222222222';
 
-  beforeAll(async () => {
-    test = await makeTestContext('owner');
-  });
-
-  afterAll(async () => {
-    await disposeTestContext(test);
-  });
-
-  const primaryOverride = async () => {
-    const row = await readPropertyBrandOverride(test.tenant.tenantId, test.ctx.propertyId);
-    return (row?.brandOverride ?? {}) as Record<string, string | null>;
-  };
-
-  it('primary site — logo + favicon ids land on the site’s OWN override', async () => {
-    await themeService.updateSettings(test.ctx, {
-      logoLightMediaId: LOGO,
-      faviconMediaId: FAVICON,
+    beforeAll(async () => {
+        test = await makeTestContext('owner');
     });
-    const override = await primaryOverride();
-    expect(override.logoLightMediaId).toBe(LOGO);
-    expect(override.faviconMediaId).toBe(FAVICON);
 
-    // The tenant base stays empty. It used to receive these ids, and because it is
-    // also the fallback an unbranded site inherits, a logo attached to the primary
-    // showed up on every sibling site — a live tenant had two unrelated web
-    // properties wearing the same wordmark (2026-07-31).
-    const base = await readTenantBrand(test.tenant.tenantId);
-    expect(base?.logoLightMediaId ?? null).toBeNull();
-    expect(base?.faviconMediaId ?? null).toBeNull();
-  });
+    afterAll(async () => {
+        await disposeTestContext(test);
+    });
 
-  it('null clears one id; an omitted field is left as-is', async () => {
-    await themeService.updateSettings(test.ctx, { logoLightMediaId: null });
-    const override = await primaryOverride();
-    expect(override.logoLightMediaId ?? null).toBeNull(); // cleared
-    expect(override.faviconMediaId).toBe(FAVICON); // untouched (undefined)
-  });
+    const primaryOverride = async () => {
+        const row = await readPropertyBrandOverride(test.tenant.tenantId, test.ctx.propertyId);
+        return (row?.brandOverride ?? {}) as Record<string, string | null>;
+    };
 
-  it('a sibling site does NOT inherit the primary’s logo', async () => {
-    await themeService.updateSettings(test.ctx, { logoLightMediaId: LOGO });
-    const secondary = await addSecondaryProperty(test, 'sibling');
+    it('primary site — logo + favicon ids land on the site’s OWN override', async () => {
+        await themeService.updateSettings(test.ctx, {
+            logoLightMediaId: LOGO,
+            faviconMediaId: FAVICON,
+        });
+        const override = await primaryOverride();
+        expect(override.logoLightMediaId).toBe(LOGO);
+        expect(override.faviconMediaId).toBe(FAVICON);
 
-    // The regression itself: branding one site must leave every other site alone.
-    const row = await readPropertyBrandOverride(test.tenant.tenantId, secondary.propertyId);
-    const override = (row?.brandOverride ?? {}) as Record<string, string | null>;
-    expect(override.logoLightMediaId ?? null).toBeNull();
+        // The tenant base stays empty. It used to receive these ids, and because it is
+        // also the fallback an unbranded site inherits, a logo attached to the primary
+        // showed up on every sibling site — a live tenant had two unrelated web
+        // properties wearing the same wordmark (2026-07-31).
+        const base = await readTenantBrand(test.tenant.tenantId);
+        expect(base?.logoLightMediaId ?? null).toBeNull();
+        expect(base?.faviconMediaId ?? null).toBeNull();
+    });
 
-    // And there is nothing on the tenant base for it to pick the logo up from.
-    const base = await readTenantBrand(test.tenant.tenantId);
-    expect(base?.logoLightMediaId ?? null).toBeNull();
-  });
+    it('null clears one id; an omitted field is left as-is', async () => {
+        await themeService.updateSettings(test.ctx, { logoLightMediaId: null });
+        const override = await primaryOverride();
+        expect(override.logoLightMediaId ?? null).toBeNull(); // cleared
+        expect(override.faviconMediaId).toBe(FAVICON); // untouched (undefined)
+    });
 
-  it('non-primary site — the id lands on the site override, not the tenant base', async () => {
-    const secondary = await addSecondaryProperty(test);
-    await themeService.updateSettings(secondary.ctx, { logoLightMediaId: LOGO });
+    it('a sibling site does NOT inherit the primary’s logo', async () => {
+        await themeService.updateSettings(test.ctx, { logoLightMediaId: LOGO });
+        const secondary = await addSecondaryProperty(test, 'sibling');
 
-    const row = await readPropertyBrandOverride(test.tenant.tenantId, secondary.propertyId);
-    const override = row?.brandOverride as { logoLightMediaId?: string } | null;
-    expect(override?.logoLightMediaId).toBe(LOGO);
+        // The regression itself: branding one site must leave every other site alone.
+        const row = await readPropertyBrandOverride(test.tenant.tenantId, secondary.propertyId);
+        const override = (row?.brandOverride ?? {}) as Record<string, string | null>;
+        expect(override.logoLightMediaId ?? null).toBeNull();
 
-    // The tenant base logo stays cleared (from the null test) — a sibling-site
-    // logo change must not leak onto the base brand.
-    const base = await readTenantBrand(test.tenant.tenantId);
-    expect(base?.logoLightMediaId ?? null).toBeNull();
-  });
+        // And there is nothing on the tenant base for it to pick the logo up from.
+        const base = await readTenantBrand(test.tenant.tenantId);
+        expect(base?.logoLightMediaId ?? null).toBeNull();
+    });
+
+    it('non-primary site — the id lands on the site override, not the tenant base', async () => {
+        const secondary = await addSecondaryProperty(test);
+        await themeService.updateSettings(secondary.ctx, { logoLightMediaId: LOGO });
+
+        const row = await readPropertyBrandOverride(test.tenant.tenantId, secondary.propertyId);
+        const override = row?.brandOverride as { logoLightMediaId?: string } | null;
+        expect(override?.logoLightMediaId).toBe(LOGO);
+
+        // The tenant base logo stays cleared (from the null test) — a sibling-site
+        // logo change must not leak onto the base brand.
+        const base = await readTenantBrand(test.tenant.tenantId);
+        expect(base?.logoLightMediaId ?? null).toBeNull();
+    });
 });

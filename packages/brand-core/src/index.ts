@@ -22,7 +22,7 @@
 //
 // ── WHAT IS DELIBERATELY NOT HERE ───────────────────────────────────────────
 //
-// The email FALLBACK PALETTE — the colours a platform email uses when a tenant
+// The email FALLBACK PALETTE — the colors a platform email uses when a tenant
 // has supplied no identity of its own. Those still come from `@sparx/email`'s
 // `defaultBrand`, and they are the one remaining place a platform send carries
 // one brand's values. That is a design decision (what SHOULD a brand-neutral
@@ -53,6 +53,57 @@ export interface PlatformBrandIdentity {
    * is worse than an absent one.
    */
   supportEmail: string | null;
+  /**
+   * The brand's public home, for the legal line at the foot of a platform
+   * email. Not `appOrigin` — that is where a signed-in person works, and the
+   * two are different hosts for a brand whose console has no front door.
+   */
+  siteUrl: string | null;
+  /**
+   * The `From` a platform send is addressed from, envelope name included
+   * (`Piggles <noreply@…>`).
+   *
+   * Null when the brand has published no sending identity, and the caller then
+   * decides — an email worker keeps the platform default address and corrects
+   * only the display NAME, because the address has to resolve to a domain the
+   * provider is authorised to send for and a name does not.
+   */
+  fromEmail: string | null;
+  /**
+   * How many TRAILING characters of `name` wear the accent color where the
+   * name is set as a wordmark (the masthead of a platform email).
+   *
+   * sparx sets 1 — "spar" in the masthead ink, an Ember "x". That flourish was
+   * hardcoded as literal JSX, which is how a Piggles owner's password-reset
+   * email came to carry another company's wordmark at the top of it.
+   *
+   * Default 0: a brand that has not said otherwise gets its name set plainly,
+   * which is right for every name whose last letter means nothing in
+   * particular. Configuration rather than a lookup, so this file still names
+   * no brand.
+   */
+  accentChars: number;
+  /**
+   * Where a billing question goes — the masthead meta on a receipt, and the
+   * "reach us at …" line under it.
+   *
+   * Falls back to `supportEmail`, because a brand with one inbox has one
+   * inbox and being told to write to a `billing@` address that does not exist
+   * is worse than being told to write to the one that does. Null when the
+   * brand has published neither, and then the line is omitted rather than
+   * invented.
+   */
+  billingEmail: string | null;
+  /**
+   * The zone a tenant of this brand gets its free subdomain in —
+   * `<slug>.piggles.site` rather than `<slug>.sparx.zone`.
+   *
+   * Null when the brand has published none, and the caller then falls back to
+   * the deployment's default zone. `provisionTenant` still takes the zone as
+   * an explicit parameter; this is what a caller that HAS a brand but no zone
+   * argument should be reaching for.
+   */
+  zoneDomain: string | null;
 }
 
 /** `PIGGLES_BRAND_NAME` from (`piggles`, `BRAND_NAME`). */
@@ -74,6 +125,31 @@ export function normalizeBrandKey(brand: string | null | undefined): string {
 }
 
 /**
+ * Which brand THIS PROCESS is, from `PLATFORM_BRAND`.
+ *
+ * ── WHEN THIS IS THE RIGHT QUESTION, AND WHEN IT IS THE WRONG ONE ───────────
+ *
+ * Right for a **single-brand app process**: each brand's account app is its own
+ * deployment mounting its own Better Auth handler, so a signup arriving there
+ * belongs to that brand by construction, and there is nothing else to ask. This
+ * is how a Google signup learns which brand it is — the OAuth hook has a user
+ * and no tenant yet, so the tenant's own column does not exist to read.
+ *
+ * WRONG for a **shared process**. api-rest and the event workers serve every
+ * brand from one container, and there this returns whatever the deployment was
+ * labelled — one answer to a question that has a different answer per request.
+ * Those read `tenants.platform_brand` instead. Getting this backwards would
+ * stamp one brand's identity onto the other's mail, which is the exact failure
+ * this package was written for.
+ *
+ * Unset → the default brand, which is correct for every deployment that existed
+ * before there was a second one.
+ */
+export function currentPlatformBrand(): string {
+  return normalizeBrandKey(readEnv('PLATFORM_BRAND'));
+}
+
+/**
  * The identity to speak as, for one brand.
  *
  * Never throws. A missing name falls back to the KEY, which is right for the
@@ -88,10 +164,43 @@ export function normalizeBrandKey(brand: string | null | undefined): string {
 export function platformBrandIdentity(brand?: string | null): PlatformBrandIdentity {
   const key = normalizeBrandKey(brand);
   const name = readEnv(varName(key, 'BRAND_NAME')) ?? key;
+  const supportEmail = readEnv(varName(key, 'SUPPORT_EMAIL'));
   return {
     key,
     name,
     supportName: readEnv(varName(key, 'SUPPORT_NAME')) ?? `${name} Support`,
-    supportEmail: readEnv(varName(key, 'SUPPORT_EMAIL')),
+    supportEmail,
+    billingEmail: readEnv(varName(key, 'BILLING_EMAIL')) ?? supportEmail,
+    zoneDomain: readEnv(varName(key, 'ZONE_DOMAIN')),
+    siteUrl: readEnv(varName(key, 'BRAND_URL')),
+    fromEmail: readEnv(varName(key, 'EMAIL_FROM')),
+    accentChars: readAccentChars(varName(key, 'BRAND_ACCENT_CHARS'), name),
   };
+}
+
+/** Clamped to the name, so a stale value can never slice past its end. */
+function readAccentChars(name: string, brandName: string): number {
+  const parsed = Number.parseInt(readEnv(name) ?? '', 10);
+  if (!Number.isFinite(parsed) || parsed <= 0) return 0;
+  return Math.min(parsed, brandName.length);
+}
+
+/**
+ * The display name to put in front of a sending address the brand does not own.
+ *
+ * Both brands send through one Mailgun domain, so a Piggles tenant's mail leaves
+ * from a sparx address and will until Piggles has DNS of its own. The address is
+ * a deliverability fact and cannot be rewritten from configuration; the NAME
+ * beside it is presentation and can. `sparx <noreply@sparx.email>` reaching a
+ * Piggles customer names the wrong company twice — this fixes the half that is
+ * safe to fix, and leaves the half that is not visible in the address bar of
+ * approximately nobody's mail client.
+ *
+ * Returns `fromEmail` verbatim when the brand HAS published one, since a brand
+ * with its own sending domain needs no correction.
+ */
+export function platformFrom(identity: PlatformBrandIdentity, fallbackFrom: string): string {
+  if (identity.fromEmail) return identity.fromEmail;
+  const address = fallbackFrom.match(/<([^>]+)>/)?.[1] ?? fallbackFrom.trim();
+  return `${identity.name} <${address}>`;
 }

@@ -2,7 +2,7 @@
 
 // What the theme actually looks like, on real controls.
 //
-// Real silica components, not swatches. A swatch grid answers "what colour is
+// Real silica components, not swatches. A swatch grid answers "what color is
 // primary"; nobody is asking that. What an author needs to see is whether a
 // button is readable, whether a card separates from the page, and whether the
 // alert they will use for a failed payment looks like a problem — which only the

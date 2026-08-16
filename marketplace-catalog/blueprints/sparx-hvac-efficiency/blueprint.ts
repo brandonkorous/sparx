@@ -10,71 +10,71 @@ import emails from './emails.json' with { type: 'json' };
 import assets from './assets.json' with { type: 'json' };
 
 const blueprint = {
-  key: 'sparx-hvac-efficiency',
-  version: '1.3.0',
-  name: 'sparx — HVAC (Efficiency)',
-  summary:
-    'A data-forward HVAC site for energy-efficiency pros — a cool evergreen-and-slate palette with a bright teal signal accent, built around online booking. Homeowners book an energy assessment, a free install estimate or a tune-up in about a minute; three technicians carry their own skills and hours. Leads with lower bills, heat-pump expertise and rebate help. Ships as "Northline Climate", a high-efficiency heating-and-cooling company.',
-  vertical: 'services',
-  preview: 'media/preview.png',
-  requiresModules: ['builder', 'scheduling', 'crm', 'email'],
+    key: 'sparx-hvac-efficiency',
+    version: '1.3.0',
+    name: 'sparx — HVAC (Efficiency)',
+    summary:
+        'A data-forward HVAC site for energy-efficiency pros — a cool evergreen-and-slate palette with a bright teal signal accent, built around online booking. Homeowners book an energy assessment, a free install estimate or a tune-up in about a minute; three technicians carry their own skills and hours. Leads with lower bills, heat-pump expertise and rebate help. Ships as "Northline Climate", a high-efficiency heating-and-cooling company.',
+    vertical: 'services',
+    preview: 'media/preview.png',
+    requiresModules: ['builder', 'scheduling', 'crm', 'email'],
 
-  // Identity only (business name + tagline + fonts + the theme's hex colours). The look
-  // rides site.theme + the theme decl below; the installing tenant rebrands the name.
-  brand: {
-    businessName: 'Northline Climate',
-    tagline: 'Comfort that costs less.',
-    colors: {
-      primary: '#106c3e',
-      primaryForeground: '#f3fbf5',
-      accent: '#00baa5',
-      secondary: '#35424a',
-    },
-    fonts: {
-      heading: 'Space Grotesk',
-      body: 'Inter',
-    },
-  },
-
-  // The provisioned SiteTheme the installer creates + applies — an editable saved theme
-  // over a foundation base + the template's brand snapshot. The LIVE storefront look is
-  // site.theme (the flat bespoke tokens), written last.
-  theme: {
-    name: 'northline',
-    basePresetKey: 'apex',
-    presentation: {
-      v: 2,
-      containerWidth: '1152px',
-    },
+    // Identity only (business name + tagline + fonts + the theme's hex colors). The look
+    // rides site.theme + the theme decl below; the installing tenant rebrands the name.
     brand: {
-      colorPrimary: '#106c3e',
-      colorAccent: '#00baa5',
-      colorSecondary: '#35424a',
-      fontHeading: 'Space Grotesk',
-      fontBody: 'Inter',
-      tokens: {},
+        businessName: 'Northline Climate',
+        tagline: 'Comfort that costs less.',
+        colors: {
+            primary: '#106c3e',
+            primaryForeground: '#f3fbf5',
+            accent: '#00baa5',
+            secondary: '#35424a',
+        },
+        fonts: {
+            heading: 'Space Grotesk',
+            body: 'Inter',
+        },
     },
-    apply: true,
-  },
 
-  assets,
-  contentTypes: [],
+    // The provisioned SiteTheme the installer creates + applies — an editable saved theme
+    // over a foundation base + the template's brand snapshot. The LIVE storefront look is
+    // site.theme (the flat bespoke tokens), written last.
+    theme: {
+        name: 'northline',
+        basePresetKey: 'apex',
+        presentation: {
+            v: 2,
+            containerWidth: '1152px',
+        },
+        brand: {
+            colorPrimary: '#106c3e',
+            colorAccent: '#00baa5',
+            colorSecondary: '#35424a',
+            fontHeading: 'Space Grotesk',
+            fontBody: 'Inter',
+            tokens: {},
+        },
+        apply: true,
+    },
 
-  // The booking spine — policies, bookable resources (staff/rooms/stations) with weekly
-  // hours, and the service menu. The installer's scheduling slice replays it into a live
-  // booking flow that the site's /book page renders.
-  scheduling,
+    assets,
+    contentTypes: [],
 
-  // Brand-voiced MARKETING starters (a welcome + a come-back), installed as DRAFTS the
-  // tenant switches on. The transactional booking sends — confirmation, reminder,
-  // reschedule, cancellation, waitlist — are platform KEYED defaults, so they are covered
-  // on email-module activation and are deliberately NOT duplicated here.
-  emails,
-  sequences: [],
+    // The booking spine — policies, bookable resources (staff/rooms/stations) with weekly
+    // hours, and the service menu. The installer's scheduling slice replays it into a live
+    // booking flow that the site's /book page renders.
+    scheduling,
 
-  // The composed distinct site (frame + Home + Book + About + Contact) in the bespoke
-  // theme, fully stamped.
-  site,
+    // Brand-voiced MARKETING starters (a welcome + a come-back), installed as DRAFTS the
+    // tenant switches on. The transactional booking sends — confirmation, reminder,
+    // reschedule, cancellation, waitlist — are platform KEYED defaults, so they are covered
+    // on email-module activation and are deliberately NOT duplicated here.
+    emails,
+    sequences: [],
+
+    // The composed distinct site (frame + Home + Book + About + Contact) in the bespoke
+    // theme, fully stamped.
+    site,
 };
 
 export default blueprint;

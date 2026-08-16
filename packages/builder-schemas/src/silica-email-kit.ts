@@ -21,30 +21,30 @@
 // picks a color by hand freezes that field, exactly as silica intends.
 
 import type {
-  ButtonNode,
-  ColumnNode,
-  ColumnsNode,
-  ContentNode,
-  DividerNode,
-  EmailDocument,
-  ImageNode,
-  LayoutChild,
-  LinkNode,
-  SectionNode,
-  SpacerNode,
-  TextNode,
+    ButtonNode,
+    ColumnNode,
+    ColumnsNode,
+    ContentNode,
+    DividerNode,
+    EmailDocument,
+    ImageNode,
+    LayoutChild,
+    LinkNode,
+    SectionNode,
+    SpacerNode,
+    TextNode,
 } from '@wizeworks/silicaui-builder/email';
 
 /** silica's neutral palette (`DEFAULT_EMAIL_COLORS`), which it doesn't export. Every
  *  value here is paired with its `*Auto` flag, so these are the pre-brand fallbacks —
  *  what a document looks like before a tenant theme touches it, never a final color. */
 const C = {
-  primary: '#111827',
-  primaryContent: '#ffffff',
-  baseContent: '#18181b',
-  base100: '#ffffff',
-  base200: '#f4f4f5',
-  base300: '#e4e4e7',
+    primary: '#111827',
+    primaryContent: '#ffffff',
+    baseContent: '#18181b',
+    base100: '#ffffff',
+    base200: '#f4f4f5',
+    base300: '#e4e4e7',
 } as const;
 
 /** The body's type scale. 16px is the floor for anything a reader reads as prose;
@@ -60,91 +60,91 @@ const sid = (kind: string): string => `def-s-${kind}-${(n += 1)}`;
 // ── Leaves ───────────────────────────────────────────────────────────────────
 
 interface TextOptions {
-  size?: number;
-  weight?: TextNode['fontWeight'];
-  align?: TextNode['align'];
-  /** Which theme role this text tracks (silicaui 0.33). Omitted → `baseContent`.
-   *  Use `primary` for the ONE key datum, or a semantic role (`success` / `warning`
-   *  / `info` / `error`) for a status. Repaints per tenant. */
-  colorRole?: TextNode['colorRole'];
-  /** Colour for `<a>` inside `html`, by theme role — replaces the client-default
-   *  hyperlink blue with a brand-adaptive link colour (no more `color:inherit`). */
-  linkColorRole?: TextNode['linkColorRole'];
-  /** Bind this node's copy to a data path; the resolver fills it and, when the value
-   *  is absent, DROPS the node (see `when()`). */
-  ref?: string;
+    size?: number;
+    weight?: TextNode['fontWeight'];
+    align?: TextNode['align'];
+    /** Which theme role this text tracks (silicaui 0.33). Omitted → `baseContent`.
+     *  Use `primary` for the ONE key datum, or a semantic role (`success` / `warning`
+     *  / `info` / `error`) for a status. Repaints per tenant. */
+    colorRole?: TextNode['colorRole'];
+    /** Color for `<a>` inside `html`, by theme role — replaces the client-default
+     *  hyperlink blue with a brand-adaptive link color (no more `color:inherit`). */
+    linkColorRole?: TextNode['linkColorRole'];
+    /** Bind this node's copy to a data path; the resolver fills it and, when the value
+     *  is absent, DROPS the node (see `when()`). */
+    ref?: string;
 }
 
 /** A text block. `html` is inline-safe HTML (`<b>`, `<i>`, `<a href>`, `<br>`) and may
  *  carry `{{tokens}}` — silica interpolates those natively at resolve time. */
 export function text(html: string, opts: TextOptions = {}): TextNode {
-  const fontSize = opts.size ?? SIZE.body;
-  return {
-    id: sid('text'),
-    kind: 'text',
-    html,
-    align: opts.align ?? 'left',
-    color: C.baseContent,
-    colorAuto: true,
-    ...(opts.colorRole ? { colorRole: opts.colorRole } : {}),
-    ...(opts.linkColorRole ? { linkColorAuto: true, linkColorRole: opts.linkColorRole } : {}),
-    fontSize,
-    fontWeight: opts.weight ?? 'normal',
-    // Tighter leading on a heading, roomy on prose — both derived so a resized
-    // block never ends up with leading that fights its size.
-    lineHeight: Math.round(fontSize * (fontSize >= SIZE.heading ? 1.3 : 1.6)),
-    ...(opts.ref ? { data: { kind: 'value' as const, ref: opts.ref } } : {}),
-  };
+    const fontSize = opts.size ?? SIZE.body;
+    return {
+        id: sid('text'),
+        kind: 'text',
+        html,
+        align: opts.align ?? 'left',
+        color: C.baseContent,
+        colorAuto: true,
+        ...(opts.colorRole ? { colorRole: opts.colorRole } : {}),
+        ...(opts.linkColorRole ? { linkColorAuto: true, linkColorRole: opts.linkColorRole } : {}),
+        fontSize,
+        fontWeight: opts.weight ?? 'normal',
+        // Tighter leading on a heading, roomy on prose — both derived so a resized
+        // block never ends up with leading that fights its size.
+        lineHeight: Math.round(fontSize * (fontSize >= SIZE.heading ? 1.3 : 1.6)),
+        ...(opts.ref ? { data: { kind: 'value' as const, ref: opts.ref } } : {}),
+    };
 }
 
 export const heading = (html: string): TextNode =>
-  text(html, { size: SIZE.heading, weight: 'bold' });
+    text(html, { size: SIZE.heading, weight: 'bold' });
 
 export const para = (html: string): TextNode => text(html);
 
 /** A column caption in the line-item table — the one place 14px is right, because it
  *  labels the data rather than being read as prose. */
 const caption = (html: string, align: TextNode['align'] = 'left'): TextNode =>
-  text(html, { size: SIZE.caption, weight: 'semibold', align });
+    text(html, { size: SIZE.caption, weight: 'semibold', align });
 
 export function button(
-  label: string,
-  href: string,
-  align: ButtonNode['align'] = 'left'
+    label: string,
+    href: string,
+    align: ButtonNode['align'] = 'left'
 ): ButtonNode {
-  return {
-    id: sid('button'),
-    kind: 'button',
-    label,
-    href,
-    bg: C.primary,
-    bgAuto: true,
-    color: C.primaryContent,
-    colorAuto: true,
-    radius: 6,
-    align,
-    paddingX: 24,
-    paddingY: 12,
-  };
+    return {
+        id: sid('button'),
+        kind: 'button',
+        label,
+        href,
+        bg: C.primary,
+        bgAuto: true,
+        color: C.primaryContent,
+        colorAuto: true,
+        radius: 6,
+        align,
+        paddingX: 24,
+        paddingY: 12,
+    };
 }
 
 /** A secondary, low-emphasis action rendered as a TEXT LINK beneath the primary
  *  button, so a confirmation has ONE clear primary and a quiet "and also…" under it.
- *  `linkColorRole:'primary'` paints the `<a>` in the brand colour (theme-adaptive)
+ *  `linkColorRole:'primary'` paints the `<a>` in the brand color (theme-adaptive)
  *  instead of the client's default hyperlink blue. */
 export const actionLink = (
-  label: string,
-  href: string,
-  align: TextNode['align'] = 'center'
+    label: string,
+    href: string,
+    align: TextNode['align'] = 'center'
 ): TextNode =>
-  text(`<a href="${href}">${label}</a>`, { align, weight: 'semibold', linkColorRole: 'primary' });
+    text(`<a href="${href}">${label}</a>`, { align, weight: 'semibold', linkColorRole: 'primary' });
 
 export const divider = (): DividerNode => ({
-  id: sid('divider'),
-  kind: 'divider',
-  color: C.base300,
-  colorAuto: true,
-  thickness: 1,
+    id: sid('divider'),
+    kind: 'divider',
+    color: C.base300,
+    colorAuto: true,
+    thickness: 1,
 });
 
 /** Vertical breathing room between blocks. The schema's own `spacer` — cheaper than
@@ -154,31 +154,31 @@ export const spacer = (height = 16): SpacerNode => ({ id: sid('spacer'), kind: '
 // ── Containers ───────────────────────────────────────────────────────────────
 
 export function section(children: LayoutChild[], paddingY = 24): SectionNode {
-  return {
-    id: sid('section'),
-    kind: 'section',
-    bg: C.base100,
-    bgAuto: true,
-    paddingX: 24,
-    paddingY,
-    children,
-  };
+    return {
+        id: sid('section'),
+        kind: 'section',
+        bg: C.base100,
+        bgAuto: true,
+        paddingX: 24,
+        paddingY,
+        children,
+    };
 }
 
 const column = (widthPct: number, children: LayoutChild[]): ColumnNode => ({
-  id: sid('column'),
-  kind: 'column',
-  widthPct,
-  children,
+    id: sid('column'),
+    kind: 'column',
+    widthPct,
+    children,
 });
 
 const columns = (cols: ColumnNode[]): ColumnsNode => ({
-  id: sid('columns'),
-  kind: 'columns',
-  children: cols,
-  // A three-column line-item row is a TABLE, not a layout: stacking it on mobile
-  // would tear each item's name away from its price. Kept side-by-side.
-  stackOnMobile: false,
+    id: sid('columns'),
+    kind: 'columns',
+    children: cols,
+    // A three-column line-item row is a TABLE, not a layout: stacking it on mobile
+    // would tear each item's name away from its price. Kept side-by-side.
+    stackOnMobile: false,
 });
 
 /** A block shown only when `ref` resolves to something. The `conditional_block`
@@ -186,7 +186,7 @@ const columns = (cols: ColumnNode[]): ColumnsNode => ({
  *  field), so resolution either passes it through untouched or — when the value is
  *  absent and the resolver runs with `hideWhenEmpty` — drops it whole. */
 export function when(ref: string, children: LayoutChild[]): SectionNode {
-  return { ...section(children, 8), data: { kind: 'value', ref } };
+    return { ...section(children, 8), data: { kind: 'value', ref } };
 }
 
 /** A line-item table over a bound collection (`order.items` / `cart.items` /
@@ -201,55 +201,55 @@ export function when(ref: string, children: LayoutChild[]): SectionNode {
  *  The authored cell copy is not filler: silica renders the authored children once
  *  when a collection resolves empty, so this is what an item-less email shows. */
 export function itemsTable(ref: string, opts: { thumbnails?: boolean } = {}): SectionNode[] {
-  // Column widths sum to 93%, NOT 100%: the projector renders columns as
-  // `display:inline-block`, and the whitespace between them adds a space's worth of
-  // width — three columns at a full 100% overflow and the last wraps, tearing each
-  // item's price onto its own centred line. The 7% slack absorbs the inter-column
-  // whitespace so the row stays intact. `align:'left'` hugs the row to the left edge
-  // (the section's `<td>` is otherwise `align:center`, same fix `detailPanel` uses).
-  //
-  // `thumbnails` prepends a product-image column (bound to each item's `imageUrl`) —
-  // the single biggest lift on a commerce receipt: a customer recognises what they
-  // bought by its picture before they read a word. It's OPT-IN because an item with no
-  // image (a wholesale line, a service) would leave a dead column; the commerce order
-  // emails set it, invoices/quotes don't. Widths still sum to ~93% for the same slack.
-  const thumbs = opts.thumbnails ?? false;
-  const COL = thumbs
-    ? ({ thumb: 15, item: 40, qty: 12, amount: 26 } as const)
-    : ({ thumb: 0, item: 54, qty: 13, amount: 26 } as const);
-  const headerCols = [
-    ...(thumbs ? [column(COL.thumb, [])] : []),
-    column(COL.item, [caption('Item')]),
-    column(COL.qty, [caption('Qty', 'right')]),
-    column(COL.amount, [caption('Amount', 'right')]),
-  ];
-  const rowCols = [
-    ...(thumbs ? [column(COL.thumb, [image('imageUrl', { width: 44 })])] : []),
-    column(COL.item, [text('Item', { ref: 'name' })]),
-    column(COL.qty, [text('1', { align: 'right', ref: 'quantity' })]),
-    column(COL.amount, [text('—', { align: 'right', ref: 'lineTotal' })]),
-  ];
-  const header: SectionNode = {
-    ...section([columns(headerCols), divider()], 8),
-    align: 'left',
-  };
-  const rows: SectionNode = {
-    ...section([columns(rowCols)], 8),
-    align: 'left',
-    data: { kind: 'collection', ref },
-  };
-  return [header, rows];
+    // Column widths sum to 93%, NOT 100%: the projector renders columns as
+    // `display:inline-block`, and the whitespace between them adds a space's worth of
+    // width — three columns at a full 100% overflow and the last wraps, tearing each
+    // item's price onto its own centred line. The 7% slack absorbs the inter-column
+    // whitespace so the row stays intact. `align:'left'` hugs the row to the left edge
+    // (the section's `<td>` is otherwise `align:center`, same fix `detailPanel` uses).
+    //
+    // `thumbnails` prepends a product-image column (bound to each item's `imageUrl`) —
+    // the single biggest lift on a commerce receipt: a customer recognises what they
+    // bought by its picture before they read a word. It's OPT-IN because an item with no
+    // image (a wholesale line, a service) would leave a dead column; the commerce order
+    // emails set it, invoices/quotes don't. Widths still sum to ~93% for the same slack.
+    const thumbs = opts.thumbnails ?? false;
+    const COL = thumbs
+        ? ({ thumb: 15, item: 40, qty: 12, amount: 26 } as const)
+        : ({ thumb: 0, item: 54, qty: 13, amount: 26 } as const);
+    const headerCols = [
+        ...(thumbs ? [column(COL.thumb, [])] : []),
+        column(COL.item, [caption('Item')]),
+        column(COL.qty, [caption('Qty', 'right')]),
+        column(COL.amount, [caption('Amount', 'right')]),
+    ];
+    const rowCols = [
+        ...(thumbs ? [column(COL.thumb, [image('imageUrl', { width: 44 })])] : []),
+        column(COL.item, [text('Item', { ref: 'name' })]),
+        column(COL.qty, [text('1', { align: 'right', ref: 'quantity' })]),
+        column(COL.amount, [text('—', { align: 'right', ref: 'lineTotal' })]),
+    ];
+    const header: SectionNode = {
+        ...section([columns(headerCols), divider()], 8),
+        align: 'left',
+    };
+    const rows: SectionNode = {
+        ...section([columns(rowCols)], 8),
+        align: 'left',
+        data: { kind: 'collection', ref },
+    };
+    return [header, rows];
 }
 
 /** One line of a cost summary — the money math under a receipt. `strong` marks the
- *  ONE total row: it gets a rule above it and renders large in the brand colour, so
+ *  ONE total row: it gets a rule above it and renders large in the brand color, so
  *  the eye lands on the number that matters. `ref` drops an optional line (a discount,
  *  a tax that doesn't apply) cleanly, same `hideWhenEmpty` mechanism as `when()`. */
 export interface SummaryRow {
-  label: string;
-  value: string;
-  ref?: string;
-  strong?: boolean;
+    label: string;
+    value: string;
+    ref?: string;
+    strong?: boolean;
 }
 
 /**
@@ -257,32 +257,32 @@ export interface SummaryRow {
  * sits under `itemsTable` and makes the math legible at a glance instead of buried in a
  * detail panel. Each row is a two-column `label | value` line (value right-aligned, the
  * accountant's convention); the `strong` total row is set off by a rule and painted in
- * the brand colour. Columns sum to ~95% for the same inline-block slack `itemsTable`
+ * the brand color. Columns sum to ~95% for the same inline-block slack `itemsTable`
  * leaves (one gap, so less slack needed than the three-column table).
  */
 export function costSummary(rows: SummaryRow[]): SectionNode {
-  const COL = { label: 60, value: 35 } as const;
-  const line = (r: SummaryRow): ColumnsNode => {
-    const label = text(r.label, {
-      size: r.strong ? 17 : SIZE.body,
-      weight: r.strong ? 'bold' : 'normal',
+    const COL = { label: 60, value: 35 } as const;
+    const line = (r: SummaryRow): ColumnsNode => {
+        const label = text(r.label, {
+            size: r.strong ? 17 : SIZE.body,
+            weight: r.strong ? 'bold' : 'normal',
+        });
+        const value = text(r.value, {
+            align: 'right',
+            size: r.strong ? 20 : SIZE.body,
+            weight: r.strong ? 'semibold' : 'normal',
+            ...(r.strong ? { colorRole: 'primary' as const } : {}),
+        });
+        const cols = columns([column(COL.label, [label]), column(COL.value, [value])]);
+        return r.ref ? { ...cols, data: { kind: 'value', ref: r.ref } } : cols;
+    };
+    const children: LayoutChild[] = [];
+    rows.forEach((r, i) => {
+        if (i > 0) children.push(r.strong ? divider() : spacer(6));
+        if (r.strong && i > 0) children.push(spacer(10));
+        children.push(line(r));
     });
-    const value = text(r.value, {
-      align: 'right',
-      size: r.strong ? 20 : SIZE.body,
-      weight: r.strong ? 'semibold' : 'normal',
-      ...(r.strong ? { colorRole: 'primary' as const } : {}),
-    });
-    const cols = columns([column(COL.label, [label]), column(COL.value, [value])]);
-    return r.ref ? { ...cols, data: { kind: 'value', ref: r.ref } } : cols;
-  };
-  const children: LayoutChild[] = [];
-  rows.forEach((r, i) => {
-    if (i > 0) children.push(r.strong ? divider() : spacer(6));
-    if (r.strong && i > 0) children.push(spacer(10));
-    children.push(line(r));
-  });
-  return { ...section(children, 8), align: 'left' };
+    return { ...section(children, 8), align: 'left' };
 }
 
 // ── Detail panel ───────────────────────────────────────────────────────────────
@@ -292,19 +292,19 @@ export function costSummary(rows: SummaryRow[]): SectionNode {
  *  empty the whole row drops (same `hideWhenEmpty` mechanism as `when()`), so a
  *  booking with no location never shows a dangling "Location" label. `emphasize`
  *  marks the ONE datum that matters most (a booking's date/time) — rendered large
- *  and in the brand colour so the eye lands on it first. */
+ *  and in the brand color so the eye lands on it first. */
 export interface DetailRow {
-  label: string;
-  value: string;
-  ref?: string;
-  emphasize?: boolean;
+    label: string;
+    value: string;
+    ref?: string;
+    emphasize?: boolean;
 }
 
-/** An optional status shown at the top of the card — a semantic-coloured state on
+/** An optional status shown at the top of the card — a semantic-colored state on
  *  the record (`success` Confirmed · `info` Upcoming · `warning` Rescheduled …). */
 export interface DetailStatus {
-  label: string;
-  role: TextNode['colorRole'];
+    label: string;
+    role: TextNode['colorRole'];
 }
 
 /**
@@ -331,50 +331,50 @@ export interface DetailStatus {
  *  wear it, so the card look is defined ONCE. `satisfies` keeps the role/align values
  *  as their narrow literal types while checking the shape against `SectionNode`. */
 const CARD = {
-  paddingX: 20,
-  bg: C.base200,
-  bgAuto: true,
-  bgRole: 'base200',
-  borderColor: C.base300,
-  borderColorAuto: true,
-  borderColorRole: 'base300',
-  borderWidth: 1,
-  radius: 16,
-  marginX: 24,
-  marginY: 8,
-  align: 'left',
+    paddingX: 20,
+    bg: C.base200,
+    bgAuto: true,
+    bgRole: 'base200',
+    borderColor: C.base300,
+    borderColorAuto: true,
+    borderColorRole: 'base300',
+    borderWidth: 1,
+    radius: 16,
+    marginX: 24,
+    marginY: 8,
+    align: 'left',
 } satisfies Partial<SectionNode>;
 
 export function detailPanel(
-  rows: DetailRow[],
-  opts: { status?: DetailStatus; ref?: string } = {}
+    rows: DetailRow[],
+    opts: { status?: DetailStatus; ref?: string } = {}
 ): SectionNode {
-  const row = (r: DetailRow): ColumnsNode => {
-    const value = r.emphasize
-      ? text(r.value, { size: 20, weight: 'semibold', colorRole: 'primary' })
-      : text(r.value, { size: SIZE.body });
-    const cols = columns([
-      column(100, [text(r.label, { size: SIZE.caption, weight: 'semibold' }), value, spacer(12)]),
-    ]);
-    return r.ref ? { ...cols, data: { kind: 'value', ref: r.ref } } : cols;
-  };
-  const children: LayoutChild[] = [];
-  if (opts.status) {
-    children.push(
-      text(opts.status.label, {
-        size: SIZE.caption,
-        weight: 'semibold',
-        colorRole: opts.status.role,
-      }),
-      spacer(10)
-    );
-  }
-  children.push(...rows.map(row));
-  const panel: SectionNode = { ...section(children, 18), ...CARD };
-  // `ref` gates the WHOLE card: a single-fact panel (a ship-to on a digital order)
-  // drops entirely when its data is absent, rather than rendering an empty inset box.
-  // A section fills no default field, so a bound section is pure show/hide (like when()).
-  return opts.ref ? { ...panel, data: { kind: 'value', ref: opts.ref } } : panel;
+    const row = (r: DetailRow): ColumnsNode => {
+        const value = r.emphasize
+            ? text(r.value, { size: 20, weight: 'semibold', colorRole: 'primary' })
+            : text(r.value, { size: SIZE.body });
+        const cols = columns([
+            column(100, [text(r.label, { size: SIZE.caption, weight: 'semibold' }), value, spacer(12)]),
+        ]);
+        return r.ref ? { ...cols, data: { kind: 'value', ref: r.ref } } : cols;
+    };
+    const children: LayoutChild[] = [];
+    if (opts.status) {
+        children.push(
+            text(opts.status.label, {
+                size: SIZE.caption,
+                weight: 'semibold',
+                colorRole: opts.status.role,
+            }),
+            spacer(10)
+        );
+    }
+    children.push(...rows.map(row));
+    const panel: SectionNode = { ...section(children, 18), ...CARD };
+    // `ref` gates the WHOLE card: a single-fact panel (a ship-to on a digital order)
+    // drops entirely when its data is absent, rather than rendering an empty inset box.
+    // A section fills no default field, so a bound section is pure show/hide (like when()).
+    return opts.ref ? { ...panel, data: { kind: 'value', ref: opts.ref } } : panel;
 }
 
 /** A tinted, bordered card wrapping FREE content (a heading, prose, a button) — the
@@ -382,7 +382,7 @@ export function detailPanel(
  *  message" block: a promo, a notice, a highlighted next step. Same inset card chrome
  *  as `detailPanel` (shared `CARD`), with the children spaced apart so they breathe. */
 export function calloutCard(children: ContentNode[]): SectionNode {
-  return { ...section(spaced(children), 18), ...CARD };
+    return { ...section(spaced(children), 18), ...CARD };
 }
 
 /** A vertical list of title→description pairs inside the inset card — the "here's
@@ -392,16 +392,16 @@ export function calloutCard(children: ContentNode[]): SectionNode {
  *  tight gap inside a pair and a wider one between pairs so the list scans. Same inset
  *  card chrome as `detailPanel` / `calloutCard` (shared `CARD`). */
 export function featureList(items: { title: string; body: string }[]): SectionNode {
-  const children: LayoutChild[] = [];
-  items.forEach((it, i) => {
-    if (i > 0) children.push(spacer(18));
-    children.push(
-      text(it.title, { size: 17, weight: 'bold' }),
-      spacer(4),
-      text(it.body, { size: 15 })
-    );
-  });
-  return { ...section(children, 22), ...CARD };
+    const children: LayoutChild[] = [];
+    items.forEach((it, i) => {
+        if (i > 0) children.push(spacer(18));
+        children.push(
+            text(it.title, { size: 17, weight: 'bold' }),
+            spacer(4),
+            text(it.body, { size: 15 })
+        );
+    });
+    return { ...section(children, 22), ...CARD };
 }
 
 /** A single feature card shown only when a MODULE is active — the module-aware twin of
@@ -415,7 +415,7 @@ export function featureList(items: { title: string; body: string }[]): SectionNo
  *  source, binding.ts); the resolver (`resolveModules`) fills '' for an inactive module,
  *  which is what triggers the drop. Stacking several reads as one grouped list. */
 export function moduleFeature(slug: string, title: string, body: string): SectionNode {
-  return { ...featureList([{ title, body }]), data: { kind: 'value', ref: `modules.${slug}` } };
+    return { ...featureList([{ title, body }]), data: { kind: 'value', ref: `modules.${slug}` } };
 }
 
 /** A module-gated cross-sell callout — the "keep going" nudge at the tail of an email:
@@ -429,18 +429,18 @@ export function moduleFeature(slug: string, title: string, body: string): Sectio
  *  it rides under the unsubscribe footer; in a transactional send it's only ever a single
  *  incidental block under genuinely transactional content (CAN-SPAM primary-purpose). */
 export function crossSell(
-  slug: string,
-  title: string,
-  body: string,
-  ctaLabel: string,
-  href: string
+    slug: string,
+    title: string,
+    body: string,
+    ctaLabel: string,
+    href: string
 ): SectionNode {
-  const card = calloutCard([
-    text(title, { size: 20, weight: 'bold', align: 'center' }),
-    text(body, { align: 'center' }),
-    button(ctaLabel, href, 'center'),
-  ]);
-  return { ...card, data: { kind: 'value', ref: `modules.${slug}` } };
+    const card = calloutCard([
+        text(title, { size: 20, weight: 'bold', align: 'center' }),
+        text(body, { align: 'center' }),
+        button(ctaLabel, href, 'center'),
+    ]);
+    return { ...card, data: { kind: 'value', ref: `modules.${slug}` } };
 }
 
 /** A bound image — its `src` fills from `ref` (an image node's default bindable field),
@@ -448,18 +448,18 @@ export function crossSell(
  *  empty value drops the node (`hideWhenEmpty`), so an item with no image leaves no broken
  *  frame. `width` is pixels (the projector clamps to the body width). */
 export function image(
-  ref: string,
-  opts: { width?: number; align?: ImageNode['align'] } = {}
+    ref: string,
+    opts: { width?: number; align?: ImageNode['align'] } = {}
 ): ImageNode {
-  return {
-    id: sid('image'),
-    kind: 'image',
-    src: '',
-    alt: '',
-    width: opts.width ?? 120,
-    align: opts.align ?? 'left',
-    data: { kind: 'value', ref },
-  };
+    return {
+        id: sid('image'),
+        kind: 'image',
+        src: '',
+        alt: '',
+        width: opts.width ?? 120,
+        align: opts.align ?? 'left',
+        data: { kind: 'value', ref },
+    };
 }
 
 /** A clickable GROUP (silicaui 0.38 `LinkNode`) — one destination shared by its children,
@@ -469,13 +469,13 @@ export function image(
  *  page. The projector distributes the anchor onto each child (image → `<a><img>`, text →
  *  wrapped `<a>`) rather than one block-level `<a>` — the only form Outlook honours. */
 export function link(hrefRef: string, children: ContentNode[]): LinkNode {
-  return {
-    id: sid('link'),
-    kind: 'link',
-    href: '',
-    children,
-    data: { kind: 'value', ref: hrefRef },
-  };
+    return {
+        id: sid('link'),
+        kind: 'link',
+        href: '',
+        children,
+        data: { kind: 'value', ref: hrefRef },
+    };
 }
 
 /**
@@ -495,44 +495,44 @@ export function link(hrefRef: string, children: ContentNode[]): LinkNode {
  * never renders the empty-collection placeholder.
  */
 export function productRail(opts: {
-  heading: string;
-  ctaLabel: string;
-  ctaHref: string;
-  ref?: string;
+    heading: string;
+    ctaLabel: string;
+    ctaHref: string;
+    ref?: string;
 }): SectionNode[] {
-  const ref = opts.ref ?? 'commerce.product';
-  // Two columns summing to 96%, NOT 100% — the projector renders columns as
-  // inline-block and the whitespace between them adds a space's width, so a full 100%
-  // wraps the price column onto its own line (same slack `itemsTable` leaves). A compact
-  // thumbnail (a cart-line rhythm, not a full-bleed hero) keeps a rail of several
-  // products scannable rather than a screen-height stack.
-  const COL = { image: 16, text: 80 } as const;
-  const headingSection = section([text(opts.heading, { size: 20, weight: 'bold' })], 16);
-  // The row AND a trailing spacer are BOTH children of the collection section, so the
-  // repeat emits `[row, gap]` per product — giving each card breathing room. Without the
-  // spacer the square thumbnails stack edge-to-edge and read as one continuous strip.
-  const cardRow: SectionNode = {
-    ...section(
-      [
-        columns([
-          column(COL.image, [link('url', [image('imageUrl', { width: 64 })])]),
-          column(COL.text, [
-            link('url', [
-              text('', { ref: 'title', weight: 'semibold', size: 16 }),
-              spacer(4),
-              text('', { ref: 'priceLabel', size: 15, colorRole: 'primary' }),
-            ]),
-          ]),
-        ]),
-        spacer(18),
-      ],
-      10
-    ),
-    align: 'left',
-    data: { kind: 'collection', ref },
-  };
-  const cta = section([button(opts.ctaLabel, opts.ctaHref, 'center')], 8);
-  return [headingSection, cardRow, cta];
+    const ref = opts.ref ?? 'commerce.product';
+    // Two columns summing to 96%, NOT 100% — the projector renders columns as
+    // inline-block and the whitespace between them adds a space's width, so a full 100%
+    // wraps the price column onto its own line (same slack `itemsTable` leaves). A compact
+    // thumbnail (a cart-line rhythm, not a full-bleed hero) keeps a rail of several
+    // products scannable rather than a screen-height stack.
+    const COL = { image: 16, text: 80 } as const;
+    const headingSection = section([text(opts.heading, { size: 20, weight: 'bold' })], 16);
+    // The row AND a trailing spacer are BOTH children of the collection section, so the
+    // repeat emits `[row, gap]` per product — giving each card breathing room. Without the
+    // spacer the square thumbnails stack edge-to-edge and read as one continuous strip.
+    const cardRow: SectionNode = {
+        ...section(
+            [
+                columns([
+                    column(COL.image, [link('url', [image('imageUrl', { width: 64 })])]),
+                    column(COL.text, [
+                        link('url', [
+                            text('', { ref: 'title', weight: 'semibold', size: 16 }),
+                            spacer(4),
+                            text('', { ref: 'priceLabel', size: 15, colorRole: 'primary' }),
+                        ]),
+                    ]),
+                ]),
+                spacer(18),
+            ],
+            10
+        ),
+        align: 'left',
+        data: { kind: 'collection', ref },
+    };
+    const cta = section([button(opts.ctaLabel, opts.ctaHref, 'center')], 8);
+    return [headingSection, cardRow, cta];
 }
 
 /**
@@ -552,46 +552,46 @@ export function productRail(opts: {
  * section's own text is authored empty, so the placeholder repeat renders nothing.
  */
 export function contentRail(opts: {
-  heading: string;
-  ctaLabel: string;
-  ctaHref: string;
-  ref?: string;
+    heading: string;
+    ctaLabel: string;
+    ctaHref: string;
+    ref?: string;
 }): SectionNode[] {
-  const ref = opts.ref ?? 'cms.blog_post';
-  // Gate on the content itself: an empty collection resolves to `[]`, which
-  // `isEmptyValue` counts as absent, so the heading + CTA drop when there's nothing
-  // to show (and a non-CMS tenant, where the ref is unknown, drops too).
-  const contentGate = { kind: 'value' as const, ref };
-  const COL = { image: 26, text: 70 } as const;
-  const headingSection: SectionNode = {
-    ...section([text(opts.heading, { size: 20, weight: 'bold' })], 16),
-    data: contentGate,
-  };
-  const cardRow: SectionNode = {
-    ...section(
-      [
-        columns([
-          column(COL.image, [link('url', [image('imageUrl', { width: 96 })])]),
-          column(COL.text, [
-            link('url', [
-              text('', { ref: 'title', weight: 'semibold', size: 16 }),
-              spacer(4),
-              text('', { ref: 'excerpt', size: 14 }),
-            ]),
-          ]),
-        ]),
-        spacer(18),
-      ],
-      10
-    ),
-    align: 'left',
-    data: { kind: 'collection', ref },
-  };
-  const cta: SectionNode = {
-    ...section([button(opts.ctaLabel, opts.ctaHref, 'center')], 8),
-    data: contentGate,
-  };
-  return [headingSection, cardRow, cta];
+    const ref = opts.ref ?? 'cms.blog_post';
+    // Gate on the content itself: an empty collection resolves to `[]`, which
+    // `isEmptyValue` counts as absent, so the heading + CTA drop when there's nothing
+    // to show (and a non-CMS tenant, where the ref is unknown, drops too).
+    const contentGate = { kind: 'value' as const, ref };
+    const COL = { image: 26, text: 70 } as const;
+    const headingSection: SectionNode = {
+        ...section([text(opts.heading, { size: 20, weight: 'bold' })], 16),
+        data: contentGate,
+    };
+    const cardRow: SectionNode = {
+        ...section(
+            [
+                columns([
+                    column(COL.image, [link('url', [image('imageUrl', { width: 96 })])]),
+                    column(COL.text, [
+                        link('url', [
+                            text('', { ref: 'title', weight: 'semibold', size: 16 }),
+                            spacer(4),
+                            text('', { ref: 'excerpt', size: 14 }),
+                        ]),
+                    ]),
+                ]),
+                spacer(18),
+            ],
+            10
+        ),
+        align: 'left',
+        data: { kind: 'collection', ref },
+    };
+    const cta: SectionNode = {
+        ...section([button(opts.ctaLabel, opts.ctaHref, 'center')], 8),
+        data: contentGate,
+    };
+    return [headingSection, cardRow, cta];
 }
 
 // ── The document ─────────────────────────────────────────────────────────────
@@ -601,25 +601,25 @@ export function contentRail(opts: {
  *  edits only their own copy and can't delete the compliance footer off a marketing
  *  email. */
 export function emailDoc(subject: string, preheader: string, body: SectionNode[]): EmailDocument {
-  return {
-    version: '1',
-    subject,
-    preheader,
-    root: {
-      id: sid('body'),
-      kind: 'body',
-      width: 600,
-      bg: C.base200,
-      bgAuto: true,
-      contentBg: C.base100,
-      contentBgAuto: true,
-      fontFamily: 'Arial, Helvetica, sans-serif',
-      // Declare both schemes so Apple Mail / Outlook-for-Mac render the light design
-      // as authored instead of force-inverting it; Gmail/Outlook.com ignore it.
-      colorScheme: 'light dark',
-      children: body,
-    },
-  };
+    return {
+        version: '1',
+        subject,
+        preheader,
+        root: {
+            id: sid('body'),
+            kind: 'body',
+            width: 600,
+            bg: C.base200,
+            bgAuto: true,
+            contentBg: C.base100,
+            contentBgAuto: true,
+            fontFamily: 'Arial, Helvetica, sans-serif',
+            // Declare both schemes so Apple Mail / Outlook-for-Mac render the light design
+            // as authored instead of force-inverting it; Gmail/Outlook.com ignore it.
+            colorScheme: 'light dark',
+            children: body,
+        },
+    };
 }
 
 /** Separate a run of stacked blocks with a real gap. The projector gives sibling
@@ -629,12 +629,12 @@ export function emailDoc(subject: string, preheader: string, body: SectionNode[]
  *  gap (same device `detailPanel` uses between its rows). Edges are left to the
  *  section's own `paddingY`, so a spacer only ever goes BETWEEN two blocks. */
 function spaced(children: ContentNode[], gap = 16): LayoutChild[] {
-  const out: LayoutChild[] = [];
-  children.forEach((child, i) => {
-    if (i > 0) out.push(spacer(gap));
-    out.push(child);
-  });
-  return out;
+    const out: LayoutChild[] = [];
+    children.forEach((child, i) => {
+        if (i > 0) out.push(spacer(gap));
+        out.push(child);
+    });
+    return out;
 }
 
 /** A one-section body — the shape almost every default takes: a heading, some copy,
@@ -642,5 +642,5 @@ function spaced(children: ContentNode[], gap = 16): LayoutChild[] {
  *  blocks are spaced apart (`spaced`) so the heading, lead and CTA breathe instead of
  *  colliding. */
 export function copyBlock(children: ContentNode[]): SectionNode {
-  return section(spaced(children));
+    return section(spaced(children));
 }

@@ -1,38 +1,44 @@
 {
-  "schemaVersion": 1,
-  "category": "blueprint",
-  "slug": "sparx-beauty-counter",
-  "name": "Beauty Counter",
-  "version": "1.4.0",
-  "tagline": "A glossy, shade-forward template for own-brand colour cosmetics and beauty counters.",
-  "description": "A shade-forward storefront for an own-brand colour-cosmetics house — a full-bleed lifestyle hero over a \"find your perfect match\" funnel of best-sellers, shade-matching editorial bands, face/lip/eye carousels and a gift-with-purchase reward, in a blush-tinted theme with a bold hot-magenta primary. Modelled on the beauty-counter archetype; shipped as Maeve.",
-  "payload": "blueprint.ts",
-  "facets": {
-    "vertical": "retail",
-    "industry": "Colour cosmetics"
-  },
-  "pricing": {
-    "model": "free",
-    "priceCents": 0
-  },
-  "requires": {
-    "modules": ["builder", "commerce", "cms", "crm", "email"]
-  },
-  "media": [
-    {
-      "file": "media/icon.png",
-      "kind": "icon",
-      "alt": "Beauty Counter icon"
+    "schemaVersion": 1,
+    "category": "blueprint",
+    "slug": "sparx-beauty-counter",
+    "name": "Beauty Counter",
+    "version": "1.4.0",
+    "tagline": "A glossy, shade-forward template for own-brand color cosmetics and beauty counters.",
+    "description": "A shade-forward storefront for an own-brand color-cosmetics house — a full-bleed lifestyle hero over a \"find your perfect match\" funnel of best-sellers, shade-matching editorial bands, face/lip/eye carousels and a gift-with-purchase reward, in a blush-tinted theme with a bold hot-magenta primary. Modelled on the beauty-counter archetype; shipped as Maeve.",
+    "payload": "blueprint.ts",
+    "facets": {
+        "vertical": "retail",
+        "industry": "Color cosmetics"
     },
-    {
-      "file": "media/preview.png",
-      "kind": "preview",
-      "alt": "Beauty Counter — home page preview"
-    }
-  ],
-  "author": {
-    "displayName": "WizeWorks"
-  },
-  "accent": "#d00078",
-  "sortWeight": 60
+    "pricing": {
+        "model": "free",
+        "priceCents": 0
+    },
+    "requires": {
+        "modules": [
+            "builder",
+            "commerce",
+            "cms",
+            "crm",
+            "email"
+        ]
+    },
+    "media": [
+        {
+            "file": "media/icon.png",
+            "kind": "icon",
+            "alt": "Beauty Counter icon"
+        },
+        {
+            "file": "media/preview.png",
+            "kind": "preview",
+            "alt": "Beauty Counter — home page preview"
+        }
+    ],
+    "author": {
+        "displayName": "WizeWorks"
+    },
+    "accent": "#d00078",
+    "sortWeight": 60
 }

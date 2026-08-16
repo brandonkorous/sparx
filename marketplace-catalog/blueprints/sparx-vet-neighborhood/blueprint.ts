@@ -10,71 +10,71 @@ import emails from './emails.json' with { type: 'json' };
 import assets from './assets.json' with { type: 'json' };
 
 const blueprint = {
-  key: 'sparx-vet-neighborhood',
-  version: '1.3.0',
-  name: 'sparx — Veterinary (Neighborhood)',
-  summary:
-    'A warm, friendly neighborhood vet-clinic site — a caring teal palette, a coral accent and a clean warm-white ground. Installs a working booking flow: appointment types (wellness, vaccines, sick visits, dental, senior care), two vets and a tech you book by name, and exam rooms as resources so each visit reserves both a doctor and a room. Ships as "Cedar Paws Veterinary", a full-service clinic for dogs and cats.',
-  vertical: 'services',
-  preview: 'media/preview.png',
-  requiresModules: ['builder', 'scheduling', 'crm', 'email'],
+    key: 'sparx-vet-neighborhood',
+    version: '1.3.0',
+    name: 'sparx — Veterinary (Neighborhood)',
+    summary:
+        'A warm, friendly neighborhood vet-clinic site — a caring teal palette, a coral accent and a clean warm-white ground. Installs a working booking flow: appointment types (wellness, vaccines, sick visits, dental, senior care), two vets and a tech you book by name, and exam rooms as resources so each visit reserves both a doctor and a room. Ships as "Cedar Paws Veterinary", a full-service clinic for dogs and cats.',
+    vertical: 'services',
+    preview: 'media/preview.png',
+    requiresModules: ['builder', 'scheduling', 'crm', 'email'],
 
-  // Identity only (business name + tagline + fonts + the theme's hex colours). The look
-  // rides site.theme + the theme decl below; the installing tenant rebrands the name.
-  brand: {
-    businessName: 'Cedar Paws Veterinary',
-    tagline: 'Your pet’s second family.',
-    colors: {
-      primary: '#1c8d7a',
-      primaryForeground: '#030e0b',
-      accent: '#e67e54',
-      secondary: '#2e4145',
-    },
-    fonts: {
-      heading: 'Nunito',
-      body: 'Inter',
-    },
-  },
-
-  // The provisioned SiteTheme the installer creates + applies — an editable saved theme
-  // over a foundation base + the template's brand snapshot. The LIVE storefront look is
-  // site.theme (the flat bespoke tokens), written last.
-  theme: {
-    name: 'cedarpaws',
-    basePresetKey: 'apex',
-    presentation: {
-      v: 2,
-      containerWidth: '1152px',
-    },
+    // Identity only (business name + tagline + fonts + the theme's hex colors). The look
+    // rides site.theme + the theme decl below; the installing tenant rebrands the name.
     brand: {
-      colorPrimary: '#1c8d7a',
-      colorAccent: '#e67e54',
-      colorSecondary: '#2e4145',
-      fontHeading: 'Nunito',
-      fontBody: 'Inter',
-      tokens: {},
+        businessName: 'Cedar Paws Veterinary',
+        tagline: 'Your pet’s second family.',
+        colors: {
+            primary: '#1c8d7a',
+            primaryForeground: '#030e0b',
+            accent: '#e67e54',
+            secondary: '#2e4145',
+        },
+        fonts: {
+            heading: 'Nunito',
+            body: 'Inter',
+        },
     },
-    apply: true,
-  },
 
-  assets,
-  contentTypes: [],
+    // The provisioned SiteTheme the installer creates + applies — an editable saved theme
+    // over a foundation base + the template's brand snapshot. The LIVE storefront look is
+    // site.theme (the flat bespoke tokens), written last.
+    theme: {
+        name: 'cedarpaws',
+        basePresetKey: 'apex',
+        presentation: {
+            v: 2,
+            containerWidth: '1152px',
+        },
+        brand: {
+            colorPrimary: '#1c8d7a',
+            colorAccent: '#e67e54',
+            colorSecondary: '#2e4145',
+            fontHeading: 'Nunito',
+            fontBody: 'Inter',
+            tokens: {},
+        },
+        apply: true,
+    },
 
-  // The booking spine — policies, bookable resources (staff/rooms/stations) with weekly
-  // hours, and the service menu. The installer's scheduling slice replays it into a live
-  // booking flow that the site's /book page renders.
-  scheduling,
+    assets,
+    contentTypes: [],
 
-  // Brand-voiced MARKETING starters (a welcome + a come-back), installed as DRAFTS the
-  // tenant switches on. The transactional booking sends — confirmation, reminder,
-  // reschedule, cancellation, waitlist — are platform KEYED defaults, so they are covered
-  // on email-module activation and are deliberately NOT duplicated here.
-  emails,
-  sequences: [],
+    // The booking spine — policies, bookable resources (staff/rooms/stations) with weekly
+    // hours, and the service menu. The installer's scheduling slice replays it into a live
+    // booking flow that the site's /book page renders.
+    scheduling,
 
-  // The composed distinct site (frame + Home + Book + About + Contact) in the bespoke
-  // theme, fully stamped.
-  site,
+    // Brand-voiced MARKETING starters (a welcome + a come-back), installed as DRAFTS the
+    // tenant switches on. The transactional booking sends — confirmation, reminder,
+    // reschedule, cancellation, waitlist — are platform KEYED defaults, so they are covered
+    // on email-module activation and are deliberately NOT duplicated here.
+    emails,
+    sequences: [],
+
+    // The composed distinct site (frame + Home + Book + About + Contact) in the bespoke
+    // theme, fully stamped.
+    site,
 };
 
 export default blueprint;

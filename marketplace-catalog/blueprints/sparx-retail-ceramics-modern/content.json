@@ -1,227 +1,227 @@
 [
-  {
-    "typeKey": "blog_post",
-    "slug": "designed-to-be-used",
-    "status": "published",
-    "body": {
-      "title": "Designed to be used, not displayed",
-      "excerpt": "A modern piece can be handsome and still earn its keep. Here’s how we decide what to make — and what we leave out.",
-      "featuredImage": {
-        "$asset": "form-post-use"
-      },
-      "body": {
-        "type": "doc",
-        "content": [
-          {
-            "type": "paragraph",
-            "content": [
-              {
-                "type": "text",
-                "text": "There’s a version of “design ceramics” that lives on a shelf, gets photographed, and never holds a meal. We’re not interested in that. Everything we make has to survive a normal week — the dishwasher, the microwave, a knock against the tap — or we don’t make it. Modern shouldn’t mean precious."
-              }
-            ]
-          },
-          {
-            "type": "heading",
-            "attrs": {
-              "level": 2
+    {
+        "typeKey": "blog_post",
+        "slug": "designed-to-be-used",
+        "status": "published",
+        "body": {
+            "title": "Designed to be used, not displayed",
+            "excerpt": "A modern piece can be handsome and still earn its keep. Here’s how we decide what to make — and what we leave out.",
+            "featuredImage": {
+                "$asset": "form-post-use"
             },
-            "content": [
-              {
-                "type": "text",
-                "text": "Start with the shape, remove the rest"
-              }
-            ]
-          },
-          {
-            "type": "paragraph",
-            "content": [
-              {
-                "type": "text",
-                "text": "We design every piece by taking things away. Start with the job it has to do — hold coffee, stack in a cupboard, pour without dripping — and cut everything that isn’t serving it. The result is usually a straight wall, a clean rim and a foot that balances. It looks simple because the work went into deciding what not to add."
-              }
-            ]
-          },
-          {
-            "type": "heading",
-            "attrs": {
-              "level": 2
+            "body": {
+                "type": "doc",
+                "content": [
+                    {
+                        "type": "paragraph",
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "There’s a version of “design ceramics” that lives on a shelf, gets photographed, and never holds a meal. We’re not interested in that. Everything we make has to survive a normal week — the dishwasher, the microwave, a knock against the tap — or we don’t make it. Modern shouldn’t mean precious."
+                            }
+                        ]
+                    },
+                    {
+                        "type": "heading",
+                        "attrs": {
+                            "level": 2
+                        },
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "Start with the shape, remove the rest"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "paragraph",
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "We design every piece by taking things away. Start with the job it has to do — hold coffee, stack in a cupboard, pour without dripping — and cut everything that isn’t serving it. The result is usually a straight wall, a clean rim and a foot that balances. It looks simple because the work went into deciding what not to add."
+                            }
+                        ]
+                    },
+                    {
+                        "type": "heading",
+                        "attrs": {
+                            "level": 2
+                        },
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "The everyday test"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "paragraph",
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "Before a shape goes into production, we live with a prototype for a few weeks — actual mornings, actual dinners, actual washing-up. If a handle is a hair too small, if a bowl is a touch too deep to eat from comfortably, if a glaze scratches, it goes back. A piece only ships once it’s passed the most ordinary test there is: reaching for it first, again and again, without thinking about why."
+                            }
+                        ]
+                    }
+                ]
+            }
+        }
+    },
+    {
+        "typeKey": "blog_post",
+        "slug": "the-three-colors",
+        "status": "published",
+        "body": {
+            "title": "The three colors, and why they vary",
+            "excerpt": "Chalk, Slate and Coral aren’t swatches — they’re glaze chemistry that meets fire. Here’s what to expect on your piece.",
+            "featuredImage": {
+                "$asset": "form-post-color"
             },
-            "content": [
-              {
-                "type": "text",
-                "text": "The everyday test"
-              }
-            ]
-          },
-          {
-            "type": "paragraph",
-            "content": [
-              {
-                "type": "text",
-                "text": "Before a shape goes into production, we live with a prototype for a few weeks — actual mornings, actual dinners, actual washing-up. If a handle is a hair too small, if a bowl is a touch too deep to eat from comfortably, if a glaze scratches, it goes back. A piece only ships once it’s passed the most ordinary test there is: reaching for it first, again and again, without thinking about why."
-              }
-            ]
-          }
-        ]
-      }
+            "body": {
+                "type": "doc",
+                "content": [
+                    {
+                        "type": "paragraph",
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "We keep the palette deliberately short: one soft white, one cool grey, one warm accent. Three colors is enough to build a whole table and few enough that everything we make is guaranteed to mix. But a glaze isn’t paint — it’s a coat of minerals that only becomes its final color in the heat of the kiln, and small things change how it lands."
+                            }
+                        ]
+                    },
+                    {
+                        "type": "heading",
+                        "attrs": {
+                            "level": 2
+                        },
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "Chalk, Slate, Coral"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "paragraph",
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "Chalk is a soft, warm white — the studio default and the easiest to live with. Slate is a cool mid-grey that reads almost blue in daylight and grounds a shelf without going black. Coral is the one loud note: a warm, clay-red accent meant to be used sparingly — one bowl, one mug, the single thing on the shelf that isn’t quiet. All three are food-safe and dishwasher-safe."
+                            }
+                        ]
+                    },
+                    {
+                        "type": "heading",
+                        "attrs": {
+                            "level": 2
+                        },
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "Why yours won’t match the photo exactly"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "paragraph",
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "Where a glaze pools thicker it fires deeper; where it thins over an edge it breaks lighter toward the clay. Its exact tone shifts with the thickness of the coat and the spot it sat in the kiln. We photograph a representative piece, but yours will be its own — a shade lighter here, a touch deeper there. On a contemporary form that variation isn’t a flaw to hide; it’s the quiet proof a person made it."
+                            }
+                        ]
+                    }
+                ]
+            }
+        }
+    },
+    {
+        "typeKey": "blog_post",
+        "slug": "caring-for-your-pieces",
+        "status": "published",
+        "body": {
+            "title": "Caring for your pieces",
+            "excerpt": "Our stoneware is built for daily life, not a cabinet. A few simple habits keep it looking new for years.",
+            "featuredImage": {
+                "$asset": "form-post-care"
+            },
+            "body": {
+                "type": "doc",
+                "content": [
+                    {
+                        "type": "paragraph",
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "The best thing you can do with one of our pieces is use it hard. Everything is high-fired stoneware, fully vitrified, which makes it genuinely tough and completely everyday — not a fragile object you’re nervous around. A few small habits keep it at its best."
+                            }
+                        ]
+                    },
+                    {
+                        "type": "heading",
+                        "attrs": {
+                            "level": 2
+                        },
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "Dishwasher, microwave, everyday"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "paragraph",
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "All of our glazed ware is dishwasher-safe and microwave-safe — no special treatment. If you hand-wash, a soft sponge is plenty; skip the scouring pad, which can dull a matte glaze over time. The only real rule is thermal shock: don’t move a piece straight from the freezer to a hot oven, and let a cold mug warm for a moment before boiling water goes in."
+                            }
+                        ]
+                    },
+                    {
+                        "type": "heading",
+                        "attrs": {
+                            "level": 2
+                        },
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "The bare rim and foot"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "paragraph",
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "We leave a thin band of clay bare on the foot, and on some pieces the rim, so you can see and feel the material. Very occasionally a bare foot can leave a faint grey mark on a soft surface — a quick pass with fine sandpaper clears it, and we do that before anything ships. If yours ever needs it, a light sand and it’s gone."
+                            }
+                        ]
+                    },
+                    {
+                        "type": "heading",
+                        "attrs": {
+                            "level": 2
+                        },
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "If something chips"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "paragraph",
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "Even tough stoneware can chip against a stone counter or a hard tap. A small chip on a rim is usually still perfectly safe to use, and plenty of people grow fond of the mark. If a piece ever fails in a way that isn’t fair wear, get in touch — we stand behind everything that leaves the studio."
+                            }
+                        ]
+                    }
+                ]
+            }
+        }
     }
-  },
-  {
-    "typeKey": "blog_post",
-    "slug": "the-three-colours",
-    "status": "published",
-    "body": {
-      "title": "The three colours, and why they vary",
-      "excerpt": "Chalk, Slate and Coral aren’t swatches — they’re glaze chemistry that meets fire. Here’s what to expect on your piece.",
-      "featuredImage": {
-        "$asset": "form-post-color"
-      },
-      "body": {
-        "type": "doc",
-        "content": [
-          {
-            "type": "paragraph",
-            "content": [
-              {
-                "type": "text",
-                "text": "We keep the palette deliberately short: one soft white, one cool grey, one warm accent. Three colours is enough to build a whole table and few enough that everything we make is guaranteed to mix. But a glaze isn’t paint — it’s a coat of minerals that only becomes its final colour in the heat of the kiln, and small things change how it lands."
-              }
-            ]
-          },
-          {
-            "type": "heading",
-            "attrs": {
-              "level": 2
-            },
-            "content": [
-              {
-                "type": "text",
-                "text": "Chalk, Slate, Coral"
-              }
-            ]
-          },
-          {
-            "type": "paragraph",
-            "content": [
-              {
-                "type": "text",
-                "text": "Chalk is a soft, warm white — the studio default and the easiest to live with. Slate is a cool mid-grey that reads almost blue in daylight and grounds a shelf without going black. Coral is the one loud note: a warm, clay-red accent meant to be used sparingly — one bowl, one mug, the single thing on the shelf that isn’t quiet. All three are food-safe and dishwasher-safe."
-              }
-            ]
-          },
-          {
-            "type": "heading",
-            "attrs": {
-              "level": 2
-            },
-            "content": [
-              {
-                "type": "text",
-                "text": "Why yours won’t match the photo exactly"
-              }
-            ]
-          },
-          {
-            "type": "paragraph",
-            "content": [
-              {
-                "type": "text",
-                "text": "Where a glaze pools thicker it fires deeper; where it thins over an edge it breaks lighter toward the clay. Its exact tone shifts with the thickness of the coat and the spot it sat in the kiln. We photograph a representative piece, but yours will be its own — a shade lighter here, a touch deeper there. On a contemporary form that variation isn’t a flaw to hide; it’s the quiet proof a person made it."
-              }
-            ]
-          }
-        ]
-      }
-    }
-  },
-  {
-    "typeKey": "blog_post",
-    "slug": "caring-for-your-pieces",
-    "status": "published",
-    "body": {
-      "title": "Caring for your pieces",
-      "excerpt": "Our stoneware is built for daily life, not a cabinet. A few simple habits keep it looking new for years.",
-      "featuredImage": {
-        "$asset": "form-post-care"
-      },
-      "body": {
-        "type": "doc",
-        "content": [
-          {
-            "type": "paragraph",
-            "content": [
-              {
-                "type": "text",
-                "text": "The best thing you can do with one of our pieces is use it hard. Everything is high-fired stoneware, fully vitrified, which makes it genuinely tough and completely everyday — not a fragile object you’re nervous around. A few small habits keep it at its best."
-              }
-            ]
-          },
-          {
-            "type": "heading",
-            "attrs": {
-              "level": 2
-            },
-            "content": [
-              {
-                "type": "text",
-                "text": "Dishwasher, microwave, everyday"
-              }
-            ]
-          },
-          {
-            "type": "paragraph",
-            "content": [
-              {
-                "type": "text",
-                "text": "All of our glazed ware is dishwasher-safe and microwave-safe — no special treatment. If you hand-wash, a soft sponge is plenty; skip the scouring pad, which can dull a matte glaze over time. The only real rule is thermal shock: don’t move a piece straight from the freezer to a hot oven, and let a cold mug warm for a moment before boiling water goes in."
-              }
-            ]
-          },
-          {
-            "type": "heading",
-            "attrs": {
-              "level": 2
-            },
-            "content": [
-              {
-                "type": "text",
-                "text": "The bare rim and foot"
-              }
-            ]
-          },
-          {
-            "type": "paragraph",
-            "content": [
-              {
-                "type": "text",
-                "text": "We leave a thin band of clay bare on the foot, and on some pieces the rim, so you can see and feel the material. Very occasionally a bare foot can leave a faint grey mark on a soft surface — a quick pass with fine sandpaper clears it, and we do that before anything ships. If yours ever needs it, a light sand and it’s gone."
-              }
-            ]
-          },
-          {
-            "type": "heading",
-            "attrs": {
-              "level": 2
-            },
-            "content": [
-              {
-                "type": "text",
-                "text": "If something chips"
-              }
-            ]
-          },
-          {
-            "type": "paragraph",
-            "content": [
-              {
-                "type": "text",
-                "text": "Even tough stoneware can chip against a stone counter or a hard tap. A small chip on a rim is usually still perfectly safe to use, and plenty of people grow fond of the mark. If a piece ever fails in a way that isn’t fair wear, get in touch — we stand behind everything that leaves the studio."
-              }
-            ]
-          }
-        ]
-      }
-    }
-  }
 ]

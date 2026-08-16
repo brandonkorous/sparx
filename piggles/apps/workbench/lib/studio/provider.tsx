@@ -5,7 +5,7 @@
 // Above the dock is the whole point. A session held inside a pane would be one
 // session per pane, which is exactly the arrangement this replaces — two panes,
 // two drafts, two Saves. Held here, the theme pane and every page pane share one
-// set of documents, so a colour change repaints them all with nothing in between.
+// set of documents, so a color change repaints them all with nothing in between.
 //
 // It survives a pane closing and re-opening, and it survives a pane being torn
 // into its own window: dockview moves the DOM, the React tree stays here.
@@ -15,12 +15,14 @@
 import { createContext, useContext, useEffect, useMemo, useRef, type ReactNode } from 'react';
 import { StudioSession, type SiteContext } from '@wizeworks/studio';
 import { StudioProvider, type StudioHost } from '@wizeworks/studio/react';
+import { MediaPickerProvider } from '../../surfaces/cms/media-picker';
 import { useSilicaPieces } from '../../surfaces/builder/studio/data';
 import { tenantSymbolId } from '../../surfaces/builder/studio/saved-pieces';
 import { useActiveSiteId } from '../api/shell-data';
 import { useStudioHostConfig } from './host';
 import { toLayoutDoc, useLayout } from './layout-data';
 import { useSiteSymbols } from './piece-data';
+import { useStudioUnloadGuard } from './unsaved';
 
 interface StudioBinding {
   session: StudioSession | null;
@@ -38,6 +40,17 @@ const StudioBindingContext = createContext<StudioBinding>({ session: null, host:
  * is a data one.
  */
 export function StudioSessionProvider({ children }: { children: ReactNode }) {
+  // The picture browser sits ABOVE the host, because the host is what hands it to
+  // every builder: an image field that asks a business owner for a web address is
+  // asking them to do a technical thing with their own photograph.
+  return (
+    <MediaPickerProvider source="content">
+      <StudioBinding>{children}</StudioBinding>
+    </MediaPickerProvider>
+  );
+}
+
+function StudioBinding({ children }: { children: ReactNode }) {
   const { data: siteState } = useActiveSiteId();
   const propertyId = siteState?.propertyId ?? null;
   const host = useStudioHostConfig();
@@ -54,6 +67,8 @@ export function StudioSessionProvider({ children }: { children: ReactNode }) {
 
   useSymbolLibrary(session, propertyId);
   useSiteChrome(session, propertyId);
+  // A document can be unsaved with no pane open — the pane guards cannot see that.
+  useStudioUnloadGuard(session);
 
   const binding = useMemo<StudioBinding>(() => ({ session, host }), [session, host]);
 

@@ -5,6 +5,7 @@ import {
   EmailCallout,
   EmailDisplayHeading,
   EmailParagraph,
+  usePlatform,
 } from '../components';
 
 export interface BillingTrialEndingEmailProps {
@@ -23,17 +24,18 @@ export function BillingTrialEndingEmail({
   trialEndLabel,
   manageUrl,
 }: BillingTrialEndingEmailProps) {
+  const platform = usePlatform();
   return (
     <PlatformEmailLayout
-      preview="Your sparx trial ends soon"
-      mastheadRight="billing@sparx.email"
+      preview={`Your ${platform.name} trial ends soon`}
+      mastheadRight={platform.billingEmail ?? undefined}
       footerLinks={[{ label: 'Billing settings', href: manageUrl }]}
-      footerReason="You're receiving this because your sparx free trial is ending soon."
+      footerReason={`You're receiving this because your ${platform.name} free trial is ending soon.`}
     >
       <EmailDisplayHeading>Your trial ends soon</EmailDisplayHeading>
       <EmailParagraph>
-        Hi {accountName ?? 'there'}, your sparx free trial is almost up — add a payment method to
-        keep everything running without a break.
+        Hi {accountName ?? 'there'}, your {platform.name} free trial is almost up — add a payment
+        method to keep everything running without a break.
       </EmailParagraph>
       <EmailCallout tone="info">Your trial ends {trialEndLabel}.</EmailCallout>
       <EmailActionButton href={manageUrl}>Add a payment method</EmailActionButton>
@@ -45,4 +47,4 @@ export function BillingTrialEndingEmail({
   );
 }
 
-export const billingTrialEndingSubject = 'Your sparx trial ends soon';
+export const billingTrialEndingSubject = (platform: string) => `Your ${platform} trial ends soon`;

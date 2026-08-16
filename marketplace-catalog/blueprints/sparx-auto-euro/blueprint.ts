@@ -10,71 +10,71 @@ import emails from './emails.json' with { type: 'json' };
 import assets from './assets.json' with { type: 'json' };
 
 const blueprint = {
-  key: 'sparx-auto-euro',
-  version: '1.3.0',
-  name: 'sparx — Auto (European Specialist)',
-  summary:
-    'A precision European-import auto shop — BMW, Mercedes, Audi, Porsche and VW — in a dark graphite palette with a sharp marque-red primary. Installs a working booking flow: factory-trained master technicians you book by name, real service bays as bookable resources (a visit reserves both), and a live menu of diagnostics, scheduled maintenance, performance and pre-purchase inspection with a diagnostic-deposit policy. Ships as "Autobahn Werks" — dealer-level, without the dealer markup.',
-  vertical: 'services',
-  preview: 'media/preview.png',
-  requiresModules: ['builder', 'scheduling', 'crm', 'email'],
+    key: 'sparx-auto-euro',
+    version: '1.3.0',
+    name: 'sparx — Auto (European Specialist)',
+    summary:
+        'A precision European-import auto shop — BMW, Mercedes, Audi, Porsche and VW — in a dark graphite palette with a sharp marque-red primary. Installs a working booking flow: factory-trained master technicians you book by name, real service bays as bookable resources (a visit reserves both), and a live menu of diagnostics, scheduled maintenance, performance and pre-purchase inspection with a diagnostic-deposit policy. Ships as "Autobahn Werks" — dealer-level, without the dealer markup.',
+    vertical: 'services',
+    preview: 'media/preview.png',
+    requiresModules: ['builder', 'scheduling', 'crm', 'email'],
 
-  // Identity only (business name + tagline + fonts + the theme's hex colours). The look
-  // rides site.theme + the theme decl below; the installing tenant rebrands the name.
-  brand: {
-    businessName: 'Autobahn Werks',
-    tagline: 'Dealer-level care for European machines.',
-    colors: {
-      primary: '#d93036',
-      primaryForeground: '#ffffff',
-      accent: '#4fa8e1',
-      secondary: '#bfc5ca',
-    },
-    fonts: {
-      heading: 'Space Grotesk',
-      body: 'Inter',
-    },
-  },
-
-  // The provisioned SiteTheme the installer creates + applies — an editable saved theme
-  // over a foundation base + the template's brand snapshot. The LIVE storefront look is
-  // site.theme (the flat bespoke tokens), written last.
-  theme: {
-    name: 'autobahn',
-    basePresetKey: 'apex',
-    presentation: {
-      v: 2,
-      containerWidth: '1152px',
-    },
+    // Identity only (business name + tagline + fonts + the theme's hex colors). The look
+    // rides site.theme + the theme decl below; the installing tenant rebrands the name.
     brand: {
-      colorPrimary: '#d93036',
-      colorAccent: '#4fa8e1',
-      colorSecondary: '#bfc5ca',
-      fontHeading: 'Space Grotesk',
-      fontBody: 'Inter',
-      tokens: {},
+        businessName: 'Autobahn Werks',
+        tagline: 'Dealer-level care for European machines.',
+        colors: {
+            primary: '#d93036',
+            primaryForeground: '#ffffff',
+            accent: '#4fa8e1',
+            secondary: '#bfc5ca',
+        },
+        fonts: {
+            heading: 'Space Grotesk',
+            body: 'Inter',
+        },
     },
-    apply: true,
-  },
 
-  assets,
-  contentTypes: [],
+    // The provisioned SiteTheme the installer creates + applies — an editable saved theme
+    // over a foundation base + the template's brand snapshot. The LIVE storefront look is
+    // site.theme (the flat bespoke tokens), written last.
+    theme: {
+        name: 'autobahn',
+        basePresetKey: 'apex',
+        presentation: {
+            v: 2,
+            containerWidth: '1152px',
+        },
+        brand: {
+            colorPrimary: '#d93036',
+            colorAccent: '#4fa8e1',
+            colorSecondary: '#bfc5ca',
+            fontHeading: 'Space Grotesk',
+            fontBody: 'Inter',
+            tokens: {},
+        },
+        apply: true,
+    },
 
-  // The booking spine — policies, bookable resources (staff/rooms/stations) with weekly
-  // hours, and the service menu. The installer's scheduling slice replays it into a live
-  // booking flow that the site's /book page renders.
-  scheduling,
+    assets,
+    contentTypes: [],
 
-  // Brand-voiced MARKETING starters (a welcome + a come-back), installed as DRAFTS the
-  // tenant switches on. The transactional booking sends — confirmation, reminder,
-  // reschedule, cancellation, waitlist — are platform KEYED defaults, so they are covered
-  // on email-module activation and are deliberately NOT duplicated here.
-  emails,
-  sequences: [],
+    // The booking spine — policies, bookable resources (staff/rooms/stations) with weekly
+    // hours, and the service menu. The installer's scheduling slice replays it into a live
+    // booking flow that the site's /book page renders.
+    scheduling,
 
-  // The composed distinct site (frame + Home + Book + About + Contact) in the bespoke
-  // theme, fully stamped.
-  site,
+    // Brand-voiced MARKETING starters (a welcome + a come-back), installed as DRAFTS the
+    // tenant switches on. The transactional booking sends — confirmation, reminder,
+    // reschedule, cancellation, waitlist — are platform KEYED defaults, so they are covered
+    // on email-module activation and are deliberately NOT duplicated here.
+    emails,
+    sequences: [],
+
+    // The composed distinct site (frame + Home + Book + About + Contact) in the bespoke
+    // theme, fully stamped.
+    site,
 };
 
 export default blueprint;

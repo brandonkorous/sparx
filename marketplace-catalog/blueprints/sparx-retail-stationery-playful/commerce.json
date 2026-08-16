@@ -1,579 +1,686 @@
 {
-  "categories": [
-    {
-      "handle": "notebooks",
-      "name": "Notebooks",
-      "description": "Bright notebooks in every colour.",
-      "featured": true
-    },
-    {
-      "handle": "pens-stickers",
-      "name": "Pens & stickers",
-      "description": "Gel pens, stickers and pins.",
-      "featured": true
-    },
-    {
-      "handle": "cards-gifts",
-      "name": "Cards & gifts",
-      "description": "Cards, washi and gift bundles.",
-      "featured": true
-    },
-    {
-      "handle": "desk",
-      "name": "Desk",
-      "description": "Calendars, sticky notes and desk joy.",
-      "featured": true
-    }
-  ],
-  "collections": [
-    {
-      "handle": "new-drops",
-      "name": "Fresh drops",
-      "description": "The newest bright things to land.",
-      "type": "manual",
-      "featured": true,
-      "productHandles": [
-        "colour-pop-notebook",
-        "gel-pen-set",
-        "sticker-pack",
-        "enamel-pin",
-        "desk-calendar"
-      ]
-    },
-    {
-      "handle": "best-sellers",
-      "name": "Best sellers",
-      "description": "The desk staples everyone comes back for.",
-      "type": "manual",
-      "featured": true,
-      "productHandles": [
-        "colour-pop-notebook",
-        "pocket-notebook-trio",
-        "gel-pen-set",
-        "sticky-note-cube",
-        "happy-desk-bundle"
-      ]
-    },
-    {
-      "handle": "colour-crew",
-      "name": "The colour crew",
-      "description": "The brightest stuff we make.",
-      "type": "manual",
-      "featured": false,
-      "productHandles": [
-        "colour-pop-notebook",
-        "pocket-notebook-trio",
-        "gel-pen-set",
-        "sticker-pack",
-        "sticky-note-cube",
-        "washi-tape-set"
-      ]
-    },
-    {
-      "handle": "desk-basics",
-      "name": "Desk basics",
-      "description": "Everything for a desk you actually like.",
-      "type": "manual",
-      "featured": false,
-      "productHandles": ["pocket-notebook-trio", "desk-calendar", "sticky-note-cube"]
-    },
-    {
-      "handle": "gift-it",
-      "name": "Gift it",
-      "description": "Little presents that always land.",
-      "type": "manual",
-      "featured": false,
-      "productHandles": [
-        "sticker-pack",
-        "enamel-pin",
-        "greeting-card-set",
-        "washi-tape-set",
-        "happy-desk-bundle"
-      ]
-    }
-  ],
-  "products": [
-    {
-      "handle": "colour-pop-notebook",
-      "title": "Colour-Pop Notebook",
-      "description": "Our hero notebook — a chunky A5 with a bright, wipe-clean cover and 160 pages of smooth 100gsm dot-grid stock that takes a gel pen or a fountain pen without bleeding through. Lies flat, rounded corners that don’t get bashed, and an elastic in a matching colour. The one that makes you want to fill it.",
-      "status": "active",
-      "productType": "Notebook",
-      "vendor": "Pencil Club",
-      "tags": ["notebook", "dot-grid", "a5", "colourful"],
-      "categoryHandles": ["notebooks"],
-      "collectionHandles": ["new-drops", "best-sellers", "colour-crew"],
-      "seoTitle": "Colour-Pop Notebook — bright A5 dot-grid notebook | Pencil Club",
-      "seoDescription": "A chunky A5 dot-grid notebook with a bright wipe-clean cover and smooth 100gsm paper. Sunshine, Bubblegum, Mint or Grape.",
-      "options": [
+    "categories": [
         {
-          "name": "Colour",
-          "displayType": "swatch",
-          "values": [
-            {
-              "value": "Sunshine"
-            },
-            {
-              "value": "Bubblegum"
-            },
-            {
-              "value": "Mint"
-            },
-            {
-              "value": "Grape"
-            }
-          ]
-        }
-      ],
-      "variants": [
-        {
-          "sku": "PC-NB-A5-SUN",
-          "priceCents": 1600,
-          "isDefault": true,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Colour": "Sunshine"
-          }
+            "handle": "notebooks",
+            "name": "Notebooks",
+            "description": "Bright notebooks in every color.",
+            "featured": true
         },
         {
-          "sku": "PC-NB-A5-BUB",
-          "priceCents": 1600,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Colour": "Bubblegum"
-          }
+            "handle": "pens-stickers",
+            "name": "Pens & stickers",
+            "description": "Gel pens, stickers and pins.",
+            "featured": true
         },
         {
-          "sku": "PC-NB-A5-MIN",
-          "priceCents": 1600,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Colour": "Mint"
-          }
+            "handle": "cards-gifts",
+            "name": "Cards & gifts",
+            "description": "Cards, washi and gift bundles.",
+            "featured": true
         },
         {
-          "sku": "PC-NB-A5-GRP",
-          "priceCents": 1600,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Colour": "Grape"
-          }
+            "handle": "desk",
+            "name": "Desk",
+            "description": "Calendars, sticky notes and desk joy.",
+            "featured": true
         }
-      ],
-      "images": [
+    ],
+    "collections": [
         {
-          "assetId": "prod-colour-notebook",
-          "isPrimary": true,
-          "alt": "A colour-pop A5 notebook with a bright cover"
-        }
-      ]
-    },
-    {
-      "handle": "pocket-notebook-trio",
-      "title": "Pocket Notebook Trio",
-      "description": "Three slim pocket notebooks that live in a bag, a pocket or a glovebox — the place a random thought actually gets caught. Forty-eight pages each of the same smooth stock as the big one, in three colours that make them easy to tell apart. Small, cheap enough to actually use, and far too cute to leave in the shop.",
-      "status": "active",
-      "productType": "Notebook",
-      "vendor": "Pencil Club",
-      "tags": ["notebook", "pocket", "set", "colourful"],
-      "categoryHandles": ["notebooks"],
-      "collectionHandles": ["best-sellers", "colour-crew", "desk-basics"],
-      "seoTitle": "Pocket Notebook Trio — bright pocket notebooks | Pencil Club",
-      "seoDescription": "A set of three slim pocket notebooks in bright colours, 48 pages each. Sunshine, Bubblegum, Mint or Grape.",
-      "options": [
-        {
-          "name": "Colour",
-          "displayType": "swatch",
-          "values": [
-            {
-              "value": "Sunshine"
-            },
-            {
-              "value": "Bubblegum"
-            },
-            {
-              "value": "Mint"
-            },
-            {
-              "value": "Grape"
-            }
-          ]
-        }
-      ],
-      "variants": [
-        {
-          "sku": "PC-NB-PKT-SUN",
-          "priceCents": 1200,
-          "isDefault": true,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Colour": "Sunshine"
-          }
+            "handle": "new-drops",
+            "name": "Fresh drops",
+            "description": "The newest bright things to land.",
+            "type": "manual",
+            "featured": true,
+            "productHandles": [
+                "color-pop-notebook",
+                "gel-pen-set",
+                "sticker-pack",
+                "enamel-pin",
+                "desk-calendar"
+            ]
         },
         {
-          "sku": "PC-NB-PKT-BUB",
-          "priceCents": 1200,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Colour": "Bubblegum"
-          }
+            "handle": "best-sellers",
+            "name": "Best sellers",
+            "description": "The desk staples everyone comes back for.",
+            "type": "manual",
+            "featured": true,
+            "productHandles": [
+                "color-pop-notebook",
+                "pocket-notebook-trio",
+                "gel-pen-set",
+                "sticky-note-cube",
+                "happy-desk-bundle"
+            ]
         },
         {
-          "sku": "PC-NB-PKT-MIN",
-          "priceCents": 1200,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Colour": "Mint"
-          }
+            "handle": "color-crew",
+            "name": "The color crew",
+            "description": "The brightest stuff we make.",
+            "type": "manual",
+            "featured": false,
+            "productHandles": [
+                "color-pop-notebook",
+                "pocket-notebook-trio",
+                "gel-pen-set",
+                "sticker-pack",
+                "sticky-note-cube",
+                "washi-tape-set"
+            ]
         },
         {
-          "sku": "PC-NB-PKT-GRP",
-          "priceCents": 1200,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Colour": "Grape"
-          }
-        }
-      ],
-      "images": [
-        {
-          "assetId": "prod-pocket-trio",
-          "isPrimary": true,
-          "alt": "A trio of small pocket notebooks in bright colours"
-        }
-      ]
-    },
-    {
-      "handle": "gel-pen-set",
-      "title": "Gel Pen Set of Twelve",
-      "description": "A dozen gel pens in a rainbow that actually looks like a rainbow — smooth 0.7mm rollers that lay down bold, glossy colour and dry fast enough that lefties don’t smudge. No skipping, no scratchy start, no sad muddy shades. The set that turns a to-do list into a small art project.",
-      "status": "active",
-      "productType": "Pens",
-      "vendor": "Pencil Club",
-      "tags": ["pens", "gel-pen", "set", "colourful"],
-      "categoryHandles": ["pens-stickers"],
-      "collectionHandles": ["new-drops", "best-sellers", "colour-crew"],
-      "seoTitle": "Gel Pen Set of Twelve — rainbow gel pens | Pencil Club",
-      "seoDescription": "A set of twelve smooth 0.7mm gel pens in bold, fast-drying rainbow colours. No skipping, no smudging.",
-      "variants": [
-        {
-          "sku": "PC-PEN-GEL12",
-          "priceCents": 1400,
-          "isDefault": true,
-          "inventoryPolicy": "continue"
-        }
-      ],
-      "images": [
-        {
-          "assetId": "prod-gel-pens",
-          "isPrimary": true,
-          "alt": "A set of twelve rainbow gel pens"
-        }
-      ]
-    },
-    {
-      "handle": "sticker-pack",
-      "title": "Sticker Pack",
-      "description": "A fat pack of die-cut vinyl stickers for laptops, water bottles, planners and anything that’ll hold still. Waterproof, peel-clean, and just the right amount of silly. Pick a theme and get a mix you’ll actually want to use — no filler, no lame ones you leave on the sheet.",
-      "status": "active",
-      "productType": "Stickers",
-      "vendor": "Pencil Club",
-      "tags": ["stickers", "vinyl", "fun"],
-      "categoryHandles": ["pens-stickers"],
-      "collectionHandles": ["new-drops", "colour-crew", "gift-it"],
-      "seoTitle": "Sticker Pack — die-cut vinyl stickers | Pencil Club",
-      "seoDescription": "A pack of waterproof die-cut vinyl stickers in a fun mix. Choose Happy Faces, Fruit Salad or Outer Space.",
-      "options": [
-        {
-          "name": "Theme",
-          "displayType": "dropdown",
-          "values": [
-            {
-              "value": "Happy Faces"
-            },
-            {
-              "value": "Fruit Salad"
-            },
-            {
-              "value": "Outer Space"
-            }
-          ]
-        }
-      ],
-      "variants": [
-        {
-          "sku": "PC-STK-FACE",
-          "priceCents": 700,
-          "isDefault": true,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Theme": "Happy Faces"
-          }
+            "handle": "desk-basics",
+            "name": "Desk basics",
+            "description": "Everything for a desk you actually like.",
+            "type": "manual",
+            "featured": false,
+            "productHandles": [
+                "pocket-notebook-trio",
+                "desk-calendar",
+                "sticky-note-cube"
+            ]
         },
         {
-          "sku": "PC-STK-FRUIT",
-          "priceCents": 700,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Theme": "Fruit Salad"
-          }
+            "handle": "gift-it",
+            "name": "Gift it",
+            "description": "Little presents that always land.",
+            "type": "manual",
+            "featured": false,
+            "productHandles": [
+                "sticker-pack",
+                "enamel-pin",
+                "greeting-card-set",
+                "washi-tape-set",
+                "happy-desk-bundle"
+            ]
+        }
+    ],
+    "products": [
+        {
+            "handle": "color-pop-notebook",
+            "title": "Color-Pop Notebook",
+            "description": "Our hero notebook — a chunky A5 with a bright, wipe-clean cover and 160 pages of smooth 100gsm dot-grid stock that takes a gel pen or a fountain pen without bleeding through. Lies flat, rounded corners that don’t get bashed, and an elastic in a matching color. The one that makes you want to fill it.",
+            "status": "active",
+            "productType": "Notebook",
+            "vendor": "Pencil Club",
+            "tags": [
+                "notebook",
+                "dot-grid",
+                "a5",
+                "colorful"
+            ],
+            "categoryHandles": [
+                "notebooks"
+            ],
+            "collectionHandles": [
+                "new-drops",
+                "best-sellers",
+                "color-crew"
+            ],
+            "seoTitle": "Color-Pop Notebook — bright A5 dot-grid notebook | Pencil Club",
+            "seoDescription": "A chunky A5 dot-grid notebook with a bright wipe-clean cover and smooth 100gsm paper. Sunshine, Bubblegum, Mint or Grape.",
+            "options": [
+                {
+                    "name": "Color",
+                    "displayType": "swatch",
+                    "values": [
+                        {
+                            "value": "Sunshine"
+                        },
+                        {
+                            "value": "Bubblegum"
+                        },
+                        {
+                            "value": "Mint"
+                        },
+                        {
+                            "value": "Grape"
+                        }
+                    ]
+                }
+            ],
+            "variants": [
+                {
+                    "sku": "PC-NB-A5-SUN",
+                    "priceCents": 1600,
+                    "isDefault": true,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Sunshine"
+                    }
+                },
+                {
+                    "sku": "PC-NB-A5-BUB",
+                    "priceCents": 1600,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Bubblegum"
+                    }
+                },
+                {
+                    "sku": "PC-NB-A5-MIN",
+                    "priceCents": 1600,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Mint"
+                    }
+                },
+                {
+                    "sku": "PC-NB-A5-GRP",
+                    "priceCents": 1600,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Grape"
+                    }
+                }
+            ],
+            "images": [
+                {
+                    "assetId": "prod-color-notebook",
+                    "isPrimary": true,
+                    "alt": "A color-pop A5 notebook with a bright cover"
+                }
+            ]
         },
         {
-          "sku": "PC-STK-SPACE",
-          "priceCents": 700,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Theme": "Outer Space"
-          }
-        }
-      ],
-      "images": [
-        {
-          "assetId": "prod-sticker-pack",
-          "isPrimary": true,
-          "alt": "A pack of playful die-cut stickers"
-        }
-      ]
-    },
-    {
-      "handle": "enamel-pin",
-      "title": "Enamel Pin",
-      "description": "A shiny hard-enamel pin for a jacket, a bag or a lanyard — bright colour, a proper rubber clutch that won’t bail on you, and a shape that makes people smile in the queue. Tiny, collectible, and the easiest little “I saw this and thought of you” there is.",
-      "status": "active",
-      "productType": "Pin",
-      "vendor": "Pencil Club",
-      "tags": ["pin", "enamel", "gift", "fun"],
-      "categoryHandles": ["pens-stickers"],
-      "collectionHandles": ["new-drops", "gift-it"],
-      "seoTitle": "Enamel Pin — hard-enamel pin | Pencil Club",
-      "seoDescription": "A bright hard-enamel pin with a secure rubber clutch. Choose Rainbow, Lucky Star or Little Cloud.",
-      "options": [
-        {
-          "name": "Design",
-          "displayType": "dropdown",
-          "values": [
-            {
-              "value": "Rainbow"
-            },
-            {
-              "value": "Lucky Star"
-            },
-            {
-              "value": "Little Cloud"
-            }
-          ]
-        }
-      ],
-      "variants": [
-        {
-          "sku": "PC-PIN-RBOW",
-          "priceCents": 900,
-          "isDefault": true,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Design": "Rainbow"
-          }
+            "handle": "pocket-notebook-trio",
+            "title": "Pocket Notebook Trio",
+            "description": "Three slim pocket notebooks that live in a bag, a pocket or a glovebox — the place a random thought actually gets caught. Forty-eight pages each of the same smooth stock as the big one, in three colors that make them easy to tell apart. Small, cheap enough to actually use, and far too cute to leave in the shop.",
+            "status": "active",
+            "productType": "Notebook",
+            "vendor": "Pencil Club",
+            "tags": [
+                "notebook",
+                "pocket",
+                "set",
+                "colorful"
+            ],
+            "categoryHandles": [
+                "notebooks"
+            ],
+            "collectionHandles": [
+                "best-sellers",
+                "color-crew",
+                "desk-basics"
+            ],
+            "seoTitle": "Pocket Notebook Trio — bright pocket notebooks | Pencil Club",
+            "seoDescription": "A set of three slim pocket notebooks in bright colors, 48 pages each. Sunshine, Bubblegum, Mint or Grape.",
+            "options": [
+                {
+                    "name": "Color",
+                    "displayType": "swatch",
+                    "values": [
+                        {
+                            "value": "Sunshine"
+                        },
+                        {
+                            "value": "Bubblegum"
+                        },
+                        {
+                            "value": "Mint"
+                        },
+                        {
+                            "value": "Grape"
+                        }
+                    ]
+                }
+            ],
+            "variants": [
+                {
+                    "sku": "PC-NB-PKT-SUN",
+                    "priceCents": 1200,
+                    "isDefault": true,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Sunshine"
+                    }
+                },
+                {
+                    "sku": "PC-NB-PKT-BUB",
+                    "priceCents": 1200,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Bubblegum"
+                    }
+                },
+                {
+                    "sku": "PC-NB-PKT-MIN",
+                    "priceCents": 1200,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Mint"
+                    }
+                },
+                {
+                    "sku": "PC-NB-PKT-GRP",
+                    "priceCents": 1200,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Grape"
+                    }
+                }
+            ],
+            "images": [
+                {
+                    "assetId": "prod-pocket-trio",
+                    "isPrimary": true,
+                    "alt": "A trio of small pocket notebooks in bright colors"
+                }
+            ]
         },
         {
-          "sku": "PC-PIN-STAR",
-          "priceCents": 900,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Design": "Lucky Star"
-          }
+            "handle": "gel-pen-set",
+            "title": "Gel Pen Set of Twelve",
+            "description": "A dozen gel pens in a rainbow that actually looks like a rainbow — smooth 0.7mm rollers that lay down bold, glossy color and dry fast enough that lefties don’t smudge. No skipping, no scratchy start, no sad muddy shades. The set that turns a to-do list into a small art project.",
+            "status": "active",
+            "productType": "Pens",
+            "vendor": "Pencil Club",
+            "tags": [
+                "pens",
+                "gel-pen",
+                "set",
+                "colorful"
+            ],
+            "categoryHandles": [
+                "pens-stickers"
+            ],
+            "collectionHandles": [
+                "new-drops",
+                "best-sellers",
+                "color-crew"
+            ],
+            "seoTitle": "Gel Pen Set of Twelve — rainbow gel pens | Pencil Club",
+            "seoDescription": "A set of twelve smooth 0.7mm gel pens in bold, fast-drying rainbow colors. No skipping, no smudging.",
+            "variants": [
+                {
+                    "sku": "PC-PEN-GEL12",
+                    "priceCents": 1400,
+                    "isDefault": true,
+                    "inventoryPolicy": "continue"
+                }
+            ],
+            "images": [
+                {
+                    "assetId": "prod-gel-pens",
+                    "isPrimary": true,
+                    "alt": "A set of twelve rainbow gel pens"
+                }
+            ]
         },
         {
-          "sku": "PC-PIN-CLOUD",
-          "priceCents": 900,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Design": "Little Cloud"
-          }
-        }
-      ],
-      "images": [
-        {
-          "assetId": "prod-enamel-pin",
-          "isPrimary": true,
-          "alt": "A shiny enamel pin in a fun shape"
-        }
-      ]
-    },
-    {
-      "handle": "desk-calendar",
-      "title": "Standing Desk Calendar",
-      "description": "A cheerful standing calendar that turns the whole year into a bit of colour on your desk — one bright, illustrated spread a month, a fold-out easel back that actually stands up, and big date boxes with room to scribble. Undated? No — properly dated, so you can just flip and go.",
-      "status": "active",
-      "productType": "Calendar",
-      "vendor": "Pencil Club",
-      "tags": ["calendar", "desk", "colourful"],
-      "categoryHandles": ["desk"],
-      "collectionHandles": ["new-drops", "desk-basics"],
-      "seoTitle": "Standing Desk Calendar — illustrated desk calendar | Pencil Club",
-      "seoDescription": "A cheerful standing desk calendar with a bright illustrated spread each month, big date boxes and a fold-out easel back.",
-      "variants": [
-        {
-          "sku": "PC-CAL-DESK",
-          "priceCents": 1500,
-          "isDefault": true,
-          "inventoryPolicy": "continue"
-        }
-      ],
-      "images": [
-        {
-          "assetId": "prod-desk-calendar",
-          "isPrimary": true,
-          "alt": "A standing desk calendar with colourful months"
-        }
-      ]
-    },
-    {
-      "handle": "sticky-note-cube",
-      "title": "Rainbow Sticky-Note Cube",
-      "description": "A chunky brick of five hundred sticky notes in a full rainbow stack — the reminder that’s impossible to lose because it’s the brightest thing on the desk. Sticks firm, peels clean, and doesn’t curl up at the corner. Flag a page, leave a note, build a very small confetti pile. Desk joy, by the block.",
-      "status": "active",
-      "productType": "Sticky notes",
-      "vendor": "Pencil Club",
-      "tags": ["sticky-notes", "desk", "colourful"],
-      "categoryHandles": ["desk"],
-      "collectionHandles": ["best-sellers", "desk-basics", "colour-crew"],
-      "seoTitle": "Rainbow Sticky-Note Cube — 500 bright sticky notes | Pencil Club",
-      "seoDescription": "A chunky cube of 500 rainbow sticky notes that stick firm and peel clean. The brightest reminder on the desk.",
-      "variants": [
-        {
-          "sku": "PC-STK-CUBE",
-          "priceCents": 800,
-          "isDefault": true,
-          "inventoryPolicy": "continue"
-        }
-      ],
-      "images": [
-        {
-          "assetId": "prod-sticky-cube",
-          "isPrimary": true,
-          "alt": "A chunky cube of rainbow sticky notes"
-        }
-      ]
-    },
-    {
-      "handle": "greeting-card-set",
-      "title": "Greeting Card Set of Eight",
-      "description": "Eight bright, cheerful cards for the moments that don’t come with a printed line — a well-done, a thinking-of-you, a happy-everything. Blank inside so the words are yours, printed on thick recycled board with a colour that pops, and eight matching envelopes. The box to keep in a drawer for when you need one, fast.",
-      "status": "active",
-      "productType": "Cards",
-      "vendor": "Pencil Club",
-      "tags": ["cards", "greeting", "gift", "set"],
-      "categoryHandles": ["cards-gifts"],
-      "collectionHandles": ["gift-it", "colour-crew"],
-      "seoTitle": "Greeting Card Set of Eight — bright blank cards | Pencil Club",
-      "seoDescription": "A boxed set of eight bright, blank greeting cards on thick recycled board with matching envelopes. For every everyday occasion.",
-      "variants": [
-        {
-          "sku": "PC-CARD-SET8",
-          "priceCents": 1600,
-          "isDefault": true,
-          "inventoryPolicy": "continue"
-        }
-      ],
-      "images": [
-        {
-          "assetId": "prod-greeting-cards",
-          "isPrimary": true,
-          "alt": "A boxed set of bright greeting cards with envelopes"
-        }
-      ]
-    },
-    {
-      "handle": "washi-tape-set",
-      "title": "Washi Tape Set",
-      "description": "Five rolls of low-tack Japanese paper tape for the small joys of a page — flagging a spread, taping in a ticket, or just brightening a boring corner. Writes over cleanly, tears by hand, peels off without a fight. Sold as a set that genuinely goes together, in colours that play nicely with everything else here.",
-      "status": "active",
-      "productType": "Accessory",
-      "vendor": "Pencil Club",
-      "tags": ["washi", "tape", "set", "colourful"],
-      "categoryHandles": ["cards-gifts"],
-      "collectionHandles": ["colour-crew", "gift-it"],
-      "seoTitle": "Washi Tape Set — Japanese paper tape | Pencil Club",
-      "seoDescription": "A set of five low-tack washi paper tapes that write over cleanly, tear by hand and peel off without a fight. Brights, Pastels or Mono.",
-      "options": [
-        {
-          "name": "Colour",
-          "displayType": "swatch",
-          "values": [
-            {
-              "value": "Brights"
-            },
-            {
-              "value": "Pastels"
-            },
-            {
-              "value": "Mono"
-            }
-          ]
-        }
-      ],
-      "variants": [
-        {
-          "sku": "PC-WASHI-BRT",
-          "priceCents": 1100,
-          "isDefault": true,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Colour": "Brights"
-          }
+            "handle": "sticker-pack",
+            "title": "Sticker Pack",
+            "description": "A fat pack of die-cut vinyl stickers for laptops, water bottles, planners and anything that’ll hold still. Waterproof, peel-clean, and just the right amount of silly. Pick a theme and get a mix you’ll actually want to use — no filler, no lame ones you leave on the sheet.",
+            "status": "active",
+            "productType": "Stickers",
+            "vendor": "Pencil Club",
+            "tags": [
+                "stickers",
+                "vinyl",
+                "fun"
+            ],
+            "categoryHandles": [
+                "pens-stickers"
+            ],
+            "collectionHandles": [
+                "new-drops",
+                "color-crew",
+                "gift-it"
+            ],
+            "seoTitle": "Sticker Pack — die-cut vinyl stickers | Pencil Club",
+            "seoDescription": "A pack of waterproof die-cut vinyl stickers in a fun mix. Choose Happy Faces, Fruit Salad or Outer Space.",
+            "options": [
+                {
+                    "name": "Theme",
+                    "displayType": "dropdown",
+                    "values": [
+                        {
+                            "value": "Happy Faces"
+                        },
+                        {
+                            "value": "Fruit Salad"
+                        },
+                        {
+                            "value": "Outer Space"
+                        }
+                    ]
+                }
+            ],
+            "variants": [
+                {
+                    "sku": "PC-STK-FACE",
+                    "priceCents": 700,
+                    "isDefault": true,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Theme": "Happy Faces"
+                    }
+                },
+                {
+                    "sku": "PC-STK-FRUIT",
+                    "priceCents": 700,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Theme": "Fruit Salad"
+                    }
+                },
+                {
+                    "sku": "PC-STK-SPACE",
+                    "priceCents": 700,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Theme": "Outer Space"
+                    }
+                }
+            ],
+            "images": [
+                {
+                    "assetId": "prod-sticker-pack",
+                    "isPrimary": true,
+                    "alt": "A pack of playful die-cut stickers"
+                }
+            ]
         },
         {
-          "sku": "PC-WASHI-PAS",
-          "priceCents": 1100,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Colour": "Pastels"
-          }
+            "handle": "enamel-pin",
+            "title": "Enamel Pin",
+            "description": "A shiny hard-enamel pin for a jacket, a bag or a lanyard — bright color, a proper rubber clutch that won’t bail on you, and a shape that makes people smile in the queue. Tiny, collectible, and the easiest little “I saw this and thought of you” there is.",
+            "status": "active",
+            "productType": "Pin",
+            "vendor": "Pencil Club",
+            "tags": [
+                "pin",
+                "enamel",
+                "gift",
+                "fun"
+            ],
+            "categoryHandles": [
+                "pens-stickers"
+            ],
+            "collectionHandles": [
+                "new-drops",
+                "gift-it"
+            ],
+            "seoTitle": "Enamel Pin — hard-enamel pin | Pencil Club",
+            "seoDescription": "A bright hard-enamel pin with a secure rubber clutch. Choose Rainbow, Lucky Star or Little Cloud.",
+            "options": [
+                {
+                    "name": "Design",
+                    "displayType": "dropdown",
+                    "values": [
+                        {
+                            "value": "Rainbow"
+                        },
+                        {
+                            "value": "Lucky Star"
+                        },
+                        {
+                            "value": "Little Cloud"
+                        }
+                    ]
+                }
+            ],
+            "variants": [
+                {
+                    "sku": "PC-PIN-RBOW",
+                    "priceCents": 900,
+                    "isDefault": true,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Design": "Rainbow"
+                    }
+                },
+                {
+                    "sku": "PC-PIN-STAR",
+                    "priceCents": 900,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Design": "Lucky Star"
+                    }
+                },
+                {
+                    "sku": "PC-PIN-CLOUD",
+                    "priceCents": 900,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Design": "Little Cloud"
+                    }
+                }
+            ],
+            "images": [
+                {
+                    "assetId": "prod-enamel-pin",
+                    "isPrimary": true,
+                    "alt": "A shiny enamel pin in a fun shape"
+                }
+            ]
         },
         {
-          "sku": "PC-WASHI-MON",
-          "priceCents": 1100,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Colour": "Mono"
-          }
-        }
-      ],
-      "images": [
+            "handle": "desk-calendar",
+            "title": "Standing Desk Calendar",
+            "description": "A cheerful standing calendar that turns the whole year into a bit of color on your desk — one bright, illustrated spread a month, a fold-out easel back that actually stands up, and big date boxes with room to scribble. Undated? No — properly dated, so you can just flip and go.",
+            "status": "active",
+            "productType": "Calendar",
+            "vendor": "Pencil Club",
+            "tags": [
+                "calendar",
+                "desk",
+                "colorful"
+            ],
+            "categoryHandles": [
+                "desk"
+            ],
+            "collectionHandles": [
+                "new-drops",
+                "desk-basics"
+            ],
+            "seoTitle": "Standing Desk Calendar — illustrated desk calendar | Pencil Club",
+            "seoDescription": "A cheerful standing desk calendar with a bright illustrated spread each month, big date boxes and a fold-out easel back.",
+            "variants": [
+                {
+                    "sku": "PC-CAL-DESK",
+                    "priceCents": 1500,
+                    "isDefault": true,
+                    "inventoryPolicy": "continue"
+                }
+            ],
+            "images": [
+                {
+                    "assetId": "prod-desk-calendar",
+                    "isPrimary": true,
+                    "alt": "A standing desk calendar with colorful months"
+                }
+            ]
+        },
         {
-          "assetId": "prod-washi",
-          "isPrimary": true,
-          "alt": "A set of patterned washi tape rolls in bright colours"
-        }
-      ]
-    },
-    {
-      "handle": "happy-desk-bundle",
-      "title": "The Happy Desk Bundle",
-      "description": "The whole cheer-up in one box — a Colour-Pop Notebook, the twelve gel pens, a sticker pack and a rainbow sticky-note cube, wrapped and ready to give. It’s what we reach for when someone “just needs a little something”: everything to make a desk fun, and nothing to figure out. Add a note at checkout and we’ll write it in.",
-      "status": "active",
-      "productType": "Gift set",
-      "vendor": "Pencil Club",
-      "tags": ["gift", "bundle", "set", "colourful"],
-      "categoryHandles": ["cards-gifts"],
-      "collectionHandles": ["gift-it", "best-sellers", "new-drops"],
-      "seoTitle": "The Happy Desk Bundle — notebook, pens, stickers gift set | Pencil Club",
-      "seoDescription": "A boxed gift set: a Colour-Pop Notebook, twelve gel pens, a sticker pack and a rainbow sticky-note cube, wrapped and ready to give.",
-      "variants": [
+            "handle": "sticky-note-cube",
+            "title": "Rainbow Sticky-Note Cube",
+            "description": "A chunky brick of five hundred sticky notes in a full rainbow stack — the reminder that’s impossible to lose because it’s the brightest thing on the desk. Sticks firm, peels clean, and doesn’t curl up at the corner. Flag a page, leave a note, build a very small confetti pile. Desk joy, by the block.",
+            "status": "active",
+            "productType": "Sticky notes",
+            "vendor": "Pencil Club",
+            "tags": [
+                "sticky-notes",
+                "desk",
+                "colorful"
+            ],
+            "categoryHandles": [
+                "desk"
+            ],
+            "collectionHandles": [
+                "best-sellers",
+                "desk-basics",
+                "color-crew"
+            ],
+            "seoTitle": "Rainbow Sticky-Note Cube — 500 bright sticky notes | Pencil Club",
+            "seoDescription": "A chunky cube of 500 rainbow sticky notes that stick firm and peel clean. The brightest reminder on the desk.",
+            "variants": [
+                {
+                    "sku": "PC-STK-CUBE",
+                    "priceCents": 800,
+                    "isDefault": true,
+                    "inventoryPolicy": "continue"
+                }
+            ],
+            "images": [
+                {
+                    "assetId": "prod-sticky-cube",
+                    "isPrimary": true,
+                    "alt": "A chunky cube of rainbow sticky notes"
+                }
+            ]
+        },
         {
-          "sku": "PC-GIFT-DESK",
-          "priceCents": 4200,
-          "isDefault": true,
-          "inventoryPolicy": "continue"
-        }
-      ],
-      "images": [
+            "handle": "greeting-card-set",
+            "title": "Greeting Card Set of Eight",
+            "description": "Eight bright, cheerful cards for the moments that don’t come with a printed line — a well-done, a thinking-of-you, a happy-everything. Blank inside so the words are yours, printed on thick recycled board with a color that pops, and eight matching envelopes. The box to keep in a drawer for when you need one, fast.",
+            "status": "active",
+            "productType": "Cards",
+            "vendor": "Pencil Club",
+            "tags": [
+                "cards",
+                "greeting",
+                "gift",
+                "set"
+            ],
+            "categoryHandles": [
+                "cards-gifts"
+            ],
+            "collectionHandles": [
+                "gift-it",
+                "color-crew"
+            ],
+            "seoTitle": "Greeting Card Set of Eight — bright blank cards | Pencil Club",
+            "seoDescription": "A boxed set of eight bright, blank greeting cards on thick recycled board with matching envelopes. For every everyday occasion.",
+            "variants": [
+                {
+                    "sku": "PC-CARD-SET8",
+                    "priceCents": 1600,
+                    "isDefault": true,
+                    "inventoryPolicy": "continue"
+                }
+            ],
+            "images": [
+                {
+                    "assetId": "prod-greeting-cards",
+                    "isPrimary": true,
+                    "alt": "A boxed set of bright greeting cards with envelopes"
+                }
+            ]
+        },
         {
-          "assetId": "prod-gift-bundle",
-          "isPrimary": true,
-          "alt": "A happy-desk gift bundle of notebook, pens and stickers"
+            "handle": "washi-tape-set",
+            "title": "Washi Tape Set",
+            "description": "Five rolls of low-tack Japanese paper tape for the small joys of a page — flagging a spread, taping in a ticket, or just brightening a boring corner. Writes over cleanly, tears by hand, peels off without a fight. Sold as a set that genuinely goes together, in colors that play nicely with everything else here.",
+            "status": "active",
+            "productType": "Accessory",
+            "vendor": "Pencil Club",
+            "tags": [
+                "washi",
+                "tape",
+                "set",
+                "colorful"
+            ],
+            "categoryHandles": [
+                "cards-gifts"
+            ],
+            "collectionHandles": [
+                "color-crew",
+                "gift-it"
+            ],
+            "seoTitle": "Washi Tape Set — Japanese paper tape | Pencil Club",
+            "seoDescription": "A set of five low-tack washi paper tapes that write over cleanly, tear by hand and peel off without a fight. Brights, Pastels or Mono.",
+            "options": [
+                {
+                    "name": "Color",
+                    "displayType": "swatch",
+                    "values": [
+                        {
+                            "value": "Brights"
+                        },
+                        {
+                            "value": "Pastels"
+                        },
+                        {
+                            "value": "Mono"
+                        }
+                    ]
+                }
+            ],
+            "variants": [
+                {
+                    "sku": "PC-WASHI-BRT",
+                    "priceCents": 1100,
+                    "isDefault": true,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Brights"
+                    }
+                },
+                {
+                    "sku": "PC-WASHI-PAS",
+                    "priceCents": 1100,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Pastels"
+                    }
+                },
+                {
+                    "sku": "PC-WASHI-MON",
+                    "priceCents": 1100,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Mono"
+                    }
+                }
+            ],
+            "images": [
+                {
+                    "assetId": "prod-washi",
+                    "isPrimary": true,
+                    "alt": "A set of patterned washi tape rolls in bright colors"
+                }
+            ]
+        },
+        {
+            "handle": "happy-desk-bundle",
+            "title": "The Happy Desk Bundle",
+            "description": "The whole cheer-up in one box — a Color-Pop Notebook, the twelve gel pens, a sticker pack and a rainbow sticky-note cube, wrapped and ready to give. It’s what we reach for when someone “just needs a little something”: everything to make a desk fun, and nothing to figure out. Add a note at checkout and we’ll write it in.",
+            "status": "active",
+            "productType": "Gift set",
+            "vendor": "Pencil Club",
+            "tags": [
+                "gift",
+                "bundle",
+                "set",
+                "colorful"
+            ],
+            "categoryHandles": [
+                "cards-gifts"
+            ],
+            "collectionHandles": [
+                "gift-it",
+                "best-sellers",
+                "new-drops"
+            ],
+            "seoTitle": "The Happy Desk Bundle — notebook, pens, stickers gift set | Pencil Club",
+            "seoDescription": "A boxed gift set: a Color-Pop Notebook, twelve gel pens, a sticker pack and a rainbow sticky-note cube, wrapped and ready to give.",
+            "variants": [
+                {
+                    "sku": "PC-GIFT-DESK",
+                    "priceCents": 4200,
+                    "isDefault": true,
+                    "inventoryPolicy": "continue"
+                }
+            ],
+            "images": [
+                {
+                    "assetId": "prod-gift-bundle",
+                    "isPrimary": true,
+                    "alt": "A happy-desk gift bundle of notebook, pens and stickers"
+                }
+            ]
         }
-      ]
-    }
-  ]
+    ]
 }

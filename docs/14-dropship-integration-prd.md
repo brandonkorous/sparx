@@ -107,7 +107,7 @@ encodes whatever its order API needs into that SKU during `syncCatalog`: Printfu
 `sync_variant_id`; Printify uses a composite `"{productId}:{variantId}"`; DSers/Spocket use the
 supplier SKU directly.
 
-**Variant availability (per exact combo).** A POD supplier can mark an individual colour/size
+**Variant availability (per exact combo).** A POD supplier can mark an individual color/size
 combo temporarily unfulfillable while the merchant still _offers_ it — Printify's `is_available`
 (distinct from `is_enabled`, which is "merchant offers it at all"). `NormalizedProductVariant`
 carries an optional **`available`** flag for this (absent/`true` = orderable; `false` = the
@@ -116,7 +116,7 @@ supplier currently can't make it). The two flags map differently on import:
 - **`is_enabled: false`** → the variant is **dropped** at normalize (the merchant never offered it).
 - **`is_available: false`** → the variant is **kept** but imported with `inventoryPolicy: 'deny'`
   (and no stock rows), so the public PDP computes `inStock = false` and **greys out just that
-  combo** — the option pill goes disabled+struck-through, the colour swatch gets a diagonal slash.
+  combo** — the option pill goes disabled+struck-through, the color swatch gets a diagonal slash.
   A product is only flagged out of stock at the product level when **every** combo is unavailable.
 
 Re-sync (`/reimport`) re-applies the latest snapshot both ways: a combo that came back in stock is

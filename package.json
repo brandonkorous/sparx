@@ -33,7 +33,9 @@
     "db:seed": "pnpm --filter @sparx/db db:seed",
     "db:studio": "pnpm --filter @sparx/db db:studio",
     "clean": "turbo run clean && rm -rf node_modules",
-    "check:boundaries": "node scripts/check-boundaries.mjs"
+    "check:boundaries": "node scripts/check-boundaries.mjs",
+    "check:deletability": "node scripts/check-deletability.mjs",
+    "check:deletability:build": "node scripts/check-deletability.mjs --build"
   },
   "devDependencies": {
     "@eslint/js": "^9.18.0",

@@ -13,65 +13,65 @@ import assets from './assets.json' with { type: 'json' };
 import emails from './emails.json' with { type: 'json' };
 
 const blueprint = {
-  key: 'sparx-portfolio-developer',
-  version: '1.2.0',
-  name: 'sparx — Developer Portfolio',
-  summary:
-    'A hire-me portfolio for a creative developer / technologist: a mono terminal hero, selected builds as bordered cards that light up on hover, a “Now” band of what’s running, and case-study pages that walk what it is, the hard part, the stack and what shipped. Dressed in a near-black terminal theme with a monospace body, acid-green primary and electric-cyan accent. The site is its own proof of taste. Shipped as Kade Nakamura.',
-  vertical: 'content',
-  preview: 'media/preview.png',
-  requiresModules: ['builder', 'cms', 'email'],
+    key: 'sparx-portfolio-developer',
+    version: '1.2.0',
+    name: 'sparx — Developer Portfolio',
+    summary:
+        'A hire-me portfolio for a creative developer / technologist: a mono terminal hero, selected builds as bordered cards that light up on hover, a “Now” band of what’s running, and case-study pages that walk what it is, the hard part, the stack and what shipped. Dressed in a near-black terminal theme with a monospace body, acid-green primary and electric-cyan accent. The site is its own proof of taste. Shipped as Kade Nakamura.',
+    vertical: 'content',
+    preview: 'media/preview.png',
+    requiresModules: ['builder', 'cms', 'email'],
 
-  // Identity only (person's name + tagline + fonts + the theme's hex colours). The look
-  // itself rides site.theme + the theme decl below; the installing tenant rebrands the name.
-  brand: {
-    businessName: 'Kade Nakamura',
-    tagline: 'I build things that run in a browser.',
-    colors: {
-      primary: '#49de78',
-      primaryForeground: '#060e07',
-      accent: '#00d2d3',
-      secondary: '#b4cabd',
-    },
-    fonts: {
-      heading: 'Space Grotesk',
-      body: 'JetBrains Mono',
-    },
-  },
-
-  // The provisioned SiteTheme the installer creates + applies — the bespoke portfolio look
-  // as a tenant-editable saved theme (base preset = the template's own theme key, plus its
-  // brand snapshot).
-  theme: {
-    name: 'portfolio-developer',
-    basePresetKey: 'portfolio-developer',
-    presentation: {
-      v: 2,
-      containerWidth: '1152px',
-    },
+    // Identity only (person's name + tagline + fonts + the theme's hex colors). The look
+    // itself rides site.theme + the theme decl below; the installing tenant rebrands the name.
     brand: {
-      colorPrimary: '#49de78',
-      colorAccent: '#00d2d3',
-      colorSecondary: '#b4cabd',
-      fontHeading: 'Space Grotesk',
-      fontBody: 'JetBrains Mono',
-      tokens: {},
+        businessName: 'Kade Nakamura',
+        tagline: 'I build things that run in a browser.',
+        colors: {
+            primary: '#49de78',
+            primaryForeground: '#060e07',
+            accent: '#00d2d3',
+            secondary: '#b4cabd',
+        },
+        fonts: {
+            heading: 'Space Grotesk',
+            body: 'JetBrains Mono',
+        },
     },
-    apply: true,
-  },
 
-  assets,
-  contentTypes: [],
-  authors,
-  content,
+    // The provisioned SiteTheme the installer creates + applies — the bespoke portfolio look
+    // as a tenant-editable saved theme (base preset = the template's own theme key, plus its
+    // brand snapshot).
+    theme: {
+        name: 'portfolio-developer',
+        basePresetKey: 'portfolio-developer',
+        presentation: {
+            v: 2,
+            containerWidth: '1152px',
+        },
+        brand: {
+            colorPrimary: '#49de78',
+            colorAccent: '#00d2d3',
+            colorSecondary: '#b4cabd',
+            fontHeading: 'Space Grotesk',
+            fontBody: 'JetBrains Mono',
+            tokens: {},
+        },
+        apply: true,
+    },
 
-  // A portfolio has no commerce. The projects are CMS `blog_post` records (see content).
-  emails,
-  sequences: [],
+    assets,
+    contentTypes: [],
+    authors,
+    content,
 
-  // The composed distinct site (frame + home + a live /work index + about/contact + the
-  // /blog/:slug case-study template), in the bespoke theme, fully stamped.
-  site,
+    // A portfolio has no commerce. The projects are CMS `blog_post` records (see content).
+    emails,
+    sequences: [],
+
+    // The composed distinct site (frame + home + a live /work index + about/contact + the
+    // /blog/:slug case-study template), in the bespoke theme, fully stamped.
+    site,
 };
 
 export default blueprint;

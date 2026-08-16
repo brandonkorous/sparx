@@ -2,7 +2,7 @@
 
 // Look & feel — one pane, one theme document.
 //
-// Open it beside the page builder and change a colour: the page repaints as you
+// Open it beside the page builder and change a color: the page repaints as you
 // drag, because both panes read the same document out of the session. That is the
 // thing the old editor could not do, and it is the reason this pane exists at all
 // rather than being a mode inside another one.
@@ -36,7 +36,7 @@ export function ThemePaneSurface({ ctx }: { ctx: SurfaceContext }) {
     return (
       <div className="bg-base-200 flex h-full flex-col items-center justify-center gap-3 p-6 text-center">
         <p className="text-base-content">
-          Your site is using the colours from your business details. Pick a look to change how it
+          Your site is using the colors from your business details. Pick a look to change how it
           feels.
         </p>
         <ThemeLibrary appliedId={state.appliedId} openId={openId} onOpen={setOpenId} />

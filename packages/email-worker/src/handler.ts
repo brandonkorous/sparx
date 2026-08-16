@@ -27,7 +27,12 @@ import {
   renderTemplate,
 } from '@sparx/email';
 import { analyticsService, brandService } from '@sparx/email-platform';
-import { platformBrandIdentity } from '@wizeworks/brand-core';
+import { appOrigin } from '@sparx/links/server';
+import {
+  platformBrandIdentity,
+  platformFrom,
+  type PlatformBrandIdentity,
+} from '@wizeworks/brand-core';
 
 // The delivery gate lives in its own module — see the header there for why,
 // and for the four templates it silently dropped before it had a test.
@@ -71,6 +76,54 @@ export interface HandleOutcome {
 }
 
 /**
+ * WHICH PRODUCT is sending this, resolved from the tenant's `platform_brand`.
+ *
+ * `tenants` is the non-RLS dispatch row, so this reads on the plain client with
+ * no tenant context — the same property that lets a Stripe webhook resolve a
+ * tenant. Best-effort: a failed lookup speaks as the default brand rather than
+ * dropping the mail, because a queue that stops is worse than a wrong word.
+ */
+async function platformIdentity(tenantId: string, logger: Logger) {
+  try {
+    const row = await prisma.tenant.findUnique({
+      where: { id: tenantId },
+      select: { platformBrand: true },
+    });
+    return platformBrandIdentity(row?.platformBrand);
+  } catch (err) {
+    logger.warn({ err }, 'platform brand lookup failed — speaking as the default brand');
+    return platformBrandIdentity(null);
+  }
+}
+
+/** The `platform` overlay every send carries, branded or not.
+ *
+ *  It is NOT part of the tenant's brand and must not be conditioned on one: the
+ *  footer's legal line and the masthead wordmark state who WE are, so a fully
+ *  branded shop needs them exactly as much as an unbranded one does. Conflating
+ *  the two is what left "WizeWorks · sparx.works" under a Piggles invoice. */
+function platformOverlay(identity: PlatformBrandIdentity) {
+  return {
+    name: identity.name,
+    url: identity.siteUrl,
+    accentChars: identity.accentChars,
+    billingEmail: identity.billingEmail,
+    appUrl: consoleOrigin(identity.key),
+  };
+}
+
+/** `appOrigin` THROWS on an unconfigured production origin, which is right for a
+ *  link somebody is about to click and wrong for one decoration on an email that
+ *  otherwise delivers fine. Absent here means the template omits the link. */
+function consoleOrigin(brand: string): string | null {
+  try {
+    return appOrigin(brand);
+  } catch {
+    return null;
+  }
+}
+
+/**
  * The chrome for a tenant that has supplied no identity of its own.
  *
  * Which is most of them, early on — and until 2026-08-16 every one of those
@@ -82,23 +135,9 @@ export interface HandleOutcome {
  * not: what a brand-neutral platform email should look like is a design question
  * rather than a bug, and silently restyling every sparx email while fixing a
  * name would be smuggling one in. Tracked in piggles/docs/migration.
- *
- * `tenants` is the non-RLS dispatch row, so this reads on the plain client with
- * no tenant context — the same property that lets a Stripe webhook resolve a
- * tenant. Best-effort: a failed lookup renders the default rather than dropping
- * the mail, because a queue that stops is worse than a wrong word.
  */
-async function platformFallbackBrand(tenantId: string, logger: Logger) {
-  try {
-    const row = await prisma.tenant.findUnique({
-      where: { id: tenantId },
-      select: { platformBrand: true },
-    });
-    return { ...defaultBrand, siteName: platformBrandIdentity(row?.platformBrand).name };
-  } catch (err) {
-    logger.warn({ err }, 'platform brand lookup failed — rendering the default chrome');
-    return defaultBrand;
-  }
+function platformFallbackBrand(identity: PlatformBrandIdentity) {
+  return { ...defaultBrand, siteName: identity.name, platform: platformOverlay(identity) };
 }
 
 export function parseEvent(raw: unknown): EmailSendEvent | null {
@@ -114,11 +153,16 @@ export async function handle(event: EmailSendEvent, logger: Logger): Promise<Han
   });
 
   try {
+    // Resolved ONCE per send: the From's display name, the fallback chrome and
+    // the footer's legal line all state the same thing, and three lookups that
+    // could disagree is three ways for one email to name two companies.
+    const identity = await platformIdentity(event.tenantId, childLog);
+
     let rendered;
     if ('kind' in data) {
       // Pre-rendered — deliver as-is.
       rendered = {
-        from: data.from ?? defaultRawFrom(),
+        from: data.from ?? platformFrom(identity, defaultRawFrom()),
         to: data.to,
         replyTo: data.replyTo,
         subject: data.subject,
@@ -143,7 +187,12 @@ export async function handle(event: EmailSendEvent, logger: Logger): Promise<Han
         childLog.warn({ err: brandErr }, 'brand resolution failed — rendering with defaults');
       }
       rendered = await renderTemplate(data, {
-        brand: brand ?? (await platformFallbackBrand(event.tenantId, childLog)),
+        // The tenant's brand when they have one, but the PLATFORM overlay either
+        // way — see `platformOverlay`.
+        brand: brand
+          ? { ...brand, platform: platformOverlay(identity) }
+          : platformFallbackBrand(identity),
+        from: platformFrom(identity, defaultRawFrom()),
       });
     }
 
@@ -199,6 +248,9 @@ export async function handle(event: EmailSendEvent, logger: Logger): Promise<Han
   }
 }
 
+/** The platform's configured sending identity, before the per-brand name is put
+ *  in front of it (`platformFrom`). One Mailgun domain serves both brands, so
+ *  the ADDRESS is shared by construction and only the display name varies. */
 function defaultRawFrom(): string {
   return process.env.SPARX_EMAIL_FROM ?? 'sparx <noreply@sparx.email>';
 }

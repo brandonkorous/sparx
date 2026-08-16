@@ -28,7 +28,7 @@
 // Module, not neutral. This state is an INVITATION — open a record, pick a
 // batch, add the first variant — and it is the app's own hue that says which app
 // is inviting you. silica's EmptyState paints a 55%-faded base-content glyph and
-// takes no colour, so the tone is applied here, once, for the same reason it is
+// takes no color, so the tone is applied here, once, for the same reason it is
 // applied inside the other two: the caller passes its glyph, the component
 // decides what the state looks like.
 
@@ -37,33 +37,33 @@ import { EmptyState } from '@wizeworks/silicaui-react';
 import { hasStateArt, StateArt } from './state-art';
 
 export function PaneEmpty({
-  icon,
-  module,
-  title,
-  description,
-  actions,
+    icon,
+    module,
+    title,
+    description,
+    actions,
 }: {
-  /** The surface's own glyph, so the state still looks like the pane it is. */
-  icon?: ReactNode;
-  /** Which module's pane this is, so a brand with per-app artwork can draw the
-   *  right picture. */
-  module?: string;
-  title: ReactNode;
-  description?: ReactNode;
-  /** The way out — usually the thing that would fill this pane. */
-  actions?: ReactNode;
+    /** The surface's own glyph, so the state still looks like the pane it is. */
+    icon?: ReactNode;
+    /** Which module's pane this is, so a brand with per-app artwork can draw the
+     *  right picture. */
+    module?: string;
+    title: ReactNode;
+    description?: ReactNode;
+    /** The way out — usually the thing that would fill this pane. */
+    actions?: ReactNode;
 }) {
-  const branded = hasStateArt();
+    const branded = hasStateArt();
 
-  return (
-    <div className="flex h-full min-h-72 flex-col items-center justify-center gap-1 px-6 py-10">
-      <StateArt state="empty" module={module} />
-      <EmptyState
-        icon={branded ? undefined : icon ? <span className="text-module">{icon}</span> : undefined}
-        title={title}
-        description={description}
-        actions={actions}
-      />
-    </div>
-  );
+    return (
+        <div className="flex h-full min-h-72 flex-col items-center justify-center gap-1 px-6 py-10">
+            <StateArt state="empty" module={module} />
+            <EmptyState
+                icon={branded ? undefined : icon ? <span className="text-module">{icon}</span> : undefined}
+                title={title}
+                description={description}
+                actions={actions}
+            />
+        </div>
+    );
 }

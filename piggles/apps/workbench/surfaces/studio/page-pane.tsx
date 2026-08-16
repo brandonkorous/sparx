@@ -17,6 +17,7 @@ import { useDirtySource } from '../../lib/workbench/dirty';
 import { useStudioBinding } from '../../lib/studio/provider';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { PagesList } from './pages-list';
+import { OpenHistory, OpenPreview } from './open-history';
 import { SaveAsPiece } from './save-as-piece';
 import { usePageDocument, type PageDocumentState } from './use-page-document';
 
@@ -60,15 +61,17 @@ export function PagePaneSurface({ ctx }: { ctx: SurfaceContext }) {
 
   return (
     <DocumentProvider store={state.store}>
-      <PagePaneBody state={state} onTitle={(title) => ctx.setTitle(title)} />
+      <PagePaneBody ctx={ctx} state={state} onTitle={(title) => ctx.setTitle(title)} />
     </DocumentProvider>
   );
 }
 
 function PagePaneBody({
+  ctx,
   state,
   onTitle,
 }: {
+  ctx: SurfaceContext;
   state: PageDocumentState;
   onTitle: (title: string) => void;
 }) {
@@ -86,7 +89,7 @@ function PagePaneBody({
 
   return (
     <TreeBuilder
-      toolbar={<PageActions state={state} unsaved={unsaved} />}
+      toolbar={<PageActions ctx={ctx} state={state} unsaved={unsaved} />}
       statusBar={
         <PageStatus
           dirty={unsaved}
@@ -99,9 +102,19 @@ function PagePaneBody({
   );
 }
 
-function PageActions({ state, unsaved }: { state: PageDocumentState; unsaved: boolean }) {
+function PageActions({
+  ctx,
+  state,
+  unsaved,
+}: {
+  ctx: SurfaceContext;
+  state: PageDocumentState;
+  unsaved: boolean;
+}) {
   return (
     <>
+      <OpenPreview ctx={ctx} />
+      <OpenHistory ctx={ctx} />
       <SaveAsPiece />
       <Button
         size="sm"

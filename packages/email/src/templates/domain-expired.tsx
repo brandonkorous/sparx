@@ -6,6 +6,7 @@ import {
   EmailDisplayHeading,
   EmailFinePrint,
   EmailParagraph,
+  usePlatformName,
 } from '../components';
 
 export interface DomainExpiredEmailProps {
@@ -25,11 +26,12 @@ export function DomainExpiredEmail({
   expiredOnLabel,
   renewUrl,
 }: DomainExpiredEmailProps) {
+  const platform = usePlatformName();
   return (
     <PlatformEmailLayout
       preview={`${domainName} has expired — renew to keep your address`}
       footerLinks={[{ label: 'Domain settings', href: renewUrl }]}
-      footerReason={`You're receiving this because ${domainName} is registered through sparx.`}
+      footerReason={`You're receiving this because ${domainName} is registered through ${platform}.`}
     >
       <EmailDisplayHeading>Your domain has expired</EmailDisplayHeading>
 

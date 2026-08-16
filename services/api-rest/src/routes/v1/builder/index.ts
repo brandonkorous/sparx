@@ -15,6 +15,7 @@ import previewRoutes from './preview.js';
 import governanceRoutes from './governance.js';
 import archetypeRoutes from './archetypes.js';
 import analyticsRoutes from './analytics.js';
+import historyRoutes from './history.js';
 
 const builderRoutes: FastifyPluginAsync = async (app) => {
   await app.register(pageRoutes);
@@ -30,6 +31,7 @@ const builderRoutes: FastifyPluginAsync = async (app) => {
   await app.register(governanceRoutes);
   await app.register(archetypeRoutes);
   await app.register(analyticsRoutes);
+  await app.register(historyRoutes);
 };
 
 export default builderRoutes;

@@ -37,30 +37,30 @@ const blueprintsDir = join(catalog, 'blueprints');
 // the theme's stated intent rather than invented.
 type Vertical = 'retail' | 'content' | 'services';
 interface Desc {
-  audience: string;
-  vertical: Vertical;
+    audience: string;
+    vertical: Vertical;
 }
 const DESC: Record<string, Desc> = {
-  boutique: { audience: 'small fashion retail', vertical: 'retail' },
-  kitchen: { audience: 'restaurants, cafés, and bakeries', vertical: 'retail' },
-  cellar: { audience: 'wine, beer, spirits, and bars', vertical: 'retail' },
-  petal: { audience: 'florists, weddings, and events', vertical: 'retail' },
-  lodge: { audience: 'hotels, cabins, and short-stay rentals', vertical: 'services' },
-  workshop: { audience: 'fabrication, joinery, and general trade', vertical: 'services' },
-  garage: { audience: 'vehicle service, repair, and parts', vertical: 'services' },
-  field: { audience: 'farming, landscaping, and outdoor contracting', vertical: 'services' },
-  harbor: { audience: 'freight, haulage, and plant hire', vertical: 'services' },
-  hearth: { audience: 'home services, interiors, and furnishings', vertical: 'services' },
-  clinic: { audience: 'medical, dental, and wellness practices', vertical: 'services' },
-  salon: { audience: 'hair, beauty, nails, and spa', vertical: 'services' },
-  ledger: { audience: 'accountancy, law, and financial advice', vertical: 'services' },
-  summit: { audience: 'consulting and B2B agencies', vertical: 'services' },
-  academy: { audience: 'schools, tutoring, and training providers', vertical: 'services' },
-  studio: { audience: 'design, photography, and creative studios', vertical: 'services' },
-  gallery: { audience: 'artists, makers, and portfolios', vertical: 'content' },
-  press: { audience: 'publishers, newsletters, and blogs', vertical: 'content' },
-  stage: { audience: 'music, theatre, and ticketed events', vertical: 'services' },
-  signal: { audience: 'software, apps, and subscriptions', vertical: 'services' },
+    boutique: { audience: 'small fashion retail', vertical: 'retail' },
+    kitchen: { audience: 'restaurants, cafés, and bakeries', vertical: 'retail' },
+    cellar: { audience: 'wine, beer, spirits, and bars', vertical: 'retail' },
+    petal: { audience: 'florists, weddings, and events', vertical: 'retail' },
+    lodge: { audience: 'hotels, cabins, and short-stay rentals', vertical: 'services' },
+    workshop: { audience: 'fabrication, joinery, and general trade', vertical: 'services' },
+    garage: { audience: 'vehicle service, repair, and parts', vertical: 'services' },
+    field: { audience: 'farming, landscaping, and outdoor contracting', vertical: 'services' },
+    harbor: { audience: 'freight, haulage, and plant hire', vertical: 'services' },
+    hearth: { audience: 'home services, interiors, and furnishings', vertical: 'services' },
+    clinic: { audience: 'medical, dental, and wellness practices', vertical: 'services' },
+    salon: { audience: 'hair, beauty, nails, and spa', vertical: 'services' },
+    ledger: { audience: 'accountancy, law, and financial advice', vertical: 'services' },
+    summit: { audience: 'consulting and B2B agencies', vertical: 'services' },
+    academy: { audience: 'schools, tutoring, and training providers', vertical: 'services' },
+    studio: { audience: 'design, photography, and creative studios', vertical: 'services' },
+    gallery: { audience: 'artists, makers, and portfolios', vertical: 'content' },
+    press: { audience: 'publishers, newsletters, and blogs', vertical: 'content' },
+    stage: { audience: 'music, theatre, and ticketed events', vertical: 'services' },
+    signal: { audience: 'software, apps, and subscriptions', vertical: 'services' },
 };
 
 const title = (name: string): string => name.charAt(0).toUpperCase() + name.slice(1);
@@ -68,51 +68,51 @@ const title = (name: string): string => name.charAt(0).toUpperCase() + name.slic
 /** colorToHex, but fail-fast: a theme role that won't resolve to hex is a generator
  *  bug worth stopping on, not a silent `#000000`. */
 function hex(value: string | undefined, ctx: string): string {
-  const out = colorToHex(value ?? null);
-  if (!out) throw new Error(`gen-sparx-themed: ${ctx} did not resolve to hex (got ${value})`);
-  return out;
+    const out = colorToHex(value ?? null);
+    if (!out) throw new Error(`gen-sparx-themed: ${ctx} did not resolve to hex (got ${value})`);
+    return out;
 }
 
 /** The `businessName`/`fonts` families a theme states (falling back to silica's own
  *  default face names when a theme declares no type). */
 function faces(theme: Theme): { heading: string; body: string } {
-  const body = theme.fonts?.sans?.family ?? 'Inter';
-  const heading = theme.fonts?.head?.family ?? body;
-  return { heading, body };
+    const body = theme.fonts?.sans?.family ?? 'Inter';
+    const heading = theme.fonts?.head?.family ?? body;
+    return { heading, body };
 }
 
 /** The shared parts of the golden bundle, read once and cloned into every theme. */
 interface Golden {
-  brandTagline: string;
-  assets: unknown;
-  commerce: unknown;
-  content: unknown;
-  sequences: unknown;
-  emails: { name: string; publish: boolean }[];
-  emailDocs: unknown[];
-  site: Record<string, unknown>;
+    brandTagline: string;
+    assets: unknown;
+    commerce: unknown;
+    content: unknown;
+    sequences: unknown;
+    emails: { name: string; publish: boolean }[];
+    emailDocs: unknown[];
+    site: Record<string, unknown>;
 }
 
 async function loadGolden(): Promise<Golden> {
-  const mod = (await import(pathToFileURL(join(goldenDir, 'blueprint.ts')).href)) as {
-    default: Record<string, unknown>;
-  };
-  const bp = mod.default;
-  const emails = bp.emails as { name: string; publish: boolean; doc: unknown }[];
-  if (emails.length !== 2) {
-    throw new Error(`gen-sparx-themed: expected golden to ship 2 emails, found ${emails.length}`);
-  }
-  const brand = bp.brand as { tagline?: string };
-  return {
-    brandTagline: brand.tagline ?? 'Everything you sell, publish, and book — in one place.',
-    assets: bp.assets,
-    commerce: bp.commerce,
-    content: bp.content,
-    sequences: bp.sequences,
-    emails: emails.map((e) => ({ name: e.name, publish: e.publish })),
-    emailDocs: emails.map((e) => e.doc),
-    site: bp.site as Record<string, unknown>,
-  };
+    const mod = (await import(pathToFileURL(join(goldenDir, 'blueprint.ts')).href)) as {
+        default: Record<string, unknown>;
+    };
+    const bp = mod.default;
+    const emails = bp.emails as { name: string; publish: boolean; doc: unknown }[];
+    if (emails.length !== 2) {
+        throw new Error(`gen-sparx-themed: expected golden to ship 2 emails, found ${emails.length}`);
+    }
+    const brand = bp.brand as { tagline?: string };
+    return {
+        brandTagline: brand.tagline ?? 'Everything you sell, publish, and book — in one place.',
+        assets: bp.assets,
+        commerce: bp.commerce,
+        content: bp.content,
+        sequences: bp.sequences,
+        emails: emails.map((e) => ({ name: e.name, publish: e.publish })),
+        emailDocs: emails.map((e) => e.doc),
+        site: bp.site as Record<string, unknown>,
+    };
 }
 
 const json = (value: unknown): string => JSON.stringify(value, null, 2) + '\n';
@@ -121,24 +121,24 @@ const json = (value: unknown): string => JSON.stringify(value, null, 2) + '\n';
  *  the loader resolves this module with no workspace resolution). Prettier reformats
  *  the inlined literals after generation, so this only has to be valid TS. */
 function blueprintTs(opts: {
-  key: string;
-  name: string;
-  summary: string;
-  vertical: Vertical;
-  requiresModules: string[];
-  brand: unknown;
-  theme: unknown;
-  emails: { name: string; publish: boolean }[];
-  sequences: unknown;
+    key: string;
+    name: string;
+    summary: string;
+    vertical: Vertical;
+    requiresModules: string[];
+    brand: unknown;
+    theme: unknown;
+    emails: { name: string; publish: boolean }[];
+    sequences: unknown;
 }): string {
-  const emailVars = ['welcomeEmail', 'welcomeEmail2'];
-  const emailsLiteral = opts.emails
-    .map(
-      (e, i) =>
-        `{ name: ${JSON.stringify(e.name)}, doc: ${emailVars[i]}, publish: ${String(e.publish)} }`
-    )
-    .join(',\n    ');
-  return `// sparx — ${title(opts.key.replace(/^sparx-/, ''))}: a THEMED CLONE of the golden \`sparx\`
+    const emailVars = ['welcomeEmail', 'welcomeEmail2'];
+    const emailsLiteral = opts.emails
+        .map(
+            (e, i) =>
+                `{ name: ${JSON.stringify(e.name)}, doc: ${emailVars[i]}, publish: ${String(e.publish)} }`
+        )
+        .join(',\n    ');
+    return `// sparx — ${title(opts.key.replace(/^sparx-/, ''))}: a THEMED CLONE of the golden \`sparx\`
 // blueprint, re-dressed in the '${opts.key.replace(/^sparx-/, '')}' silica theme. Same
 // complete multi-module starter (shop · journal · booking · wholesale), captured once
 // and re-themed — content, commerce, and emails are identical to the flagship; only the
@@ -192,183 +192,183 @@ export default blueprint;
 }
 
 function manifestJson(opts: {
-  key: string;
-  name: string;
-  summary: string;
-  tagline: string;
-  vertical: Vertical;
-  industry: string;
-  accent: string;
-  sortWeight: number;
+    key: string;
+    name: string;
+    summary: string;
+    tagline: string;
+    vertical: Vertical;
+    industry: string;
+    accent: string;
+    sortWeight: number;
 }): unknown {
-  return {
-    schemaVersion: 1,
-    category: 'blueprint',
-    slug: opts.key,
-    name: opts.name,
-    version: '1.2.0',
-    tagline: opts.tagline,
-    description: opts.summary,
-    payload: 'blueprint.ts',
-    facets: {
-      vertical: opts.vertical,
-      industry: opts.industry,
-    },
-    pricing: { model: 'free', priceCents: 0 },
-    // requires.modules mirrors the payload's requiresModules (a validation-consistency
-    // list, not an install gate). Deliberately NOT mirrored into facets.requiredModules:
-    // the template's content is independent of a tenant's active modules, so the card
-    // advertises no module requirement to gate on.
-    requires: { modules: ['builder', 'commerce', 'cms', 'crm', 'email'] },
-    media: [
-      { file: 'media/icon.png', kind: 'icon', alt: `${opts.name} icon` },
-      { file: 'media/preview.png', kind: 'preview', alt: `${opts.name} — home page preview` },
-    ],
-    author: { displayName: 'WizeWorks' },
-    // THIS FAMILY IS SPARX'S OWN SHOWCASE, and that is what makes it restricted.
-    // Its captured site says "sparx" in the page copy and its `brand.businessName`
-    // is "sparx" — it is the product demonstrating itself, not a vertical template.
-    // The other ~169 bundles carry no `brands` and are shared by every brand, which
-    // is the default and should stay the default: a template that must name its
-    // brands to be seen forks the catalog the first time someone forgets.
-    brands: ['sparx'],
-    accent: opts.accent,
-    sortWeight: opts.sortWeight,
-  };
+    return {
+        schemaVersion: 1,
+        category: 'blueprint',
+        slug: opts.key,
+        name: opts.name,
+        version: '1.2.0',
+        tagline: opts.tagline,
+        description: opts.summary,
+        payload: 'blueprint.ts',
+        facets: {
+            vertical: opts.vertical,
+            industry: opts.industry,
+        },
+        pricing: { model: 'free', priceCents: 0 },
+        // requires.modules mirrors the payload's requiresModules (a validation-consistency
+        // list, not an install gate). Deliberately NOT mirrored into facets.requiredModules:
+        // the template's content is independent of a tenant's active modules, so the card
+        // advertises no module requirement to gate on.
+        requires: { modules: ['builder', 'commerce', 'cms', 'crm', 'email'] },
+        media: [
+            { file: 'media/icon.png', kind: 'icon', alt: `${opts.name} icon` },
+            { file: 'media/preview.png', kind: 'preview', alt: `${opts.name} — home page preview` },
+        ],
+        author: { displayName: 'WizeWorks' },
+        // THIS FAMILY IS SPARX'S OWN SHOWCASE, and that is what makes it restricted.
+        // Its captured site says "sparx" in the page copy and its `brand.businessName`
+        // is "sparx" — it is the product demonstrating itself, not a vertical template.
+        // The other ~169 bundles carry no `brands` and are shared by every brand, which
+        // is the default and should stay the default: a template that must name its
+        // brands to be seen forks the catalog the first time someone forgets.
+        brands: ['sparx'],
+        accent: opts.accent,
+        sortWeight: opts.sortWeight,
+    };
 }
 
 /** Copy a media file from golden into a clone ONLY if the clone doesn't already have
  *  one — media is hand-maintained + survives regen (CLAUDE.md), so a themed preview.png
  *  added later (Phase 6) is never clobbered by a re-run. */
 async function copyMediaIfAbsent(dstMediaDir: string, file: string): Promise<void> {
-  const dst = join(dstMediaDir, file);
-  try {
-    await fs.access(dst);
-    return; // already present — leave it
-  } catch {
-    /* absent — copy the golden placeholder */
-  }
-  await fs.copyFile(join(goldenDir, 'media', file), dst);
+    const dst = join(dstMediaDir, file);
+    try {
+        await fs.access(dst);
+        return; // already present — leave it
+    } catch {
+        /* absent — copy the golden placeholder */
+    }
+    await fs.copyFile(join(goldenDir, 'media', file), dst);
 }
 
 async function main(): Promise<void> {
-  const golden = await loadGolden();
+    const golden = await loadGolden();
 
-  let index = 0;
-  for (const theme of SPARX_THEMES) {
-    const desc = DESC[theme.name];
-    if (!desc) throw new Error(`gen-sparx-themed: no descriptor for theme '${theme.name}'`);
+    let index = 0;
+    for (const theme of SPARX_THEMES) {
+        const desc = DESC[theme.name];
+        if (!desc) throw new Error(`gen-sparx-themed: no descriptor for theme '${theme.name}'`);
 
-    const key = `sparx-${theme.name}`;
-    const t = title(theme.name);
-    const dir = join(blueprintsDir, key);
-    const mediaDir = join(dir, 'media');
-    await fs.mkdir(mediaDir, { recursive: true });
+        const key = `sparx-${theme.name}`;
+        const t = title(theme.name);
+        const dir = join(blueprintsDir, key);
+        const mediaDir = join(dir, 'media');
+        await fs.mkdir(mediaDir, { recursive: true });
 
-    // The ship-ready flat token bag for this theme (light in tokens, color delta in
-    // dark), matching the golden site.theme shape — this is the single source of the
-    // look for both storefront and email.
-    const resolved = resolveSparxTheme(theme);
-    const light = resolved.tokens;
-    const { heading, body } = faces(theme);
+        // The ship-ready flat token bag for this theme (light in tokens, color delta in
+        // dark), matching the golden site.theme shape — this is the single source of the
+        // look for both storefront and email.
+        const resolved = resolveSparxTheme(theme);
+        const light = resolved.tokens;
+        const { heading, body } = faces(theme);
 
-    const primary = hex(light['--color-primary'], `${key} primary`);
-    const primaryForeground = hex(light['--color-primary-content'], `${key} primary-content`);
-    const accent = hex(light['--color-accent'], `${key} accent`);
-    const secondary = hex(light['--color-secondary'], `${key} secondary`);
+        const primary = hex(light['--color-primary'], `${key} primary`);
+        const primaryForeground = hex(light['--color-primary-content'], `${key} primary-content`);
+        const accent = hex(light['--color-accent'], `${key} accent`);
+        const secondary = hex(light['--color-secondary'], `${key} secondary`);
 
-    // The theme's own name, with NO brand prefix. Every row in this family carried
-    // one, and a word that appears on all 190 cards cannot be the thing that tells
-    // them apart — it is noise in the one place the name has to do work. It is also
-    // the product's name on another brand's marketplace, which is the leak
-    // `brands` (below) exists to stop; dropping it here means the label is right
-    // even where the gate is not the thing being tested.
-    const name = t;
-    const summary =
-      `The complete starter — a faceted shop, a journal, a booking page, and a ` +
-      `wholesale page — in the ${t} look, tuned for ${desc.audience}. Install it, make it ` +
-      `yours, and launch a polished working site in minutes.`;
-    const tagline = `A complete multi-module starter in the ${t} look — for ${desc.audience}.`;
+        // The theme's own name, with NO brand prefix. Every row in this family carried
+        // one, and a word that appears on all 190 cards cannot be the thing that tells
+        // them apart — it is noise in the one place the name has to do work. It is also
+        // the product's name on another brand's marketplace, which is the leak
+        // `brands` (below) exists to stop; dropping it here means the label is right
+        // even where the gate is not the thing being tested.
+        const name = t;
+        const summary =
+            `The complete starter — a faceted shop, a journal, a booking page, and a ` +
+            `wholesale page — in the ${t} look, tuned for ${desc.audience}. Install it, make it ` +
+            `yours, and launch a polished working site in minutes.`;
+        const tagline = `A complete multi-module starter in the ${t} look — for ${desc.audience}.`;
 
-    const brand = {
-      businessName: 'sparx',
-      tagline: golden.brandTagline,
-      colors: { primary, primaryForeground, accent, secondary },
-      fonts: { heading, body },
-    };
+        const brand = {
+            businessName: 'sparx',
+            tagline: golden.brandTagline,
+            colors: { primary, primaryForeground, accent, secondary },
+            fonts: { heading, body },
+        };
 
-    const themeDecl = {
-      name: theme.name,
-      // The base is the theme ITSELF — a saved theme carries a presentation overlay
-      // and a brand snapshot, never a palette, so the base is where the colours come
-      // from. This said `'apex'`, one of six legacy presets: every one of these
-      // blueprints installed a saved theme whose base was the same generic indigo,
-      // with only the brand identity slots distinguishing them.
-      basePresetKey: theme.name,
-      presentation: { v: 2, containerWidth: '1152px' },
-      brand: {
-        colorPrimary: primary,
-        colorAccent: accent,
-        colorSecondary: secondary,
-        fontHeading: heading,
-        fontBody: body,
-        tokens: {},
-      },
-      apply: true,
-    };
+        const themeDecl = {
+            name: theme.name,
+            // The base is the theme ITSELF — a saved theme carries a presentation overlay
+            // and a brand snapshot, never a palette, so the base is where the colors come
+            // from. This said `'apex'`, one of six legacy presets: every one of these
+            // blueprints installed a saved theme whose base was the same generic indigo,
+            // with only the brand identity slots distinguishing them.
+            basePresetKey: theme.name,
+            presentation: { v: 2, containerWidth: '1152px' },
+            brand: {
+                colorPrimary: primary,
+                colorAccent: accent,
+                colorSecondary: secondary,
+                fontHeading: heading,
+                fontBody: body,
+                tokens: {},
+            },
+            apply: true,
+        };
 
-    // site.json = golden site with this theme's resolved token bag.
-    const site = { ...golden.site, theme: resolved };
+        // site.json = golden site with this theme's resolved token bag.
+        const site = { ...golden.site, theme: resolved };
 
-    await fs.writeFile(join(dir, 'site.json'), json(site));
-    await fs.writeFile(join(dir, 'content.json'), json(golden.content));
-    await fs.writeFile(join(dir, 'commerce.json'), json(golden.commerce));
-    await fs.writeFile(join(dir, 'assets.json'), json(golden.assets));
-    await fs.writeFile(join(dir, 'welcome-email.json'), json(golden.emailDocs[0]));
-    await fs.writeFile(join(dir, 'welcome-email-2.json'), json(golden.emailDocs[1]));
+        await fs.writeFile(join(dir, 'site.json'), json(site));
+        await fs.writeFile(join(dir, 'content.json'), json(golden.content));
+        await fs.writeFile(join(dir, 'commerce.json'), json(golden.commerce));
+        await fs.writeFile(join(dir, 'assets.json'), json(golden.assets));
+        await fs.writeFile(join(dir, 'welcome-email.json'), json(golden.emailDocs[0]));
+        await fs.writeFile(join(dir, 'welcome-email-2.json'), json(golden.emailDocs[1]));
 
-    await fs.writeFile(
-      join(dir, 'blueprint.ts'),
-      blueprintTs({
-        key,
-        name,
-        summary,
-        vertical: desc.vertical,
-        requiresModules: ['builder', 'commerce', 'cms', 'crm', 'email'],
-        brand,
-        theme: themeDecl,
-        emails: golden.emails,
-        sequences: golden.sequences,
-      })
-    );
+        await fs.writeFile(
+            join(dir, 'blueprint.ts'),
+            blueprintTs({
+                key,
+                name,
+                summary,
+                vertical: desc.vertical,
+                requiresModules: ['builder', 'commerce', 'cms', 'crm', 'email'],
+                brand,
+                theme: themeDecl,
+                emails: golden.emails,
+                sequences: golden.sequences,
+            })
+        );
 
-    await fs.writeFile(
-      join(dir, 'sparx.json'),
-      json(
-        manifestJson({
-          key,
-          name,
-          summary,
-          tagline,
-          vertical: desc.vertical,
-          industry: t,
-          accent: primary,
-          sortWeight: 90 - index,
-        })
-      )
-    );
+        await fs.writeFile(
+            join(dir, 'sparx.json'),
+            json(
+                manifestJson({
+                    key,
+                    name,
+                    summary,
+                    tagline,
+                    vertical: desc.vertical,
+                    industry: t,
+                    accent: primary,
+                    sortWeight: 90 - index,
+                })
+            )
+        );
 
-    await copyMediaIfAbsent(mediaDir, 'icon.png');
-    await copyMediaIfAbsent(mediaDir, 'preview.png');
+        await copyMediaIfAbsent(mediaDir, 'icon.png');
+        await copyMediaIfAbsent(mediaDir, 'preview.png');
 
-    index += 1;
-    console.log(`  · ${key.padEnd(18)} ${name}`);
-  }
+        index += 1;
+        console.log(`  · ${key.padEnd(18)} ${name}`);
+    }
 
-  console.log(`gen-sparx-themed: wrote ${index} themed clone bundles under blueprints/`);
+    console.log(`gen-sparx-themed: wrote ${index} themed clone bundles under blueprints/`);
 }
 
 main().catch((err: unknown) => {
-  console.error(err);
-  process.exit(1);
+    console.error(err);
+    process.exit(1);
 });

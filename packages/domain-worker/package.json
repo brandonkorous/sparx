@@ -16,6 +16,7 @@
     "@sparx/db": "workspace:*",
     "@sparx/events": "workspace:*",
     "@sparx/links": "workspace:*",
+    "@wizeworks/brand-core": "workspace:*",
     "pino": "^9.5.0",
     "zod": "^4.4.3"
   },

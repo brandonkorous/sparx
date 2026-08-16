@@ -7,6 +7,7 @@ import {
   EmailFallbackLink,
   EmailFinePrint,
   EmailParagraph,
+  usePlatformName,
 } from '../components';
 
 // Team invitation — "{Inviter} invited you to join {Org} on sparx" (docs/114 §A.4).
@@ -40,14 +41,15 @@ export function TeamInvitationEmail({
   acceptUrl,
   expiresInDays,
 }: TeamInvitationEmailProps) {
+  const platform = usePlatformName();
   return (
     <PlatformEmailLayout
-      preview={`${inviterName} invited you to join ${orgName} on sparx`}
-      footerReason={`You're receiving this because ${inviterName} invited you to ${orgName} on sparx.`}
+      preview={`${inviterName} invited you to join ${orgName} on ${platform}`}
+      footerReason={`You're receiving this because ${inviterName} invited you to ${orgName} on ${platform}.`}
     >
       <EmailDisplayHeading>You&apos;re invited to join {orgName}</EmailDisplayHeading>
       <EmailParagraph>
-        {inviterName} invited you to join <strong>{orgName}</strong> on sparx as a{' '}
+        {inviterName} invited you to join <strong>{orgName}</strong> on {platform} as a{' '}
         <strong>{role}</strong>. Accept the invitation to get access to the workspace.
       </EmailParagraph>
       <EmailCallout tone="info">
@@ -64,6 +66,6 @@ export function TeamInvitationEmail({
   );
 }
 
-export function teamInvitationSubject(orgName: string): string {
-  return `You're invited to join ${orgName} on sparx`;
+export function teamInvitationSubject(orgName: string, platform: string): string {
+  return `You're invited to join ${orgName} on ${platform}`;
 }

@@ -18,7 +18,7 @@
 @import 'tailwindcss';
 @import '@piggles/brand/theme.css';
 
-/* The registered colour roles. This list REPLACES silicaui's default set, so
+/* The registered color roles. This list REPLACES silicaui's default set, so
  * every built-in still wanted is re-listed — `neutral` included.
  *
  * Beyond the defaults:
@@ -27,7 +27,7 @@
  *   • `module`   — the active-app bridge. `data-app` / `data-group` /
  *                  `data-module` repoint `--color-module`, and registering the
  *                  NAME is what makes `color="module"` resolve through silica's
- *                  normal colour machinery.
+ *                  normal color machinery.
  *   • `group-*`  — so a rail or launcher can reach a group hue directly
  *                  (`bg-group-sell`) rather than only through the bridge.
  *
@@ -371,7 +371,7 @@ h6 {
  * ── WHY TWO TONES AND NOT ONE ──────────────────────────────────────────────
  *
  * A single deeper tint fixes the separation and still leaves her floating in a
- * coloured rectangle. Every cut in the batch stands on something — a counter, a
+ * colored rectangle. Every cut in the batch stands on something — a counter, a
  * bench, a stall, a chair — so the card gives that thing a floor to sit on, and
  * the scene stops being a sticker on a panel and becomes a room with her in it.
  * It suits the artwork exactly: these are dioramas, and a diorama has a base.

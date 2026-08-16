@@ -6,7 +6,7 @@ Real photographs used in the marketing layout itself — the picture half of a
 
 ## Why these exist
 
-The first version of this homepage was built entirely from type and colour. It
+The first version of this homepage was built entirely from type and color. It
 was, accurately, described as basic — and that is not a stylistic position, it is
 a gap. A visitor scanning a page takes in the pictures long before the prose; a
 page with none asks them to read their way to the point, and most will not.
@@ -56,7 +56,7 @@ repeat and neither is caught by anything automated.
 **A file name is not a description.** Still true, and still catching people: while
 searching for `working-late.jpg`, the top CC0 hit for "bookkeeping" was titled
 _Bench Accounting 2015-11-30_ and is a photograph of somebody painting
-watercolours. Nothing about the metadata gives that away. The original
+watercolors. Nothing about the metadata gives that away. The original
 `cafe.jpg` was a wall of
 decorative plates — no room, no tables, nobody in it — and it shipped captioned
 as a café because the alt text was written from the file name rather than the

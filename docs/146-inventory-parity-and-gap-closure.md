@@ -281,7 +281,7 @@ freshness columns) is authored and awaiting the pipeline; everything else is in 
 - [x] **1.6** Oversell surface: incidents by kind, item, channel and stock age, with the row opening the item **[D3] UI**
 - [x] **1.7** Per-channel safety buffer — override → channel default → level cushion, with two partial unique indexes so a nullable-column UNIQUE cannot accept duplicate channel defaults **[D3] DB**
 - [x] **1.8** Sync freshness SLO — `expectedIntervalSec` on `InventorySource`; a breach flags the source, stamps `staleSince`, and fires `inventory.source.stale` (and `.recovered`). Events fire on TRANSITIONS only **[D4] DB**
-- [x] **1.9** Stock age indicator — `asOf` + server-computed `ageSeconds` on every level row; the badge renders only when the number has actually gone stale, so the colour keeps meaning something **[D4] UI**
+- [x] **1.9** Stock age indicator — `asOf` + server-computed `ageSeconds` on every level row; the badge renders only when the number has actually gone stale, so the color keeps meaning something **[D4] UI**
 - [x] **1.10** Staleness policy per source: `warn` | `buffer_up` | `pause_channel`, resolved worst-of across every late source feeding a level and additive on top of the configured channel buffer **[D3][D4]**
 - [x] **1.11** Shrinkage report — `loss` / `damage` / negative `recount` by period, location, reason and value, priced at the movement's own cost; positive recounts reported ALONGSIDE rather than netted off; % of valuation against the 1–5% band businesses actually live in **[P21] UI**
 - [x] **1.12** Scanner-safe role — `scanner` is a lateral staff role admitted to receive / count-entry / transfer / lookup by an explicit allow-list, with cost fields redacted at the transport and receipt-line cost overrides stripped. Posting a count and creating a transfer stay `editor` **[D7]**
@@ -518,7 +518,7 @@ its thinnest lines at a loss and cannot see it.
   change across the units STILL ON HAND. It does not restate what already sold — that cost was
   recorded when the goods left, and editing it is what an accountant means by "the books moved".
 - **`cogs_report` by reason.** Goods sold is cost of sales; goods lost is a problem. Adding them
-  together hides the second inside the first, so the report splits them and the surface colours
+  together hides the second inside the first, so the report splits them and the surface colors
   them differently.
 - 15 REST endpoints, 8 MCP tools, two new workbench surfaces (cost vs plan; how stock is valued),
   the landed-cost breakdown and charge entry on the receipt surface, expected charges on the

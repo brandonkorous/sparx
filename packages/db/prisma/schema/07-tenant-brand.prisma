@@ -30,8 +30,8 @@ model TenantBrand {
 
   // Core identity palette (hex). Presentation tokens stay in the storefront theme.
   // The `*Foreground` columns are the optional `-content` overrides for their
-  // base colour (docs/33 §3.1); null = auto-derive for AA legibility. `secondary`
-  // is the brand's second identity colour; it falls back to `primary` if unset.
+  // base color (docs/33 §3.1); null = auto-derive for AA legibility. `secondary`
+  // is the brand's second identity color; it falls back to `primary` if unset.
   colorPrimary             String? @map("color_primary") @db.VarChar(7)
   colorPrimaryForeground   String? @map("color_primary_foreground") @db.VarChar(7)
   colorAccent              String? @map("color_accent") @db.VarChar(7)
@@ -45,7 +45,7 @@ model TenantBrand {
 
   // Token Model v2 brand-owned NON-IDENTITY tokens (docs/33): shape (radius
   // trio + border width), rhythm (space base + control sizes), effect (depth).
-  // A partial BrandTokenDoc — only the shape/rhythm/effect branches; colour +
+  // A partial BrandTokenDoc — only the shape/rhythm/effect branches; color +
   // type stay in the dedicated columns above (one source of truth per axis).
   // Null = no overrides → the theme preset's defaults apply.
   tokens Json? @db.JsonB

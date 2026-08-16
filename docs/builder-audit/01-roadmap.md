@@ -190,7 +190,7 @@ Last Updated: 2026-08-03
 >   inverted ONLY A's node and left B's bold intact — and, the sharper case, two further
 >   `Ctrl+Z` on A's exhausted stack did NOTHING rather than falling through to the shared op
 >   log and eating B's work.
-> - **(7) saved pieces.** "Save as component" → duplicate → ONE master colour edit turned BOTH
+> - **(7) saved pieces.** "Save as component" → duplicate → ONE master color edit turned BOTH
 >   instances green; after save + hard reload both returned still linked and still green.
 > - **(1) preview vs draft.** Same URL, token only: live serves the published design, the
 >   `?sparxSitePreview=` token serves the DRAFT, fully themed.
@@ -405,7 +405,7 @@ nobody in the comparison set does it well — this is where the builder can lead
   >
   > **A disabled module contributes `undefined`, not `[]`** — and the roster is never even queried. That is the engine's contract from slice 9 held at the boundary: `[]` means "there are none, so that link is broken", so emitting it for a module a tenant simply has not switched on would report every product link on the site as broken. Pinned by a test that asserts the query was not issued, not merely that the result was empty.
   >
-  > **The theme derivation moved rather than being copied.** A site's theme is `null` in the database until an author opens the Design inspector, which most never do — so "what does `bg-primary` actually paint here" is only answerable by compiling the tenant's brand, with the per-site override applied. That lived in the workbench, where the canvas was its only caller. A second copy in the check would eventually disagree, and the failure mode is a check judging colours nobody sees; so `tenantTheme` + `applyBrandOverride` are now `@sparx/site-themes/v2/brand-theme.ts` and the studio file is a re-export.
+  > **The theme derivation moved rather than being copied.** A site's theme is `null` in the database until an author opens the Design inspector, which most never do — so "what does `bg-primary` actually paint here" is only answerable by compiling the tenant's brand, with the per-site override applied. That lived in the workbench, where the canvas was its only caller. A second copy in the check would eventually disagree, and the failure mode is a check judging colors nobody sees; so `tenantTheme` + `applyBrandOverride` are now `@sparx/site-themes/v2/brand-theme.ts` and the studio file is a re-export.
   >
   > **Where the friction is.** The panel is a drawer off the studio toolbar, grouped by what each severity MEANS ("Someone visiting your site right now would hit this and it would not work"), and every finding that names a block has a **Show me** that opens the page, the header and footer, or the saved piece and selects it. Both routes in save the draft first — the endpoint reads the saved draft, and a check that is one save behind says "clean" about work it has not seen. The publish flow interrupts **only on errors**, once, with a confirm whose primary answer is "Publish anyway"; warnings and suggestions never interrupt. A check that fails to run does not hold up a publish that would otherwise succeed.
   >
@@ -468,7 +468,7 @@ Upstream. Filed in [docs/silicaui/01](../silicaui/01-builder-asks.md); [02-silic
   >
   > **Q26 is answered by `initialMode` + `onModeChange`, and the studio now uses both.** `builder.studio` takes a `{mode}` param (`page` · `layout` · `component` · `theme`, validated — a typo opens the editor normally rather than handing silica a mode it has no case for), and `onModeChange` retitles the pane, because "Editor" on four torn-off windows tells an operator nothing.
   >
-  > **The deep link this earns, and why it is not decoration.** The nav catalog has always claimed `header` / `footer` / `menu` land in the Editor — and they did, on a page BODY, with no signpost to the chrome. Site identity says twice that it owns the header's CONTENT and that the editor owns its arrangement, and offered no way there. It now carries two links: **Design the header & footer** (`mode: 'layout'`) and **Colours & type** (`mode: 'theme'`), on the same shift/alt target contract as every other list.
+  > **The deep link this earns, and why it is not decoration.** The nav catalog has always claimed `header` / `footer` / `menu` land in the Editor — and they did, on a page BODY, with no signpost to the chrome. Site identity says twice that it owns the header's CONTENT and that the editor owns its arrangement, and offered no way there. It now carries two links: **Design the header & footer** (`mode: 'layout'`) and **Colors & type** (`mode: 'theme'`), on the same shift/alt target contract as every other list.
   >
   > **What is still not possible, deliberately:** `initialMode` seeds at mount and is never re-read, and there is no `editor.setMode`. So an affordance INSIDE the editor — "edit the header this page uses", from the frame picker in `toolbarSlot` — cannot switch surface itself. Not re-raised: a controlled mode would let a parent re-render pull an author out of the surface they are working in, which is the worse failure. Weighed, not missed.
 
@@ -480,7 +480,7 @@ Upstream. Filed in [docs/silicaui/01](../silicaui/01-builder-asks.md); [02-silic
   >
   > **The real obstacle was the App Router, not the engine.** `layout.tsx` renders the chrome and is handed its children but never their route, so it cannot ask "which page am I wrapping" — per-page frames are impossible while the layout asks for _the_ frame. Rather than move `<SilicaChrome>` into all twelve routes that render a silica body (twelve copies, and a thirteenth route later that silently has none), `proxy.ts` mirrors the pathname onto `x-sparx-path` and the frame read takes `&path=`, answering with the chrome THAT page asks for. Chrome stays in one place.
   >
-  > **Two bugs this would have shipped with, caught on the way.** (1) `getPublishedSilicaFrame` falls back to the code starter frame whenever `frame` is null — which would have put a header straight back onto the landing page built to avoid one. Hence `frameless` on the DTO: two opposite instructions were wearing the same `null`. (2) `silicaActive` was `Boolean(silicaFrame.frame)`, and it gates the silica THEME stylesheet, the web fonts and the accent colour — all site-level. A bare page has a null frame, so reading that alone shipped the one page an author most wants to look designed with no theme and no fonts.
+  > **Two bugs this would have shipped with, caught on the way.** (1) `getPublishedSilicaFrame` falls back to the code starter frame whenever `frame` is null — which would have put a header straight back onto the landing page built to avoid one. Hence `frameless` on the DTO: two opposite instructions were wearing the same `null`. (2) `silicaActive` was `Boolean(silicaFrame.frame)`, and it gates the silica THEME stylesheet, the web fonts and the accent color — all site-level. A bare page has a null frame, so reading that alone shipped the one page an author most wants to look designed with no theme and no fonts.
   >
   > **Slice 21's "unreachable" bare-`<main>` branch is now the landing-page render path** — it stopped being dead the moment a page could ask for no chrome.
   >
@@ -592,7 +592,7 @@ Where "no better in the world" is actually won or lost.
   >
   > **Revenue is credited to the page that BROUGHT the buyer**, not the one they checked out from, because `attribution_landing_path` is the first-touch path (docs/128 §3). A product page cannot take credit for a visitor the home page won. The window and `status <> 'cancelled'` match the revenue-by-source report exactly so the two can never disagree about what a sale is, and it is scoped by `property_id` — an owner with two businesses must not see one site's revenue against the other's home page.
   >
-  > **Where the honesty is.** Conversion is `null`, not 0%, when nobody came — 0% reads as failure rather than as silence. An unmeasured load time is `neutral`, never green: painting "we have no idea" the same colour as "fast" is the one thing this must not do. Folded load times are re-weighted by sample count, so a path measured twice cannot outvote one measured two thousand times. Traffic on paths no page owns (products, posts, legal) is reported in `otherPaths` rather than dropped, so the totals reconcile with the traffic card instead of quietly disagreeing with it. With Commerce off the money columns are absent rather than permanently zero. One known limitation, stated in the code: a folded template's `visitors` is a SUM across its records, so one person who browsed four products counts four times — deduplicating would cost a `COUNT(DISTINCT)` per template, and the surface words it as visits.
+  > **Where the honesty is.** Conversion is `null`, not 0%, when nobody came — 0% reads as failure rather than as silence. An unmeasured load time is `neutral`, never green: painting "we have no idea" the same color as "fast" is the one thing this must not do. Folded load times are re-weighted by sample count, so a path measured twice cannot outvote one measured two thousand times. Traffic on paths no page owns (products, posts, legal) is reported in `otherPaths` rather than dropped, so the totals reconcile with the traffic card instead of quietly disagreeing with it. With Commerce off the money columns are absent rather than permanently zero. One known limitation, stated in the code: a folded template's `visitors` is a SUM across its records, so one person who browsed four products counts four times — deduplicating would cost a `COUNT(DISTINCT)` per template, and the surface words it as visits.
 
 - [x] **23. Collection pagination**, plus sort, filter and conditional visibility in the binder. Removes the silent 24-record cap. — _in-our-control + silicaui · L_
 
@@ -803,7 +803,7 @@ they stopped covering the whole MDI — that treated the symptom. The container 
   >    have been told it was a fix. The finding still reports; only the button is withheld.
   >
   > Most findings will never carry one, and that is the design rather than a gap: "choose a
-  > destination for this link" and "pick a readable colour" are the author's decisions.
+  > destination for this link" and "pick a readable color" are the author's decisions.
   > **`fix.test.ts` (6 tests) is where the whole risk lives**, including a sweep asserting that no
   > non-class rule ever attaches one. site-lint is now **116**.
   >

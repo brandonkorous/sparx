@@ -1,269 +1,269 @@
 [
-  {
-    "typeKey": "blog_post",
-    "slug": "how-to-build-the-perfect-gift-box",
-    "status": "published",
-    "body": {
-      "title": "How to build the perfect gift box",
-      "excerpt": "A gift box is a tiny bit of theatre. Here’s how we pack one that makes someone gasp before they’ve even tasted anything.",
-      "featuredImage": {
-        "$asset": "post-giftbox"
-      },
-      "body": {
-        "type": "doc",
-        "content": [
-          {
-            "type": "paragraph",
-            "content": [
-              {
-                "type": "text",
-                "text": "A box of chocolate is one of the easiest gifts to get right and one of the easiest to make special. The chocolate does most of the work — but a little thought about who it’s for, and how it’s packed, turns a nice present into one they remember. Here’s how we think about it when we build a box for you."
-              }
-            ]
-          },
-          {
-            "type": "heading",
-            "attrs": {
-              "level": 2
+    {
+        "typeKey": "blog_post",
+        "slug": "how-to-build-the-perfect-gift-box",
+        "status": "published",
+        "body": {
+            "title": "How to build the perfect gift box",
+            "excerpt": "A gift box is a tiny bit of theatre. Here’s how we pack one that makes someone gasp before they’ve even tasted anything.",
+            "featuredImage": {
+                "$asset": "post-giftbox"
             },
-            "content": [
-              {
-                "type": "text",
-                "text": "Start with the person, not the chocolate"
-              }
-            ]
-          },
-          {
-            "type": "paragraph",
-            "content": [
-              {
-                "type": "text",
-                "text": "Before you pick a single flavour, picture the person. A caramel obsessive wants a box that leans caramel, not a polite one of everything. A first-time chocolate gift for someone whose tastes you don’t know is the moment for a bright, mixed assortment — the Rainbow Box exists precisely so you can’t get it wrong. Kids want fun shapes and sprinkles far more than they want a 70% single origin. Match the box to the mouth and you’re already most of the way there."
-              }
-            ]
-          },
-          {
-            "type": "heading",
-            "attrs": {
-              "level": 2
+            "body": {
+                "type": "doc",
+                "content": [
+                    {
+                        "type": "paragraph",
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "A box of chocolate is one of the easiest gifts to get right and one of the easiest to make special. The chocolate does most of the work — but a little thought about who it’s for, and how it’s packed, turns a nice present into one they remember. Here’s how we think about it when we build a box for you."
+                            }
+                        ]
+                    },
+                    {
+                        "type": "heading",
+                        "attrs": {
+                            "level": 2
+                        },
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "Start with the person, not the chocolate"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "paragraph",
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "Before you pick a single flavour, picture the person. A caramel obsessive wants a box that leans caramel, not a polite one of everything. A first-time chocolate gift for someone whose tastes you don’t know is the moment for a bright, mixed assortment — the Rainbow Box exists precisely so you can’t get it wrong. Kids want fun shapes and sprinkles far more than they want a 70% single origin. Match the box to the mouth and you’re already most of the way there."
+                            }
+                        ]
+                    },
+                    {
+                        "type": "heading",
+                        "attrs": {
+                            "level": 2
+                        },
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "Mix textures, not just flavours"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "paragraph",
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "The best boxes have contrast built in. A soft ganache next to a snappy caramel next to a crunchy dipped pretzel keeps every bite interesting — a box of nine identical truffles, however good, gets samey by the fifth. When you build your own, we’ll nudge you toward a spread of textures on purpose. It’s the difference between “these are lovely” and “I couldn’t stop.”"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "heading",
+                        "attrs": {
+                            "level": 2
+                        },
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "Let us do the wrapping"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "paragraph",
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "Half the gift is the moment the lid comes off. We nestle every piece, line the box, tie the ribbon and — if you add a note at checkout — tuck in a hand-written card. You don’t have to do a thing except decide who’s lucky enough to get it. Add the gift note, and it arrives looking like you tried much harder than pressing “buy.”"
+                            }
+                        ]
+                    }
+                ]
+            }
+        }
+    },
+    {
+        "typeKey": "blog_post",
+        "slug": "the-right-way-to-melt-a-cocoa-bomb",
+        "status": "published",
+        "body": {
+            "title": "The right way to melt a hot-cocoa bomb",
+            "excerpt": "It’s the best thirty seconds in a mug — if you do it in the right order. A tiny, fun how-to.",
+            "featuredImage": {
+                "$asset": "post-cocoa"
             },
-            "content": [
-              {
-                "type": "text",
-                "text": "Mix textures, not just flavours"
-              }
-            ]
-          },
-          {
-            "type": "paragraph",
-            "content": [
-              {
-                "type": "text",
-                "text": "The best boxes have contrast built in. A soft ganache next to a snappy caramel next to a crunchy dipped pretzel keeps every bite interesting — a box of nine identical truffles, however good, gets samey by the fifth. When you build your own, we’ll nudge you toward a spread of textures on purpose. It’s the difference between “these are lovely” and “I couldn’t stop.”"
-              }
-            ]
-          },
-          {
-            "type": "heading",
-            "attrs": {
-              "level": 2
+            "body": {
+                "type": "doc",
+                "content": [
+                    {
+                        "type": "paragraph",
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "A hot-cocoa bomb is equal parts drink and magic trick: a hollow chocolate sphere that melts open when hot milk hits it, releasing the cocoa and marshmallows hiding inside. It’s genuinely delightful — and it works far better if you don’t rush it. Here’s the order of operations for the full show."
+                            }
+                        ]
+                    },
+                    {
+                        "type": "heading",
+                        "attrs": {
+                            "level": 2
+                        },
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "Hot milk, not boiling"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "paragraph",
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "Heat your milk until it’s steaming and hot to the touch, but pull it before a rolling boil — boiling milk can scorch and go skinny, and you want it silky. Whole milk or a barista-style oat milk gives the richest cup; the fat is what makes it feel like a treat rather than a hot drink."
+                            }
+                        ]
+                    },
+                    {
+                        "type": "heading",
+                        "attrs": {
+                            "level": 2
+                        },
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "Bomb in the mug first, then pour"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "paragraph",
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "This is the whole secret: put the cocoa bomb in the mug before the milk, not after. Pour the hot milk slowly straight over the top, and give it a few seconds — you’ll see the shell soften, crack and open, and the marshmallows bob up. Pouring the milk first and dropping the bomb in after just makes it float sadly. Order matters."
+                            }
+                        ]
+                    },
+                    {
+                        "type": "heading",
+                        "attrs": {
+                            "level": 2
+                        },
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "Stir, and make it yours"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "paragraph",
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "Once it’s opened, stir well to bring all that drinking chocolate up off the bottom into a glossy, even cup. Then dress it up if you like: a swirl of whipped cream, a dusting of cocoa, a candy cane in the Peppermint one. Two minutes of work, one very good mug, and a small crowd every single time you make one in front of someone."
+                            }
+                        ]
+                    }
+                ]
+            }
+        }
+    },
+    {
+        "typeKey": "blog_post",
+        "slug": "whats-in-a-bonbon",
+        "status": "published",
+        "body": {
+            "title": "What’s actually in a bonbon (and where the color comes from)",
+            "excerpt": "Those bright, glossy shells aren’t painted with anything weird. Here’s how a bonbon really gets made — and colored.",
+            "featuredImage": {
+                "$asset": "post-makers"
             },
-            "content": [
-              {
-                "type": "text",
-                "text": "Let us do the wrapping"
-              }
-            ]
-          },
-          {
-            "type": "paragraph",
-            "content": [
-              {
-                "type": "text",
-                "text": "Half the gift is the moment the lid comes off. We nestle every piece, line the box, tie the ribbon and — if you add a note at checkout — tuck in a hand-written card. You don’t have to do a thing except decide who’s lucky enough to get it. Add the gift note, and it arrives looking like you tried much harder than pressing “buy.”"
-              }
-            ]
-          }
-        ]
-      }
+            "body": {
+                "type": "doc",
+                "content": [
+                    {
+                        "type": "paragraph",
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "People often assume our jewel-bright bonbons are airbrushed with something artificial. They’re not — the color is colored cocoa butter, the same cocoa butter that’s already in the chocolate, just tinted. Here’s what actually goes into one of those little shells, start to finish."
+                            }
+                        ]
+                    },
+                    {
+                        "type": "heading",
+                        "attrs": {
+                            "level": 2
+                        },
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "The shell, and the color"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "paragraph",
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "We start with a polished mould and flick or brush tinted cocoa butter into each cavity — that’s where the color and the pattern come from, painted in before any chocolate goes near it. Then we fill the mould with tempered chocolate, tip most of it back out, and let a thin shell set against the sides. The color ends up on the outside of the shell, which is why it looks painted: because, in a sense, it is."
+                            }
+                        ]
+                    },
+                    {
+                        "type": "heading",
+                        "attrs": {
+                            "level": 2
+                        },
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "The filling is the flavour"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "paragraph",
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "Into each set shell goes the good bit: a ganache, a caramel, a fruit purée, a praline. This is where a bonbon actually tastes of something — passionfruit, raspberry, salted caramel, mint. We make the fillings in small batches with real ingredients, because a beautiful shell around a dull centre is just decoration. Then we cap each one with a final layer of chocolate to seal it."
+                            }
+                        ]
+                    },
+                    {
+                        "type": "heading",
+                        "attrs": {
+                            "level": 2
+                        },
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "The snap you can hear"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "paragraph",
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "Finally it’s all about temper. Well-tempered chocolate sets hard and glossy, releases cleanly from the mould, and snaps with a click when you bite it. That snap isn’t just satisfying — it’s the sign the chocolate was handled properly. So a good bonbon is three things at once: a pretty shell, a real filling, and a clean snap. Get all three and you’ve got the thing people photograph before they eat it."
+                            }
+                        ]
+                    }
+                ]
+            }
+        }
     }
-  },
-  {
-    "typeKey": "blog_post",
-    "slug": "the-right-way-to-melt-a-cocoa-bomb",
-    "status": "published",
-    "body": {
-      "title": "The right way to melt a hot-cocoa bomb",
-      "excerpt": "It’s the best thirty seconds in a mug — if you do it in the right order. A tiny, fun how-to.",
-      "featuredImage": {
-        "$asset": "post-cocoa"
-      },
-      "body": {
-        "type": "doc",
-        "content": [
-          {
-            "type": "paragraph",
-            "content": [
-              {
-                "type": "text",
-                "text": "A hot-cocoa bomb is equal parts drink and magic trick: a hollow chocolate sphere that melts open when hot milk hits it, releasing the cocoa and marshmallows hiding inside. It’s genuinely delightful — and it works far better if you don’t rush it. Here’s the order of operations for the full show."
-              }
-            ]
-          },
-          {
-            "type": "heading",
-            "attrs": {
-              "level": 2
-            },
-            "content": [
-              {
-                "type": "text",
-                "text": "Hot milk, not boiling"
-              }
-            ]
-          },
-          {
-            "type": "paragraph",
-            "content": [
-              {
-                "type": "text",
-                "text": "Heat your milk until it’s steaming and hot to the touch, but pull it before a rolling boil — boiling milk can scorch and go skinny, and you want it silky. Whole milk or a barista-style oat milk gives the richest cup; the fat is what makes it feel like a treat rather than a hot drink."
-              }
-            ]
-          },
-          {
-            "type": "heading",
-            "attrs": {
-              "level": 2
-            },
-            "content": [
-              {
-                "type": "text",
-                "text": "Bomb in the mug first, then pour"
-              }
-            ]
-          },
-          {
-            "type": "paragraph",
-            "content": [
-              {
-                "type": "text",
-                "text": "This is the whole secret: put the cocoa bomb in the mug before the milk, not after. Pour the hot milk slowly straight over the top, and give it a few seconds — you’ll see the shell soften, crack and open, and the marshmallows bob up. Pouring the milk first and dropping the bomb in after just makes it float sadly. Order matters."
-              }
-            ]
-          },
-          {
-            "type": "heading",
-            "attrs": {
-              "level": 2
-            },
-            "content": [
-              {
-                "type": "text",
-                "text": "Stir, and make it yours"
-              }
-            ]
-          },
-          {
-            "type": "paragraph",
-            "content": [
-              {
-                "type": "text",
-                "text": "Once it’s opened, stir well to bring all that drinking chocolate up off the bottom into a glossy, even cup. Then dress it up if you like: a swirl of whipped cream, a dusting of cocoa, a candy cane in the Peppermint one. Two minutes of work, one very good mug, and a small crowd every single time you make one in front of someone."
-              }
-            ]
-          }
-        ]
-      }
-    }
-  },
-  {
-    "typeKey": "blog_post",
-    "slug": "whats-in-a-bonbon",
-    "status": "published",
-    "body": {
-      "title": "What’s actually in a bonbon (and where the colour comes from)",
-      "excerpt": "Those bright, glossy shells aren’t painted with anything weird. Here’s how a bonbon really gets made — and coloured.",
-      "featuredImage": {
-        "$asset": "post-makers"
-      },
-      "body": {
-        "type": "doc",
-        "content": [
-          {
-            "type": "paragraph",
-            "content": [
-              {
-                "type": "text",
-                "text": "People often assume our jewel-bright bonbons are airbrushed with something artificial. They’re not — the colour is coloured cocoa butter, the same cocoa butter that’s already in the chocolate, just tinted. Here’s what actually goes into one of those little shells, start to finish."
-              }
-            ]
-          },
-          {
-            "type": "heading",
-            "attrs": {
-              "level": 2
-            },
-            "content": [
-              {
-                "type": "text",
-                "text": "The shell, and the colour"
-              }
-            ]
-          },
-          {
-            "type": "paragraph",
-            "content": [
-              {
-                "type": "text",
-                "text": "We start with a polished mould and flick or brush tinted cocoa butter into each cavity — that’s where the colour and the pattern come from, painted in before any chocolate goes near it. Then we fill the mould with tempered chocolate, tip most of it back out, and let a thin shell set against the sides. The colour ends up on the outside of the shell, which is why it looks painted: because, in a sense, it is."
-              }
-            ]
-          },
-          {
-            "type": "heading",
-            "attrs": {
-              "level": 2
-            },
-            "content": [
-              {
-                "type": "text",
-                "text": "The filling is the flavour"
-              }
-            ]
-          },
-          {
-            "type": "paragraph",
-            "content": [
-              {
-                "type": "text",
-                "text": "Into each set shell goes the good bit: a ganache, a caramel, a fruit purée, a praline. This is where a bonbon actually tastes of something — passionfruit, raspberry, salted caramel, mint. We make the fillings in small batches with real ingredients, because a beautiful shell around a dull centre is just decoration. Then we cap each one with a final layer of chocolate to seal it."
-              }
-            ]
-          },
-          {
-            "type": "heading",
-            "attrs": {
-              "level": 2
-            },
-            "content": [
-              {
-                "type": "text",
-                "text": "The snap you can hear"
-              }
-            ]
-          },
-          {
-            "type": "paragraph",
-            "content": [
-              {
-                "type": "text",
-                "text": "Finally it’s all about temper. Well-tempered chocolate sets hard and glossy, releases cleanly from the mould, and snaps with a click when you bite it. That snap isn’t just satisfying — it’s the sign the chocolate was handled properly. So a good bonbon is three things at once: a pretty shell, a real filling, and a clean snap. Get all three and you’ve got the thing people photograph before they eat it."
-              }
-            ]
-          }
-        ]
-      }
-    }
-  }
 ]

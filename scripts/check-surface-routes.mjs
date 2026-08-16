@@ -27,7 +27,17 @@ import { dirname, join } from 'node:path';
 
 const repoRoot = join(dirname(fileURLToPath(import.meta.url)), '..');
 
-const CATALOG_DIR = 'apps/workbench/lib/surfaces/catalog';
+// BOTH consoles, because both address their panes out of the one route table.
+//
+// It scanned sparx's catalog alone for a long time, and piggles' own studio panes —
+// its page, header, look, saved-piece, history and preview builders — went six phases
+// with no address at all. Nothing failed: an unaddressed pane just falls back to `/`,
+// so the bar goes blank when you focus it and a link to a page editor cannot be sent.
+// A check that covers one of two apps reads exactly like a check that covers both.
+const CATALOG_DIRS = [
+  'apps/workbench/lib/surfaces/catalog',
+  'piggles/apps/workbench/lib/surfaces/catalog',
+];
 const ROUTES_FILE = 'packages/links/src/routes.ts';
 
 /** Strip `//` line comments so a key quoted inside prose is not read as a declaration. */
@@ -48,11 +58,15 @@ function collect(source, pattern) {
 }
 
 // --- Registered surfaces ----------------------------------------------------
+// The UNION of both catalogs. A key either console registers must be addressable,
+// and a route either console can serve is not orphaned.
 const surfaces = new Set();
-for (const file of readdirSync(join(repoRoot, CATALOG_DIR))) {
-  if (!file.endsWith('.ts')) continue;
-  const source = readFileSync(join(repoRoot, CATALOG_DIR, file), 'utf8');
-  for (const key of collect(source, /\bkey:\s*'([^']+)'/g)) surfaces.add(key);
+for (const dir of CATALOG_DIRS) {
+  for (const file of readdirSync(join(repoRoot, dir))) {
+    if (!file.endsWith('.ts')) continue;
+    const source = readFileSync(join(repoRoot, dir, file), 'utf8');
+    for (const key of collect(source, /\bkey:\s*'([^']+)'/g)) surfaces.add(key);
+  }
 }
 
 // --- Addressed surfaces -----------------------------------------------------

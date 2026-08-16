@@ -1,6 +1,11 @@
 import * as React from 'react';
 import { PlatformEmailLayout } from './_layout';
-import { EmailActionButton, EmailDisplayHeading, EmailParagraph } from '../components';
+import {
+  EmailActionButton,
+  EmailDisplayHeading,
+  EmailParagraph,
+  usePlatformName,
+} from '../components';
 
 export interface InvitationAcceptedEmailProps {
   /** The inviter's name (falls back to "there") — the recipient of this email. */
@@ -24,6 +29,7 @@ export function InvitationAcceptedEmail({
   orgName,
   dashboardUrl,
 }: InvitationAcceptedEmailProps) {
+  const platform = usePlatformName();
   const who = inviteeName ?? inviteeEmail;
   return (
     <PlatformEmailLayout
@@ -34,7 +40,7 @@ export function InvitationAcceptedEmail({
       <EmailDisplayHeading>{who} joined the team</EmailDisplayHeading>
       <EmailParagraph>
         {inviterName ? `Hi ${inviterName}, ` : ''}good news — <strong>{who}</strong> accepted your
-        invitation and now has access to <strong>{orgName}</strong> on sparx
+        invitation and now has access to <strong>{orgName}</strong> on {platform}
         {inviteeName ? ` (${inviteeEmail})` : ''}.
       </EmailParagraph>
       <EmailParagraph>
@@ -47,6 +53,6 @@ export function InvitationAcceptedEmail({
   );
 }
 
-export function invitationAcceptedSubject(inviteeName: string): string {
-  return `${inviteeName} joined your team on sparx`;
+export function invitationAcceptedSubject(inviteeName: string, platform: string): string {
+  return `${inviteeName} joined your team on ${platform}`;
 }

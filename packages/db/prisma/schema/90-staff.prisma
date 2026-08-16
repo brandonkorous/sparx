@@ -93,7 +93,7 @@ model StaffMember {
   // against the right person without a human matching names in a spreadsheet.
   externalPayrollId String? @map("external_payroll_id") @db.VarChar(120)
 
-  // Chip colour on the schedule. Null = assigned from the palette on first render, so
+  // Chip color on the schedule. Null = assigned from the palette on first render, so
   // a tenant who never opens settings still gets a legible week.
   color    String? @db.VarChar(7)
   photoUrl String? @map("photo_url") @db.Text

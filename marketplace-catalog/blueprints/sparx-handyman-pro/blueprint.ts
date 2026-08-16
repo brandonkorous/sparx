@@ -10,71 +10,71 @@ import emails from './emails.json' with { type: 'json' };
 import assets from './assets.json' with { type: 'json' };
 
 const blueprint = {
-  key: 'sparx-handyman-pro',
-  version: '1.3.0',
-  name: 'sparx — Handyman (Pro)',
-  summary:
-    'A dependable handyman site — a sturdy navy-and-amber palette on an off-white ground with a solid slab display, photo-led throughout. Installs a working booking flow: a real visit menu (free estimates, TV mounting, furniture assembly, drywall repair, half-day honey-do lists), three handymen dispatched by skill with their own hours, and a 24-hour reschedule policy. Ships as "Ace & Able Handyman", an all-around home-repair pro where one call fixes it all.',
-  vertical: 'services',
-  preview: 'media/preview.png',
-  requiresModules: ['builder', 'scheduling', 'crm', 'email'],
+    key: 'sparx-handyman-pro',
+    version: '1.3.0',
+    name: 'sparx — Handyman (Pro)',
+    summary:
+        'A dependable handyman site — a sturdy navy-and-amber palette on an off-white ground with a solid slab display, photo-led throughout. Installs a working booking flow: a real visit menu (free estimates, TV mounting, furniture assembly, drywall repair, half-day honey-do lists), three handymen dispatched by skill with their own hours, and a 24-hour reschedule policy. Ships as "Ace & Able Handyman", an all-around home-repair pro where one call fixes it all.',
+    vertical: 'services',
+    preview: 'media/preview.png',
+    requiresModules: ['builder', 'scheduling', 'crm', 'email'],
 
-  // Identity only (business name + tagline + fonts + the theme's hex colours). The look
-  // rides site.theme + the theme decl below; the installing tenant rebrands the name.
-  brand: {
-    businessName: 'Ace & Able Handyman',
-    tagline: 'One call fixes it all.',
-    colors: {
-      primary: '#17559b',
-      primaryForeground: '#f4f9ff',
-      accent: '#e87f25',
-      secondary: '#313942',
-    },
-    fonts: {
-      heading: 'Archivo',
-      body: 'Inter',
-    },
-  },
-
-  // The provisioned SiteTheme the installer creates + applies — an editable saved theme
-  // over a foundation base + the template's brand snapshot. The LIVE storefront look is
-  // site.theme (the flat bespoke tokens), written last.
-  theme: {
-    name: 'aceable',
-    basePresetKey: 'apex',
-    presentation: {
-      v: 2,
-      containerWidth: '1152px',
-    },
+    // Identity only (business name + tagline + fonts + the theme's hex colors). The look
+    // rides site.theme + the theme decl below; the installing tenant rebrands the name.
     brand: {
-      colorPrimary: '#17559b',
-      colorAccent: '#e87f25',
-      colorSecondary: '#313942',
-      fontHeading: 'Archivo',
-      fontBody: 'Inter',
-      tokens: {},
+        businessName: 'Ace & Able Handyman',
+        tagline: 'One call fixes it all.',
+        colors: {
+            primary: '#17559b',
+            primaryForeground: '#f4f9ff',
+            accent: '#e87f25',
+            secondary: '#313942',
+        },
+        fonts: {
+            heading: 'Archivo',
+            body: 'Inter',
+        },
     },
-    apply: true,
-  },
 
-  assets,
-  contentTypes: [],
+    // The provisioned SiteTheme the installer creates + applies — an editable saved theme
+    // over a foundation base + the template's brand snapshot. The LIVE storefront look is
+    // site.theme (the flat bespoke tokens), written last.
+    theme: {
+        name: 'aceable',
+        basePresetKey: 'apex',
+        presentation: {
+            v: 2,
+            containerWidth: '1152px',
+        },
+        brand: {
+            colorPrimary: '#17559b',
+            colorAccent: '#e87f25',
+            colorSecondary: '#313942',
+            fontHeading: 'Archivo',
+            fontBody: 'Inter',
+            tokens: {},
+        },
+        apply: true,
+    },
 
-  // The booking spine — policies, bookable resources (staff/rooms/stations) with weekly
-  // hours, and the service menu. The installer's scheduling slice replays it into a live
-  // booking flow that the site's /book page renders.
-  scheduling,
+    assets,
+    contentTypes: [],
 
-  // Brand-voiced MARKETING starters (a welcome + a come-back), installed as DRAFTS the
-  // tenant switches on. The transactional booking sends — confirmation, reminder,
-  // reschedule, cancellation, waitlist — are platform KEYED defaults, so they are covered
-  // on email-module activation and are deliberately NOT duplicated here.
-  emails,
-  sequences: [],
+    // The booking spine — policies, bookable resources (staff/rooms/stations) with weekly
+    // hours, and the service menu. The installer's scheduling slice replays it into a live
+    // booking flow that the site's /book page renders.
+    scheduling,
 
-  // The composed distinct site (frame + Home + Book + About + Contact) in the bespoke
-  // theme, fully stamped.
-  site,
+    // Brand-voiced MARKETING starters (a welcome + a come-back), installed as DRAFTS the
+    // tenant switches on. The transactional booking sends — confirmation, reminder,
+    // reschedule, cancellation, waitlist — are platform KEYED defaults, so they are covered
+    // on email-module activation and are deliberately NOT duplicated here.
+    emails,
+    sequences: [],
+
+    // The composed distinct site (frame + Home + Book + About + Contact) in the bespoke
+    // theme, fully stamped.
+    site,
 };
 
 export default blueprint;

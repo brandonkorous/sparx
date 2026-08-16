@@ -1,831 +1,953 @@
 {
-  "categories": [
-    {
-      "handle": "kitchen",
-      "name": "Kitchen",
-      "description": "The useful, unfussy things a kitchen runs on.",
-      "featured": true
-    },
-    {
-      "handle": "cleaning",
-      "name": "Cleaning",
-      "description": "Plastic-free ways to keep a home clean.",
-      "featured": true
-    },
-    {
-      "handle": "tableware",
-      "name": "Tableware",
-      "description": "Hand-made stoneware for the table.",
-      "featured": true
-    },
-    {
-      "handle": "storage",
-      "name": "Storage",
-      "description": "Baskets and jars for keeping things.",
-      "featured": false
-    },
-    {
-      "handle": "textiles",
-      "name": "Bath & textiles",
-      "description": "Towels in organic cotton and linen.",
-      "featured": false
-    }
-  ],
-  "collections": [
-    {
-      "handle": "best-sellers",
-      "name": "Best Sellers",
-      "description": "The everyday things people come back for.",
-      "type": "manual",
-      "featured": true,
-      "productHandles": [
-        "organic-cotton-dish-towels",
-        "beeswax-food-wraps",
-        "castile-soap-bars",
-        "seagrass-storage-baskets",
-        "stoneware-mug-set"
-      ]
-    },
-    {
-      "handle": "new-arrivals",
-      "name": "New Arrivals",
-      "description": "The latest additions to the shop.",
-      "type": "manual",
-      "featured": false,
-      "productHandles": [
-        "bamboo-utensil-set",
-        "linen-tea-towels",
-        "glass-storage-jars",
-        "stoneware-serving-bowl",
-        "organic-cotton-bath-towels"
-      ]
-    },
-    {
-      "handle": "kitchen",
-      "name": "Kitchen",
-      "description": "Everyday tools and textiles for cooking and clearing.",
-      "type": "manual",
-      "featured": false,
-      "productHandles": [
-        "organic-cotton-dish-towels",
-        "beeswax-food-wraps",
-        "bamboo-utensil-set",
-        "linen-tea-towels"
-      ]
-    },
-    {
-      "handle": "cleaning",
-      "name": "Cleaning",
-      "description": "Plastic-free soap, brushes and laundry.",
-      "type": "manual",
-      "featured": false,
-      "productHandles": ["castile-soap-bars", "wool-dryer-balls", "coconut-scrub-brushes"]
-    },
-    {
-      "handle": "storage",
-      "name": "Storage",
-      "description": "Woven baskets and recycled-glass jars.",
-      "type": "manual",
-      "featured": false,
-      "productHandles": ["seagrass-storage-baskets", "glass-storage-jars"]
-    }
-  ],
-  "products": [
-    {
-      "handle": "organic-cotton-dish-towels",
-      "title": "Organic Cotton Dish Towels",
-      "description": "A set of three generously sized dish towels woven from GOTS-certified organic cotton, with a waffle weave that actually dries a plate instead of pushing the water around. They soften with every wash, hang from a sewn-in loop, and go on the compost heap in shreds when a decade of use finally finishes them.",
-      "status": "active",
-      "productType": "Kitchen textiles",
-      "vendor": "Fernwood Goods",
-      "tags": ["organic cotton", "kitchen", "dish towels", "plastic-free"],
-      "categoryHandles": ["kitchen"],
-      "collectionHandles": ["best-sellers", "kitchen"],
-      "seoTitle": "Organic Cotton Dish Towels — set of three waffle-weave towels",
-      "seoDescription": "A set of three GOTS-certified organic cotton waffle-weave dish towels that soften with every wash.",
-      "productTypeKey": "apparel",
-      "attributes": {
-        "fabric": "Woven from GOTS-certified organic cotton in a waffle structure that traps water and actually dries a plate instead of pushing it around. Generously sized, hemmed flat, and finished with a sewn-in hanging loop.",
-        "fit": "A set of three, sized for real drying — big enough for a stack of plates, not a token square. They soften and grow more absorbent with every wash.",
-        "care": "Machine wash warm with like colours and tumble or line dry; skip fabric softener, which coats the cotton and stops it absorbing. Bleach-free, and compostable in shreds once a decade of use finishes them.",
-        "materials": [
-          {
-            "name": "Organic cotton",
-            "percent": "100%"
-          }
-        ],
-        "origin": "Made in Portugal"
-      },
-      "options": [
+    "categories": [
         {
-          "name": "Colour",
-          "displayType": "swatch",
-          "values": [
-            {
-              "value": "Natural"
-            },
-            {
-              "value": "Sage"
-            }
-          ]
-        }
-      ],
-      "variants": [
-        {
-          "sku": "FWD-DISHTOWEL-NAT",
-          "priceCents": 2400,
-          "isDefault": true,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Colour": "Natural"
-          }
+            "handle": "kitchen",
+            "name": "Kitchen",
+            "description": "The useful, unfussy things a kitchen runs on.",
+            "featured": true
         },
         {
-          "sku": "FWD-DISHTOWEL-SAG",
-          "priceCents": 2400,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Colour": "Sage"
-          }
-        }
-      ],
-      "images": [
-        {
-          "assetId": "organic-cotton-dish-towels",
-          "isPrimary": true,
-          "alt": "The Organic Cotton Dish Towels"
-        }
-      ]
-    },
-    {
-      "handle": "beeswax-food-wraps",
-      "title": "Beeswax Food Wraps",
-      "description": "The plastic wrap you never throw away. Organic cotton dipped in beeswax, tree resin and jojoba oil, so the warmth of your hands moulds it around a bowl, a lemon half or a loaf of bread. Wash it in cool water, use it for a year or more, then compost it or wrap it round kindling to light a fire.",
-      "status": "active",
-      "productType": "Kitchen",
-      "vendor": "Fernwood Goods",
-      "tags": ["beeswax", "kitchen", "plastic-free", "reusable"],
-      "categoryHandles": ["kitchen"],
-      "collectionHandles": ["best-sellers", "kitchen"],
-      "seoTitle": "Beeswax Food Wraps — reusable plastic-free food wraps",
-      "seoDescription": "Organic cotton beeswax wraps that mould to a bowl with the warmth of your hands and compost at the end.",
-      "productTypeKey": "apparel",
-      "attributes": {
-        "fabric": "Organic cotton dipped in a blend of beeswax, tree resin and jojoba oil, so the warmth of your hands moulds it around a bowl, a lemon half or a loaf. The wax makes it cling; the cotton makes it last.",
-        "fit": "A mixed set of small, medium and large squares — enough to cover most bowls and to fold around a sandwich or a block of cheese. Re-waxable, so a tired wrap comes back rather than going in the bin.",
-        "care": "Wash in cool water with a little mild soap and air-dry flat — no heat, no dishwasher, and not around raw meat. Re-wax with a grated block in a warm oven when the cling fades; compost it at the very end.",
-        "materials": [
-          {
-            "name": "Organic cotton",
-            "percent": "62%"
-          },
-          {
-            "name": "Beeswax",
-            "percent": "28%"
-          },
-          {
-            "name": "Tree resin & jojoba oil",
-            "percent": "10%"
-          }
-        ],
-        "origin": "Made in England"
-      },
-      "options": [
-        {
-          "name": "Size",
-          "displayType": "dropdown",
-          "values": [
-            {
-              "value": "Set of 3"
-            },
-            {
-              "value": "Set of 5"
-            }
-          ]
-        }
-      ],
-      "variants": [
-        {
-          "sku": "FWD-BEESWAX-3",
-          "priceCents": 1800,
-          "isDefault": true,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Size": "Set of 3"
-          }
+            "handle": "cleaning",
+            "name": "Cleaning",
+            "description": "Plastic-free ways to keep a home clean.",
+            "featured": true
         },
         {
-          "sku": "FWD-BEESWAX-5",
-          "priceCents": 2800,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Size": "Set of 5"
-          }
-        }
-      ],
-      "images": [
-        {
-          "assetId": "beeswax-food-wraps",
-          "isPrimary": true,
-          "alt": "The Beeswax Food Wraps"
-        }
-      ]
-    },
-    {
-      "handle": "bamboo-utensil-set",
-      "title": "Bamboo Utensil Set",
-      "description": "Five kitchen tools — spoon, slotted spoon, spatula, turner and salad fork — carved from a single stand of fast-growing bamboo, which grows back faster than any hardwood we could have used. Kind to a non-stick pan, warm in the hand, and finished with a food-safe oil you can refresh in a minute.",
-      "status": "active",
-      "productType": "Kitchen",
-      "vendor": "Fernwood Goods",
-      "tags": ["bamboo", "kitchen", "utensils", "renewable"],
-      "categoryHandles": ["kitchen"],
-      "collectionHandles": ["new-arrivals", "kitchen"],
-      "seoTitle": "Bamboo Utensil Set — five-piece fast-growing bamboo kitchen tools",
-      "seoDescription": "A five-piece bamboo utensil set, kind to non-stick pans and finished in food-safe oil.",
-      "productTypeKey": "apparel",
-      "attributes": {
-        "fabric": "Carved from a single stand of fast-growing bamboo — which regrows quicker than any hardwood — and finished with a food-safe oil. Five tools: a spoon, a slotted spoon, a spatula, a turner and a salad fork.",
-        "fit": "A five-piece set sized for everyday cooking — warm and light in the hand, kind to a non-stick pan, and long enough to keep knuckles off a hot pan edge.",
-        "care": "Hand-wash in warm soapy water and dry upright — never the dishwasher, which splits wood over time. Refresh the finish in a minute with a food-safe oil when the grain starts to look dry.",
-        "materials": [
-          {
-            "name": "Bamboo",
-            "percent": "100%"
-          }
-        ],
-        "origin": "Made in Vietnam"
-      },
-      "variants": [
-        {
-          "sku": "FWD-BAMBOO-SET",
-          "priceCents": 3200,
-          "isDefault": true,
-          "inventoryPolicy": "continue"
-        }
-      ],
-      "images": [
-        {
-          "assetId": "bamboo-utensil-set",
-          "isPrimary": true,
-          "alt": "The Bamboo Utensil Set"
-        }
-      ]
-    },
-    {
-      "handle": "linen-tea-towels",
-      "title": "Linen Tea Towels",
-      "description": "A pair of tea towels woven from European flax linen — the fibre that needs almost no water or spray to grow, and gets softer and more absorbent the more you use it. Lint-free for a polished glass, quick to dry so they never turn musty, and finished with a hanging loop and a plainly stitched edge.",
-      "status": "active",
-      "productType": "Kitchen textiles",
-      "vendor": "Fernwood Goods",
-      "tags": ["linen", "kitchen", "tea towels", "flax"],
-      "categoryHandles": ["kitchen"],
-      "collectionHandles": ["new-arrivals", "kitchen"],
-      "seoTitle": "Linen Tea Towels — pair of European flax linen towels",
-      "seoDescription": "A pair of lint-free European flax linen tea towels that soften and absorb more with use.",
-      "productTypeKey": "apparel",
-      "attributes": {
-        "fabric": "Woven from European flax linen — the fibre that grows on rain alone and gets softer and more absorbent the more you use it. Lint-free for a polished glass, with a plainly stitched edge and a hanging loop.",
-        "fit": "A pair, cut long for a proper grip on a hot pan and quick to dry so they never turn musty between washes. They break in over the first few washes and only improve from there.",
-        "care": "Machine wash warm and line or tumble dry; linen actually likes being used and washed. A press with a warm iron while slightly damp keeps them crisp, though creased is honest too.",
-        "materials": [
-          {
-            "name": "European flax linen",
-            "percent": "100%"
-          }
-        ],
-        "origin": "Made in Lithuania"
-      },
-      "options": [
-        {
-          "name": "Colour",
-          "displayType": "swatch",
-          "values": [
-            {
-              "value": "Oat"
-            },
-            {
-              "value": "Clay"
-            }
-          ]
-        }
-      ],
-      "variants": [
-        {
-          "sku": "FWD-TEATOWEL-OAT",
-          "priceCents": 2200,
-          "isDefault": true,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Colour": "Oat"
-          }
+            "handle": "tableware",
+            "name": "Tableware",
+            "description": "Hand-made stoneware for the table.",
+            "featured": true
         },
         {
-          "sku": "FWD-TEATOWEL-CLA",
-          "priceCents": 2200,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Colour": "Clay"
-          }
-        }
-      ],
-      "images": [
-        {
-          "assetId": "linen-tea-towels",
-          "isPrimary": true,
-          "alt": "The Linen Tea Towels"
-        }
-      ]
-    },
-    {
-      "handle": "castile-soap-bars",
-      "title": "Castile Soap Bars",
-      "description": "A trio of hard-milled castile soap bars made from olive and coconut oil and nothing you cannot pronounce — no palm oil, no synthetic fragrance, no plastic. One bar does the sink, the shower and the hands, lasts for weeks, and arrives wrapped in paper you can plant or compost.",
-      "status": "active",
-      "productType": "Cleaning",
-      "vendor": "Fernwood Goods",
-      "tags": ["castile soap", "cleaning", "palm-oil-free", "plastic-free"],
-      "categoryHandles": ["cleaning"],
-      "collectionHandles": ["best-sellers", "cleaning"],
-      "seoTitle": "Castile Soap Bars — set of three olive-oil soap bars",
-      "seoDescription": "A trio of hard-milled olive and coconut castile soap bars, palm-oil-free and plastic-free.",
-      "productTypeKey": "apparel",
-      "attributes": {
-        "fabric": "Hard-milled from olive and coconut oil and nothing you cannot pronounce — no palm oil, no synthetic fragrance, no plastic. A trio of long-lasting bars wrapped in paper you can compost or plant.",
-        "fit": "Three full-size bars; one does the sink, the shower and the hands and lasts for weeks. Sized to sit in a dish without going to mush between uses.",
-        "care": "Keep the bar on a draining dish so it dries between uses — a soaking bar is a bar you waste. Cool water or warm, it lathers either way, and the paper wrap composts.",
-        "materials": [
-          {
-            "name": "Saponified olive oil",
-            "percent": "70%"
-          },
-          {
-            "name": "Saponified coconut oil",
-            "percent": "28%"
-          },
-          {
-            "name": "Water & minerals",
-            "percent": "2%"
-          }
-        ],
-        "origin": "Made in Spain"
-      },
-      "options": [
-        {
-          "name": "Scent",
-          "displayType": "dropdown",
-          "values": [
-            {
-              "value": "Unscented"
-            },
-            {
-              "value": "Lavender"
-            }
-          ]
-        }
-      ],
-      "variants": [
-        {
-          "sku": "FWD-CASTILE-UNS",
-          "priceCents": 1400,
-          "isDefault": true,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Scent": "Unscented"
-          }
+            "handle": "storage",
+            "name": "Storage",
+            "description": "Baskets and jars for keeping things.",
+            "featured": false
         },
         {
-          "sku": "FWD-CASTILE-LAV",
-          "priceCents": 1500,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Scent": "Lavender"
-          }
+            "handle": "textiles",
+            "name": "Bath & textiles",
+            "description": "Towels in organic cotton and linen.",
+            "featured": false
         }
-      ],
-      "images": [
+    ],
+    "collections": [
         {
-          "assetId": "castile-soap-bars",
-          "isPrimary": true,
-          "alt": "The Castile Soap Bars"
-        }
-      ]
-    },
-    {
-      "handle": "wool-dryer-balls",
-      "title": "Wool Dryer Balls",
-      "description": "Six balls of dense New Zealand wool that replace single-use dryer sheets for good. They bounce between your clothes to cut drying time by a quarter, soften without any coating, and take a few drops of essential oil if you like a scent. They last for a thousand loads, then go on the compost.",
-      "status": "active",
-      "productType": "Cleaning",
-      "vendor": "Fernwood Goods",
-      "tags": ["wool", "laundry", "cleaning", "reusable"],
-      "categoryHandles": ["cleaning"],
-      "collectionHandles": ["cleaning"],
-      "seoTitle": "Wool Dryer Balls — set of six New Zealand wool dryer balls",
-      "seoDescription": "Six New Zealand wool dryer balls that cut drying time and replace single-use dryer sheets.",
-      "productTypeKey": "apparel",
-      "attributes": {
-        "fabric": "Six balls of dense, felted New Zealand wool and nothing else. They bounce between damp clothes in the dryer to lift and separate them, cutting drying time and softening without any coating or scent.",
-        "fit": "A set of six — the number it takes to make a real difference to a full load; add a few drops of essential oil if you like a scent. They last for a thousand loads and then compost.",
-        "care": "Just use them — they need no washing. If they pill, a quick run in a hot dryer re-felts the surface. Store them dry between loads so the wool never sits damp.",
-        "materials": [
-          {
-            "name": "New Zealand wool",
-            "percent": "100%"
-          }
-        ],
-        "origin": "Made in Nepal"
-      },
-      "variants": [
-        {
-          "sku": "FWD-DRYERBALL-6",
-          "priceCents": 2600,
-          "isDefault": true,
-          "inventoryPolicy": "continue"
-        }
-      ],
-      "images": [
-        {
-          "assetId": "wool-dryer-balls",
-          "isPrimary": true,
-          "alt": "The Wool Dryer Balls"
-        }
-      ]
-    },
-    {
-      "handle": "coconut-scrub-brushes",
-      "title": "Coconut Scrub Brushes",
-      "description": "A pair of dish brushes with beechwood handles and stiff coconut-coir bristles that scour a burnt pan without a scrap of plastic. When the head finally wears down you unclip it for the compost and click a fresh one onto the same handle — a brush you refill instead of replace.",
-      "status": "active",
-      "productType": "Cleaning",
-      "vendor": "Fernwood Goods",
-      "tags": ["coconut coir", "cleaning", "plastic-free", "refillable"],
-      "categoryHandles": ["cleaning"],
-      "collectionHandles": ["cleaning"],
-      "seoTitle": "Coconut Scrub Brushes — pair of refillable dish brushes",
-      "seoDescription": "A pair of beechwood dish brushes with compostable coconut-coir heads you refill, not replace.",
-      "productTypeKey": "apparel",
-      "attributes": {
-        "fabric": "Beechwood handles and stiff coconut-coir bristles that scour a burnt pan without a scrap of plastic. The head clips off for the compost when it wears down; a fresh one clicks onto the same handle.",
-        "fit": "A pair, so there is a dry one while the other drains — sized to fit the hand and reach the bottom of a pan. A refillable design: you replace the head, not the whole brush.",
-        "care": "Rinse and stand it bristle-up to dry so the wood never sits in water. When the coir softens, unclip the head for the compost and click on a replacement.",
-        "materials": [
-          {
-            "name": "Beechwood",
-            "percent": "60%"
-          },
-          {
-            "name": "Coconut coir",
-            "percent": "38%"
-          },
-          {
-            "name": "Galvanised wire",
-            "percent": "2%"
-          }
-        ],
-        "origin": "Made in Germany"
-      },
-      "variants": [
-        {
-          "sku": "FWD-SCRUBBRUSH-2",
-          "priceCents": 1600,
-          "isDefault": true,
-          "inventoryPolicy": "continue"
-        }
-      ],
-      "images": [
-        {
-          "assetId": "coconut-scrub-brushes",
-          "isPrimary": true,
-          "alt": "The Coconut Scrub Brushes"
-        }
-      ]
-    },
-    {
-      "handle": "seagrass-storage-baskets",
-      "title": "Seagrass Storage Baskets",
-      "description": "A hand-woven basket of seagrass — a plant that regrows in the shallows and needs no farming at all — with sturdy handles and a soft, structured shape that holds its form under a load of blankets, toys or firewood. Every one is woven by hand, so no two are exactly alike, and it lasts for years of daily lifting.",
-      "status": "active",
-      "productType": "Storage",
-      "vendor": "Fernwood Goods",
-      "tags": ["seagrass", "storage", "basket", "handwoven"],
-      "categoryHandles": ["storage"],
-      "collectionHandles": ["best-sellers", "storage"],
-      "seoTitle": "Seagrass Storage Baskets — hand-woven seagrass baskets",
-      "seoDescription": "A hand-woven seagrass storage basket with sturdy handles that holds its shape under a load.",
-      "productTypeKey": "apparel",
-      "attributes": {
-        "fabric": "Hand-woven from seagrass — a plant that regrows in the shallows and needs no farming — over a sturdy frame, with woven handles and a soft, structured shape that holds its form under a load.",
-        "fit": "Offered in two sizes for blankets, toys or firewood; every basket is woven by hand, so no two are exactly alike. Sized to sit on a shelf or on the floor beside a sofa.",
-        "care": "Dust it out or wipe with a barely-damp cloth; keep it out of standing water, as any natural fibre dislikes staying wet. Reshape it by hand if it takes a knock — seagrass is forgiving.",
-        "materials": [
-          {
-            "name": "Seagrass",
-            "percent": "94%"
-          },
-          {
-            "name": "Steel frame",
-            "percent": "6%"
-          }
-        ],
-        "origin": "Made in Vietnam"
-      },
-      "options": [
-        {
-          "name": "Size",
-          "displayType": "dropdown",
-          "values": [
-            {
-              "value": "Small"
-            },
-            {
-              "value": "Large"
-            }
-          ]
-        }
-      ],
-      "variants": [
-        {
-          "sku": "FWD-BASKET-SM",
-          "priceCents": 3800,
-          "isDefault": true,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Size": "Small"
-          }
+            "handle": "best-sellers",
+            "name": "Best Sellers",
+            "description": "The everyday things people come back for.",
+            "type": "manual",
+            "featured": true,
+            "productHandles": [
+                "organic-cotton-dish-towels",
+                "beeswax-food-wraps",
+                "castile-soap-bars",
+                "seagrass-storage-baskets",
+                "stoneware-mug-set"
+            ]
         },
         {
-          "sku": "FWD-BASKET-LG",
-          "priceCents": 5400,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Size": "Large"
-          }
-        }
-      ],
-      "images": [
-        {
-          "assetId": "seagrass-storage-baskets",
-          "isPrimary": true,
-          "alt": "The Seagrass Storage Baskets"
-        }
-      ]
-    },
-    {
-      "handle": "glass-storage-jars",
-      "title": "Glass Storage Jars",
-      "description": "A set of thick recycled-glass jars with a bamboo lid and a silicone seal, for the pantry staples that used to live in plastic. You can see what is in them, they wash in the machine forever, and glass is the one material you can recycle again and again with nothing lost. Airtight enough for flour, coffee or the good biscuits.",
-      "status": "active",
-      "productType": "Storage",
-      "vendor": "Fernwood Goods",
-      "tags": ["recycled glass", "storage", "jars", "pantry"],
-      "categoryHandles": ["storage"],
-      "collectionHandles": ["new-arrivals", "storage"],
-      "seoTitle": "Glass Storage Jars — recycled-glass pantry jars with bamboo lids",
-      "seoDescription": "A set of airtight recycled-glass storage jars with bamboo lids and silicone seals for the pantry.",
-      "productTypeKey": "apparel",
-      "attributes": {
-        "fabric": "Thick recycled glass with a bamboo lid and a silicone seal, so you can see what is inside and recycle the glass again and again with nothing lost. Airtight enough for flour, coffee or the good biscuits.",
-        "fit": "A set in two counts, sized for the pantry staples that used to live in plastic; the jars stack and line up cleanly on a shelf. The bamboo lid wipes clean and the seal lifts out to wash.",
-        "care": "The glass jar is dishwasher-safe forever; hand-wash the bamboo lid and let it dry rather than soaking it. Replace the silicone seal on its own if it ever perishes, not the whole jar.",
-        "materials": [
-          {
-            "name": "Recycled glass",
-            "percent": "88%"
-          },
-          {
-            "name": "Bamboo lid",
-            "percent": "9%"
-          },
-          {
-            "name": "Silicone seal",
-            "percent": "3%"
-          }
-        ],
-        "origin": "Made in Poland"
-      },
-      "options": [
-        {
-          "name": "Size",
-          "displayType": "dropdown",
-          "values": [
-            {
-              "value": "Set of 3"
-            },
-            {
-              "value": "Set of 6"
-            }
-          ]
-        }
-      ],
-      "variants": [
-        {
-          "sku": "FWD-GLASSJAR-3",
-          "priceCents": 3400,
-          "isDefault": true,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Size": "Set of 3"
-          }
+            "handle": "new-arrivals",
+            "name": "New Arrivals",
+            "description": "The latest additions to the shop.",
+            "type": "manual",
+            "featured": false,
+            "productHandles": [
+                "bamboo-utensil-set",
+                "linen-tea-towels",
+                "glass-storage-jars",
+                "stoneware-serving-bowl",
+                "organic-cotton-bath-towels"
+            ]
         },
         {
-          "sku": "FWD-GLASSJAR-6",
-          "priceCents": 5800,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Size": "Set of 6"
-          }
-        }
-      ],
-      "images": [
-        {
-          "assetId": "glass-storage-jars",
-          "isPrimary": true,
-          "alt": "The Glass Storage Jars"
-        }
-      ]
-    },
-    {
-      "handle": "stoneware-mug-set",
-      "title": "Stoneware Mug Set",
-      "description": "Four mugs thrown from local stoneware clay and glazed in a soft matte that breaks to bare clay at the rim. They hold a proper amount of coffee, keep it warm, and are heavy enough to feel like something. Fired once, kept for years, and made from clay dug rather than a resin poured.",
-      "status": "active",
-      "productType": "Tableware",
-      "vendor": "Fernwood Goods",
-      "tags": ["stoneware", "tableware", "mugs", "handmade"],
-      "categoryHandles": ["tableware"],
-      "collectionHandles": ["best-sellers"],
-      "seoTitle": "Stoneware Mug Set — set of four hand-glazed stoneware mugs",
-      "seoDescription": "A set of four stoneware mugs in a soft matte glaze that breaks to bare clay at the rim.",
-      "productTypeKey": "apparel",
-      "attributes": {
-        "fabric": "Thrown from local stoneware clay and glazed in a soft matte that breaks to bare clay at the rim. Fired hard so it holds heat, and heavy enough in the hand to feel like something.",
-        "fit": "A set of four, each holding a proper amount of coffee; because they are glazed by hand, the colour varies a little cup to cup. Sized for everyday use, not a display shelf.",
-        "care": "Dishwasher- and microwave-safe, though a quick hand-wash keeps the matte glaze at its best. Warm the cup with hot water first on a cold morning and it holds the heat longer.",
-        "materials": [
-          {
-            "name": "Stoneware clay",
-            "percent": "90%"
-          },
-          {
-            "name": "Mineral glaze",
-            "percent": "10%"
-          }
-        ],
-        "origin": "Made in Stoke-on-Trent, England"
-      },
-      "options": [
-        {
-          "name": "Colour",
-          "displayType": "swatch",
-          "values": [
-            {
-              "value": "Oatmeal"
-            },
-            {
-              "value": "Clay"
-            }
-          ]
-        }
-      ],
-      "variants": [
-        {
-          "sku": "FWD-MUG-OAT",
-          "priceCents": 4400,
-          "isDefault": true,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Colour": "Oatmeal"
-          }
+            "handle": "kitchen",
+            "name": "Kitchen",
+            "description": "Everyday tools and textiles for cooking and clearing.",
+            "type": "manual",
+            "featured": false,
+            "productHandles": [
+                "organic-cotton-dish-towels",
+                "beeswax-food-wraps",
+                "bamboo-utensil-set",
+                "linen-tea-towels"
+            ]
         },
         {
-          "sku": "FWD-MUG-CLA",
-          "priceCents": 4400,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Colour": "Clay"
-          }
-        }
-      ],
-      "images": [
-        {
-          "assetId": "stoneware-mug-set",
-          "isPrimary": true,
-          "alt": "The Stoneware Mug Set"
-        }
-      ]
-    },
-    {
-      "handle": "stoneware-serving-bowl",
-      "title": "Stoneware Serving Bowl",
-      "description": "A wide, low serving bowl thrown by hand from stoneware clay — big enough for a salad for the table or a bowl of fruit on the counter, and handsome enough to leave out. The speckled oatmeal glaze suits whatever you put in it, and stoneware simply outlasts the plastic and melamine it replaces.",
-      "status": "active",
-      "productType": "Tableware",
-      "vendor": "Fernwood Goods",
-      "tags": ["stoneware", "tableware", "serving bowl", "handmade"],
-      "categoryHandles": ["tableware"],
-      "collectionHandles": ["new-arrivals"],
-      "seoTitle": "Stoneware Serving Bowl — wide hand-thrown serving bowl",
-      "seoDescription": "A wide, low hand-thrown stoneware serving bowl in a speckled oatmeal glaze.",
-      "productTypeKey": "apparel",
-      "attributes": {
-        "fabric": "A wide, low bowl thrown by hand from stoneware clay in a speckled oatmeal glaze that suits whatever you put in it. Substantial enough to sit out on the counter and handsome enough to leave there.",
-        "fit": "Big enough for a salad for the table or a bowl of fruit on the side; each one is hand-thrown, so the size and the speckle vary slightly. One generous bowl, not a nesting set.",
-        "care": "Dishwasher-safe and hard-wearing; a hand-wash keeps the glaze looking its best over years. Bring it up to room temperature before a hot oven if you serve straight from the heat.",
-        "materials": [
-          {
-            "name": "Stoneware clay",
-            "percent": "92%"
-          },
-          {
-            "name": "Mineral glaze",
-            "percent": "8%"
-          }
-        ],
-        "origin": "Made in Stoke-on-Trent, England"
-      },
-      "variants": [
-        {
-          "sku": "FWD-BOWL",
-          "priceCents": 4800,
-          "isDefault": true,
-          "inventoryPolicy": "continue"
-        }
-      ],
-      "images": [
-        {
-          "assetId": "stoneware-serving-bowl",
-          "isPrimary": true,
-          "alt": "The Stoneware Serving Bowl"
-        }
-      ]
-    },
-    {
-      "handle": "organic-cotton-bath-towels",
-      "title": "Organic Cotton Bath Towels",
-      "description": "A pair of bath towels woven from long-staple organic cotton, thirsty from the first wash rather than the tenth and free of the softening coatings that stop cheaper towels absorbing at all. Undyed or coloured with low-impact dye, hemmed to hold their shape, and the kind of everyday thing worth buying once and keeping.",
-      "status": "active",
-      "productType": "Textiles",
-      "vendor": "Fernwood Goods",
-      "tags": ["organic cotton", "bath", "towels", "textiles"],
-      "categoryHandles": ["textiles"],
-      "collectionHandles": ["new-arrivals"],
-      "seoTitle": "Organic Cotton Bath Towels — pair of long-staple cotton towels",
-      "seoDescription": "A pair of long-staple organic cotton bath towels, thirsty from the first wash and free of softening coatings.",
-      "productTypeKey": "apparel",
-      "attributes": {
-        "fabric": "Woven from long-staple organic cotton, thirsty from the first wash rather than the tenth and free of the softening coatings that stop cheaper towels absorbing. Undyed or coloured with low-impact dye, and hemmed to hold their shape.",
-        "fit": "A pair of full-size bath towels, dense enough to dry properly and to last years of daily use. They plump up over the first few washes and stay soft without any additives.",
-        "care": "Machine wash warm and tumble dry on low; skip the fabric softener, which is exactly what stops a towel absorbing. Wash new towels once before first use to set the pile.",
-        "materials": [
-          {
-            "name": "Organic cotton",
-            "percent": "100%"
-          }
-        ],
-        "origin": "Made in Portugal"
-      },
-      "options": [
-        {
-          "name": "Colour",
-          "displayType": "swatch",
-          "values": [
-            {
-              "value": "Oat"
-            },
-            {
-              "value": "Slate"
-            }
-          ]
-        }
-      ],
-      "variants": [
-        {
-          "sku": "FWD-BATHTOWEL-OAT",
-          "priceCents": 4200,
-          "isDefault": true,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Colour": "Oat"
-          }
+            "handle": "cleaning",
+            "name": "Cleaning",
+            "description": "Plastic-free soap, brushes and laundry.",
+            "type": "manual",
+            "featured": false,
+            "productHandles": [
+                "castile-soap-bars",
+                "wool-dryer-balls",
+                "coconut-scrub-brushes"
+            ]
         },
         {
-          "sku": "FWD-BATHTOWEL-SLT",
-          "priceCents": 4200,
-          "inventoryPolicy": "continue",
-          "optionValues": {
-            "Colour": "Slate"
-          }
+            "handle": "storage",
+            "name": "Storage",
+            "description": "Woven baskets and recycled-glass jars.",
+            "type": "manual",
+            "featured": false,
+            "productHandles": [
+                "seagrass-storage-baskets",
+                "glass-storage-jars"
+            ]
         }
-      ],
-      "images": [
+    ],
+    "products": [
         {
-          "assetId": "organic-cotton-bath-towels",
-          "isPrimary": true,
-          "alt": "The Organic Cotton Bath Towels"
+            "handle": "organic-cotton-dish-towels",
+            "title": "Organic Cotton Dish Towels",
+            "description": "A set of three generously sized dish towels woven from GOTS-certified organic cotton, with a waffle weave that actually dries a plate instead of pushing the water around. They soften with every wash, hang from a sewn-in loop, and go on the compost heap in shreds when a decade of use finally finishes them.",
+            "status": "active",
+            "productType": "Kitchen textiles",
+            "vendor": "Fernwood Goods",
+            "tags": [
+                "organic cotton",
+                "kitchen",
+                "dish towels",
+                "plastic-free"
+            ],
+            "categoryHandles": [
+                "kitchen"
+            ],
+            "collectionHandles": [
+                "best-sellers",
+                "kitchen"
+            ],
+            "seoTitle": "Organic Cotton Dish Towels — set of three waffle-weave towels",
+            "seoDescription": "A set of three GOTS-certified organic cotton waffle-weave dish towels that soften with every wash.",
+            "productTypeKey": "apparel",
+            "attributes": {
+                "fabric": "Woven from GOTS-certified organic cotton in a waffle structure that traps water and actually dries a plate instead of pushing it around. Generously sized, hemmed flat, and finished with a sewn-in hanging loop.",
+                "fit": "A set of three, sized for real drying — big enough for a stack of plates, not a token square. They soften and grow more absorbent with every wash.",
+                "care": "Machine wash warm with like colors and tumble or line dry; skip fabric softener, which coats the cotton and stops it absorbing. Bleach-free, and compostable in shreds once a decade of use finishes them.",
+                "materials": [
+                    {
+                        "name": "Organic cotton",
+                        "percent": "100%"
+                    }
+                ],
+                "origin": "Made in Portugal"
+            },
+            "options": [
+                {
+                    "name": "Color",
+                    "displayType": "swatch",
+                    "values": [
+                        {
+                            "value": "Natural"
+                        },
+                        {
+                            "value": "Sage"
+                        }
+                    ]
+                }
+            ],
+            "variants": [
+                {
+                    "sku": "FWD-DISHTOWEL-NAT",
+                    "priceCents": 2400,
+                    "isDefault": true,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Natural"
+                    }
+                },
+                {
+                    "sku": "FWD-DISHTOWEL-SAG",
+                    "priceCents": 2400,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Sage"
+                    }
+                }
+            ],
+            "images": [
+                {
+                    "assetId": "organic-cotton-dish-towels",
+                    "isPrimary": true,
+                    "alt": "The Organic Cotton Dish Towels"
+                }
+            ]
+        },
+        {
+            "handle": "beeswax-food-wraps",
+            "title": "Beeswax Food Wraps",
+            "description": "The plastic wrap you never throw away. Organic cotton dipped in beeswax, tree resin and jojoba oil, so the warmth of your hands moulds it around a bowl, a lemon half or a loaf of bread. Wash it in cool water, use it for a year or more, then compost it or wrap it round kindling to light a fire.",
+            "status": "active",
+            "productType": "Kitchen",
+            "vendor": "Fernwood Goods",
+            "tags": [
+                "beeswax",
+                "kitchen",
+                "plastic-free",
+                "reusable"
+            ],
+            "categoryHandles": [
+                "kitchen"
+            ],
+            "collectionHandles": [
+                "best-sellers",
+                "kitchen"
+            ],
+            "seoTitle": "Beeswax Food Wraps — reusable plastic-free food wraps",
+            "seoDescription": "Organic cotton beeswax wraps that mould to a bowl with the warmth of your hands and compost at the end.",
+            "productTypeKey": "apparel",
+            "attributes": {
+                "fabric": "Organic cotton dipped in a blend of beeswax, tree resin and jojoba oil, so the warmth of your hands moulds it around a bowl, a lemon half or a loaf. The wax makes it cling; the cotton makes it last.",
+                "fit": "A mixed set of small, medium and large squares — enough to cover most bowls and to fold around a sandwich or a block of cheese. Re-waxable, so a tired wrap comes back rather than going in the bin.",
+                "care": "Wash in cool water with a little mild soap and air-dry flat — no heat, no dishwasher, and not around raw meat. Re-wax with a grated block in a warm oven when the cling fades; compost it at the very end.",
+                "materials": [
+                    {
+                        "name": "Organic cotton",
+                        "percent": "62%"
+                    },
+                    {
+                        "name": "Beeswax",
+                        "percent": "28%"
+                    },
+                    {
+                        "name": "Tree resin & jojoba oil",
+                        "percent": "10%"
+                    }
+                ],
+                "origin": "Made in England"
+            },
+            "options": [
+                {
+                    "name": "Size",
+                    "displayType": "dropdown",
+                    "values": [
+                        {
+                            "value": "Set of 3"
+                        },
+                        {
+                            "value": "Set of 5"
+                        }
+                    ]
+                }
+            ],
+            "variants": [
+                {
+                    "sku": "FWD-BEESWAX-3",
+                    "priceCents": 1800,
+                    "isDefault": true,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Size": "Set of 3"
+                    }
+                },
+                {
+                    "sku": "FWD-BEESWAX-5",
+                    "priceCents": 2800,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Size": "Set of 5"
+                    }
+                }
+            ],
+            "images": [
+                {
+                    "assetId": "beeswax-food-wraps",
+                    "isPrimary": true,
+                    "alt": "The Beeswax Food Wraps"
+                }
+            ]
+        },
+        {
+            "handle": "bamboo-utensil-set",
+            "title": "Bamboo Utensil Set",
+            "description": "Five kitchen tools — spoon, slotted spoon, spatula, turner and salad fork — carved from a single stand of fast-growing bamboo, which grows back faster than any hardwood we could have used. Kind to a non-stick pan, warm in the hand, and finished with a food-safe oil you can refresh in a minute.",
+            "status": "active",
+            "productType": "Kitchen",
+            "vendor": "Fernwood Goods",
+            "tags": [
+                "bamboo",
+                "kitchen",
+                "utensils",
+                "renewable"
+            ],
+            "categoryHandles": [
+                "kitchen"
+            ],
+            "collectionHandles": [
+                "new-arrivals",
+                "kitchen"
+            ],
+            "seoTitle": "Bamboo Utensil Set — five-piece fast-growing bamboo kitchen tools",
+            "seoDescription": "A five-piece bamboo utensil set, kind to non-stick pans and finished in food-safe oil.",
+            "productTypeKey": "apparel",
+            "attributes": {
+                "fabric": "Carved from a single stand of fast-growing bamboo — which regrows quicker than any hardwood — and finished with a food-safe oil. Five tools: a spoon, a slotted spoon, a spatula, a turner and a salad fork.",
+                "fit": "A five-piece set sized for everyday cooking — warm and light in the hand, kind to a non-stick pan, and long enough to keep knuckles off a hot pan edge.",
+                "care": "Hand-wash in warm soapy water and dry upright — never the dishwasher, which splits wood over time. Refresh the finish in a minute with a food-safe oil when the grain starts to look dry.",
+                "materials": [
+                    {
+                        "name": "Bamboo",
+                        "percent": "100%"
+                    }
+                ],
+                "origin": "Made in Vietnam"
+            },
+            "variants": [
+                {
+                    "sku": "FWD-BAMBOO-SET",
+                    "priceCents": 3200,
+                    "isDefault": true,
+                    "inventoryPolicy": "continue"
+                }
+            ],
+            "images": [
+                {
+                    "assetId": "bamboo-utensil-set",
+                    "isPrimary": true,
+                    "alt": "The Bamboo Utensil Set"
+                }
+            ]
+        },
+        {
+            "handle": "linen-tea-towels",
+            "title": "Linen Tea Towels",
+            "description": "A pair of tea towels woven from European flax linen — the fibre that needs almost no water or spray to grow, and gets softer and more absorbent the more you use it. Lint-free for a polished glass, quick to dry so they never turn musty, and finished with a hanging loop and a plainly stitched edge.",
+            "status": "active",
+            "productType": "Kitchen textiles",
+            "vendor": "Fernwood Goods",
+            "tags": [
+                "linen",
+                "kitchen",
+                "tea towels",
+                "flax"
+            ],
+            "categoryHandles": [
+                "kitchen"
+            ],
+            "collectionHandles": [
+                "new-arrivals",
+                "kitchen"
+            ],
+            "seoTitle": "Linen Tea Towels — pair of European flax linen towels",
+            "seoDescription": "A pair of lint-free European flax linen tea towels that soften and absorb more with use.",
+            "productTypeKey": "apparel",
+            "attributes": {
+                "fabric": "Woven from European flax linen — the fibre that grows on rain alone and gets softer and more absorbent the more you use it. Lint-free for a polished glass, with a plainly stitched edge and a hanging loop.",
+                "fit": "A pair, cut long for a proper grip on a hot pan and quick to dry so they never turn musty between washes. They break in over the first few washes and only improve from there.",
+                "care": "Machine wash warm and line or tumble dry; linen actually likes being used and washed. A press with a warm iron while slightly damp keeps them crisp, though creased is honest too.",
+                "materials": [
+                    {
+                        "name": "European flax linen",
+                        "percent": "100%"
+                    }
+                ],
+                "origin": "Made in Lithuania"
+            },
+            "options": [
+                {
+                    "name": "Color",
+                    "displayType": "swatch",
+                    "values": [
+                        {
+                            "value": "Oat"
+                        },
+                        {
+                            "value": "Clay"
+                        }
+                    ]
+                }
+            ],
+            "variants": [
+                {
+                    "sku": "FWD-TEATOWEL-OAT",
+                    "priceCents": 2200,
+                    "isDefault": true,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Oat"
+                    }
+                },
+                {
+                    "sku": "FWD-TEATOWEL-CLA",
+                    "priceCents": 2200,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Clay"
+                    }
+                }
+            ],
+            "images": [
+                {
+                    "assetId": "linen-tea-towels",
+                    "isPrimary": true,
+                    "alt": "The Linen Tea Towels"
+                }
+            ]
+        },
+        {
+            "handle": "castile-soap-bars",
+            "title": "Castile Soap Bars",
+            "description": "A trio of hard-milled castile soap bars made from olive and coconut oil and nothing you cannot pronounce — no palm oil, no synthetic fragrance, no plastic. One bar does the sink, the shower and the hands, lasts for weeks, and arrives wrapped in paper you can plant or compost.",
+            "status": "active",
+            "productType": "Cleaning",
+            "vendor": "Fernwood Goods",
+            "tags": [
+                "castile soap",
+                "cleaning",
+                "palm-oil-free",
+                "plastic-free"
+            ],
+            "categoryHandles": [
+                "cleaning"
+            ],
+            "collectionHandles": [
+                "best-sellers",
+                "cleaning"
+            ],
+            "seoTitle": "Castile Soap Bars — set of three olive-oil soap bars",
+            "seoDescription": "A trio of hard-milled olive and coconut castile soap bars, palm-oil-free and plastic-free.",
+            "productTypeKey": "apparel",
+            "attributes": {
+                "fabric": "Hard-milled from olive and coconut oil and nothing you cannot pronounce — no palm oil, no synthetic fragrance, no plastic. A trio of long-lasting bars wrapped in paper you can compost or plant.",
+                "fit": "Three full-size bars; one does the sink, the shower and the hands and lasts for weeks. Sized to sit in a dish without going to mush between uses.",
+                "care": "Keep the bar on a draining dish so it dries between uses — a soaking bar is a bar you waste. Cool water or warm, it lathers either way, and the paper wrap composts.",
+                "materials": [
+                    {
+                        "name": "Saponified olive oil",
+                        "percent": "70%"
+                    },
+                    {
+                        "name": "Saponified coconut oil",
+                        "percent": "28%"
+                    },
+                    {
+                        "name": "Water & minerals",
+                        "percent": "2%"
+                    }
+                ],
+                "origin": "Made in Spain"
+            },
+            "options": [
+                {
+                    "name": "Scent",
+                    "displayType": "dropdown",
+                    "values": [
+                        {
+                            "value": "Unscented"
+                        },
+                        {
+                            "value": "Lavender"
+                        }
+                    ]
+                }
+            ],
+            "variants": [
+                {
+                    "sku": "FWD-CASTILE-UNS",
+                    "priceCents": 1400,
+                    "isDefault": true,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Scent": "Unscented"
+                    }
+                },
+                {
+                    "sku": "FWD-CASTILE-LAV",
+                    "priceCents": 1500,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Scent": "Lavender"
+                    }
+                }
+            ],
+            "images": [
+                {
+                    "assetId": "castile-soap-bars",
+                    "isPrimary": true,
+                    "alt": "The Castile Soap Bars"
+                }
+            ]
+        },
+        {
+            "handle": "wool-dryer-balls",
+            "title": "Wool Dryer Balls",
+            "description": "Six balls of dense New Zealand wool that replace single-use dryer sheets for good. They bounce between your clothes to cut drying time by a quarter, soften without any coating, and take a few drops of essential oil if you like a scent. They last for a thousand loads, then go on the compost.",
+            "status": "active",
+            "productType": "Cleaning",
+            "vendor": "Fernwood Goods",
+            "tags": [
+                "wool",
+                "laundry",
+                "cleaning",
+                "reusable"
+            ],
+            "categoryHandles": [
+                "cleaning"
+            ],
+            "collectionHandles": [
+                "cleaning"
+            ],
+            "seoTitle": "Wool Dryer Balls — set of six New Zealand wool dryer balls",
+            "seoDescription": "Six New Zealand wool dryer balls that cut drying time and replace single-use dryer sheets.",
+            "productTypeKey": "apparel",
+            "attributes": {
+                "fabric": "Six balls of dense, felted New Zealand wool and nothing else. They bounce between damp clothes in the dryer to lift and separate them, cutting drying time and softening without any coating or scent.",
+                "fit": "A set of six — the number it takes to make a real difference to a full load; add a few drops of essential oil if you like a scent. They last for a thousand loads and then compost.",
+                "care": "Just use them — they need no washing. If they pill, a quick run in a hot dryer re-felts the surface. Store them dry between loads so the wool never sits damp.",
+                "materials": [
+                    {
+                        "name": "New Zealand wool",
+                        "percent": "100%"
+                    }
+                ],
+                "origin": "Made in Nepal"
+            },
+            "variants": [
+                {
+                    "sku": "FWD-DRYERBALL-6",
+                    "priceCents": 2600,
+                    "isDefault": true,
+                    "inventoryPolicy": "continue"
+                }
+            ],
+            "images": [
+                {
+                    "assetId": "wool-dryer-balls",
+                    "isPrimary": true,
+                    "alt": "The Wool Dryer Balls"
+                }
+            ]
+        },
+        {
+            "handle": "coconut-scrub-brushes",
+            "title": "Coconut Scrub Brushes",
+            "description": "A pair of dish brushes with beechwood handles and stiff coconut-coir bristles that scour a burnt pan without a scrap of plastic. When the head finally wears down you unclip it for the compost and click a fresh one onto the same handle — a brush you refill instead of replace.",
+            "status": "active",
+            "productType": "Cleaning",
+            "vendor": "Fernwood Goods",
+            "tags": [
+                "coconut coir",
+                "cleaning",
+                "plastic-free",
+                "refillable"
+            ],
+            "categoryHandles": [
+                "cleaning"
+            ],
+            "collectionHandles": [
+                "cleaning"
+            ],
+            "seoTitle": "Coconut Scrub Brushes — pair of refillable dish brushes",
+            "seoDescription": "A pair of beechwood dish brushes with compostable coconut-coir heads you refill, not replace.",
+            "productTypeKey": "apparel",
+            "attributes": {
+                "fabric": "Beechwood handles and stiff coconut-coir bristles that scour a burnt pan without a scrap of plastic. The head clips off for the compost when it wears down; a fresh one clicks onto the same handle.",
+                "fit": "A pair, so there is a dry one while the other drains — sized to fit the hand and reach the bottom of a pan. A refillable design: you replace the head, not the whole brush.",
+                "care": "Rinse and stand it bristle-up to dry so the wood never sits in water. When the coir softens, unclip the head for the compost and click on a replacement.",
+                "materials": [
+                    {
+                        "name": "Beechwood",
+                        "percent": "60%"
+                    },
+                    {
+                        "name": "Coconut coir",
+                        "percent": "38%"
+                    },
+                    {
+                        "name": "Galvanised wire",
+                        "percent": "2%"
+                    }
+                ],
+                "origin": "Made in Germany"
+            },
+            "variants": [
+                {
+                    "sku": "FWD-SCRUBBRUSH-2",
+                    "priceCents": 1600,
+                    "isDefault": true,
+                    "inventoryPolicy": "continue"
+                }
+            ],
+            "images": [
+                {
+                    "assetId": "coconut-scrub-brushes",
+                    "isPrimary": true,
+                    "alt": "The Coconut Scrub Brushes"
+                }
+            ]
+        },
+        {
+            "handle": "seagrass-storage-baskets",
+            "title": "Seagrass Storage Baskets",
+            "description": "A hand-woven basket of seagrass — a plant that regrows in the shallows and needs no farming at all — with sturdy handles and a soft, structured shape that holds its form under a load of blankets, toys or firewood. Every one is woven by hand, so no two are exactly alike, and it lasts for years of daily lifting.",
+            "status": "active",
+            "productType": "Storage",
+            "vendor": "Fernwood Goods",
+            "tags": [
+                "seagrass",
+                "storage",
+                "basket",
+                "handwoven"
+            ],
+            "categoryHandles": [
+                "storage"
+            ],
+            "collectionHandles": [
+                "best-sellers",
+                "storage"
+            ],
+            "seoTitle": "Seagrass Storage Baskets — hand-woven seagrass baskets",
+            "seoDescription": "A hand-woven seagrass storage basket with sturdy handles that holds its shape under a load.",
+            "productTypeKey": "apparel",
+            "attributes": {
+                "fabric": "Hand-woven from seagrass — a plant that regrows in the shallows and needs no farming — over a sturdy frame, with woven handles and a soft, structured shape that holds its form under a load.",
+                "fit": "Offered in two sizes for blankets, toys or firewood; every basket is woven by hand, so no two are exactly alike. Sized to sit on a shelf or on the floor beside a sofa.",
+                "care": "Dust it out or wipe with a barely-damp cloth; keep it out of standing water, as any natural fibre dislikes staying wet. Reshape it by hand if it takes a knock — seagrass is forgiving.",
+                "materials": [
+                    {
+                        "name": "Seagrass",
+                        "percent": "94%"
+                    },
+                    {
+                        "name": "Steel frame",
+                        "percent": "6%"
+                    }
+                ],
+                "origin": "Made in Vietnam"
+            },
+            "options": [
+                {
+                    "name": "Size",
+                    "displayType": "dropdown",
+                    "values": [
+                        {
+                            "value": "Small"
+                        },
+                        {
+                            "value": "Large"
+                        }
+                    ]
+                }
+            ],
+            "variants": [
+                {
+                    "sku": "FWD-BASKET-SM",
+                    "priceCents": 3800,
+                    "isDefault": true,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Size": "Small"
+                    }
+                },
+                {
+                    "sku": "FWD-BASKET-LG",
+                    "priceCents": 5400,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Size": "Large"
+                    }
+                }
+            ],
+            "images": [
+                {
+                    "assetId": "seagrass-storage-baskets",
+                    "isPrimary": true,
+                    "alt": "The Seagrass Storage Baskets"
+                }
+            ]
+        },
+        {
+            "handle": "glass-storage-jars",
+            "title": "Glass Storage Jars",
+            "description": "A set of thick recycled-glass jars with a bamboo lid and a silicone seal, for the pantry staples that used to live in plastic. You can see what is in them, they wash in the machine forever, and glass is the one material you can recycle again and again with nothing lost. Airtight enough for flour, coffee or the good biscuits.",
+            "status": "active",
+            "productType": "Storage",
+            "vendor": "Fernwood Goods",
+            "tags": [
+                "recycled glass",
+                "storage",
+                "jars",
+                "pantry"
+            ],
+            "categoryHandles": [
+                "storage"
+            ],
+            "collectionHandles": [
+                "new-arrivals",
+                "storage"
+            ],
+            "seoTitle": "Glass Storage Jars — recycled-glass pantry jars with bamboo lids",
+            "seoDescription": "A set of airtight recycled-glass storage jars with bamboo lids and silicone seals for the pantry.",
+            "productTypeKey": "apparel",
+            "attributes": {
+                "fabric": "Thick recycled glass with a bamboo lid and a silicone seal, so you can see what is inside and recycle the glass again and again with nothing lost. Airtight enough for flour, coffee or the good biscuits.",
+                "fit": "A set in two counts, sized for the pantry staples that used to live in plastic; the jars stack and line up cleanly on a shelf. The bamboo lid wipes clean and the seal lifts out to wash.",
+                "care": "The glass jar is dishwasher-safe forever; hand-wash the bamboo lid and let it dry rather than soaking it. Replace the silicone seal on its own if it ever perishes, not the whole jar.",
+                "materials": [
+                    {
+                        "name": "Recycled glass",
+                        "percent": "88%"
+                    },
+                    {
+                        "name": "Bamboo lid",
+                        "percent": "9%"
+                    },
+                    {
+                        "name": "Silicone seal",
+                        "percent": "3%"
+                    }
+                ],
+                "origin": "Made in Poland"
+            },
+            "options": [
+                {
+                    "name": "Size",
+                    "displayType": "dropdown",
+                    "values": [
+                        {
+                            "value": "Set of 3"
+                        },
+                        {
+                            "value": "Set of 6"
+                        }
+                    ]
+                }
+            ],
+            "variants": [
+                {
+                    "sku": "FWD-GLASSJAR-3",
+                    "priceCents": 3400,
+                    "isDefault": true,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Size": "Set of 3"
+                    }
+                },
+                {
+                    "sku": "FWD-GLASSJAR-6",
+                    "priceCents": 5800,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Size": "Set of 6"
+                    }
+                }
+            ],
+            "images": [
+                {
+                    "assetId": "glass-storage-jars",
+                    "isPrimary": true,
+                    "alt": "The Glass Storage Jars"
+                }
+            ]
+        },
+        {
+            "handle": "stoneware-mug-set",
+            "title": "Stoneware Mug Set",
+            "description": "Four mugs thrown from local stoneware clay and glazed in a soft matte that breaks to bare clay at the rim. They hold a proper amount of coffee, keep it warm, and are heavy enough to feel like something. Fired once, kept for years, and made from clay dug rather than a resin poured.",
+            "status": "active",
+            "productType": "Tableware",
+            "vendor": "Fernwood Goods",
+            "tags": [
+                "stoneware",
+                "tableware",
+                "mugs",
+                "handmade"
+            ],
+            "categoryHandles": [
+                "tableware"
+            ],
+            "collectionHandles": [
+                "best-sellers"
+            ],
+            "seoTitle": "Stoneware Mug Set — set of four hand-glazed stoneware mugs",
+            "seoDescription": "A set of four stoneware mugs in a soft matte glaze that breaks to bare clay at the rim.",
+            "productTypeKey": "apparel",
+            "attributes": {
+                "fabric": "Thrown from local stoneware clay and glazed in a soft matte that breaks to bare clay at the rim. Fired hard so it holds heat, and heavy enough in the hand to feel like something.",
+                "fit": "A set of four, each holding a proper amount of coffee; because they are glazed by hand, the color varies a little cup to cup. Sized for everyday use, not a display shelf.",
+                "care": "Dishwasher- and microwave-safe, though a quick hand-wash keeps the matte glaze at its best. Warm the cup with hot water first on a cold morning and it holds the heat longer.",
+                "materials": [
+                    {
+                        "name": "Stoneware clay",
+                        "percent": "90%"
+                    },
+                    {
+                        "name": "Mineral glaze",
+                        "percent": "10%"
+                    }
+                ],
+                "origin": "Made in Stoke-on-Trent, England"
+            },
+            "options": [
+                {
+                    "name": "Color",
+                    "displayType": "swatch",
+                    "values": [
+                        {
+                            "value": "Oatmeal"
+                        },
+                        {
+                            "value": "Clay"
+                        }
+                    ]
+                }
+            ],
+            "variants": [
+                {
+                    "sku": "FWD-MUG-OAT",
+                    "priceCents": 4400,
+                    "isDefault": true,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Oatmeal"
+                    }
+                },
+                {
+                    "sku": "FWD-MUG-CLA",
+                    "priceCents": 4400,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Clay"
+                    }
+                }
+            ],
+            "images": [
+                {
+                    "assetId": "stoneware-mug-set",
+                    "isPrimary": true,
+                    "alt": "The Stoneware Mug Set"
+                }
+            ]
+        },
+        {
+            "handle": "stoneware-serving-bowl",
+            "title": "Stoneware Serving Bowl",
+            "description": "A wide, low serving bowl thrown by hand from stoneware clay — big enough for a salad for the table or a bowl of fruit on the counter, and handsome enough to leave out. The speckled oatmeal glaze suits whatever you put in it, and stoneware simply outlasts the plastic and melamine it replaces.",
+            "status": "active",
+            "productType": "Tableware",
+            "vendor": "Fernwood Goods",
+            "tags": [
+                "stoneware",
+                "tableware",
+                "serving bowl",
+                "handmade"
+            ],
+            "categoryHandles": [
+                "tableware"
+            ],
+            "collectionHandles": [
+                "new-arrivals"
+            ],
+            "seoTitle": "Stoneware Serving Bowl — wide hand-thrown serving bowl",
+            "seoDescription": "A wide, low hand-thrown stoneware serving bowl in a speckled oatmeal glaze.",
+            "productTypeKey": "apparel",
+            "attributes": {
+                "fabric": "A wide, low bowl thrown by hand from stoneware clay in a speckled oatmeal glaze that suits whatever you put in it. Substantial enough to sit out on the counter and handsome enough to leave there.",
+                "fit": "Big enough for a salad for the table or a bowl of fruit on the side; each one is hand-thrown, so the size and the speckle vary slightly. One generous bowl, not a nesting set.",
+                "care": "Dishwasher-safe and hard-wearing; a hand-wash keeps the glaze looking its best over years. Bring it up to room temperature before a hot oven if you serve straight from the heat.",
+                "materials": [
+                    {
+                        "name": "Stoneware clay",
+                        "percent": "92%"
+                    },
+                    {
+                        "name": "Mineral glaze",
+                        "percent": "8%"
+                    }
+                ],
+                "origin": "Made in Stoke-on-Trent, England"
+            },
+            "variants": [
+                {
+                    "sku": "FWD-BOWL",
+                    "priceCents": 4800,
+                    "isDefault": true,
+                    "inventoryPolicy": "continue"
+                }
+            ],
+            "images": [
+                {
+                    "assetId": "stoneware-serving-bowl",
+                    "isPrimary": true,
+                    "alt": "The Stoneware Serving Bowl"
+                }
+            ]
+        },
+        {
+            "handle": "organic-cotton-bath-towels",
+            "title": "Organic Cotton Bath Towels",
+            "description": "A pair of bath towels woven from long-staple organic cotton, thirsty from the first wash rather than the tenth and free of the softening coatings that stop cheaper towels absorbing at all. Undyed or colored with low-impact dye, hemmed to hold their shape, and the kind of everyday thing worth buying once and keeping.",
+            "status": "active",
+            "productType": "Textiles",
+            "vendor": "Fernwood Goods",
+            "tags": [
+                "organic cotton",
+                "bath",
+                "towels",
+                "textiles"
+            ],
+            "categoryHandles": [
+                "textiles"
+            ],
+            "collectionHandles": [
+                "new-arrivals"
+            ],
+            "seoTitle": "Organic Cotton Bath Towels — pair of long-staple cotton towels",
+            "seoDescription": "A pair of long-staple organic cotton bath towels, thirsty from the first wash and free of softening coatings.",
+            "productTypeKey": "apparel",
+            "attributes": {
+                "fabric": "Woven from long-staple organic cotton, thirsty from the first wash rather than the tenth and free of the softening coatings that stop cheaper towels absorbing. Undyed or colored with low-impact dye, and hemmed to hold their shape.",
+                "fit": "A pair of full-size bath towels, dense enough to dry properly and to last years of daily use. They plump up over the first few washes and stay soft without any additives.",
+                "care": "Machine wash warm and tumble dry on low; skip the fabric softener, which is exactly what stops a towel absorbing. Wash new towels once before first use to set the pile.",
+                "materials": [
+                    {
+                        "name": "Organic cotton",
+                        "percent": "100%"
+                    }
+                ],
+                "origin": "Made in Portugal"
+            },
+            "options": [
+                {
+                    "name": "Color",
+                    "displayType": "swatch",
+                    "values": [
+                        {
+                            "value": "Oat"
+                        },
+                        {
+                            "value": "Slate"
+                        }
+                    ]
+                }
+            ],
+            "variants": [
+                {
+                    "sku": "FWD-BATHTOWEL-OAT",
+                    "priceCents": 4200,
+                    "isDefault": true,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Oat"
+                    }
+                },
+                {
+                    "sku": "FWD-BATHTOWEL-SLT",
+                    "priceCents": 4200,
+                    "inventoryPolicy": "continue",
+                    "optionValues": {
+                        "Color": "Slate"
+                    }
+                }
+            ],
+            "images": [
+                {
+                    "assetId": "organic-cotton-bath-towels",
+                    "isPrimary": true,
+                    "alt": "The Organic Cotton Bath Towels"
+                }
+            ]
         }
-      ]
-    }
-  ]
+    ]
 }

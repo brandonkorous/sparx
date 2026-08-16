@@ -1,348 +1,404 @@
 {
-  "policies": [
-    {
-      "handle": "boutique-standard",
-      "name": "Standard booking",
-      "depositType": "none",
-      "cancellationWindowHours": 48,
-      "reminderOffsetsMin": [2880, 1440, 120],
-      "policyText": "We groom one pet at a time, so we ask for at least 48 hours’ notice to change or cancel. We send a reminder two days ahead, the day before, and two hours before your visit."
-    },
-    {
-      "handle": "signature-deposit",
-      "name": "Signature deposit",
-      "depositType": "deposit",
-      "depositAmountCents": 2500,
-      "cancellationWindowHours": 48,
-      "reminderOffsetsMin": [2880, 1440, 120],
-      "policyText": "Our longer signature and styling visits hold a $25 deposit that comes off your total. Reschedule with 48 hours’ notice and it carries over to your next appointment."
-    }
-  ],
-  "resources": [
-    {
-      "handle": "eloise",
-      "name": "Eloise Fairbanks",
-      "kind": "staff",
-      "skillTags": ["signature", "breed-styling", "hand-strip", "spa-addons"],
-      "windows": [
+    "policies": [
         {
-          "dayOfWeek": 2,
-          "startMinute": 540,
-          "endMinute": 1020
+            "handle": "boutique-standard",
+            "name": "Standard booking",
+            "depositType": "none",
+            "cancellationWindowHours": 48,
+            "reminderOffsetsMin": [
+                2880,
+                1440,
+                120
+            ],
+            "policyText": "We groom one pet at a time, so we ask for at least 48 hours’ notice to change or cancel. We send a reminder two days ahead, the day before, and two hours before your visit."
         },
         {
-          "dayOfWeek": 3,
-          "startMinute": 540,
-          "endMinute": 1020
-        },
-        {
-          "dayOfWeek": 4,
-          "startMinute": 540,
-          "endMinute": 1020
-        },
-        {
-          "dayOfWeek": 5,
-          "startMinute": 540,
-          "endMinute": 1020
+            "handle": "signature-deposit",
+            "name": "Signature deposit",
+            "depositType": "deposit",
+            "depositAmountCents": 2500,
+            "cancellationWindowHours": 48,
+            "reminderOffsetsMin": [
+                2880,
+                1440,
+                120
+            ],
+            "policyText": "Our longer signature and styling visits hold a $25 deposit that comes off your total. Reschedule with 48 hours’ notice and it carries over to your next appointment."
         }
-      ]
-    },
-    {
-      "handle": "marcus",
-      "name": "Marcus Devlin",
-      "kind": "staff",
-      "skillTags": ["signature", "cat", "de-shed", "spa-addons"],
-      "windows": [
+    ],
+    "resources": [
         {
-          "dayOfWeek": 3,
-          "startMinute": 570,
-          "endMinute": 1050
+            "handle": "eloise",
+            "name": "Eloise Fairbanks",
+            "kind": "staff",
+            "skillTags": [
+                "signature",
+                "breed-styling",
+                "hand-strip",
+                "spa-addons"
+            ],
+            "windows": [
+                {
+                    "dayOfWeek": 2,
+                    "startMinute": 540,
+                    "endMinute": 1020
+                },
+                {
+                    "dayOfWeek": 3,
+                    "startMinute": 540,
+                    "endMinute": 1020
+                },
+                {
+                    "dayOfWeek": 4,
+                    "startMinute": 540,
+                    "endMinute": 1020
+                },
+                {
+                    "dayOfWeek": 5,
+                    "startMinute": 540,
+                    "endMinute": 1020
+                }
+            ]
         },
         {
-          "dayOfWeek": 4,
-          "startMinute": 570,
-          "endMinute": 1050
+            "handle": "marcus",
+            "name": "Marcus Devlin",
+            "kind": "staff",
+            "skillTags": [
+                "signature",
+                "cat",
+                "de-shed",
+                "spa-addons"
+            ],
+            "windows": [
+                {
+                    "dayOfWeek": 3,
+                    "startMinute": 570,
+                    "endMinute": 1050
+                },
+                {
+                    "dayOfWeek": 4,
+                    "startMinute": 570,
+                    "endMinute": 1050
+                },
+                {
+                    "dayOfWeek": 5,
+                    "startMinute": 570,
+                    "endMinute": 1050
+                },
+                {
+                    "dayOfWeek": 6,
+                    "startMinute": 570,
+                    "endMinute": 1050
+                }
+            ]
         },
         {
-          "dayOfWeek": 5,
-          "startMinute": 570,
-          "endMinute": 1050
+            "handle": "priya",
+            "name": "Priya Anand",
+            "kind": "staff",
+            "skillTags": [
+                "signature",
+                "spa-addons",
+                "breed-styling",
+                "de-shed"
+            ],
+            "windows": [
+                {
+                    "dayOfWeek": 2,
+                    "startMinute": 600,
+                    "endMinute": 1080
+                },
+                {
+                    "dayOfWeek": 4,
+                    "startMinute": 600,
+                    "endMinute": 1080
+                },
+                {
+                    "dayOfWeek": 5,
+                    "startMinute": 600,
+                    "endMinute": 1080
+                },
+                {
+                    "dayOfWeek": 6,
+                    "startMinute": 600,
+                    "endMinute": 1080
+                }
+            ]
         },
         {
-          "dayOfWeek": 6,
-          "startMinute": 570,
-          "endMinute": 1050
+            "handle": "suite-willow",
+            "name": "Willow Suite",
+            "kind": "space",
+            "skillTags": [
+                "suite"
+            ],
+            "windows": [
+                {
+                    "dayOfWeek": 2,
+                    "startMinute": 540,
+                    "endMinute": 1080
+                },
+                {
+                    "dayOfWeek": 3,
+                    "startMinute": 540,
+                    "endMinute": 1080
+                },
+                {
+                    "dayOfWeek": 4,
+                    "startMinute": 540,
+                    "endMinute": 1080
+                },
+                {
+                    "dayOfWeek": 5,
+                    "startMinute": 540,
+                    "endMinute": 1080
+                },
+                {
+                    "dayOfWeek": 6,
+                    "startMinute": 540,
+                    "endMinute": 1080
+                }
+            ]
+        },
+        {
+            "handle": "suite-quiet",
+            "name": "Quiet Room (Cat Suite)",
+            "kind": "space",
+            "skillTags": [
+                "cat-suite",
+                "suite"
+            ],
+            "windows": [
+                {
+                    "dayOfWeek": 2,
+                    "startMinute": 540,
+                    "endMinute": 1080
+                },
+                {
+                    "dayOfWeek": 3,
+                    "startMinute": 540,
+                    "endMinute": 1080
+                },
+                {
+                    "dayOfWeek": 4,
+                    "startMinute": 540,
+                    "endMinute": 1080
+                },
+                {
+                    "dayOfWeek": 5,
+                    "startMinute": 540,
+                    "endMinute": 1080
+                },
+                {
+                    "dayOfWeek": 6,
+                    "startMinute": 540,
+                    "endMinute": 1080
+                }
+            ]
         }
-      ]
-    },
-    {
-      "handle": "priya",
-      "name": "Priya Anand",
-      "kind": "staff",
-      "skillTags": ["signature", "spa-addons", "breed-styling", "de-shed"],
-      "windows": [
+    ],
+    "services": [
         {
-          "dayOfWeek": 2,
-          "startMinute": 600,
-          "endMinute": 1080
+            "handle": "meet-consult",
+            "name": "Meet & greet consultation",
+            "description": "A calm first visit — we meet your pet, talk through coat, temperament and the look you love, and plan the perfect groom. Booked before your first signature visit.",
+            "durationMinutes": 30,
+            "priceCents": 0,
+            "requiresApproval": true,
+            "assignmentStrategy": "customer_choice",
+            "resourceRequirements": [
+                {
+                    "role": "groomer",
+                    "kind": "staff",
+                    "skillTags": [
+                        "signature"
+                    ],
+                    "count": 1
+                },
+                {
+                    "role": "suite",
+                    "kind": "space",
+                    "skillTags": [
+                        "suite"
+                    ],
+                    "count": 1
+                }
+            ],
+            "policyHandle": "boutique-standard"
         },
         {
-          "dayOfWeek": 4,
-          "startMinute": 600,
-          "endMinute": 1080
+            "handle": "signature-spa-groom",
+            "name": "Signature spa groom",
+            "description": "Our full experience: a gentle warm bath, hand-fluff dry, breed-appropriate finish, nails, ears and a spritz of light cologne — never crated, never rushed.",
+            "durationMinutes": 120,
+            "priceCents": 11500,
+            "bufferAfterMin": 15,
+            "assignmentStrategy": "customer_choice",
+            "resourceRequirements": [
+                {
+                    "role": "groomer",
+                    "kind": "staff",
+                    "skillTags": [
+                        "signature"
+                    ],
+                    "count": 1
+                },
+                {
+                    "role": "suite",
+                    "kind": "space",
+                    "skillTags": [
+                        "suite"
+                    ],
+                    "count": 1
+                }
+            ],
+            "policyHandle": "signature-deposit"
         },
         {
-          "dayOfWeek": 5,
-          "startMinute": 600,
-          "endMinute": 1080
+            "handle": "breed-hand-style",
+            "name": "Breed-specific hand styling",
+            "description": "Scissored and hand-finished to your breed’s standard — poodle, doodle, terrier, spaniel and more. A master groomer shapes every line by hand.",
+            "durationMinutes": 150,
+            "priceCents": 15500,
+            "bufferAfterMin": 15,
+            "assignmentStrategy": "customer_choice",
+            "resourceRequirements": [
+                {
+                    "role": "groomer",
+                    "kind": "staff",
+                    "skillTags": [
+                        "breed-styling"
+                    ],
+                    "count": 1
+                },
+                {
+                    "role": "suite",
+                    "kind": "space",
+                    "skillTags": [
+                        "suite"
+                    ],
+                    "count": 1
+                }
+            ],
+            "policyHandle": "signature-deposit"
         },
         {
-          "dayOfWeek": 6,
-          "startMinute": 600,
-          "endMinute": 1080
+            "handle": "hand-strip",
+            "name": "Hand-stripping (wire coats)",
+            "description": "Traditional hand-stripping for wire-coated breeds — pulling, not clipping, to keep color and texture true. Patient, careful, and kind to the coat.",
+            "durationMinutes": 150,
+            "priceCents": 16500,
+            "bufferAfterMin": 15,
+            "assignmentStrategy": "customer_choice",
+            "resourceRequirements": [
+                {
+                    "role": "groomer",
+                    "kind": "staff",
+                    "skillTags": [
+                        "hand-strip"
+                    ],
+                    "count": 1
+                },
+                {
+                    "role": "suite",
+                    "kind": "space",
+                    "skillTags": [
+                        "suite"
+                    ],
+                    "count": 1
+                }
+            ],
+            "policyHandle": "signature-deposit"
+        },
+        {
+            "handle": "spa-refresh",
+            "name": "Spa refresh & tidy",
+            "description": "A between-grooms freshen-up — bath, blow-out, sanitary trim, paws and a face tidy. In and out feeling soft and clean.",
+            "durationMinutes": 75,
+            "priceCents": 7500,
+            "assignmentStrategy": "any_available",
+            "resourceRequirements": [
+                {
+                    "role": "groomer",
+                    "kind": "staff",
+                    "skillTags": [
+                        "signature"
+                    ],
+                    "count": 1
+                },
+                {
+                    "role": "suite",
+                    "kind": "space",
+                    "skillTags": [
+                        "suite"
+                    ],
+                    "count": 1
+                }
+            ],
+            "policyHandle": "boutique-standard"
+        },
+        {
+            "handle": "spa-addons",
+            "name": "Spa add-on ritual",
+            "description": "Add the extras: a blueberry facial, a soothing pawdicure, and a deep coat-conditioning mask. The little luxuries that leave them glossy and calm.",
+            "durationMinutes": 60,
+            "priceCents": 5500,
+            "assignmentStrategy": "customer_choice",
+            "resourceRequirements": [
+                {
+                    "role": "groomer",
+                    "kind": "staff",
+                    "skillTags": [
+                        "spa-addons"
+                    ],
+                    "count": 1
+                },
+                {
+                    "role": "suite",
+                    "kind": "space",
+                    "skillTags": [
+                        "suite"
+                    ],
+                    "count": 1
+                }
+            ],
+            "policyHandle": "boutique-standard"
+        },
+        {
+            "handle": "cat-spa-groom",
+            "name": "Cat spa groom",
+            "description": "A gentle, unhurried groom for cats in our quiet room away from the dogs — bath, de-shed or lion trim, nails and ears, handled with a soft touch.",
+            "durationMinutes": 90,
+            "priceCents": 9500,
+            "bufferAfterMin": 15,
+            "assignmentStrategy": "customer_choice",
+            "resourceRequirements": [
+                {
+                    "role": "groomer",
+                    "kind": "staff",
+                    "skillTags": [
+                        "cat"
+                    ],
+                    "count": 1
+                },
+                {
+                    "role": "suite",
+                    "kind": "space",
+                    "skillTags": [
+                        "cat-suite"
+                    ],
+                    "count": 1
+                }
+            ],
+            "policyHandle": "signature-deposit"
         }
-      ]
-    },
-    {
-      "handle": "suite-willow",
-      "name": "Willow Suite",
-      "kind": "space",
-      "skillTags": ["suite"],
-      "windows": [
+    ],
+    "locations": [
         {
-          "dayOfWeek": 2,
-          "startMinute": 540,
-          "endMinute": 1080
-        },
-        {
-          "dayOfWeek": 3,
-          "startMinute": 540,
-          "endMinute": 1080
-        },
-        {
-          "dayOfWeek": 4,
-          "startMinute": 540,
-          "endMinute": 1080
-        },
-        {
-          "dayOfWeek": 5,
-          "startMinute": 540,
-          "endMinute": 1080
-        },
-        {
-          "dayOfWeek": 6,
-          "startMinute": 540,
-          "endMinute": 1080
+            "handle": "premises",
+            "name": "The Groom Room",
+            "timezone": "UTC"
         }
-      ]
-    },
-    {
-      "handle": "suite-quiet",
-      "name": "Quiet Room (Cat Suite)",
-      "kind": "space",
-      "skillTags": ["cat-suite", "suite"],
-      "windows": [
-        {
-          "dayOfWeek": 2,
-          "startMinute": 540,
-          "endMinute": 1080
-        },
-        {
-          "dayOfWeek": 3,
-          "startMinute": 540,
-          "endMinute": 1080
-        },
-        {
-          "dayOfWeek": 4,
-          "startMinute": 540,
-          "endMinute": 1080
-        },
-        {
-          "dayOfWeek": 5,
-          "startMinute": 540,
-          "endMinute": 1080
-        },
-        {
-          "dayOfWeek": 6,
-          "startMinute": 540,
-          "endMinute": 1080
-        }
-      ]
-    }
-  ],
-  "services": [
-    {
-      "handle": "meet-consult",
-      "name": "Meet & greet consultation",
-      "description": "A calm first visit — we meet your pet, talk through coat, temperament and the look you love, and plan the perfect groom. Booked before your first signature visit.",
-      "durationMinutes": 30,
-      "priceCents": 0,
-      "requiresApproval": true,
-      "assignmentStrategy": "customer_choice",
-      "resourceRequirements": [
-        {
-          "role": "groomer",
-          "kind": "staff",
-          "skillTags": ["signature"],
-          "count": 1
-        },
-        {
-          "role": "suite",
-          "kind": "space",
-          "skillTags": ["suite"],
-          "count": 1
-        }
-      ],
-      "policyHandle": "boutique-standard"
-    },
-    {
-      "handle": "signature-spa-groom",
-      "name": "Signature spa groom",
-      "description": "Our full experience: a gentle warm bath, hand-fluff dry, breed-appropriate finish, nails, ears and a spritz of light cologne — never crated, never rushed.",
-      "durationMinutes": 120,
-      "priceCents": 11500,
-      "bufferAfterMin": 15,
-      "assignmentStrategy": "customer_choice",
-      "resourceRequirements": [
-        {
-          "role": "groomer",
-          "kind": "staff",
-          "skillTags": ["signature"],
-          "count": 1
-        },
-        {
-          "role": "suite",
-          "kind": "space",
-          "skillTags": ["suite"],
-          "count": 1
-        }
-      ],
-      "policyHandle": "signature-deposit"
-    },
-    {
-      "handle": "breed-hand-style",
-      "name": "Breed-specific hand styling",
-      "description": "Scissored and hand-finished to your breed’s standard — poodle, doodle, terrier, spaniel and more. A master groomer shapes every line by hand.",
-      "durationMinutes": 150,
-      "priceCents": 15500,
-      "bufferAfterMin": 15,
-      "assignmentStrategy": "customer_choice",
-      "resourceRequirements": [
-        {
-          "role": "groomer",
-          "kind": "staff",
-          "skillTags": ["breed-styling"],
-          "count": 1
-        },
-        {
-          "role": "suite",
-          "kind": "space",
-          "skillTags": ["suite"],
-          "count": 1
-        }
-      ],
-      "policyHandle": "signature-deposit"
-    },
-    {
-      "handle": "hand-strip",
-      "name": "Hand-stripping (wire coats)",
-      "description": "Traditional hand-stripping for wire-coated breeds — pulling, not clipping, to keep colour and texture true. Patient, careful, and kind to the coat.",
-      "durationMinutes": 150,
-      "priceCents": 16500,
-      "bufferAfterMin": 15,
-      "assignmentStrategy": "customer_choice",
-      "resourceRequirements": [
-        {
-          "role": "groomer",
-          "kind": "staff",
-          "skillTags": ["hand-strip"],
-          "count": 1
-        },
-        {
-          "role": "suite",
-          "kind": "space",
-          "skillTags": ["suite"],
-          "count": 1
-        }
-      ],
-      "policyHandle": "signature-deposit"
-    },
-    {
-      "handle": "spa-refresh",
-      "name": "Spa refresh & tidy",
-      "description": "A between-grooms freshen-up — bath, blow-out, sanitary trim, paws and a face tidy. In and out feeling soft and clean.",
-      "durationMinutes": 75,
-      "priceCents": 7500,
-      "assignmentStrategy": "any_available",
-      "resourceRequirements": [
-        {
-          "role": "groomer",
-          "kind": "staff",
-          "skillTags": ["signature"],
-          "count": 1
-        },
-        {
-          "role": "suite",
-          "kind": "space",
-          "skillTags": ["suite"],
-          "count": 1
-        }
-      ],
-      "policyHandle": "boutique-standard"
-    },
-    {
-      "handle": "spa-addons",
-      "name": "Spa add-on ritual",
-      "description": "Add the extras: a blueberry facial, a soothing pawdicure, and a deep coat-conditioning mask. The little luxuries that leave them glossy and calm.",
-      "durationMinutes": 60,
-      "priceCents": 5500,
-      "assignmentStrategy": "customer_choice",
-      "resourceRequirements": [
-        {
-          "role": "groomer",
-          "kind": "staff",
-          "skillTags": ["spa-addons"],
-          "count": 1
-        },
-        {
-          "role": "suite",
-          "kind": "space",
-          "skillTags": ["suite"],
-          "count": 1
-        }
-      ],
-      "policyHandle": "boutique-standard"
-    },
-    {
-      "handle": "cat-spa-groom",
-      "name": "Cat spa groom",
-      "description": "A gentle, unhurried groom for cats in our quiet room away from the dogs — bath, de-shed or lion trim, nails and ears, handled with a soft touch.",
-      "durationMinutes": 90,
-      "priceCents": 9500,
-      "bufferAfterMin": 15,
-      "assignmentStrategy": "customer_choice",
-      "resourceRequirements": [
-        {
-          "role": "groomer",
-          "kind": "staff",
-          "skillTags": ["cat"],
-          "count": 1
-        },
-        {
-          "role": "suite",
-          "kind": "space",
-          "skillTags": ["cat-suite"],
-          "count": 1
-        }
-      ],
-      "policyHandle": "signature-deposit"
-    }
-  ],
-  "locations": [
-    {
-      "handle": "premises",
-      "name": "The Groom Room",
-      "timezone": "UTC"
-    }
-  ]
+    ]
 }

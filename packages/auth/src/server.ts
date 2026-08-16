@@ -5,6 +5,7 @@ import { emailOTP, magicLink, mcp, oneTap, organization, twoFactor } from 'bette
 import { passkey } from '@better-auth/passkey';
 import { createAuthMiddleware, getSessionFromCtx } from 'better-auth/api';
 import { accountOrigin } from '@sparx/links/server';
+import { currentPlatformBrand, platformBrandIdentity } from '@wizeworks/brand-core';
 import { authPrisma } from './prisma';
 import { publishAuthEmail } from './email-events';
 import { finalizeOAuthSignup, provisionTenantForOAuth } from './oauth-provisioning';
@@ -554,7 +555,19 @@ function createAuth() {
       //     two-step verification on at all. Password is still demanded from
       //     anyone who HAS one, so this loosens nothing for password accounts.
       twoFactor({
-        issuer: 'sparx',
+        // The name a person sees in their authenticator app, and it was the
+        // literal `'sparx'` — so a Piggles owner turning on two-step
+        // verification ended up with another product's name in Google
+        // Authenticator forever, since the issuer is baked into the QR at
+        // enrollment and cannot be corrected afterwards.
+        //
+        // The brand this PROCESS serves — each brand's account app is its own
+        // deployment mounting its own handler, so that is already the right
+        // answer wherever an enrollment actually starts.
+        // `/two-factor/enable` also accepts a per-enrollment `issuer` in its
+        // body, which is what a console on a different origin sends; neither
+        // path needs shared code to branch on brand.
+        issuer: platformBrandIdentity(currentPlatformBrand()).name,
         allowPasswordless: true,
         skipVerificationOnEnable: false,
         totpOptions: { digits: 6, period: 30 },

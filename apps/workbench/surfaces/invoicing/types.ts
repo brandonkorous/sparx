@@ -6,37 +6,37 @@
 export type ArStatus = 'unpaid' | 'partial' | 'paid' | 'overdue' | 'void';
 
 export interface BillingParty {
-  name?: string;
-  email?: string;
-  address?: string;
+    name?: string;
+    email?: string;
+    address?: string;
 }
 
 /** The server's frozen record of how a markup/pass-through line was priced. */
 export interface LineMarkupSnapshotWire {
-  ruleId: string | null;
-  ruleName: string | null;
-  method: string;
-  value: number | null;
-  marginPct: number;
-  markupPct: number;
-  costBasisValueCents: number;
+    ruleId: string | null;
+    ruleName: string | null;
+    method: string;
+    value: number | null;
+    marginPct: number;
+    markupPct: number;
+    costBasisValueCents: number;
 }
 
 export interface BillingDocumentLine {
-  id?: string;
-  lineTypeId?: string | null;
-  description: string;
-  quantity: number;
-  unitPrice: number;
-  /** An absolute money reduction on this line, before document-level tax. */
-  discountAmount?: number;
-  taxable?: boolean;
-  productId?: string | null;
-  variantId?: string | null;
-  /** Cost basis the server resolved, in cents. */
-  costCents?: number | null;
-  /** Present on a line priced by cost + markup. */
-  appliedMarkup?: LineMarkupSnapshotWire | null;
+    id?: string;
+    lineTypeId?: string | null;
+    description: string;
+    quantity: number;
+    unitPrice: number;
+    /** An absolute money reduction on this line, before document-level tax. */
+    discountAmount?: number;
+    taxable?: boolean;
+    productId?: string | null;
+    variantId?: string | null;
+    /** Cost basis the server resolved, in cents. */
+    costCents?: number | null;
+    /** Present on a line priced by cost + markup. */
+    appliedMarkup?: LineMarkupSnapshotWire | null;
 }
 
 /**
@@ -47,18 +47,18 @@ export interface BillingDocumentLine {
 export type DocumentStageType = 'draft' | 'open' | 'committed' | 'final' | 'paid' | 'void';
 
 export interface DocumentStage {
-  id: string;
-  name: string;
-  customerLabel: string;
-  stageType: DocumentStageType;
-  /** Entry effects — what happens to the document when it ENTERS this stage. */
-  snapshotOnEnter: boolean;
-  numberOnEnter: boolean;
-  /** Prefix for the number minted on entry ('INV-'). Only meaningful with
-   *  `numberOnEnter`; null lets the server fall back to its own default. */
-  numberPrefix: string | null;
-  locksEditing: boolean;
-  sortOrder: number;
+    id: string;
+    name: string;
+    customerLabel: string;
+    stageType: DocumentStageType;
+    /** Entry effects — what happens to the document when it ENTERS this stage. */
+    snapshotOnEnter: boolean;
+    numberOnEnter: boolean;
+    /** Prefix for the number minted on entry ('INV-'). Only meaningful with
+     *  `numberOnEnter`; null lets the server fall back to its own default. */
+    numberPrefix: string | null;
+    locksEditing: boolean;
+    sortOrder: number;
 }
 
 /**
@@ -70,13 +70,13 @@ export interface DocumentStage {
  * about the stage chain (lifecycle.tsx) simply read less of it.
  */
 export interface DocumentWorkflowDetail {
-  id: string;
-  name: string;
-  slug: string;
-  isDefault: boolean;
-  sortOrder: number;
-  archivedAt: string | null;
-  stages: DocumentStage[];
+    id: string;
+    name: string;
+    slug: string;
+    isDefault: boolean;
+    sortOrder: number;
+    archivedAt: string | null;
+    stages: DocumentStage[];
 }
 
 /**
@@ -87,76 +87,76 @@ export interface DocumentWorkflowDetail {
  * the substance is what `…/snapshots/:id/pdf` renders.
  */
 export interface DocumentSnapshot {
-  id: string;
-  stageType: DocumentStage['stageType'];
-  customerLabel: string;
-  documentNumber: string | null;
-  createdAt: string;
+    id: string;
+    stageType: DocumentStage['stageType'];
+    customerLabel: string;
+    documentNumber: string | null;
+    createdAt: string;
 }
 
-/** Semantic tone for a stage — status is its own colour axis (docs/23). */
+/** Semantic tone for a stage — status is its own color axis (docs/23). */
 export function stageTone(
-  type: DocumentStage['stageType']
+    type: DocumentStage['stageType']
 ): 'success' | 'warning' | 'danger' | 'info' | 'neutral' {
-  switch (type) {
-    case 'paid':
-      return 'success';
-    case 'final':
-      return 'warning'; // billable + awaiting money — the same axis as `unpaid`
-    case 'committed':
-      return 'info';
-    case 'open':
-      return 'info';
-    case 'void':
-      return 'danger';
-    default:
-      return 'neutral'; // draft — nothing binding yet
-  }
+    switch (type) {
+        case 'paid':
+            return 'success';
+        case 'final':
+            return 'warning'; // billable + awaiting money — the same axis as `unpaid`
+        case 'committed':
+            return 'info';
+        case 'open':
+            return 'info';
+        case 'void':
+            return 'danger';
+        default:
+            return 'neutral'; // draft — nothing binding yet
+    }
 }
 
 export interface BillingDocument {
-  id: string;
-  /** Null until the document reaches a numbering stage. */
-  number: string | null;
-  currency: string;
-  /** The CRM customer being billed. A document must reference this or a B2B
-   *  account — see the refine on CreateBillingDocumentInput. */
-  customerId: string | null;
-  billTo: BillingParty | null;
-  shipTo: BillingParty | null;
-  /**
-   * Who this document bills, resolved SERVER-side for list rows.
-   *
-   * Present on list responses, absent when fetching one document (the detail
-   * view has the full relations). It exists because `billTo` is only written
-   * when a document is snapshotted — so reading `billTo.name` alone left the
-   * customer column empty for every draft and open document, which is most of
-   * a working receivables list.
-   */
-  billedToName?: string | null;
-  taxRate: number;
-  subtotal: number;
-  taxTotal: number;
-  total: number;
-  balance: number;
-  amountPaid: number;
-  status: ArStatus;
-  /** Net-terms due date. Null for pay-now/retail documents with no terms. */
-  dueAt: string | null;
-  /**
-   * Days past due, computed server-side. The UI never re-derives this — if it
-   * did, the list and the AR aging report could disagree about whether the same
-   * invoice is late.
-   */
-  overdueDays: number;
-  workflowId: string;
-  stageId: string;
-  lines?: BillingDocumentLine[];
-  /** Set once an accepted quote has been converted — the FK lives on Order, so
-   *  the API looks it up and sends it along with the document. */
-  convertedOrder?: { id: string; orderNumber: string } | null;
-  createdAt?: string;
-  updatedAt?: string;
+    id: string;
+    /** Null until the document reaches a numbering stage. */
+    number: string | null;
+    currency: string;
+    /** The CRM customer being billed. A document must reference this or a B2B
+     *  account — see the refine on CreateBillingDocumentInput. */
+    customerId: string | null;
+    billTo: BillingParty | null;
+    shipTo: BillingParty | null;
+    /**
+     * Who this document bills, resolved SERVER-side for list rows.
+     *
+     * Present on list responses, absent when fetching one document (the detail
+     * view has the full relations). It exists because `billTo` is only written
+     * when a document is snapshotted — so reading `billTo.name` alone left the
+     * customer column empty for every draft and open document, which is most of
+     * a working receivables list.
+     */
+    billedToName?: string | null;
+    taxRate: number;
+    subtotal: number;
+    taxTotal: number;
+    total: number;
+    balance: number;
+    amountPaid: number;
+    status: ArStatus;
+    /** Net-terms due date. Null for pay-now/retail documents with no terms. */
+    dueAt: string | null;
+    /**
+     * Days past due, computed server-side. The UI never re-derives this — if it
+     * did, the list and the AR aging report could disagree about whether the same
+     * invoice is late.
+     */
+    overdueDays: number;
+    workflowId: string;
+    stageId: string;
+    lines?: BillingDocumentLine[];
+    /** Set once an accepted quote has been converted — the FK lives on Order, so
+     *  the API looks it up and sends it along with the document. */
+    convertedOrder?: { id: string; orderNumber: string } | null;
+    createdAt?: string;
+    updatedAt?: string;
 }
 
 /**
@@ -170,9 +170,9 @@ export interface BillingDocument {
  * envelope meta, not working around it here.
  */
 export interface PaginationMeta {
-  total: number;
-  skip: number;
-  per_page: number;
+    total: number;
+    skip: number;
+    per_page: number;
 }
 
 /**
@@ -189,54 +189,54 @@ export interface PaginationMeta {
  * Anything reading these fields must go through here first.
  */
 function num(value: unknown): number {
-  const parsed = typeof value === 'number' ? value : Number(value);
-  return Number.isFinite(parsed) ? parsed : 0;
+    const parsed = typeof value === 'number' ? value : Number(value);
+    return Number.isFinite(parsed) ? parsed : 0;
 }
 
 export function normalizeDocument(raw: BillingDocument): BillingDocument {
-  return {
-    ...raw,
-    taxRate: num(raw.taxRate),
-    subtotal: num(raw.subtotal),
-    taxTotal: num(raw.taxTotal),
-    total: num(raw.total),
-    balance: num(raw.balance),
-    amountPaid: num(raw.amountPaid),
-    overdueDays: num(raw.overdueDays),
-    ...(raw.lines
-      ? {
-          lines: raw.lines.map((line) => ({
-            ...line,
-            quantity: num(line.quantity),
-            unitPrice: num(line.unitPrice),
-            discountAmount: num(line.discountAmount),
-          })),
-        }
-      : {}),
-  };
+    return {
+        ...raw,
+        taxRate: num(raw.taxRate),
+        subtotal: num(raw.subtotal),
+        taxTotal: num(raw.taxTotal),
+        total: num(raw.total),
+        balance: num(raw.balance),
+        amountPaid: num(raw.amountPaid),
+        overdueDays: num(raw.overdueDays),
+        ...(raw.lines
+            ? {
+                lines: raw.lines.map((line) => ({
+                    ...line,
+                    quantity: num(line.quantity),
+                    unitPrice: num(line.unitPrice),
+                    discountAmount: num(line.discountAmount),
+                })),
+            }
+            : {}),
+    };
 }
 
-/** Maps AR status onto a silica semantic colour. State is its own colour axis,
+/** Maps AR status onto a silica semantic color. State is its own color axis,
  *  independent of the module hue — see docs/23 Semantic-Status. */
 export function statusTone(
-  status: ArStatus
+    status: ArStatus
 ): 'success' | 'warning' | 'danger' | 'info' | 'neutral' {
-  switch (status) {
-    case 'paid':
-      return 'success';
-    case 'partial':
-      return 'info';
-    case 'overdue':
-      return 'danger';
-    case 'void':
-      return 'neutral';
-    default:
-      return 'warning';
-  }
+    switch (status) {
+        case 'paid':
+            return 'success';
+        case 'partial':
+            return 'info';
+        case 'overdue':
+            return 'danger';
+        case 'void':
+            return 'neutral';
+        default:
+            return 'warning';
+    }
 }
 
 export function formatMoney(amount: number, currency: string): string {
-  return new Intl.NumberFormat(undefined, { style: 'currency', currency }).format(amount);
+    return new Intl.NumberFormat(undefined, { style: 'currency', currency }).format(amount);
 }
 
 /**
@@ -250,28 +250,28 @@ export function formatMoney(amount: number, currency: string): string {
 const COMPACT_THRESHOLD = 10_000;
 
 export function formatMoneyCompact(amount: number, currency = 'USD'): string {
-  if (Math.abs(amount) >= COMPACT_THRESHOLD) {
-    return new Intl.NumberFormat(undefined, {
-      style: 'currency',
-      currency,
-      notation: 'compact',
-      maximumFractionDigits: 1,
-    }).format(amount);
-  }
-  return new Intl.NumberFormat(undefined, { style: 'currency', currency }).format(amount);
+    if (Math.abs(amount) >= COMPACT_THRESHOLD) {
+        return new Intl.NumberFormat(undefined, {
+            style: 'currency',
+            currency,
+            notation: 'compact',
+            maximumFractionDigits: 1,
+        }).format(amount);
+    }
+    return new Intl.NumberFormat(undefined, { style: 'currency', currency }).format(amount);
 }
 
 export interface AgingBucket {
-  key: string;
-  label: string;
-  balance: number;
-  count: number;
+    key: string;
+    label: string;
+    balance: number;
+    count: number;
 }
 
 export interface AgingReport {
-  buckets: AgingBucket[];
-  totalOutstanding: number;
-  totalCount: number;
+    buckets: AgingBucket[];
+    totalOutstanding: number;
+    totalCount: number;
 }
 
 /**
@@ -280,26 +280,26 @@ export interface AgingReport {
  * this" and can't disagree with the AR report about it.
  */
 export function describeDue(
-  dueAt: string | null | undefined,
-  overdueDays: number
+    dueAt: string | null | undefined,
+    overdueDays: number
 ): { label: string; tone: 'danger' | 'warning' | 'muted'; title: string } {
-  if (!dueAt) return { label: 'No due date', tone: 'muted', title: 'No payment terms set' };
+    if (!dueAt) return { label: 'No due date', tone: 'muted', title: 'No payment terms set' };
 
-  const due = new Date(dueAt);
-  const title = due.toLocaleDateString(undefined, { dateStyle: 'medium' });
+    const due = new Date(dueAt);
+    const title = due.toLocaleDateString(undefined, { dateStyle: 'medium' });
 
-  if (overdueDays > 0) {
-    return {
-      label: overdueDays === 1 ? '1 day late' : `${String(overdueDays)} days late`,
-      tone: 'danger',
-      title: `Was due ${title}`,
-    };
-  }
+    if (overdueDays > 0) {
+        return {
+            label: overdueDays === 1 ? '1 day late' : `${String(overdueDays)} days late`,
+            tone: 'danger',
+            title: `Was due ${title}`,
+        };
+    }
 
-  const days = Math.ceil((due.getTime() - Date.now()) / 86_400_000);
-  if (days <= 0) return { label: 'Due today', tone: 'warning', title: `Due ${title}` };
-  if (days === 1) return { label: 'Due tomorrow', tone: 'warning', title: `Due ${title}` };
-  if (days <= 7)
-    return { label: `Due in ${String(days)} days`, tone: 'warning', title: `Due ${title}` };
-  return { label: title, tone: 'muted', title: `Due ${title}` };
+    const days = Math.ceil((due.getTime() - Date.now()) / 86_400_000);
+    if (days <= 0) return { label: 'Due today', tone: 'warning', title: `Due ${title}` };
+    if (days === 1) return { label: 'Due tomorrow', tone: 'warning', title: `Due ${title}` };
+    if (days <= 7)
+        return { label: `Due in ${String(days)} days`, tone: 'warning', title: `Due ${title}` };
+    return { label: title, tone: 'muted', title: `Due ${title}` };
 }

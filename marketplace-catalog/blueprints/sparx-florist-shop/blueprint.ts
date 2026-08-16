@@ -10,71 +10,71 @@ import emails from './emails.json' with { type: 'json' };
 import assets from './assets.json' with { type: 'json' };
 
 const blueprint = {
-  key: 'sparx-florist-shop',
-  version: '1.3.0',
-  name: 'sparx — Florist (Shop)',
-  summary:
-    'A bright, joyful neighbourhood flower-shop site — a warm off-white ground, a cheerful coral primary, a fresh-green accent and a friendly rounded display. Installs a working booking flow: online booking for consults, flower subscriptions and hands-on workshops, with the shop’s florists as bookable resources on their own hours. Same-day local delivery, daily fresh arrangements, sympathy and celebration flowers. Ships as "Petal & Post".',
-  vertical: 'services',
-  preview: 'media/preview.png',
-  requiresModules: ['builder', 'scheduling', 'crm', 'email'],
+    key: 'sparx-florist-shop',
+    version: '1.3.0',
+    name: 'sparx — Florist (Shop)',
+    summary:
+        'A bright, joyful neighbourhood flower-shop site — a warm off-white ground, a cheerful coral primary, a fresh-green accent and a friendly rounded display. Installs a working booking flow: online booking for consults, flower subscriptions and hands-on workshops, with the shop’s florists as bookable resources on their own hours. Same-day local delivery, daily fresh arrangements, sympathy and celebration flowers. Ships as "Petal & Post".',
+    vertical: 'services',
+    preview: 'media/preview.png',
+    requiresModules: ['builder', 'scheduling', 'crm', 'email'],
 
-  // Identity only (business name + tagline + fonts + the theme's hex colours). The look
-  // rides site.theme + the theme decl below; the installing tenant rebrands the name.
-  brand: {
-    businessName: 'Petal & Post',
-    tagline: 'Fresh flowers, picked for your day.',
-    colors: {
-      primary: '#e55551',
-      primaryForeground: '#130807',
-      accent: '#5bb661',
-      secondary: '#513933',
-    },
-    fonts: {
-      heading: 'Quicksand',
-      body: 'Inter',
-    },
-  },
-
-  // The provisioned SiteTheme the installer creates + applies — an editable saved theme
-  // over a foundation base + the template's brand snapshot. The LIVE storefront look is
-  // site.theme (the flat bespoke tokens), written last.
-  theme: {
-    name: 'petalpost',
-    basePresetKey: 'apex',
-    presentation: {
-      v: 2,
-      containerWidth: '1152px',
-    },
+    // Identity only (business name + tagline + fonts + the theme's hex colors). The look
+    // rides site.theme + the theme decl below; the installing tenant rebrands the name.
     brand: {
-      colorPrimary: '#e55551',
-      colorAccent: '#5bb661',
-      colorSecondary: '#513933',
-      fontHeading: 'Quicksand',
-      fontBody: 'Inter',
-      tokens: {},
+        businessName: 'Petal & Post',
+        tagline: 'Fresh flowers, picked for your day.',
+        colors: {
+            primary: '#e55551',
+            primaryForeground: '#130807',
+            accent: '#5bb661',
+            secondary: '#513933',
+        },
+        fonts: {
+            heading: 'Quicksand',
+            body: 'Inter',
+        },
     },
-    apply: true,
-  },
 
-  assets,
-  contentTypes: [],
+    // The provisioned SiteTheme the installer creates + applies — an editable saved theme
+    // over a foundation base + the template's brand snapshot. The LIVE storefront look is
+    // site.theme (the flat bespoke tokens), written last.
+    theme: {
+        name: 'petalpost',
+        basePresetKey: 'apex',
+        presentation: {
+            v: 2,
+            containerWidth: '1152px',
+        },
+        brand: {
+            colorPrimary: '#e55551',
+            colorAccent: '#5bb661',
+            colorSecondary: '#513933',
+            fontHeading: 'Quicksand',
+            fontBody: 'Inter',
+            tokens: {},
+        },
+        apply: true,
+    },
 
-  // The booking spine — policies, bookable resources (staff/rooms/stations) with weekly
-  // hours, and the service menu. The installer's scheduling slice replays it into a live
-  // booking flow that the site's /book page renders.
-  scheduling,
+    assets,
+    contentTypes: [],
 
-  // Brand-voiced MARKETING starters (a welcome + a come-back), installed as DRAFTS the
-  // tenant switches on. The transactional booking sends — confirmation, reminder,
-  // reschedule, cancellation, waitlist — are platform KEYED defaults, so they are covered
-  // on email-module activation and are deliberately NOT duplicated here.
-  emails,
-  sequences: [],
+    // The booking spine — policies, bookable resources (staff/rooms/stations) with weekly
+    // hours, and the service menu. The installer's scheduling slice replays it into a live
+    // booking flow that the site's /book page renders.
+    scheduling,
 
-  // The composed distinct site (frame + Home + Book + About + Contact) in the bespoke
-  // theme, fully stamped.
-  site,
+    // Brand-voiced MARKETING starters (a welcome + a come-back), installed as DRAFTS the
+    // tenant switches on. The transactional booking sends — confirmation, reminder,
+    // reschedule, cancellation, waitlist — are platform KEYED defaults, so they are covered
+    // on email-module activation and are deliberately NOT duplicated here.
+    emails,
+    sequences: [],
+
+    // The composed distinct site (frame + Home + Book + About + Contact) in the bespoke
+    // theme, fully stamped.
+    site,
 };
 
 export default blueprint;

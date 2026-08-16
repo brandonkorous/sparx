@@ -204,7 +204,7 @@ model BuilderSite {
   //
   // Deliberately NOT a foreign key, also matching `frameId`. A dangling id falls
   // back to the brand-derived theme and is REPORTED — the site still renders in
-  // its own colours, and the console says the look it was wearing is gone rather
+  // its own colors, and the console says the look it was wearing is gone rather
   // than quietly restoring one the author moved away from.
   themeId          String? @map("theme_id") @db.Uuid
   publishedThemeId String? @map("published_theme_id") @db.Uuid

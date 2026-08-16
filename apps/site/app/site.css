@@ -13,10 +13,10 @@
      · a ~100-line `:root` block of `--st-*` token fallbacks, and
      · a `--color-*: var(--st-*)` bridge remapping the whole storefront palette
        onto them.
-   Together they made `--st-*` a SECOND source of truth for tenant colour, and the
+   Together they made `--st-*` a SECOND source of truth for tenant color, and the
    bridge pointed the opposite way from the one in globals.css, so which vocabulary
    won was decided by stylesheet source order. An applied theme could silently keep
-   the previous palette, and site fonts could never change at all. Colour and type
+   the previous palette, and site fonts could never change at all. Color and type
    now have exactly one source: the injected theme.
    See docs/implementation/st-token-retirement.md.
 

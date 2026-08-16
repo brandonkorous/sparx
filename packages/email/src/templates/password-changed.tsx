@@ -6,6 +6,7 @@ import {
   EmailDisplayHeading,
   EmailFinePrint,
   EmailParagraph,
+  usePlatformName,
 } from '../components';
 
 export interface PasswordChangedEmailProps {
@@ -24,15 +25,16 @@ export function PasswordChangedEmail({
   changedAtLabel,
   secureUrl,
 }: PasswordChangedEmailProps) {
+  const platform = usePlatformName();
   return (
     <PlatformEmailLayout
-      preview="Your sparx password was changed"
-      footerReason="You're receiving this because your sparx password was changed."
+      preview={`Your ${platform} password was changed`}
+      footerReason={`You're receiving this because your ${platform} password was changed.`}
     >
       <EmailDisplayHeading>Your password was changed</EmailDisplayHeading>
       <EmailParagraph>
-        {name ? `Hi ${name}, ` : ''}this is a confirmation that the password for your sparx account
-        was just changed{changedAtLabel ? ` on ${changedAtLabel}` : ''}. If this was you,
+        {name ? `Hi ${name}, ` : ''}this is a confirmation that the password for your {platform}{' '}
+        account was just changed{changedAtLabel ? ` on ${changedAtLabel}` : ''}. If this was you,
         you&apos;re all set — no further action needed.
       </EmailParagraph>
 
@@ -51,4 +53,4 @@ export function PasswordChangedEmail({
   );
 }
 
-export const passwordChangedSubject = 'Your sparx password was changed';
+export const passwordChangedSubject = (platform: string) => `Your ${platform} password was changed`;

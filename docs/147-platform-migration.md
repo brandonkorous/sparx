@@ -415,7 +415,7 @@ Each of these was a typecheck or lint failure before it was a rule:
 - **silicaui `Button` has no `asChild`.** Marketing CTAs are
   `<a href={signupHref('ref')} className={buttonClasses({ size, color, variant })}>`, and the
   `ref` is signup attribution (docs/80). An **outline button inside a dark island takes no
-  `color`** — naming one paints the label in that colour's raw accent and drops to ~1.7:1.
+  `color`** — naming one paints the label in that color's raw accent and drops to ~1.7:1.
 - `Display` only goes down to `h3`. `FaqItem` requires a stable `id` — it anchors both the
   accordion and the FAQPage structured data.
 - Workbench: `RefreshButton` takes `onRefresh` + `updatedAt`, not `onClick`. Toasts are

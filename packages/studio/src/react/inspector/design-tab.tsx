@@ -164,7 +164,7 @@ function ChipRow({
   );
 }
 
-/** The swatch preview for a colour option. Literal strings, mapped rather than
+/** The swatch preview for a color option. Literal strings, mapped rather than
  *  computed, so Tailwind generates every one of them. */
 function swatchClass(value: string): string {
   const SWATCHES: Record<string, string> = {

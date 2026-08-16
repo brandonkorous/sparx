@@ -14,69 +14,69 @@ import assets from './assets.json' with { type: 'json' };
 import emails from './emails.json' with { type: 'json' };
 
 const blueprint = {
-  key: 'sparx-retail-bookstore-indie',
-  version: '1.4.0',
-  name: 'sparx — Independent Bookshop',
-  summary:
-    'A complete, working shop for an independent bookshop: a real catalogue of staff-picked books, a canvas tote, a bookmark set, a gift card and a hand-picked book-club subscription, with categories, collections, a bespoke literary PDP and a full merchandised home page led by staff picks. Warm foxed-paper theme — cream ground, deep oxblood, an ink accent on rubrics and links. Shipped as Marginalia Books.',
-  vertical: 'retail',
-  preview: 'media/preview.png',
-  requiresModules: ['builder', 'commerce', 'cms', 'crm', 'email'],
+    key: 'sparx-retail-bookstore-indie',
+    version: '1.4.0',
+    name: 'sparx — Independent Bookshop',
+    summary:
+        'A complete, working shop for an independent bookshop: a real catalogue of staff-picked books, a canvas tote, a bookmark set, a gift card and a hand-picked book-club subscription, with categories, collections, a bespoke literary PDP and a full merchandised home page led by staff picks. Warm foxed-paper theme — cream ground, deep oxblood, an ink accent on rubrics and links. Shipped as Marginalia Books.',
+    vertical: 'retail',
+    preview: 'media/preview.png',
+    requiresModules: ['builder', 'commerce', 'cms', 'crm', 'email'],
 
-  // Identity only (business name + tagline + fonts + the theme's hex colours). The look
-  // itself rides site.theme + the theme decl below; the installing tenant rebrands the name.
-  brand: {
-    businessName: 'Marginalia Books',
-    tagline: 'Books we loved, hand-sold.',
-    colors: {
-      primary: '#751f1d',
-      primaryForeground: '#fff6f5',
-      accent: '#9a2a1e',
-      secondary: '#5e3f30',
-    },
-    fonts: {
-      heading: 'Fraunces',
-      body: 'Spectral',
-    },
-  },
-
-  // The provisioned SiteTheme the installer creates + applies — the bespoke template
-  // look as a tenant-editable saved theme (base preset = the template's own theme key,
-  // plus its brand snapshot).
-  theme: {
-    name: 'retail-bookstore-indie',
-    basePresetKey: 'retail-bookstore-indie',
-    presentation: {
-      v: 2,
-      containerWidth: '1152px',
-    },
+    // Identity only (business name + tagline + fonts + the theme's hex colors). The look
+    // itself rides site.theme + the theme decl below; the installing tenant rebrands the name.
     brand: {
-      colorPrimary: '#751f1d',
-      colorAccent: '#9a2a1e',
-      colorSecondary: '#5e3f30',
-      fontHeading: 'Fraunces',
-      fontBody: 'Spectral',
-      tokens: {},
+        businessName: 'Marginalia Books',
+        tagline: 'Books we loved, hand-sold.',
+        colors: {
+            primary: '#751f1d',
+            primaryForeground: '#fff6f5',
+            accent: '#9a2a1e',
+            secondary: '#5e3f30',
+        },
+        fonts: {
+            heading: 'Fraunces',
+            body: 'Spectral',
+        },
     },
-    apply: true,
-  },
 
-  assets,
-  contentTypes: [],
-  authors,
-  content,
-  commerce,
+    // The provisioned SiteTheme the installer creates + applies — the bespoke template
+    // look as a tenant-editable saved theme (base preset = the template's own theme key,
+    // plus its brand snapshot).
+    theme: {
+        name: 'retail-bookstore-indie',
+        basePresetKey: 'retail-bookstore-indie',
+        presentation: {
+            v: 2,
+            containerWidth: '1152px',
+        },
+        brand: {
+            colorPrimary: '#751f1d',
+            colorAccent: '#9a2a1e',
+            colorSecondary: '#5e3f30',
+            fontHeading: 'Fraunces',
+            fontBody: 'Spectral',
+            tokens: {},
+        },
+        apply: true,
+    },
 
-  // A shop's brand-voiced MARKETING starters (a welcome + a win-back), tokenized so a fork
-  // re-themes to the tenant and installed as DRAFTS — the platform's keyed transactional
-  // defaults (order/shipping/dunning) are separate and never duplicated here. Content
-  // templates ship an empty set.
-  emails,
-  sequences: [],
+    assets,
+    contentTypes: [],
+    authors,
+    content,
+    commerce,
 
-  // The composed distinct site (frame + a template-specific home + standard commerce/
-  // cms/about/contact pages + the /journal index), in the bespoke theme, fully stamped.
-  site,
+    // A shop's brand-voiced MARKETING starters (a welcome + a win-back), tokenized so a fork
+    // re-themes to the tenant and installed as DRAFTS — the platform's keyed transactional
+    // defaults (order/shipping/dunning) are separate and never duplicated here. Content
+    // templates ship an empty set.
+    emails,
+    sequences: [],
+
+    // The composed distinct site (frame + a template-specific home + standard commerce/
+    // cms/about/contact pages + the /journal index), in the bespoke theme, fully stamped.
+    site,
 };
 
 export default blueprint;

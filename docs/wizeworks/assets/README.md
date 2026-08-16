@@ -13,8 +13,8 @@ Source artwork for the WizeWorks mark. Spec and rules in
 | -------------------- | --------------------------------------- | -------- |
 | `wordmark.svg`       | Light surfaces — ink, `z` in pine       | 3492×798 |
 | `wordmark-dark.svg`  | Dark surfaces — bone, `z` in light pine | 3492×798 |
-| `wordmark-black.svg` | One-colour black, `z` at 50% opacity    | 3492×798 |
-| `wordmark-white.svg` | One-colour white, `z` at 50% opacity    | 3492×798 |
+| `wordmark-black.svg` | One-color black, `z` at 50% opacity     | 3492×798 |
+| `wordmark-white.svg` | One-color white, `z` at 50% opacity     | 3492×798 |
 | `icon.svg`           | Pine tile, paper W                      | 1183²    |
 | `icon-dark.svg`      | Light-pine tile, dark W                 | 1183²    |
 | `icon-black.svg`     | Black tile, white W                     | 1183²    |

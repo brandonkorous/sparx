@@ -1,249 +1,284 @@
 {
-  "policies": [
-    {
-      "handle": "salon-standard",
-      "name": "Standard booking",
-      "depositType": "none",
-      "cancellationWindowHours": 24,
-      "reminderOffsetsMin": [1440, 120],
-      "policyText": "Please give us at least 24 hours’ notice to change or cancel. We send a reminder the day before and two hours ahead."
-    },
-    {
-      "handle": "colour-deposit",
-      "name": "Colour deposit",
-      "depositType": "deposit",
-      "depositAmountCents": 2500,
-      "cancellationWindowHours": 48,
-      "reminderOffsetsMin": [2880, 1440, 120],
-      "policyText": "Colour appointments hold a $25 deposit that comes off your total. Reschedule with 48 hours’ notice and it carries over."
-    }
-  ],
-  "resources": [
-    {
-      "handle": "ava",
-      "name": "Ava Bennett",
-      "kind": "staff",
-      "skillTags": ["cut", "colour", "styling", "treatment", "balayage"],
-      "windows": [
+    "policies": [
         {
-          "dayOfWeek": 2,
-          "startMinute": 540,
-          "endMinute": 1080
+            "handle": "salon-standard",
+            "name": "Standard booking",
+            "depositType": "none",
+            "cancellationWindowHours": 24,
+            "reminderOffsetsMin": [
+                1440,
+                120
+            ],
+            "policyText": "Please give us at least 24 hours’ notice to change or cancel. We send a reminder the day before and two hours ahead."
         },
         {
-          "dayOfWeek": 3,
-          "startMinute": 540,
-          "endMinute": 1080
-        },
-        {
-          "dayOfWeek": 4,
-          "startMinute": 540,
-          "endMinute": 1080
-        },
-        {
-          "dayOfWeek": 5,
-          "startMinute": 540,
-          "endMinute": 1080
-        },
-        {
-          "dayOfWeek": 6,
-          "startMinute": 540,
-          "endMinute": 1080
+            "handle": "color-deposit",
+            "name": "Color deposit",
+            "depositType": "deposit",
+            "depositAmountCents": 2500,
+            "cancellationWindowHours": 48,
+            "reminderOffsetsMin": [
+                2880,
+                1440,
+                120
+            ],
+            "policyText": "Color appointments hold a $25 deposit that comes off your total. Reschedule with 48 hours’ notice and it carries over."
         }
-      ]
-    },
-    {
-      "handle": "maya",
-      "name": "Maya Cole",
-      "kind": "staff",
-      "skillTags": ["cut", "styling", "treatment"],
-      "windows": [
+    ],
+    "resources": [
         {
-          "dayOfWeek": 3,
-          "startMinute": 600,
-          "endMinute": 1140
+            "handle": "ava",
+            "name": "Ava Bennett",
+            "kind": "staff",
+            "skillTags": [
+                "cut",
+                "color",
+                "styling",
+                "treatment",
+                "balayage"
+            ],
+            "windows": [
+                {
+                    "dayOfWeek": 2,
+                    "startMinute": 540,
+                    "endMinute": 1080
+                },
+                {
+                    "dayOfWeek": 3,
+                    "startMinute": 540,
+                    "endMinute": 1080
+                },
+                {
+                    "dayOfWeek": 4,
+                    "startMinute": 540,
+                    "endMinute": 1080
+                },
+                {
+                    "dayOfWeek": 5,
+                    "startMinute": 540,
+                    "endMinute": 1080
+                },
+                {
+                    "dayOfWeek": 6,
+                    "startMinute": 540,
+                    "endMinute": 1080
+                }
+            ]
         },
         {
-          "dayOfWeek": 4,
-          "startMinute": 600,
-          "endMinute": 1140
+            "handle": "maya",
+            "name": "Maya Cole",
+            "kind": "staff",
+            "skillTags": [
+                "cut",
+                "styling",
+                "treatment"
+            ],
+            "windows": [
+                {
+                    "dayOfWeek": 3,
+                    "startMinute": 600,
+                    "endMinute": 1140
+                },
+                {
+                    "dayOfWeek": 4,
+                    "startMinute": 600,
+                    "endMinute": 1140
+                },
+                {
+                    "dayOfWeek": 5,
+                    "startMinute": 600,
+                    "endMinute": 1140
+                },
+                {
+                    "dayOfWeek": 6,
+                    "startMinute": 600,
+                    "endMinute": 1140
+                },
+                {
+                    "dayOfWeek": 0,
+                    "startMinute": 600,
+                    "endMinute": 1140
+                }
+            ]
         },
         {
-          "dayOfWeek": 5,
-          "startMinute": 600,
-          "endMinute": 1140
+            "handle": "noor",
+            "name": "Noor Rahim",
+            "kind": "staff",
+            "skillTags": [
+                "color",
+                "balayage",
+                "treatment"
+            ],
+            "windows": [
+                {
+                    "dayOfWeek": 2,
+                    "startMinute": 600,
+                    "endMinute": 1080
+                },
+                {
+                    "dayOfWeek": 4,
+                    "startMinute": 600,
+                    "endMinute": 1080
+                },
+                {
+                    "dayOfWeek": 5,
+                    "startMinute": 600,
+                    "endMinute": 1080
+                },
+                {
+                    "dayOfWeek": 6,
+                    "startMinute": 600,
+                    "endMinute": 1080
+                }
+            ]
+        }
+    ],
+    "services": [
+        {
+            "handle": "cut-finish",
+            "name": "Cut & finish",
+            "description": "A consultation, a precise cut and a polished blow-dry to finish.",
+            "durationMinutes": 60,
+            "priceCents": 8500,
+            "assignmentStrategy": "customer_choice",
+            "resourceRequirements": [
+                {
+                    "role": "stylist",
+                    "kind": "staff",
+                    "skillTags": [
+                        "cut"
+                    ],
+                    "count": 1
+                }
+            ],
+            "policyHandle": "salon-standard"
         },
         {
-          "dayOfWeek": 6,
-          "startMinute": 600,
-          "endMinute": 1140
+            "handle": "blow-dry",
+            "name": "Blow-dry & style",
+            "description": "A wash and a styled finish — smooth, soft or full-bodied, however you like it.",
+            "durationMinutes": 45,
+            "priceCents": 5000,
+            "assignmentStrategy": "any_available",
+            "resourceRequirements": [
+                {
+                    "role": "stylist",
+                    "kind": "staff",
+                    "skillTags": [
+                        "styling"
+                    ],
+                    "count": 1
+                }
+            ],
+            "policyHandle": "salon-standard"
         },
         {
-          "dayOfWeek": 0,
-          "startMinute": 600,
-          "endMinute": 1140
-        }
-      ]
-    },
-    {
-      "handle": "noor",
-      "name": "Noor Rahim",
-      "kind": "staff",
-      "skillTags": ["colour", "balayage", "treatment"],
-      "windows": [
-        {
-          "dayOfWeek": 2,
-          "startMinute": 600,
-          "endMinute": 1080
+            "handle": "gloss-toner",
+            "name": "Gloss & toner",
+            "description": "A shine-boosting gloss to refresh tone between color appointments.",
+            "durationMinutes": 60,
+            "priceCents": 7500,
+            "bufferAfterMin": 10,
+            "assignmentStrategy": "customer_choice",
+            "resourceRequirements": [
+                {
+                    "role": "colorist",
+                    "kind": "staff",
+                    "skillTags": [
+                        "color"
+                    ],
+                    "count": 1
+                }
+            ],
+            "policyHandle": "salon-standard"
         },
         {
-          "dayOfWeek": 4,
-          "startMinute": 600,
-          "endMinute": 1080
+            "handle": "full-color",
+            "name": "Full color",
+            "description": "Single-process color, root to tip, with a gloss and a finish.",
+            "durationMinutes": 120,
+            "priceCents": 16000,
+            "bufferAfterMin": 15,
+            "assignmentStrategy": "customer_choice",
+            "resourceRequirements": [
+                {
+                    "role": "colorist",
+                    "kind": "staff",
+                    "skillTags": [
+                        "color"
+                    ],
+                    "count": 1
+                }
+            ],
+            "policyHandle": "color-deposit"
         },
         {
-          "dayOfWeek": 5,
-          "startMinute": 600,
-          "endMinute": 1080
+            "handle": "balayage",
+            "name": "Balayage",
+            "description": "Hand-painted, lived-in lightness — soft grow-out, low upkeep.",
+            "durationMinutes": 180,
+            "priceCents": 24000,
+            "bufferAfterMin": 15,
+            "assignmentStrategy": "customer_choice",
+            "resourceRequirements": [
+                {
+                    "role": "colorist",
+                    "kind": "staff",
+                    "skillTags": [
+                        "balayage"
+                    ],
+                    "count": 1
+                }
+            ],
+            "policyHandle": "color-deposit"
         },
         {
-          "dayOfWeek": 6,
-          "startMinute": 600,
-          "endMinute": 1080
-        }
-      ]
-    }
-  ],
-  "services": [
-    {
-      "handle": "cut-finish",
-      "name": "Cut & finish",
-      "description": "A consultation, a precise cut and a polished blow-dry to finish.",
-      "durationMinutes": 60,
-      "priceCents": 8500,
-      "assignmentStrategy": "customer_choice",
-      "resourceRequirements": [
+            "handle": "bond-treatment",
+            "name": "Bond-repair treatment",
+            "description": "A strengthening treatment that leaves hair softer, shinier and easier to manage.",
+            "durationMinutes": 45,
+            "priceCents": 6500,
+            "assignmentStrategy": "any_available",
+            "resourceRequirements": [
+                {
+                    "role": "stylist",
+                    "kind": "staff",
+                    "skillTags": [
+                        "treatment"
+                    ],
+                    "count": 1
+                }
+            ],
+            "policyHandle": "salon-standard"
+        },
         {
-          "role": "stylist",
-          "kind": "staff",
-          "skillTags": ["cut"],
-          "count": 1
+            "handle": "bridal-styling",
+            "name": "Bridal styling",
+            "description": "A trial and day-of styling for the wedding — booked with a consultation first.",
+            "durationMinutes": 90,
+            "priceCents": 15000,
+            "requiresApproval": true,
+            "assignmentStrategy": "customer_choice",
+            "resourceRequirements": [
+                {
+                    "role": "stylist",
+                    "kind": "staff",
+                    "skillTags": [
+                        "styling"
+                    ],
+                    "count": 1
+                }
+            ],
+            "policyHandle": "color-deposit"
         }
-      ],
-      "policyHandle": "salon-standard"
-    },
-    {
-      "handle": "blow-dry",
-      "name": "Blow-dry & style",
-      "description": "A wash and a styled finish — smooth, soft or full-bodied, however you like it.",
-      "durationMinutes": 45,
-      "priceCents": 5000,
-      "assignmentStrategy": "any_available",
-      "resourceRequirements": [
+    ],
+    "locations": [
         {
-          "role": "stylist",
-          "kind": "staff",
-          "skillTags": ["styling"],
-          "count": 1
+            "handle": "premises",
+            "name": "Maison Élan",
+            "timezone": "UTC"
         }
-      ],
-      "policyHandle": "salon-standard"
-    },
-    {
-      "handle": "gloss-toner",
-      "name": "Gloss & toner",
-      "description": "A shine-boosting gloss to refresh tone between colour appointments.",
-      "durationMinutes": 60,
-      "priceCents": 7500,
-      "bufferAfterMin": 10,
-      "assignmentStrategy": "customer_choice",
-      "resourceRequirements": [
-        {
-          "role": "colourist",
-          "kind": "staff",
-          "skillTags": ["colour"],
-          "count": 1
-        }
-      ],
-      "policyHandle": "salon-standard"
-    },
-    {
-      "handle": "full-colour",
-      "name": "Full colour",
-      "description": "Single-process colour, root to tip, with a gloss and a finish.",
-      "durationMinutes": 120,
-      "priceCents": 16000,
-      "bufferAfterMin": 15,
-      "assignmentStrategy": "customer_choice",
-      "resourceRequirements": [
-        {
-          "role": "colourist",
-          "kind": "staff",
-          "skillTags": ["colour"],
-          "count": 1
-        }
-      ],
-      "policyHandle": "colour-deposit"
-    },
-    {
-      "handle": "balayage",
-      "name": "Balayage",
-      "description": "Hand-painted, lived-in lightness — soft grow-out, low upkeep.",
-      "durationMinutes": 180,
-      "priceCents": 24000,
-      "bufferAfterMin": 15,
-      "assignmentStrategy": "customer_choice",
-      "resourceRequirements": [
-        {
-          "role": "colourist",
-          "kind": "staff",
-          "skillTags": ["balayage"],
-          "count": 1
-        }
-      ],
-      "policyHandle": "colour-deposit"
-    },
-    {
-      "handle": "bond-treatment",
-      "name": "Bond-repair treatment",
-      "description": "A strengthening treatment that leaves hair softer, shinier and easier to manage.",
-      "durationMinutes": 45,
-      "priceCents": 6500,
-      "assignmentStrategy": "any_available",
-      "resourceRequirements": [
-        {
-          "role": "stylist",
-          "kind": "staff",
-          "skillTags": ["treatment"],
-          "count": 1
-        }
-      ],
-      "policyHandle": "salon-standard"
-    },
-    {
-      "handle": "bridal-styling",
-      "name": "Bridal styling",
-      "description": "A trial and day-of styling for the wedding — booked with a consultation first.",
-      "durationMinutes": 90,
-      "priceCents": 15000,
-      "requiresApproval": true,
-      "assignmentStrategy": "customer_choice",
-      "resourceRequirements": [
-        {
-          "role": "stylist",
-          "kind": "staff",
-          "skillTags": ["styling"],
-          "count": 1
-        }
-      ],
-      "policyHandle": "colour-deposit"
-    }
-  ],
-  "locations": [
-    {
-      "handle": "premises",
-      "name": "Maison Élan",
-      "timezone": "UTC"
-    }
-  ]
+    ]
 }

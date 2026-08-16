@@ -10,71 +10,71 @@ import emails from './emails.json' with { type: 'json' };
 import assets from './assets.json' with { type: 'json' };
 
 const blueprint = {
-  key: 'sparx-nutrition-sports',
-  version: '1.3.0',
-  name: 'sparx — Nutrition (Sports & Performance)',
-  summary:
-    'A bold, athletic sports-nutrition site — a crisp near-white ground, an electric-blue primary and a lime accent with a sturdy condensed display. Installs a working booking flow: a real consult menu (free strategy call, performance assessment, fueling plans, endurance & strength sessions, body-composition testing, follow-ups), three sports dietitians booked by name with their own hours, and a no-show policy. Ships as "Fuel Performance Nutrition".',
-  vertical: 'services',
-  preview: 'media/preview.png',
-  requiresModules: ['builder', 'scheduling', 'crm', 'email'],
+    key: 'sparx-nutrition-sports',
+    version: '1.3.0',
+    name: 'sparx — Nutrition (Sports & Performance)',
+    summary:
+        'A bold, athletic sports-nutrition site — a crisp near-white ground, an electric-blue primary and a lime accent with a sturdy condensed display. Installs a working booking flow: a real consult menu (free strategy call, performance assessment, fueling plans, endurance & strength sessions, body-composition testing, follow-ups), three sports dietitians booked by name with their own hours, and a no-show policy. Ships as "Fuel Performance Nutrition".',
+    vertical: 'services',
+    preview: 'media/preview.png',
+    requiresModules: ['builder', 'scheduling', 'crm', 'email'],
 
-  // Identity only (business name + tagline + fonts + the theme's hex colours). The look
-  // rides site.theme + the theme decl below; the installing tenant rebrands the name.
-  brand: {
-    businessName: 'Fuel Performance Nutrition',
-    tagline: 'Fuel like your results depend on it.',
-    colors: {
-      primary: '#007be4',
-      primaryForeground: '#050c13',
-      accent: '#98d423',
-      secondary: '#2e3947',
-    },
-    fonts: {
-      heading: 'Oswald',
-      body: 'Inter',
-    },
-  },
-
-  // The provisioned SiteTheme the installer creates + applies — an editable saved theme
-  // over a foundation base + the template's brand snapshot. The LIVE storefront look is
-  // site.theme (the flat bespoke tokens), written last.
-  theme: {
-    name: 'fuel',
-    basePresetKey: 'apex',
-    presentation: {
-      v: 2,
-      containerWidth: '1152px',
-    },
+    // Identity only (business name + tagline + fonts + the theme's hex colors). The look
+    // rides site.theme + the theme decl below; the installing tenant rebrands the name.
     brand: {
-      colorPrimary: '#007be4',
-      colorAccent: '#98d423',
-      colorSecondary: '#2e3947',
-      fontHeading: 'Oswald',
-      fontBody: 'Inter',
-      tokens: {},
+        businessName: 'Fuel Performance Nutrition',
+        tagline: 'Fuel like your results depend on it.',
+        colors: {
+            primary: '#007be4',
+            primaryForeground: '#050c13',
+            accent: '#98d423',
+            secondary: '#2e3947',
+        },
+        fonts: {
+            heading: 'Oswald',
+            body: 'Inter',
+        },
     },
-    apply: true,
-  },
 
-  assets,
-  contentTypes: [],
+    // The provisioned SiteTheme the installer creates + applies — an editable saved theme
+    // over a foundation base + the template's brand snapshot. The LIVE storefront look is
+    // site.theme (the flat bespoke tokens), written last.
+    theme: {
+        name: 'fuel',
+        basePresetKey: 'apex',
+        presentation: {
+            v: 2,
+            containerWidth: '1152px',
+        },
+        brand: {
+            colorPrimary: '#007be4',
+            colorAccent: '#98d423',
+            colorSecondary: '#2e3947',
+            fontHeading: 'Oswald',
+            fontBody: 'Inter',
+            tokens: {},
+        },
+        apply: true,
+    },
 
-  // The booking spine — policies, bookable resources (staff/rooms/stations) with weekly
-  // hours, and the service menu. The installer's scheduling slice replays it into a live
-  // booking flow that the site's /book page renders.
-  scheduling,
+    assets,
+    contentTypes: [],
 
-  // Brand-voiced MARKETING starters (a welcome + a come-back), installed as DRAFTS the
-  // tenant switches on. The transactional booking sends — confirmation, reminder,
-  // reschedule, cancellation, waitlist — are platform KEYED defaults, so they are covered
-  // on email-module activation and are deliberately NOT duplicated here.
-  emails,
-  sequences: [],
+    // The booking spine — policies, bookable resources (staff/rooms/stations) with weekly
+    // hours, and the service menu. The installer's scheduling slice replays it into a live
+    // booking flow that the site's /book page renders.
+    scheduling,
 
-  // The composed distinct site (frame + Home + Book + About + Contact) in the bespoke
-  // theme, fully stamped.
-  site,
+    // Brand-voiced MARKETING starters (a welcome + a come-back), installed as DRAFTS the
+    // tenant switches on. The transactional booking sends — confirmation, reminder,
+    // reschedule, cancellation, waitlist — are platform KEYED defaults, so they are covered
+    // on email-module activation and are deliberately NOT duplicated here.
+    emails,
+    sequences: [],
+
+    // The composed distinct site (frame + Home + Book + About + Contact) in the bespoke
+    // theme, fully stamped.
+    site,
 };
 
 export default blueprint;

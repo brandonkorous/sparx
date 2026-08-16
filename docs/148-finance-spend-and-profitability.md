@@ -152,7 +152,7 @@ shipping surfaces away from every tenant that had not bought the new module.
 
 The fix is `SurfaceDefinition.requiresModules` plus a shared `surfaceIsVisible`: the
 gate now runs **per surface**, and a module group empties (and disappears) only when
-nothing inside it survives. One coloured group, three entitlement answers — see §5.
+nothing inside it survives. One colored group, three entitlement answers — see §5.
 
 `surfaceIsVisible` is shared by the rail, the mobile drawer, the launcher and
 record-search routing. That last one mattered: the launcher had a second gate whose own
@@ -274,7 +274,7 @@ behind the module flag:
 - **Accounting** — the connection, the mapping table, and the sync history (§6).
 
 Design notes that are binding here rather than optional: the profit surfaces are a
-**colour** problem before they are a chart problem — cost of sale, labour and operating
+**color** problem before they are a chart problem — cost of sale, labour and operating
 must be distinguishable at a glance, and a negative month has to read as negative
 without the reader parsing a minus sign. `statusTone()` covers paid/overdue/unpaid on
 the bills surface. See [DESIGN.md](../DESIGN.md) and RULE #4 before building any of it;
@@ -408,8 +408,8 @@ Three jobs: generate due recurring expenses, recompute dirty days of
    the Spending list**, not a trip to the detail pane: amount / what for /
    category, Enter to save, focus back to the amount and the category deliberately
    sticky — a shoebox of receipts is a run of the same kind of thing. And **the
-   Profit surface leads with colour**: net profit is red when negative before the
-   reader parses a minus sign, and the per-day chart colours each bar by its own
+   Profit surface leads with color**: net profit is red when negative before the
+   reader parses a minus sign, and the per-day chart colors each bar by its own
    sign rather than hanging negatives below an axis line someone has to find.
 
    A second pass caught the Accounting surface shipping two of its three parts —
@@ -497,7 +497,7 @@ Three jobs: generate due recurring expenses, recompute dirty days of
    reviewed rather than silently shipped.
 
 7. ~~**Marketing site**~~ — **done.** `finance` added to every place `apps/web`
-   enumerates modules: the catalog + its four colour maps + the icon, the megamenu
+   enumerates modules: the catalog + its four color maps + the icon, the megamenu
    grouping (a typed `Record`, so it broke the build until it was given a column —
    working exactly as its own comment promised), the pricing ledger, the feature
    table, both switchboards' `ELSEWHERE_MONTHLY`, the platform page, and the
@@ -538,7 +538,7 @@ Three jobs: generate due recurring expenses, recompute dirty days of
 
    The page's three cost hues are imported from the same vocabulary the product
    uses (`kindColor` in the workbench's `format.ts`), so a visitor who signs up
-   meets the colours they were just shown. And the accounting section says
+   meets the colors they were just shown. And the accounting section says
    **download** rather than **sync**: only the spreadsheet provider is
    `available` today, and the page names direct QuickBooks Online / Xero sync as
    coming — the alternative is exactly the "we integrate with QuickBooks" lie §6

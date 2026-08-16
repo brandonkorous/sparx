@@ -3,7 +3,7 @@
  * The stylesheet for a shell that Piggles owns wrapped around surfaces it does
  * not (piggles/CLAUDE.md RULE #0). That split is the whole shape of this file:
  *
- *   • The BRAND half is Piggles' — the theme import, the registered colour
+ *   • The BRAND half is Piggles' — the theme import, the registered color
  *     roles, the heading face, the canvas.
  *   • The SURFACE half is imported wholesale from the shared workbench's
  *     ./surface-support.css. Those rules are the styling contract the ~500
@@ -25,7 +25,7 @@
 @import '@piggles/brand/theme.css';
 
 /* Rules that close a hole in a silicaui component, and the toast surface. Both
- * are written entirely in tokens — they name no colour of their own — so they
+ * are written entirely in tokens — they name no color of their own — so they
  * resolve to Piggles' values here and sparx's over there. That is why they sit
  * in @wizeworks/silica-corrections: a fix both brands need cannot live inside
  * one brand's package, or deleting that brand deletes the other's fix. */
@@ -122,7 +122,7 @@
  * responsive vocabulary and the only one the device toggle can actually preview. */
 @import '../../../../packages/silica-catalog/src/builder-vocabulary.css';
 
-/* ── The registered colour roles ─────────────────────────────────────────────
+/* ── The registered color roles ─────────────────────────────────────────────
  *
  * This list REPLACES silicaui's default set, so every built-in still wanted is
  * re-listed — `neutral` included. Beyond the defaults:
@@ -133,7 +133,7 @@
  *   • `module`     — the active-app bridge. `data-app` / `data-group` /
  *                    `data-module` repoint `--color-module`, and registering the
  *                    NAME is what makes `color="module"` resolve through
- *                    silica's normal colour machinery.
+ *                    silica's normal color machinery.
  *   • `group-*`    — so the rail and launcher can reach a group hue directly
  *                    (`bg-group-sell`) rather than only through the bridge.
  *   • `module-*`   — the per-module hues. A token in theme.css is NOT enough: a
@@ -157,7 +157,7 @@
     module-platform;
 }
 
-/* Bridge the non-color brand tokens into the Tailwind v4 theme. Colours are
+/* Bridge the non-color brand tokens into the Tailwind v4 theme. Colors are
  * owned entirely by silicaui via the @plugin above. Radius is deliberately
  * ABSENT: theme.css defines it semantically (--radius-box / --radius-field /
  * --radius-selector) and silicaui already emits rounded-box / rounded-field /
@@ -242,7 +242,7 @@ h6 {
  * dragging all aiming at the old, gapless rectangle. Do not "simplify" the gap
  * back into this stylesheet.
  *
- * What IS left here is skin: colour, radius, borders. That is the correct split,
+ * What IS left here is skin: color, radius, borders. That is the correct split,
  * and it is why nothing in lib/dock was forked (piggles/CLAUDE.md RULE #0).
  *
  * ── WHY EVERY SELECTOR CARRIES TWO CLASSES ──────────────────────────────────

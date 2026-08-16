@@ -148,7 +148,7 @@
 >
 > **One thing to carry forward: §9 REPAINTS ALREADY-PUBLISHED TENANT SITES.** Theme tokens are CSS
 > custom properties resolved per render, not stamped into published trees, so moving the
-> `-content` threshold changes live text colour wherever a brand colour's lightness sits between
+> `-content` threshold changes live text color wherever a brand color's lightness sits between
 > 0.57 and 0.68. It is a correctness fix — those combinations were failing AA — but it is visible,
 > and the fallback's "every shipped preset passes at 0.57" has a worst row of 4.51 against a 4.5
 > threshold. That is a coincidence, not a safety margin: the measured build-time path is the
