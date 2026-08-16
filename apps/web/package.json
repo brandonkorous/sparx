@@ -24,6 +24,7 @@
     "@sparx/site-themes": "workspace:*",
     "@sparx/story-schemas": "workspace:*",
     "@sparx/ui": "workspace:*",
+    "@wizeworks/silica-corrections": "workspace:*",
     "@wizeworks/silicaui": "catalog:",
     "@wizeworks/silicaui-html": "catalog:",
     "@wizeworks/silicaui-react": "catalog:",

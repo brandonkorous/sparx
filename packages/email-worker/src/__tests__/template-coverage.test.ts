@@ -20,10 +20,12 @@
 // a TypeScript union on the other, and nothing compared them. `TEMPLATE_IDS`
 // exists so something can.
 
-// The JSX-free subpath on purpose: importing `@sparx/email` proper would pull
-// React and every template into a test that only needs a list of strings.
+// The JSX-free subpaths on purpose: importing `@sparx/email` proper would pull
+// React and every template into a test that needs only a list of strings and a
+// bag of plain objects.
 import { describe, expect, it } from 'vitest';
 import { TEMPLATE_IDS } from '@sparx/email/template-ids';
+import { TEMPLATE_PROPS } from '@sparx/email/template-fixtures';
 
 import { TemplateSendSchema } from '../template-schema.js';
 
@@ -50,5 +52,35 @@ describe('email-worker accepts every template', () => {
     const known = new Set<string>(TEMPLATE_IDS);
     const orphans = [...accepted].filter((id) => !known.has(id));
     expect(orphans, `schema members with no template: ${orphans.join(', ')}`).toEqual([]);
+  });
+
+  // ══════════════════════════════════════════════════════════════════════════
+  // NAME COVERAGE IS NOT ENOUGH — THE SHAPES HAVE TO AGREE TOO
+  // ══════════════════════════════════════════════════════════════════════════
+  //
+  // The gate and the renderer are two hand-maintained descriptions of the same
+  // payload, and they can disagree in ways the tests above cannot see: an
+  // `acceptUrl` typed `.url()` while the publisher sends a bare path, a field
+  // the gate requires and the template treats as optional, a number where a
+  // string arrives. Every one of those passes "is the template listed" and
+  // still drops the email, silently, in production.
+  //
+  // These are the SAME objects `@sparx/email` renders in its own suite, so the
+  // two ends are pinned to one description of each template.
+  describe.each(TEMPLATE_IDS)('%s', (id) => {
+    it('accepts the props the renderer is proven against', () => {
+      const result = TemplateSendSchema.safeParse({
+        template: id,
+        to: 'someone@example.test',
+        props: TEMPLATE_PROPS[id],
+      });
+
+      // The issues, not just "false" — a bare boolean sends the next person
+      // diffing a 450-line schema against a template by eye.
+      const issues = result.success
+        ? []
+        : result.error.issues.map((i) => `${i.path.join('.')}: ${i.message}`);
+      expect(issues, `the worker would DROP a valid ${id}`).toEqual([]);
+    });
   });
 });

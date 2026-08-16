@@ -112,7 +112,13 @@ describe('commission on a sale', () => {
     // "Nobody is credited" and "they are not on commission" are both ordinary,
     // and they are fixed in completely different places — so the outcome has to
     // survive as far as the log.
-    for (const outcome of ['no-attribution', 'no-rate', 'not-payable', 'unknown-sale']) {
+    for (const outcome of [
+      'no-attribution',
+      'no-rate',
+      'rate-not-in-force',
+      'not-payable',
+      'unknown-sale',
+    ]) {
       commissionForOrder.mockResolvedValueOnce({ outcome });
       const result = await handle(parseEvent(envelope('order.paid', { orderId: ORDER }))!, logger);
       expect(result).toMatchObject({ outcome: 'skipped', commission: outcome });

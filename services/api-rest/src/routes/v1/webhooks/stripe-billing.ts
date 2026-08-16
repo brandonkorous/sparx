@@ -11,8 +11,8 @@
 //   invoice.payment_failed         → subscription_status = past_due + emails the tenant
 //   invoice.payment_succeeded      → subscription_status = active + emails a receipt
 //
-// The three tenant-facing emails are sparx-branded platform templates (bucket B),
-// published as `email.send` to the tenant's billing contact (docs/impl transactional-email §4 P4).
+// The three tenant-facing emails are PLATFORM templates (bucket B), rendered in
+// the tenant's own brand and published as `email.send` to its billing contact.
 //
 // Always 200 on a valid signature (even for unhandled types) so Stripe stops
 // retrying; 403 on a bad signature. Reconciliation is idempotent.
@@ -27,9 +27,9 @@ import { prisma } from '@sparx/db';
 import { appLink, appOrigin } from '@sparx/links/server';
 import { env } from '../../../env.js';
 
-// ── sparx-billing notifications (docs/impl transactional-email §4 P4) ─────────
-// The tenant's OWN sparx bill: receipt, payment-failed, trial-ending. These are
-// PLATFORM → tenant emails (sparx-branded React templates, bucket B), not a
+// ── Platform billing notifications (docs/impl transactional-email §4 P4) ─────
+// The tenant's OWN bill from WizeWorks: receipt, payment-failed, trial-ending.
+// These are PLATFORM → tenant emails (bucket B), not a
 // tenant's customer emails — so they publish `email.send` with a coded template,
 // addressed to the tenant's billing contact, not through the Builder-email path.
 
@@ -37,14 +37,23 @@ import { env } from '../../../env.js';
  *  `stripeCustomerId` (a non-RLS root row, safe to read without a tenant context). */
 async function billingRecipient(
   customerId: string | null | undefined
-): Promise<{ tenantId: string; email: string; name: string } | null> {
+): Promise<{ tenantId: string; email: string; name: string; brand: string } | null> {
   if (!customerId) return null;
   const tenant = await prisma.tenant.findUnique({
     where: { stripeCustomerId: customerId },
-    select: { id: true, email: true, name: true },
+    // `platformBrand` rides this read. A Stripe webhook has no session and no
+    // hostname — the `tenants` row is the non-RLS dispatch row precisely so a
+    // webhook can resolve the tenant before any context is set, and the brand is
+    // resolvable from exactly the same place for exactly the same reason.
+    select: { id: true, email: true, name: true, platformBrand: true },
   });
   if (!tenant?.email) return null;
-  return { tenantId: tenant.id, email: tenant.email, name: tenant.name };
+  return {
+    tenantId: tenant.id,
+    email: tenant.email,
+    name: tenant.name,
+    brand: tenant.platformBrand,
+  };
 }
 
 function money(cents: number, currency: string): string {
@@ -63,13 +72,19 @@ function dateLabel(unixSeconds: number): string {
   }).format(new Date(unixSeconds * 1000));
 }
 
-/** The workbench billing page — where a tenant adds/updates a card. The address
- *  comes from the shared table (`@sparx/links`), which is what stops this file
- *  from knowing a surface key: it used to append `?open=finance.subscription`,
- *  so renaming that surface would have broken every billing email already sent.
- *  `/settings/billing` is the canonical address and resolves on its own. */
-function billingSettingsUrl(): string {
-  return appLink('finance.subscription') ?? appOrigin();
+/** The billing page — where a tenant adds/updates a card. The address comes from
+ *  the shared table (`@sparx/links`), which is what stops this file from knowing
+ *  a surface key: it used to append `?open=finance.subscription`, so renaming
+ *  that surface would have broken every billing email already sent.
+ *
+ *  Takes the tenant's brand because the console it opens differs per product.
+ *  Note that `finance.subscription` is a HIDDEN surface in the Piggles console —
+ *  platform billing lives on getpiggles.com there (piggles/CLAUDE.md RULE #2) —
+ *  so once Piggles bills through Stripe, this address needs a Piggles-side
+ *  answer rather than a Piggles-origin version of a sparx address. Tracked as
+ *  follow-up in piggles/docs/migration. */
+function billingSettingsUrl(brand: string): string {
+  return appLink('finance.subscription', undefined, { brand }) ?? appOrigin(brand);
 }
 
 const asString = (v: string | { id: string } | null | undefined): string | undefined =>
@@ -219,7 +234,7 @@ async function dispatch(log: FastifyBaseLogger, event: Stripe.Event): Promise<vo
               ...(kind === 'canceled' && ps.renewsOnLabel
                 ? { effectiveLabel: ps.renewsOnLabel }
                 : {}),
-              manageUrl: billingSettingsUrl(),
+              manageUrl: billingSettingsUrl(recipient.brand),
             },
           });
         }
@@ -240,7 +255,7 @@ async function dispatch(log: FastifyBaseLogger, event: Stripe.Event): Promise<vo
           props: {
             accountName: recipient.name,
             trialEndLabel: dateLabel(sub.trial_end),
-            manageUrl: billingSettingsUrl(),
+            manageUrl: billingSettingsUrl(recipient.brand),
           },
         });
       }
@@ -258,13 +273,13 @@ async function dispatch(log: FastifyBaseLogger, event: Stripe.Event): Promise<vo
       if (customerId) {
         await setSubscriptionStatus(customerId, status);
       }
-      // Notify the tenant about their own sparx bill. The hosted invoice page is
+      // Notify the tenant about their own bill. The hosted invoice page is
       // Stripe's — always present on a real invoice; fall back to the dashboard
       // billing settings if a test invoice lacks it.
       const recipient = await billingRecipient(customerId);
       if (recipient) {
         const currency = invoice.currency ?? 'usd';
-        const invoiceUrl = invoice.hosted_invoice_url ?? billingSettingsUrl();
+        const invoiceUrl = invoice.hosted_invoice_url ?? billingSettingsUrl(recipient.brand);
         // A failed or recovered payment is a fact about the customer, not just a
         // status column — the platform CRM records it on their timeline and tags
         // the deal (docs/140 §5). Published here because this is the branch that

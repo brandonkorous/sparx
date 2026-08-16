@@ -67,6 +67,7 @@ COPY packages/field-schema/package.json packages/field-schema/
 COPY packages/integrations/package.json packages/integrations/
 COPY packages/marketplace-schemas/package.json packages/marketplace-schemas/
 COPY packages/silica-catalog/package.json packages/silica-catalog/
+COPY packages/silica-corrections/package.json packages/silica-corrections/
 COPY packages/site-themes/package.json packages/site-themes/
 COPY packages/sitebuilder-schemas/package.json packages/sitebuilder-schemas/
 COPY packages/story-schemas/package.json packages/story-schemas/
@@ -121,6 +122,7 @@ COPY packages/field-schema packages/field-schema
 COPY packages/integrations packages/integrations
 COPY packages/marketplace-schemas packages/marketplace-schemas
 COPY packages/silica-catalog packages/silica-catalog
+COPY packages/silica-corrections packages/silica-corrections
 COPY packages/site-themes packages/site-themes
 COPY packages/sitebuilder-schemas packages/sitebuilder-schemas
 COPY packages/story-schemas packages/story-schemas

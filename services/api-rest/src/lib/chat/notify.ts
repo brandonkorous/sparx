@@ -18,6 +18,7 @@ import { publish } from '@sparx/api-core/pubsub';
 import { appLink, appOrigin } from '@sparx/links/server';
 
 import { resolveActivePropertyName } from '../property.js';
+import { tenantPlatformBrand } from '../tenant-brand.js';
 import { firstNonEmpty } from './types.js';
 
 export type EscalationReason = 'ai_disabled' | 'away' | 'escalated';
@@ -89,7 +90,13 @@ export async function escalateToHuman(
     // the conversation surface cannot silently orphan links already sent. The
     // old hand-built `/chat/<id>` stays valid as an alias for exactly that
     // reason — every push notification already delivered carries it.
-    const conversationUrl = appLink('chat.inbox.thread', { id: conversationId }) ?? appOrigin();
+    //
+    // The brand decides the ORIGIN the address resolves against: the recipient
+    // is this tenant's own owner or admin, so the link has to open the console
+    // they signed in to, not the other brand's.
+    const brand = await tenantPlatformBrand(ctx.tenantId);
+    const conversationUrl =
+      appLink('chat.inbox.thread', { id: conversationId }, { brand }) ?? appOrigin(brand);
     const snippet = info.snippet.slice(0, 200);
 
     // Each recipient gets an email (if they have an address) AND a web-push

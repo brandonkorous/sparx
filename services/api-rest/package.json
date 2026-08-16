@@ -93,6 +93,7 @@
     "@sparx/staff": "workspace:*",
     "@sparx/usage": "workspace:*",
     "@sparx/voice": "workspace:*",
+    "@wizeworks/brand-core": "workspace:*",
     "@wizeworks/silicaui-html": "catalog:",
     "fastify": "^5.6.1",
     "fastify-plugin": "^5.0.1",

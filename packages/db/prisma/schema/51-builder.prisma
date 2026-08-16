@@ -190,7 +190,24 @@ model BuilderSite {
   // presets the author snapshots in the Themes panel. Authoring state only: the
   // storefront renders just the active `theme`, so there is no published copy.
   // Null until the author saves their first theme (silica seeds it on load).
+  //
+  // SUPERSEDED by `builder_themes` (see BuilderTheme). Kept because sparx's own
+  // studio still round-trips it through the whole-`Site` blob; the per-document
+  // editor reads and writes the rows instead. Delete it when that blob goes.
   silicaDraftSavedThemes Json? @map("silica_draft_saved_themes")
+
+  // WHICH theme this site wears — a `builder_themes` row, or null for the
+  // brand-derived one. The draft/published pair matches `BuilderPage.frameId`,
+  // and for the same reason: what a site LOOKS like is the most visible thing
+  // about it, so the pointer at it has to obey the publish lifecycle or "try a
+  // different look" would repaint the live site the moment it was clicked.
+  //
+  // Deliberately NOT a foreign key, also matching `frameId`. A dangling id falls
+  // back to the brand-derived theme and is REPORTED — the site still renders in
+  // its own colours, and the console says the look it was wearing is gone rather
+  // than quietly restoring one the author moved away from.
+  themeId          String? @map("theme_id") @db.Uuid
+  publishedThemeId String? @map("published_theme_id") @db.Uuid
 
   publishedAt DateTime? @map("published_at") @db.Timestamptz
   createdAt   DateTime  @default(now()) @map("created_at") @db.Timestamptz
@@ -201,6 +218,64 @@ model BuilderSite {
 
   @@index([tenantId])
   @@map("builder_sites")
+}
+
+// The tenant's own THEME — a look, owned by the business rather than by a site.
+//
+// This is the tier that was missing. A theme used to be one JSON column on
+// `builder_sites` plus a JSON "saved themes" library beside it, which cannot
+// express the two things a theme actually is: reusable across a tenant's sites,
+// and publishable on its own schedule. A business with a shop and a blog wants
+// one look on both; changing it in one place is the entire point.
+//
+// THREE TIERS, AND ONLY ONE OF THEM IS A ROW:
+//   · SYSTEM presets ship in code (`@sparx/silica-catalog`'s theme groups) and
+//     are offered read-only. "Use this" COPIES one into a row here.
+//   · MARKETPLACE listings live in `marketplace_themes`, with their publisher,
+//     price and install count. Installing COPIES the payload into a row here.
+//   · A TENANT theme is this table.
+// Copy-on-use rather than a reference, so a preset or a listing changing under a
+// live site can never repaint it — and so an author can always edit what they
+// picked. `origin` + `sourceKey` / `marketplaceThemeId` keep the provenance.
+//
+// The draft/published pair matches BuilderPage and BuilderLayout exactly:
+// publishing a theme snapshots draft → published, and the storefront reads only
+// the published copy. Editing a look never changes a live site until it is
+// published, which is what makes trying one safe.
+//
+// Tenant-scoped + FORCE RLS, like every other builder_* table. There is no
+// null-tenant row here on purpose: a shared row would need a policy exception,
+// and the two tiers that ARE shared already have homes of their own.
+model BuilderTheme {
+  id       String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId String @map("tenant_id") @db.Uuid
+
+  name String @db.VarChar(160)
+
+  // custom | preset | marketplace — where this look CAME from. Provenance, never
+  // ownership: every row here belongs to the tenant and is editable.
+  origin    String  @default("custom") @db.VarChar(20)
+  // The platform preset slug this was copied from, when origin = 'preset'.
+  sourceKey String? @map("source_key") @db.VarChar(120)
+  // The listing this was installed from, and at what version, when origin =
+  // 'marketplace'. Not a foreign key — a listing can be retracted, and that must
+  // not delete a look somebody's live site is wearing.
+  marketplaceThemeId String? @map("marketplace_theme_id") @db.Uuid
+  marketplaceVersion String? @map("marketplace_version") @db.VarChar(20)
+
+  // The silica `Theme` — `{ name, tokens, dark?, mode? }`, the `--*` custom
+  // properties verbatim, so what previews on the canvas is what renders live.
+  draftTokens     Json  @map("draft_tokens")
+  publishedTokens Json? @map("published_tokens")
+
+  publishedAt DateTime? @map("published_at") @db.Timestamptz
+  createdAt   DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt   DateTime  @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId, name])
+  @@map("builder_themes")
 }
 
 // The site LAYOUT — the chrome shell (header / outlet / footer) every page

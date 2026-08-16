@@ -323,6 +323,11 @@ jobs:
           # already small (76-121 MB), and share nothing with the service tree.
           build-args: |
             BASE=${{ needs.base.outputs.image }}
+          # A BuildKit secret, never a build-arg: an arg stays readable in the
+          # image's layer history. Only the three Piggles Dockerfiles mount it —
+          # for the other nineteen it is declared and never materialised.
+          secrets: |
+            fontawesome_npm_token=${{ secrets.FONTAWESOME_NPM_TOKEN }}
           tags: |
             ghcr.io/${{ github.repository }}/${{ matrix.name }}:${{ github.sha }}
             ghcr.io/${{ github.repository }}/${{ matrix.name }}:latest

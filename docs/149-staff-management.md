@@ -1,8 +1,8 @@
 # 149 — Staff management (the `staff` module)
 
-Version: 0.7 (verified)
+Version: 0.8 (clicked)
 Author: Brandon Korous
-Last Updated: 2026-08-14
+Last Updated: 2026-08-16
 
 > Status: **built and browser-verified end to end.** All six surfaces have been driven by
 > hand — a person hired, a rate recorded, hours typed, approved, costed and deleted, a
@@ -10,7 +10,7 @@ Last Updated: 2026-08-14
 > plus 38 DB-backed integration tests that walk approved time all the way into a
 > `finance_expenses` row and out again as a payroll hours file.
 >
-> **Clicking it found six defects that every static check had passed** — §11 lists them.
+> **Clicking it found seven defects that every static check had passed** — §11 lists them.
 > Four were invisible to typecheck, lint and 84 green tests by construction: a silently
 > skipped module tile, an unregistered colour, a dropped field, and a site filter that
 > turned 7h 30m into a confident 0h. This is [[feedback_test_as_a_business_owner]]
@@ -20,9 +20,10 @@ Last Updated: 2026-08-14
 > and works without this. Staff turns 148's hand-typed "Wages" line into derived labour
 > cost and unlocks true job profitability.
 >
-> **0.7: the commission migration is applied and the chain is proven end to end** — 24
-> tests, 13 pure and 11 DB-backed. Neither of the two new controls has been CLICKED
-> though, and §11 is a list of six defects that only clicking found.
+> **0.8: both commission controls have been CLICKED**, end to end — a salesperson hired
+> on 7.5%, an order credited to her through "Who sold it", $30.45 on her pay record. It
+> cost a seventh defect (§11 #7): the screen told an owner their salesperson was "not on
+> commission" when she was, because the rate started after the sale.
 >
 > **0.5 closed the certification sweep** and **0.6 the commission calculation** (§10) —
 > both had shipped as tested service code with no caller, so an expiry date was recorded
@@ -401,7 +402,7 @@ events and `finance.expense.recorded`. That required adding `staff` and `finance
 from `@sparx/modules`, that neither module had ever been added to. **An event a tenant
 cannot pick from a list may as well not be published.**
 
-**Invoked for the first time (2026-08-14).** A cron endpoint that has never been called
+**Invoked for the first time (2026-08-16).** A cron endpoint that has never been called
 is the same category of thing as a handler nothing publishes to, so all four new
 endpoints were fired against the local database through the real router — token refused
 when absent, refused when wrong, accepted when right. The certification sweep found
@@ -478,16 +479,19 @@ four places that never carried it, and each would have failed silently:
   per sale on purpose: modelling a split as "several rows" with no share column would pay
   each named person the FULL commission. Doing it properly needs a share per row, a rule
   for shares that do not total 100%, and a UI that can express both.
-- **Nobody has clicked either new control.** The commission chain is proven by DB-backed
-  tests, not by a person driving the screen — and §11 is a list of six defects that only
-  clicking found. Treat both as unverified until someone does.
+  **Both controls have now been clicked (2026-08-16).** End to end in the workbench: a
+  salesperson hired, put on "Commission only · 7.5% of each sale", credited with order
+  SO-1007 through "Who sold it", and **$30.45 recorded on her pay record** — 7.5% of the
+  $405.97 of goods, not of the $453.96 the customer paid, so the $14.50 delivery and $33.49
+  tax stayed out of it exactly as §10 says they must. It cost one real defect, §11 #7, which
+  every static check and 24 passing tests had let through.
 
 ---
 
 ## 11. What clicking it found
 
-Six defects, none of which typecheck, ESLint, Prettier or 84 passing tests could have
-caught. They are recorded because four of them share one shape — **a thing that is
+Seven defects, none of which typecheck, ESLint, Prettier or 84 passing tests could have
+caught. They are recorded because five of them share one shape — **a thing that is
 absent behaves exactly like a thing that is fine** — and that shape will recur.
 
 1. **The module could not be turned on, because its tile did not exist.** `MODULE_META` in
@@ -532,6 +536,27 @@ absent behaves exactly like a thing that is fine** — and that shape will recur
    understate a screen — it fails to pay somebody. Unattributed hours now fall to the
    person's main business, resolved per member so a two-site person is never counted
    twice.
+
+7. **"They are not on commission" — said about somebody on commission.** Hire a
+   salesperson today, put them on 7.5%, credit them with an order paid a fortnight ago,
+   and the screen answered: _"Credited to Marisol Okonkwo, but they are not on commission,
+   so nothing was earned. Set a commission rate on their pay record to change that."_
+   She was on commission, In force, 7.5%. The rate simply **started after the sale**, and
+   the owner was being sent to do the exact thing they had just done — after which they
+   would get the same message again and conclude the feature was broken.
+
+   The calculator collapsed two causes into one `no-rate`: never on commission, and not on
+   commission **yet**. They are indistinguishable from inside the lookup — no rate came
+   back either way — and they are fixed in opposite places, which is what makes a single
+   message worse than silence. `rate-not-in-force` is now its own outcome carrying both
+   days, and it says: _"Their commission starts Aug 16, 2026 and this order was paid
+   Aug 4, 2026, so it earned nothing."_
+
+   **Writing that message found a second problem.** The obvious advice — "backdate the
+   rate" — is refused: pay rates may not overlap, so `setRate` with an earlier start throws
+   `OverlappingPayRateError`. The remedy that works is remove-and-re-add, so the message
+   names that instead of sending somebody into a guard rail. A test asserts the throw as
+   well as the fix, because the advice is now part of the contract.
 
 **One gap, not a defect: nothing could record an hour by hand.** `useCreateTimeEntry`,
 `useUpdateTimeEntry` and `useDeleteTimeEntry` were built and wired to the API, and no

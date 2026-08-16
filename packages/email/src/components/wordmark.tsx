@@ -36,7 +36,13 @@ export function EmailWordmark({
   const brand = useBrand();
   const logoUrl = brand.logoUrl;
   const hasLogo = Boolean(logoUrl);
-  const hasName = Boolean(brand.siteName) && brand.siteName !== 'sparx';
+  // "A name the TENANT chose", not "a name that isn't sparx". This compared
+  // against the literal `'sparx'` until 2026-08-16, which made one brand's name
+  // the definition of "unbranded" — so a Piggles tenant's platform email put
+  // "sparx" beside their logo, and no amount of configuring Piggles could have
+  // stopped it. The flag says what was actually meant, and the send that builds
+  // the fallback is what sets it.
+  const hasName = Boolean(brand.siteName) && !brand.siteNameIsPlatformDefault;
 
   // Which parts the treatment asks for, then a name fallback so the header is never
   // empty (a logo-only treatment with no logo, etc. → the name / sparx default).

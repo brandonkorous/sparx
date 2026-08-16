@@ -65,7 +65,8 @@ import {
   type ModuleAccessMode,
 } from '@sparx/auth';
 import { MODULE_SLUGS, MODULE_SLUG_SET } from '../../lib/module-toggle.js';
-import { appOrigin } from '@sparx/links/server';
+import { accountOrigin, appOrigin } from '@sparx/links/server';
+import { tenantPlatformBrand } from '../../lib/tenant-brand.js';
 
 // Better Auth's organization plugin is configured with
 // `invitationExpiresIn: 60 * 60 * 24 * 7` (packages/auth/src/server.ts). An
@@ -74,15 +75,24 @@ import { appOrigin } from '@sparx/links/server';
 const INVITATION_TTL_DAYS = 7;
 const INVITATION_TTL_MS = INVITATION_TTL_DAYS * 24 * 60 * 60 * 1000;
 
-/** The base of the /accept-invite link.
+/** The base of the /accept-invite link, on the inviting tenant's own product.
  *
- *  `/accept-invite` is a real PAGE in the workbench, not a pane address, so it is
- *  assembled by hand rather than through the address table — but the ORIGIN comes
- *  from the one place that knows it. Its own fallback used to say `localhost:3001`,
- *  the removed dashboard's port, so every invitation generated on a laptop pointed
- *  at nothing; `appOrigin()` answers 3011 outside production. */
-function acceptUrlFor(invitationId: string): string {
-  return `${appOrigin()}/accept-invite?invitation=${encodeURIComponent(invitationId)}`;
+ *  `/accept-invite` is a real PAGE, not a pane address, so it is assembled by
+ *  hand rather than through the address table — but the ORIGIN comes from the one
+ *  place that knows it.
+ *
+ *  `accountOrigin`, not `appOrigin`, and the distinction is load-bearing. An
+ *  invitee is by definition not signed in yet, so the page has to offer sign-in
+ *  AND sign-up — which means it lives wherever the brand's auth lives. For sparx
+ *  that is the same host either way. For Piggles it is getpiggles.com, and a link
+ *  to the console would land on a domain with no sign-in page at all.
+ *
+ *  Both halves of this were wrong before: no brand at all, so a Piggles owner
+ *  inviting their bookkeeper mailed them a link to sparx — another company's
+ *  product, with no account waiting and nothing to accept. */
+async function acceptUrlFor(tenantId: string, invitationId: string): Promise<string> {
+  const brand = await tenantPlatformBrand(tenantId);
+  return `${accountOrigin(brand)}/accept-invite?invitation=${encodeURIComponent(invitationId)}`;
 }
 
 // ── Input shapes ────────────────────────────────────────────────────────────
@@ -718,7 +728,7 @@ const teamRoutes: FastifyPluginAsync = async (app) => {
           memberName: current.user.name ?? undefined,
           orgName,
           newRole: nextRole,
-          dashboardUrl: appOrigin(),
+          dashboardUrl: appOrigin(await tenantPlatformBrand(auth.tenantId)),
         },
       });
     }
@@ -830,7 +840,7 @@ async function publishInvitationEmail(
         ? invitation.inviter.name.trim()
         : invitation.inviter.email,
       role: invitation.role,
-      acceptUrl: acceptUrlFor(invitation.id),
+      acceptUrl: await acceptUrlFor(tenantId, invitation.id),
       expiresInDays: INVITATION_TTL_DAYS,
     },
   });

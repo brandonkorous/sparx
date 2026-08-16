@@ -6,6 +6,7 @@ import pageRoutes from './pages.js';
 import siteRoutes from './site.js';
 import assignmentRoutes from './assignments.js';
 import layoutRoutes from './layout.js';
+import themeRoutes from './themes.js';
 import emailRoutes from './emails.js';
 import componentRoutes from './components.js';
 import bindingSchemaRoutes from './binding-schema.js';
@@ -20,6 +21,7 @@ const builderRoutes: FastifyPluginAsync = async (app) => {
   await app.register(siteRoutes);
   await app.register(assignmentRoutes);
   await app.register(layoutRoutes);
+  await app.register(themeRoutes);
   await app.register(emailRoutes);
   await app.register(componentRoutes);
   await app.register(bindingSchemaRoutes);

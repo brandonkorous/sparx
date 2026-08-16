@@ -114,11 +114,13 @@ right, the explanation becomes redundant.** §5 is a real before/after of exactl
 
 ## 0. The law
 
-> **Neutral is not the default. Neutral has to be earned.**
+> **Neutral is not the default, and it is not yours to choose. Ask Brandon, every time.**
 
 Same shape as the pane-vs-modal rule in [apps/workbench/CLAUDE.md](apps/workbench/CLAUDE.md) — the
-cheap option is not the free option. `color="neutral"` is a **decision**, and like a modal it must
-clear a named test (§3). If you cannot name which test it clears, it is the wrong color.
+cheap option is not the free option. This used to say "neutral has to be earned" and §3 listed the
+four uses that earned it. The list became something to argue past rather than a bar to clear, so
+`color="neutral"` now needs **Brandon's explicit approval on the specific instance**. Asking is
+cheap; grey shipping because a checklist could be read generously is what this costs otherwise.
 
 ### 0.1 Why grey keeps happening — read this before you argue with §2
 
@@ -182,7 +184,7 @@ open it to build on-system.
 | `primary`   | `#e04631`   | `#e04631`   | sparx ember. The brand, and **the affirmative action** — the button that does the thing this surface exists to do. |
 | `secondary` | `#0c1433`   | `#36d2ff`   | Deep navy / cyan. The second voice: a supporting action, an alternate path.                                        |
 | `accent`    | `#36d2ff`   | `#4fe0ff`   | Bright cyan. Draws the eye to one thing. Rationed — one per surface.                                               |
-| `neutral`   | `#282e39`   | `#323844`   | See §3. Four legitimate uses; everything else is a bug.                                                            |
+| `neutral`   | `#282e39`   | `#323844`   | **Needs Brandon's approval, per instance.** See §3.                                                                |
 | `info`      | `#147ea3`   | `#38bdf8`   | "Here is a fact you need." Private, safe, reversible things live here.                                             |
 | `success`   | `#16865a`   | `#22c55e`   | "This is done / live / healthy."                                                                                   |
 | `warning`   | `#f2b84b`   | `#fbbf24`   | "This has scope beyond where you're standing." Not an error — a consequence.                                       |
@@ -285,11 +287,11 @@ have written `ring-primary` 43 times instead. Only the shared class achieves sin
 Before you type a `color=`, decide which of three axes the element is on. They are **orthogonal** —
 an element sits on one, never two.
 
-| Axis            | The question               | Answer from                                                                                     |
-| --------------- | -------------------------- | ----------------------------------------------------------------------------------------------- |
-| **Identity**    | _What is this a thing of?_ | Module hue — `ModuleScope` + `color="module"`                                                   |
-| **State**       | _What condition is it in?_ | `success` `warning` `error` `info` (`statusTone`)                                               |
-| **Consequence** | _What happens if I click?_ | `primary` do it · `danger` destroys/publishes · `secondary` alternate · ghost-`neutral` dismiss |
+| Axis            | The question               | Answer from                                                                                                                                  |
+| --------------- | -------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Identity**    | _What is this a thing of?_ | Module hue — `ModuleScope` + `color="module"`                                                                                                |
+| **State**       | _What condition is it in?_ | `success` `warning` `error` `info` (`statusTone`)                                                                                            |
+| **Consequence** | _What happens if I click?_ | `primary` do it · `danger` destroys/publishes · `secondary` alternate (a ghost dismiss is still a color decision — `neutral` needs approval) |
 
 Then apply the rule all of this is really about:
 
@@ -502,12 +504,13 @@ that line.** A neutral you can't justify in one sentence is the bug this documen
 Two failures pull in opposite directions and this section is about the second one, so read them
 together before reaching for either fix.
 
-**`neutral` is a first-class member of the palette** — `primary`, `secondary`, `accent`, `success`,
-`info`, `warning`, `error`, `neutral`. §3 narrows _when_ it is the right answer; it never says the
-color is off-limits, and **stripping the `color` prop off a control is not a way to comply with it.**
-A colorless `<Button>` falls back to the base surface scale, which is the correct control for a
-genuinely untyped action — but reaching for it everywhere produces exactly the monochrome screen
-RULE #4 exists to prevent. Removing color is not the same as earning it.
+**`neutral` is a real member of the palette — it is just not one you may reach for on your own
+judgement.** Naming it needs Brandon's approval on the specific instance (RULE #4). Everything below
+is about where it WORKS once approved, not a route to approving it yourself.
+
+**A COLORLESS control is a different thing and is fine.** Omitting the `color` prop falls back to the
+base surface scale, and that is the correct control for a genuinely untyped action — it needs no
+approval. The rule is about NAMING `neutral`, not about every control having to wear a hue.
 
 **The one hard constraint: `neutral` is near-black (`#282e39` light / `#323844` dark), so it must
 never be painted onto a dark surface.** `btn-neutral` on a `bg-neutral` band, on `data-theme="dark"`,

@@ -1,7 +1,7 @@
 @import 'tailwindcss';
 @import '@sparx/ui/tokens.css';
 /* Rules that close a hole in a silicaui component — see the file header. */
-@import '@sparx/brand/silica-gaps.css';
+@import '@wizeworks/silica-corrections/silica-gaps.css';
 
 @source '../../../packages/ui/src/**/*.{ts,tsx}';
 @source '../../../packages/chat-widget/src/**/*.{ts,tsx}';

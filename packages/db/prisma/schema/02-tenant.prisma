@@ -480,6 +480,8 @@ model Tenant {
   builderLayouts           BuilderLayout[]
   // Builder module — the per-property silica site record: theme + symbols (docs/118)
   builderSites             BuilderSite[]
+  // Builder module — the tenant's own themes, reusable across its sites
+  builderThemes            BuilderTheme[]
   // Builder module — per-record template overrides (docs/51 §6)
   builderPageAssignments   BuilderPageAssignment[]
   // Builder module — the Email Builder's emails (docs/52)

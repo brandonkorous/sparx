@@ -1,0 +1,27 @@
+{
+  "name": "@wizeworks/brand-core",
+  "version": "0.0.0",
+  "private": true,
+  "description": "The platform's brand CONTRACT — which brands exist and what identity each must supply. Brand-blind by construction: it declares the shape and resolves values from configuration, and states none of its own.",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    }
+  },
+  "files": [
+    "src"
+  ],
+  "scripts": {
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run --passWithNoTests",
+    "clean": "rm -rf .turbo *.tsbuildinfo"
+  },
+  "devDependencies": {
+    "@types/node": "^25.9.1",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.7"
+  }
+}

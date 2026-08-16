@@ -31,3 +31,22 @@ export async function tenantPlatformBrand(tenantId: string): Promise<string> {
   });
   return row?.platformBrand ?? DEFAULT_PLATFORM_BRAND;
 }
+
+/**
+ * Brands that sell ONE plan with every module in it.
+ *
+ * sparx bills per active module, so a module that is off is a module nobody
+ * bought and switching it on is a sale. Piggles has no module pricing at all
+ * (piggles/CLAUDE.md RULE #2) — every app is included, so a Piggles tenant with
+ * a module off is not a customer who declined it, it is a provisioning gap, and
+ * every screen behind it is a locked door on a product that promises none.
+ *
+ * An EXPLICIT list, never inferred from a plan value or a domain. Getting this
+ * wrong in the permissive direction hands a paying brand's modules away for
+ * free, so a new brand opts in here deliberately or not at all.
+ */
+const BRANDS_INCLUDING_EVERY_MODULE = new Set<string>(['piggles']);
+
+export function brandIncludesEveryModule(brand: string): boolean {
+  return BRANDS_INCLUDING_EVERY_MODULE.has(brand);
+}

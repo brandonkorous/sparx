@@ -66,15 +66,20 @@ const emailDomainRoutes: FastifyPluginAsync = (app) => {
     const domain = await domainService.verify(ctx, id);
     if (before.state !== 'verified' && domain.state === 'verified') {
       try {
+        // `platformBrand` rides the SAME read the address does — the link in
+        // this email must land on the console the recipient actually uses.
         const tenant = await prisma.tenant.findUnique({
           where: { id: ctx.tenantId },
-          select: { email: true },
+          select: { email: true, platformBrand: true },
         });
         if (tenant?.email) {
           await publish(request.log, 'email.send', ctx.tenantId, null, {
             to: tenant.email,
             template: 'email-domain-verified',
-            props: { domainName: domain.domain, dashboardUrl: appOrigin() },
+            props: {
+              domainName: domain.domain,
+              dashboardUrl: appOrigin(tenant.platformBrand),
+            },
           });
         }
       } catch (err) {

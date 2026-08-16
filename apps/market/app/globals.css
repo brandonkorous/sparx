@@ -4,8 +4,8 @@
    Now the shared @sparx/brand package — defined once, imported by every app. */
 @import '@sparx/brand/theme.css';
 /* Rules that close a hole in a silicaui component — see the file header. */
-@import '@sparx/brand/silica-gaps.css';
-@import '@sparx/brand/toast.css';
+@import '@wizeworks/silica-corrections/silica-gaps.css';
+@import '@wizeworks/silica-corrections/toast.css';
 /* SparkMascot motion (blink + the footer peek) — the mascot's geometry ships in
    @sparx/brand/react, its motion in this one stylesheet, so market never
    re-declares a keyframe the marketing site already owns. */

@@ -33,6 +33,7 @@
     "@sparx/site-themes": "workspace:*",
     "@sparx/social": "workspace:*",
     "@sparx/story-schemas": "workspace:*",
+    "@wizeworks/silica-corrections": "workspace:*",
     "@wizeworks/silicaui": "catalog:",
     "@wizeworks/silicaui-builder": "catalog:",
     "@wizeworks/silicaui-charts": "catalog:",

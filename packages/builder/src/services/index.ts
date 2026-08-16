@@ -5,6 +5,7 @@ export * as pageService from './page-service';
 export * as siteService from './site-service';
 export * as assignmentService from './assignment-service';
 export * as layoutService from './layout-service';
+export * as themeService from './theme-service';
 export * as formService from './form-submit-service';
 export * as formDefinitionService from './form-definition-service';
 export * as emailService from './email-service';

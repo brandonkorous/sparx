@@ -70,7 +70,7 @@ import { createReleaseTx, recordArtifactTx, type ManifestEntry } from './artifac
 import { appendOpsTx } from './op-log-service';
 import { captureDraftVersionTx, type DraftVersionSource } from './draft-version-service';
 import { newOpBatch, pageCreateOp, pageDeleteOp, savedThemesSetOp, themeSetOp } from './silica-ops';
-import { BuilderConflictError, BuilderValidationError } from '../errors';
+import { BuilderConflictError, BuilderNotFoundError, BuilderValidationError } from '../errors';
 import type { PropertyContext } from '../errors';
 
 const asJson = (v: unknown): Prisma.InputJsonValue => v as Prisma.InputJsonValue;
@@ -610,6 +610,37 @@ function stagedTheme(site: BuilderSite | null, stage: SiteStage): SilicaTheme | 
 }
 
 /**
+ * The theme a site wears, preferring the `builder_themes` ROW it points at.
+ *
+ * Two tiers coexist on purpose during the cutover. A site edited in the
+ * per-document editor points at a row; one edited through the whole-`Site` blob
+ * still carries its theme in a column. The ROW WINS when there is one, because
+ * pointing at it is the newer and more deliberate act — and a site that has never
+ * been near the new editor has a null pointer and is completely unaffected.
+ *
+ * A dangling pointer falls through to the column and then to brand-derived. That
+ * is the deliberate degradation: the site keeps rendering in its own colours
+ * rather than going unstyled because a look was deleted.
+ */
+async function resolveStagedTheme(
+  tx: TxClient,
+  ctx: PropertyContext,
+  site: BuilderSite | null,
+  stage: SiteStage
+): Promise<SilicaTheme | null> {
+  const themeId = stage === 'draft' ? site?.themeId : site?.publishedThemeId;
+  if (themeId) {
+    const row = await tx.builderTheme.findFirst({
+      where: { id: themeId, tenantId: ctx.tenantId },
+      select: { draftTokens: true, publishedTokens: true },
+    });
+    const tokens = stage === 'draft' ? row?.draftTokens : row?.publishedTokens;
+    if (tokens != null) return tokens as unknown as SilicaTheme;
+  }
+  return stagedTheme(site, stage);
+}
+
+/**
  * The columns a PUBLISHED page read actually uses (docs/127 §2).
  *
  * `builder_pages` carries FOUR Json tree columns — `draft_tree`, `published_tree`,
@@ -715,7 +746,10 @@ export function getPublishedFrame(
       path == null ? undefined : findPageFrameId(tx, ctx.propertyId, path, stage),
     ]);
 
-    const meta = { symbols: stagedSymbols(site, stage), theme: stagedTheme(site, stage) };
+    const meta = {
+      symbols: stagedSymbols(site, stage),
+      theme: await resolveStagedTheme(tx, ctx, site, stage),
+    };
     const treeOf = (l: { silicaDraftTree: unknown; silicaPublishedTree: unknown } | null) =>
       stage === 'draft' ? l?.silicaDraftTree : l?.silicaPublishedTree;
     const asFrame = (root: unknown): SilicaFrame | null =>
@@ -1627,6 +1661,371 @@ export async function resetFrame(
 const treeDiffers = (draft: unknown, published: unknown): boolean =>
   JSON.stringify(draft ?? null) !== JSON.stringify(published ?? null);
 
+/** The site's chrome as ONE document — what the layout builder opens. */
+export interface FrameDocument {
+  /** `builder_layouts.id` — the same value `builder_pages.frame_id` points at, so a
+   *  page and the editor agree on which chrome wraps it with no translation. */
+  layoutId: string;
+  name: string;
+  root: SilicaNode;
+  /** False when this is the starter seed rather than a stored tree: nobody has
+   *  authored chrome here yet, and the first Save materializes it. */
+  stored: boolean;
+  publishedAt: string | null;
+  /** The saved draft differs from what visitors are served. */
+  unpublished: boolean;
+}
+
+/**
+ * Read the site's chrome alone.
+ *
+ * `load` returns the frame too — alongside every page body and the whole symbol
+ * library, which is a large read to answer "what is in the header". This is the
+ * per-row version, and it is what lets the layout builder open in the same time on
+ * a three-page site and a three-hundred-page one.
+ *
+ * Seeds the starter layout row when the property has none, exactly as
+ * `layoutService.listOrSeed` does: the pane needs an id to save against, and page
+ * panes resolve their chrome through that same id.
+ */
+export function loadFrame(
+  ctx: PropertyContext,
+  modules: SiteChromeOptions = {}
+): Promise<FrameDocument> {
+  return withTenant(ctx, async (tx) => {
+    const layout = await activeLayoutTx(tx, ctx);
+    const stored = layout.silicaDraftTree != null;
+    return {
+      layoutId: layout.id,
+      name: layout.name,
+      root: stored ? asNode(layout.silicaDraftTree) : starterFrame(modules).root,
+      stored,
+      publishedAt: layout.publishedAt ? layout.publishedAt.toISOString() : null,
+      // A seed is not a draft: there is nothing saved to be ahead of what is live.
+      unpublished: stored && treeDiffers(layout.silicaDraftTree, layout.silicaPublishedTree),
+    };
+  });
+}
+
+/**
+ * Publish the site's chrome alone — the layout builder's Publish.
+ *
+ * A header typo should not require shipping every half-built page with it, which is
+ * what a whole-site publish makes an author do. So this snapshots one layout, and
+ * seals a release for it like any other publish.
+ *
+ * The release carries the PREVIOUS release's manifest with this layout's entry
+ * swapped in, so every release stays a complete description of the live site and
+ * rollback keeps working. Without that carry-forward a chrome publish would seal a
+ * one-entry release, and restoring it would blank every page the site has.
+ */
+export async function publishFrame(
+  ctx: PropertyContext
+): Promise<{ layoutId: string; publishedAt: string; release: { id: string; hash: string } }> {
+  const now = new Date();
+  const result = await withTenant(ctx, async (tx) => {
+    const layout = await activeLayoutTx(tx, ctx);
+    if (layout.silicaDraftTree == null) {
+      throw new BuilderValidationError(
+        'There is no header or footer saved yet — save your layout before publishing it.'
+      );
+    }
+    await tx.builderLayout.update({
+      where: { id: layout.id },
+      data: { silicaPublishedTree: asJson(layout.silicaDraftTree), publishedAt: now },
+    });
+    const hash = await recordArtifactTx(tx, ctx, 'layout', layout.id, layout.silicaDraftTree);
+    await reindexTreeTx(tx, ctx, {
+      ownerKind: 'layout',
+      ownerId: layout.id,
+      tree: asNode(layout.silicaDraftTree),
+    });
+
+    const manifest = await carryForwardManifestTx(tx, ctx, {
+      ownerKind: 'layout',
+      ownerId: layout.id,
+      hash,
+    });
+    const release = await createReleaseTx(tx, ctx, manifest);
+
+    await writeAuditLog({
+      tx,
+      tenantId: ctx.tenantId,
+      actorId: ctx.userId ?? null,
+      actorType: 'user',
+      action: 'builder.layout.published',
+      entityType: 'BuilderLayout',
+      entityId: layout.id,
+      diff: { after: { name: layout.name, release: release.hash } },
+    });
+    return { layoutId: layout.id, name: layout.name, release };
+  });
+
+  invalidatePublishedStylesheet(ctx);
+  await publishBuilderEvent({
+    tenantId: ctx.tenantId,
+    topic: 'builder.layout.published',
+    payload: {
+      propertyId: ctx.propertyId,
+      layoutId: result.layoutId,
+      name: result.name,
+      releaseId: result.release.id,
+      hash: result.release.hash,
+    },
+  });
+  return {
+    layoutId: result.layoutId,
+    publishedAt: now.toISOString(),
+    release: result.release,
+  };
+}
+
+/**
+ * The site's OWN saved pieces — `builder_sites.silica_draft_symbols`.
+ *
+ * Distinct from the tenant library in `builder_components`, which is shared across
+ * every site the business owns. Both end up in one symbol map on a canvas; only
+ * where the master is STORED differs, and the id namespace is what says which.
+ */
+export function loadSymbols(ctx: PropertyContext): Promise<Record<string, SilicaSymbolDef>> {
+  return withTenant(ctx, async (tx) => {
+    const site = await tx.builderSite.findUnique({ where: { propertyId: ctx.propertyId } });
+    return symbolsOf(site?.silicaDraftSymbols);
+  });
+}
+
+/**
+ * Write ONE of the site's own saved pieces.
+ *
+ * Read-modify-write on a single JSON column, which is as narrow as this store gets —
+ * the symbol map is one column by construction. What it is NOT is a whole-site
+ * write: pages, chrome and theme are never read or touched, so a component pane
+ * saving a master cannot overwrite a page another pane is editing.
+ */
+export async function setSymbol(
+  ctx: PropertyContext,
+  id: string,
+  input: { name: string; root: SilicaNode }
+): Promise<SilicaSymbolDef> {
+  const symbol: SilicaSymbolDef = { id, name: input.name, root: input.root };
+  await withTenant(ctx, async (tx) => {
+    const site = await tx.builderSite.findUnique({ where: { propertyId: ctx.propertyId } });
+    const symbols = { ...symbolsOf(site?.silicaDraftSymbols), [id]: symbol };
+    await tx.builderSite.upsert({
+      where: { propertyId: ctx.propertyId },
+      update: { silicaDraftSymbols: asJson(symbols) },
+      create: {
+        tenantId: ctx.tenantId,
+        propertyId: ctx.propertyId,
+        silicaDraftSymbols: asJson(symbols),
+      },
+    });
+    await reindexTreeTx(tx, ctx, { ownerKind: 'symbol', ownerId: id, tree: input.root });
+    await writeAuditLog({
+      tx,
+      tenantId: ctx.tenantId,
+      actorId: ctx.userId ?? null,
+      actorType: 'user',
+      action: 'builder.site.symbol.saved',
+      entityType: 'BuilderSite',
+      entityId: ctx.propertyId,
+      diff: { after: { symbolId: id, name: input.name } },
+    });
+  });
+  return symbol;
+}
+
+/**
+ * Drop one of the site's own saved pieces.
+ *
+ * Every instance of it across every page DETACHES — silica's own behaviour for a
+ * master that is gone, and the honest outcome: the design stays on the page, it
+ * simply stops following a master that no longer exists. The caller is expected to
+ * have told the author how many placements that is first.
+ */
+export async function removeSymbol(ctx: PropertyContext, id: string): Promise<void> {
+  await withTenant(ctx, async (tx) => {
+    const site = await tx.builderSite.findUnique({ where: { propertyId: ctx.propertyId } });
+    const symbols = symbolsOf(site?.silicaDraftSymbols);
+    if (!(id in symbols)) throw new BuilderNotFoundError('Symbol', id);
+    delete symbols[id];
+    await tx.builderSite.update({
+      where: { propertyId: ctx.propertyId },
+      data: { silicaDraftSymbols: asJson(symbols) },
+    });
+    await dropOwnerTx(tx, ctx, 'symbol', id);
+    await writeAuditLog({
+      tx,
+      tenantId: ctx.tenantId,
+      actorId: ctx.userId ?? null,
+      actorType: 'user',
+      action: 'builder.site.symbol.removed',
+      entityType: 'BuilderSite',
+      entityId: ctx.propertyId,
+      diff: { before: { symbolId: id } },
+    });
+  });
+}
+
+/** One page as the page builder opens it — its body, and everything about it that
+ *  is not a node. */
+export interface PageDocument {
+  id: string;
+  name: string;
+  slug: string | null;
+  kind: 'singleton' | 'collection';
+  recordType: string | null;
+  recordSubtype: string | null;
+  isDefault: boolean;
+  /** `null` the site's layout, `'none'` no chrome at all, otherwise a layout id. */
+  frameId: string | null;
+  seoTitle: string | null;
+  seoDescription: string | null;
+  canonical: string | null;
+  ogImage: string | null;
+  noindex: boolean;
+  root: SilicaNode;
+  /** False when the page has no silica body yet — this is an empty one to start from. */
+  stored: boolean;
+  publishedAt: string | null;
+  unpublished: boolean;
+}
+
+/**
+ * Read ONE page's body and settings.
+ *
+ * The per-row half of `load`. A page pane opening this way costs the same whether
+ * the site has three pages or three hundred, and — the part that matters — several
+ * page panes open at once are several independent reads rather than several copies
+ * of one site blob racing each other.
+ */
+export function loadPage(ctx: PropertyContext, id: string): Promise<PageDocument> {
+  return withTenant(ctx, async (tx) => {
+    const row = await tx.builderPage.findFirst({ where: { id, propertyId: ctx.propertyId } });
+    if (!row) throw new BuilderNotFoundError('BuilderPage', id);
+    const stored = row.silicaDraftTree != null;
+    return {
+      id: row.id,
+      name: row.name,
+      slug: row.slug,
+      kind: row.kind === 'collection' ? 'collection' : 'singleton',
+      recordType: row.recordType,
+      recordSubtype: row.recordSubtype,
+      isDefault: row.isDefault,
+      frameId: row.frameId,
+      seoTitle: row.seoTitle,
+      seoDescription: row.seoDescription,
+      canonical: row.canonical,
+      ogImage: row.ogImage,
+      noindex: row.noindex,
+      // An empty page BODY, not an empty node: the Navigator needs a real root to
+      // hang sections off, and the author needs something to drop the first one into.
+      root: stored ? asNode(row.silicaDraftTree) : stampTree(pageBody([])),
+      stored,
+      publishedAt: row.publishedAt ? row.publishedAt.toISOString() : null,
+      // The chrome POINTER counts as unpublished work too. Moving a page off the
+      // site header and seeing "nothing to publish" is how that change reached
+      // production on Save instead of on Publish.
+      unpublished:
+        (stored && treeDiffers(row.silicaDraftTree, row.silicaPublishedTree)) ||
+        row.frameId !== row.publishedFrameId,
+    };
+  });
+}
+
+/**
+ * Publish ONE page.
+ *
+ * The page and the chrome it asks for go live together, exactly as the whole-site
+ * publish sends them — a body that reached production without its frame pointer
+ * would render inside a header its author had already moved it away from.
+ */
+export async function publishPage(
+  ctx: PropertyContext,
+  id: string
+): Promise<{ pageId: string; publishedAt: string; release: { id: string; hash: string } }> {
+  const now = new Date();
+  const result = await withTenant(ctx, async (tx) => {
+    const row = await tx.builderPage.findFirst({ where: { id, propertyId: ctx.propertyId } });
+    if (!row) throw new BuilderNotFoundError('BuilderPage', id);
+    if (row.silicaDraftTree == null) {
+      throw new BuilderValidationError(
+        'There is nothing saved on this page yet — save it before publishing it.'
+      );
+    }
+    await tx.builderPage.update({
+      where: { id: row.id },
+      data: {
+        silicaPublishedTree: asJson(row.silicaDraftTree),
+        publishedFrameId: row.frameId,
+        publishedAt: now,
+      },
+    });
+    const hash = await recordArtifactTx(tx, ctx, 'page', row.id, row.silicaDraftTree);
+    await reindexTreeTx(tx, ctx, {
+      ownerKind: 'page',
+      ownerId: row.id,
+      tree: asNode(row.silicaDraftTree),
+    });
+
+    const manifest = await carryForwardManifestTx(tx, ctx, {
+      ownerKind: 'page',
+      ownerId: row.id,
+      hash,
+    });
+    const release = await createReleaseTx(tx, ctx, manifest);
+
+    await writeAuditLog({
+      tx,
+      tenantId: ctx.tenantId,
+      actorId: ctx.userId ?? null,
+      actorType: 'user',
+      action: 'builder.page.published',
+      entityType: 'BuilderPage',
+      entityId: row.id,
+      diff: { after: { name: row.name, release: release.hash } },
+    });
+    return { pageId: row.id, release };
+  });
+
+  invalidatePublishedStylesheet(ctx);
+  await publishBuilderEvent({
+    tenantId: ctx.tenantId,
+    topic: 'builder.page.published',
+    payload: {
+      propertyId: ctx.propertyId,
+      scope: 'page',
+      pageId: result.pageId,
+      pages: 1,
+      releaseId: result.release.id,
+      hash: result.release.hash,
+    },
+  });
+  return { pageId: result.pageId, publishedAt: now.toISOString(), release: result.release };
+}
+
+/** The newest release's manifest with one owner's entry replaced (or added).
+ *
+ *  A per-document publish changes exactly one artifact; everything else stays live
+ *  as it was. Carrying the rest forward is what keeps a release a complete, and
+ *  therefore restorable, description of the site. With no prior release the answer
+ *  is the one entry — which is accurate: nothing else has ever been published. */
+async function carryForwardManifestTx(
+  tx: TxClient,
+  ctx: PropertyContext,
+  entry: ManifestEntry
+): Promise<ManifestEntry[]> {
+  const previous = await tx.builderRelease.findFirst({
+    where: { propertyId: ctx.propertyId },
+    orderBy: { createdAt: 'desc' },
+    select: { manifest: true },
+  });
+  const carried = ((previous?.manifest ?? []) as unknown as ManifestEntry[]).filter(
+    (e) => !(e.ownerKind === entry.ownerKind && e.ownerId === entry.ownerId)
+  );
+  return [...carried, entry];
+}
+
 /** Compare every silica draft tree against its published counterpart. Read-only. */
 export function publishState(ctx: PropertyContext): Promise<SitePublishState> {
   return withTenant(ctx, async (tx) => {
@@ -1747,6 +2146,11 @@ export async function publish(ctx: PropertyContext): Promise<{ id: string; hash:
           silicaPublishedTheme:
             site.silicaDraftTheme == null ? Prisma.DbNull : asJson(site.silicaDraftTheme),
           silicaPublishedSymbols: asJson(site.silicaDraftSymbols),
+          // WHICH `builder_themes` look this site wears goes live with everything
+          // else. The same argument as `publishedFrameId` on a page: without it,
+          // choosing a different look in the theme picker would repaint the live
+          // site on Save, and Publish would report nothing to publish.
+          publishedThemeId: site.themeId,
           publishedAt: now,
         },
       });

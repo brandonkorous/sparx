@@ -2,7 +2,7 @@
 
 **Version:** 2.5
 **Author:** Brandon Korous
-**Last Updated:** 2026-08-14
+**Last Updated:** 2026-08-16
 
 > **Reconciled 2026-07-22 (docs-vs-built audit):** the operator UI now lives in the workbench
 > (`apps/workbench/surfaces/dropship/`), not the deleted `apps/dashboard`; the §2 table row was
@@ -319,7 +319,7 @@ required adding `dropship` to the **local** `ModuleSlug` union in
 `automations-catalog.ts`. An event a tenant cannot pick from a list is as inert
 as one nobody publishes.
 
-### 15.1 Run and proven (2026-08-14)
+### 15.1 Run and proven (2026-08-16)
 
 The endpoint was invoked for the first time against the local database — five
 dropship tenants, all five OK — and it polled **nothing**, because the only two

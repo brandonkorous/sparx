@@ -3,6 +3,14 @@
 // ledger. Routes stay thin — they parse + gate + render the envelope; this owns
 // Zod validation, RLS-scoped transactions, event publishing, and the cross-org
 // referral write.
+//
+// SPARX-ONLY, which is why the `appOrigin()` calls below take no brand. The
+// reseller programme — referrals, commissions, tiers, the partner directory — is
+// a sparx PRODUCT with no Piggles equivalent, and `platform.settings.partner` is
+// in the Piggles console's `hiddenSurfaces`. No Piggles tenant can reach these
+// routes, so the default brand is the correct answer rather than an unexamined
+// one. Should the programme ever span both brands, every emitter here takes the
+// tenant's brand as the rest of the platform now does.
 
 import { randomBytes } from 'node:crypto';
 

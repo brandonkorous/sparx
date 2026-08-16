@@ -31,9 +31,10 @@
   },
   "dependencies": {
     "@base-ui-components/react": "1.0.0-rc.0",
-    "@sparx/brand": "workspace:*",
     "@radix-ui/react-slot": "^1.1.1",
     "@radix-ui/react-tooltip": "^1.2.8",
+    "@sparx/brand": "workspace:*",
+    "@wizeworks/silica-corrections": "workspace:*",
     "@wizeworks/silicaui-react": "catalog:",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",

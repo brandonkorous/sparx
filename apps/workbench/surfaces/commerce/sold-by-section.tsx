@@ -39,7 +39,7 @@ import {
   type CommissionOutcome,
   type SaleType,
 } from '../staff/data';
-import { formatCents } from '../finance/format';
+import { formatCents, formatDay } from '../finance/format';
 
 /**
  * What a recalculation means, in the owner's words.
@@ -58,6 +58,16 @@ function outcomeMessage(result: CommissionOutcome, who: string): string {
         : `Credited to ${who}. This order earned nothing — the amount it was based on came to zero.`;
     case 'no-rate':
       return `Credited to ${who}, but they are not on commission, so nothing was earned. Set a commission rate on their pay record to change that.`;
+    case 'rate-not-in-force':
+      // NOT "they are not on commission" — they are, and saying otherwise sends
+      // the owner to set a rate they have already set. The dates are the whole
+      // message: a rate only pays sales made after it starts, and backdating it
+      // on the pay record is the fix.
+      // The remedy is spelled out because the obvious one does not work: pay
+      // rates may not overlap, so adding an EARLIER rate is refused outright.
+      // Removing the rate and adding it again from a earlier date is the actual
+      // path, and an owner told merely to "backdate it" hits that wall instead.
+      return `Credited to ${who}. Their commission starts ${formatDay(result.rateStartsOn)} and this order was paid ${formatDay(result.earnedOn)}, so it earned nothing. To count it, remove that rate on their pay record and add it again from an earlier date.`;
     case 'not-payable':
       return `Credited to ${who}. Commission is worked out once the order is paid.`;
     case 'no-attribution':

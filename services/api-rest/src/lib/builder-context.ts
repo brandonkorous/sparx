@@ -7,7 +7,7 @@
 // lib/sitebuilder-context.ts.
 
 import type { FastifyRequest } from 'fastify';
-import type { PropertyContext, ServiceContext } from '@sparx/builder';
+import type { PropertyContext, ServiceContext, SiteChromeOptions } from '@sparx/builder';
 import { isModuleEnabled } from '@sparx/auth';
 import { requireAuth } from '@sparx/api-core/auth';
 import { moduleDisabled } from '@sparx/api-core/errors';
@@ -57,6 +57,25 @@ export async function toBuilderContextFor(
   const auth = requireAuth(request);
   const propertyId = await requireTenantProperty(auth, propertyParam);
   return { tenantId: auth.tenantId, userId: auth.actorId, propertyId };
+}
+
+/**
+ * Which modules shape the starter chrome — the nav links a seeded or reset header
+ * is allowed to carry.
+ *
+ * The three flags fail in DIFFERENT directions, and that asymmetry is the whole
+ * reason this is one function rather than three inline `.catch(() => …)`s. Commerce
+ * fails OPEN: a flag-lookup blip must never strip Shop from a tenant who pays for
+ * it. Scheduling and CMS fail CLOSED: both are opt-in, so a blip must not invent a
+ * Book or Journal link pointing at an index with nothing behind it.
+ */
+export async function siteChromeOptions(tenantId: string): Promise<SiteChromeOptions> {
+  const [commerceEnabled, schedulingEnabled, cmsEnabled] = await Promise.all([
+    isModuleEnabled(tenantId, 'commerce').catch(() => true),
+    isModuleEnabled(tenantId, 'scheduling').catch(() => false),
+    isModuleEnabled(tenantId, 'cms').catch(() => false),
+  ]);
+  return { commerceEnabled, schedulingEnabled, cmsEnabled };
 }
 
 /** Throws MODULE_DISABLED (→ 404 envelope) if the caller's tenant doesn't have

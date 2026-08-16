@@ -36,6 +36,7 @@ COPY packages/builder-schemas/package.json packages/builder-schemas/
 # published silica pages through (docs/118). Only npm dep is silicaui-html; no
 # workspace deps of its own.
 COPY packages/silica-catalog/package.json packages/silica-catalog/
+COPY packages/silica-corrections/package.json packages/silica-corrections/
 # @sparx/builder-render — the shared canvas↔live render path (docs/builder/02); the
 # live storefront renders through it. Its workspace deps (builder-schemas,
 # cms-editor) are above.
@@ -55,6 +56,7 @@ COPY packages/sitebuilder-schemas packages/sitebuilder-schemas
 COPY packages/section-template-react packages/section-template-react
 COPY packages/builder-schemas packages/builder-schemas
 COPY packages/silica-catalog packages/silica-catalog
+COPY packages/silica-corrections packages/silica-corrections
 COPY packages/builder-render packages/builder-render
 COPY packages/chat-widget packages/chat-widget
 COPY apps/site apps/site

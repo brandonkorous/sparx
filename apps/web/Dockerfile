@@ -39,6 +39,7 @@ COPY packages/migration/package.json packages/migration/
 # @imports/@sources silica-catalog by relative path, so BOTH must be present.
 COPY packages/builder-schemas/package.json packages/builder-schemas/
 COPY packages/silica-catalog/package.json packages/silica-catalog/
+COPY packages/silica-corrections/package.json packages/silica-corrections/
 
 # Install only the @sparx/web subgraph (its deps + transitive workspace deps).
 RUN --mount=type=cache,id=pnpm,target=/root/.local/share/pnpm/store \
@@ -56,6 +57,7 @@ COPY packages/story-schemas packages/story-schemas
 COPY packages/migration packages/migration
 COPY packages/builder-schemas packages/builder-schemas
 COPY packages/silica-catalog packages/silica-catalog
+COPY packages/silica-corrections packages/silica-corrections
 COPY apps/web apps/web
 
 # PostHog analytics — NEXT_PUBLIC_* is inlined at build time, so the key must be

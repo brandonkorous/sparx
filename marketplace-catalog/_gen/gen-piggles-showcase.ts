@@ -32,11 +32,10 @@
 //
 // The golden's `site.theme` is a resolved, flat token bag that has been through
 // the real pipeline. Authoring a fresh silica theme would mean inventing a
-// four-step oklch surface ramp in light AND dark — and piggles' theme.css says
-// in writing that its palette "was CHOSEN BY MEASUREMENT (WCAG contrast + a ΔE76
-// separation screen). Re-measure before changing any of it; do not eyeball."
-// So this takes the proven structure and substitutes ONLY the colour roles, with
-// the values that file already measured. Nothing here is a new colour.
+// four-step oklch surface ramp in light AND dark, and the Piggles palette is not
+// this file's to invent. So this takes the proven structure and substitutes ONLY
+// the colour roles, with the values from `@piggles/brand`. Nothing here is a new
+// colour.
 
 import { promises as fs } from 'node:fs';
 import { dirname, join } from 'node:path';

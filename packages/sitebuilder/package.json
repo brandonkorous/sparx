@@ -12,10 +12,6 @@
     "./services": {
       "types": "./src/services/index.ts",
       "default": "./src/services/index.ts"
-    },
-    "./manifest": {
-      "types": "./src/manifest.ts",
-      "default": "./src/manifest.ts"
     }
   },
   "files": [

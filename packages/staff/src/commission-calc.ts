@@ -38,13 +38,36 @@ import { withTenant, type TxClient } from '@sparx/db';
 
 import { commissionCents, recordCommission, type CommissionSource } from './commissions.js';
 
-/** What a calculation did, so a caller can log something true. */
+/**
+ * What a calculation did, so a caller can log something true.
+ *
+ * `no-rate` and `rate-not-in-force` are deliberately two outcomes, not one.
+ * They look identical from inside the calculation — no rate came back — and they
+ * are fixed in opposite ways, so collapsing them produces advice that is worse
+ * than silence. Found by clicking it: a salesperson was put on 7.5% commission
+ * today, an order paid a fortnight ago was credited to her, and the screen said
+ * "they are not on commission — set a commission rate on their pay record."
+ * She was on commission. The rate simply started after the sale, and the owner
+ * was being sent to do the exact thing they had just done.
+ */
 export interface CommissionOutcome {
-  outcome: 'recorded' | 'no-attribution' | 'no-rate' | 'not-payable' | 'unknown-sale';
+  outcome:
+    | 'recorded'
+    | 'no-attribution'
+    | 'no-rate'
+    | 'rate-not-in-force'
+    | 'not-payable'
+    | 'unknown-sale';
   staffMemberId?: string;
   basisCents?: number;
   ratePercent?: number;
   amountCents?: number;
+  /** `rate-not-in-force` only: when their commission actually starts, and the day
+   *  the sale earned on. Both, because the sentence a person needs is the
+   *  comparison — "their commission started on the 16th; this was paid on the
+   *  4th" — and neither date means anything without the other. ISO days. */
+  rateStartsOn?: string;
+  earnedOn?: string;
 }
 
 /**
@@ -107,6 +130,43 @@ async function commissionRateOn(
   if (!rate) return null;
   const percent = Number(rate.commissionPercent.toString());
   return percent > 0 ? { percent, currency: rate.currency } : null;
+}
+
+/**
+ * Why no rate applied — the difference between "never on commission" and "not on
+ * commission YET".
+ *
+ * Only asked once the day lookup has already failed, so it costs a query only on
+ * the path that is about to tell somebody something, and never on the hot path.
+ * A rate with a zero percentage counts as not being on commission at all: the
+ * basis says commission and the share says nothing, which is the same practical
+ * state as no rate, and calling it "starts later" would be a lie.
+ */
+async function whyNoRate(
+  client: TxClient,
+  staffMemberId: string,
+  earnedOn: Date
+): Promise<CommissionOutcome> {
+  const earliest = await client.staffPayRate.findFirst({
+    where: { staffMemberId, basis: 'commission', commissionPercent: { gt: 0 } },
+    orderBy: { effectiveFrom: 'asc' },
+    select: { effectiveFrom: true },
+  });
+  if (!earliest || earliest.effectiveFrom <= earnedOn) {
+    // No commission rate at all, or one that had already ENDED by this day —
+    // "set a rate" is honest advice for the first and close enough for the
+    // second, which is rare and visible on the pay history either way.
+    return { outcome: 'no-rate', staffMemberId };
+  }
+  return {
+    outcome: 'rate-not-in-force',
+    staffMemberId,
+    // Days, not instants. `effectiveFrom` is a stored calendar day and `paidAt`
+    // is a real moment; formatting either in local time renders it a day early
+    // west of Greenwich, so both are cut in UTC.
+    rateStartsOn: earliest.effectiveFrom.toISOString().slice(0, 10),
+    earnedOn: earnedOn.toISOString().slice(0, 10),
+  };
 }
 
 /**
@@ -176,7 +236,7 @@ export async function commissionForOrder(
 
     const earnedOn = order.paidAt;
     const rate = await commissionRateOn(client, staffMemberId, earnedOn);
-    if (!rate) return { outcome: 'no-rate', staffMemberId };
+    if (!rate) return whyNoRate(client, staffMemberId, earnedOn);
 
     const grossBasis = decimalToCents(order.subtotal) - decimalToCents(order.discountTotal);
     const basisCents = refundAdjustedBasis(
@@ -259,7 +319,7 @@ export async function commissionForDeal(
 
     const earnedOn = deal.closedAt ?? new Date();
     const rate = await commissionRateOn(client, staffMemberId, earnedOn);
-    if (!rate) return { outcome: 'no-rate', staffMemberId };
+    if (!rate) return whyNoRate(client, staffMemberId, earnedOn);
 
     const basisCents = Math.max(0, decimalToCents(deal.value));
     const amountCents = commissionCents(basisCents, rate.percent);

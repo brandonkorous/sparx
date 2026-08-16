@@ -40,6 +40,53 @@ because the only per-template code is the spec.
 (`gap-7`/`gap-1.5`) compiles while `@source`-scanned but emits NOTHING once stamped into a tenant's
 stored tree; the sweep flags it `class-no-css`. Use `aspect-square`/`aspect-video`, `gap-4/6/8`.
 
+## A regen is NOT free — the template generators re-mint node ids
+
+`gen-template-*.ts` assigns node ids from a random base, so **running one
+rewrites every id in its `site.json`**. Re-running a generator "just to check
+nothing broke" produces ~950 changed lines on a bundle nobody edited, and those
+ids are PERSISTED with the tree and used as React/dnd keys — so the churn is real,
+not cosmetic. Regenerate only when you changed that template; `git checkout --`
+the bundle if you ran it to test something else.
+
+The `sparx-*` themed clones and `piggles-starter` are safe: they copy the golden's
+captured site verbatim rather than composing it, so their `site.json` is untouched
+by a regen. They DO emit their own `sparx.json`, though — unlike the rule below —
+so a manifest edit that is not also made in the generator is reverted by the next
+run.
+
+## Brand scoping: who may SEE a bundle
+
+A manifest may declare `brands: ['sparx']` / `['piggles']`. **Omitted means every
+brand, and that default must stay the default** — a template that has to name its
+brands to be visible forks the catalog the first time somebody forgets. Of 191
+bundles: 169 shared, 21 sparx's showcase family, 1 Piggles'.
+
+Only a SHOWCASE is ever restricted — a bundle whose `brand.businessName` is the
+platform's own name, which is the product demonstrating itself rather than a
+vertical template. Enforced in `services/api-rest/src/lib/marketplace/brand-scope.ts`
+at three points (the listing's `notIn`, the v1 install route, and the internal
+furnish path), because a key posted from a browser form reaches install without
+passing the list.
+
+## Media: shoot it, don't inherit it
+
+`media/icon.png` (512×512) + `media/preview.png` (~1600×1000) are hand-maintained
+and survive a regen — which means a NEW bundle silently ships whatever its
+generator copied in as a placeholder. Two steps produce real ones, both running
+Playwright over `file://` with no dev server, no DB and no install:
+
+```
+pnpm --filter @sparx/api-rest exec tsx "$PWD/marketplace-catalog/_gen/preview-showcase.ts" <slug>
+node marketplace-catalog/_gen/card-media.mjs <slug> [--icon <mark.svg>]
+```
+
+`preview-showcase.ts` renders a CAPTURED-site bundle (the showcase family, which
+has no `TemplateSiteSpec` to compose from) through the same `writeSitePreview` the
+templates use. `card-media.mjs` writes the card art — the home page alone, review
+labels stripped. **Do not copy `.preview/site-<slug>.png` into `media/`**: that is
+the seven-page review strip, and as a card it renders as an unreadable sliver.
+
 ## Source of truth is the generator, not the emitted bundle
 
 `_gen/<name>/` (a module folder, one concern per file) is hand-authored and EMITS

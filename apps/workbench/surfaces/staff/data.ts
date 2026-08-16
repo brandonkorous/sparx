@@ -762,11 +762,21 @@ export interface SaleAttribution {
  *  on commission — are fixed in completely different places, so the screen has
  *  to be able to tell them apart. */
 export interface CommissionOutcome {
-  outcome: 'recorded' | 'no-attribution' | 'no-rate' | 'not-payable' | 'unknown-sale';
+  outcome:
+    | 'recorded'
+    | 'no-attribution'
+    | 'no-rate'
+    | 'rate-not-in-force'
+    | 'not-payable'
+    | 'unknown-sale';
   staffMemberId?: string;
   basisCents?: number;
   ratePercent?: number;
   amountCents?: number;
+  /** `rate-not-in-force` only — the day their commission starts, and the day the
+   *  sale earned on. ISO days, rendered in UTC (see `formatDay`). */
+  rateStartsOn?: string;
+  earnedOn?: string;
 }
 
 export type SaleType = 'order' | 'deal';

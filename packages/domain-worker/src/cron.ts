@@ -57,7 +57,9 @@ export async function runRenewalCheck(logger: Logger): Promise<{ processed: numb
     for (const domain of expiring) {
       const tenant = await prisma.tenant.findUnique({
         where: { id: domain.tenantId },
-        select: { email: true },
+        // Brand rides this read — a cron has no request, so the row is the only
+        // place the link's origin can come from.
+        select: { email: true, platformBrand: true },
       });
       if (!tenant?.email) {
         logger.warn(
@@ -80,7 +82,9 @@ export async function runRenewalCheck(logger: Logger): Promise<{ processed: numb
               domainName: domain.host,
               daysUntilExpiry: threshold,
               expiresAt: domain.expiresAt ? formatDate(domain.expiresAt) : 'soon',
-              renewUrl: appLink('platform.settings.domains') ?? appOrigin(),
+              renewUrl:
+                appLink('platform.settings.domains', undefined, { brand: tenant.platformBrand }) ??
+                appOrigin(tenant.platformBrand),
               autoRenew: domain.autoRenew,
             },
           },
@@ -116,7 +120,9 @@ export async function runRenewalCheck(logger: Logger): Promise<{ processed: numb
   for (const domain of expired) {
     const tenant = await prisma.tenant.findUnique({
       where: { id: domain.tenantId },
-      select: { email: true },
+      // Brand rides this read — a cron has no request, so the row is the only
+      // place the link's origin can come from.
+      select: { email: true, platformBrand: true },
     });
     if (!tenant?.email) {
       logger.warn(
@@ -138,7 +144,9 @@ export async function runRenewalCheck(logger: Logger): Promise<{ processed: numb
           props: {
             domainName: domain.host,
             expiredOnLabel: domain.expiresAt ? formatDate(domain.expiresAt) : undefined,
-            renewUrl: appLink('platform.settings.domains') ?? appOrigin(),
+            renewUrl:
+              appLink('platform.settings.domains', undefined, { brand: tenant.platformBrand }) ??
+              appOrigin(tenant.platformBrand),
           },
         },
         pubLogger

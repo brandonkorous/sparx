@@ -18,6 +18,7 @@
     "@sparx/email": "workspace:*",
     "@sparx/email-platform": "workspace:*",
     "@sparx/events": "workspace:*",
+    "@wizeworks/brand-core": "workspace:*",
     "pino": "^9.5.0",
     "zod": "^4.4.3"
   },

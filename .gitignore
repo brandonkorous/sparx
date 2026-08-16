@@ -62,13 +62,6 @@ marketplace-catalog/_gen/.preview/
 # Local media storage (LocalStorage MEDIA_LOCAL_DIR — generated, never committed)
 **/.media-tmp/
 **/raw videos/*
-# Impeccable — local hook consent + session cache (regenerated; never committed).
-# NOTE: the design spec apps/*/.impeccable/design.json IS tracked (pairs with DESIGN.md);
-# only the machine-local *.local.json / *.cache.json scratch is ignored.
-**/.impeccable/*.local.json
-**/.impeccable/*.cache.json
-# The live/ runtime dir (server port, sessions, annotations) is per-machine session state.
-**/.impeccable/live/
 
 # Local media storage — the LocalStorage driver's on-disk root (MEDIA_LOCAL_DIR) when
 # api-rest runs in `local` mode. Real tenant uploads (originals + transcoded variants)

@@ -5,6 +5,15 @@
  *
  * `campaign` convention: `{initiative}-{yyyy-mm}`. The general launch is
  * `launch-2026-06`; the Founding-100 promo links carry `founding-100-2026-06`.
+ *
+ * ── ONE BRAND'S DATA, IN A SHARED PACKAGE ───────────────────────────────────
+ *
+ * This is sparx's own campaign list — its hostname, its launch month, its promo.
+ * It is the only file in this package that states a brand value, which is why it
+ * is NOT re-exported from the barrel: reachable at `@sparx/attribution/launch-links`
+ * by the brand that owns it, and invisible to the one that does not. It belongs
+ * in the sparx tree and moves there with the restructure (piggles/docs/migration,
+ * phase A4); the subpath is the seam that makes that move a file rename.
  */
 import type { LinkDef } from './links';
 

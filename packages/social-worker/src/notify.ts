@@ -22,13 +22,21 @@ import { appLink, appOrigin } from '@sparx/links/server';
 import { getSocialDescriptor, type SocialPlatform } from '@sparx/social';
 import type { Logger } from 'pino';
 
-/** The tenant's own contact address — who hears about this. */
-async function tenantEmail(tenantId: string): Promise<{ email: string; name: string } | null> {
+/** The tenant's own contact address — who hears about this — and which product
+ *  they hear about it on. A worker has no request and therefore no hostname, so
+ *  the brand can only come from the row; it rides the read that was happening
+ *  anyway. */
+async function tenantEmail(
+  tenantId: string
+): Promise<{ email: string; name: string; brand: string } | null> {
   const tenant = await withTenant({ tenantId }, (tx) =>
-    tx.tenant.findUnique({ where: { id: tenantId }, select: { email: true, name: true } })
+    tx.tenant.findUnique({
+      where: { id: tenantId },
+      select: { email: true, name: true, platformBrand: true },
+    })
   );
   if (!tenant?.email) return null;
-  return { email: tenant.email, name: tenant.name };
+  return { email: tenant.email, name: tenant.name, brand: tenant.platformBrand };
 }
 
 // These two were DEAD. They emitted `/?surface=social.composer&id=<id>` — a query
@@ -36,12 +44,12 @@ async function tenantEmail(tenantId: string): Promise<{ email: string; name: str
 // So every "your post didn't go out" and "reconnect your account" email landed on
 // a bare workbench with no post in sight, which is the worst possible moment for
 // a link to do nothing. Built from the address table now, like everything else.
-function composerUrl(postId: string): string {
-  return appLink('social.composer', { id: postId }) ?? appOrigin();
+function composerUrl(postId: string, brand: string): string {
+  return appLink('social.composer', { id: postId }, { brand }) ?? appOrigin(brand);
 }
 
-function connectionsUrl(): string {
-  return appLink('social.connections') ?? appOrigin();
+function connectionsUrl(brand: string): string {
+  return appLink('social.connections', undefined, { brand }) ?? appOrigin(brand);
 }
 
 /** A post's opening words — enough to recognize it in a subject line. */
@@ -100,7 +108,7 @@ export async function notifyPostFailure(
           excerpt: excerptOf(post.body),
           failed,
           succeeded,
-          postUrl: composerUrl(postId),
+          postUrl: composerUrl(postId, recipient.brand),
           ...(post.scheduledAt
             ? {
                 scheduledFor: new Intl.DateTimeFormat('en-US', {
@@ -173,7 +181,7 @@ export async function notifyConnectionExpired(
           platformName: descriptor?.name ?? connection.platform.replace(/_/g, ' '),
           ...(connection.displayName ? { accountName: connection.displayName } : {}),
           scheduledCount,
-          reconnectUrl: connectionsUrl(),
+          reconnectUrl: connectionsUrl(recipient.brand),
         },
       },
       logger

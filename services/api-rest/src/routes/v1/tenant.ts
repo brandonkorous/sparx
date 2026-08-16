@@ -5,6 +5,9 @@
 //   GET    /v1/tenant/modules                      → [{slug, enabled}]
 //   PUT    /v1/tenant/modules                      → bulk-set { slug: enabled } (owner/admin)
 //   PATCH  /v1/tenant/modules/:slug                → toggle enabled (owner/admin)
+//   POST   /v1/tenant/modules/reconcile            → all-on, brands that include them (owner/admin)
+//   GET    /v1/tenant/rail                         → { apps } — the rail preference
+//   PUT    /v1/tenant/rail                         → set it (owner/admin)
 //   GET    /v1/tenant/onboarding                   → raw onboarding state
 //   PATCH  /v1/tenant/onboarding                   → patch onboarding state
 //   GET    /v1/tenant/onboarding/progress          → derived progress + steps
@@ -47,6 +50,7 @@ import {
   toggleTenantModule,
   moduleBlockedMessage,
 } from '../../lib/module-toggle.js';
+import { brandIncludesEveryModule, tenantPlatformBrand } from '../../lib/tenant-brand.js';
 import { computeBannerEnabled } from '../../lib/consent.js';
 import { resolvePropertyId } from '../../lib/property.js';
 import {
@@ -286,6 +290,28 @@ const ModulePatch = z.object({
 const ModulesBulkPut = z.object({
   modules: z.record(z.string(), z.boolean()),
 });
+
+// The rail's app ids belong to the calling product's registry, so they are
+// length-capped and de-duplicated rather than checked against a list — a copy of
+// another app's ids here is a copy that drifts. An id that resolves to nothing
+// simply shows nothing.
+const RailPut = z.object({
+  apps: z
+    .array(z.string().min(1).max(64))
+    .max(64)
+    .transform((apps) => [...new Set(apps)]),
+});
+
+/** The rail preference, or `null` when this business has never set one — which
+ *  the client reads as "use your defaults", never as "an empty rail". */
+function readRailApps(settings: unknown): string[] | null {
+  if (!settings || typeof settings !== 'object' || Array.isArray(settings)) return null;
+  const rail = (settings as Record<string, unknown>).rail;
+  if (!rail || typeof rail !== 'object' || Array.isArray(rail)) return null;
+  const apps = (rail as Record<string, unknown>).apps;
+  if (!Array.isArray(apps)) return null;
+  return apps.filter((app): app is string => typeof app === 'string');
+}
 
 // Modules-first onboarding (docs/15 v2): modules → template → workspace → domain
 // → payments → launch. The tenant explicitly picks their modules FIRST (that
@@ -674,7 +700,7 @@ const tenantRoutes: FastifyPluginAsync = async (app) => {
       try {
         const owner = await prisma.tenant.findUnique({
           where: { id: auth.tenantId },
-          select: { email: true, name: true },
+          select: { email: true, name: true, platformBrand: true },
         });
         if (owner?.email) {
           await publish(request.log, 'email.send', auth.tenantId, auth.actorId, {
@@ -684,7 +710,7 @@ const tenantRoutes: FastifyPluginAsync = async (app) => {
               enabled,
               accountName: owner.name ?? undefined,
               moduleName: MODULE_LABELS[target] ?? target,
-              dashboardUrl: appOrigin(),
+              dashboardUrl: appOrigin(owner.platformBrand),
             },
           });
         }
@@ -748,6 +774,84 @@ const tenantRoutes: FastifyPluginAsync = async (app) => {
 
     const states = deriveModuleStates(effective);
     return ok(MODULE_SLUGS.map((slug) => moduleRow(slug, states)));
+  });
+
+  // Bring a tenant up to every module, for brands whose plan includes them all.
+  //
+  // Idempotent, and a no-op for a brand that bills per module — a route that
+  // switched everything on for a sparx tenant would be giving away the product.
+  // Goes through `applyModuleWrites` like every other activation, so each newly
+  // enabled module announces `module.activated` and gets its baseline seeded;
+  // writing the flags alone would leave an app switched on and empty.
+  app.post('/v1/tenant/modules/reconcile', async (request) => {
+    const auth = requireRole(request, 'admin');
+    const brand = await tenantPlatformBrand(auth.tenantId);
+    if (!brandIncludesEveryModule(brand)) return ok({ activated: [] });
+
+    const before = await prisma.tenant.findUnique({
+      where: { id: auth.tenantId },
+      select: { settings: true },
+    });
+    if (!before) throw notFound('Tenant', auth.tenantId);
+
+    const currentFlags = readModuleFlags(before.settings);
+    const writes = new Map<ModuleSlug, boolean>();
+    for (const slug of MODULE_SLUGS) {
+      if (currentFlags[slug] !== true) writes.set(slug, true);
+    }
+    if (writes.size === 0) return ok({ activated: [] });
+
+    request.log.info(
+      { tenantId: auth.tenantId, brand, slugs: [...writes.keys()] },
+      'reconciling tenant to every module'
+    );
+    await applyModuleWrites(request.log, auth.tenantId, auth.actorId, before.settings, writes);
+    return ok({ activated: [...writes.keys()] });
+  });
+
+  // ── The app rail ───────────────────────────────────────────────────────────
+  //
+  // Which apps this BUSINESS keeps on its rail. Deliberately opaque here: the
+  // ids are the calling product's app registry, which api-rest has no business
+  // holding a copy of. It stores a list and hands it back.
+  //
+  // NOT an entitlement, and the distinction is the whole point of the route.
+  // Module flags answer "does this tenant have the capability"; this answers
+  // "does this business want it in front of them". A brand that includes every
+  // module has no use for the first question and still needs the second, and
+  // before this existed it borrowed the module flags to answer it — which turned
+  // a display preference into a locked door.
+  app.get('/v1/tenant/rail', async (request) => {
+    const auth = requireAuth(request);
+    const row = await prisma.tenant.findUnique({
+      where: { id: auth.tenantId },
+      select: { settings: true },
+    });
+    return ok({ apps: readRailApps(row?.settings ?? null) });
+  });
+
+  // Owner/admin, mirroring the module routes: what the rail carries is a
+  // decision about the business, not a personal view. Per-person shortcuts are
+  // favourites and recents on the /v1/me spine.
+  app.put('/v1/tenant/rail', async (request) => {
+    const auth = requireRole(request, 'admin');
+    const { apps } = RailPut.parse(request.body);
+
+    const before = await prisma.tenant.findUnique({
+      where: { id: auth.tenantId },
+      select: { settings: true },
+    });
+    if (!before) throw notFound('Tenant', auth.tenantId);
+
+    // Read-modify-write, MERGED — `settings` is a shared per-tenant blob and
+    // assigning it would drop modules, onboarding and everything else in there.
+    const settings = (before.settings as Record<string, unknown> | null) ?? {};
+    const rail = (settings.rail as Record<string, unknown> | undefined) ?? {};
+    await prisma.tenant.update({
+      where: { id: auth.tenantId },
+      data: { settings: { ...settings, rail: { ...rail, apps } } },
+    });
+    return ok({ apps });
   });
 
   app.get('/v1/tenant/onboarding', async (request) => {

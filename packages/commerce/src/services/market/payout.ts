@@ -85,6 +85,13 @@ const emailLogger: PublisherLogger = {
 // the three environments. `appOrigin()` reads every name that has ever meant this
 // URL, in one fixed order, so a settlement email points at the same host as a
 // domain-renewal one regardless of which service happened to send it.
+//
+// NO BRAND ARGUMENT, deliberately. This is the sparx marketplace's settlement
+// mail, and sparx.market is a sparx PRODUCT that does not exist in Piggles
+// (piggles/CLAUDE.md, "A sparx PRODUCT is not a Piggles capability"). A Piggles
+// tenant can never be the recipient, so the default brand is not a shortcut here
+// — it is the only correct answer. If a marketplace ever spans both brands, this
+// takes the tenant's brand like every other emitter.
 function dashboardBase(): string {
   return appOrigin();
 }

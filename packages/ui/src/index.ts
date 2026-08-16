@@ -13,7 +13,11 @@
 // See docs/23-frontend-component-architecture.md §9 and packages/ui/CLAUDE.md.
 
 // ── Utilities ──────────────────────────────────────────────
-export { cn } from './utils/cn';
+// Re-exported, not defined here. `cn` corrects tailwind-merge's misreading of
+// silica's `soft` classes — a platform fix with no sparx in it — so it lives in
+// @wizeworks/silica-corrections. It stays on this barrel because six admin
+// screens import it from here and there is no reason to make them care.
+export { cn } from '@wizeworks/silica-corrections';
 export { cva, type VariantProps } from './utils/cva';
 
 // ── Variant system (docs/35) ───────────────────────────────

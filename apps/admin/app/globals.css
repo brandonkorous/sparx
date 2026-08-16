@@ -4,8 +4,8 @@
    non-color design tokens (type, spacing, radius, shadow, chart) + component CSS. */
 @import '@sparx/brand/theme.css';
 /* Rules that close a hole in a silicaui component — see the file header. */
-@import '@sparx/brand/silica-gaps.css';
-@import '@sparx/brand/toast.css';
+@import '@wizeworks/silica-corrections/silica-gaps.css';
+@import '@wizeworks/silica-corrections/toast.css';
 @import '@sparx/ui/tokens.css';
 
 /* silicaui component layer — the @plugin registers the semantic + module palette

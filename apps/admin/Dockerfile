@@ -29,6 +29,7 @@ COPY apps/admin/package.json apps/admin/
 COPY packages/ui/package.json packages/ui/
 COPY packages/forms/package.json packages/forms/
 COPY packages/brand/package.json packages/brand/
+COPY packages/silica-corrections/package.json packages/silica-corrections/
 COPY packages/operator/package.json packages/operator/
 COPY packages/operator-auth/package.json packages/operator-auth/
 COPY packages/events/package.json packages/events/
@@ -41,6 +42,7 @@ RUN --mount=type=cache,id=pnpm,target=/root/.local/share/pnpm/store \
 COPY packages/ui packages/ui
 COPY packages/forms packages/forms
 COPY packages/brand packages/brand
+COPY packages/silica-corrections packages/silica-corrections
 COPY packages/operator packages/operator
 COPY packages/operator-auth packages/operator-auth
 COPY packages/events packages/events

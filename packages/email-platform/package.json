@@ -16,10 +16,6 @@
     "./schemas": {
       "types": "./src/schemas/index.ts",
       "default": "./src/schemas/index.ts"
-    },
-    "./manifest": {
-      "types": "./src/manifest.ts",
-      "default": "./src/manifest.ts"
     }
   },
   "files": [

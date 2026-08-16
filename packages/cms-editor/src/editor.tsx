@@ -37,7 +37,7 @@ import {
   Tv,
   Undo2,
 } from 'lucide-react';
-import { cn } from '@sparx/ui';
+import { cn } from '@wizeworks/silica-corrections';
 import { cmsEditorExtensions, emptyDoc } from './extensions';
 import { detectProvider } from './nodes';
 import type { ReferenceSearchFn } from './nodes';

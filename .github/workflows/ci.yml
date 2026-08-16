@@ -9,6 +9,13 @@ concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: true
 
+# Font Awesome Pro resolves from a private registry, and the root .npmrc expands
+# this variable at install time. Declared workflow-level so every job — including
+# the steps inside the composite setup action, which cannot read `secrets` —
+# inherits it, rather than thirteen copies drifting apart.
+env:
+  FONTAWESOME_NPM_TOKEN: ${{ secrets.FONTAWESOME_NPM_TOKEN }}
+
 # ONE JOB PER TASK, IN PARALLEL, EACH WITH A WARM TURBO CACHE.
 #
 # This was a single `validate` job running lint → typecheck → test → prettier in
@@ -240,8 +247,17 @@ jobs:
         with:
           node-version-file: .nvmrc
 
-      - name: Check piggles and sparx share no application code
-        run: node scripts/check-piggles-isolation.mjs
+      # Neither product may import the other's app code, AND piggles' use of the
+      # retiring `@sparx/*` scope may only fall (piggles/docs/migration, A0).
+      - name: Check the product boundaries hold
+        run: node scripts/check-boundaries.mjs
+
+      # Isolation stops Piggles IMPORTING sparx; this stops it SOUNDING like
+      # sparx. The surfaces are a fork of sparx's catalog, so every new screen
+      # arrives wearing sparx's words and keeps them until somebody looks —
+      # "Modules" reached the rail of a product that has no module pricing.
+      - name: Check no sparx vocabulary reaches the Piggles nav
+        run: node piggles/scripts/check-nav-vocabulary.mjs
 
   webhook-events:
     name: Webhook event parity

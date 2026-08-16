@@ -18,13 +18,16 @@
 
 import type { Logger } from 'pino';
 import { z } from 'zod';
+import { prisma } from '@sparx/db';
 import {
+  defaultBrand,
   getEmailProvider,
   MailgunParameterError,
   PostalParameterError,
   renderTemplate,
 } from '@sparx/email';
 import { analyticsService, brandService } from '@sparx/email-platform';
+import { platformBrandIdentity } from '@wizeworks/brand-core';
 
 // The delivery gate lives in its own module — see the header there for why,
 // and for the four templates it silently dropped before it had a test.
@@ -65,6 +68,37 @@ export interface HandleOutcome {
   messageId: string;
   recipient: string;
   errorMessage?: string;
+}
+
+/**
+ * The chrome for a tenant that has supplied no identity of its own.
+ *
+ * Which is most of them, early on — and until 2026-08-16 every one of those
+ * sends went out saying "sparx", because `defaultBrand` is the pre-multibrand
+ * default and nothing overrode it. A Piggles customer's receipt, trial notice
+ * and password reset all arrived wearing another company's name.
+ *
+ * The NAME is fixed here, from `<BRAND>_BRAND_NAME`. The PALETTE deliberately is
+ * not: what a brand-neutral platform email should look like is a design question
+ * rather than a bug, and silently restyling every sparx email while fixing a
+ * name would be smuggling one in. Tracked in piggles/docs/migration.
+ *
+ * `tenants` is the non-RLS dispatch row, so this reads on the plain client with
+ * no tenant context — the same property that lets a Stripe webhook resolve a
+ * tenant. Best-effort: a failed lookup renders the default rather than dropping
+ * the mail, because a queue that stops is worse than a wrong word.
+ */
+async function platformFallbackBrand(tenantId: string, logger: Logger) {
+  try {
+    const row = await prisma.tenant.findUnique({
+      where: { id: tenantId },
+      select: { platformBrand: true },
+    });
+    return { ...defaultBrand, siteName: platformBrandIdentity(row?.platformBrand).name };
+  } catch (err) {
+    logger.warn({ err }, 'platform brand lookup failed — rendering the default chrome');
+    return defaultBrand;
+  }
 }
 
 export function parseEvent(raw: unknown): EmailSendEvent | null {
@@ -108,7 +142,9 @@ export async function handle(event: EmailSendEvent, logger: Logger): Promise<Han
       } catch (brandErr) {
         childLog.warn({ err: brandErr }, 'brand resolution failed — rendering with defaults');
       }
-      rendered = await renderTemplate(data, { brand: brand ?? undefined });
+      rendered = await renderTemplate(data, {
+        brand: brand ?? (await platformFallbackBrand(event.tenantId, childLog)),
+      });
     }
 
     // Stamp tenant_id (+ any caller variables: broadcast_id, automation_key) so

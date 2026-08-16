@@ -1,0 +1,285 @@
+'use client';
+
+// Drawing a silica node tree as real DOM.
+//
+// Real DOM, not an iframe. The canvas frame is a plain element whose width drives
+// the tree's own `@container` queries, so switching device REFLOWS the design the
+// author is editing instead of opening a second, mobile editor beside it.
+//
+// Selection and hover paint with `outline`, never `border` or `ring`: an outline
+// takes no space, so highlighting a block cannot move the block beside it. A
+// 2px border would make every hover nudge the layout the author is judging.
+//
+// STYLING RULE (hard): every class here is a LITERAL string, so a consuming app's
+// Tailwind `@source` scan safelists it. A computed class name compiles to nothing
+// and the failure is invisible — the ring simply never appears.
+
+import { createElement, type ReactNode } from 'react';
+import {
+  applyOverrides,
+  expandComponent,
+  type Child,
+  type Node,
+  type SymbolDef,
+} from '@wizeworks/silicaui-html';
+import { isAddressable, isNodeChild, type AddressableNode } from '../../tree/walk';
+import type { StudioHost } from '../host';
+
+/** Elements that cannot hold children. Passing them any is a React error, not a
+ *  warning, so the check has to happen before `createElement`. */
+const VOID_TAGS = new Set([
+  'area',
+  'base',
+  'br',
+  'col',
+  'embed',
+  'hr',
+  'img',
+  'input',
+  'link',
+  'meta',
+  'param',
+  'source',
+  'track',
+  'wbr',
+]);
+
+/** HTML attribute names React spells differently. Everything else passes through. */
+const ATTR_ALIASES: Record<string, string> = {
+  for: 'htmlFor',
+  class: 'className',
+  colspan: 'colSpan',
+  rowspan: 'rowSpan',
+  maxlength: 'maxLength',
+  readonly: 'readOnly',
+  tabindex: 'tabIndex',
+};
+
+export interface RenderContext {
+  host: StudioHost;
+  symbols: Record<string, SymbolDef>;
+  selectedIds: readonly string[];
+  hoverId: string | null;
+  /**
+   * The ids the author may edit. Null means the whole tree — which is a layout or
+   * a component pane. On a page pane it holds the body's ids, and everything
+   * outside it is chrome: real, live, and inert.
+   */
+  editableIds: Set<string> | null;
+  /** Where a drop would land, drawn as an edge or a ring while dragging. */
+  dropHint: DropHint | null;
+}
+
+export interface DropHint {
+  targetId: string;
+  position: 'before' | 'after' | 'inside';
+}
+
+export function isEditable(ctx: RenderContext, id: string | undefined): boolean {
+  if (!id) return false;
+  return ctx.editableIds === null || ctx.editableIds.has(id);
+}
+
+/** The outline utilities a node wears for its current state. */
+function stateClasses(ctx: RenderContext, node: AddressableNode): string {
+  const id = node.id;
+  if (!id) return '';
+  const editable = isEditable(ctx, id);
+  const classes: string[] = [];
+
+  if (ctx.selectedIds.includes(id)) {
+    classes.push('outline-primary outline outline-2 -outline-offset-2');
+  } else if (ctx.hoverId === id && editable) {
+    classes.push('outline-primary/50 outline outline-1 -outline-offset-1');
+  }
+
+  if (ctx.dropHint?.targetId === id) {
+    classes.push(
+      ctx.dropHint.position === 'inside'
+        ? 'outline-secondary outline outline-2 outline-dashed -outline-offset-2'
+        : 'outline-secondary outline outline-2 -outline-offset-2'
+    );
+  }
+
+  // Chrome around an editable page body reads as context, not as content the
+  // author forgot they could touch.
+  if (!editable) classes.push('pointer-events-none select-none');
+
+  return classes.join(' ');
+}
+
+/** Resolve a bound value for the canvas — sample data, so a bound heading reads
+ *  as a real product name instead of as `{{…}}`. */
+function boundText(ctx: RenderContext, node: AddressableNode): string | undefined {
+  if (node.data?.kind !== 'value') return undefined;
+  return ctx.host.resolveBinding?.(node.data.ref, node.data.attr);
+}
+
+export function renderNode(node: Node, ctx: RenderContext, key?: string | number): ReactNode {
+  if (node.kind === 'outlet') {
+    // The layout builder draws the Outlet at its real place in the chrome. It is
+    // the one node an author can neither delete nor move, so it says what it is
+    // rather than rendering as an empty gap they will try to fill.
+    return (
+      <div
+        key={key}
+        data-sui-outlet=""
+        className="border-base-content/25 text-base-content/70 bg-base-200 flex min-h-32 items-center justify-center rounded-lg border border-dashed p-6 text-sm"
+      >
+        Every page appears here
+      </div>
+    );
+  }
+
+  if (node.instanceOf) return renderInstance(node, ctx, key);
+  if (node.kind === 'host') return renderHost(node, ctx, key);
+  if (node.kind === 'component') return renderComponent(node, ctx, key);
+
+  return renderElement(node, ctx, key);
+}
+
+function renderElement(
+  node: AddressableNode,
+  ctx: RenderContext,
+  key?: string | number
+): ReactNode {
+  if (node.kind !== 'element') return null;
+
+  const props: Record<string, unknown> = {};
+  for (const [name, value] of Object.entries(node.attrs ?? {})) {
+    props[ATTR_ALIASES[name] ?? name] = value;
+  }
+
+  const state = stateClasses(ctx, node);
+  props.className = [node.class, state].filter(Boolean).join(' ') || undefined;
+  props.key = key;
+  if (node.id) {
+    props['data-sui-id'] = node.id;
+    props.draggable = isEditable(ctx, node.id) && !node.locked;
+  }
+
+  const tag = node.tag.toLowerCase();
+  if (VOID_TAGS.has(tag)) return createElement(tag, props);
+
+  if (node.rawHtml !== undefined) {
+    // The one sanctioned bypass of the raw-element floor — the host sanitized it
+    // at its data boundary, the same trust model as `dangerouslySetInnerHTML`.
+    props.dangerouslySetInnerHTML = { __html: node.rawHtml };
+    return createElement(tag, props);
+  }
+
+  const bound = boundText(ctx, node);
+  if (bound !== undefined) return createElement(tag, props, bound);
+
+  return createElement(tag, props, renderChildren(node.children, ctx));
+}
+
+/**
+ * A silica component, lowered to its element expansion.
+ *
+ * Lowering rather than mounting a React component keeps the canvas honest: it
+ * walks the SAME shape `toHtml` walks, so what the author sees is structurally
+ * what publishes. The component's own id is forced back onto the expansion root,
+ * or clicking a Button would select whatever `<button>` the expansion produced
+ * and the Inspector would offer element props for a component.
+ */
+function renderComponent(
+  node: AddressableNode,
+  ctx: RenderContext,
+  key?: string | number
+): ReactNode {
+  if (node.kind !== 'component') return null;
+  let expanded: Node;
+  try {
+    expanded = expandComponent(node);
+  } catch {
+    return (
+      <span
+        key={key}
+        data-sui-id={node.id}
+        className="border-warning text-warning-content bg-warning/20 rounded border border-dashed px-2 py-1 text-sm"
+      >
+        Unknown component: {node.component}
+      </span>
+    );
+  }
+  if (!isAddressable(expanded)) return null;
+  return renderNode({ ...expanded, id: node.id, class: expanded.class ?? node.class }, ctx, key);
+}
+
+/** A pinned functional core — cart, checkout, the brand mark. */
+function renderHost(node: AddressableNode, ctx: RenderContext, key?: string | number): ReactNode {
+  if (node.kind !== 'host') return null;
+  const drawn = ctx.host.renderHostNode?.(node);
+  const state = stateClasses(ctx, node);
+  return (
+    <div
+      key={key}
+      data-sui-id={node.id}
+      data-sui-host={node.component}
+      className={[node.class, state].filter(Boolean).join(' ') || undefined}
+    >
+      {drawn ?? (
+        <div className="border-base-content/25 bg-base-100 text-base-content rounded-lg border border-dashed p-6 text-sm">
+          {node.component} · live region
+        </div>
+      )}
+    </div>
+  );
+}
+
+/**
+ * An instance of a saved piece.
+ *
+ * The master is drawn with this instance's overrides applied, but ONLY the
+ * instance node is selectable — its expansion is not the author's tree to edit
+ * here, and letting them click into it would silently detach the piece or edit
+ * every other instance without saying so. Editing the master is the component
+ * pane's job, and it propagates because both read one store.
+ */
+function renderInstance(
+  node: AddressableNode,
+  ctx: RenderContext,
+  key?: string | number
+): ReactNode {
+  const symbol = node.instanceOf ? ctx.symbols[node.instanceOf] : undefined;
+  if (!symbol) {
+    return (
+      <div
+        key={key}
+        data-sui-id={node.id}
+        className="border-warning bg-warning/20 text-warning-content rounded border border-dashed p-4 text-sm"
+      >
+        This saved design is no longer available
+      </div>
+    );
+  }
+
+  const master = applyOverrides(structuredClone(symbol.root), node.overrides);
+  const inner: RenderContext = { ...ctx, editableIds: new Set(), selectedIds: [], hoverId: null };
+  const state = stateClasses(ctx, node);
+
+  return (
+    <div
+      key={key}
+      data-sui-id={node.id}
+      data-sui-instance={node.instanceOf}
+      className={[node.class, state].filter(Boolean).join(' ') || undefined}
+    >
+      {renderNode(master, inner)}
+    </div>
+  );
+}
+
+function renderChildren(children: Child[] | undefined, ctx: RenderContext): ReactNode {
+  if (!children?.length) return null;
+  return children.map((child, index) =>
+    isNodeChild(child) ? renderNode(child, ctx, keyFor(child, index)) : child
+  );
+}
+
+/** A stable React key. The node id when there is one — an index alone re-keys
+ *  every sibling after an insert, which throws away their DOM and any focus in it. */
+function keyFor(node: Node, index: number): string {
+  return isAddressable(node) && node.id ? node.id : `i${index}`;
+}

@@ -13,8 +13,8 @@
    shifts). Phase 3 deletes @sparx/ui/tokens.css and brand becomes sole. */
 @import '@sparx/brand/theme.css';
 /* Rules that close a hole in a silicaui component — see the file header. */
-@import '@sparx/brand/silica-gaps.css';
-@import '@sparx/brand/toast.css';
+@import '@wizeworks/silica-corrections/silica-gaps.css';
+@import '@wizeworks/silica-corrections/toast.css';
 /* SparkMascot motion — the idle bob, the blink, the wink, and the footer peek.
    marketing.css carried its own copy of the first three for a while; the
    canonical set lives beside the component in @sparx/brand, so the mascot moves

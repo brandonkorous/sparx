@@ -67,6 +67,16 @@ export interface BrandTokens {
   logoUrl?: string;
   /** Store name — wordmark fallback + footer. */
   siteName?: string;
+  /**
+   * True when `siteName` is the PLATFORM's own name rather than one the tenant
+   * chose — i.e. this send found no tenant identity and fell back.
+   *
+   * The wordmark needs the distinction and cannot infer it: it used to ask
+   * `siteName !== 'sparx'`, which hardcoded one brand as the meaning of
+   * "unbranded" and put that brand's name on the other brand's email. Whoever
+   * builds the fallback knows the answer; nobody downstream can work it out.
+   */
+  siteNameIsPlatformDefault?: boolean;
   /** The site's social links, rendered as self-contained badges in the footer.
    *  Platform is a free string here; the footer maps it to silica's supported
    *  badge set and drops the rest. */
@@ -83,7 +93,12 @@ export const defaultBrand: BrandTokens = {
   border: colors.border,
   fontHeading: fontFamily,
   fontBody: fontFamily,
+  // The pre-multibrand default, kept so a send that names no brand renders
+  // exactly as it always has. A caller that KNOWS the platform brand overrides
+  // this — see email-worker's handler — and the flag below is what tells the
+  // wordmark this is a fallback rather than somebody's actual shop name.
   siteName: 'sparx',
+  siteNameIsPlatformDefault: true,
   // The sparx default theme's DARK neutrals (the `apex` preset's dark tokens in
   // @sparx/site-themes) — so an unbranded send still renders a real dark theme on a
   // dark-mode client, not the light card on a black screen. Brand hue (`primary`) is

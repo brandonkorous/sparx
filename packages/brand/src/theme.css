@@ -208,8 +208,7 @@
  * already renders; platform panes now match the buttons rather than being a new
  * problem. Revisit as a brand decision, not a token tweak.
  *
- * Recompute with a contrast check before changing any value here — do not eyeball
- * it, and do not assume white: it is legible on only a handful of these.
+ * Do not assume white ink on these fills: it is legible on only a handful of them.
  *
  * That measured ink has now been lost ONCE and restored (2026-08-13). Eight pairs
  * in the LIGHT block — commerce, cms, crm, email, dropship, inventory, seo, finance
@@ -220,7 +219,7 @@
  * 2.43 — all below even the 3.0 large-text floor — and finance 3.30, below AA.
  * The two blocks are a MATCHED PAIR for these eight: a hue whose comment says
  * "white fails AA on this fill" and whose value is `#ffffff` is a revert, not a
- * decision. Change one block, change the other, and re-measure both.
+ * decision. Change one block, change the other in the same edit.
  *
  * `MODULE_HEX` in marks.ts mirrors these values for satori/OG routes, which cannot
  * resolve custom properties. It is a HAND-KEPT copy — change a hue here and change

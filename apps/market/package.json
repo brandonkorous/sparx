@@ -17,13 +17,14 @@
     "@sparx/commerce-schemas": "workspace:*",
     "@stripe/react-stripe-js": "^3.7.0",
     "@stripe/stripe-js": "^5.10.0",
+    "@wizeworks/silica-corrections": "workspace:*",
+    "@wizeworks/silicaui": "catalog:",
+    "@wizeworks/silicaui-react": "catalog:",
     "geist": "^1.3.1",
     "lucide-react": "^0.577.0",
     "next": "^16.2.6",
     "react": "^19.2.6",
-    "react-dom": "^19.2.6",
-    "@wizeworks/silicaui": "catalog:",
-    "@wizeworks/silicaui-react": "catalog:"
+    "react-dom": "^19.2.6"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.3.0",

@@ -1,0 +1,36 @@
+{
+  "name": "@wizeworks/silica-corrections",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Platform-level corrections to silicaui — written against silica's own classes and custom properties, so they inherit whatever a brand's tokens set. Brand-blind by construction: every brand imports these, none of them may state a value.",
+  "type": "module",
+  "sideEffects": [
+    "**/*.css"
+  ],
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    },
+    "./silica-gaps.css": "./src/silica-gaps.css",
+    "./toast.css": "./src/toast.css"
+  },
+  "files": [
+    "src"
+  ],
+  "scripts": {
+    "clean": "rm -rf .turbo *.tsbuildinfo",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run --passWithNoTests"
+  },
+  "dependencies": {
+    "clsx": "^2.1.1",
+    "tailwind-merge": "^2.6.0"
+  },
+  "devDependencies": {
+    "@types/node": "^25.9.1",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.7"
+  }
+}

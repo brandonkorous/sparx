@@ -13,6 +13,10 @@
       "types": "./src/template-ids.ts",
       "default": "./src/template-ids.ts"
     },
+    "./template-fixtures": {
+      "types": "./src/template-fixtures.ts",
+      "default": "./src/template-fixtures.ts"
+    },
     "./templates": {
       "types": "./src/templates/index.ts",
       "default": "./src/templates/index.ts"

@@ -4,11 +4,32 @@ import { nextCookies } from 'better-auth/next-js';
 import { emailOTP, magicLink, mcp, oneTap, organization, twoFactor } from 'better-auth/plugins';
 import { passkey } from '@better-auth/passkey';
 import { createAuthMiddleware, getSessionFromCtx } from 'better-auth/api';
+import { accountOrigin } from '@sparx/links/server';
 import { authPrisma } from './prisma';
 import { publishAuthEmail } from './email-events';
 import { finalizeOAuthSignup, provisionTenantForOAuth } from './oauth-provisioning';
 import { MCP_ALL_OAUTH_SCOPES, verifyConsentGrant } from './mcp-scopes';
 import { ac, roles } from './org-roles';
+
+/**
+ * Which brand an organization belongs to.
+ *
+ * The organization id IS the tenant id (the tenant model is the Better Auth
+ * organization), and `tenants` is the non-RLS dispatch row, so this reads on the
+ * plain client with no tenant context — the same reason a Stripe webhook can
+ * resolve a tenant before any context is set.
+ *
+ * Falls back to the column's own default, which is what every tenant
+ * provisioned before the second brand existed carries. That is the safe
+ * direction: it is the answer this code gave for its whole life.
+ */
+async function tenantPlatformBrandForOrg(organizationId: string): Promise<string> {
+  const row = await authPrisma.tenant.findUnique({
+    where: { id: organizationId },
+    select: { platformBrand: true },
+  });
+  return row?.platformBrand ?? 'sparx';
+}
 
 // sparx Better Auth server instance. One per process — same caching strategy
 // as @sparx/db's prisma client so dev HMR does not leak adapters.
@@ -418,8 +439,18 @@ function createAuth() {
         // Auth does not generate the accept URL; we point it at our own
         // /accept-invite page carrying the invitation id.
         async sendInvitationEmail(data) {
-          const appUrl = process.env.BETTER_AUTH_URL ?? 'http://localhost:3001';
-          const acceptUrl = `${appUrl}/accept-invite?invitation=${encodeURIComponent(data.id)}`;
+          // The organization id IS the tenant id, so the brand is one read away —
+          // and it has to be read, because this link is the invitee's whole
+          // introduction to the product. Sent against the wrong brand it lands
+          // them on another company's sign-in page.
+          //
+          // `accountOrigin`, not `appOrigin`: an invitee is not signed in yet, so
+          // the page has to offer sign-in and sign-up, which live wherever the
+          // brand's auth does. The old fallback here was `localhost:3001` — the
+          // removed dashboard's port — so every locally-minted invitation pointed
+          // at nothing at all.
+          const brand = await tenantPlatformBrandForOrg(data.organization.id);
+          const acceptUrl = `${accountOrigin(brand)}/accept-invite?invitation=${encodeURIComponent(data.id)}`;
           const inviterName = data.inviter.user.name?.trim() || data.inviter.user.email;
           await publishAuthEmail({
             tenantId: data.organization.id,

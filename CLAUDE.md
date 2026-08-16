@@ -60,8 +60,8 @@ mistake. And never "re-skin" a silicaui component:
 // island, ignores the token system, and is exactly what this rule exists to stop.
 <Button size="lg" style={{ backgroundColor: '#0A0A0A' }}>Start free</Button>
 
-// ALWAYS — props resolve to the plugin's real classes: `btn btn-neutral btn-lg`.
-<Button color="neutral" size="lg">Start free</Button>
+// ALWAYS — props resolve to the plugin's real classes: `btn btn-primary btn-lg`.
+<Button color="primary" size="lg">Start free</Button>                // `neutral` would need approval (RULE #4)
 <Button color="module-commerce" size="xl">Start selling</Button>   // module hues are registered colors
 <Button variant="outline" size="lg">Talk to sales</Button>         // inside <Section surface="dark">, the
                                                                    // theme island resolves border + ink
@@ -130,17 +130,26 @@ it just looked nicer," use the real token. Hierarchy comes from **scale, weight,
 not from fading things out. Related: [DESIGN.md](DESIGN.md), and the
 base font floor of 16px for body text.
 
-## RULE #4 — neutral has to be earned
+## RULE #4 — `neutral` requires Brandon's approval, every time
 
 **A screen where everything is the same color is a design failure**, with the same weight as a
 gradient hero. Rules #1–#3 are prohibitions, and monochrome is the one output that satisfies every
 prohibition at once — so grey is what gets built unless something requires otherwise. This rule
 requires otherwise.
 
-`color="neutral"` is a decision, not a default. It is earned by the chassis (backgrounds, borders,
-dividers), bare prose you authored yourself, the dismiss half of a decision pair, or a genuinely
-untyped value — **nothing else.** If an element distinguishes A from B, its color carries the
-distinction; two badges that mean different things and render the same grey are wrong, not safe.
+**`color="neutral"` is not yours to choose. Ask Brandon, get a yes, then use it — and never ship it
+on the assumption that this instance is obviously fine.** A COLORLESS control — no `color` prop at
+all — is a different thing and is fine without asking; it is the right control for a genuinely
+untyped action. The rule is about naming `neutral`. This rule used to read "neutral has to be
+earned" and listed what earned it (the chassis, bare prose, the dismiss half of a pair, an untyped
+value). That list was treated as a checklist to argue past rather than a bar to clear, and grey went
+on shipping — so the list is gone and the approval is the bar.
+
+If an element distinguishes A from B, its color carries the distinction; two badges that mean
+different things and render the same grey are wrong, not safe. When you reach for grey, you have
+almost always skipped the question of what the thing MEANS: a destructive control is `danger`, a
+favourite is `primary`, anything belonging to an app is `module`. Work that out first — the answer
+is usually a real color, and the approval is only needed for what genuinely has no meaning to carry.
 
 **"Readable ink" does NOT mean `text-base-content`.** A silica color class only sets CSS variables
 (`--btn-fg`, `--tabs-accent-content`, …); the component paints itself from them, so its foreground is

@@ -23,6 +23,8 @@ import { z } from 'zod';
 import { prisma, withTenant, type Prisma } from '@sparx/db';
 import { publish } from '@sparx/api-core/pubsub';
 import { appOrigin } from '@sparx/links/server';
+import { tenantPlatformBrand } from '../../lib/tenant-brand.js';
+import { platformBrandIdentity } from '@wizeworks/brand-core';
 import type { FeedbackRespondedPayload } from '@sparx/events';
 import { writePlatformNotice } from '../../lib/platform-notice.js';
 import type {
@@ -479,16 +481,30 @@ const operatorFeedbackRoutes: FastifyPluginAsync = async (app) => {
         // the submitter's inbox alongside the in-app notice above.
         const feedbackTitle =
           row.subject && row.subject.trim().length > 0 ? row.subject : 'your feedback';
+        const brandIdentity = platformBrandIdentity(await tenantPlatformBrand(tenantId));
         await publish(request.log, 'email.send', tenantId, authorId, {
           to: before.submitterEmail,
           template: 'feedback-response',
+          // Somebody wrote in, a person answered, and hitting reply should reach
+          // that person. Omitted entirely when the brand has published no
+          // address — an absent reply-to falls back to the sending domain, where
+          // an invented one bounces, and a bounced reply to a support message is
+          // worse than no reply path at all.
+          ...(brandIdentity.supportEmail ? { replyTo: brandIdentity.supportEmail } : {}),
           props: {
             recipientName: null,
             feedbackTitle,
             responseBody: body,
-            responderName: authorName ?? 'sparx Support',
+            // The tenant's OWN product signs the reply. A hardcoded fallback
+            // told a Piggles customer that sparx had answered them; a
+            // brand-neutral "Support" fixed that and lost something real, since
+            // a reply from a named product is warmer and more trustworthy than
+            // one from nobody. `platformBrandIdentity` gives the name back
+            // without shared code knowing either brand — it reads
+            // `<BRAND>_SUPPORT_NAME` / `<BRAND>_BRAND_NAME`.
+            responderName: authorName ?? brandIdentity.supportName,
             ...(status ? { statusLabel: status } : {}),
-            threadUrl: appOrigin(),
+            threadUrl: appOrigin(brandIdentity.key),
           },
         });
       }

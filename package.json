@@ -21,7 +21,7 @@
     "check:events": "node scripts/check-event-topics.mjs",
     "check:routes": "node scripts/check-surface-routes.mjs",
     "check:docker": "node scripts/check-dockerfile-deps.mjs",
-    "check:isolation": "node scripts/check-piggles-isolation.mjs",
+    "check:piggles-nav": "node piggles/scripts/check-nav-vocabulary.mjs",
     "check:webhooks": "node scripts/check-webhook-events.mjs",
     "check:inventory-api": "node scripts/check-inventory-api-docs.mjs",
     "gen:inventory-api": "node scripts/gen-inventory-api-reference.mjs",
@@ -32,7 +32,8 @@
     "db:migrate": "pnpm --filter @sparx/db db:migrate",
     "db:seed": "pnpm --filter @sparx/db db:seed",
     "db:studio": "pnpm --filter @sparx/db db:studio",
-    "clean": "turbo run clean && rm -rf node_modules"
+    "clean": "turbo run clean && rm -rf node_modules",
+    "check:boundaries": "node scripts/check-boundaries.mjs"
   },
   "devDependencies": {
     "@eslint/js": "^9.18.0",

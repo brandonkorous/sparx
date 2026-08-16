@@ -8,6 +8,10 @@
     ".": {
       "types": "./src/index.ts",
       "default": "./src/index.ts"
+    },
+    "./launch-links": {
+      "types": "./src/launch-links.ts",
+      "default": "./src/launch-links.ts"
     }
   },
   "files": [

@@ -20,10 +20,6 @@
     "./consumers": {
       "types": "./src/consumers/index.ts",
       "default": "./src/consumers/index.ts"
-    },
-    "./manifest": {
-      "types": "./src/manifest.ts",
-      "default": "./src/manifest.ts"
     }
   },
   "files": [

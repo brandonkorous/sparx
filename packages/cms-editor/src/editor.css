@@ -9,7 +9,7 @@
  * source, none of them were emitted and the editor silently collapsed to a
  * single line with unstyled content. Owning the appearance here removes that
  * footgun. Tokens (`--color-*`, `--font-mono`, `--module-active`) come from
- * `@sparx/ui/tokens.css`, which apps already import.
+ * `@sparx/ui/tokens.css`, which sparx apps already import.
  *
  * Scope: `.sparx-content-editor` is set on the ProseMirror contenteditable via
  * the editor's `editorProps.attributes.class`.

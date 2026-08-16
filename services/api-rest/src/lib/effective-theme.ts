@@ -49,6 +49,19 @@ export async function effectiveTheme(
     tx.siteConfig.findUnique({ where: { propertyId: ctx.propertyId } }),
   ]);
 
+  // The `builder_themes` ROW this site points at wins over the legacy column: a
+  // site edited in the per-document editor carries its look as a row, and one
+  // edited through the whole-`Site` blob still carries it as a column. A dangling
+  // pointer falls through to the column and then to brand-derived, so a deleted
+  // look degrades to the tenant's own colours rather than to nothing.
+  if (!opts.ignoreAuthored && site?.themeId) {
+    const row = await tx.builderTheme.findFirst({
+      where: { id: site.themeId, tenantId: ctx.tenantId },
+      select: { draftTokens: true },
+    });
+    if (row?.draftTokens) return row.draftTokens as unknown as Theme;
+  }
+
   const authored = site?.silicaDraftTheme as Theme | null | undefined;
   if (authored && !opts.ignoreAuthored) return authored;
 

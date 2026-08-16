@@ -27,6 +27,12 @@
 //                                       starter chrome (DRAFT only). Narrow on
 //                                       purpose — pages/theme/symbols and everything
 //                                       visitors are served stay put
+//   GET    /v1/builder/site/symbols → the site's OWN saved pieces (the tenant
+//                                       library is /v1/builder/components)
+//   PUT    /v1/builder/site/symbols/:symbolId
+//                                     → write one of them
+//   DELETE /v1/builder/site/symbols/:symbolId
+//                                     → drop one; every instance DETACHES
 //   GET    /v1/builder/site/symbols/:symbolId/usages
 //                                     → where a saved component is PLACED (docs/126
 //                                       §5.4). Deleting a master detaches every
@@ -64,11 +70,14 @@ import {
   siteService,
 } from '@sparx/builder';
 import { withTenant } from '@sparx/db';
-import { isModuleEnabled } from '@sparx/auth';
 import { ok } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
 import { withRequestTenant } from '@sparx/api-core/db';
-import { requireBuilderModule, toBuilderContext } from '../../../lib/builder-context.js';
+import {
+  requireBuilderModule,
+  siteChromeOptions,
+  toBuilderContext,
+} from '../../../lib/builder-context.js';
 import { getBuilderBroadcaster } from '../../../websocket/builder-broadcast.js';
 import { auditAndStore } from '../../../lib/seo-audit.js';
 import { runSiteCheck } from '../../../lib/site-check.js';
@@ -97,16 +106,8 @@ const builderSiteRoutes: FastifyPluginAsync = (app) => {
     const ctx = await toBuilderContext(request);
     // The module flags decide which RECORD detail pages this property should have, and
     // `load` seeds any that are missing — the only thing that puts a product or blog-post
-    // page in front of a tenant whose site predates page addresses. Same failure
-    // directions as the frame reset below: Commerce fails OPEN so a flag blip never hides
-    // a page from a tenant who pays for it, Scheduling and CMS fail CLOSED so a blip never
-    // invents one.
-    const [commerceEnabled, schedulingEnabled, cmsEnabled] = await Promise.all([
-      isModuleEnabled(ctx.tenantId, 'commerce').catch(() => true),
-      isModuleEnabled(ctx.tenantId, 'scheduling').catch(() => false),
-      isModuleEnabled(ctx.tenantId, 'cms').catch(() => false),
-    ]);
-    const site = await siteService.load(ctx, { commerceEnabled, schedulingEnabled, cmsEnabled });
+    // page in front of a tenant whose site predates page addresses.
+    const site = await siteService.load(ctx, await siteChromeOptions(ctx.tenantId));
     return ok({ site });
   });
 
@@ -141,6 +142,44 @@ const builderSiteRoutes: FastifyPluginAsync = (app) => {
   // Answered from the derived node index rather than by walking every tree in the
   // property. Read-only, so `viewer` — knowing what a delete would break should never
   // require the permission to perform it.
+
+  /**
+   * The site's OWN saved pieces.
+   *
+   * Not the tenant library (`/v1/builder/components`) — that one is shared across
+   * every site the business owns. Both end up in one symbol map on a canvas; only
+   * where the master is stored differs, and the id namespace says which is which.
+   * Registered before `:symbolId` so the static path is not swallowed by the param.
+   */
+  app.get('/v1/builder/site/symbols', async (request) => {
+    requireRole(request, 'viewer');
+    await requireBuilderModule(request);
+    const symbols = await siteService.loadSymbols(await toBuilderContext(request));
+    return ok({ symbols });
+  });
+
+  app.put('/v1/builder/site/symbols/:symbolId', async (request) => {
+    requireRole(request, 'editor');
+    await requireBuilderModule(request);
+    const { symbolId } = request.params as { symbolId: string };
+    const body = request.body as { name: string; root: unknown };
+    const symbol = await siteService.setSymbol(await toBuilderContext(request), symbolId, {
+      name: body.name,
+      root: body.root as never,
+    });
+    return ok(symbol);
+  });
+
+  // Every instance across every page DETACHES — the design stays where it is and
+  // simply stops following a master that no longer exists. The pane names the
+  // placement count before offering this.
+  app.delete('/v1/builder/site/symbols/:symbolId', async (request) => {
+    requireRole(request, 'editor');
+    await requireBuilderModule(request);
+    const { symbolId } = request.params as { symbolId: string };
+    await siteService.removeSymbol(await toBuilderContext(request), symbolId);
+    return ok({ symbolId });
+  });
 
   app.get('/v1/builder/site/symbols/:symbolId/usages', async (request) => {
     requireRole(request, 'viewer');
@@ -335,21 +374,7 @@ const builderSiteRoutes: FastifyPluginAsync = (app) => {
     requireRole(request, 'editor');
     await requireBuilderModule(request);
     const ctx = await toBuilderContext(request);
-    const [commerceEnabled, schedulingEnabled, cmsEnabled] = await Promise.all([
-      // Fails OPEN, matching the studio's starter seed: a flag-lookup blip must never
-      // silently strip Commerce chrome from a tenant who pays for it.
-      isModuleEnabled(ctx.tenantId, 'commerce').catch(() => true),
-      // Fails CLOSED — Scheduling is opt-in, so a blip must not invent a Book link.
-      isModuleEnabled(ctx.tenantId, 'scheduling').catch(() => false),
-      // Fails CLOSED for the same reason — a blip must not invent a Journal link to
-      // an index with nothing behind it.
-      isModuleEnabled(ctx.tenantId, 'cms').catch(() => false),
-    ]);
-    const frame = await siteService.resetFrame(ctx, {
-      commerceEnabled,
-      schedulingEnabled,
-      cmsEnabled,
-    });
+    const frame = await siteService.resetFrame(ctx, await siteChromeOptions(ctx.tenantId));
     return ok({ frame });
   });
 

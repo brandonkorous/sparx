@@ -91,6 +91,9 @@ importers:
       '@sparx/ui':
         specifier: workspace:*
         version: link:../../packages/ui
+      '@wizeworks/silica-corrections':
+        specifier: workspace:*
+        version: link:../../packages/silica-corrections
       '@wizeworks/silicaui':
         specifier: 'catalog:'
         version: 0.52.0(tailwindcss@4.3.0)
@@ -161,6 +164,9 @@ importers:
       '@stripe/stripe-js':
         specifier: ^5.10.0
         version: 5.10.0
+      '@wizeworks/silica-corrections':
+        specifier: workspace:*
+        version: link:../../packages/silica-corrections
       '@wizeworks/silicaui':
         specifier: 'catalog:'
         version: 0.52.0(tailwindcss@4.3.0)
@@ -246,6 +252,9 @@ importers:
       '@stripe/stripe-js':
         specifier: ^5.10.0
         version: 5.10.0
+      '@wizeworks/silica-corrections':
+        specifier: workspace:*
+        version: link:../../packages/silica-corrections
       '@wizeworks/silicaui-behaviors':
         specifier: 'catalog:'
         version: 0.52.0
@@ -334,6 +343,9 @@ importers:
       '@sparx/ui':
         specifier: workspace:*
         version: link:../../packages/ui
+      '@wizeworks/silica-corrections':
+        specifier: workspace:*
+        version: link:../../packages/silica-corrections
       '@wizeworks/silicaui':
         specifier: 'catalog:'
         version: 0.52.0(tailwindcss@4.3.0)
@@ -464,6 +476,9 @@ importers:
       '@sparx/story-schemas':
         specifier: workspace:*
         version: link:../../packages/story-schemas
+      '@wizeworks/silica-corrections':
+        specifier: workspace:*
+        version: link:../../packages/silica-corrections
       '@wizeworks/silicaui':
         specifier: 'catalog:'
         version: 0.52.0(tailwindcss@4.3.0)
@@ -658,6 +673,9 @@ importers:
       '@sparx/legal-seed':
         specifier: workspace:*
         version: link:../legal-seed
+      '@sparx/links':
+        specifier: workspace:*
+        version: link:../links
       '@sparx/modules':
         specifier: workspace:*
         version: link:../modules
@@ -928,6 +946,18 @@ importers:
         specifier: ^4.1.7
         version: 4.1.7(@opentelemetry/api@1.9.1)(@types/node@25.9.1)(@vitest/coverage-v8@4.1.7)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.0.14(@types/node@25.9.1)(esbuild@0.28.0)(jiti@2.7.0)(tsx@4.22.3)(yaml@2.9.0))
 
+  packages/brand-core:
+    devDependencies:
+      '@types/node':
+        specifier: ^25.9.1
+        version: 25.9.1
+      typescript:
+        specifier: ^6.0.3
+        version: 6.0.3
+      vitest:
+        specifier: ^4.1.7
+        version: 4.1.7(@opentelemetry/api@1.9.1)(@types/node@25.9.1)(@vitest/coverage-v8@4.1.7)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.0.14(@types/node@25.9.1)(esbuild@0.28.0)(jiti@2.7.0)(tsx@4.22.3)(yaml@2.9.0))
+
   packages/builder:
     dependencies:
       '@google-cloud/pubsub':
@@ -1135,9 +1165,6 @@ importers:
 
   packages/cms-editor:
     dependencies:
-      '@sparx/ui':
-        specifier: workspace:*
-        version: link:../ui
       '@tiptap/core':
         specifier: ^3.23.6
         version: 3.23.6(@tiptap/pm@3.23.6)
@@ -1180,6 +1207,9 @@ importers:
       '@tiptap/suggestion':
         specifier: ^3.23.6
         version: 3.23.6(@tiptap/core@3.23.6(@tiptap/pm@3.23.6))(@tiptap/pm@3.23.6)
+      '@wizeworks/silica-corrections':
+        specifier: workspace:*
+        version: link:../silica-corrections
       '@wizeworks/silicaui-html':
         specifier: 'catalog:'
         version: 0.52.0(@wizeworks/silicaui@0.52.0(tailwindcss@4.3.0))
@@ -1742,6 +1772,9 @@ importers:
       '@sparx/events':
         specifier: workspace:*
         version: link:../events
+      '@wizeworks/brand-core':
+        specifier: workspace:*
+        version: link:../brand-core
       pino:
         specifier: ^9.5.0
         version: 9.14.0
@@ -2615,6 +2648,25 @@ importers:
         specifier: ^4.1.7
         version: 4.1.7(@opentelemetry/api@1.9.1)(@types/node@25.9.1)(@vitest/coverage-v8@4.1.7)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.0.14(@types/node@25.9.1)(esbuild@0.28.0)(jiti@2.7.0)(tsx@4.22.3)(yaml@2.9.0))
 
+  packages/silica-corrections:
+    dependencies:
+      clsx:
+        specifier: ^2.1.1
+        version: 2.1.1
+      tailwind-merge:
+        specifier: ^2.6.0
+        version: 2.6.1
+    devDependencies:
+      '@types/node':
+        specifier: ^25.9.1
+        version: 25.9.1
+      typescript:
+        specifier: ^6.0.3
+        version: 6.0.3
+      vitest:
+        specifier: ^4.1.7
+        version: 4.1.7(@opentelemetry/api@1.9.1)(@types/node@25.9.1)(@vitest/coverage-v8@4.1.7)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.0.14(@types/node@25.9.1)(esbuild@0.28.0)(jiti@2.7.0)(tsx@4.22.3)(yaml@2.9.0))
+
   packages/site-lint:
     dependencies:
       '@sparx/silica-catalog':
@@ -2863,6 +2915,46 @@ importers:
         specifier: ^4.1.7
         version: 4.1.7(@opentelemetry/api@1.9.1)(@types/node@25.9.1)(@vitest/coverage-v8@4.1.7)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.0.14(@types/node@25.9.1)(esbuild@0.28.0)(jiti@2.7.0)(tsx@4.22.3)(yaml@2.9.0))
 
+  packages/studio:
+    dependencies:
+      '@sparx/silica-catalog':
+        specifier: workspace:*
+        version: link:../silica-catalog
+      '@sparx/site-themes':
+        specifier: workspace:*
+        version: link:../site-themes
+      '@wizeworks/silicaui-builder':
+        specifier: 'catalog:'
+        version: 0.52.0(@wizeworks/silicaui-react@0.52.0(@types/react@19.2.15)(@wizeworks/silicaui@0.52.0(tailwindcss@4.3.0))(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(tailwindcss@4.3.0)
+      '@wizeworks/silicaui-html':
+        specifier: 'catalog:'
+        version: 0.52.0(@wizeworks/silicaui@0.52.0(tailwindcss@4.3.0))
+      '@wizeworks/silicaui-react':
+        specifier: 'catalog:'
+        version: 0.52.0(@types/react@19.2.15)(@wizeworks/silicaui@0.52.0(tailwindcss@4.3.0))(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
+      react:
+        specifier: ^19.0.0
+        version: 19.2.6
+      react-dom:
+        specifier: ^19.0.0
+        version: 19.2.6(react@19.2.6)
+    devDependencies:
+      '@types/node':
+        specifier: ^25.9.1
+        version: 25.9.1
+      '@types/react':
+        specifier: ^19.0.0
+        version: 19.2.15
+      '@types/react-dom':
+        specifier: ^19.0.0
+        version: 19.2.3(@types/react@19.2.15)
+      typescript:
+        specifier: ^6.0.3
+        version: 6.0.3
+      vitest:
+        specifier: ^4.1.7
+        version: 4.1.7(@opentelemetry/api@1.9.1)(@types/node@25.9.1)(@vitest/coverage-v8@4.1.7)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.0.14(@types/node@25.9.1)(esbuild@0.28.0)(jiti@2.7.0)(tsx@4.22.3)(yaml@2.9.0))
+
   packages/surface-compile:
     dependencies:
       '@sparx/builder-schemas':
@@ -2914,6 +3006,9 @@ importers:
       '@sparx/brand':
         specifier: workspace:*
         version: link:../brand
+      '@wizeworks/silica-corrections':
+        specifier: workspace:*
+        version: link:../silica-corrections
       '@wizeworks/silicaui-react':
         specifier: 'catalog:'
         version: 0.52.0(@types/react@19.2.15)(@wizeworks/silicaui@0.52.0(tailwindcss@4.3.0))(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
@@ -2997,6 +3092,9 @@ importers:
 
   piggles/apps/account:
     dependencies:
+      '@fortawesome/pro-solid-svg-icons':
+        specifier: ^7.3.1
+        version: 7.3.1
       '@piggles/auth-handoff':
         specifier: workspace:*
         version: link:../../packages/auth-handoff
@@ -3009,6 +3107,9 @@ importers:
       '@piggles/mascot':
         specifier: workspace:*
         version: link:../../packages/mascot
+      '@piggles/ui':
+        specifier: workspace:*
+        version: link:../../packages/ui
       '@sparx/auth':
         specifier: workspace:*
         version: link:../../../packages/auth
@@ -3018,6 +3119,9 @@ importers:
       '@sparx/events':
         specifier: workspace:*
         version: link:../../../packages/events
+      '@sparx/links':
+        specifier: workspace:*
+        version: link:../../../packages/links
       '@wizeworks/silicaui':
         specifier: 'catalog:'
         version: 0.52.0(tailwindcss@4.3.0)
@@ -3027,9 +3131,6 @@ importers:
       better-auth:
         specifier: ^1.6.11
         version: 1.6.11(@opentelemetry/api@1.9.1)(@prisma/client@6.19.3(prisma@6.19.3(typescript@6.0.3))(typescript@6.0.3))(next@16.2.6(@opentelemetry/api@1.9.1)(@playwright/test@1.60.0)(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(pg@8.21.0)(prisma@6.19.3(typescript@6.0.3))(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(vitest@4.1.7)
-      lucide-react:
-        specifier: ^0.577.0
-        version: 0.577.0(react@19.2.6)
       next:
         specifier: ^16.2.6
         version: 16.2.6(@opentelemetry/api@1.9.1)(@playwright/test@1.60.0)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
@@ -3067,6 +3168,9 @@ importers:
 
   piggles/apps/web:
     dependencies:
+      '@fortawesome/pro-solid-svg-icons':
+        specifier: ^7.3.1
+        version: 7.3.1
       '@piggles/brand':
         specifier: workspace:*
         version: link:../../packages/brand
@@ -3076,6 +3180,9 @@ importers:
       '@piggles/mascot':
         specifier: workspace:*
         version: link:../../packages/mascot
+      '@piggles/ui':
+        specifier: workspace:*
+        version: link:../../packages/ui
       '@wizeworks/silicaui':
         specifier: 'catalog:'
         version: 0.52.0(tailwindcss@4.3.0)
@@ -3125,6 +3232,9 @@ importers:
       '@dnd-kit/utilities':
         specifier: ^3.2.2
         version: 3.2.2(react@19.2.6)
+      '@fortawesome/pro-solid-svg-icons':
+        specifier: ^7.3.1
+        version: 7.3.1
       '@piggles/auth-handoff':
         specifier: workspace:*
         version: link:../../packages/auth-handoff
@@ -3137,6 +3247,9 @@ importers:
       '@piggles/mascot':
         specifier: workspace:*
         version: link:../../packages/mascot
+      '@piggles/ui':
+        specifier: workspace:*
+        version: link:../../packages/ui
       '@sparx/api-client':
         specifier: workspace:*
         version: link:../../../packages/api-client
@@ -3152,9 +3265,6 @@ importers:
       '@sparx/automation-schemas':
         specifier: workspace:*
         version: link:../../../packages/automation-schemas
-      '@sparx/brand':
-        specifier: workspace:*
-        version: link:../../../packages/brand
       '@sparx/builder-schemas':
         specifier: workspace:*
         version: link:../../../packages/builder-schemas
@@ -3194,9 +3304,9 @@ importers:
       '@sparx/story-schemas':
         specifier: workspace:*
         version: link:../../../packages/story-schemas
-      '@sparx/ui':
+      '@wizeworks/silica-corrections':
         specifier: workspace:*
-        version: link:../../../packages/ui
+        version: link:../../../packages/silica-corrections
       '@wizeworks/silicaui':
         specifier: 'catalog:'
         version: 0.52.0(tailwindcss@4.3.0)
@@ -3215,24 +3325,21 @@ importers:
       '@wizeworks/silicaui-react':
         specifier: 'catalog:'
         version: 0.52.0(@types/react@19.2.15)(@wizeworks/silicaui@0.52.0(tailwindcss@4.3.0))(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
+      '@wizeworks/studio':
+        specifier: workspace:*
+        version: link:../../../packages/studio
       better-auth:
         specifier: ^1.6.11
         version: 1.6.11(@opentelemetry/api@1.9.1)(@prisma/client@6.19.3(prisma@6.19.3(typescript@6.0.3))(typescript@6.0.3))(next@16.2.6(@opentelemetry/api@1.9.1)(@playwright/test@1.60.0)(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(pg@8.21.0)(prisma@6.19.3(typescript@6.0.3))(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(vitest@4.1.7)
       dockview:
         specifier: ^4.9.0
         version: 4.13.1(react@19.2.6)
-      driver.js:
-        specifier: ^1.4.0
-        version: 1.4.0
       geist:
         specifier: ^1.3.1
         version: 1.7.1(next@16.2.6(@opentelemetry/api@1.9.1)(@playwright/test@1.60.0)(react-dom@19.2.6(react@19.2.6))(react@19.2.6))
       jose:
         specifier: ^5.9.6
         version: 5.10.0
-      lucide-react:
-        specifier: ^0.577.0
-        version: 0.577.0(react@19.2.6)
       next:
         specifier: ^16.2.6
         version: 16.2.6(@opentelemetry/api@1.9.1)(@playwright/test@1.60.0)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
@@ -3313,12 +3420,12 @@ importers:
 
   piggles/packages/config:
     dependencies:
+      '@fortawesome/pro-solid-svg-icons':
+        specifier: ^7.3.1
+        version: 7.3.1
       '@piggles/brand':
         specifier: workspace:*
         version: link:../brand
-      lucide-react:
-        specifier: ^0.577.0
-        version: 0.577.0(react@19.2.6)
 
   piggles/packages/mascot:
     devDependencies:
@@ -3337,6 +3444,24 @@ importers:
       sharp:
         specifier: ^0.34.5
         version: 0.34.5
+      typescript:
+        specifier: ^6.0.3
+        version: 6.0.3
+
+  piggles/packages/ui:
+    devDependencies:
+      '@types/react':
+        specifier: ^19.0.0
+        version: 19.2.15
+      '@wizeworks/silicaui-react':
+        specifier: 'catalog:'
+        version: 0.52.0(@types/react@19.2.15)(@wizeworks/silicaui@0.52.0(tailwindcss@4.3.0))(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
+      react:
+        specifier: ^19.0.0
+        version: 19.2.6
+      tailwindcss:
+        specifier: ^4.0.0
+        version: 4.3.0
       typescript:
         specifier: ^6.0.3
         version: 6.0.3
@@ -3732,6 +3857,9 @@ importers:
       '@sparx/voice':
         specifier: workspace:*
         version: link:../../packages/voice
+      '@wizeworks/brand-core':
+        specifier: workspace:*
+        version: link:../../packages/brand-core
       '@wizeworks/silicaui-html':
         specifier: 'catalog:'
         version: 0.52.0(@wizeworks/silicaui@0.52.0(tailwindcss@4.3.0))
@@ -4675,6 +4803,14 @@ packages:
 
   '@floating-ui/utils@0.2.11':
     resolution: {integrity: sha512-RiB/yIh78pcIxl6lLMG0CgBXAZ2Y0eVHqMPYugu+9U0AeT6YBeiJpf7lbdJNIugFP5SIjwNRgo4DhR1Qxi26Gg==}
+
+  '@fortawesome/fontawesome-common-types@7.3.1':
+    resolution: {integrity: sha512-k0C0sdHmZtAo6dRDtd1Z/qcpyHbL0CKsjV8seMY/21xGhY5Wsv0XRmiI/xEEH4y2c9b1+jvgNs/3EqhV27yUEA==}
+    engines: {node: '>=6'}
+
+  '@fortawesome/pro-solid-svg-icons@7.3.1':
+    resolution: {integrity: sha512-GIpB5nFXFtHJwMSRfNPOP0HekDAUdMi0RgKmMIebXtB8bcPA+vpLmzEryYhdnEpnMRp099u44ewLZ8IIIy9Psw==}
+    engines: {node: '>=6'}
 
   '@google-cloud/paginator@5.0.2':
     resolution: {integrity: sha512-DJS3s0OVH4zFDB1PzjxAsHqJT6sKVbRwwML0ZBP9PbU7Yebtu/7SWMRzvO2J3nUi9pRNITCfu4LJeooM2w4pjg==}
@@ -10641,6 +10777,12 @@ snapshots:
       react-dom: 19.2.6(react@19.2.6)
 
   '@floating-ui/utils@0.2.11': {}
+
+  '@fortawesome/fontawesome-common-types@7.3.1': {}
+
+  '@fortawesome/pro-solid-svg-icons@7.3.1':
+    dependencies:
+      '@fortawesome/fontawesome-common-types': 7.3.1
 
   '@google-cloud/paginator@5.0.2':
     dependencies:

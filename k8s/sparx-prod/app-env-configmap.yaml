@@ -44,6 +44,44 @@ data:
   # names still resolve, in a fixed order, so nothing breaks mid-rollout.
   SPARX_APP_URL: https://app.sparx.works
   NEXT_PUBLIC_APP_URL: https://app.sparx.works
+
+  # Piggles' equivalents. `appOrigin(brand)` derives the variable name from the
+  # tenant's `platform_brand`, so a second brand is configuration rather than a
+  # code change — and without these, every link the platform built for a Piggles
+  # tenant pointed at app.sparx.works. An unconfigured origin now THROWS in
+  # production rather than guessing, so a missing line fails the rollout instead
+  # of quietly mailing somebody another company's URL.
+  #
+  # Two, not one: mypiggles.com has no sign-in page and never will, so anything
+  # an unauthenticated person clicks — a team invitation above all — resolves
+  # against the ACCOUNT origin. sparx needs no _ACCOUNT_URL because its
+  # workbench mounts Better Auth and the lookup falls through to the same host.
+  PIGGLES_APP_URL: https://mypiggles.com
+  PIGGLES_ACCOUNT_URL: https://getpiggles.com
+
+  # Who the platform speaks AS, per brand (@wizeworks/brand-core). Shared code —
+  # an email worker draining one queue for both brands — cannot import either
+  # brand's package, so the identity arrives as configuration keyed by
+  # `tenants.platform_brand`.
+  #
+  # `*_BRAND_NAME` is the case-sensitive product name and is not derivable:
+  # sparx is lowercase on purpose, Piggles is capitalised on purpose. It is the
+  # wordmark on every platform email to a tenant with no branding of its own —
+  # which is most of them early on, and all of which said "sparx" until
+  # 2026-08-16.
+  #
+  # `*_SUPPORT_NAME` defaults to "<name> Support" and only needs setting to say
+  # something else.
+  SPARX_BRAND_NAME: sparx
+  PIGGLES_BRAND_NAME: Piggles
+
+  # CONFIRM BEFORE RELYING ON IT. This is the reply-to on a support answer, so a
+  # domain that does not accept mail silently bounces a customer's reply. If it
+  # is not live yet, DELETE the line — brand-core treats an unset address as
+  # "this brand has published none" and omits the reply-to entirely, which is the
+  # honest outcome. Do not substitute a guess.
+  PIGGLES_SUPPORT_EMAIL: support@meetpiggles.com
+
   NEXT_PUBLIC_API_URL: https://api.sparx.works
   NEXT_PUBLIC_MARKETING_URL: https://sparx.works
   # Staff app → api-rest in-cluster URL. Avoids going out through Caddy.

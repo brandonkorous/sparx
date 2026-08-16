@@ -11,7 +11,7 @@ import crypto from 'node:crypto';
 import { withTenant } from '@sparx/db';
 
 import { createMember } from '../../src/members.js';
-import { setRate } from '../../src/rates.js';
+import { deleteRate, listRates, setRate } from '../../src/rates.js';
 import { attributeSale, listCommissions } from '../../src/commissions.js';
 import { commissionForOrder } from '../../src/commission-calc.js';
 import { createTestTenant, day, dropTestTenant, type TestTenant } from '../helpers.js';
@@ -27,7 +27,7 @@ afterEach(async () => {
 });
 
 /** Somebody paid on commission, at `percent`, from the start of the year. */
-async function hireOnCommission(percent = 7.5) {
+async function hireOnCommission(percent = 7.5, from = '2026-01-01') {
   const member = await createMember(ctx.tenantId, {
     firstName: 'Rae',
     lastName: 'Villanueva',
@@ -38,7 +38,7 @@ async function hireOnCommission(percent = 7.5) {
     basis: 'commission',
     amountCents: 0,
     commissionPercent: percent,
-    effectiveFrom: day('2026-01-01'),
+    effectiveFrom: day(from),
   });
   return member;
 }
@@ -133,6 +133,70 @@ describe('commission on an order', () => {
 
     expect(await commissionForOrder(ctx.tenantId, order.id)).toMatchObject({
       outcome: 'no-attribution',
+    });
+  });
+
+  it('says the rate STARTED LATER rather than "not on commission"', async () => {
+    // The defect this pins was found by clicking, not by a test: somebody was put
+    // on 7.5% today, an order paid a fortnight ago was credited to them, and the
+    // screen said "they are not on commission — set a commission rate." They
+    // were on commission. Sending an owner to do the thing they have just done
+    // is worse than saying nothing, because they conclude the feature is broken.
+    const member = await hireOnCommission(7.5, '2026-06-01');
+    const order = await placeOrder({ subtotal: '400.00', total: '440.00', paid: true });
+    await attributeSale(ctx.tenantId, {
+      staffMemberId: member.id,
+      sourceType: 'order',
+      sourceId: order.id,
+    });
+
+    // The order was paid 2026-03-02 — before the rate begins.
+    expect(await commissionForOrder(ctx.tenantId, order.id)).toMatchObject({
+      outcome: 'rate-not-in-force',
+      staffMemberId: member.id,
+      rateStartsOn: '2026-06-01',
+      earnedOn: '2026-03-02',
+    });
+    expect(await listCommissions(ctx.tenantId, {})).toHaveLength(0);
+  });
+
+  it('pays it once the rate is re-added from an earlier date', async () => {
+    // The other half, and the reason the message names the remedy so precisely.
+    // The obvious advice — "backdate the rate" — is REFUSED: pay rates may not
+    // overlap, so `setRate` with an earlier start throws
+    // `OverlappingPayRateError`. Removing the rate and adding it again is the
+    // path that actually works, and telling somebody to do the other thing sends
+    // them into a wall.
+    const member = await hireOnCommission(7.5, '2026-06-01');
+    const order = await placeOrder({ subtotal: '400.00', total: '440.00', paid: true });
+    await attributeSale(ctx.tenantId, {
+      staffMemberId: member.id,
+      sourceType: 'order',
+      sourceId: order.id,
+    });
+    await commissionForOrder(ctx.tenantId, order.id);
+
+    await expect(
+      setRate(ctx.tenantId, member.id, {
+        basis: 'commission',
+        amountCents: 0,
+        commissionPercent: 7.5,
+        effectiveFrom: day('2026-01-01'),
+      })
+    ).rejects.toThrow(/already has a pay rate/);
+
+    const [existing] = await listRates(ctx.tenantId, member.id);
+    await deleteRate(ctx.tenantId, existing!.id);
+    await setRate(ctx.tenantId, member.id, {
+      basis: 'commission',
+      amountCents: 0,
+      commissionPercent: 7.5,
+      effectiveFrom: day('2026-01-01'),
+    });
+
+    expect(await commissionForOrder(ctx.tenantId, order.id)).toMatchObject({
+      outcome: 'recorded',
+      amountCents: 3_000,
     });
   });
 

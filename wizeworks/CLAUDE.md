@@ -144,7 +144,7 @@ both:
 
 - **Hostname → brand**, for anything serving a request. The console and
   marketing sites resolve from the host.
-- **`Tenant.brand` → brand**, for everything with no request context: the
+- **`Tenant.platformBrand` → brand**, for everything with no request context: the
   `email.send` worker consuming off Pub/Sub, OG image routes, invoices,
   receipts, and the Stripe webhook. `Tenant` is the non-RLS dispatch row, so a
   webhook can resolve brand before any tenant context is set — the same reason
@@ -183,8 +183,12 @@ leaving them in a file that will read as sparx's would have been misleading.
   tenant model _is_ the Better Auth `organization`). Two instances: staff
   (Layer 1, globally-unique email) and shopper (Layer 2, per-`(tenant,email)`).
   Use the org-membership primitives rather than building a parallel system.
-  **API keys are a custom implementation** (`sk_live_*`, SHA-256) and **MFA is
-  not yet implemented**.
+  **API keys are a custom implementation** (`sk_live_*`, SHA-256). **MFA IS
+  implemented** — the `twoFactor` plugin is registered on both server and client,
+  backed by the `TwoFactor` model, with TOTP plus encrypted backup codes. Both
+  brands handle the challenge: sparx in workbench's `AuthWrapper`, Piggles in the
+  account app's sign-in form. (This line read "not yet implemented"; that was
+  copied from the root file before it was corrected, and it was already false.)
 - **Modules are feature-flagged, not separately deployed.** A disabled module
   returns 404 with a clear error, runs no workers, stores no rows. Activation is
   event-driven via `module.activated`.

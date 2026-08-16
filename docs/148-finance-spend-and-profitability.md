@@ -2,7 +2,7 @@
 
 Version: 0.9 (run)
 Author: Brandon Korous
-Last Updated: 2026-08-14
+Last Updated: 2026-08-16
 
 > Status: **built end to end.** Schema + migration, [`@sparx/finance`](../packages/finance/)
 > (85 pure-unit tests plus a DB-backed integration suite), the whole `/v1/finance/*`
@@ -727,7 +727,7 @@ The rollup recomputes a **two-day** trailing window by default, not one: today's
 figures are still moving, and a job that only ever recomputed "today" would leave
 yesterday frozen at whatever it was when the job last ran. `?days=` widens it.
 
-### Run end to end (2026-08-14)
+### Run end to end (2026-08-16)
 
 Both endpoints had been written, reviewed and never called. They were fired
 against the local database through the real router, with the dev transport
@@ -751,4 +751,4 @@ either side covers alone.
 Two zeros in that run are honest rather than broken, and both were checked:
 `generated=0` because no tenant has a repeating cost whose next run has come due,
 and `days=0` because `recomputeDay` writes a rollup row only for a day with
-activity — the sweep covered 13–14 August, which are quiet.
+activity — and the two days the sweep covered are quiet ones.

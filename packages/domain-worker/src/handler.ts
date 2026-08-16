@@ -103,9 +103,13 @@ export async function handleDomainPurchased(
   try {
     const tenant = await prisma.tenant.findUnique({
       where: { id: event.tenantId },
-      select: { email: true },
+      // `platformBrand` rides this read: a worker has no request and therefore
+      // no hostname, so the row is the only place the brand can come from — and
+      // without it this link opens the other brand's console.
+      select: { email: true, platformBrand: true },
     });
     if (tenant?.email) {
+      const brand = tenant.platformBrand;
       await publishEvent(
         publisher,
         'email.send',
@@ -117,7 +121,8 @@ export async function handleDomainPurchased(
           props: {
             domainName: domain,
             siteUrl: `https://${domain}`,
-            dashboardUrl: appLink('platform.settings.domains') ?? appOrigin(),
+            dashboardUrl:
+              appLink('platform.settings.domains', undefined, { brand }) ?? appOrigin(brand),
           },
         },
         pubLogger

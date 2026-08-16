@@ -11,18 +11,31 @@
 //   DELETE /v1/builder/layouts/:id          → remove (refused for the live layout)
 //   POST   /v1/builder/layouts/:id/publish  → snapshot draft → published
 //   POST   /v1/builder/layouts/:id/activate → make this published layout live
+//   GET    /v1/builder/layouts/silica       → the ACTIVE layout's silica chrome, on
+//                                              its own — the layout builder's load
+//   PUT    /v1/builder/layouts/silica       → replace the ACTIVE layout's silica
+//                                              chrome, leaving pages, theme and
+//                                              symbols untouched
+//   POST   /v1/builder/layouts/silica/publish
+//                                            → put the chrome live on its own,
+//                                              leaving every page draft where it is
 //
 // Bodies are validated by the service-layer Zod schemas (the established route ↔
 // service boundary), so api-rest keeps no @sparx/builder-schemas dependency.
 
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
-import { layoutService } from '@sparx/builder';
+import { layoutService, siteService } from '@sparx/builder';
 import { ok } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
-import { requireBuilderModule, toBuilderContext } from '../../../lib/builder-context.js';
+import {
+  requireBuilderModule,
+  siteChromeOptions,
+  toBuilderContext,
+} from '../../../lib/builder-context.js';
 
 const IdParam = z.object({ id: z.string().uuid() });
+const SilicaBody = z.object({ root: z.unknown() });
 
 const builderLayoutRoutes: FastifyPluginAsync = (app) => {
   app.get('/v1/builder/layouts', async (request) => {
@@ -48,6 +61,55 @@ const builderLayoutRoutes: FastifyPluginAsync = (app) => {
     const layouts = await layoutService.listOrSeed(await toBuilderContext(request));
     const active = layouts.find((l) => l.isActive) ?? layouts[0] ?? null;
     return ok(active);
+  });
+
+  /**
+   * The ACTIVE layout's silica chrome, alone — the layout builder's load.
+   *
+   * `GET /v1/builder/site` answers this too, but only alongside every page body and
+   * the whole symbol library. This reads one row, so opening the layout builder costs
+   * the same on a three-page site and a three-hundred-page one.
+   *
+   * The module flags shape the STARTER chrome a property that has never been authored
+   * falls back to — a content-only tenant must not open onto a Shop link.
+   */
+  app.get('/v1/builder/layouts/silica', async (request) => {
+    requireRole(request, 'viewer');
+    await requireBuilderModule(request);
+    const ctx = await toBuilderContext(request);
+    const frame = await siteService.loadFrame(ctx, await siteChromeOptions(ctx.tenantId));
+    return ok(frame);
+  });
+
+  /**
+   * Replace the ACTIVE layout's silica chrome — the layout builder's Save.
+   *
+   * Registered before `:id` so the static path is not swallowed by the param.
+   * Site-scoped rather than layout-scoped because Piggles gives a site exactly one
+   * layout; when that stops being true this takes an id like its neighbours.
+   */
+  app.put('/v1/builder/layouts/silica', async (request) => {
+    requireRole(request, 'editor');
+    await requireBuilderModule(request);
+    const body = SilicaBody.parse(request.body);
+    const ctx = await toBuilderContext(request);
+    const change = await siteService.setFrame(ctx, { root: body.root as never });
+    return ok({ written: change !== null, reloadHints: change?.reloadHints ?? [] });
+  });
+
+  /**
+   * Put the chrome live on its own.
+   *
+   * A typo in the header should not oblige an author to ship every half-built page
+   * with the fix, which is what the whole-site publish makes them do. The release it
+   * seals carries the previous release's manifest forward with this layout swapped
+   * in, so rollback still restores a complete site.
+   */
+  app.post('/v1/builder/layouts/silica/publish', async (request) => {
+    requireRole(request, 'editor');
+    await requireBuilderModule(request);
+    const published = await siteService.publishFrame(await toBuilderContext(request));
+    return ok(published);
   });
 
   app.get('/v1/builder/layouts/:id', async (request) => {

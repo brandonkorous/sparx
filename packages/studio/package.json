@@ -1,0 +1,45 @@
+{
+  "name": "@wizeworks/studio",
+  "version": "0.0.0",
+  "private": true,
+  "description": "The editing engine behind Piggles' theme / layout / page / component / email builders. Holds documents in memory as the STORE shapes them — a theme, a layout and a page are three documents with three lifecycles, not one site blob — applies semantic ops with their own inverses for per-document undo, and resolves the theme -> layout -> page chain for a canvas. Framework-neutral at the root; the pane-ready React builders live at ./react. Reuses @wizeworks/silicaui-html for the node schema, the projection and the theme math, and never forks it.",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    },
+    "./react": {
+      "types": "./src/react/index.ts",
+      "default": "./src/react/index.ts"
+    }
+  },
+  "files": [
+    "src"
+  ],
+  "scripts": {
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run --passWithNoTests",
+    "test:watch": "vitest",
+    "clean": "rm -rf .turbo dist *.tsbuildinfo"
+  },
+  "dependencies": {
+    "@sparx/silica-catalog": "workspace:*",
+    "@sparx/site-themes": "workspace:*",
+    "@wizeworks/silicaui-builder": "catalog:",
+    "@wizeworks/silicaui-html": "catalog:",
+    "@wizeworks/silicaui-react": "catalog:"
+  },
+  "peerDependencies": {
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^25.9.1",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.7"
+  }
+}
