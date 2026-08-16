@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { cn } from '../../utils/cn';
+import { cn } from '@wizeworks/silica-corrections';
 import { topProgress } from './top-progress-controller';
 import { installNavigationListeners, resolveRouteModule } from './top-progress-nav';
 

@@ -35,7 +35,6 @@ import {
   faBuilding,
   faCheck,
   faChevronDown,
-  faCircleQuestion,
   faCookie,
   faCopy,
   faCreditCard,
@@ -56,7 +55,6 @@ import { deferTick } from '@/lib/defer';
 import { useWorkbench } from '@/lib/workbench/context';
 import { NotificationCenter } from '@/components/notification-center';
 import { FeedbackButton } from '@/components/feedback/button';
-import { useFeedback } from '@/components/feedback/provider';
 import { useViewer } from '@/lib/api/shell-data';
 import { switchBusiness, useBusinesses } from '@/lib/console/businesses';
 import type { Theme } from '@/lib/theme';
@@ -137,7 +135,6 @@ export function Topbar({
   const { data: tenant } = useTenant();
   const { data: sites } = useSites();
   const { data: viewer } = useViewer();
-  const feedback = useFeedback();
 
   const activeSite = sites?.find((site) => site.id === siteKey) ?? null;
 

@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { cva, type VariantProps } from '../../utils/cva';
-import { cn } from '../../utils/cn';
+import { cn } from '@wizeworks/silica-corrections';
 
 // Heading + Text are not in doc 23 §9's inventory, but they're necessary to
 // keep feature pages free of raw Tailwind typography classes. Adding them

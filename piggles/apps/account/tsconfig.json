@@ -9,6 +9,17 @@
       "@/*": ["./*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+  // `app/.well-known/**` is named EXPLICITLY because `**/*.ts` will not reach it:
+  // TypeScript's include globs skip any directory whose name starts with a dot,
+  // and the two OAuth discovery routes live in one by RFC. Left to the wildcard
+  // they are simply absent from the project — which types nothing, checks
+  // nothing, and surfaces only as typed-lint reporting a parsing error.
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    "app/.well-known/**/*.ts",
+    ".next/types/**/*.ts"
+  ],
   "exclude": ["node_modules", ".next", ".turbo"]
 }

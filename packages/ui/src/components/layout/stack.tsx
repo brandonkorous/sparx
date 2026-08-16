@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { cn } from '../../utils/cn';
+import { cn } from '@wizeworks/silica-corrections';
 
 type Gap = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 8 | 10 | 12;
 type Align = 'start' | 'center' | 'end' | 'stretch';

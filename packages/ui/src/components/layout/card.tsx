@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { cva, type VariantProps } from '../../utils/cva';
-import { cn } from '../../utils/cn';
+import { cn } from '@wizeworks/silica-corrections';
 import { pluginColor, type ColorKey } from '../_recipes/variants';
 
 const cardVariants = cva('border-base-300 bg-base-100 rounded-lg border', {

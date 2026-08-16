@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Loader2 } from 'lucide-react';
 import { cva, type VariantProps } from '../../utils/cva';
-import { cn } from '../../utils/cn';
+import { cn } from '@wizeworks/silica-corrections';
 
 const spinnerVariants = cva('animate-spin', {
   variants: {

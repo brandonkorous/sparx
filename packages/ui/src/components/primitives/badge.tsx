@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { cn } from '../../utils/cn';
+import { cn } from '@wizeworks/silica-corrections';
 import { type ColorKey } from '../_recipes/variants';
 
 // Badge — status pill on the shared color × variant × size axes (docs/35),

@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { cva, type VariantProps } from '../../utils/cva';
-import { cn } from '../../utils/cn';
+import { cn } from '@wizeworks/silica-corrections';
 
 const textVariants = cva('', {
   variants: {

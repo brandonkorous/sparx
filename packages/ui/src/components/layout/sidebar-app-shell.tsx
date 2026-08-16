@@ -5,7 +5,7 @@ import { ChevronsLeft, ChevronsRight, Menu, PanelLeftClose, PanelLeftOpen } from
 import { Drawer, DrawerContent, DrawerTitle } from '@wizeworks/silicaui-react';
 import { Button } from '../primitives/button';
 import { useMediaQuery } from '../../hooks/use-media-query';
-import { cn } from '../../utils/cn';
+import { cn } from '@wizeworks/silica-corrections';
 
 // SidebarAppShell is the canonical authenticated-app layout: pinned sidebar +
 // top header + scrolling content. It owns the responsive concerns that
