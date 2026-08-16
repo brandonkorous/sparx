@@ -1,12 +1,9 @@
-// The Piggles app registry — the single source of truth for what apps exist,
-// what they are called, which group they belong to, and which platform modules
-// each one fronts.
+// The Piggles app registry — what apps exist, what they are called, which group
+// they belong to, and which platform modules each one fronts.
 //
-// This is a PRODUCT ADAPTER, not a feature gate. Every app here is entitled on
-// the standard subscription; `defaultEnabled` is a workspace preference that
-// controls what the rail shows on day one, nothing more. Piggles has no module
-// pricing, so nothing in this file may ever be consulted to answer "did they pay
-// for this" — see piggles/CLAUDE.md RULE #2.
+// A PRODUCT ADAPTER, not a feature gate: every app here is included in the
+// standard subscription, and `defaultEnabled` only decides what the rail shows on
+// day one (piggles/CLAUDE.md RULE #2). Derived lookups live in `app-index.ts`.
 
 import type { PigglesGroup } from '@piggles/brand';
 
@@ -20,9 +17,8 @@ export interface PigglesAppDef {
   id: string;
   /** The customer-facing name. */
   label: string;
-  /** One line on what the app is for, in the customer's language. Used by the
-   *  launcher, onboarding and search, so it must read as a benefit rather than a
-   *  category. */
+  /** One line on what the app is for, in the customer's language — a benefit
+   *  rather than a category. Used by the launcher, onboarding and search. */
   purpose: string;
   /** Which of the six color groups this app wears. */
   group: PigglesGroup;
@@ -32,45 +28,44 @@ export interface PigglesAppDef {
    *  default, NOT an entitlement: everything is included in the subscription and
    *  everything stays one click from discoverable. */
   defaultEnabled: boolean;
-  /** The platform modules this app fronts. One Piggles app routinely covers
-   *  several — "Sell" is commerce + B2B + dropship — which is most of how the
-   *  product feels smaller than it is without being smaller than it is. */
+  /**
+   * The NAV vocabulary — the `data-module` identities whose surfaces gather
+   * under this app. One Piggles app routinely covers several: "Sell" is
+   * commerce + B2B + dropship.
+   *
+   * This is NOT the activation vocabulary. It includes identities the platform
+   * has no flag for (`platform`, `seo`, `storefront`), so it must never be sent
+   * to `PUT /v1/tenant/modules` unfiltered — see `useModulesToActivate`.
+   */
   modules: ModuleKey[];
+  /**
+   * What ADDING this app must switch on, when that differs from `modules`.
+   *
+   * Only an app built entirely from `claims` needs it: it fronts no module of
+   * its own, so without this the Add button would write nothing and still
+   * report success.
+   */
+  activates?: ModuleKey[];
   /**
    * Individual SURFACES this app takes over from whichever module owns them.
    *
-   * ── WHY A MODULE IS NOT ALWAYS THE RIGHT UNIT ─────────────────────────────
-   *
-   * `modules` groups whole modules under one app, which covers almost every
-   * case. It cannot express a SPLIT — one platform module whose surfaces belong
-   * under two different Piggles apps — and Partners is exactly that.
-   *
-   * The platform keeps suppliers, purchase orders, receiving, landed cost and
-   * supplier performance inside `inventory`, beside stock levels and shelves,
-   * because to sparx it is all one module. Piggles advertises them as a separate
-   * app: meetpiggles.com/apps/partners is titled "The suppliers and people you
-   * work alongside" and promises purchase orders, what they really cost and how
-   * long they actually take. Without this field that app could only front the
-   * platform's `partner` MODULE — which is sparx's reseller programme, a
-   * completely different product — so a Piggles customer clicking Partners
-   * expecting their suppliers got referrals, commissions and bootcamps.
+   * `modules` cannot express a SPLIT — one platform module whose surfaces belong
+   * under two Piggles apps — and Partners is exactly that. The platform keeps
+   * suppliers, purchase orders and receiving inside `inventory`; Piggles
+   * advertises them as their own app.
    *
    * A surface may be claimed by at most one app; the claiming app wins and the
-   * owning module's panel no longer lists it. Keys are verified against the
-   * surface registry — a key that does not resolve claims nothing, silently.
+   * owning module's panel no longer lists it. A key that does not resolve claims
+   * nothing, silently.
    */
   claims?: string[];
 }
 
 // ── NAV ORDER ────────────────────────────────────────────────────────────────
-// Ordered so each colour group is CONTIGUOUS. config/apps.yaml originally put
-// Content (100) and Get Found (110) far below My Site (20), which split the Web
-// group across the rail — and a group hue only does its job when the things
-// sharing it sit together. Nothing else moved; the two were lifted to sit beside
-// My Site.
-//
-// The sequence tells a story a business owner already has: your presence → what
-// you sell → the people → the money → running the place.
+// Ordered so each colour group is CONTIGUOUS — a group hue only does its job
+// when the things sharing it sit together. The sequence tells a story a business
+// owner already has: your presence → what you sell → the people → the money →
+// running the place.
 
 export const APPS: readonly PigglesAppDef[] = [
   {
@@ -80,6 +75,7 @@ export const APPS: readonly PigglesAppDef[] = [
     group: 'home',
     navOrder: 10,
     defaultEnabled: true,
+    // `platform` is the console itself — always on, never activatable.
     modules: ['platform'],
   },
   {
@@ -89,6 +85,7 @@ export const APPS: readonly PigglesAppDef[] = [
     group: 'web',
     navOrder: 20,
     defaultEnabled: true,
+    // `storefront` is a hue identity only; `builder` is the module behind it.
     modules: ['builder', 'storefront'],
   },
   {
@@ -107,6 +104,7 @@ export const APPS: readonly PigglesAppDef[] = [
     group: 'web',
     navOrder: 40,
     defaultEnabled: true,
+    // `seo` rides along with the site and has no flag of its own.
     modules: ['seo', 'social'],
   },
   {
@@ -131,23 +129,18 @@ export const APPS: readonly PigglesAppDef[] = [
     id: 'partners',
     label: 'Partners',
     purpose: 'Your suppliers, what they charge and what you have on order',
-    // MOVED from `run` to `sell`, with the app itself. Partners is about buying
-    // the stock you sell, so it belongs beside Sell and Stock — and a colour
-    // group only does its job when the things sharing it sit together
-    // (DESIGN.md §2). It sat in `run` while it fronted sparx's reseller
-    // programme, which is a different app that Piggles does not have.
+    // Beside Sell and Stock because Partners is about buying the stock you sell.
+    // It sat in `run` while it fronted sparx's reseller programme, which is a
+    // different app that Piggles does not have.
     group: 'sell',
     navOrder: 70,
     defaultEnabled: false,
-    // Built ENTIRELY from claims, with no module of its own — see `claims` on
-    // the interface for why a module is the wrong unit here.
-    //
-    // `dropship` is not listed either, deliberately. It splits the same way
-    // `inventory` does: its supplier screens belong here, and "Shipped by a
-    // supplier" is a panel on a PRODUCT and belongs in Sell beside the product
-    // it is about. Claiming the four supplier screens leaves that one where it
-    // makes sense.
+    // Built ENTIRELY from claims. `dropship` is not listed either: its supplier
+    // screens belong here, but "Shipped by a supplier" is a panel on a PRODUCT
+    // and stays in Sell beside the product it is about.
     modules: [],
+    // ...which is why adding it has to name the modules its claims come from.
+    activates: ['inventory', 'dropship'],
     claims: [
       // Who supplies what, and on what terms.
       'dropship.suppliers.list',
@@ -232,6 +225,7 @@ export const APPS: readonly PigglesAppDef[] = [
     group: 'run',
     navOrder: 140,
     defaultEnabled: false,
+    // `automations` is a hue identity; the screens ride along with the platform.
     modules: ['automations'],
   },
   {
@@ -244,54 +238,3 @@ export const APPS: readonly PigglesAppDef[] = [
     modules: ['ai'],
   },
 ] as const;
-
-export type PigglesAppId = (typeof APPS)[number]['id'];
-
-/** Lookup by id. */
-export const APP_BY_ID: Record<string, PigglesAppDef> = Object.fromEntries(
-  APPS.map((a) => [a.id, a])
-);
-
-/** Which group an app belongs to. The canonical statement of this mapping —
- *  `@piggles/brand`'s theme.css restates it in CSS only because a stylesheet
- *  cannot import TypeScript. */
-export const APP_GROUP: Record<string, PigglesGroup> = Object.fromEntries(
-  APPS.map((a) => [a.id, a.group])
-);
-
-/** Platform module key → the Piggles app that fronts it.
- *
- *  This is the bridge for SHARED surfaces. They are platform code that speaks
- *  sparx's vocabulary (`commerce`, `crm`, `invoicing`); this answers "what does
- *  Piggles call the place this belongs". Derived from APPS rather than hand-kept,
- *  so a module can never end up mapped in one direction and not the other. */
-export const MODULE_TO_APP: Record<ModuleKey, string> = Object.fromEntries(
-  APPS.flatMap((a) => a.modules.map((m) => [m, a.id]))
-);
-
-/** Platform module key → colour group, for anything reaching for a hue directly.
- *  Mirrors the `[data-module=…]` bridge in `@piggles/brand`'s theme.css. */
-export const MODULE_GROUP: Record<ModuleKey, PigglesGroup> = Object.fromEntries(
-  APPS.flatMap((a) => a.modules.map((m) => [m, a.group]))
-);
-
-/** The apps in a group, in nav order. */
-export const appsInGroup = (group: PigglesGroup): PigglesAppDef[] =>
-  APPS.filter((a) => a.group === group).sort((x, y) => x.navOrder - y.navOrder);
-
-/** The rail a brand-new business sees. Onboarding narrows this further by asking
- *  what the business actually does — it HIDES, it never gates, and every app
- *  stays reachable from the launcher regardless. */
-export const defaultRail = (): PigglesAppDef[] =>
-  APPS.filter((a) => a.defaultEnabled).sort((x, y) => x.navOrder - y.navOrder);
-
-// There is deliberately NO `modulesForGroups` here any more.
-//
-// It mapped onboarding's "what do you do?" answer to the modules to activate,
-// and that mapping was the bug: a module left off returns 404, runs no workers
-// and stores no rows, so the groups somebody did not tick became locked doors on
-// a screen promising "everything is included either way". Onboarding now
-// activates ALL_MODULES for every business (RULE #2) and the groups decide only
-// what starts on the rail. Reintroducing a groups→modules function is
-// reintroducing the gate — if you need one, you are about to charge for
-// something Piggles does not charge for.

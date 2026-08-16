@@ -18,16 +18,41 @@ renders — the surfaces, the dock plumbing, the controller, the registry, the
 API routes. It imports nothing from `apps/workbench`, there is no `@workbench/*`
 alias, and no path in `piggles/` climbs out into `apps/`.
 
-| Layer                                                 | Owner           | Piggles may                              |
-| ----------------------------------------------------- | --------------- | ---------------------------------------- |
-| `packages/*`, `services/*`, `packages/db`             | shared platform | import — these are libraries, not an app |
-| `apps/**` (sparx web, site, market, admin, workbench) | sparx           | **nothing. Never read, never edit.**     |
-| `piggles/**`                                          | Piggles         | own outright                             |
+| Layer                                                 | Owner           | Piggles may                                                 |
+| ----------------------------------------------------- | --------------- | ----------------------------------------------------------- |
+| `packages/*`, `services/*`, `packages/db`             | shared platform | import — libraries, not an app. **But see the scope note.** |
+| `apps/**` (sparx web, site, market, admin, workbench) | sparx           | **nothing. Never read, never edit.**                        |
+| `piggles/**`                                          | Piggles         | own outright                                                |
 
 Both brands run on **one database and one tenant pool**. A tenant belongs to the
-brand it signed up under, recorded on `Tenant.brand`, and never changes brands.
-Sharing a DATABASE is not sharing an application: the database is a service both
-speak to, and either app can be deleted without disturbing it.
+brand it signed up under, recorded on **`Tenant.platformBrand`** (a `String`,
+defaulting to `"sparx"`), and never changes brands. It is deliberately NOT called
+`brand` — that name is already the model's relation to `TenantBrand`, which is
+the tenant's OWN branding and a different thing entirely. Sharing a DATABASE is
+not sharing an application: the database is a service both speak to, and either
+app can be deleted without disturbing it.
+
+### The `@sparx/*` scope is retiring
+
+The shared packages are named `@sparx/*` because sparx was the only product when
+they were written. They are platform code and always were — a Prisma client, a
+query wrapper, a schema set — but a package Piggles cannot boot without, wearing
+another brand's name, is not something you can point at and call independent.
+
+They are being renamed to `@wizeworks/*` and moved to a `wizeworks/` tree; the
+plan, its phases and the running checklist are in
+[docs/migration/](docs/migration/). Until that lands:
+
+- **Do not add a new `@sparx/*` dependency from `piggles/`.** The
+  `check:boundaries` script counts them per package against a recorded baseline
+  and fails the push if any count rises. Falling is the only permitted direction.
+- **`@sparx/brand` and `@sparx/ui` are OFF LIMITS entirely.** Those two genuinely
+  carry sparx — its marks, its mascot, its token values — and Piggles has
+  `@piggles/brand`, `@piggles/mascot` and `@piggles/ui` of its own. Both were
+  dropped from the console on 2026-08-16 along with the five places it was
+  rendering sparx's wordmark and mascot.
+- A correction both brands need goes in a **brand-blind** package, never in one
+  brand's. `@wizeworks/silica-corrections` exists for exactly that reason.
 
 ### Why this was not always the rule, and what it cost
 
@@ -82,6 +107,13 @@ capability WizeWorks operates for both brands under two names. That is a product
 decision with a real Piggles-side thing behind it — a domain that resolves, an
 account that exists — and it is Brandon's to make. Absent that, the default is
 exclude.
+
+## RULE #0.5 — Files in `piggles/` requirements
+
+1. **No file shall be more than 250 lines long.** If it is, split it into a `components/` or `lib/` subdirectory.
+2. **No methods shall be more than 50 lines long.** If it is, split it into a helper function or a subcomponent.
+3. **Comments must be short and precise.** If a comment is more than 3 lines long, it is probably explaining a design flaw that should be fixed instead of explained.
+4. **If you touch a file in `piggles/`, you must apply this rule set to it.** If you are editing a file that is already too long, you must split it into smaller files. If you are adding a new file, you must make sure it is not too long.
 
 ## RULE #1 — Piggles is not a smaller product
 
@@ -215,19 +247,30 @@ and the relevant `docs/` node before non-trivial work. Note
 ## Which root rules still apply
 
 **Still binding** — root RULE #1 (silicaui first, Tailwind second; feature code
-chooses, never paints), RULE #2 (no eyebrows), RULE #4 (neutral must be earned),
+chooses, never paints), RULE #2 (no eyebrows), RULE #4 (`neutral` needs Brandon's
+approval, every time),
 the no-gradients rule, the 16px body floor, the no-inline-`style` rule, explicit-
 save editors, destructive actions behind `useConfirm`, and every architectural
 convention in the root file (RLS, Better Auth, Pub/Sub events, the release
 pipeline, migration monotonicity).
 
-**Superseded for Piggles** — the visual restraint clauses. Roundness, warmth, the
-mascot, and silica's `--depth: 1` elevation are Piggles' identity, not drift. The
-specifics are in [DESIGN.md](DESIGN.md); do not import sparx's flat, cool, sharp-
-edged defaults into a Piggles surface just because they are the repo's habit. Note
-what that does and does not license: `--depth: 1` is one token that turns on
-silica's own Card and Button elevation. A `shadow-*` utility in feature code is
-still a re-skin and still banned.
+**Superseded for Piggles** — the visual restraint clauses, and **the root
+no-shadows rule most of all.** Roundness, warmth, the mascot and elevation are
+Piggles' identity, not drift. Do not import sparx's flat, cool, sharp-edged
+defaults into a Piggles surface just because they are the repo's habit.
+
+**Shadows are a Piggles device, and `shadow-*` in feature code is sanctioned.**
+The palette is soft and warm, so a hairline border separates two surfaces far
+more weakly here than it does on sparx's cool greys — elevation is what does that
+work instead. Lift a panel, a card, a band, a dock window: reach for Tailwind's
+`shadow-*` scale, which is the shared ladder everything else on the page is
+already using.
+
+The one thing that is still wrong is **stacking**. `--depth: 1` already gives
+silica's own Card, Button, Dialog and Popover a resting shadow, so adding
+`shadow-*` on top of one of those doubles it up and reads as a rendering fault
+rather than as depth. Silica paints it → leave it alone. Piggles owns it → lift
+it yourself. Detail and the worked examples: [DESIGN.md](DESIGN.md) §4 and §8.
 
 ## Environment
 

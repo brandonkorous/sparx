@@ -100,6 +100,28 @@ export const MODULE_TERMS = {
 
 export type ModuleTermKey = keyof typeof MODULE_TERMS;
 
+/**
+ * What to call each app GROUP where one has to be named.
+ *
+ * The group keys are colour families — `web`, `run` — and a colour family is not
+ * a place anybody goes. These are the same rule as the rest of the lexicon: name
+ * it by what you are doing there.
+ *
+ * `home` has no entry on purpose. It holds one app, and a heading over a single
+ * row is an eyebrow (root CLAUDE.md RULE #2) — a one-app group renders bare.
+ */
+export const GROUP_TERMS = {
+  web: 'Your website',
+  sell: 'Selling',
+  people: 'Who you deal with',
+  money: 'Getting paid',
+  run: 'Running the place',
+} as const satisfies Record<string, string>;
+
+/** What Piggles calls a group, or `undefined` for one that must render bare. */
+export const groupTerm = (group: string): string | undefined =>
+  (GROUP_TERMS as Record<string, string | undefined>)[group];
+
 /** What Piggles calls a module, or `undefined` for one it has no name for —
  *  which lets a caller fall through to the platform's own label rather than
  *  rendering a blank where a new module appeared. */

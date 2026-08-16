@@ -1,0 +1,1127 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Piggles — pain-first home page mockup</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Nunito:wght@700;800;900&display=swap" rel="stylesheet" />
+
+<!--
+  ══════════════════════════════════════════════════════════════════════════════
+  meetpiggles.com — HOME, REBUILT AROUND THE PAIN
+  ══════════════════════════════════════════════════════════════════════════════
+
+  This is a MOCKUP, not shipped code. Tokens are declared as CSS custom
+  properties with the same names @piggles/brand/theme.css uses, and every value
+  is copied from it — so porting to apps/web is deleting this <style> block and
+  swapping class names for silicaui components. No value here was invented.
+
+  ── WHAT CHANGED, AND WHY ────────────────────────────────────────────────────
+
+  The live page opens with a capability ("Your whole business. One screen.") and
+  proves it beautifully. A capability is an answer, and the reader has not asked
+  the question yet. Every section that follows is therefore about the product.
+
+  This page opens with the reader's Thursday night and does not mention the
+  product until the reader has agreed there is a problem. The shape is
+  Problem → Agitate → False fix → Turn → Solution → Arithmetic → Objections,
+  which is PAS with the two beats SaaS pages usually skip: the false fix (why
+  the reader has already failed to fix this) and the objections (what stops
+  them clicking even once they agree).
+
+  ── WHAT SURVIVED FROM THE LIVE PAGE ─────────────────────────────────────────
+
+  The turn ("You don't have a CRM. You have customers."), the trust section's
+  refusals, the fifteen-app bento, and the closing band. Those are the best
+  things on the site and none of them are the problem.
+
+  ── EVERY CLAIM ON THIS PAGE IS ONE THE PRODUCT ALREADY MAKES ────────────────
+
+  DESIGN.md §10. There is no uptime figure, no logo wall, no customer count, and
+  no "saves you 6 hours a week" — Piggles has not launched and cannot know that.
+  The arithmetic section (§6) is built the honest way round: the reader types
+  their own numbers and we type none, which is both truer and more persuasive
+  than a number they would have to take on faith.
+-->
+
+<style>
+/* ── TOKENS ────────────────────────────────────────────────────────────────────
+   Verbatim from packages/brand/src/theme.css. Light only in this mockup. */
+:root {
+  --color-primary: #ff6f86;          --color-primary-content: #ffffff;
+  --color-secondary: #2d3443;        --color-secondary-content: #ffffff;
+  --color-accent: #ffb3c0;           --color-accent-content: #202631;
+  --color-accent-pale: #ffe9ed;
+  --color-neutral: #52454f;          --color-neutral-content: #ffffff;
+  --color-success: #14804a;          --color-success-content: #ffffff;
+  --color-info: #2563eb;             --color-info-content: #ffffff;
+  --color-warning: #f3b61f;          --color-warning-content: #202631;
+  --color-error: #c93838;            --color-error-content: #ffffff;
+
+  --color-base-100: #ffffff;
+  --color-base-200: #fbf7f8;
+  --color-base-300: #f7f0f2;
+  --color-base-content: #202631;
+  --color-ink-soft: #4b5563;
+
+  --color-group-home: #ff6f86;
+  --color-group-web: #4f46e5;
+  --color-group-sell: #c2410c;
+  --color-group-people: #0e7490;
+  --color-group-money: #4d7c0f;
+  --color-group-run: #7e22ce;
+
+  --radius-selector: 9999px;
+  --radius-field: 12px;
+  --radius-box: 18px;
+  --radius-section: 24px;
+
+  --font-sans: 'Inter', system-ui, sans-serif;
+  --font-heading: 'Nunito', 'Inter', system-ui, sans-serif;
+  --ease-piggles: cubic-bezier(0.34, 1.36, 0.64, 1);
+
+  /* --depth: 1 in Piggles, which is silica's own Card elevation. Mirrored here
+     as one variable so nothing hand-tunes an alpha ladder. */
+  --lift: 0 1px 2px rgba(32,38,49,.06), 0 4px 14px rgba(32,38,49,.06);
+  --lift-lg: 0 2px 6px rgba(32,38,49,.08), 0 18px 40px rgba(32,38,49,.10);
+}
+
+/* The group-hue bridge, exactly as theme.css does it: a data attribute repoints
+   --color-module for its subtree, and everything inside reads that one name. */
+[data-group='home']   { --color-module: var(--color-group-home);   --color-module-content: #ffffff; }
+[data-group='web']    { --color-module: var(--color-group-web);    --color-module-content: #ffffff; }
+[data-group='sell']   { --color-module: var(--color-group-sell);   --color-module-content: #ffffff; }
+[data-group='people'] { --color-module: var(--color-group-people); --color-module-content: #ffffff; }
+[data-group='money']  { --color-module: var(--color-group-money);  --color-module-content: #ffffff; }
+[data-group='run']    { --color-module: var(--color-group-run);    --color-module-content: #ffffff; }
+
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: 17px;            /* 16px floor, DESIGN.md §3 — this sits above it */
+  line-height: 1.55;
+  color: var(--color-base-content);
+  background: var(--color-base-300);
+  -webkit-font-smoothing: antialiased;
+}
+h1, h2, h3, h4 { font-family: var(--font-heading); margin: 0; line-height: 1.06; letter-spacing: -0.015em; }
+p { margin: 0; }
+ul, ol { margin: 0; padding: 0; list-style: none; }
+a { color: inherit; }
+img { max-width: 100%; display: block; }
+button, input { font: inherit; color: inherit; }
+
+/* ── LAYOUT PRIMITIVES ───────────────────────────────────────────────────── */
+.wrap { max-width: 1240px; margin: 0 auto; padding: 0 24px; }
+.section { padding: 0 16px; }
+/* A section is an inset rounded panel on the warm ground — the live site's own
+   shape, kept, because it is most of why the page reads as Piggles. */
+.panel {
+  max-width: 1240px; margin: 0 auto;
+  border-radius: var(--radius-section);
+  padding: 72px 56px;
+}
+.panel--white { background: var(--color-base-100); }
+.panel--warm  { background: var(--color-base-200); }
+.panel--pale  { background: var(--color-accent-pale); }
+.stack { display: grid; gap: 32px; }
+
+h1 { font-size: clamp(2.5rem, 5.6vw, 4.35rem); font-weight: 900; }
+h2 { font-size: clamp(2rem, 3.6vw, 3.1rem); font-weight: 900; }
+h3 { font-size: 1.3rem; font-weight: 800; }
+.lede { font-size: 1.2rem; max-width: 58ch; }
+.said { font-family: var(--font-heading); font-weight: 900; font-size: clamp(1.6rem, 2.6vw, 2.35rem); line-height: 1.14; }
+
+/* ── CONTROLS ────────────────────────────────────────────────────────────────
+   These stand in for silicaui's Button. In the port they become
+   <Button color size variant> and this CSS is deleted. */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+  height: 48px; padding: 0 22px; border: 1.5px solid transparent;
+  border-radius: var(--radius-field); font-weight: 700; font-size: 1rem;
+  text-decoration: none; cursor: pointer; white-space: nowrap;
+  transition: transform .18s var(--ease-piggles), background-color .18s ease, border-color .18s ease;
+}
+.btn:hover { transform: translateY(-1px); }
+.btn-xl { height: 67px; padding: 0 34px; font-size: 1.15rem; }
+.btn-primary { background: var(--color-primary); color: var(--color-primary-content); box-shadow: var(--lift); }
+.btn-primary:hover { background: #ff5c76; }
+.btn-outline { background: transparent; border-color: currentColor; }
+.btn-secondary { background: var(--color-secondary); color: var(--color-secondary-content); }
+.btn-block { width: 100%; }
+
+.pill {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 7px 14px; border-radius: var(--radius-selector);
+  font-size: .95rem; font-weight: 700;
+}
+.pill-module { background: color-mix(in oklab, var(--color-module) 12%, transparent); color: var(--color-module); }
+.pill-warn   { background: color-mix(in oklab, var(--color-warning) 26%, transparent); color: #6b4c00; }
+.pill-ok     { background: color-mix(in oklab, var(--color-success) 14%, transparent); color: var(--color-success); }
+.pill-bad    { background: color-mix(in oklab, var(--color-error) 12%, transparent); color: var(--color-error); }
+
+/* ── HEADER ──────────────────────────────────────────────────────────────── */
+.site-header {
+  position: sticky; top: 0; z-index: 60;
+  background: color-mix(in oklab, var(--color-base-300) 88%, transparent);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid color-mix(in oklab, var(--color-base-content) 8%, transparent);
+}
+.site-header .wrap { display: flex; align-items: center; gap: 28px; height: 76px; }
+.wordmark { display: inline-flex; align-items: center; gap: 10px; font-family: var(--font-heading); font-weight: 900; font-size: 1.55rem; text-decoration: none; letter-spacing: -.02em; }
+.wordmark .snout { width: 34px; height: 34px; border-radius: 11px; background: var(--color-primary); display: grid; place-items: center; }
+.wordmark .snout i { width: 15px; height: 12px; border-radius: 6px; background: #fff; position: relative; }
+.wordmark .snout i::before, .wordmark .snout i::after { content: ''; position: absolute; top: 3px; width: 3.5px; height: 6px; border-radius: 3px; background: var(--color-primary); }
+.wordmark .snout i::before { left: 3px; } .wordmark .snout i::after { right: 3px; }
+.site-nav { display: flex; gap: 22px; margin-left: auto; font-weight: 600; }
+.site-nav a { text-decoration: none; }
+.site-nav a:hover { color: var(--color-primary); }
+
+/* ── 1 · HERO ────────────────────────────────────────────────────────────────
+   Left: the problem in the reader's own week, then the product in one line.
+   Right: the SAME Thursday drawn twice, on a switch. Research is consistent
+   that a hero which shows the transformation inside 3–5 seconds beats a hero
+   that describes it, and a switch is the cheapest way to show a before and an
+   after in one viewport without a video. */
+.hero { padding: 8px 16px 0; }
+.hero-inner {
+  max-width: 1240px; margin: 0 auto;
+  background: var(--color-base-100);
+  border-radius: var(--radius-section);
+  padding: 68px 56px 60px;
+  display: grid; grid-template-columns: 1.02fr 1fr; gap: 56px; align-items: center;
+}
+.hero h1 span { color: var(--color-primary); }
+.hero-sub { font-size: 1.28rem; margin-top: 24px; max-width: 54ch; }
+.hero-cta { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 34px; }
+.hero-notes { display: flex; flex-wrap: wrap; gap: 8px 26px; margin-top: 22px; font-weight: 600; }
+.hero-notes li { display: flex; align-items: center; gap: 8px; }
+.hero-notes .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--color-primary); }
+
+/* The switch itself. Two labels, one moving thumb. */
+.switch { display: inline-flex; padding: 5px; gap: 4px; background: var(--color-base-300); border-radius: var(--radius-selector); }
+.switch button {
+  border: 0; background: transparent; cursor: pointer; font-weight: 700; font-size: 1rem;
+  padding: 11px 20px; border-radius: var(--radius-selector); transition: background-color .2s ease, color .2s ease;
+}
+.switch button[aria-pressed='true'] { background: var(--color-base-100); box-shadow: var(--lift); }
+.switch button[data-state='now'][aria-pressed='true'] { color: var(--color-error); }
+.switch button[data-state='piggles'][aria-pressed='true'] { color: var(--color-primary); }
+
+.stage { margin-top: 18px; position: relative; }
+.stage-view { display: none; }
+.stage-view.is-on { display: block; animation: fade-up .45s var(--ease-piggles) both; }
+@keyframes fade-up { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+
+/* BEFORE — six loose tools on a desk that do not touch. Deliberately ragged:
+   different widths, different tilts, hairline borders, and a broken seam drawn
+   between the two that should have been one thing. */
+.mess { position: relative; height: 430px; background: var(--color-base-200); border-radius: var(--radius-box); border: 1px solid var(--color-base-300); overflow: hidden; }
+.tool {
+  position: absolute; background: var(--color-base-100); border: 1px solid var(--color-base-300);
+  border-radius: 14px; padding: 12px 14px; box-shadow: var(--lift); width: 190px;
+}
+.tool b { display: block; font-size: .95rem; font-weight: 800; }
+.tool span { display: block; font-size: .9rem; color: var(--color-ink-soft); margin-top: 2px; }
+.tool .tag { display: inline-block; margin-top: 8px; font-size: .8rem; font-weight: 700; padding: 3px 9px; border-radius: var(--radius-selector); }
+.tool--a { top: 16px;  left: 18px;  transform: rotate(-2deg); }
+.tool--b { top: 8px;   right: 20px; transform: rotate(2.5deg); }
+.tool--c { top: 152px; left: 62px;  transform: rotate(1.5deg); }
+.tool--d { top: 168px; right: 12px; transform: rotate(-1.5deg); }
+.tool--e { bottom: 14px; left: 14px; transform: rotate(2deg); }
+.tool--f { bottom: 26px; right: 46px; transform: rotate(-2.5deg); }
+.mess .cut {
+  position: absolute; z-index: 5; display: flex; align-items: center; gap: 6px;
+  font-size: .82rem; font-weight: 800; color: var(--color-error);
+  background: var(--color-base-100); border: 1.5px dashed var(--color-error);
+  padding: 4px 10px; border-radius: var(--radius-selector);
+}
+.cut--1 { top: 108px; left: 118px; }
+.cut--2 { top: 262px; right: 96px; }
+
+/* AFTER — one window, one rail, the same six things inside it. */
+.win { border: 1px solid var(--color-base-300); border-radius: var(--radius-box); overflow: hidden; background: var(--color-base-200); box-shadow: var(--lift-lg); height: 430px; display: grid; grid-template-rows: 46px 1fr; }
+.win-bar { background: var(--color-base-100); border-bottom: 1px solid var(--color-base-300); display: flex; align-items: center; gap: 12px; padding: 0 16px; font-size: .92rem; font-weight: 700; }
+.win-bar .lights { display: flex; gap: 6px; }
+.win-bar .lights i { width: 10px; height: 10px; border-radius: 50%; background: var(--color-base-300); }
+.win-bar .clock { margin-left: auto; font-weight: 700; font-variant-numeric: tabular-nums; }
+.win-body { display: grid; grid-template-columns: 62px 1fr; }
+.rail { border-right: 1px solid var(--color-base-300); background: var(--color-base-100); display: grid; align-content: start; justify-items: center; gap: 6px; padding: 12px 0; }
+.rail i { width: 34px; height: 34px; border-radius: 11px; display: block; background: color-mix(in oklab, var(--color-module, var(--color-base-content)) 14%, transparent); border: 1px solid color-mix(in oklab, var(--color-module, var(--color-base-content)) 30%, transparent); }
+.rail i.off { background: color-mix(in oklab, var(--color-base-content) 6%, transparent); border-color: transparent; }
+.desk { padding: 14px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; align-content: start; }
+.card {
+  background: var(--color-base-100); border: 1px solid var(--color-base-300);
+  border-radius: 14px; padding: 11px 13px;
+}
+.card b { display: block; font-size: .92rem; font-weight: 800; }
+.card span { display: block; font-size: .87rem; color: var(--color-ink-soft); margin-top: 2px; }
+.card .row { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 8px; }
+.card .fig { font-family: var(--font-heading); font-weight: 900; font-size: 1.45rem; color: var(--color-module); }
+.card--hot { border-color: var(--color-module); box-shadow: 0 0 0 3px color-mix(in oklab, var(--color-module) 18%, transparent); }
+.linked { grid-column: 1 / -1; display: flex; align-items: center; gap: 10px; font-size: .88rem; font-weight: 700; color: var(--color-success); background: color-mix(in oklab, var(--color-success) 8%, transparent); border-radius: 12px; padding: 9px 12px; }
+
+/* ── 1b · WHOEVER ────────────────────────────────────────────────────────────
+   Kept from the live page, and moved EARLIER. On a pain-first page the reader
+   has to recognise themselves before the pain lands, or the six failures below
+   read as somebody else's Thursday. It is also the honest substitute DESIGN.md
+   §10 names for a logo wall: naming the trades lets a florist recognise herself
+   without anybody claiming she has already signed up.
+
+   No panel under it — it is display type and it wants air, and the open ground
+   is what gives the white panel below it an entrance. */
+.whoever { max-width: 1240px; margin: 0 auto; padding: 56px 24px 44px; display: grid; grid-template-columns: 34% 1fr; gap: 56px; align-items: start; }
+.trades { font-family: var(--font-heading); display: flex; flex-wrap: wrap; gap: 0 .42em; font-size: clamp(1.75rem, 3.8vw, 3.5rem); line-height: 1.12; font-weight: 900; letter-spacing: -.02em; }
+.trades li[data-group] { color: var(--color-module); }
+
+/* ── 2 · THE SEAMS ───────────────────────────────────────────────────────────
+   The agitation beat. Six cards, each one a real failure, each one traced to
+   the gap between two tools rather than to the reader being disorganised. The
+   card wears the hue of the app that would have owned it — so the colour is
+   already teaching where the fix lives, four sections before the fix.
+
+   The broken-link diagram sits BELOW the heading, not above it. Above it, two
+   chips and a glyph occupy the eyebrow slot, and RULE #2 bans the slot rather
+   than the markup — a diagram is not exempt just because it isn't a word. It
+   also reads better in this order: what happened, which two tools, what it cost. */
+.seams { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-top: 44px; }
+.seam {
+  background: var(--color-base-100); border: 1px solid var(--color-base-300);
+  border-radius: var(--radius-box); padding: 24px; display: grid; gap: 12px; align-content: start;
+}
+.seam-link { display: flex; align-items: center; gap: 8px; font-size: .88rem; font-weight: 700; flex-wrap: wrap; }
+.seam-link .end { padding: 5px 11px; border-radius: var(--radius-selector); background: var(--color-base-300); }
+.seam-link .brk { color: var(--color-error); font-size: 1.15rem; line-height: 1; }
+.seam h3 { font-size: 1.24rem; color: var(--color-module); }
+.seam p { font-size: 1.02rem; }
+.seam .cost { display: flex; align-items: baseline; gap: 8px; border-top: 1.5px solid var(--color-base-300); padding-top: 12px; font-weight: 700; }
+.seam .cost em { font-style: normal; color: var(--color-ink-soft); font-weight: 600; font-size: .95rem; }
+
+/* ── 3 · THE FALSE FIX ───────────────────────────────────────────────────── */
+.fixes { display: grid; grid-template-columns: repeat(3, 1fr); gap: 40px; margin-top: 44px; }
+.fix { display: grid; gap: 12px; align-content: start; border-top: 3px solid var(--color-module); padding-top: 20px; }
+.fix h3 { font-size: 1.35rem; }
+.fix .outcome { font-weight: 700; color: var(--color-error); display: flex; gap: 9px; align-items: flex-start; }
+
+/* ── 4 · THE TURN (dark island) ──────────────────────────────────────────── */
+.turn {
+  background: #1c212c; color: #f4f5f7;
+  border-radius: var(--radius-section); max-width: 1240px; margin: 0 auto;
+  padding: 76px 56px; display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center;
+}
+.turn .accent { color: var(--color-accent); }
+.turn ul { border-top: 1px solid #3a4150; }
+.turn li { border-bottom: 1px solid #3a4150; }
+.turn li a { display: flex; align-items: center; gap: 24px; padding: 20px 0; text-decoration: none; }
+.turn .jargon { flex: 1; font-size: 1.1rem; color: #c9cedb; text-decoration: line-through; text-decoration-thickness: 2px; text-decoration-color: var(--color-primary); }
+.turn .plain { flex: 1; text-align: right; font-family: var(--font-heading); font-weight: 900; font-size: 1.55rem; }
+/* The lifted dark group hues from theme.css — the raw light-theme hues drop
+   under 3:1 on this ground, which is the measurement DESIGN.md §3 records. */
+.turn [data-group='people'] .plain { color: #67e8f9; }
+.turn [data-group='web']    .plain { color: #a5b4fc; }
+.turn [data-group='sell']   .plain { color: #fdba74; }
+.turn [data-group='money']  .plain { color: #bef264; }
+.turn [data-group='run']    .plain { color: #d8b4fe; }
+
+/* ── 5 · THE CHAIN ───────────────────────────────────────────────────────────
+   The visual rhyme with §2: the same tools, the same day, with the seams
+   welded. Where §2 drew a broken link, this draws a live one. */
+.chain { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; margin-top: 44px; align-items: stretch; }
+.link { position: relative; padding: 0 22px; }
+.link:first-child { padding-left: 0; } .link:last-child { padding-right: 0; }
+.link-card { background: var(--color-base-100); border: 1px solid var(--color-base-300); border-top: 4px solid var(--color-module); border-radius: var(--radius-box); padding: 22px; height: 100%; display: grid; gap: 10px; align-content: start; }
+.link-card h3 { font-size: 1.16rem; color: var(--color-module); }
+.link-card p { font-size: 1.02rem; }
+.link-card .what { font-weight: 700; }
+.link::after {
+  content: '→'; position: absolute; top: 50%; right: -12px; transform: translateY(-50%);
+  font-size: 1.5rem; font-weight: 700; color: var(--color-primary); z-index: 2;
+}
+.link:last-child::after { content: none; }
+.chain-foot { margin-top: 34px; background: var(--color-base-100); border: 1.5px solid var(--color-primary); border-radius: var(--radius-box); padding: 26px 30px; display: flex; gap: 20px; align-items: center; flex-wrap: wrap; }
+
+/* ── 6 · THE ARITHMETIC ──────────────────────────────────────────────────── */
+.sums { display: grid; grid-template-columns: 1.05fr .95fr; gap: 52px; align-items: start; margin-top: 40px; }
+.tally { background: var(--color-base-100); border: 1px solid var(--color-base-300); border-radius: var(--radius-box); padding: 30px; }
+.tally-row { display: flex; align-items: center; gap: 14px; padding: 13px 0; border-bottom: 1px solid var(--color-base-300); }
+.tally-row:last-of-type { border-bottom: 0; }
+.tally-row label { flex: 1; font-weight: 600; }
+.tally-row .cur { color: var(--color-ink-soft); font-weight: 700; }
+.tally-row input {
+  width: 92px; height: 44px; text-align: right; border: 1.5px solid var(--color-base-300);
+  border-radius: var(--radius-field); padding: 0 12px; background: var(--color-base-200); font-weight: 700;
+}
+.tally-row input:focus { outline: 3px solid color-mix(in oklab, var(--color-primary) 45%, transparent); outline-offset: 1px; border-color: var(--color-primary); }
+.tally-total { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; margin-top: 22px; padding-top: 20px; border-top: 2px solid var(--color-base-content); }
+.tally-total b { font-family: var(--font-heading); font-weight: 900; font-size: 2.6rem; font-variant-numeric: tabular-nums; }
+.verdict { margin-top: 18px; border-radius: var(--radius-field); padding: 16px 18px; font-weight: 700; background: var(--color-base-200); }
+.verdict.is-over { background: color-mix(in oklab, var(--color-success) 12%, transparent); color: #0c5c35; }
+
+.price-card { background: var(--color-base-100); border: 1px solid var(--color-base-300); border-radius: var(--radius-box); padding: 34px; box-shadow: var(--lift); }
+.price-card .big { font-family: var(--font-heading); font-weight: 900; font-size: 4rem; line-height: 1; }
+.price-card .big i { font-style: normal; font-size: 1.25rem; font-weight: 800; }
+.price-card ul { margin-top: 24px; display: grid; gap: 12px; }
+.price-card li { display: flex; gap: 12px; align-items: flex-start; }
+.tick { flex: none; width: 20px; height: 20px; margin-top: 3px; color: var(--color-primary); }
+
+/* ── 7 · OBJECTIONS ──────────────────────────────────────────────────────────
+   The objection IS the heading. It was a coloured line above the heading first,
+   which is an eyebrow however true the sentence is — and this way round is
+   better anyway: the reader scans four headings and finds their own thought in
+   one of them, instead of scanning four of our answers. */
+.objections { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-top: 40px; }
+.objection { background: var(--color-base-100); border: 1px solid var(--color-base-300); border-left: 5px solid var(--color-module); border-radius: var(--radius-box); padding: 26px 28px; display: grid; gap: 10px; align-content: start; }
+.objection h3 { font-size: 1.42rem; color: var(--color-module); }
+.objection .answer { font-weight: 800; font-size: 1.1rem; }
+
+/* ── 8 · THE FIFTEEN (bento) ─────────────────────────────────────────────── */
+.bento { display: grid; grid-template-columns: repeat(6, 1fr); gap: 14px; margin-top: 40px; }
+.tile {
+  border-radius: var(--radius-box); padding: 26px; display: flex; flex-direction: column;
+  border: 1px solid var(--color-base-300);
+  background: color-mix(in oklab, var(--color-module) 8%, var(--color-base-100));
+}
+.tile h3 { font-size: 1.4rem; color: var(--color-module); }
+.tile > p { margin-top: 10px; font-size: 1.02rem; max-width: 46ch; }
+.tile ul { margin-top: auto; padding-top: 24px; display: grid; gap: 14px; }
+.tile.two ul { grid-template-columns: 1fr 1fr; gap: 14px 26px; }
+.tile li { display: flex; gap: 12px; align-items: flex-start; }
+.tile .glyph { flex: none; width: 36px; height: 36px; border-radius: 11px; background: var(--color-module); color: var(--color-module-content); display: grid; place-items: center; }
+.tile .glyph svg { width: 18px; height: 18px; }
+.tile .name { font-weight: 800; display: block; }
+.tile .purpose { font-size: .95rem; color: var(--color-ink-soft); display: block; }
+
+/* ── 9 · TRUST ───────────────────────────────────────────────────────────── */
+.absent { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-top: 36px; }
+.absent li { border: 1.5px dashed var(--color-base-300); border-radius: var(--radius-box); padding: 24px; }
+.absent h3 { font-size: 1.15rem; }
+.absent p { margin-top: 8px; }
+.trust { display: grid; grid-template-columns: repeat(4, 1fr); gap: 32px; margin-top: 32px; }
+.trust li { border-top: 2px solid var(--color-base-content); padding-top: 18px; }
+.trust h3 { font-size: 1.16rem; }
+.trust p { margin-top: 8px; font-size: 1.02rem; }
+
+/* ── 10 · FAQ ────────────────────────────────────────────────────────────── */
+.faq { display: grid; gap: 10px; }
+.faq details { background: var(--color-base-100); border: 1px solid var(--color-base-300); border-radius: var(--radius-box); padding: 4px 24px; }
+.faq summary { cursor: pointer; list-style: none; font-weight: 800; font-size: 1.1rem; padding: 20px 0; display: flex; gap: 16px; align-items: center; }
+.faq summary::-webkit-details-marker { display: none; }
+.faq summary::after { content: '+'; margin-left: auto; font-family: var(--font-heading); font-weight: 900; font-size: 1.6rem; color: var(--color-primary); line-height: 1; }
+.faq details[open] summary::after { content: '–'; }
+.faq details p { padding-bottom: 22px; max-width: 78ch; }
+
+/* ── 11 · CLOSE ──────────────────────────────────────────────────────────── */
+.close {
+  background: var(--color-primary); color: var(--color-primary-content);
+  border-radius: var(--radius-section); max-width: 1240px; margin: 0 auto;
+  padding: 64px 56px; display: grid; grid-template-columns: 1fr auto; gap: 40px; align-items: center;
+}
+.close h2 { max-width: 20ch; }
+.close .btn-outline { border-color: currentColor; }
+.close-cta { display: flex; gap: 14px; flex-wrap: wrap; margin-top: 26px; }
+.close .note { margin-top: 18px; font-weight: 700; }
+.mascot { width: 230px; }
+
+.site-footer { padding: 56px 16px 40px; }
+.site-footer .wrap { display: flex; gap: 24px; align-items: center; flex-wrap: wrap; color: var(--color-ink-soft); font-weight: 600; }
+
+/* ── STICKY MOBILE CTA ───────────────────────────────────────────────────────
+   The one piece of chrome added purely on the evidence: a sticky bottom CTA is
+   the single highest-lift placement measured in the 2,000-page study, and it
+   costs a phone reader nothing because it replaces a header they have scrolled
+   past. Hidden on desktop, where the header CTA is always in view. */
+.dock { display: none; }
+@media (max-width: 900px) {
+  .dock {
+    display: flex; position: fixed; left: 12px; right: 12px; bottom: 12px; z-index: 70;
+    gap: 12px; align-items: center; padding: 12px 12px 12px 18px;
+    background: var(--color-base-100); border: 1px solid var(--color-base-300);
+    border-radius: var(--radius-box); box-shadow: var(--lift-lg);
+  }
+  .dock b { font-family: var(--font-heading); font-weight: 900; }
+  .dock .btn { margin-left: auto; }
+}
+
+/* ── RESPONSIVE ─────────────────────────────────────────────────────────────
+   Root memory: responsive is non-negotiable. Three collapses — 1140, 900, 620. */
+@media (max-width: 1140px) {
+  .hero-inner, .turn, .sums, .whoever { grid-template-columns: 1fr; }
+  .faq-grid { grid-template-columns: 1fr !important; gap: 32px !important; }
+  .seams, .fixes, .absent { grid-template-columns: repeat(2, 1fr); }
+  .trust { grid-template-columns: repeat(2, 1fr); }
+  .chain { grid-template-columns: 1fr 1fr; gap: 34px 0; }
+  .link::after { content: none; }
+  .bento { grid-template-columns: repeat(2, 1fr); }
+  .tile { grid-column: span 1 !important; }
+  .tile.two ul { grid-template-columns: 1fr; }
+}
+@media (max-width: 900px) {
+  .panel { padding: 52px 28px; }
+  .whoever { padding: 40px 28px 32px; gap: 28px; }
+  .hero-inner { padding: 44px 28px 48px; }
+  .turn, .close { padding: 52px 28px; }
+  .site-nav { display: none; }
+  .close { grid-template-columns: 1fr; }
+  .mascot { width: 170px; justify-self: center; }
+  body { padding-bottom: 90px; }
+}
+@media (max-width: 620px) {
+  .seams, .fixes, .absent, .trust, .objections, .bento, .chain { grid-template-columns: 1fr; }
+  .mess { height: 460px; }
+  .tool { width: 168px; }
+  .desk { grid-template-columns: 1fr; }
+  .win { height: auto; }
+}
+@media (prefers-reduced-motion: reduce) {
+  * { animation: none !important; transition: none !important; }
+  html { scroll-behavior: auto; }
+}
+</style>
+</head>
+
+<body>
+
+<!-- The fifteen app glyphs, as a sprite. In apps/web these arrive from
+     @piggles/config via appIcon(id) — drawn here so the mockup shows real
+     icons rather than a letter in a box, which is the difference between a
+     tile that reads as an app and one that reads as a placeholder. -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-home" viewBox="0 0 24 24"><path d="M4 10.5 12 4l8 6.5V20a1 1 0 0 1-1 1h-4v-6H9v6H5a1 1 0 0 1-1-1z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></symbol>
+  <symbol id="i-site" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M3.5 12h17M12 3.5c2.2 2.4 3.3 5.3 3.3 8.5s-1.1 6.1-3.3 8.5c-2.2-2.4-3.3-5.3-3.3-8.5S9.8 5.9 12 3.5z" fill="none" stroke="currentColor" stroke-width="2"/></symbol>
+  <symbol id="i-content" viewBox="0 0 24 24"><path d="M6 3.5h8l4.5 4.5V20a.5.5 0 0 1-.5.5H6a.5.5 0 0 1-.5-.5V4a.5.5 0 0 1 .5-.5z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M13.5 3.5V9H19M8.5 13h7M8.5 16.5h5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="i-found" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="m16 16 4.5 4.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="i-sell" viewBox="0 0 24 24"><path d="M11.4 3.5H20v8.6l-8.9 8.9a1 1 0 0 1-1.4 0l-7.2-7.2a1 1 0 0 1 0-1.4z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><circle cx="16" cy="8" r="1.6" fill="currentColor"/></symbol>
+  <symbol id="i-stock" viewBox="0 0 24 24"><path d="M3.5 7.5 12 3.5l8.5 4v9L12 20.5l-8.5-4z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M3.5 7.5 12 11.5l8.5-4M12 11.5v9" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></symbol>
+  <symbol id="i-customers" viewBox="0 0 24 24"><circle cx="9.5" cy="8.5" r="3.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M3.5 20c0-3.3 2.7-6 6-6s6 2.7 6 6M16 5.2a3.5 3.5 0 0 1 0 6.6M17.5 14.6c1.9.9 3 2.9 3 5.4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="i-messages" viewBox="0 0 24 24"><rect x="3.5" y="5.5" width="17" height="13" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="m4 7 8 6 8-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></symbol>
+  <symbol id="i-bookings" viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15.5" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M3.5 10h17M8 3v4M16 3v4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="15" r="1.6" fill="currentColor"/></symbol>
+  <symbol id="i-invoices" viewBox="0 0 24 24"><path d="M5.5 3.5h13v17l-2.2-1.6-2.2 1.6-2.1-1.6-2.2 1.6-2.3-1.6z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9 8.5h6M9 12.5h6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="i-money" viewBox="0 0 24 24"><path d="M3.5 20.5V4M3.5 20.5H21" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M7 16l3.5-4.5 3 2.5L20 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-team" viewBox="0 0 24 24"><circle cx="12" cy="7.5" r="3.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M5 20.5c0-3.9 3.1-7 7-7 1.4 0 2.7.4 3.8 1.1" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="m15.5 18.5 2 2 3.5-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-automations" viewBox="0 0 24 24"><path d="M13.5 2.5 5 13.5h6l-.5 8L19 10.5h-6z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></symbol>
+  <symbol id="i-partners" viewBox="0 0 24 24"><path d="M2.5 7.5h10v9h-10zM12.5 11h4l3 3v2.5h-7z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><circle cx="6.5" cy="18.5" r="1.8" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="16.5" cy="18.5" r="1.8" fill="none" stroke="currentColor" stroke-width="2"/></symbol>
+  <symbol id="i-connections" viewBox="0 0 24 24"><path d="M9 3v6M15 3v6M6.5 9h11v3.5a5.5 5.5 0 0 1-11 0z" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 18v3.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+</svg>
+
+<header class="site-header">
+  <div class="wrap">
+    <a class="wordmark" href="#top"><span class="snout"><i></i></span>Piggles</a>
+    <nav class="site-nav">
+      <a href="#seams">Why it's hard</a>
+      <a href="#apps">What's included</a>
+      <a href="#sums">Price</a>
+      <a href="#answers">Answers</a>
+    </nav>
+    <a class="btn btn-primary" href="#price">Start free</a>
+  </div>
+</header>
+
+<main id="top">
+
+  <!-- ════ 1 · HERO — the problem, then the product, then the switch ════════ -->
+  <section class="hero">
+    <div class="hero-inner">
+      <div>
+        <h1>It's Thursday night and you're&nbsp;still <span>doing the admin.</span></h1>
+        <p class="hero-sub">
+          The bookings are in one app. The invoices are in another. The stock is a spreadsheet,
+          the customers are in your phone, and none of them have ever spoken to each other.
+          <strong>Piggles is all of it, in one place, for $49 a month.</strong>
+        </p>
+        <div class="hero-cta">
+          <a class="btn btn-primary btn-xl" href="#price">Start free for 14 days</a>
+          <a class="btn btn-outline btn-xl" href="#seams">Show me what you mean</a>
+        </div>
+        <ul class="hero-notes">
+          <li><span class="dot"></span>No card needed</li>
+          <li><span class="dot"></span>All fifteen apps included</li>
+          <li><span class="dot"></span>Your data leaves whenever you do</li>
+        </ul>
+      </div>
+
+      <!-- The same Thursday, twice. -->
+      <div>
+        <div class="switch" role="group" aria-label="Compare">
+          <button type="button" data-state="now" aria-pressed="true">Your Thursday now</button>
+          <button type="button" data-state="piggles" aria-pressed="false">Your Thursday on Piggles</button>
+        </div>
+
+        <div class="stage">
+          <!-- BEFORE -->
+          <div class="stage-view is-on" data-view="now">
+            <div class="mess">
+              <div class="tool tool--a" data-group="people">
+                <b>Booking app</b><span>Sat 10:00 — wreath workshop</span>
+                <span class="tag pill-warn">2 seats, or is it 4?</span>
+              </div>
+              <div class="tool tool--b" data-group="sell">
+                <b>Website</b><span>Sold 3 bouquets overnight</span>
+                <span class="tag pill-bad">Stock still says 14</span>
+              </div>
+              <div class="tool tool--c" data-group="sell">
+                <b>stock-count-FINAL-v3.xlsx</b><span>Last edited 9 days ago</span>
+              </div>
+              <div class="tool tool--d" data-group="money">
+                <b>Accounts</b><span>Invoice for Saturday</span>
+                <span class="tag pill-bad">Never sent</span>
+              </div>
+              <div class="tool tool--e" data-group="people">
+                <b>Your phone</b><span>"Same again for the window?"</span>
+                <span class="tag pill-warn">Who is this?</span>
+              </div>
+              <div class="tool tool--f" data-group="web">
+                <b>Card reader app</b><span>Today: $1,286</span>
+                <span class="tag pill-warn">Not in the accounts</span>
+              </div>
+              <span class="cut cut--1">✕ doesn't reach</span>
+              <span class="cut cut--2">✕ doesn't reach</span>
+            </div>
+          </div>
+
+          <!-- AFTER -->
+          <div class="stage-view" data-view="piggles">
+            <div class="win">
+              <div class="win-bar">
+                <span class="lights"><i></i><i></i><i></i></span>
+                Wildroot Flowers
+                <span class="clock">21:04 · Thursday</span>
+              </div>
+              <div class="win-body">
+                <nav class="rail" aria-label="Apps">
+                  <i data-group="home"></i>
+                  <i data-group="web"></i>
+                  <i data-group="sell"></i>
+                  <i data-group="people"></i>
+                  <i data-group="money"></i>
+                  <i class="off"></i><i class="off"></i><i class="off"></i>
+                </nav>
+                <div class="desk">
+                  <div class="card card--hot" data-group="people">
+                    <b>Bookings</b><span>Sat 10:00 · wreath workshop</span>
+                    <div class="row"><span>Seats left</span><span class="fig">2</span></div>
+                  </div>
+                  <div class="card" data-group="sell">
+                    <b>Sell → Stock</b><span>3 bouquets, sold online</span>
+                    <div class="row"><span>On the shelf</span><span class="fig">11</span></div>
+                  </div>
+                  <div class="card" data-group="money">
+                    <b>Invoices</b><span>Saturday's workshop</span>
+                    <div class="row"><span>INV-2214</span><span class="pill pill-ok">Sent</span></div>
+                  </div>
+                  <div class="card" data-group="people">
+                    <b>Customers</b><span>"Same again for the window?"</span>
+                    <div class="row"><span>Fourth order</span><span class="pill pill-module">Regular</span></div>
+                  </div>
+                  <p class="linked">✓ Sold on the site, counted in stock, invoiced from the booking — nobody typed it twice.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════ 1b · WHOEVER — the reader recognises themselves before the pain ══ -->
+  <section class="whoever">
+    <div>
+      <h2>Whatever kind of business you have.</h2>
+      <p class="lede" style="margin-top:20px">
+        Piggles is not a shop product with appointments bolted on, or a booking product that also
+        does invoices. A bakery, a barber and a potter are equally the point — and so is the garage,
+        the market stall and the person who makes things in a shed.
+      </p>
+    </div>
+    <ul class="trades">
+      <li>A bakery.</li>
+      <li data-group="people">A barber.</li>
+      <li data-group="sell">A potter.</li>
+      <li data-group="web">A garage.</li>
+      <li data-group="money">A market stall.</li>
+      <li data-group="run">A salon.</li>
+      <li>A tailor.</li>
+      <li data-group="people">A studio.</li>
+      <li data-group="sell">A workshop.</li>
+      <li data-group="web">A supplier.</li>
+      <li data-group="money">A shed.</li>
+    </ul>
+  </section>
+
+  <!-- ════ 2 · THE SEAMS — agitate, but blame the seams, never the reader ═══ -->
+  <section class="section" id="seams" style="margin-top:16px">
+    <div class="panel panel--white">
+      <div style="max-width:62ch">
+        <h2>Not one of your tools is broken. That's what makes this so hard to fix.</h2>
+        <p class="lede" style="margin-top:24px">
+          The booking app books beautifully. The accounts package accounts. Every one of them does
+          its own job well, and every problem you actually have happens in the gap between two of
+          them — which is the one place none of them is responsible for.
+        </p>
+      </div>
+
+      <ul class="seams">
+        <li class="seam" data-group="people">
+          <h3>The Saturday you booked twice</h3>
+          <p>Somebody took the last place on your website at half eleven at night. Your calendar had no idea, so you took it again on the phone at nine.</p>
+          <p class="seam-link"><span class="end">Website</span><span class="brk">✕</span><span class="end">Calendar</span></p>
+          <p class="cost">Two customers, one seat. <em>You eat the difference.</em></p>
+        </li>
+        <li class="seam" data-group="sell">
+          <h3>The thing you sold and didn't have</h3>
+          <p>The till counts down. The website counts down. Neither counts the other, so the number you're looking at has been wrong since Tuesday.</p>
+          <p class="seam-link"><span class="end">Shop till</span><span class="brk">✕</span><span class="end">Online stock</span></p>
+          <p class="cost">A refund and an apology. <em>The apology costs more.</em></p>
+        </li>
+        <li class="seam" data-group="money">
+          <h3>The invoice you never sent</h3>
+          <p>The work finished in one place and invoicing lives in another, so sending it is a job you have to remember to do. Some weeks you remember.</p>
+          <p class="seam-link"><span class="end">The job</span><span class="brk">✕</span><span class="end">Invoicing</span></p>
+          <p class="cost">Money you earned and never asked for. <em>Every month, a bit of it.</em></p>
+        </li>
+        <li class="seam" data-group="people">
+          <h3>"Sorry — who am I speaking to?"</h3>
+          <p>They've bought from you four times and been to a workshop. Nothing in front of you says so, so they get treated like a stranger.</p>
+          <p class="seam-link"><span class="end">Their fourth order</span><span class="brk">✕</span><span class="end">Your screen</span></p>
+          <p class="cost">The regular who quietly stops being one.</p>
+        </li>
+        <li class="seam" data-group="run">
+          <h3>Sunday, spent copying</h3>
+          <p>Orders into the spreadsheet, the spreadsheet into the accounts, the accounts into the tax return. None of it is work. All of it is your weekend.</p>
+          <p class="seam-link"><span class="end">Everything</span><span class="brk">✕</span><span class="end">Everything else</span></p>
+          <p class="cost">The hours you meant to spend on the business.</p>
+        </li>
+        <li class="seam" data-group="web">
+          <h3>The bills you'd have to go and look up</h3>
+          <p>Website, bookings, email, accounts, the card reader, the one you signed up for in March. You couldn't say what they add up to without going to check.</p>
+          <p class="seam-link"><span class="end">Six subscriptions</span><span class="brk">✕</span><span class="end">One business</span></p>
+          <p class="cost">More than you think. <em><a href="#sums">Add them up.</a></em></p>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ════ 3 · THE FALSE FIX — why you haven't already solved this ══════════ -->
+  <section class="section" style="margin-top:16px">
+    <div class="panel panel--warm">
+      <div style="max-width:62ch">
+        <h2>You've tried to fix it three times already.</h2>
+        <p class="lede" style="margin-top:24px">
+          Nobody puts up with this out of laziness. Every road out of it has a toll, and you have
+          probably paid at least one of them.
+        </p>
+      </div>
+
+      <ul class="fixes">
+        <li class="fix" data-group="run">
+          <h3>You added a tool to connect the tools</h3>
+          <p>An automation service in the middle, wiring six apps together with rules you wrote at eleven o'clock one night.</p>
+          <p class="outcome"><span>✕</span><span>Now you maintain plumbing as well as a business — and when it breaks, it breaks silently.</span></p>
+        </li>
+        <li class="fix" data-group="web">
+          <h3>You bought the serious all-in-one</h3>
+          <p>It genuinely does everything. It also asked you to understand pipelines, price books and record types before it would do any of it.</p>
+          <p class="outcome"><span>✕</span><span>Six weeks of onboarding, and you still only use the bit you already had.</span></p>
+        </li>
+        <li class="fix" data-group="money">
+          <h3>You decided to just keep on top of it</h3>
+          <p>A spreadsheet, a notebook, a good memory and one evening a week set aside to square everything up.</p>
+          <p class="outcome"><span>✕</span><span>The cheapest option on paper. It is paid for in Sundays, and the price goes up as you grow.</span></p>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ════ 4 · THE TURN ════════════════════════════════════════════════════ -->
+  <section class="section" style="margin-top:16px">
+    <div class="turn">
+      <div>
+        <h2>The second one nearly worked.</h2>
+        <p class="lede" style="margin-top:24px">
+          Software this connected does exist. It is what large companies run on, and it is why they
+          don't have your Thursday. The reason you couldn't keep it is not that it did too much —
+          it is that it made you learn its vocabulary before it would help you at all.
+        </p>
+        <p class="said accent" style="margin-top:28px">You don't have a CRM.<br />You have customers.</p>
+        <p style="margin-top:26px;font-size:1.12rem">
+          Piggles is that capability with the vocabulary taken out. Nothing was removed to get these
+          names — the thing underneath is the same thing bigger companies pay a great deal more for.
+          It just stopped asking you to translate.
+        </p>
+      </div>
+      <ul>
+        <li data-group="people"><a href="#apps"><span class="jargon">CRM</span><span class="plain">Customers</span></a></li>
+        <li data-group="web"><a href="#apps"><span class="jargon">CMS</span><span class="plain">Content</span></a></li>
+        <li data-group="web"><a href="#apps"><span class="jargon">SEO</span><span class="plain">Get Found</span></a></li>
+        <li data-group="sell"><a href="#apps"><span class="jargon">Inventory management</span><span class="plain">Stock</span></a></li>
+        <li data-group="people"><a href="#apps"><span class="jargon">Scheduling</span><span class="plain">Bookings</span></a></li>
+        <li data-group="money"><a href="#apps"><span class="jargon">Financial reporting</span><span class="plain">Money</span></a></li>
+        <li data-group="run"><a href="#apps"><span class="jargon">RBAC</span><span class="plain">Who can do what</span></a></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ════ 5 · THE CHAIN — the seams from §2, welded ═══════════════════════ -->
+  <section class="section" style="margin-top:16px">
+    <div class="panel panel--white">
+      <div style="max-width:62ch">
+        <h2>One place, so nothing has to be told twice.</h2>
+        <p class="lede" style="margin-top:24px">
+          Here is the same Saturday workshop from the top of this page, moving through Piggles.
+          It is one system, so the parts of it cannot disagree with each other — not because they
+          sync well, but because there is only one of each number.
+        </p>
+      </div>
+
+      <ol class="chain">
+        <li class="link" data-group="web">
+          <div class="link-card">
+            <h3>Your website</h3>
+            <p class="what">Somebody books a place at 23:14.</p>
+            <p>Your site is not a different company. It is showing the same calendar you are.</p>
+          </div>
+        </li>
+        <li class="link" data-group="people">
+          <div class="link-card">
+            <h3>Bookings</h3>
+            <p class="what">Two seats left, everywhere, instantly.</p>
+            <p>Nothing to copy across in the morning, and no second place to check.</p>
+          </div>
+        </li>
+        <li class="link" data-group="people">
+          <div class="link-card">
+            <h3>Customers</h3>
+            <p class="what">Their fourth booking, on their card.</p>
+            <p>Orders, messages and bookings on one page, because they are one person.</p>
+          </div>
+        </li>
+        <li class="link" data-group="money">
+          <div class="link-card">
+            <h3>Invoices</h3>
+            <p class="what">The invoice already knows the job.</p>
+            <p>It was the booking an hour ago. You added a line and sent it.</p>
+          </div>
+        </li>
+      </ol>
+
+      <div class="chain-foot">
+        <p style="flex:1;min-width:280px;font-size:1.12rem">
+          <strong>That is the whole trick, and it is not a clever one.</strong>
+          Six of the fifteen apps just did something on your behalf. You opened one of them.
+        </p>
+        <a class="btn btn-secondary" href="#apps">See all fifteen</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════ 6 · THE ARITHMETIC ══════════════════════════════════════════════ -->
+  <section class="section" id="sums" style="margin-top:16px">
+    <div class="panel panel--pale">
+      <div style="max-width:62ch">
+        <h2>Add up what you pay now.</h2>
+        <p class="lede" style="margin-top:24px">
+          We're not going to guess your numbers at you — you'd have no reason to believe them.
+          Put your own in. Most people have to go and look at least two of these up, and noticing
+          that is worth more than the total.
+        </p>
+      </div>
+
+      <div class="sums">
+        <div class="tally">
+          <div class="tally-row"><label for="t1">Website and hosting</label><span class="cur">$</span><input id="t1" type="number" min="0" placeholder="0" /></div>
+          <div class="tally-row"><label for="t2">Online bookings</label><span class="cur">$</span><input id="t2" type="number" min="0" placeholder="0" /></div>
+          <div class="tally-row"><label for="t3">Accounts and invoicing</label><span class="cur">$</span><input id="t3" type="number" min="0" placeholder="0" /></div>
+          <div class="tally-row"><label for="t4">Email and newsletters</label><span class="cur">$</span><input id="t4" type="number" min="0" placeholder="0" /></div>
+          <div class="tally-row"><label for="t5">Shop, till or online selling</label><span class="cur">$</span><input id="t5" type="number" min="0" placeholder="0" /></div>
+          <div class="tally-row"><label for="t6">Stock, scheduling, storage, the rest</label><span class="cur">$</span><input id="t6" type="number" min="0" placeholder="0" /></div>
+
+          <div class="tally-total">
+            <span style="font-weight:700">Every month, before Piggles</span>
+            <b>$<span id="total">0</span></b>
+          </div>
+          <p class="verdict" id="verdict">Fill in what you know. The gaps are part of the answer.</p>
+        </div>
+
+        <div class="price-card">
+          <p class="big">$49<i>/month</i></p>
+          <p style="margin-top:8px;font-weight:700">One plan. That is the whole price list.</p>
+          <ul>
+            <li><svg class="tick" viewBox="0 0 24 24" aria-hidden><path d="m4 12.6 5 5L20 6.4" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>All fifteen apps, from the first day</li>
+            <li><svg class="tick" viewBox="0 0 24 24" aria-hidden><path d="m4 12.6 5 5L20 6.4" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>Your website, and a Piggles address for it</li>
+            <li><svg class="tick" viewBox="0 0 24 24" aria-hidden><path d="m4 12.6 5 5L20 6.4" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>Three people on your team</li>
+            <li><svg class="tick" viewBox="0 0 24 24" aria-hidden><path d="m4 12.6 5 5L20 6.4" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>Your own customers, products and orders</li>
+            <li><svg class="tick" viewBox="0 0 24 24" aria-hidden><path d="m4 12.6 5 5L20 6.4" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>Everything exportable, always</li>
+          </ul>
+          <p style="margin-top:22px">
+            Your bill changes when the <em>business</em> needs more room — more people, more storage,
+            more email going out. Never because you switched Bookings on.
+          </p>
+          <a class="btn btn-primary btn-xl btn-block" href="#price" style="margin-top:24px">Start free for 14 days</a>
+          <p style="margin-top:12px;text-align:center;font-weight:600">No card needed to start.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════ 7 · OBJECTIONS ══════════════════════════════════════════════════ -->
+  <section class="section" id="answers" style="margin-top:16px">
+    <div class="panel panel--white">
+      <div style="max-width:62ch">
+        <h2>The four reasons you're about to close this tab.</h2>
+        <p class="lede" style="margin-top:24px">
+          All of them are good reasons. Here is the honest version of each, including the one where
+          the honest answer is "not yet".
+        </p>
+      </div>
+
+      <ul class="objections">
+        <li class="objection" data-group="sell">
+          <h3>"I've just got everything working."</h3>
+          <p class="answer">Then don't move it all at once.</p>
+          <p>
+            Start with the one that hurts most — usually bookings or invoices — and leave the rest
+            where it is. Piggles is fifteen apps whether you use one of them or all of them, so
+            there is no penalty for moving slowly and nothing extra to pay when you finish.
+          </p>
+        </li>
+        <li class="objection" data-group="money">
+          <h3>"Moving the data will be a nightmare."</h3>
+          <p class="answer">Bring it in a spreadsheet. Take it back the same way.</p>
+          <p>
+            Customers, products and orders import from the files your current tools already export.
+            And the door swings both ways: everything in Piggles exports whenever you want, in
+            formats other software can actually read. Leaving is not a support ticket.
+          </p>
+        </li>
+        <li class="objection" data-group="people">
+          <h3>"I'm not technical."</h3>
+          <p class="answer">That is the entire design brief.</p>
+          <p>
+            Signing up asks two questions — what the business is called and what you want to start
+            with — and the workspace arrives set up rather than empty. There is nothing in it called
+            a pipeline stage, a record type or a price book unless you go looking for one.
+          </p>
+        </li>
+        <li class="objection" data-group="run">
+          <h3>"What if I outgrow it?"</h3>
+          <p class="answer">You'd have to outgrow the platform, not the friendly names.</p>
+          <p>
+            Wholesale pricing, multiple warehouses, approval rules and automations are all in there,
+            included, waiting for the day you need them. What you would grow out of is the amount of
+            room — more team, more storage — and that is a number you change, not a product you leave.
+          </p>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ════ 8 · THE FIFTEEN ═════════════════════════════════════════════════ -->
+  <section class="section" id="apps" style="margin-top:16px">
+    <div class="panel panel--warm">
+      <div style="max-width:62ch">
+        <h2>All fifteen, grouped the way a business is.</h2>
+        <p class="lede" style="margin-top:24px">
+          Not a features list — the six things a day is actually made of. Every one included from the
+          first day, and every one a real place in the software rather than a bullet point on this page.
+        </p>
+      </div>
+
+      <div class="bento">
+        <div class="tile" data-group="home" style="grid-column:span 2">
+          <h3>Your day</h3>
+          <p>What needs you this morning, in one place: the bookings, the messages, the thing that ran out, the invoice that has gone past due. It is the first screen and most days it is the only one you need.</p>
+          <ul>
+            <li><span class="glyph"><svg aria-hidden="true"><use href="#i-home"/></svg></span><span><span class="name">Home</span><span class="purpose">What needs your attention right now</span></span></li>
+          </ul>
+        </div>
+
+        <div class="tile two" data-group="web" style="grid-column:span 4">
+          <h3>Your website</h3>
+          <p>The site, what's on it, and getting people to it.</p>
+          <ul>
+            <li><span class="glyph"><svg aria-hidden="true"><use href="#i-site"/></svg></span><span><span class="name">My Site</span><span class="purpose">Pages, design and branding</span></span></li>
+            <li><span class="glyph"><svg aria-hidden="true"><use href="#i-content"/></svg></span><span><span class="name">Content</span><span class="purpose">Write once, use everywhere</span></span></li>
+            <li><span class="glyph"><svg aria-hidden="true"><use href="#i-found"/></svg></span><span><span class="name">Get Found</span><span class="purpose">Search and social</span></span></li>
+          </ul>
+        </div>
+
+        <div class="tile" data-group="sell" style="grid-column:span 3">
+          <h3>Selling</h3>
+          <p>What you sell, what's left, and what it cost you.</p>
+          <ul>
+            <li><span class="glyph"><svg aria-hidden="true"><use href="#i-sell"/></svg></span><span><span class="name">Sell</span><span class="purpose">Products, services, orders and checkout</span></span></li>
+            <li><span class="glyph"><svg aria-hidden="true"><use href="#i-stock"/></svg></span><span><span class="name">Stock</span><span class="purpose">What's on the shelf, and when to reorder</span></span></li>
+          </ul>
+        </div>
+
+        <div class="tile" data-group="people" style="grid-column:span 3">
+          <h3>People</h3>
+          <p>Everyone who buys from you, talks to you or books you.</p>
+          <ul>
+            <li><span class="glyph"><svg aria-hidden="true"><use href="#i-customers"/></svg></span><span><span class="name">Customers</span><span class="purpose">Everything they've ever done, on one card</span></span></li>
+            <li><span class="glyph"><svg aria-hidden="true"><use href="#i-messages"/></svg></span><span><span class="name">Messages</span><span class="purpose">Email that knows who you're writing to</span></span></li>
+            <li><span class="glyph"><svg aria-hidden="true"><use href="#i-bookings"/></svg></span><span><span class="name">Bookings</span><span class="purpose">Your calendar, open to the public</span></span></li>
+          </ul>
+        </div>
+
+        <div class="tile" data-group="money" style="grid-column:span 2">
+          <h3>Money</h3>
+          <p>What you're owed, what you've taken, and what it means. The numbers come from the orders and bookings themselves, so there is nothing to reconcile at the end of the month.</p>
+          <ul>
+            <li><span class="glyph"><svg aria-hidden="true"><use href="#i-invoices"/></svg></span><span><span class="name">Invoices</span><span class="purpose">Send them, chase them, get paid</span></span></li>
+            <li><span class="glyph"><svg aria-hidden="true"><use href="#i-money"/></svg></span><span><span class="name">Money</span><span class="purpose">Where it came from and where it went</span></span></li>
+          </ul>
+        </div>
+
+        <div class="tile two" data-group="run" style="grid-column:span 4">
+          <h3>Running it</h3>
+          <p>The people you work with, and the jobs you shouldn't be doing by hand.</p>
+          <ul>
+            <li><span class="glyph"><svg aria-hidden="true"><use href="#i-team"/></svg></span><span><span class="name">My Team</span><span class="purpose">Who can see and do what</span></span></li>
+            <li><span class="glyph"><svg aria-hidden="true"><use href="#i-automations"/></svg></span><span><span class="name">Automations</span><span class="purpose">The follow-ups you keep forgetting</span></span></li>
+            <li><span class="glyph"><svg aria-hidden="true"><use href="#i-partners"/></svg></span><span><span class="name">Partners</span><span class="purpose">Suppliers, orders and what they really cost</span></span></li>
+            <li><span class="glyph"><svg aria-hidden="true"><use href="#i-connections"/></svg></span><span><span class="name">Connections</span><span class="purpose">The other things you already use</span></span></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════ 9 · TRUST ═══════════════════════════════════════════════════════ -->
+  <section class="section" style="margin-top:16px">
+    <div class="panel panel--white">
+      <div style="max-width:62ch">
+        <h2>The boring things, done properly.</h2>
+        <p class="lede" style="margin-top:24px">
+          You are about to put your customers, your takings and your website into something you found
+          this evening. Here is what we are not going to put on this page to make that feel safer.
+        </p>
+      </div>
+
+      <ul class="absent">
+        <li><h3>A certification badge</h3><p>We don't have one. A badge on a page is the cheapest lie in this industry.</p></li>
+        <li><h3>An uptime percentage</h3><p>Nobody is measuring it yet. A number nobody measures is a decoration.</p></li>
+        <li><h3>A wall of customer logos</h3><p>We would have to invent them, and you would have no way of knowing.</p></li>
+      </ul>
+
+      <p class="said" style="margin-top:44px">Here is what is left when you take those out.</p>
+
+      <ul class="trust">
+        <li><h3>Your data is yours</h3><p>Export your customers, products, orders and content whenever you want, in formats other software can read. Leaving is not a support ticket.</p></li>
+        <li><h3>Kept separate, kept safe</h3><p>Your business is isolated from every other business on Piggles at the database itself, not just in the app. Encrypted in transit and at rest.</p></li>
+        <li><h3>It stays up</h3><p>Backed up continuously, monitored around the clock, with a public status page so you never have to guess whether it is you.</p></li>
+        <li><h3>A person answers</h3><p>Support from people who know the product, not a queue that closes your ticket for being inactive.</p></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ════ 10 · FAQ ════════════════════════════════════════════════════════ -->
+  <section class="section" style="margin-top:16px">
+    <div class="panel panel--warm">
+      <div class="faq-grid" style="display:grid;grid-template-columns:.8fr 1.2fr;gap:56px;align-items:start">
+        <div>
+          <h2>Questions people actually ask.</h2>
+          <p class="lede" style="margin-top:20px">
+            The ones that come up before anybody signs anything. Every answer is the one on the
+            pricing and trust pages, not a shorter version of it.
+          </p>
+        </div>
+        <div class="faq">
+          <details open>
+            <summary>Do I need a card to try it?</summary>
+            <p>No. The trial is fourteen days with no card. If you decide not to carry on, nothing happens — there is no charge to cancel before.</p>
+          </details>
+          <details>
+            <summary>What happens if I go over one of the limits?</summary>
+            <p>Nothing you already have is touched, and nothing you are part way through is stopped. You get a quiet notice as you approach it, and the option to add more room in one tap at the moment it matters — with the price on the button, not behind it. If you do nothing, only new additions of that one kind pause. Your website stays up, your customers stay visible, and order confirmations and password resets always go out regardless.</p>
+          </details>
+          <details>
+            <summary>Can I take my data with me if I leave?</summary>
+            <p>All of it, whenever you want, in formats other software can actually read — customers, products, orders, invoices and everything you have written. You do not have to ask, and you do not have to be leaving.</p>
+          </details>
+          <details>
+            <summary>What if I run two businesses?</summary>
+            <p>Each business is its own subscription, with its own website, customers and books kept completely separate. That is deliberate: sharing them is almost always a mistake you find out about at tax time.</p>
+          </details>
+          <details>
+            <summary>Do you use my business data to train AI?</summary>
+            <p>No. Not to train a model, not to improve a shared assistant, not anonymised, not aggregated. Any AI feature runs on a key you connect yourself, which means the data goes where you agreed and nowhere else — and you can revoke it whenever you want.</p>
+          </details>
+          <details>
+            <summary>Is there a discount for paying yearly?</summary>
+            <p>Not yet. When there is, it will be a straightforward reduction rather than a different plan with different limits.</p>
+          </details>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════ 11 · CLOSE ══════════════════════════════════════════════════════ -->
+  <section class="section" id="price" style="margin-top:16px">
+    <div class="close">
+      <div>
+        <h2>Go and run the business. Piggles will handle the business software.</h2>
+        <div class="close-cta">
+          <a class="btn btn-secondary btn-xl" href="#">Get Piggles</a>
+          <a class="btn btn-outline btn-xl" href="#">Talk to a person</a>
+        </div>
+        <p class="note">$49 a month · free for 14 days · no card needed</p>
+      </div>
+      <img class="mascot" src="../../apps/web/public/mascot/mascot-base.webp" alt="" />
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <a class="wordmark" href="#top" style="font-size:1.25rem"><span class="snout" style="width:28px;height:28px;border-radius:9px"><i style="width:12px;height:10px"></i></span>Piggles</a>
+    <span>Business software for people who have a business to run.</span>
+    <span style="margin-left:auto">Pricing · Trust · Answers · Contact</span>
+  </div>
+</footer>
+
+<!-- Sticky CTA, phones only. -->
+<div class="dock">
+  <div><b>$49/month</b><br /><span style="font-size:.9rem">Free for 14 days, no card</span></div>
+  <a class="btn btn-primary" href="#price">Start free</a>
+</div>
+
+<script>
+// The hero switch. Two views, one at a time.
+document.querySelectorAll('.switch button').forEach((b) => {
+  b.addEventListener('click', () => {
+    const want = b.dataset.state;
+    document.querySelectorAll('.switch button').forEach((x) =>
+      x.setAttribute('aria-pressed', String(x.dataset.state === want)),
+    );
+    document.querySelectorAll('.stage-view').forEach((v) =>
+      v.classList.toggle('is-on', v.dataset.view === want),
+    );
+  });
+});
+
+// The arithmetic. Every number is the reader's; we supply none of them.
+const fields = ['t1', 't2', 't3', 't4', 't5', 't6'].map((id) => document.getElementById(id));
+const totalEl = document.getElementById('total');
+const verdict = document.getElementById('verdict');
+
+function tally() {
+  const n = fields.reduce((sum, f) => sum + (parseFloat(f.value) || 0), 0);
+  totalEl.textContent = n.toLocaleString('en-US', { maximumFractionDigits: 0 });
+  verdict.classList.toggle('is-over', n > 49);
+  verdict.textContent =
+    n === 0
+      ? 'Fill in what you know. The gaps are part of the answer.'
+      : n > 49
+        ? `That is $${(n - 49).toLocaleString('en-US', { maximumFractionDigits: 0 })} a month more than Piggles, across ${fields.filter((f) => parseFloat(f.value) > 0).length} separate bills — and none of those tools talk to each other.`
+        : 'Cheaper than Piggles today. Worth asking what the copying between them costs you on a Sunday.';
+}
+fields.forEach((f) => f.addEventListener('input', tally));
+</script>
+
+</body>
+</html>

@@ -29,12 +29,12 @@
 //     `formats{}` object. Normalising here is what lets product code keep saying
 //     `pose="wave"` forever, whichever batch the art came from.
 //
-// ── THE BATCH NUMBER IS PROVENANCE, NOT A NAMESPACE ──────────────────────────
+// ── EVERY DELIVERED CUT SHIPS ────────────────────────────────────────────────
 //
-// Pose ids are semantic and permanent (`wave`, `celebrate`). A later batch that
-// re-cuts an existing pose SUPERSEDES it in place: last entry in ACTIVE_BATCHES
-// wins, the catalog records which batch the art came from, and no product code
-// changes. That is the whole reason this is a build step and not a copy-paste.
+// Pose ids are semantic and permanent (`wave`, `celebrate`), and a later batch
+// that re-cuts an existing pose takes the bare id so no product code changes.
+// The earlier cut is NOT thrown away — it ships as `<id>-<batch>` and stays
+// reachable. Art that was delivered is art the app can use.
 
 import { createHash } from 'node:crypto';
 import { mkdir, readdir, readFile, rm, writeFile } from 'node:fs/promises';
@@ -76,10 +76,16 @@ const BATCH_ROOT = join(PIGGLES_ROOT, 'images', 'mascot');
  *    04  business settings — a counter, a shop shelf, a meeting table, a bench
  *    05  one round table, ten activities. A DAY at one desk, which is exactly
  *        what apps/web's scroll film and the console's empty states both want.
+ *    07  eleven TRADES — a bakery, a barber, a potter, a garage, a market stall,
+ *        a salon, a tailor, an art studio, a workshop, a supplier, a shed. Cut
+ *        for meetpiggles.com's "whatever kind of business you have" wall, where
+ *        the whole set is on screen at once and the claim IS the variety.
  *
  *  Later batches are listed last, so where two draw the same idea the tighter
- *  cut wins. No id collides across the five today. */
-const ACTIVE_BATCHES = ['01', '02', '03', '04', '05'];
+ *  cut takes the bare id. ONE id collides today: `workshop`, drawn by 04 as a
+ *  generic bench and by 07 as a trade. 07 keeps `workshop`; 04's ships as
+ *  `workshop-04`. There is no batch 06. */
+const ACTIVE_BATCHES = ['01', '02', '03', '04', '05', '07'];
 
 /** Apps that get a copy of the shipped assets. Each Next app serves them from its
  *  own `public/`, which is the one URL shape that works identically in the
@@ -188,16 +194,43 @@ async function boundingBox(file) {
  *
  *  Deliberately narrow. The pink brand mark printed on the laptop lids, mugs and
  *  parcels is far more saturated than skin, so the upper bound rejects it, and
- *  the row percentile in `subjectSpan` throws away whatever leaks through. */
+ *  the row percentile in `subjectSpan` throws away whatever leaks through.
+ *
+ *  ── THE BOUNDS WERE TOO LOOSE, AND THE FAILURE WAS SILENT ──────────────────
+ *
+ *  They were `saturation >= 0.14` and `|g - b| <= 34`, which also admits PALE
+ *  CREAM AND TAN — bread, a canvas awning, a beige counter, a paper cup. Those
+ *  are red-dominant and only mildly saturated, so they read as skin, and every
+ *  one of them extends the measured span upward or downward past where she
+ *  actually is.
+ *
+ *  That inflates `subject`, and an inflated `subject` makes <PigglesMascot>
+ *  render the pose SMALLER — it divides by this number to decide how wide the
+ *  image has to be. Batch 07 is where it became impossible to miss, because all
+ *  eleven cuts sit on screen at once: `bakery` measured 0.878 against a true
+ *  0.490 and `market-stall` 0.851 against 0.391, so at one named size Piggles
+ *  came out 85px and 70px tall beside a 153px `supplier`. A 2.2x spread, from
+ *  the machinery whose entire job is making that spread 1.0x.
+ *
+ *  Her skin is PINK — red-dominant with green and blue nearly equal (g-b ≈ 9).
+ *  Cream and tan are yellower (bread ≈ 28, pale wood ≈ 45). Halving the green-
+ *  blue tolerance separates them, and lifting the saturation floor drops the
+ *  washed-out end of the same family.
+ *
+ *  Measured across all 60 poses before changing it: on the 16 FIGURE-ONLY poses,
+ *  which have no props to contaminate them and must therefore be unaffected, the
+ *  mean change is -0.010 — nothing. On the 44 scene poses it is -0.102. The test
+ *  rejects props and leaves skin alone, which is the only evidence that
+ *  distinguishes a tighter detector from a broken one. */
 function isSkin(r, g, b, a) {
   if (a < 200 || r < 180) return false;
   const max = Math.max(r, g, b);
   const min = Math.min(r, g, b);
   if (max !== r) return false;
   const saturation = (max - min) / max;
-  if (saturation < 0.14 || saturation > 0.62) return false;
-  // Wood and tan are much yellower than skin — g and b diverge.
-  return Math.abs(g - b) <= 34;
+  if (saturation < 0.2 || saturation > 0.62) return false;
+  // Wood, bread and cream are all yellower than skin — g and b diverge.
+  return Math.abs(g - b) <= 18;
 }
 
 /** What fraction of the artwork's height the CHARACTER occupies.
@@ -430,8 +463,21 @@ for (const batch of ACTIVE_BATCHES) {
   const manifest = JSON.parse(await readFile(join(BATCH_ROOT, batch, 'manifest.json'), 'utf8'));
   for (const entry of normalise(manifest, batch)) {
     if (entry.hasArt) {
+      // A COLLIDING ID DOES NOT DISCARD ART. Every delivered cut ships and is
+      // reachable; the later batch keeps the bare id so no call site changes,
+      // and the earlier one is re-keyed `<id>-<batch>`.
+      //
+      // It used to just overwrite, which meant batch 04's `workshop` was drawn,
+      // paid for, sitting in the repo, and unreachable — and the app served a
+      // DIFFERENT picture at the same URL the moment 07 landed.
       if (seen.has(entry.id)) {
-        console.log(`  ${entry.id}: batch ${batch} supersedes ${seen.get(entry.id).batch}`);
+        const earlier = seen.get(entry.id);
+        const rekeyed = `${earlier.id}-${earlier.batch}`;
+        if (seen.has(rekeyed)) throw new Error(`re-key collision: ${rekeyed} already exists`);
+        seen.set(rekeyed, { ...earlier, id: rekeyed });
+        console.log(
+          `  ${entry.id}: batch ${batch} takes the id; batch ${earlier.batch} ships as ${rekeyed}`
+        );
       }
       seen.set(entry.id, entry);
       roadmap.delete(entry.id);

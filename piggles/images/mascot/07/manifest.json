@@ -1,0 +1,23 @@
+{
+  "name": "Piggles Mascot System",
+  "batch": "07",
+  "version": "7.0.0",
+  "character": "Piggles",
+  "specification": "MASCOT.md v1.1",
+  "presentationMode": "branded-small-business-scenes",
+  "defaultFormat": "webp",
+  "sheet": "assets/sheets/piggles-character-sheet.jpg",
+  "assets": [
+    {"id":"piggles-bakery","title":"Bakery","category":"food-service","alt":"Piggles presenting bread at a bakery counter","png":"assets/png/piggles-bakery.png","webp":"assets/webp/piggles-bakery.webp"},
+    {"id":"piggles-barber","title":"Barber","category":"personal-services","alt":"Piggles ready to work beside a barber chair","png":"assets/png/piggles-barber.png","webp":"assets/webp/piggles-barber.webp"},
+    {"id":"piggles-potter","title":"Potter","category":"craft","alt":"Piggles shaping a clay pot on a pottery wheel","png":"assets/png/piggles-potter.png","webp":"assets/webp/piggles-potter.webp"},
+    {"id":"piggles-garage","title":"Garage","category":"automotive","alt":"Piggles working with tools in a garage","png":"assets/png/piggles-garage.png","webp":"assets/webp/piggles-garage.webp"},
+    {"id":"piggles-market-stall","title":"Market Stall","category":"retail","alt":"Piggles presenting produce at a market stall","png":"assets/png/piggles-market-stall.png","webp":"assets/webp/piggles-market-stall.webp"},
+    {"id":"piggles-salon","title":"Salon","category":"personal-services","alt":"Piggles ready to style hair in a salon","png":"assets/png/piggles-salon.png","webp":"assets/webp/piggles-salon.webp"},
+    {"id":"piggles-tailor","title":"Tailor","category":"craft","alt":"Piggles tailoring beside a sewing machine","png":"assets/png/piggles-tailor.png","webp":"assets/webp/piggles-tailor.webp"},
+    {"id":"piggles-art-studio","title":"Art Studio","category":"creative","alt":"Piggles painting at an easel in an art studio","png":"assets/png/piggles-art-studio.png","webp":"assets/webp/piggles-art-studio.webp"},
+    {"id":"piggles-workshop","title":"Workshop","category":"craft","alt":"Piggles woodworking at a workshop bench","png":"assets/png/piggles-workshop.png","webp":"assets/webp/piggles-workshop.webp"},
+    {"id":"piggles-supplier","title":"Supplier","category":"inventory","alt":"Piggles managing boxes and supplies","png":"assets/png/piggles-supplier.png","webp":"assets/webp/piggles-supplier.webp"},
+    {"id":"piggles-shed","title":"Shed","category":"outdoor-services","alt":"Piggles working with garden tools beside a shed","png":"assets/png/piggles-shed.png","webp":"assets/webp/piggles-shed.webp"}
+  ]
+}

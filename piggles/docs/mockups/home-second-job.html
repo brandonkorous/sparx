@@ -1,0 +1,869 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Piggles — "the second job" home page mockup</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Nunito:wght@700;800;900&display=swap" rel="stylesheet" />
+
+<!--
+  ══════════════════════════════════════════════════════════════════════════════
+  meetpiggles.com — HOME, VERSION 2: "THE SECOND JOB"
+  ══════════════════════════════════════════════════════════════════════════════
+
+  A clean-sheet page. Nothing here is carried over from the live home page or
+  from the pain-first mockup beside it — not the day film, not the trades list,
+  not "You don't have a CRM", not the trust refusals, not the tally, not the
+  closing line. Different pain, different argument, different devices.
+
+  ── THE ARGUMENT ─────────────────────────────────────────────────────────────
+
+  The other version's pain is OPERATIONAL: things break in the gaps between your
+  tools. This version's pain is about IDENTITY and TIME, which is the older and
+  sorer of the two: you are good at a thing, you started a business to do that
+  thing, and you now spend most of your week doing six other jobs instead. That
+  is not a complaint about software — until §3, where it turns out five of the
+  six jobs exist only because nothing in your business knows anything about the
+  rest of it. The identity complaint becomes a structural problem, which is the
+  only kind that can be fixed by buying something.
+
+  Then it pays off the second, quieter pain that no other page here touches:
+  every piece of software you own gets more expensive the better your business
+  does. Piggles genuinely does not (CLAUDE.md RULE #2), so that section is an
+  argument rather than a price list.
+
+  ── THE BEATS ────────────────────────────────────────────────────────────────
+
+    1  The rota          you hold six jobs and nobody is paying you for five
+    2  The job cards     what each one is, when you do it, why it exists
+    3  The turn          you are the only thing in the business that knows
+    4  One fact          the same fact in six places, typed nowhere
+    5  The price         what makes your bill go up, everywhere else and here
+    6  The first hour    what happens between clicking and having something
+    7  The fifteen       an index, not a brochure
+    8  We are new        the objection nobody else on this page will say aloud
+    9  Close             back to the job you actually wanted
+
+  ── NOTHING HERE IS INVENTED ─────────────────────────────────────────────────
+
+  DESIGN.md §10. No uptime figure, no logo wall, no customer count, and — the
+  temptation this particular argument creates — NO claim about hours saved.
+  "Get your Sundays back" is unmeasurable and unearned before launch, so §3 and
+  §4 argue that the jobs are structural rather than that they disappear on a
+  schedule. §8 says out loud that Piggles is new, which is the honest version of
+  the trust section and is also the highest-lift objection to answer.
+
+  Tokens are copied verbatim from packages/brand/src/theme.css.
+-->
+
+<style>
+/* ── TOKENS ──────────────────────────────────────────────────────────────── */
+:root {
+  --color-primary: #ff6f86;          --color-primary-content: #ffffff;
+  --color-secondary: #2d3443;        --color-secondary-content: #ffffff;
+  --color-accent: #ffb3c0;           --color-accent-content: #202631;
+  --color-accent-pale: #ffe9ed;
+  --color-neutral: #52454f;
+  --color-success: #14804a;
+  --color-warning: #f3b61f;
+  --color-error: #c93838;
+
+  --color-base-100: #ffffff;
+  --color-base-200: #fbf7f8;
+  --color-base-300: #f7f0f2;
+  --color-base-content: #202631;
+  --color-ink-soft: #4b5563;
+
+  --color-group-home: #ff6f86;
+  --color-group-web: #4f46e5;
+  --color-group-sell: #c2410c;
+  --color-group-people: #0e7490;
+  --color-group-money: #4d7c0f;
+  --color-group-run: #7e22ce;
+
+  --radius-selector: 9999px;
+  --radius-field: 12px;
+  --radius-box: 18px;
+  --radius-section: 24px;
+
+  --font-sans: 'Inter', system-ui, sans-serif;
+  --font-heading: 'Nunito', 'Inter', system-ui, sans-serif;
+  --ease-piggles: cubic-bezier(0.34, 1.36, 0.64, 1);
+
+  --lift: 0 1px 2px rgba(32,38,49,.06), 0 4px 14px rgba(32,38,49,.06);
+  --lift-lg: 0 2px 6px rgba(32,38,49,.08), 0 18px 40px rgba(32,38,49,.10);
+}
+
+[data-group='home']   { --color-module: var(--color-group-home);   --color-module-content: #ffffff; }
+[data-group='web']    { --color-module: var(--color-group-web);    --color-module-content: #ffffff; }
+[data-group='sell']   { --color-module: var(--color-group-sell);   --color-module-content: #ffffff; }
+[data-group='people'] { --color-module: var(--color-group-people); --color-module-content: #ffffff; }
+[data-group='money']  { --color-module: var(--color-group-money);  --color-module-content: #ffffff; }
+[data-group='run']    { --color-module: var(--color-group-run);    --color-module-content: #ffffff; }
+
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+body {
+  margin: 0; font-family: var(--font-sans); font-size: 17px; line-height: 1.55;
+  color: var(--color-base-content); background: var(--color-base-300);
+  -webkit-font-smoothing: antialiased;
+}
+h1, h2, h3, h4 { font-family: var(--font-heading); margin: 0; line-height: 1.06; letter-spacing: -.015em; }
+p { margin: 0; } ul, ol { margin: 0; padding: 0; list-style: none; }
+a { color: inherit; } img { max-width: 100%; display: block; }
+button, input { font: inherit; color: inherit; }
+
+h1 { font-size: clamp(2.6rem, 5.8vw, 4.5rem); font-weight: 900; }
+h2 { font-size: clamp(2rem, 3.6vw, 3.15rem); font-weight: 900; }
+h3 { font-size: 1.3rem; font-weight: 800; }
+.lede { font-size: 1.2rem; max-width: 60ch; }
+.big-say { font-family: var(--font-heading); font-weight: 900; font-size: clamp(1.7rem, 3vw, 2.6rem); line-height: 1.12; }
+
+.wrap { max-width: 1240px; margin: 0 auto; padding: 0 24px; }
+.section { padding: 0 16px; margin-top: 16px; }
+.panel { max-width: 1240px; margin: 0 auto; border-radius: var(--radius-section); padding: 76px 56px; }
+.panel--white { background: var(--color-base-100); }
+.panel--warm  { background: var(--color-base-200); }
+.panel--pale  { background: var(--color-accent-pale); }
+.head { max-width: 64ch; }
+.head p { margin-top: 24px; }
+
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+  height: 48px; padding: 0 22px; border: 1.5px solid transparent; border-radius: var(--radius-field);
+  font-weight: 700; font-size: 1rem; text-decoration: none; cursor: pointer; white-space: nowrap;
+  transition: transform .18s var(--ease-piggles), background-color .18s ease;
+}
+.btn:hover { transform: translateY(-1px); }
+.btn-xl { height: 67px; padding: 0 34px; font-size: 1.15rem; }
+.btn-primary { background: var(--color-primary); color: var(--color-primary-content); box-shadow: var(--lift); }
+.btn-primary:hover { background: #ff5c76; }
+.btn-secondary { background: var(--color-secondary); color: var(--color-secondary-content); }
+.btn-outline { background: transparent; border-color: currentColor; }
+.btn-block { width: 100%; }
+
+/* ── HEADER ──────────────────────────────────────────────────────────────── */
+.site-header {
+  position: sticky; top: 0; z-index: 60;
+  background: color-mix(in oklab, var(--color-base-300) 88%, transparent);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid color-mix(in oklab, var(--color-base-content) 8%, transparent);
+}
+.site-header .wrap { display: flex; align-items: center; gap: 28px; height: 76px; }
+.wordmark { display: inline-flex; align-items: center; gap: 10px; font-family: var(--font-heading); font-weight: 900; font-size: 1.55rem; text-decoration: none; letter-spacing: -.02em; }
+.wordmark .snout { width: 34px; height: 34px; border-radius: 11px; background: var(--color-primary); display: grid; place-items: center; }
+.wordmark .snout i { width: 15px; height: 12px; border-radius: 6px; background: #fff; position: relative; }
+.wordmark .snout i::before, .wordmark .snout i::after { content: ''; position: absolute; top: 3px; width: 3.5px; height: 6px; border-radius: 3px; background: var(--color-primary); }
+.wordmark .snout i::before { left: 3px; } .wordmark .snout i::after { right: 3px; }
+.site-nav { display: flex; gap: 22px; margin-left: auto; font-weight: 600; }
+.site-nav a { text-decoration: none; } .site-nav a:hover { color: var(--color-primary); }
+
+/* ── 1 · THE ROTA (hero) ─────────────────────────────────────────────────────
+   The hero visual is NOT a picture of the product. Deliberately: the reader has
+   not agreed there is a problem yet, and a screenshot at this point answers a
+   question nobody asked. It is a staff board where every card is the same
+   person — which states the whole argument before a word of it is read, and
+   sets up the one pink card at the end of the row. */
+.hero { padding: 8px 16px 0; }
+.hero-inner {
+  max-width: 1240px; margin: 0 auto; background: var(--color-base-100);
+  border-radius: var(--radius-section); padding: 72px 56px 60px;
+  display: grid; grid-template-columns: 1.04fr 1fr; gap: 60px; align-items: center;
+}
+.hero h1 em { font-style: normal; color: var(--color-primary); }
+.hero-sub { font-size: 1.28rem; margin-top: 26px; max-width: 52ch; }
+.hero-cta { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 34px; }
+.hero-notes { display: flex; flex-wrap: wrap; gap: 8px 26px; margin-top: 22px; font-weight: 600; }
+.hero-notes li { display: flex; align-items: center; gap: 9px; }
+.hero-notes .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--color-primary); }
+
+.board { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+.idcard {
+  background: var(--color-base-100); border: 1px solid var(--color-base-300);
+  border-radius: 16px; padding: 16px 16px 14px; box-shadow: var(--lift);
+  display: grid; gap: 10px; align-content: start;
+}
+.idcard .who { display: flex; align-items: center; gap: 11px; }
+.idcard .face {
+  flex: none; width: 40px; height: 40px; border-radius: 50%;
+  background: color-mix(in oklab, var(--color-module, var(--color-neutral)) 16%, var(--color-base-300));
+  border: 1.5px solid color-mix(in oklab, var(--color-module, var(--color-neutral)) 40%, transparent);
+  display: grid; place-items: center; color: var(--color-module, var(--color-neutral));
+}
+.idcard .face svg { width: 21px; height: 21px; }
+.idcard .role { font-family: var(--font-heading); font-weight: 900; font-size: 1.06rem; line-height: 1.15; }
+.idcard .name { font-size: .87rem; color: var(--color-ink-soft); font-weight: 600; }
+.idcard dl { display: grid; grid-template-columns: auto 1fr; gap: 3px 10px; font-size: .87rem; margin: 0; }
+.idcard dt { color: var(--color-ink-soft); font-weight: 600; }
+.idcard dd { margin: 0; font-weight: 700; }
+.idcard--you {
+  grid-column: 1 / -1; background: var(--color-primary); color: var(--color-primary-content);
+  border-color: transparent;
+}
+.idcard--you .face { background: rgba(255,255,255,.22); border-color: rgba(255,255,255,.5); color: #fff; }
+.idcard--you .name, .idcard--you dt { color: rgba(255,255,255,.85); }
+
+/* ── 2 · THE JOB CARDS ───────────────────────────────────────────────────────
+   Each job gets three things and the third is the hinge: what it IS, WHEN you
+   do it, and WHY it exists. Without the third line this section is a page
+   feeling sorry for the reader, which sells nothing. With it, every card is
+   already pointing at a structural cause — and §3 only has to say out loud what
+   six cards have quietly established. */
+.jobs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-top: 46px; }
+.job {
+  background: var(--color-base-100); border: 1px solid var(--color-base-300);
+  border-radius: var(--radius-box); padding: 26px; display: grid; gap: 14px; align-content: start;
+}
+.job h3 { color: var(--color-module); font-size: 1.28rem; }
+.job .when { display: inline-flex; align-items: center; gap: 8px; font-weight: 700; font-size: .95rem; align-self: start;
+  background: color-mix(in oklab, var(--color-module) 11%, transparent); color: var(--color-module);
+  padding: 6px 13px; border-radius: var(--radius-selector); }
+.job p { font-size: 1.02rem; }
+.job .why { border-top: 1.5px solid var(--color-base-300); padding-top: 13px; font-size: 1rem; }
+.job .why b { display: block; font-weight: 800; margin-bottom: 3px; }
+
+/* ── 3 · THE TURN (dark island) ──────────────────────────────────────────────
+   A dark act, which is a Piggles mechanism rather than a Piggles page — set
+   `data-theme` in the port and every token inside flips on its own. One
+   sentence carries this section, so it gets a whole panel and a diagram that
+   restates it rather than a wall of supporting prose. */
+.turn {
+  background: #1c212c; color: #f4f5f7; border-radius: var(--radius-section);
+  max-width: 1240px; margin: 0 auto; padding: 84px 56px;
+  display: grid; grid-template-columns: 1.05fr .95fr; gap: 64px; align-items: center;
+}
+.turn .accent { color: var(--color-accent); }
+.turn p { color: #e3e6ee; }
+
+/* The diagram: six facts, one head. Every line converges on the same point,
+   which is the reader. */
+.knows { display: grid; gap: 12px; }
+.knows-head {
+  display: flex; align-items: center; gap: 14px; background: #272d39; border: 1.5px solid var(--color-primary);
+  border-radius: var(--radius-box); padding: 18px 20px;
+}
+.knows-head .badge { flex: none; width: 46px; height: 46px; border-radius: 50%; background: var(--color-primary); color: #fff; display: grid; place-items: center; }
+.knows-head .badge svg { width: 24px; height: 24px; }
+.knows-head b { display: block; font-family: var(--font-heading); font-weight: 900; font-size: 1.2rem; }
+.knows-head span { font-size: .95rem; color: #c9cedb; }
+.knows ul { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.knows li { background: #232936; border: 1px solid #3a4150; border-radius: 14px; padding: 14px 16px; font-size: .97rem; }
+.knows li b { display: block; font-weight: 800; margin-bottom: 2px; }
+.knows li span { color: #b9c0cf; }
+.knows .foot { display: flex; align-items: center; gap: 10px; font-weight: 700; color: var(--color-accent); }
+
+/* ── 4 · ONE FACT ────────────────────────────────────────────────────────────
+   The product beat, and the smallest possible version of it: ONE fact, and
+   every place that already has it. A whole-workspace depiction would be the
+   product showing off; a single number moving is the actual claim. */
+.fact { margin-top: 46px; display: grid; grid-template-columns: 300px 1fr; gap: 44px; align-items: center; }
+.fact-source {
+  background: var(--color-base-100); border: 2px solid var(--color-primary);
+  border-radius: var(--radius-box); padding: 26px; box-shadow: var(--lift-lg); text-align: center;
+}
+.fact-source .num { font-family: var(--font-heading); font-weight: 900; font-size: 4.6rem; line-height: 1; color: var(--color-primary); }
+.fact-source .lbl { font-weight: 800; margin-top: 6px; }
+.fact-source .sub { color: var(--color-ink-soft); font-size: .97rem; margin-top: 4px; }
+.fact-out { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.place {
+  background: var(--color-base-100); border: 1px solid var(--color-base-300);
+  border-left: 4px solid var(--color-module); border-radius: 14px; padding: 16px 18px;
+}
+.place b { display: block; color: var(--color-module); font-weight: 800; font-size: 1.02rem; }
+.place span { display: block; font-size: .95rem; margin-top: 4px; }
+.fact-note { margin-top: 30px; font-size: 1.14rem; max-width: 74ch; }
+
+/* ── 5 · THE PRICE ───────────────────────────────────────────────────────────
+   Not a price list — an argument about what makes a bill go up. Two columns,
+   one struck and one ticked, because the claim is a contrast and a contrast
+   wants to be seen rather than read. */
+.triggers { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 44px; }
+.trigger-col { border-radius: var(--radius-box); padding: 32px; }
+.trigger-col.bad { background: var(--color-base-200); border: 1px solid var(--color-base-300); }
+.trigger-col.good { background: var(--color-base-100); border: 2px solid var(--color-primary); }
+.trigger-col h3 { font-size: 1.45rem; }
+.trigger-col ul { margin-top: 22px; display: grid; gap: 13px; }
+.trigger-col li { display: flex; gap: 12px; align-items: flex-start; font-size: 1.05rem; }
+.mark { flex: none; width: 24px; height: 24px; border-radius: 50%; display: grid; place-items: center; font-weight: 900; font-size: .95rem; margin-top: 1px; }
+.mark.x { background: color-mix(in oklab, var(--color-error) 13%, transparent); color: var(--color-error); }
+.mark.v { background: color-mix(in oklab, var(--color-success) 13%, transparent); color: var(--color-success); }
+.trigger-foot { margin-top: 22px; padding-top: 18px; border-top: 1.5px solid var(--color-base-300); font-size: 1.02rem; font-weight: 600; }
+.price-line { margin-top: 40px; background: var(--color-base-100); border: 1px solid var(--color-base-300); border-radius: var(--radius-box); padding: 30px 34px; display: flex; align-items: center; gap: 30px; flex-wrap: wrap; }
+.price-line .amount { font-family: var(--font-heading); font-weight: 900; font-size: 3.4rem; line-height: 1; }
+.price-line .amount i { font-style: normal; font-size: 1.15rem; }
+.price-line p { flex: 1; min-width: 260px; font-size: 1.1rem; }
+
+/* ── 6 · THE FIRST HOUR ──────────────────────────────────────────────────────
+   A timeline, because the objection this answers is about TIME ("I don't have
+   a week to set this up") and a timeline answers it in its own units. */
+.hour { display: grid; grid-template-columns: 1fr 300px; gap: 56px; align-items: center; margin-top: 44px; }
+.steps { display: grid; }
+.step { display: grid; grid-template-columns: 92px 1fr; gap: 24px; padding: 22px 0; border-top: 1.5px solid var(--color-base-300); }
+.step:last-child { border-bottom: 1.5px solid var(--color-base-300); }
+.step .at { font-family: var(--font-heading); font-weight: 900; font-size: 1.15rem; color: var(--color-module); }
+.step h3 { font-size: 1.2rem; }
+.step p { margin-top: 7px; font-size: 1.02rem; max-width: 62ch; }
+
+/* ── 7 · THE FIFTEEN ─────────────────────────────────────────────────────────
+   An INDEX, not a brochure. Tiles would make fifteen included apps look like
+   fifteen things to evaluate, and the claim here is the opposite — they are
+   already yours, so this reads like a contents page. */
+.index { margin-top: 44px; border-top: 2px solid var(--color-base-content); }
+.index-group { display: grid; grid-template-columns: 210px 1fr; gap: 32px; padding: 26px 0; border-bottom: 1px solid var(--color-base-300); }
+.index-group > div h3 { color: var(--color-module); font-size: 1.35rem; }
+.index-group > div p { font-size: .98rem; color: var(--color-ink-soft); margin-top: 6px; }
+.index-apps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px 26px; }
+.index-app { display: flex; gap: 12px; align-items: flex-start; }
+.index-app .glyph { flex: none; width: 34px; height: 34px; border-radius: 11px; background: var(--color-module); color: var(--color-module-content); display: grid; place-items: center; }
+.index-app .glyph svg { width: 17px; height: 17px; }
+.index-app b { display: block; font-weight: 800; }
+.index-app span { display: block; font-size: .94rem; color: var(--color-ink-soft); }
+
+/* ── 8 · WE ARE NEW ──────────────────────────────────────────────────────── */
+.new-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; margin-top: 40px; }
+.new-grid li { border-top: 3px solid var(--color-module); padding-top: 18px; }
+.new-grid h3 { font-size: 1.22rem; }
+.new-grid p { margin-top: 9px; font-size: 1.02rem; }
+
+/* ── 9 · CLOSE ───────────────────────────────────────────────────────────── */
+.close {
+  background: var(--color-primary); color: var(--color-primary-content);
+  border-radius: var(--radius-section); max-width: 1240px; margin: 0 auto;
+  padding: 66px 56px; display: grid; grid-template-columns: 1fr auto; gap: 44px; align-items: center;
+}
+.close h2 { max-width: 19ch; }
+.close-cta { display: flex; gap: 14px; flex-wrap: wrap; margin-top: 28px; }
+.close .note { margin-top: 18px; font-weight: 700; }
+.mascot { width: 240px; }
+
+.site-footer { padding: 56px 16px 40px; }
+.site-footer .wrap { display: flex; gap: 24px; align-items: center; flex-wrap: wrap; color: var(--color-ink-soft); font-weight: 600; }
+
+.dock { display: none; }
+@media (max-width: 900px) {
+  .dock {
+    display: flex; position: fixed; left: 12px; right: 12px; bottom: 12px; z-index: 70;
+    gap: 12px; align-items: center; padding: 12px 12px 12px 18px;
+    background: var(--color-base-100); border: 1px solid var(--color-base-300);
+    border-radius: var(--radius-box); box-shadow: var(--lift-lg);
+  }
+  .dock b { font-family: var(--font-heading); font-weight: 900; }
+  .dock .btn { margin-left: auto; }
+}
+
+/* ── RESPONSIVE ─────────────────────────────────────────────────────────── */
+@media (max-width: 1140px) {
+  .hero-inner, .turn, .fact, .hour { grid-template-columns: 1fr; }
+  .fact { gap: 28px; }
+  .jobs, .new-grid { grid-template-columns: repeat(2, 1fr); }
+  .index-group { grid-template-columns: 1fr; gap: 18px; }
+  .index-apps { grid-template-columns: repeat(2, 1fr); }
+  .hour-mascot { display: none; }
+}
+@media (max-width: 900px) {
+  .panel { padding: 54px 28px; }
+  .hero-inner { padding: 46px 28px 48px; }
+  .turn, .close { padding: 54px 28px; }
+  .site-nav { display: none; }
+  .close { grid-template-columns: 1fr; }
+  .mascot { width: 175px; justify-self: center; }
+  body { padding-bottom: 92px; }
+}
+@media (max-width: 620px) {
+  .jobs, .new-grid, .triggers, .fact-out, .index-apps, .knows ul { grid-template-columns: 1fr; }
+  .board { grid-template-columns: 1fr; }
+  .step { grid-template-columns: 1fr; gap: 4px; }
+}
+@media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } html { scroll-behavior: auto; } }
+</style>
+</head>
+
+<body>
+
+<!-- App + role glyphs. In apps/web the app icons arrive from @piggles/config
+     via appIcon(id); the six role glyphs in the hero are marketing art and
+     would live beside the page. -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-home" viewBox="0 0 24 24"><path d="M4 10.5 12 4l8 6.5V20a1 1 0 0 1-1 1h-4v-6H9v6H5a1 1 0 0 1-1-1z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></symbol>
+  <symbol id="i-site" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M3.5 12h17M12 3.5c2.2 2.4 3.3 5.3 3.3 8.5s-1.1 6.1-3.3 8.5c-2.2-2.4-3.3-5.3-3.3-8.5S9.8 5.9 12 3.5z" fill="none" stroke="currentColor" stroke-width="2"/></symbol>
+  <symbol id="i-content" viewBox="0 0 24 24"><path d="M6 3.5h8l4.5 4.5V20a.5.5 0 0 1-.5.5H6a.5.5 0 0 1-.5-.5V4a.5.5 0 0 1 .5-.5z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M13.5 3.5V9H19M8.5 13h7M8.5 16.5h5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="i-found" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="m16 16 4.5 4.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="i-sell" viewBox="0 0 24 24"><path d="M11.4 3.5H20v8.6l-8.9 8.9a1 1 0 0 1-1.4 0l-7.2-7.2a1 1 0 0 1 0-1.4z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><circle cx="16" cy="8" r="1.6" fill="currentColor"/></symbol>
+  <symbol id="i-stock" viewBox="0 0 24 24"><path d="M3.5 7.5 12 3.5l8.5 4v9L12 20.5l-8.5-4z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M3.5 7.5 12 11.5l8.5-4M12 11.5v9" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></symbol>
+  <symbol id="i-customers" viewBox="0 0 24 24"><circle cx="9.5" cy="8.5" r="3.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M3.5 20c0-3.3 2.7-6 6-6s6 2.7 6 6M16 5.2a3.5 3.5 0 0 1 0 6.6M17.5 14.6c1.9.9 3 2.9 3 5.4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="i-messages" viewBox="0 0 24 24"><rect x="3.5" y="5.5" width="17" height="13" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="m4 7 8 6 8-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></symbol>
+  <symbol id="i-bookings" viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15.5" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M3.5 10h17M8 3v4M16 3v4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="15" r="1.6" fill="currentColor"/></symbol>
+  <symbol id="i-invoices" viewBox="0 0 24 24"><path d="M5.5 3.5h13v17l-2.2-1.6-2.2 1.6-2.1-1.6-2.2 1.6-2.3-1.6z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9 8.5h6M9 12.5h6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="i-money" viewBox="0 0 24 24"><path d="M3.5 20.5V4M3.5 20.5H21" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M7 16l3.5-4.5 3 2.5L20 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-team" viewBox="0 0 24 24"><circle cx="12" cy="7.5" r="3.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M5 20.5c0-3.9 3.1-7 7-7 1.4 0 2.7.4 3.8 1.1" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="m15.5 18.5 2 2 3.5-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-automations" viewBox="0 0 24 24"><path d="M13.5 2.5 5 13.5h6l-.5 8L19 10.5h-6z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></symbol>
+  <symbol id="i-partners" viewBox="0 0 24 24"><path d="M2.5 7.5h10v9h-10zM12.5 11h4l3 3v2.5h-7z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><circle cx="6.5" cy="18.5" r="1.8" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="16.5" cy="18.5" r="1.8" fill="none" stroke="currentColor" stroke-width="2"/></symbol>
+  <symbol id="i-connections" viewBox="0 0 24 24"><path d="M9 3v6M15 3v6M6.5 9h11v3.5a5.5 5.5 0 0 1-11 0z" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 18v3.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="i-person" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4" fill="none" stroke="currentColor" stroke-width="2"/><path d="M4.5 20.5c0-4.1 3.4-7.5 7.5-7.5s7.5 3.4 7.5 7.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="i-head" viewBox="0 0 24 24"><path d="M12 2.5a7 7 0 0 0-7 7c0 2 .8 3.4 1.7 4.6.7.9 1.3 1.7 1.3 2.9v1.5h8v-1.5c0-1.2.6-2 1.3-2.9.9-1.2 1.7-2.6 1.7-4.6a7 7 0 0 0-7-7z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9.5 21.5h5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+</svg>
+
+<header class="site-header">
+  <div class="wrap">
+    <a class="wordmark" href="#top"><span class="snout"><i></i></span>Piggles</a>
+    <nav class="site-nav">
+      <a href="#jobs">The six jobs</a>
+      <a href="#price">What it costs</a>
+      <a href="#start">Getting started</a>
+      <a href="#apps">Everything included</a>
+    </nav>
+    <a class="btn btn-primary" href="#close">Start free</a>
+  </div>
+</header>
+
+<main id="top">
+
+  <!-- ════ 1 · THE ROTA ════════════════════════════════════════════════════ -->
+  <section class="hero">
+    <div class="hero-inner">
+      <div>
+        <h1>You're doing six jobs. You applied for <em>one</em> of them.</h1>
+        <p class="hero-sub">
+          Nobody opens a bakery to become a bookkeeper. Somewhere between the first customer and
+          this evening you also became the receptionist, the web person, the stock controller and
+          your own IT department — and none of it is why you did this.
+        </p>
+        <div class="hero-cta">
+          <a class="btn btn-primary btn-xl" href="#close">Start free for 14 days</a>
+          <a class="btn btn-outline btn-xl" href="#jobs">Look at the six</a>
+        </div>
+        <ul class="hero-notes">
+          <li><span class="dot"></span>Fifteen apps, one login</li>
+          <li><span class="dot"></span>$49 a month, all of it</li>
+          <li><span class="dot"></span>No card to try it</li>
+        </ul>
+      </div>
+
+      <!-- The staff board: six roles, one person. -->
+      <div class="board" aria-label="Your staff">
+        <div class="idcard" data-group="money">
+          <div class="who">
+            <span class="face"><svg aria-hidden="true"><use href="#i-person"/></svg></span>
+            <span><span class="role">Bookkeeper</span><span class="name">You</span></span>
+          </div>
+          <dl><dt>Hours</dt><dd>Sunday, 9pm</dd><dt>Pay</dt><dd>None</dd></dl>
+        </div>
+        <div class="idcard" data-group="people">
+          <div class="who">
+            <span class="face"><svg aria-hidden="true"><use href="#i-person"/></svg></span>
+            <span><span class="role">Receptionist</span><span class="name">You</span></span>
+          </div>
+          <dl><dt>Hours</dt><dd>All of them</dd><dt>Pay</dt><dd>None</dd></dl>
+        </div>
+        <div class="idcard" data-group="web">
+          <div class="who">
+            <span class="face"><svg aria-hidden="true"><use href="#i-person"/></svg></span>
+            <span><span class="role">Web person</span><span class="name">You</span></span>
+          </div>
+          <dl><dt>Hours</dt><dd>When it breaks</dd><dt>Pay</dt><dd>None</dd></dl>
+        </div>
+        <div class="idcard" data-group="sell">
+          <div class="who">
+            <span class="face"><svg aria-hidden="true"><use href="#i-person"/></svg></span>
+            <span><span class="role">Stock controller</span><span class="name">You</span></span>
+          </div>
+          <dl><dt>Hours</dt><dd>Tuesday, twice</dd><dt>Pay</dt><dd>None</dd></dl>
+        </div>
+        <div class="idcard" data-group="run">
+          <div class="who">
+            <span class="face"><svg aria-hidden="true"><use href="#i-person"/></svg></span>
+            <span><span class="role">IT department</span><span class="name">You</span></span>
+          </div>
+          <dl><dt>Hours</dt><dd>Emergencies</dd><dt>Pay</dt><dd>None</dd></dl>
+        </div>
+        <div class="idcard" data-group="run">
+          <div class="who">
+            <span class="face"><svg aria-hidden="true"><use href="#i-person"/></svg></span>
+            <span><span class="role">Software buyer</span><span class="name">You</span></span>
+          </div>
+          <dl><dt>Hours</dt><dd>Six tabs open</dd><dt>Pay</dt><dd>None</dd></dl>
+        </div>
+
+        <div class="idcard idcard--you">
+          <div class="who">
+            <span class="face"><svg aria-hidden="true"><use href="#i-person"/></svg></span>
+            <span><span class="role">Baker</span><span class="name">You — the job you applied for</span></span>
+          </div>
+          <dl><dt>Hours</dt><dd>Whatever's left</dd><dt>Pay</dt><dd>This is the business</dd></dl>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════ 2 · THE JOB CARDS ═══════════════════════════════════════════════ -->
+  <section class="section" id="jobs">
+    <div class="panel panel--white">
+      <div class="head">
+        <h2>Here is the job description nobody gave you.</h2>
+        <p class="lede">
+          Six roles, with the hours you actually work them. Read the last line of each one first —
+          it is the only part that matters, and it is the same shape every time.
+        </p>
+      </div>
+
+      <ul class="jobs">
+        <li class="job" data-group="money">
+          <h3>Bookkeeper</h3>
+          <span class="when">Sunday, after dinner</span>
+          <p>Takings from the till, takings from the website, receipts out of a carrier bag, and a spreadsheet that has to agree with all three by the end of the evening.</p>
+          <p class="why"><b>Why this job exists</b>Because the money arrives in four places and is recorded in a fifth.</p>
+        </li>
+        <li class="job" data-group="people">
+          <h3>Receptionist</h3>
+          <span class="when">Every time the phone goes</span>
+          <p>"Can you do Saturday?" You check a calendar, a notebook and your memory, and you give an answer that might be wrong until you get back to the desk.</p>
+          <p class="why"><b>Why this job exists</b>Because the diary the public books into isn't the diary you're looking at.</p>
+        </li>
+        <li class="job" data-group="web">
+          <h3>Web person</h3>
+          <span class="when">Whenever something changes</span>
+          <p>New price, new opening hours, that thing you no longer sell. Every change happens twice — once in real life, and once on a website that has no idea.</p>
+          <p class="why"><b>Why this job exists</b>Because your website is a separate company that happens to have your name on it.</p>
+        </li>
+        <li class="job" data-group="sell">
+          <h3>Stock controller</h3>
+          <span class="when">Tuesday, and again Friday</span>
+          <p>Counting things you have already counted, because the number on the screen stopped being true at some point and nobody can say when.</p>
+          <p class="why"><b>Why this job exists</b>Because two systems count the same shelf and neither tells the other.</p>
+        </li>
+        <li class="job" data-group="run">
+          <h3>IT department</h3>
+          <span class="when">Always at the worst moment</span>
+          <p>The card reader won't talk to the till. The booking confirmations stopped sending. Nobody is coming to fix it, so you learn just enough to make it limp along.</p>
+          <p class="why"><b>Why this job exists</b>Because you own six products from six companies, and the joins are yours.</p>
+        </li>
+        <li class="job" data-group="run">
+          <h3>Software buyer</h3>
+          <span class="when">Right now, probably</span>
+          <p>Comparison tabs, free trials you forgot to cancel, and a nagging sense that there is a right answer and you have not found it. This one is not even a job. It is homework.</p>
+          <p class="why"><b>Why this job exists</b>Because fixing one gap means buying one more thing that doesn't know about the others.</p>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ════ 3 · THE TURN ════════════════════════════════════════════════════ -->
+  <section class="section">
+    <div class="turn">
+      <div>
+        <h2>Five of those six are not jobs at all.</h2>
+        <p class="lede" style="margin-top:26px">
+          Nothing on that list needs a person. Every one of them is you carrying a fact from one
+          piece of software to another, by hand, because the two of them have never been
+          introduced. That is not admin. That is manual labour on behalf of your suppliers.
+        </p>
+        <p class="big-say accent" style="margin-top:30px">
+          You are the only thing in your business that knows everything.
+        </p>
+        <p style="margin-top:26px;font-size:1.12rem">
+          And it works, right up until you are busy, or ill, or on holiday, or trying to let
+          somebody else answer the phone. The thing standing between you and a day off is not the
+          work — it is that all of it lives in your head, because there is nowhere else for it
+          to live.
+        </p>
+      </div>
+
+      <div class="knows">
+        <div class="knows-head">
+          <span class="badge"><svg aria-hidden="true"><use href="#i-head"/></svg></span>
+          <span>
+            <b>Things only you know</b>
+            <span>Not written down anywhere. Not on purpose.</span>
+          </span>
+        </div>
+        <ul>
+          <li><b>Two seats left</b><span>Saturday's workshop</span></li>
+          <li><b>She's a regular</b><span>Fourth order this year</span></li>
+          <li><b>That's unpaid</b><span>Sent three weeks ago</span></li>
+          <li><b>We're out of ribbon</b><span>Since Thursday</span></li>
+          <li><b>Price went up</b><span>Site still says the old one</span></li>
+          <li><b>He needs chasing</b><span>You said you would today</span></li>
+        </ul>
+        <p class="foot">↓ &nbsp;All of it, in one place that isn't you</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════ 4 · ONE FACT ════════════════════════════════════════════════════ -->
+  <section class="section">
+    <div class="panel panel--white">
+      <div class="head">
+        <h2>One fact. Six places. Typed once.</h2>
+        <p class="lede">
+          This is the entire mechanism, and it is not a clever one: Piggles is fifteen apps sharing
+          one set of facts. So when somebody takes the second-to-last place on Saturday's workshop,
+          there is nothing to update — the number was never copied anywhere to begin with.
+        </p>
+      </div>
+
+      <div class="fact">
+        <div class="fact-source">
+          <p class="num">2</p>
+          <p class="lbl">seats left</p>
+          <p class="sub">Saturday, 10:00 · wreath workshop</p>
+        </div>
+        <div class="fact-out">
+          <div class="place" data-group="web"><b>Your website</b><span>The booking page says two, this second.</span></div>
+          <div class="place" data-group="people"><b>Bookings</b><span>Your day, with the same two.</span></div>
+          <div class="place" data-group="people"><b>Customers</b><span>On her card, with her other three orders.</span></div>
+          <div class="place" data-group="people"><b>Messages</b><span>Her confirmation, already gone.</span></div>
+          <div class="place" data-group="money"><b>Invoices</b><span>Knows what the job was without being told.</span></div>
+          <div class="place" data-group="money"><b>Money</b><span>Counts it the moment it is paid.</span></div>
+        </div>
+      </div>
+
+      <p class="fact-note">
+        <strong>Nobody typed anything into five of those.</strong> Not because Piggles syncs well —
+        because there is only one of that number, and six apps are looking straight at it. That is
+        also why the answer you give on the phone is right: you are reading the same thing your
+        website is.
+      </p>
+    </div>
+  </section>
+
+  <!-- ════ 5 · THE PRICE ═══════════════════════════════════════════════════ -->
+  <section class="section" id="price">
+    <div class="panel panel--pale">
+      <div class="head">
+        <h2>Your software gets more expensive every time you do better.</h2>
+        <p class="lede">
+          Take on somebody: that's another seat, on four different products. Get more customers:
+          you cross a contact tier. Start doing wholesale, or a second location, or online as well
+          as the shop — each one is another line on another bill. You are being charged for
+          growing, by companies that had nothing to do with it.
+        </p>
+      </div>
+
+      <div class="triggers">
+        <div class="trigger-col bad">
+          <h3>What makes your bill go up now</h3>
+          <ul>
+            <li><span class="mark x">✕</span><span>Hiring somebody — per seat, on everything you own</span></li>
+            <li><span class="mark x">✕</span><span>Passing a customer or contact count</span></li>
+            <li><span class="mark x">✕</span><span>Wanting a feature that lives one tier up</span></li>
+            <li><span class="mark x">✕</span><span>Selling in a second way — online, wholesale, in person</span></li>
+            <li><span class="mark x">✕</span><span>Adding the module that finally joins two things together</span></li>
+            <li><span class="mark x">✕</span><span>A percentage of what you sold, on top</span></li>
+          </ul>
+        </div>
+        <div class="trigger-col good">
+          <h3>What makes it go up here</h3>
+          <ul>
+            <li><span class="mark v">✓</span><span>A fourth person on the team</span></li>
+            <li><span class="mark v">✓</span><span>More storage than the plan includes</span></li>
+            <li><span class="mark v">✓</span><span>More email going out than the plan includes</span></li>
+            <li><span class="mark v">✓</span><span>More contacts than the plan includes</span></li>
+          </ul>
+          <p class="trigger-foot">
+            That is the whole list, and every one of them is your business getting bigger rather
+            than a company deciding a feature is worth more this year. Every app is included either
+            way.
+          </p>
+        </div>
+      </div>
+
+      <div class="price-line">
+        <p class="amount">$49<i>/month</i></p>
+        <p>
+          All fifteen apps, your website and an address for it, three people on your team, and
+          everything exportable whenever you want. Turning Bookings on costs nothing, because
+          Bookings was already yours. <strong>Room costs money. Capability doesn't.</strong>
+        </p>
+        <a class="btn btn-primary btn-xl" href="#close">Start free for 14 days</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════ 6 · THE FIRST HOUR ══════════════════════════════════════════════ -->
+  <section class="section" id="start">
+    <div class="panel panel--warm">
+      <div class="head">
+        <h2>What happens in the first hour.</h2>
+        <p class="lede">
+          The reason you have put this off is not the price. It is the fortnight of setting up you
+          are imagining, on top of a week that is already full. Here is the actual sequence.
+        </p>
+      </div>
+
+      <div class="hour">
+        <ol class="steps">
+          <li class="step" data-group="home">
+            <span class="at">Minute 0</span>
+            <div>
+              <h3>Two questions</h3>
+              <p>What the business is called, and what you want to start with. No card, no sales call, and nothing to install.</p>
+            </div>
+          </li>
+          <li class="step" data-group="web">
+            <span class="at">Minute 2</span>
+            <div>
+              <h3>A workspace that isn't empty</h3>
+              <p>Customers arrives with somewhere to put people. Sell already knows about tax and postage. Money arrives with its accounts. An app that hands you a blank screen has not been turned on, it has been unlocked.</p>
+            </div>
+          </li>
+          <li class="step" data-group="sell">
+            <span class="at">Minute 20</span>
+            <div>
+              <h3>Your own things in it</h3>
+              <p>Bring customers, products and orders in from the files your current tools already export. A spreadsheet is a perfectly good format to arrive in.</p>
+            </div>
+          </li>
+          <li class="step" data-group="people">
+            <span class="at">Day 2</span>
+            <div>
+              <h3>Move one job, not six</h3>
+              <p>Pick whichever of the six hurts most and move only that. Nothing costs more when you move the second one, so there is no reason to do it all in a weekend.</p>
+            </div>
+          </li>
+          <li class="step" data-group="money">
+            <span class="at">Any day after</span>
+            <div>
+              <h3>Leave, if you want to</h3>
+              <p>Everything exports whenever you ask — customers, products, orders, invoices, everything you have written — in formats other software can read. You do not have to be leaving to take a copy.</p>
+            </div>
+          </li>
+        </ol>
+        <img class="hour-mascot" src="../../apps/web/public/mascot/checklist.webp" alt="" />
+      </div>
+    </div>
+  </section>
+
+  <!-- ════ 7 · THE FIFTEEN ═════════════════════════════════════════════════ -->
+  <section class="section" id="apps">
+    <div class="panel panel--white">
+      <div class="head">
+        <h2>Everything the six jobs need, already switched on.</h2>
+        <p class="lede">
+          Fifteen apps, in the five groups a business is actually made of. This is a contents page
+          rather than a menu — there is nothing here to choose between, and nothing here that costs
+          extra.
+        </p>
+      </div>
+
+      <div class="index">
+        <div class="index-group" data-group="home">
+          <div><h3>Your day</h3><p>Where you land, and most days the only place you need.</p></div>
+          <div class="index-apps">
+            <div class="index-app"><span class="glyph"><svg aria-hidden="true"><use href="#i-home"/></svg></span><span><b>Home</b><span>What needs you right now</span></span></div>
+          </div>
+        </div>
+
+        <div class="index-group" data-group="web">
+          <div><h3>Your website</h3><p>The site, what's on it, and being findable.</p></div>
+          <div class="index-apps">
+            <div class="index-app"><span class="glyph"><svg aria-hidden="true"><use href="#i-site"/></svg></span><span><b>My Site</b><span>Pages, design and branding</span></span></div>
+            <div class="index-app"><span class="glyph"><svg aria-hidden="true"><use href="#i-content"/></svg></span><span><b>Content</b><span>Write once, use everywhere</span></span></div>
+            <div class="index-app"><span class="glyph"><svg aria-hidden="true"><use href="#i-found"/></svg></span><span><b>Get Found</b><span>Search and social</span></span></div>
+          </div>
+        </div>
+
+        <div class="index-group" data-group="sell">
+          <div><h3>Selling</h3><p>What you sell, and what's left of it.</p></div>
+          <div class="index-apps">
+            <div class="index-app"><span class="glyph"><svg aria-hidden="true"><use href="#i-sell"/></svg></span><span><b>Sell</b><span>Products, services, orders, checkout</span></span></div>
+            <div class="index-app"><span class="glyph"><svg aria-hidden="true"><use href="#i-stock"/></svg></span><span><b>Stock</b><span>On the shelf, and when to reorder</span></span></div>
+          </div>
+        </div>
+
+        <div class="index-group" data-group="people">
+          <div><h3>People</h3><p>Everyone who buys from you, books you or writes to you.</p></div>
+          <div class="index-apps">
+            <div class="index-app"><span class="glyph"><svg aria-hidden="true"><use href="#i-customers"/></svg></span><span><b>Customers</b><span>Everything they've ever done, on one card</span></span></div>
+            <div class="index-app"><span class="glyph"><svg aria-hidden="true"><use href="#i-messages"/></svg></span><span><b>Messages</b><span>Email that knows who it's writing to</span></span></div>
+            <div class="index-app"><span class="glyph"><svg aria-hidden="true"><use href="#i-bookings"/></svg></span><span><b>Bookings</b><span>Your diary, open to the public</span></span></div>
+          </div>
+        </div>
+
+        <div class="index-group" data-group="money">
+          <div><h3>Money</h3><p>What you're owed, what you took, what it means.</p></div>
+          <div class="index-apps">
+            <div class="index-app"><span class="glyph"><svg aria-hidden="true"><use href="#i-invoices"/></svg></span><span><b>Invoices</b><span>Send them, chase them, get paid</span></span></div>
+            <div class="index-app"><span class="glyph"><svg aria-hidden="true"><use href="#i-money"/></svg></span><span><b>Money</b><span>Where it came from, where it went</span></span></div>
+          </div>
+        </div>
+
+        <div class="index-group" data-group="run">
+          <div><h3>Running it</h3><p>The people you work with, and the jobs you shouldn't do by hand.</p></div>
+          <div class="index-apps">
+            <div class="index-app"><span class="glyph"><svg aria-hidden="true"><use href="#i-team"/></svg></span><span><b>My Team</b><span>Who can see and do what</span></span></div>
+            <div class="index-app"><span class="glyph"><svg aria-hidden="true"><use href="#i-automations"/></svg></span><span><b>Automations</b><span>The follow-ups you keep forgetting</span></span></div>
+            <div class="index-app"><span class="glyph"><svg aria-hidden="true"><use href="#i-partners"/></svg></span><span><b>Partners</b><span>Suppliers, orders, what they really cost</span></span></div>
+            <div class="index-app"><span class="glyph"><svg aria-hidden="true"><use href="#i-connections"/></svg></span><span><b>Connections</b><span>The other things you already use</span></span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════ 8 · WE ARE NEW ══════════════════════════════════════════════════ -->
+  <section class="section">
+    <div class="panel panel--warm">
+      <div class="head">
+        <h2>Piggles is new. You should factor that in.</h2>
+        <p class="lede">
+          You are being asked to put your customers, your takings and your website into something
+          you found this evening, by a company you have not heard of. That is a real risk and we are
+          not going to paper over it with a badge. Three things instead, all of which you can check.
+        </p>
+      </div>
+
+      <ul class="new-grid">
+        <li data-group="money">
+          <h3>Leaving is designed in, not tolerated</h3>
+          <p>Everything exports on demand, in formats other software reads, without asking anybody. That is the only promise on this page that protects you whatever happens to us — which is why it is the first one.</p>
+        </li>
+        <li data-group="people">
+          <h3>You are not the first thing we built</h3>
+          <p>The engine under Piggles already runs a business platform of its own. What is new is this product and these names, not the accounts, the orders or the database keeping your business apart from everybody else's.</p>
+        </li>
+        <li data-group="run">
+          <h3>Nothing on this page is a number we invented</h3>
+          <p>No uptime figure, no customer count, no logos, and no claim about hours saved. When those are real and somebody is willing to be named, they will appear. Until then their absence is the honest version.</p>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ════ 9 · CLOSE ═══════════════════════════════════════════════════════ -->
+  <section class="section" id="close">
+    <div class="close">
+      <div>
+        <h2>Go back to the job you actually wanted.</h2>
+        <p class="lede" style="margin-top:20px">
+          The other five aren't going anywhere on their own. Give them to something that was built
+          to do them.
+        </p>
+        <div class="close-cta">
+          <a class="btn btn-secondary btn-xl" href="#">Start free for 14 days</a>
+          <a class="btn btn-outline btn-xl" href="#">Ask a question first</a>
+        </div>
+        <p class="note">$49 a month · fourteen days free · no card needed</p>
+      </div>
+      <img class="mascot" src="../../apps/web/public/mascot/mascot-base.webp" alt="" />
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <a class="wordmark" href="#top" style="font-size:1.25rem"><span class="snout" style="width:28px;height:28px;border-radius:9px"><i style="width:12px;height:10px"></i></span>Piggles</a>
+    <span>Business software for people who have a business to run.</span>
+    <span style="margin-left:auto">Pricing · Trust · Answers · Contact</span>
+  </div>
+</footer>
+
+<div class="dock">
+  <div><b>$49/month</b><br /><span style="font-size:.9rem">Fourteen days free, no card</span></div>
+  <a class="btn btn-primary" href="#close">Start free</a>
+</div>
+
+</body>
+</html>

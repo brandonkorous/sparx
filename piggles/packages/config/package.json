@@ -8,8 +8,8 @@
     ".": "./src/index.ts"
   },
   "dependencies": {
-    "@piggles/brand": "workspace:*",
-    "lucide-react": "^0.577.0"
+    "@fortawesome/pro-solid-svg-icons": "^7.3.1",
+    "@piggles/brand": "workspace:*"
   },
   "files": [
     "src"

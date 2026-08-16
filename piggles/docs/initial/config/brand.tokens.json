@@ -103,9 +103,9 @@
   "typography": {
     "displayDirection": "very round, thick, friendly, professional",
     "bodyDirection": "high-legibility sans serif",
-    "display": "Nunito",
+    "display": "Fredoka",
     "body": "Inter",
-    "fontNote": "Nunito is SIL OFL and ships a 900 weight, so it self-hosts without a licence negotiation. Confirm against the final logo file before launch — if the wordmark is drawn in something else, this follows it.",
+    "fontNote": "Fredoka, chosen 2026-08-15, superseding Nunito. SIL OFL, so it self-hosts without a licence negotiation. Its wght axis stops at 700 — font-extrabold and font-black clamp there, so headings grow by size rather than weight. Confirm against the final logo file before launch — if the wordmark is drawn in something else, this follows it.",
     "avoid": [
       "condensed primary display fonts",
       "sharp corporate display fonts",

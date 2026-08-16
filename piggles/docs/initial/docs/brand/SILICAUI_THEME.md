@@ -264,8 +264,7 @@ tinted rendering comes from SilicaUI's universal `soft` treatment at paint time,
 there is no pre-baked tint token to drift. `Home` is the exception and is _aliased_ to
 `primary` rather than copied, so it follows the pink into dark mode.
 
-Adding a sixth group is a design decision, not a token edit: run the separation screen
-against every existing hue **and both brand pinks** first.
+Adding a sixth group is Brandon's decision, not a token edit.
 
 # Shape and depth
 

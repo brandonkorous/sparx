@@ -19,92 +19,74 @@
  * silicaui's own base-layer `light` / `dark` defaults. See ./layers.css.
  *
  * SOURCE OF TRUTH is docs/initial/docs/brand/SILICAUI_THEME.md and
- * docs/initial/config/brand.tokens.json (the approved identity board). Values here
- * match it exactly, with three corrections that were measured rather than
- * preferred and are recorded back in that document:
+ * docs/initial/config/brand.tokens.json (the approved identity board).
+ *
+ * Two structural corrections to the spec, which are about ASSIGNMENT rather than
+ * choice of colour:
  *
  *   1. The dark base ramp was inverted. The spec had base-100 as the DARKEST of
  *      the three, which put MDI windows (base-100) visually BELOW the workspace
- *      canvas (base-200) — the opposite of the light theme, and of silicaui's own
- *      dark theme, where base-100 is oklch(16%) against base-300's 11%. The three
- *      values are the spec's; the assignment is reversed so base-100 is the top
- *      surface in both modes.
- *   2. Dark `error` was `#F06B6B`, which measures ΔE 14.3 against the dark brand
- *      pink `#FF7C91` — a Delete button and the brand reading as the same colour.
- *      Now `#EF4444`: ΔE 32.2, and 4.98:1 on the spec's own error ink.
- *   3. `neutral` and `danger` were absent from the spec entirely. Both are
+ *      canvas (base-200) — the opposite of the light theme. The three values are
+ *      the spec's; the assignment is reversed so base-100 is the top surface in
+ *      both modes.
+ *   2. `neutral` and `danger` were absent from the spec entirely. Both are
  *      required — see ./layers.css.
  *
- * Everything this file adds beyond the board — the dark neutral, the app-group
- * hues — was CHOSEN BY MEASUREMENT (WCAG contrast + a ΔE76 separation screen).
- * Re-measure before changing any of it; do not eyeball, and do not assume white. */
+ * **The palette is Brandon's. Do not compute colour.** Use these tokens as
+ * given; if a pairing looks wrong on screen, say so and ask. See the note at the
+ * top of piggles/DESIGN.md. */
 
 [data-theme='light'] {
+  /* Not decorative, and not symmetry with the dark block: this is what makes the
+     browser paint native scrollbars, form controls and autofill light. Dropped
+     once, and a visitor whose OS is dark got dark scrollbars on a white page. */
   color-scheme: light;
 
-  /* Piggles Pink. White measures 2.44:1 on it, so the on-fill ink is the brand
-     INK — a pink button with a charcoal label is what the logo board already
-     does, not a compromise. */
+  /* Brand */
   --color-primary: #ff6f86;
-  --color-primary-content: #ffffff; /*#202631;*/
+  --color-primary-content: #ffffff;
 
   --color-secondary: #2d3443;
   --color-secondary-content: #ffffff;
 
-  /* Soft supporting pink. Deliberately LOW-emphasis: it is a supporting branded
-     surface, not a second call to action. */
   --color-accent: #ffb3c0;
   --color-accent-content: #202631;
 
   --color-module: var(--color-primary);
   --color-module-content: var(--color-primary-content);
 
-  --color-success: #14804a;
-  --color-success-content: #ffffff;
+  /* Softer semantic colors */
+  --color-success: #5ecf8b;
+  --color-success-content: #202631;
 
-  --color-info: #2563eb;
-  --color-info-content: #ffffff;
+  --color-info: #6ea8fe;
+  --color-info-content: #202631;
 
-  --color-warning: #f3b61f;
+  --color-warning: #ffd166;
   --color-warning-content: #202631;
 
-  --color-error: #c93838;
-  --color-error-content: #ffffff;
+  --color-error: #f08080;
+  --color-error-content: #202631;
 
-  /* danger — the ninth registered color, and NOT optional. The shared platform's
-     `statusTone()` returns `danger`, so without this pair every `<Badge
-     color="danger">` coming out of a shared workbench surface renders colorless. */
-  --color-danger: #c93838;
-  --color-danger-content: #ffffff;
+  --color-danger: var(--color-error);
+  --color-danger-content: var(--color-error-content);
 
-  /* neutral — the inverse utility surface (dark bands, `btn-neutral`, tooltips).
-     Absent from the spec, which would have left silicaui's default cool slate
-     showing through: an unowned, off-brand grey nobody chose.
-     A warm PLUM-grey, so it reads as a different ROLE from `secondary`'s cool
-     navy. The test here is a visible SURFACE STEP, not categorical ΔE — these two
-     are chrome that rarely abuts, unlike two hues in a nav rail. 1.38 against
-     secondary, just past sparx's 1.32 precedent for the same pair. 9.04:1 on
-     white. */
   --color-neutral: #52454f;
   --color-neutral-content: #ffffff;
 
-  /* Surfaces. base-100 is the TOP surface (MDI windows, cards, dialogs), base-300
-     the deepest recess. Warm, per the board — this is the quietest difference
-     from sparx's cool blue-greys and one of the most legible in person. */
+  /* Bases */
   --color-base-100: #ffffff;
-  --color-base-200: #fbf7f8;
-  --color-base-300: #f0e8ea;
+  --color-base-200: #f7f8fa;
+  --color-base-300: #eef0f3;
   --color-base-content: #202631;
 }
-
 [data-theme='dark'] {
   color-scheme: dark;
 
+  /* Brand */
   --color-primary: #ff7c91;
   --color-primary-content: #20151a;
 
-  /* Inverted role: on a dark canvas the brand ink cannot be the secondary
-     surface, so secondary becomes a light neutral. */
   --color-secondary: #d7dbe3;
   --color-secondary-content: #1b1f28;
 
@@ -114,38 +96,29 @@
   --color-module: var(--color-primary);
   --color-module-content: var(--color-primary-content);
 
-  --color-success: #38b875;
-  --color-success-content: #071a10;
+  /* Semantic colors
+     Brighter than light mode so they remain readable against dark surfaces,
+     but intentionally softened so they don't become "dashboard neon". */
+  --color-success: #62c98d;
+  --color-success-content: #102019;
 
-  --color-info: #68a3ff;
-  --color-info-content: #08162c;
+  --color-info: #7fa8e8;
+  --color-info-content: #111b2c;
 
-  --color-warning: #f6c95b;
+  --color-warning: #e8bd63;
   --color-warning-content: #241a04;
 
-  /* Correction 2 — see the header. `#F06B6B` sat ΔE 14.3 from the dark brand
-     pink; this is ΔE 32.2 and still clears AA on the spec's ink at 4.98:1. */
-  --color-error: #ef4444;
-  --color-error-content: #250909;
+  --color-error: #e97979;
+  --color-error-content: #281012;
 
-  --color-danger: #ef4444;
-  --color-danger-content: #250909;
+  --color-danger: var(--color-error);
+  --color-danger-content: var(--color-error-content);
 
-  /* Inverted role, for the same reason `secondary` is inverted three tokens up
-     and by the same reasoning — this one was simply missed.
-     `neutral` is "the opposite of the canvas": in light it is a dark plum you put
-     white on, so in dark it has to be a light plum you put near-black on. Left at
-     a dark value it worked as a FILL and failed everywhere it is INK, which is
-     `btn-neutral btn-outline` and `btn-ghost` — the rail's own "View plan" button
-     measured 2.52:1, the exact figure DESIGN.md already records for this mistake.
-     Now 6.78:1 as ink on base-100 and 8.09:1 as a fill under its own content, and
-     it holds a 1.47 surface step against `secondary` (the light pair's is 1.38). */
+  /* Neutral */
   --color-neutral: #c2b1bc;
   --color-neutral-content: #241d22;
 
-  /* Correction 1 — see the header. Same three values as the spec, assignment
-     reversed: base-100 is the TOP surface in dark exactly as in light, so an MDI
-     window sits ABOVE the workspace canvas rather than sinking below it. */
+  /* Surface hierarchy */
   --color-base-100: #272d39;
   --color-base-200: #1c212c;
   --color-base-300: #151922;
@@ -154,100 +127,68 @@
 
 /* ── The five app groups ───────────────────────────────────────────────────────
  *
- * sparx gives each of its ~18 modules its own hue. Piggles does NOT, and the
- * reason is arithmetic rather than taste: an 18-hue wheel is already at the limit
- * of what stays distinguishable, and Piggles reserves the whole rose family for
- * the brand pink, which pushes it over. A six-family wheel with lightness steps
- * INSIDE each family was measured first and produced 17 pairs under ΔE 18 —
- * `cms ↔ accent` at 5.5, `ai ↔ staff` at 9.1. Lightness does not separate a rail.
+ * sparx gives each of its ~18 modules its own hue. Piggles colors the GROUP
+ * instead: five hues plus the brand, every app in a group wearing its group's
+ * hue, apps separated within a group by icon and label. It gives the nav a spine,
+ * which Piggles needs and sparx does not — every app ships enabled, so the rail
+ * is full on day one.
  *
- * So Piggles colors the GROUP, not the app: five hues plus the brand, every app in
- * a group wearing its group's hue, apps separated within a group by icon and
- * label. Closest pair measures ΔE 18.4 and every hue clears AA. It also gives the
- * nav a spine, which Piggles needs and sparx does not — every app ships enabled,
- * so the rail is full on day one.
+ * **THESE ARE FILLS.** A group hue goes on a BACKGROUND with its `-content` on
+ * top — `bg-module` + `text-module-content` — never on a word. Anything that
+ * needs a hue as ink derives a darker value from it; see `.ink-module` in each
+ * app's globals.css.
  *
- * `money` is lime-700 rather than a money-green: at `#15803D` it measured ΔE 7.3
- * against `success`, which would have made the Money app and a success badge the
- * same colour. This is ΔE 28.4 from success and 72.9 from the nearest other group.
- *
- * These were ONCE theme-independent, on the reasoning that a saturated hue reads
- * on either canvas. That is true of a FILL, where the hue is the background and
- * `-content` is the ink. It is false everywhere the hue is itself the INK — and
- * that is most of the console: every icon in the app panel and the launcher is
- * `text-module`, and every `soft` control puts the hue on a tinted ground. On the
- * dark canvas the 600/700-weight values measured 1.98:1 (run) to 3.23:1 (money)
- * as ink, so a whole column of navigation glyphs was below AA and `run` was
- * effectively invisible. See the dark block below.
- *
- * Adding a SIXTH group hue is a design decision, not a token edit: run the
- * separation screen against every existing hue AND both brand pinks first. */
-[data-theme='light'],
-[data-theme='dark'] {
-  /* Home — the account itself, so it wears the brand. Aliased, never copied, so
-     it follows the pink into dark mode automatically. */
+ * Adding a SIXTH group hue is Brandon's decision, not a token edit. */
+[data-theme='light'] {
   --color-group-home: var(--color-primary);
   --color-group-home-content: var(--color-primary-content);
 
-  --color-group-web: #4f46e5; /* My Site, Content, Get Found — 6.29:1 on white */
-  --color-group-web-content: #ffffff;
+  --color-group-web: #9da7c7;
+  --color-group-web-content: #202631;
 
-  --color-group-sell: #c2410c; /* Sell, Stock — 5.18:1 */
-  --color-group-sell-content: #ffffff;
+  --color-group-sell: #d9a07f;
+  --color-group-sell-content: #202631;
 
-  --color-group-people: #0e7490; /* Customers, Messages, Bookings — 5.36:1 */
-  --color-group-people-content: #ffffff;
+  --color-group-people: #83b9b7;
+  --color-group-people-content: #202631;
 
-  --color-group-money: #4d7c0f; /* Invoices, Money — 4.99:1 */
-  --color-group-money-content: #ffffff;
+  --color-group-money: #a8b07a;
+  --color-group-money-content: #202631;
 
-  --color-group-run: #7e22ce; /* My Team, Automations, Partners, Connections — 6.98:1 */
-  --color-group-run-content: #ffffff;
+  --color-group-run: #b59abf;
+  --color-group-run-content: #202631;
 }
 
 /* ── The same five groups, lifted for the dark canvas ──────────────────────────
  *
- * Same families, three steps lighter, so an app keeps its identity across a theme
- * switch — Sell is orange in both, Money is lime in both. What changes is which
- * end of the family is doing the work, because on a dark ground the hue is the
- * INK and a 700-weight shade is not ink, it is a smudge.
+ * Same families, a little brighter, so an app keeps its identity across a theme
+ * switch — Sell is warm in both, Money is olive in both. They are lifted because
+ * on a dark ground the hue is often the INK: every launcher glyph, every `soft`
+ * control.
  *
- * MEASURED, both gates, against the canvas each one actually lands on:
- *
- *   as ink on base-100 (#272d39, the lightest dark surface — an MDI window):
- *     web 6.93 · sell 8.19 · people 9.53 · money 10.57 · run 7.81 · home 5.62
- *     (before: 2.20 · 2.67 · 2.58 · 2.77 · 1.98 — every one of them failing)
- *
- *   separation, DE2000, which is the gate lightening a palette usually fails:
- *     closest group pair   web ↔ run   12.8
- *     closest to a status  web ↔ info  10.8
- *   The SHIPPING LIGHT SET clears 9.6 and 5.9 on those same two tests, so this
- *   set is better separated than the one already in production — which is the
- *   bar that matters, not a round number.
- *
- * `-content` INVERTS with them, and that is not optional. It is the ink on a
- * SOLID fill; white on #bef264 is 1.3:1. Each is a near-black carrying a little
- * of its own hue, matching what the semantic tokens above already do, and every
- * pair clears 8.6:1 or better. */
+ * `-content` stays `#202631` on both canvases here — these hues are light enough
+ * either way to carry a near-black label. */
 [data-theme='dark'] {
-  /* home is deliberately absent — it aliases --color-primary, which the dark
-     block above already lifts to #ff7c91. Restating it here is how the two
-     would drift. */
+  --color-group-home: var(--color-primary);
+  --color-group-home-content: var(--color-primary-content);
 
-  --color-group-web: #a5b4fc;
-  --color-group-web-content: #171a2e;
+  /* Same identities as light mode, tuned slightly brighter/cleaner
+     for a dark canvas. */
 
-  --color-group-sell: #fdba74;
-  --color-group-sell-content: #2a1608;
+  --color-group-web: #a9b1d0;
+  --color-group-web-content: #202631;
 
-  --color-group-people: #67e8f9;
-  --color-group-people-content: #06222a;
+  --color-group-sell: #dda98b;
+  --color-group-sell-content: #202631;
 
-  --color-group-money: #bef264;
-  --color-group-money-content: #1a2404;
+  --color-group-people: #8fc2c0;
+  --color-group-people-content: #202631;
 
-  --color-group-run: #d8b4fe;
-  --color-group-run-content: #23103a;
+  --color-group-money: #b0b985;
+  --color-group-money-content: #202631;
+
+  --color-group-run: #bfa5c8;
+  --color-group-run-content: #202631;
 }
 
 /* Every app and every platform module resolves THROUGH the six above, so both
@@ -389,12 +330,16 @@
   --duration-base: 320ms;
   --duration-slow: 620ms;
 
-  /* Depth 1 — silicaui's own default, and the whole of Piggles' soft elevation:
-     resting shadow + hover-lift on Card, inset highlight on solid Buttons. sparx
-     sets this to 0 because flat, sharp and cool is sparx's identity; Piggles is
-     soft and rounded, and flat-edge separation reads colder than the brand wants.
-     This is the ONLY sanctioned elevation — one token, not a hand-rolled
-     `shadow-*` anywhere in feature code. Nothing to add per component. */
+  /* Depth 1 — silicaui's own default: resting shadow + hover-lift on Card, inset
+     highlight on solid Buttons. sparx sets this to 0 because flat, sharp and cool
+     is sparx's identity; Piggles is soft and warm, where a hairline between
+     #fcf7f8 and #ffffff barely reads as an edge and shadow does the separating.
+
+     This token covers what SILICA paints, and nothing else. Piggles-owned chrome
+     — marketing panels, dock windows — is lifted with Tailwind's `shadow-*` scale
+     in feature code, which is sanctioned. The only mistake is using both on one
+     element: `shadow-*` on a Card doubles this and reads as a rendering fault.
+     DESIGN.md §4 and §8. */
   --depth: 1;
 
   /* ── COMFORT-FIRST DENSITY ─────────────────────────────────────────────────
@@ -469,14 +414,11 @@
      `--field-gap` with a var() fallback, so this override simply wins. */
   --field-gap: 0.5rem;
 
-  /* Nunito carries the board's "very round, thick, friendly, professional"
-     direction, ships a 900 weight for display, and is SIL OFL so it self-hosts
-     without a licence negotiation. Body stays on Inter — the board asks for
-     "high-legibility sans serif" and it is already in the repo's font pipeline.
-     Confirm against the final logo file before launch: if the wordmark turns out
-     to be drawn in something else, this stack should follow it. */
+  /* Fredoka carries the board's "very round, thick, friendly" direction and is
+     SIL OFL. Its wght axis stops at 700, so `font-extrabold` and `font-black`
+     clamp there. Body stays on Inter for legibility. */
   --font-sans: 'Inter', system-ui, sans-serif;
-  --font-heading: 'Nunito', 'Inter', system-ui, sans-serif;
+  --font-heading: 'Fredoka', 'Inter', system-ui, sans-serif;
   --font-mono: 'Geist Mono', 'JetBrains Mono', monospace;
 }
 

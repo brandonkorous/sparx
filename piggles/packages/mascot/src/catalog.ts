@@ -2,12 +2,15 @@
 //
 // Source of truth: the batch manifests under piggles/images/mascot/. To change a
 // pose's metadata, edit the manifest and re-run `pnpm --filter @piggles/mascot
-// ingest`. Batches ingested: 01, 02, 03, 04, 05.
+// ingest`. Batches ingested: 01, 02, 03, 04, 05, 07.
 
 /** Every pose whose artwork exists and ships today. */
 export type MascotPoseId =
   | 'analyst'
   | 'announcement'
+  | 'art-studio'
+  | 'bakery'
+  | 'barber'
   | 'builder'
   | 'calendar-desk'
   | 'chart'
@@ -24,6 +27,7 @@ export type MascotPoseId =
   | 'error'
   | 'food-truck'
   | 'front-counter'
+  | 'garage'
   | 'home-office'
   | 'idea'
   | 'laptop-coffee'
@@ -31,6 +35,7 @@ export type MascotPoseId =
   | 'loading'
   | 'mail'
   | 'maintenance'
+  | 'market-stall'
   | 'mascot-base'
   | 'meeting-table'
   | 'money-minder'
@@ -42,20 +47,26 @@ export type MascotPoseId =
   | 'phone-desk'
   | 'planner'
   | 'point-right'
+  | 'potter'
   | 'protector'
   | 'reports-desk'
   | 'retail-shop'
+  | 'salon'
   | 'salon-station'
   | 'security'
+  | 'shed'
   | 'shipping-station'
   | 'sidekick'
+  | 'supplier'
   | 'support'
   | 'tablet-desk'
+  | 'tailor'
   | 'thumbs-up'
   | 'upload'
   | 'video-call'
   | 'welcome-sign'
-  | 'workshop';
+  | 'workshop'
+  | 'workshop-04';
 
 /** Every pose that is specified but not yet drawn. */
 export type PlannedPoseId = never;
@@ -121,7 +132,7 @@ export const MASCOT_POSES: Record<MascotPoseId, MascotPose> = {
     src: '/mascot/analyst.webp',
     width: 787,
     height: 849,
-    subject: 0.8869,
+    subject: 0.8857,
   },
   announcement: {
     id: 'announcement',
@@ -134,7 +145,46 @@ export const MASCOT_POSES: Record<MascotPoseId, MascotPose> = {
     src: '/mascot/announcement.webp',
     width: 961,
     height: 852,
-    subject: 0.8721,
+    subject: 0.8592,
+  },
+  'art-studio': {
+    id: 'art-studio',
+    batch: '07',
+    category: 'creative',
+    alt: 'Piggles painting at an easel in an art studio',
+    energy: 'friendly',
+    anchor: 'bottom',
+    intent: [],
+    src: '/mascot/art-studio.webp',
+    width: 984,
+    height: 917,
+    subject: 0.6696,
+  },
+  bakery: {
+    id: 'bakery',
+    batch: '07',
+    category: 'food-service',
+    alt: 'Piggles presenting bread at a bakery counter',
+    energy: 'friendly',
+    anchor: 'bottom',
+    intent: [],
+    src: '/mascot/bakery.webp',
+    width: 1145,
+    height: 1003,
+    subject: 0.4895,
+  },
+  barber: {
+    id: 'barber',
+    batch: '07',
+    category: 'personal-services',
+    alt: 'Piggles ready to work beside a barber chair',
+    energy: 'friendly',
+    anchor: 'bottom',
+    intent: [],
+    src: '/mascot/barber.webp',
+    width: 1185,
+    height: 895,
+    subject: 0.7073,
   },
   builder: {
     id: 'builder',
@@ -147,7 +197,7 @@ export const MASCOT_POSES: Record<MascotPoseId, MascotPose> = {
     src: '/mascot/builder.webp',
     width: 653,
     height: 903,
-    subject: 0.8339,
+    subject: 0.835,
   },
   'calendar-desk': {
     id: 'calendar-desk',
@@ -160,7 +210,7 @@ export const MASCOT_POSES: Record<MascotPoseId, MascotPose> = {
     src: '/mascot/calendar-desk.webp',
     width: 1158,
     height: 778,
-    subject: 0.9075,
+    subject: 0.7339,
   },
   chart: {
     id: 'chart',
@@ -173,7 +223,7 @@ export const MASCOT_POSES: Record<MascotPoseId, MascotPose> = {
     src: '/mascot/chart.webp',
     width: 906,
     height: 791,
-    subject: 0.8571,
+    subject: 0.8496,
   },
   checklist: {
     id: 'checklist',
@@ -186,7 +236,7 @@ export const MASCOT_POSES: Record<MascotPoseId, MascotPose> = {
     src: '/mascot/checklist.webp',
     width: 750,
     height: 836,
-    subject: 0.86,
+    subject: 0.8505,
   },
   cheerleader: {
     id: 'cheerleader',
@@ -199,7 +249,7 @@ export const MASCOT_POSES: Record<MascotPoseId, MascotPose> = {
     src: '/mascot/cheerleader.webp',
     width: 982,
     height: 852,
-    subject: 0.885,
+    subject: 0.8862,
   },
   coffee: {
     id: 'coffee',
@@ -212,7 +262,7 @@ export const MASCOT_POSES: Record<MascotPoseId, MascotPose> = {
     src: '/mascot/coffee.webp',
     width: 675,
     height: 961,
-    subject: 0.8543,
+    subject: 0.8356,
   },
   communicator: {
     id: 'communicator',
@@ -225,7 +275,7 @@ export const MASCOT_POSES: Record<MascotPoseId, MascotPose> = {
     src: '/mascot/communicator.webp',
     width: 808,
     height: 856,
-    subject: 0.8867,
+    subject: 0.882,
   },
   'desk-celebrate': {
     id: 'desk-celebrate',
@@ -238,7 +288,7 @@ export const MASCOT_POSES: Record<MascotPoseId, MascotPose> = {
     src: '/mascot/desk-celebrate.webp',
     width: 1150,
     height: 836,
-    subject: 0.8959,
+    subject: 0.7548,
   },
   'desk-workspace': {
     id: 'desk-workspace',
@@ -251,7 +301,7 @@ export const MASCOT_POSES: Record<MascotPoseId, MascotPose> = {
     src: '/mascot/desk-workspace.webp',
     width: 1099,
     height: 925,
-    subject: 0.613,
+    subject: 0.5222,
   },
   'desktop-computer': {
     id: 'desktop-computer',
@@ -264,7 +314,7 @@ export const MASCOT_POSES: Record<MascotPoseId, MascotPose> = {
     src: '/mascot/desktop-computer.webp',
     width: 1057,
     height: 919,
-    subject: 0.8215,
+    subject: 0.8128,
   },
   download: {
     id: 'download',
@@ -277,7 +327,7 @@ export const MASCOT_POSES: Record<MascotPoseId, MascotPose> = {
     src: '/mascot/download.webp',
     width: 550,
     height: 1040,
-    subject: 0.8923,
+    subject: 0.9,
   },
   'email-desk': {
     id: 'email-desk',
@@ -290,7 +340,7 @@ export const MASCOT_POSES: Record<MascotPoseId, MascotPose> = {
     src: '/mascot/email-desk.webp',
     width: 1158,
     height: 788,
-    subject: 0.8871,
+    subject: 0.7043,
   },
   empty: {
     id: 'empty',
@@ -303,7 +353,7 @@ export const MASCOT_POSES: Record<MascotPoseId, MascotPose> = {
     src: '/mascot/empty.webp',
     width: 838,
     height: 900,
-    subject: 0.8856,
+    subject: 0.8678,
   },
   error: {
     id: 'error',
@@ -316,7 +366,7 @@ export const MASCOT_POSES: Record<MascotPoseId, MascotPose> = {
     src: '/mascot/error.webp',
     width: 997,
     height: 886,
-    subject: 0.8646,
+    subject: 0.8725,
   },
   'food-truck': {
     id: 'food-truck',
@@ -329,7 +379,7 @@ export const MASCOT_POSES: Record<MascotPoseId, MascotPose> = {
     src: '/mascot/food-truck.webp',
     width: 1158,
     height: 786,
-    subject: 0.8448,
+    subject: 0.7405,
   },
   'front-counter': {
     id: 'front-counter',
@@ -342,7 +392,20 @@ export const MASCOT_POSES: Record<MascotPoseId, MascotPose> = {
     src: '/mascot/front-counter.webp',
     width: 1084,
     height: 776,
-    subject: 0.9162,
+    subject: 0.9343,
+  },
+  garage: {
+    id: 'garage',
+    batch: '07',
+    category: 'automotive',
+    alt: 'Piggles working with tools in a garage',
+    energy: 'friendly',
+    anchor: 'bottom',
+    intent: [],
+    src: '/mascot/garage.webp',
+    width: 1200,
+    height: 852,
+    subject: 0.5258,
   },
   'home-office': {
     id: 'home-office',
@@ -355,7 +418,7 @@ export const MASCOT_POSES: Record<MascotPoseId, MascotPose> = {
     src: '/mascot/home-office.webp',
     width: 1065,
     height: 781,
-    subject: 0.9104,
+    subject: 0.831,
   },
   idea: {
     id: 'idea',
@@ -368,7 +431,7 @@ export const MASCOT_POSES: Record<MascotPoseId, MascotPose> = {
     src: '/mascot/idea.webp',
     width: 695,
     height: 885,
-    subject: 0.7706,
+    subject: 0.7627,
   },
   'laptop-coffee': {
     id: 'laptop-coffee',
@@ -381,7 +444,7 @@ export const MASCOT_POSES: Record<MascotPoseId, MascotPose> = {
     src: '/mascot/laptop-coffee.webp',
     width: 1150,
     height: 909,
-    subject: 0.8559,
+    subject: 0.7932,
   },
   'laptop-focus': {
     id: 'laptop-focus',
@@ -394,7 +457,7 @@ export const MASCOT_POSES: Record<MascotPoseId, MascotPose> = {
     src: '/mascot/laptop-focus.webp',
     width: 1158,
     height: 789,
-    subject: 0.9189,
+    subject: 0.7148,
   },
   loading: {
     id: 'loading',
@@ -420,7 +483,7 @@ export const MASCOT_POSES: Record<MascotPoseId, MascotPose> = {
     src: '/mascot/mail.webp',
     width: 697,
     height: 960,
-    subject: 0.8979,
+    subject: 0.8812,
   },
   maintenance: {
     id: 'maintenance',
@@ -433,7 +496,20 @@ export const MASCOT_POSES: Record<MascotPoseId, MascotPose> = {
     src: '/mascot/maintenance.webp',
     width: 846,
     height: 877,
-    subject: 0.8643,
+    subject: 0.8655,
+  },
+  'market-stall': {
+    id: 'market-stall',
+    batch: '07',
+    category: 'retail',
+    alt: 'Piggles presenting produce at a market stall',
+    energy: 'friendly',
+    anchor: 'bottom',
+    intent: [],
+    src: '/mascot/market-stall.webp',
+    width: 1129,
+    height: 1108,
+    subject: 0.565,
   },
   'mascot-base': {
     id: 'mascot-base',
@@ -446,7 +522,7 @@ export const MASCOT_POSES: Record<MascotPoseId, MascotPose> = {
     src: '/mascot/mascot-base.webp',
     width: 809,
     height: 804,
-    subject: 0.8806,
+    subject: 0.8694,
   },
   'meeting-table': {
     id: 'meeting-table',
@@ -459,7 +535,7 @@ export const MASCOT_POSES: Record<MascotPoseId, MascotPose> = {
     src: '/mascot/meeting-table.webp',
     width: 1143,
     height: 877,
-    subject: 0.6534,
+    subject: 0.5086,
   },
   'money-minder': {
     id: 'money-minder',
@@ -472,7 +548,7 @@ export const MASCOT_POSES: Record<MascotPoseId, MascotPose> = {
     src: '/mascot/money-minder.webp',
     width: 773,
     height: 937,
-    subject: 0.8965,
+    subject: 0.8847,
   },
   'no-results': {
     id: 'no-results',
@@ -485,7 +561,7 @@ export const MASCOT_POSES: Record<MascotPoseId, MascotPose> = {
     src: '/mascot/no-results.webp',
     width: 976,
     height: 918,
-    subject: 0.866,
+    subject: 0.7887,
   },
   'orders-desk': {
     id: 'orders-desk',
@@ -498,7 +574,7 @@ export const MASCOT_POSES: Record<MascotPoseId, MascotPose> = {
     src: '/mascot/orders-desk.webp',
     width: 1158,
     height: 893,
-    subject: 0.8936,
+    subject: 0.7503,
   },
   organizer: {
     id: 'organizer',
@@ -511,7 +587,7 @@ export const MASCOT_POSES: Record<MascotPoseId, MascotPose> = {
     src: '/mascot/organizer.webp',
     width: 814,
     height: 850,
-    subject: 0.86,
+    subject: 0.76,
   },
   package: {
     id: 'package',
@@ -524,7 +600,7 @@ export const MASCOT_POSES: Record<MascotPoseId, MascotPose> = {
     src: '/mascot/package.webp',
     width: 800,
     height: 892,
-    subject: 0.8587,
+    subject: 0.8901,
   },
   phone: {
     id: 'phone',
@@ -537,7 +613,7 @@ export const MASCOT_POSES: Record<MascotPoseId, MascotPose> = {
     src: '/mascot/phone.webp',
     width: 746,
     height: 970,
-    subject: 0.8876,
+    subject: 0.8691,
   },
   'phone-desk': {
     id: 'phone-desk',
@@ -550,7 +626,7 @@ export const MASCOT_POSES: Record<MascotPoseId, MascotPose> = {
     src: '/mascot/phone-desk.webp',
     width: 1104,
     height: 872,
-    subject: 0.9117,
+    subject: 0.82,
   },
   planner: {
     id: 'planner',
@@ -563,7 +639,7 @@ export const MASCOT_POSES: Record<MascotPoseId, MascotPose> = {
     src: '/mascot/planner.webp',
     width: 835,
     height: 831,
-    subject: 0.8833,
+    subject: 0.8773,
   },
   'point-right': {
     id: 'point-right',
@@ -576,7 +652,20 @@ export const MASCOT_POSES: Record<MascotPoseId, MascotPose> = {
     src: '/mascot/point-right.webp',
     width: 1010,
     height: 953,
-    subject: 0.8573,
+    subject: 0.8489,
+  },
+  potter: {
+    id: 'potter',
+    batch: '07',
+    category: 'craft',
+    alt: 'Piggles shaping a clay pot on a pottery wheel',
+    energy: 'friendly',
+    anchor: 'bottom',
+    intent: [],
+    src: '/mascot/potter.webp',
+    width: 1016,
+    height: 1012,
+    subject: 0.7055,
   },
   protector: {
     id: 'protector',
@@ -589,7 +678,7 @@ export const MASCOT_POSES: Record<MascotPoseId, MascotPose> = {
     src: '/mascot/protector.webp',
     width: 928,
     height: 931,
-    subject: 0.8894,
+    subject: 0.8808,
   },
   'reports-desk': {
     id: 'reports-desk',
@@ -602,7 +691,7 @@ export const MASCOT_POSES: Record<MascotPoseId, MascotPose> = {
     src: '/mascot/reports-desk.webp',
     width: 1158,
     height: 832,
-    subject: 0.9087,
+    subject: 0.7752,
   },
   'retail-shop': {
     id: 'retail-shop',
@@ -615,7 +704,20 @@ export const MASCOT_POSES: Record<MascotPoseId, MascotPose> = {
     src: '/mascot/retail-shop.webp',
     width: 1086,
     height: 845,
-    subject: 0.7728,
+    subject: 0.7657,
+  },
+  salon: {
+    id: 'salon',
+    batch: '07',
+    category: 'personal-services',
+    alt: 'Piggles ready to style hair in a salon',
+    energy: 'friendly',
+    anchor: 'bottom',
+    intent: [],
+    src: '/mascot/salon.webp',
+    width: 1140,
+    height: 855,
+    subject: 0.7018,
   },
   'salon-station': {
     id: 'salon-station',
@@ -628,7 +730,7 @@ export const MASCOT_POSES: Record<MascotPoseId, MascotPose> = {
     src: '/mascot/salon-station.webp',
     width: 1043,
     height: 958,
-    subject: 0.858,
+    subject: 0.5585,
   },
   security: {
     id: 'security',
@@ -641,7 +743,20 @@ export const MASCOT_POSES: Record<MascotPoseId, MascotPose> = {
     src: '/mascot/security.webp',
     width: 910,
     height: 895,
-    subject: 0.9095,
+    subject: 0.848,
+  },
+  shed: {
+    id: 'shed',
+    batch: '07',
+    category: 'outdoor-services',
+    alt: 'Piggles working with garden tools beside a shed',
+    energy: 'friendly',
+    anchor: 'bottom',
+    intent: [],
+    src: '/mascot/shed.webp',
+    width: 1061,
+    height: 936,
+    subject: 0.4391,
   },
   'shipping-station': {
     id: 'shipping-station',
@@ -654,7 +769,7 @@ export const MASCOT_POSES: Record<MascotPoseId, MascotPose> = {
     src: '/mascot/shipping-station.webp',
     width: 886,
     height: 1008,
-    subject: 0.8085,
+    subject: 0.8056,
   },
   sidekick: {
     id: 'sidekick',
@@ -667,7 +782,20 @@ export const MASCOT_POSES: Record<MascotPoseId, MascotPose> = {
     src: '/mascot/sidekick.webp',
     width: 675,
     height: 910,
-    subject: 0.8352,
+    subject: 0.833,
+  },
+  supplier: {
+    id: 'supplier',
+    batch: '07',
+    category: 'inventory',
+    alt: 'Piggles managing boxes and supplies',
+    energy: 'friendly',
+    anchor: 'bottom',
+    intent: [],
+    src: '/mascot/supplier.webp',
+    width: 1108,
+    height: 779,
+    subject: 0.7792,
   },
   support: {
     id: 'support',
@@ -680,7 +808,7 @@ export const MASCOT_POSES: Record<MascotPoseId, MascotPose> = {
     src: '/mascot/support.webp',
     width: 1002,
     height: 878,
-    subject: 0.836,
+    subject: 0.8292,
   },
   'tablet-desk': {
     id: 'tablet-desk',
@@ -693,7 +821,20 @@ export const MASCOT_POSES: Record<MascotPoseId, MascotPose> = {
     src: '/mascot/tablet-desk.webp',
     width: 1155,
     height: 944,
-    subject: 0.8962,
+    subject: 0.6663,
+  },
+  tailor: {
+    id: 'tailor',
+    batch: '07',
+    category: 'craft',
+    alt: 'Piggles tailoring beside a sewing machine',
+    energy: 'friendly',
+    anchor: 'bottom',
+    intent: [],
+    src: '/mascot/tailor.webp',
+    width: 1116,
+    height: 988,
+    subject: 0.7611,
   },
   'thumbs-up': {
     id: 'thumbs-up',
@@ -706,7 +847,7 @@ export const MASCOT_POSES: Record<MascotPoseId, MascotPose> = {
     src: '/mascot/thumbs-up.webp',
     width: 933,
     height: 1000,
-    subject: 0.887,
+    subject: 0.874,
   },
   upload: {
     id: 'upload',
@@ -719,7 +860,7 @@ export const MASCOT_POSES: Record<MascotPoseId, MascotPose> = {
     src: '/mascot/upload.webp',
     width: 833,
     height: 824,
-    subject: 0.875,
+    subject: 0.8786,
   },
   'video-call': {
     id: 'video-call',
@@ -732,7 +873,7 @@ export const MASCOT_POSES: Record<MascotPoseId, MascotPose> = {
     src: '/mascot/video-call.webp',
     width: 1158,
     height: 882,
-    subject: 0.8605,
+    subject: 0.7279,
   },
   'welcome-sign': {
     id: 'welcome-sign',
@@ -745,20 +886,33 @@ export const MASCOT_POSES: Record<MascotPoseId, MascotPose> = {
     src: '/mascot/welcome-sign.webp',
     width: 874,
     height: 790,
-    subject: 0.8734,
+    subject: 0.8354,
   },
   workshop: {
     id: 'workshop',
+    batch: '07',
+    category: 'craft',
+    alt: 'Piggles woodworking at a workshop bench',
+    energy: 'friendly',
+    anchor: 'bottom',
+    intent: [],
+    src: '/mascot/workshop.webp',
+    width: 1006,
+    height: 1008,
+    subject: 0.5546,
+  },
+  'workshop-04': {
+    id: 'workshop-04',
     batch: '04',
     category: 'workspace',
     alt: 'Piggles beside a compact workbench',
     energy: 'friendly',
     anchor: 'bottom',
     intent: [],
-    src: '/mascot/workshop.webp',
+    src: '/mascot/workshop-04.webp',
     width: 1001,
     height: 737,
-    subject: 0.7829,
+    subject: 0.6988,
   },
 };
 
@@ -767,6 +921,9 @@ export const PLANNED_POSES: Record<PlannedPoseId, PlannedPose> = {};
 export const MASCOT_POSE_IDS: readonly MascotPoseId[] = [
   'analyst',
   'announcement',
+  'art-studio',
+  'bakery',
+  'barber',
   'builder',
   'calendar-desk',
   'chart',
@@ -783,6 +940,7 @@ export const MASCOT_POSE_IDS: readonly MascotPoseId[] = [
   'error',
   'food-truck',
   'front-counter',
+  'garage',
   'home-office',
   'idea',
   'laptop-coffee',
@@ -790,6 +948,7 @@ export const MASCOT_POSE_IDS: readonly MascotPoseId[] = [
   'loading',
   'mail',
   'maintenance',
+  'market-stall',
   'mascot-base',
   'meeting-table',
   'money-minder',
@@ -801,20 +960,26 @@ export const MASCOT_POSE_IDS: readonly MascotPoseId[] = [
   'phone-desk',
   'planner',
   'point-right',
+  'potter',
   'protector',
   'reports-desk',
   'retail-shop',
+  'salon',
   'salon-station',
   'security',
+  'shed',
   'shipping-station',
   'sidekick',
+  'supplier',
   'support',
   'tablet-desk',
+  'tailor',
   'thumbs-up',
   'upload',
   'video-call',
   'welcome-sign',
   'workshop',
+  'workshop-04',
 ];
 
 export function isAvailable(id: AnyPoseId): id is MascotPoseId {

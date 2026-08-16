@@ -1,0 +1,379 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Piggles — "Whatever kind of business you have", as a trade marquee</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Nunito:wght@700;800;900&display=swap" rel="stylesheet" />
+
+<!--
+  ══════════════════════════════════════════════════════════════════════════════
+  ONE SECTION: "Whatever kind of business you have."
+  ══════════════════════════════════════════════════════════════════════════════
+
+  A working mockup of the trade marquee, built to be testable BEFORE the art
+  lands. Drop renders into ./trades/<slug>.png and they appear; a missing file
+  renders as a dashed placeholder carrying the trade name, so the layout reads
+  with an empty folder and fills in one image at a time.
+
+  ── THE CONTROLS AT THE TOP ARE THE POINT ────────────────────────────────────
+
+  Three decisions have to be made about this section and arguing them in prose
+  is slower than looking at them, so they are switches:
+
+    Ground      calm (every card the same warm panel, hue on the LABEL only)
+                vs tinted (each card a soft wash of its group's hue)
+    Card size   how big she is allowed to be before she stops being a vignette
+                and starts being a character — the "playful, never childish"
+                line in DESIGN.md §5 is a SIZE decision more than a style one
+    Motion      running / paused, to check the still frame reads as a composed
+                wall rather than only working while it moves
+
+  ── WHY THE COPY DOESN'T MOVE ────────────────────────────────────────────────
+
+  The heading and its paragraph are sticky and completely still. The argument
+  has to stay readable while the variety scrolls past it; a marquee that carries
+  the words as well is a carousel, and nobody reads a carousel.
+
+  ── WHY THE COLUMNS RUN OPPOSITE WAYS ────────────────────────────────────────
+
+  Two columns travelling the same direction read as one list moving, which is a
+  finite thing with a top and a bottom. Opposing directions read as circulation
+  — there is no start, so the eye cannot count them, which is exactly the claim
+  the heading is making.
+
+  ── MOTION IS OPT-IN ─────────────────────────────────────────────────────────
+
+  The site's globals.css opts IN to motion (`prefers-reduced-motion:
+  no-preference`) rather than opting out, so that anyone who has asked for less
+  gets a completely static page rather than a smaller amount of the thing they
+  asked not to have. This follows it: with reduced motion the columns simply
+  stop and the section is a still wall, which is why the still frame has to be
+  good on its own.
+
+  Tokens verbatim from packages/brand/src/theme.css.
+-->
+
+<style>
+:root {
+  --color-primary: #ff6f86;          --color-primary-content: #ffffff;
+  --color-accent: #ffb3c0;
+  --color-accent-pale: #ffe9ed;
+  --color-base-100: #ffffff;
+  --color-base-200: #fbf7f8;
+  --color-base-300: #f7f0f2;
+  --color-base-content: #202631;
+  --color-ink-soft: #4b5563;
+
+  --color-group-home: #ff6f86;
+  --color-group-web: #4f46e5;
+  --color-group-sell: #c2410c;
+  --color-group-people: #0e7490;
+  --color-group-money: #4d7c0f;
+  --color-group-run: #7e22ce;
+
+  --radius-field: 12px;
+  --radius-box: 18px;
+  --radius-section: 24px;
+  --font-sans: 'Inter', system-ui, sans-serif;
+  --font-heading: 'Nunito', 'Inter', system-ui, sans-serif;
+  --ease-piggles: cubic-bezier(0.34, 1.36, 0.64, 1);
+
+  /* The two things the switches move. Card width is DERIVED from the wall's
+     width (two fluid lanes), so the wall is the lever — moving a --card-w that
+     nothing reads was the first version of this and it did nothing. */
+  --wall-w: 780px;
+  --loop: 60s;
+}
+
+[data-group='home']   { --color-module: var(--color-group-home); }
+[data-group='web']    { --color-module: var(--color-group-web); }
+[data-group='sell']   { --color-module: var(--color-group-sell); }
+[data-group='people'] { --color-module: var(--color-group-people); }
+[data-group='money']  { --color-module: var(--color-group-money); }
+[data-group='run']    { --color-module: var(--color-group-run); }
+
+*, *::before, *::after { box-sizing: border-box; }
+body {
+  margin: 0; font-family: var(--font-sans); font-size: 17px; line-height: 1.55;
+  color: var(--color-base-content); background: var(--color-base-300);
+  -webkit-font-smoothing: antialiased;
+}
+h1, h2, h3 { font-family: var(--font-heading); margin: 0; line-height: 1.06; letter-spacing: -.015em; }
+p { margin: 0; } ul { margin: 0; padding: 0; list-style: none; }
+img { display: block; max-width: 100%; }
+
+/* ── THE MOCKUP'S OWN CONTROLS (not part of the section) ─────────────────── */
+.controls {
+  position: sticky; top: 0; z-index: 50; display: flex; flex-wrap: wrap; gap: 10px 28px;
+  align-items: center; padding: 14px 24px;
+  background: var(--color-base-content); color: #fff; font-size: .93rem; font-weight: 600;
+}
+.controls strong { font-family: var(--font-heading); font-weight: 900; margin-right: 8px; }
+.controls .set { display: flex; align-items: center; gap: 8px; }
+.controls .set > span { opacity: .72; }
+.controls button {
+  font: inherit; cursor: pointer; border: 1.5px solid rgba(255,255,255,.28); background: transparent;
+  color: #fff; padding: 6px 13px; border-radius: 9999px;
+}
+.controls button[aria-pressed='true'] { background: var(--color-primary); border-color: var(--color-primary); }
+
+/* ══ THE SECTION ═════════════════════════════════════════════════════════════
+   No panel under it — this is the one section on the page that is deliberately
+   open ground, which is also what gives the dark panel below it its entrance.
+   That decision is what makes it the right section to run full-bleed. */
+.whoever {
+  display: grid; grid-template-columns: minmax(340px, 34%) 1fr;
+  gap: 64px; align-items: start;
+  max-width: 1400px; margin: 0 auto; padding: 96px 40px 0 40px;
+}
+.whoever-copy { position: sticky; top: 96px; padding-bottom: 96px; }
+.whoever-copy h2 { font-size: clamp(2.1rem, 3.5vw, 3.3rem); font-weight: 900; }
+.whoever-copy p { margin-top: 22px; font-size: 1.2rem; max-width: 46ch; }
+.whoever-copy .count {
+  margin-top: 28px; display: inline-flex; align-items: center; gap: 10px;
+  font-weight: 700; color: var(--color-ink-soft);
+}
+.whoever-copy .count i { width: 9px; height: 9px; border-radius: 50%; background: var(--color-primary); }
+
+/* The wall. Fixed height so the cards bleed past the top and bottom edges —
+   that mask is what makes it read as endless circulation rather than as a grid
+   that happens to be moving. `mask-image` fades both edges into the page ground
+   so nothing is ever cut off mid-render with a hard line. */
+.wall {
+  position: relative; width: 100%; max-width: var(--wall-w);
+  height: 82vh; min-height: 620px; overflow: hidden;
+  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px;
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 9%, #000 91%, transparent 100%);
+          mask-image: linear-gradient(to bottom, transparent 0, #000 9%, #000 91%, transparent 100%);
+}
+/* The lane holds TWO copies of the same list back to back, and the animation
+   travels exactly one copy's height. That is what makes the loop seamless —
+   at 100% the second copy sits precisely where the first one started. */
+.lane { display: grid; gap: 18px; align-content: start; will-change: transform; }
+.lane-inner { display: grid; gap: 18px; align-content: start; }
+
+@media (prefers-reduced-motion: no-preference) {
+  .lane.up   { animation: lane-up var(--loop) linear infinite; }
+  .lane.down { animation: lane-down var(--loop) linear infinite; }
+  /* A second lane at a different speed stops the two columns from beating
+     against each other in a visible rhythm. */
+  .lane.down { animation-duration: calc(var(--loop) * 1.22); }
+  body.is-paused .lane { animation-play-state: paused; }
+}
+@keyframes lane-up   { from { transform: translateY(0); }    to { transform: translateY(-50%); } }
+@keyframes lane-down { from { transform: translateY(-50%); } to { transform: translateY(0); } }
+
+/* ── A CARD ─────────────────────────────────────────────────────────────────
+   Portrait, because the render is square and the label needs somewhere to live
+   that is not on top of her. She is bottom-anchored and bleeds the bottom edge:
+   the counter/bench in every render runs the full width, so sitting it ON the
+   card edge is what makes her stand IN the card instead of floating on it.
+
+   THIS IS THE WHOLE REASON THE ART SPEC ASKS FOR A BOTTOM-ANCHORED PROP. Take
+   that away and every card needs its own vertical nudge. */
+.trade {
+  margin: 0; position: relative; overflow: hidden; border-radius: var(--radius-section);
+  aspect-ratio: 4 / 5; display: flex; flex-direction: column;
+  border: 1px solid var(--color-base-300);
+  background: var(--color-base-100);
+}
+/* Uneven heights, so the two columns never lock into a grid rhythm. Every
+   third card is squarer; the wall reads as a composed wall rather than a table. */
+.trade:nth-child(3n) { aspect-ratio: 1 / 1; }
+.trade:nth-child(5n) { aspect-ratio: 5 / 6; }
+
+.trade .label {
+  position: relative; z-index: 2; padding: 20px 22px 0;
+  font-family: var(--font-heading); font-weight: 900;
+  font-size: clamp(1.25rem, 1.5vw, 1.7rem); line-height: 1.05;
+  color: var(--color-module, var(--color-base-content));
+}
+.trade .art { position: relative; z-index: 1; flex: 1; min-height: 0; margin-top: -4px; }
+.trade .art img {
+  position: absolute; inset: auto 0 0 0; width: 100%; height: 100%;
+  object-fit: contain; object-position: bottom center;
+}
+
+/* Ground A — CALM (default). Every card the same warm panel; the hue lives on
+   the label alone. Recommended: the renders are already busy and colourful, so
+   the art is the variety and the grounds should stay out of its way. */
+body[data-ground='calm'] .trade { background: var(--color-base-200); }
+body[data-ground='calm'] .trade:nth-child(4n) { background: var(--color-accent-pale); }
+
+/* Ground B — TINTED. Each card a soft wash of its own group hue. More colour,
+   and the thing to look for is whether fourteen washes behind fourteen detailed
+   renders reads as wayfinding or as noise. */
+body[data-ground='tint'] .trade {
+  background: color-mix(in oklab, var(--color-module) 11%, var(--color-base-100));
+  border-color: color-mix(in oklab, var(--color-module) 22%, transparent);
+}
+
+/* Missing art — the layout still has to be legible with an empty folder. */
+.trade.no-art .art::after {
+  content: attr(data-slug);
+  position: absolute; inset: 14px 18px 18px; border: 1.5px dashed var(--color-base-300);
+  border-radius: var(--radius-box); display: grid; place-items: center;
+  font-family: var(--font-sans); font-size: .9rem; font-weight: 700; color: var(--color-ink-soft);
+}
+.trade.no-art img { display: none; }
+
+/* ── RESPONSIVE ─────────────────────────────────────────────────────────────
+   Under 1080 the copy stops being sticky and sits above the wall; a sticky
+   column and a short viewport fight each other.
+
+   Under 720 the vertical marquee is DROPPED entirely rather than shrunk.
+   Vertical motion inside a vertically scrolling page fights the reader's own
+   thumb, and the fix is not a slower version of the same conflict — it is one
+   horizontal lane, where the motion axis is the one the page is not using. */
+@media (max-width: 1080px) {
+  .whoever { grid-template-columns: 1fr; gap: 36px; padding: 64px 24px 0; }
+  .whoever-copy { position: static; padding-bottom: 0; }
+  .wall { height: 68vh; min-height: 520px; }
+}
+@media (max-width: 720px) {
+  .wall {
+    height: auto; min-height: 0; grid-template-columns: 1fr; overflow-x: auto;
+    -webkit-mask-image: linear-gradient(to right, transparent 0, #000 4%, #000 96%, transparent 100%);
+            mask-image: linear-gradient(to right, transparent 0, #000 4%, #000 96%, transparent 100%);
+    scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch;
+  }
+  .lane { grid-auto-flow: column; grid-auto-columns: 74vw; animation: none !important; }
+  .lane-inner { display: contents; }
+  /* Hiding a whole LANE here would drop seven of the fourteen trades on a
+     phone — on the one section whose entire claim is how many there are. It is
+     the duplicate copies that are surplus, not half the list. */
+  .lane-inner[aria-hidden='true'] { display: none; }
+  .trade { scroll-snap-align: center; aspect-ratio: 4 / 5 !important; }
+}
+
+.after {
+  max-width: 1400px; margin: 0 auto; padding: 40px 40px 96px;
+  color: var(--color-ink-soft); font-weight: 600;
+}
+</style>
+</head>
+
+<body data-ground="calm">
+
+<div class="controls">
+  <strong>Mockup controls</strong>
+  <span class="set"><span>Ground</span>
+    <button type="button" data-ground="calm" aria-pressed="true">Calm</button>
+    <button type="button" data-ground="tint" aria-pressed="false">Tinted</button>
+  </span>
+  <span class="set"><span>Card size</span>
+    <button type="button" data-w="640" aria-pressed="false">Small</button>
+    <button type="button" data-w="780" aria-pressed="true">Medium</button>
+    <button type="button" data-w="940" aria-pressed="false">Large</button>
+  </span>
+  <span class="set"><span>Motion</span>
+    <button type="button" data-motion="run" aria-pressed="true">Running</button>
+    <button type="button" data-motion="stop" aria-pressed="false">Paused</button>
+  </span>
+</div>
+
+<section class="whoever">
+  <div class="whoever-copy">
+    <h2>Whatever kind of business you have.</h2>
+    <p>
+      Piggles is not a shop product with appointments bolted on, or a booking product that also
+      does invoices. A bakery, a barber and a potter are equally the point — and so is the garage,
+      the market stall and the person who makes things in a shed.
+    </p>
+    <p class="count"><i></i><span id="count">…</span></p>
+  </div>
+
+  <div class="wall" id="wall" aria-label="The kinds of business Piggles is built for"></div>
+</section>
+
+<p class="after">
+  Drop renders into <code>./trades/&lt;slug&gt;.png</code> — see
+  <a href="trades/README.md">trades/README.md</a> for the list and the shared spec. Missing files
+  show as dashed placeholders, so this is legible with an empty folder and fills in one at a time.
+</p>
+
+<script>
+// The fourteen trades and the group hue each one wears. The hues are spread so
+// no two adjacent cards in a lane share one — with six hues over fourteen cards
+// that has to be arranged rather than hoped for.
+const TRADES = [
+  { slug: 'bakery',       label: 'A bakery.',       group: 'sell'   },
+  { slug: 'barber',       label: 'A barber.',       group: 'people' },
+  { slug: 'potter',       label: 'A potter.',       group: 'run'    },
+  { slug: 'garage',       label: 'A garage.',       group: 'web'    },
+  { slug: 'market-stall', label: 'A market stall.', group: 'money'  },
+  { slug: 'salon',        label: 'A salon.',        group: 'people' },
+  { slug: 'tailor',       label: 'A tailor.',       group: 'sell'   },
+  { slug: 'studio',       label: 'A studio.',       group: 'run'    },
+  { slug: 'workshop',     label: 'A workshop.',     group: 'web'    },
+  { slug: 'supplier',     label: 'A supplier.',     group: 'money'  },
+  { slug: 'shed',         label: 'A shed.',         group: 'sell'   },
+  { slug: 'florist',      label: 'A florist.',      group: 'people' },
+  { slug: 'cafe',         label: 'A café.',         group: 'money'  },
+  { slug: 'butcher',      label: 'A butcher.',      group: 'run'    },
+];
+
+function card(t) {
+  const el = document.createElement('figure');
+  el.className = 'trade no-art';
+  el.dataset.group = t.group;
+  el.innerHTML =
+    '<figcaption class="label">' + t.label + '</figcaption>' +
+    '<div class="art" data-slug="' + t.slug + '.png"><img alt="" src="trades/' + t.slug + '.png" /></div>';
+  // The image decides whether the card is real or a placeholder. Doing it on
+  // load/error rather than up front means dropping ONE file in makes exactly
+  // one card come alive, with no list to keep in sync.
+  const img = el.querySelector('img');
+  img.addEventListener('load', () => { el.classList.remove('no-art'); tally(); });
+  img.addEventListener('error', () => { el.classList.add('no-art'); });
+  return el;
+}
+
+// Each lane holds two copies of its half of the list, back to back, so the
+// translateY(-50%) loop lands the second copy exactly where the first began.
+function lane(items, dir) {
+  const l = document.createElement('div');
+  l.className = 'lane ' + dir;
+  for (let copy = 0; copy < 2; copy++) {
+    const inner = document.createElement('div');
+    inner.className = 'lane-inner';
+    inner.setAttribute('aria-hidden', copy === 1 ? 'true' : 'false');
+    items.forEach((t) => inner.appendChild(card(t)));
+    l.appendChild(inner);
+  }
+  return l;
+}
+
+const wall = document.getElementById('wall');
+const half = Math.ceil(TRADES.length / 2);
+wall.appendChild(lane(TRADES.slice(0, half), 'up'));
+wall.appendChild(lane(TRADES.slice(half), 'down'));
+
+function tally() {
+  const live = new Set(
+    [...document.querySelectorAll('.trade:not(.no-art) .art')].map((a) => a.dataset.slug),
+  ).size;
+  document.getElementById('count').textContent =
+    live === 0
+      ? TRADES.length + ' trades, 0 renders in — drop files into ./trades/'
+      : live + ' of ' + TRADES.length + ' renders in';
+}
+tally();
+
+// Controls.
+document.querySelectorAll('.controls button').forEach((b) => {
+  b.addEventListener('click', () => {
+    const group = b.parentElement;
+    group.querySelectorAll('button').forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
+    if (b.dataset.ground) document.body.dataset.ground = b.dataset.ground;
+    if (b.dataset.w) document.documentElement.style.setProperty('--wall-w', b.dataset.w + 'px');
+    if (b.dataset.motion) document.body.classList.toggle('is-paused', b.dataset.motion === 'stop');
+  });
+});
+</script>
+
+</body>
+</html>

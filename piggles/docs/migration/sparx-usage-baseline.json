@@ -1,0 +1,25 @@
+{
+  "note": "Ratchet for piggles/docs/migration phase A0. Counts of `@sparx/*` references under piggles/, comments excluded. These may only go DOWN. Regenerate with `pnpm check:boundaries --update-baseline` after a phase lands.",
+  "total": 431,
+  "packages": {
+    "@sparx/api-client": 93,
+    "@sparx/app-kit": 8,
+    "@sparx/attribution": 2,
+    "@sparx/auth": 36,
+    "@sparx/automation-schemas": 16,
+    "@sparx/builder-schemas": 9,
+    "@sparx/cms-editor": 5,
+    "@sparx/commerce-schemas": 15,
+    "@sparx/crm-schemas": 6,
+    "@sparx/db": 9,
+    "@sparx/email-sequences": 3,
+    "@sparx/events": 1,
+    "@sparx/links": 8,
+    "@sparx/migration": 6,
+    "@sparx/query": 181,
+    "@sparx/silica-catalog": 7,
+    "@sparx/site-themes": 10,
+    "@sparx/social": 3,
+    "@sparx/story-schemas": 13
+  }
+}

@@ -17,6 +17,7 @@
 //   • Pricing — the console never knows a price.
 
 export * from './apps';
+export * from './app-index';
 export * from './app-icons';
 export * from './lexicon';
 export * from './normalize-email';

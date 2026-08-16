@@ -1,8 +1,8 @@
 # DESIGN.md — Piggles
 
-**Version:** 1.5
+**Version:** 1.6
 **Author:** Brandon Korous
-**Last Updated:** 2026-08-14
+**Last Updated:** 2026-08-16
 
 The design contract for every Piggles surface. Binding for `piggles/**`; it
 supersedes the root [DESIGN.md](../DESIGN.md) where the two disagree, and defers to
@@ -10,10 +10,18 @@ it where this file is silent. Rules of engagement (the platform boundary, the
 lexicon, pricing) are in [CLAUDE.md](CLAUDE.md).
 
 Canonical values come from the approved identity board,
-[config/brand.tokens.json](docs/initial/config/brand.tokens.json). Everything this
-file adds beyond the board — the dark theme, the semantic ramp, the group hues —
-was **chosen by measurement** (WCAG contrast plus a ΔE76 separation screen), never
-by eye. Re-measure before changing any of it.
+[config/brand.tokens.json](docs/initial/config/brand.tokens.json).
+
+**Do not compute colour. The palette is Brandon's.** The numbers recorded in this
+file are history — a note of why a token landed where it did — not a standing
+instruction to re-derive them. Contrast ratios, ΔE separation screens and
+"measured, not eyeballed" checks are **only** to be run when Brandon asks for
+one. Recalculating the palette on every task wastes his time and yours, and the
+arithmetic is not the authority anyway: he is.
+
+What that leaves you: use the tokens as given, and follow the usage rules below
+(a hue is a fill, ink is inherited, neutral must be earned). If a pairing looks
+wrong on screen, say so and ask — do not go and re-derive the palette.
 
 ## 1. What Piggles looks like, in one paragraph
 
@@ -82,9 +90,8 @@ per group, measures **ΔE 18.4 at its closest pair** and every hue clears AA.
 It also does product work: because every app ships enabled, the Piggles rail is
 full on day one, and six color families give it a spine that sparx does not need.
 
-**Adding a seventh group is a design decision, not a token edit.** Run the
-separation screen against every existing hue first. Web ↔ Run at ΔE 18.4 is the
-floor, not headroom.
+**Adding a seventh group is Brandon's decision, not a token edit.** Ask; do not
+go and derive one.
 
 **Money is lime-700, not a money-green.** At `#15803D` it measured ΔE 7.3 against
 `success` — the Money app and a success badge would have been the same colour.
@@ -108,12 +115,79 @@ this test, so do not reach for one.
 Status is resolved with `statusTone()` and rendered `<Badge color={statusTone(s)}
 variant="soft">`, exactly as in sparx. Never a neutral status pill.
 
-### Neutral still has to be earned
+### Neutral needs Brandon's approval
 
 Root RULE #4 applies in full and matters _more_ here, because warm greys are
-seductive. Neutral is earned by the chassis, bare prose, the dismiss half of a
-decision pair, and genuinely untyped values. Nothing else. If an element
-distinguishes A from B, its color carries the distinction.
+seductive. **`color="neutral"` is not a choice you make — ask Brandon and get a
+yes first.** The rule used to list what "earned" it; the list read as a checklist
+to argue past, so it is gone.
+
+If an element distinguishes A from B, its color carries the distinction. Reaching
+for grey almost always means the question of what the thing MEANS got skipped —
+destructive is `danger`, a favourite is `primary`, anything belonging to an app
+is `module`.
+
+### Picking `color` — the positive form, for every component
+
+The clause above is a **prohibition**, and a prohibition with no positive form is
+how `color="neutral" variant="outline"` became the house default for every second
+button on the site — 24 across `apps/web`, 553 across the repo. Nobody chose it. It
+is what gets typed when the rule says what not to do and nothing says what to do.
+
+**This section is not about buttons.** It governs every component that takes a
+`color` — `Button`, `Badge`, `Card`, `Alert`, `Tabs`, `Input`, `Progress`, an icon
+chip, a hued heading, all of them. Buttons are only where the failure was noticed.
+
+**The whole palette is available, and it is bigger than the four names that get
+used.** Ten semantic roles — `primary` `secondary` `accent` `success` `info`
+`warning` `error` `danger` `neutral` — **plus the six group hues**, reached by
+putting `data-group="sell"` on an ancestor and asking for `color="module"`. That is
+sixteen real choices. `SilicaColor` is `… | (string & {})`, so the editor offers a
+handful and TypeScript catches nothing; pick from this list, not from autocomplete.
+
+**The rule is one sentence: the component takes the colour of what it is ABOUT.**
+Not of its position in the layout, not of how important it feels.
+
+| What the element is about                      | `color`                                 |
+| ---------------------------------------------- | --------------------------------------- |
+| Signing up — the one conversion action         | `primary` (and nothing else wears it)   |
+| One app, one group, one module's functionality | `module`, under a `data-group` ancestor |
+| The price, the bill, money going in or out     | `success`                               |
+| Safety, privacy, how data is handled, an FYI   | `info`                                  |
+| A limit approaching, something needing a look  | `warning`                               |
+| Deleting, cancelling, losing something         | `error` / `danger`                      |
+| An onward link with no subject of its own      | `secondary`                             |
+| The second of a pair, beside a primary         | `variant="outline"`, **no `color`**     |
+| Chrome — nav ghost, a reset, a menu icon       | `neutral`                               |
+
+`accent` is not on that list on purpose: [theme.css](packages/brand/src/theme.css)
+defines it as a low-emphasis supporting **surface**, not a second call to action.
+
+Four things this is load-bearing about:
+
+1. **Pink means one thing.** `primary` is the signup CTA and nothing else on the
+   marketing site wears it. A "read more" in pink spends the one colour a visitor
+   has learned to read as _start_.
+2. **The palette file already told us.** `--color-neutral` `#52454F` is annotated
+   in `theme.css` as _"the inverse utility surface (dark bands, `btn-neutral`,
+   tooltips)"_ — chrome. Putting it on a call to action is using a chrome token as
+   an action token, and the annotation saying so was sitting there the whole time.
+3. **The second-of-a-pair takes NO colour.** Uncoloured `outline` resolves to
+   `base-content`, which the surface has already resolved — including inside a
+   `data-theme="dark"` island, where a pinned `neutral` measures 2.52:1 and is very
+   nearly invisible. Measured and recorded at the top of
+   [close-band.tsx](apps/web/components/marketing/close-band.tsx); it holds on
+   every surface, not just that band.
+4. **A section's only action is solid, never outline.** RULE #4's positive form:
+   the action a surface exists for is a filled shape. An outline button alone in a
+   section is a section that does not know what it wants.
+
+Worked examples now in the tree: the home page's FAQ offers two links and they are
+`success` (the price) and `info` (how your data is handled) rather than two
+identical greys — the colour tells you which is which before the label is read.
+[tool-ladder.tsx](apps/web/components/marketing/tools/tool-ladder.tsx) has done the
+`color="module"` version of this all along, which is the precedent that should have
+been followed everywhere.
 
 ## 3. Ink
 
@@ -174,18 +248,26 @@ The loudest non-color difference between the brands, and it comes from the board
 The mark is a squircle and the wordmark is a rounded geometric. If the UI runs
 sharp, the logo looks borrowed.
 
-**`--depth: 1` is the whole of Piggles' elevation** — silica's own default, giving
-Card a resting shadow and hover-lift and solid Buttons an inset highlight. sparx
-sets it to `0` because flat, sharp and cool is sparx's identity; Piggles is soft
-and rounded, and flat-edge separation reads colder than the brand wants. One
-token, set once in `@piggles/brand`. This does **not** license `shadow-*` in
-feature code — a hand-rolled shadow is a re-skin under root RULE #1, and there is
-nothing to add per component because the token already did it.
+**Elevation is a Piggles identity signal, not a restraint to be spent
+sparingly.** sparx sets `--depth: 0` because flat, sharp and cool is what sparx
+is. Piggles is soft, warm and rounded, and that has a direct consequence for
+separation: on sparx's cool greys a hairline border is a crisp edge, while on
+`#fcf7f8` against `#ffffff` it is barely an edge at all. **Shadow is what
+separates surfaces here.** Reach for it.
 
-It equally does not mean **only** silica components may be lifted. Piggles owns
-chrome that silica never sees — the console's dock windows, most obviously — and
-that chrome is elevated with **Tailwind's `shadow-*` scale**, which is where
-elevation lives for anything silica does not paint itself. §8 draws the line.
+Two mechanisms, and the only rule is not to use both on the same element:
+
+- **`--depth: 1`** — silica's own default, set once in `@piggles/brand`. It gives
+  Card a resting shadow and hover-lift, and solid Buttons an inset highlight.
+  Anything silica paints is already lifted; there is nothing to add.
+- **Tailwind's `shadow-*` scale** — for everything Piggles owns and silica never
+  sees: marketing bands and panels, the console's dock windows, any composed
+  chrome. This is sanctioned in feature code and is the normal way to lift a
+  Piggles surface.
+
+**Stacking is the failure.** A `shadow-*` utility on a Card, Button, Dialog or
+Popover doubles the token's shadow and reads as a rendering fault rather than as
+depth. Silica paints it → leave it. Piggles owns it → lift it yourself.
 
 ## 5. Density — comfortable, not compact
 
@@ -266,9 +348,14 @@ it; it may not be needed once the controls and the card padding have breathed.
 
 ## 6. Typography
 
-Display is **Nunito** — round, thick, friendly, ships a 900 weight, and SIL OFL so
-it self-hosts without a licence negotiation. Body is **Inter**, per the board's
-"high-legibility sans serif", and already in the repo's font pipeline.
+Display is **Fredoka** — the roundest face that is still a working UI font, and
+SIL OFL so it self-hosts without a licence negotiation. Body is **Inter**, per the
+board's "high-legibility sans serif", and already in the repo's font pipeline.
+
+**Fredoka's weight axis stops at 700.** `font-extrabold` and `font-black` are
+therefore not distinct from `font-bold` on a heading — they clamp, silently and
+harmlessly, but they buy nothing. Reach for size, not weight, when a heading needs
+to grow. Body copy keeps Inter's full 100–900 range.
 
 Avoid, per the board: condensed display faces, sharp corporate display faces, and
 novelty faces. Confirm the stack against the final logo file before launch — if
@@ -337,7 +424,9 @@ Before calling a Piggles surface done:
 3. Every readable string uses the Piggles lexicon, not sparx's
    ([terminology.yaml](docs/initial/config/terminology.yaml)).
 4. Nothing on screen would pass unnoticed inside sparx.
-5. Light and dark both measured, not eyeballed.
+5. Light and dark both **looked at**. Open the surface in each and see that it
+   reads. No contrast arithmetic unless Brandon asked for it — see the note at
+   the top of this file.
 6. Every state built — empty, loading, error, permission-denied — not just the
    happy path.
 7. **It breathes.** No `size="sm"` reflex on a form control, no card whose

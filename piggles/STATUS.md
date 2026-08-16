@@ -1,6 +1,6 @@
 # Piggles — build status
 
-**Last updated:** 2026-08-14
+**Last updated:** 2026-08-15
 
 Where the Piggles build actually is, what is decided, and what is known-broken.
 Read [CLAUDE.md](CLAUDE.md) for the rules and [DESIGN.md](DESIGN.md) for the
@@ -236,33 +236,41 @@ is the spine of sparx's wizard because modules are what sparx bills for.**
 Piggles includes every app, so that step does not exist — which is not a step
 removed, it is a different flow. `step-payments` differs too (no card at signup).
 
-### Onboarding's answer now ACTIVATES, not just hides
+### Onboarding hands the tenant to api-rest to be FURNISHED
 
-The account app's "what do you do?" writes `settings.piggles.railGroups` AND
-turns on the platform modules behind those apps
-(`apps/account/lib/activate-modules.ts`).
+**Superseded 2026-08-15.** `apps/account/lib/activate-modules.ts` is DELETED and
+onboarding no longer activates anything itself. It names the business, records
+`settings.piggles.railGroups`, and calls
+`POST /internal/tenant/furnish` (`lib/furnish.ts`, shared-secret
+`SPARX_INTERNAL_FURNISH_TOKEN`). That endpoint does the whole second half, in
+order: **modules → industry starter → blueprint → sample data.**
 
-**Why this changed.** A first attempt switched the whole catalogue on at
-provisioning, by writing `settings.modules.<slug>.enabled` directly. That is
-wrong twice: it answers a question nobody has asked yet, and — the real bug — a
-flag write **fires nothing**. `module.activated` is what seeds the CRM's
-pipeline, segments, SLA policies and object registry, the automation catalogue,
-commerce's tax and shipping defaults, finance's accounts and the default emails.
-Write the flag alone and every Piggles business arrives with fifteen apps
-switched on and none of them set up: Customers "on", with no pipeline in it.
+**`module.activated` RIDES TWO BUSES, AND THIS APP WAS ONLY ON ONE.** That is why
+the work moved, and it is the defect worth remembering. `lib/module-toggle.ts`
+announces a module transition on BOTH the Pub/Sub topic (the automation-worker,
+another process) AND api-rest's **in-process platform bus** — and the in-process
+one carries every consumer that matters here: the CRM's pipeline, segments and
+SLA policies; commerce's tax, shipping and site-commerce defaults; scheduling's
+defaults; the default transactional emails; finance's accounts; the saved-view
+presets; invoicing's config.
 
-So: flags and events are two halves of one operation. The onboarding action
-writes the flags inside the rename transaction, expands them through the
-platform's dependency graph (`requiredModules` — B2B without Commerce is not a
-smaller feature set, it is a broken one), and publishes `module.activated` AFTER
-the commit. After, never inside: a consumer that wakes on the event has to find
-the flag already true.
+The account app published to the broker alone. The flags went true, a message
+landed on a topic, and **none of that seeding ever happened** — for every Piggles
+business created this way, with nothing anywhere reporting a failure because
+nothing failed. It is the exact outcome the old file was written to prevent,
+reached by the mechanism it chose; its comment claimed "the same event on the
+same bus", and it is not the same bus. Only a process with those consumers
+registered can announce on both.
 
-It deliberately skips three things api-rest's route does — the in-process cache
-flush (nothing to invalidate for a brand-new tenant), the WizeWorks platform-CRM
-event (FOLLOW_UPS #4) and the Stripe module-item sync (FOLLOW_UPS #1). The
-`modules` parameter briefly added to `provisionTenant` has been REMOVED: a flag
-write with no fan-out is a footgun nobody should be able to reach for.
+**Every module is now switched on, for every business**, regardless of what was
+ticked (RULE #2). It used to activate only the ticked groups' modules, which
+contradicted the screen's own promise that "everything is included either way" —
+a module that is off returns 404, runs no workers and stores no rows, so the
+unticked apps WERE locked doors. The rail groups now decide only what is on the
+rail.
+
+`billPerModule: false` is passed, so no per-module Stripe items are synced —
+under one flat price those would be line items nobody agreed to pay.
 
 **And "not activated" never means locked.** `components/all-apps-dialog.tsx`
 lists every app in the catalogue, on or not, with a one-tap **Add app** carrying
@@ -1082,15 +1090,24 @@ PIGGLES build, in a file under `apps/workbench`.)
 
 ### The guard
 
-`scripts/check-piggles-isolation.mjs`, wired into `pnpm check:isolation`, the
-pre-push hook and a CI job. It fails on any import from `piggles/` into `apps/`
-or the reverse, and it strips comments first so prose ABOUT the boundary does
-not trip it.
+`scripts/check-boundaries.mjs`, wired into `pnpm check:boundaries`, the pre-push
+hook and a CI job. It fails on any import from `piggles/` into `apps/` or the
+reverse, and it strips comments first so prose ABOUT the boundary does not trip
+it.
 
-**`@sparx/*` PACKAGE imports stay allowed and that is deliberate.** Those are
-libraries under `packages/` — a database client, a query wrapper, a UI kit.
-Deleting the sparx APPS does not delete them, so depending on one couples
-nothing.
+**It also ratchets `@sparx/*` usage inside `piggles/`, and that replaced the
+opposite rule.** This section used to say those imports "stay allowed and that is
+deliberate — deleting the sparx APPS does not delete them, so depending on one
+couples nothing." That defended the right boundary for the question it was asked
+and the wrong one for the question that matters. "Does Piggles import sparx's app
+code?" is not the same as "**can sparx be deleted without affecting Piggles?**",
+and under the second a package named `@sparx/db` that Piggles cannot boot without
+is an unanswered question rather than a pass.
+
+So the counts are recorded per package in a baseline file and may only fall. The
+scope is being renamed to `@wizeworks/*` and moved out of both brands' trees —
+see [docs/migration/](docs/migration/) for the phases and the running checklist.
+Superseded on 2026-08-16.
 
 ### What this costs, stated honestly
 
@@ -1350,7 +1367,8 @@ OAuth popup sends them back), and the `sparx_market` / `sparx_pay` wire enums.
 | Dark, every surface above | measured, not eyeballed — table at the top of this section  |
 | 360px in an iframe        | drawer fills, hero stacks, checklist aligns, no h-scroll    |
 
-`apps/` has 0 changed files throughout, and `check:isolation` passes.
+`apps/` has 0 changed files throughout, and the boundary check passes (then
+`check:isolation`; now `check:boundaries` — see "The guard" above).
 
 ### Still open from this session
 
@@ -1367,26 +1385,42 @@ OAuth popup sends them back), and the `sparx_market` / `sparx_pay` wire enums.
 
 ## Next
 
-1. **A first release.** The pipeline is wired and structurally verified but
+1. **Sign up once, and watch what a new business actually gets.** The whole
+   furnishing path — onboarding → `/internal/tenant/furnish` → modules → starter
+   → blueprint → sample data → handoff → the workbench — has NEVER been run by a
+   person. It is typechecked, linted, schema-validated and swept; not one signup
+   has gone through it. Everything below "how to resume" applies with force here:
+   every real defect this build has produced was found by opening a page or
+   querying the database, and every one of them passed all three checks first.
+
+   What to check, in the order it can go wrong: the furnish call returns at all
+   (it needs `PIGGLES_API_REST_URL` + `SPARX_INTERNAL_FURNISH_TOKEN` matching
+   api-rest's, or onboarding refuses to finish and says so); all fifteen modules
+   read as on; the CRM has a **pipeline** (its absence is what silently empties
+   the Deals board); the chosen template's pages exist on the site; the shop
+   holds the six Rowan goods. Then open the site and confirm the theme is
+   Piggles pink rather than sparx ember.
+
+2. **A first release.** The pipeline is wired and structurally verified but
    nothing has been BUILT — see "Still not done" in the deployment section. The
    three things standing between here and a live meetpiggles.com are the
    `PIGGLES_*` secrets, the Piggles Google Cloud project, and DNS. Ship
    `meetpiggles.com` first: it stands alone, it needs no secrets at all, and it
    is the one surface where a broken deploy costs nothing.
 
-2. **Billing** on top of the meters: payment method, invoices, one-tap
+3. **Billing** on top of the meters: payment method, invoices, one-tap
    expansion. The meters record; nothing reads them yet. Do FOLLOW_UPS #1 and #2
    as part of this — flat-plan Stripe items and the console's lifecycle notice
    are the same piece of work.
 
-3. **`noreply@piggles.email` still has no DNS behind it.** Wired as the sender
+4. **`noreply@piggles.email` still has no DNS behind it.** Wired as the sender
    fallback so Piggles mail does not arrive from sparx.email, and it will not
    deliver until the domain exists.
 
-4. Piggles' own video footage (currently sparx's), and a decision on the pricing
+5. Piggles' own video footage (currently sparx's), and a decision on the pricing
    allowances (`/pricing` publishes the low end of an unvalidated range).
 
-5. **Two dock ideas, deliberately NOT built** — raised, discussed, parked by
+6. **Two dock ideas, deliberately NOT built** — raised, discussed, parked by
    Brandon ("keep the tabs in windows for now"). They are two different features
    and worth keeping apart:
    - _A one-pane window gets a title bar._ Today a floating window holding one
