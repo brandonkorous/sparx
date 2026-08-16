@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { Icon } from '@piggles/ui';
 import { buttonClasses } from '@wizeworks/silicaui-react/server';
 import type { PigglesGroup } from '@piggles/brand';
 import { Logo } from '@piggles/brand/react';
@@ -59,7 +60,7 @@ export function SiteFooter() {
     // against it closed that fourth side and read as a page that had been cut
     // off rather than finished. The band now floats clear of the footer the same
     // way it floats clear of everything else.
-    <div className="bg-base-100 border-base-300 mt-24 border-t sm:mt-32 lg:mt-40">
+    <div className="bg-base-100 border-base-300 mt-16 border-t sm:mt-16 lg:mt-16">
       <div className="mx-auto max-w-7xl px-6 py-16 sm:py-20">
         <div className="grid gap-12 lg:grid-cols-4 lg:gap-16">
           {/* The ask. One column of four, so it reads as the footer's subject
@@ -83,7 +84,6 @@ export function SiteFooter() {
               </a>
               <a
                 className={buttonClasses({
-                  color: 'neutral',
                   variant: 'outline',
                   size: 'lg',
                   block: true,
@@ -103,12 +103,12 @@ export function SiteFooter() {
                   <h2 className="text-module text-base font-bold">{GROUP_COPY[group].title}</h2>
                   <ul className="mt-4 space-y-3">
                     {appsInGroup(group).map((app) => {
-                      const Icon = appIcon(app.id);
+                      const glyph = appIcon(app.id);
                       return (
                         <li key={app.id}>
                           <Link href={`/apps/${app.id}`} className="flex items-center gap-2.5">
                             <span className="bg-module bg-soft text-module grid size-7 shrink-0 place-items-center rounded-md">
-                              <Icon aria-hidden className="size-3.5" strokeWidth={1.9} />
+                              <Icon glyph={glyph} aria-hidden className="size-3.5" />
                             </span>
                             <span className="text-base">{app.label}</span>
                           </Link>
@@ -136,6 +136,9 @@ export function SiteFooter() {
             </Link>
             <Link href="/pricing" className="text-base font-semibold">
               Pricing
+            </Link>
+            <Link href="/tools" className="text-base font-semibold">
+              Free tools
             </Link>
             <Link href="/trust" className="text-base font-semibold">
               Trust

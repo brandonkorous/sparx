@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { Section } from '@piggles/ui';
 import Link from 'next/link';
 import { Alert } from '@wizeworks/silicaui-react';
 import { PRODUCT } from '@piggles/config';
@@ -183,8 +184,8 @@ export default function TermsPage() {
         </div>
       </section>
 
-      <section className="px-6 py-16 sm:py-20">
-        <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[16rem_1fr] lg:gap-16">
+      <Section>
+        <div className="grid gap-10 lg:grid-cols-[16rem_1fr] lg:gap-16">
           {/* A real index. Twelve clauses is a lot to scroll blindly, and the
               one thing somebody wants is usually the one thing they cannot
               find — most often cancelling, or who owns what. */}
@@ -200,7 +201,6 @@ export default function TermsPage() {
               ))}
             </ul>
           </nav>
-
           <div className="max-w-[75ch]">
             {CLAUSES.map((c) => (
               <section key={c.heading} id={slug(c.heading)} className="scroll-mt-28 pb-12">
@@ -239,7 +239,7 @@ export default function TermsPage() {
             </div>
           </div>
         </div>
-      </section>
+      </Section>
     </>
   );
 }

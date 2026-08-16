@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { Section } from '@piggles/ui';
 import Link from 'next/link';
 import { Alert, Card, CardBody } from '@wizeworks/silicaui-react';
 import { PRODUCT } from '@piggles/config';
@@ -235,80 +236,70 @@ export default function PrivacyPage() {
         </div>
       </section>
 
-      <section className="px-6 py-16 sm:py-20">
-        <div className="mx-auto max-w-7xl">
-          <h2 className="text-3xl font-extrabold sm:text-4xl">What Piggles holds</h2>
-          <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {COLLECTED.map((c) => (
-              <Card key={c.title}>
-                <CardBody>
-                  <h3 className="text-lg font-bold">{c.title}</h3>
-                  <p className="mt-2 text-base">{c.body}</p>
-                </CardBody>
-              </Card>
+      <Section>
+        <h2 className="text-3xl font-extrabold sm:text-4xl">What Piggles holds</h2>
+        <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {COLLECTED.map((c) => (
+            <Card key={c.title}>
+              <CardBody>
+                <h3 className="text-lg font-bold">{c.title}</h3>
+                <p className="mt-2 text-base">{c.body}</p>
+              </CardBody>
+            </Card>
+          ))}
+        </div>
+      </Section>
+
+      <Section className="bg-base-100 border-base-300 border-y">
+        <div className="grid gap-10 lg:grid-cols-3 lg:gap-16">
+          <div>
+            <h2 className="text-3xl font-extrabold sm:text-4xl">Four things that never happen.</h2>
+            <p className="mt-6 text-lg">
+              This is the part worth reading twice, because it is where most software gets you.
+            </p>
+          </div>
+          <div className="grid gap-8 sm:grid-cols-2 lg:col-span-2">
+            {NEVER.map((n) => (
+              <div key={n.title}>
+                <h3 className="text-xl font-bold">{n.title}</h3>
+                <p className="mt-2 text-base">{n.body}</p>
+              </div>
             ))}
           </div>
         </div>
-      </section>
+      </Section>
 
-      <section className="bg-base-100 border-base-300 border-y px-6 py-16 sm:py-24">
-        <div className="mx-auto max-w-7xl">
-          <div className="grid gap-10 lg:grid-cols-3 lg:gap-16">
-            <div>
-              <h2 className="text-3xl font-extrabold sm:text-4xl">
-                Four things that never happen.
-              </h2>
-              <p className="mt-6 text-lg">
-                This is the part worth reading twice, because it is where most software gets you.
-              </p>
-            </div>
-            <div className="grid gap-8 sm:grid-cols-2 lg:col-span-2">
-              {NEVER.map((n) => (
-                <div key={n.title}>
-                  <h3 className="text-xl font-bold">{n.title}</h3>
-                  <p className="mt-2 text-base">{n.body}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="px-6 py-16 sm:py-24">
-        <div className="mx-auto max-w-7xl">
-          <h2 className="text-3xl font-extrabold sm:text-4xl">Who else touches it</h2>
-          <p className="mt-6 max-w-[70ch] text-lg">
-            Two different lists, and the difference matters more than the names. The first is
-            running whether you think about it or not. The second only exists because you went and
-            switched it on.
-          </p>
-
-          <h3 className="mt-12 text-2xl font-extrabold">Always, to run the service</h3>
-          <ul className="mt-8 grid gap-8 sm:grid-cols-2 lg:grid-cols-3 lg:gap-10">
-            {ALWAYS.map((s) => (
-              <li key={s.who} className="border-base-content border-t-2 pt-5">
-                <h4 className="text-xl font-bold">{s.who}</h4>
-                <p className="mt-2 text-base">{s.why}</p>
-              </li>
-            ))}
-          </ul>
-
-          <h3 className="mt-16 text-2xl font-extrabold">Only if you connect it</h3>
-          <p className="mt-4 max-w-[70ch] text-lg">
-            None of these are on until you turn them on, and every one can be disconnected in the
-            same place you connected it.
-          </p>
-          <ul className="mt-8 grid gap-4 lg:grid-cols-2">
-            {IF_YOU_CONNECT.map((s) => (
-              <li key={s.who} className="bg-base-100 border-base-300 rounded-box border p-5 sm:p-7">
-                <h4 className="text-xl font-bold">{s.who}</h4>
-                <p className="mt-1.5 text-base font-semibold">{s.detail}</p>
-                <p className="mt-3 text-base">{s.why}</p>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </section>
+      <Section>
+        <h2 className="text-3xl font-extrabold sm:text-4xl">Who else touches it</h2>
+        <p className="mt-6 max-w-[70ch] text-lg">
+          Two different lists, and the difference matters more than the names. The first is running
+          whether you think about it or not. The second only exists because you went and switched it
+          on.
+        </p>
+        <h3 className="mt-12 text-2xl font-extrabold">Always, to run the service</h3>
+        <ul className="mt-8 grid gap-8 sm:grid-cols-2 lg:grid-cols-3 lg:gap-10">
+          {ALWAYS.map((s) => (
+            <li key={s.who} className="border-base-content border-t-2 pt-5">
+              <h4 className="text-xl font-bold">{s.who}</h4>
+              <p className="mt-2 text-base">{s.why}</p>
+            </li>
+          ))}
+        </ul>
+        <h3 className="mt-16 text-2xl font-extrabold">Only if you connect it</h3>
+        <p className="mt-4 max-w-[70ch] text-lg">
+          None of these are on until you turn them on, and every one can be disconnected in the same
+          place you connected it.
+        </p>
+        <ul className="mt-8 grid gap-4 lg:grid-cols-2">
+          {IF_YOU_CONNECT.map((s) => (
+            <li key={s.who} className="bg-base-100 border-base-300 rounded-box border p-5 sm:p-7">
+              <h4 className="text-xl font-bold">{s.who}</h4>
+              <p className="mt-1.5 text-base font-semibold">{s.detail}</p>
+              <p className="mt-3 text-base">{s.why}</p>
+            </li>
+          ))}
+        </ul>
+      </Section>
 
       {/* ── The connector disclaimers ──────────────────────────────────────────
           The part a role-based list could not say at all. Once a customer
@@ -316,123 +307,116 @@ export default function PrivacyPage() {
           with a company whose terms we do not write and whose behaviour we
           cannot control — and the person who decided that was the customer.
           Saying so plainly is both the honest thing and the protective one. */}
-      <section className="bg-base-100 border-base-300 border-y px-6 py-16 sm:py-24">
-        <div className="mx-auto max-w-7xl">
-          <div className="grid gap-10 lg:grid-cols-3 lg:gap-16">
-            <div>
-              <h2 className="text-3xl font-extrabold sm:text-4xl">
-                What happens when you connect something.
-              </h2>
-              <p className="mt-6 text-lg">
-                Connecting an outside account is genuinely a decision, so it is worth knowing
-                exactly what it does.
-              </p>
-            </div>
-            <div className="grid gap-8 sm:grid-cols-2 lg:col-span-2">
-              <div>
-                <h3 className="text-xl font-bold">Their rules apply once it arrives</h3>
-                <p className="mt-2 text-base">
-                  What you send to TikTok is held by TikTok, under TikTok’s privacy policy and not
-                  ours. We can control what leaves; we cannot control what happens after. Before
-                  connecting something you are not sure about, their policy is the one to read.
-                </p>
-              </div>
-              <div>
-                <h3 className="text-xl font-bold">Only what the job needs</h3>
-                <p className="mt-2 text-base">
-                  A social connection gets posts and their metrics. A carrier gets a delivery
-                  address. A tax service gets amounts and places, not names. Your customer list is
-                  never handed over wholesale to anybody.
-                </p>
-              </div>
-              <div>
-                <h3 className="text-xl font-bold">You are the one deciding</h3>
-                <p className="mt-2 text-base">
-                  If a supplier ships to your customer, that customer’s address has to reach the
-                  supplier — there is no version where it does not. Telling your own customers what
-                  you have connected, and having the right to send it, is yours to do rather than
-                  ours.
-                </p>
-              </div>
-              <div>
-                <h3 className="text-xl font-bold">Disconnecting stops it</h3>
-                <p className="mt-2 text-base">
-                  Revoke a connection and Piggles stops sending immediately, and the stored key is
-                  deleted. What the other company already received is theirs to delete — ask them,
-                  and their policy says how.
-                </p>
-              </div>
-            </div>
+      <Section className="bg-base-100 border-base-300 border-y">
+        <div className="grid gap-10 lg:grid-cols-3 lg:gap-16">
+          <div>
+            <h2 className="text-3xl font-extrabold sm:text-4xl">
+              What happens when you connect something.
+            </h2>
+            <p className="mt-6 text-lg">
+              Connecting an outside account is genuinely a decision, so it is worth knowing exactly
+              what it does.
+            </p>
           </div>
-        </div>
-      </section>
-
-      <section className="px-6 py-16 sm:py-24">
-        <div className="mx-auto max-w-7xl">
-          <div className="grid gap-10 lg:grid-cols-2 lg:gap-16">
+          <div className="grid gap-8 sm:grid-cols-2 lg:col-span-2">
             <div>
-              <h2 className="text-3xl font-extrabold sm:text-4xl">Signing in with Google</h2>
-              <p className="mt-6 max-w-[60ch] text-lg">
-                You can create an account with an email and a password, or with Google. Choosing
-                Google means Google tells us your name, your email address and that the sign-in
-                worked — nothing else, and no access to anything in your Google account. It also
-                means Google knows you signed in to Piggles.
-              </p>
-              <p className="mt-4 max-w-[60ch] text-lg">
-                A password works just as well and involves nobody else. Every cookie either route
-                sets is listed on{' '}
-                <Link href="/cookies" className="font-semibold underline">
-                  cookies
-                </Link>
-                .
+              <h3 className="text-xl font-bold">Their rules apply once it arrives</h3>
+              <p className="mt-2 text-base">
+                What you send to TikTok is held by TikTok, under TikTok’s privacy policy and not
+                ours. We can control what leaves; we cannot control what happens after. Before
+                connecting something you are not sure about, their policy is the one to read.
               </p>
             </div>
             <div>
-              <h2 className="text-3xl font-extrabold sm:text-4xl">Where it all sits</h2>
-              <p className="mt-6 max-w-[60ch] text-lg">
-                In managed data centres run by major cloud providers, in a region we can tell you.
-                Several of the companies above operate internationally, so information reaching them
-                may be handled outside the country you are in — which is normal for software of this
-                kind and worth knowing rather than discovering.
+              <h3 className="text-xl font-bold">Only what the job needs</h3>
+              <p className="mt-2 text-base">
+                A social connection gets posts and their metrics. A carrier gets a delivery address.
+                A tax service gets amounts and places, not names. Your customer list is never handed
+                over wholesale to anybody.
               </p>
-              <p className="mt-4 max-w-[60ch] text-lg">
-                How it is kept separate from every other business, and encrypted on the way and at
-                rest, is on{' '}
-                <Link href="/trust" className="font-semibold underline">
-                  trust
-                </Link>
-                .
+            </div>
+            <div>
+              <h3 className="text-xl font-bold">You are the one deciding</h3>
+              <p className="mt-2 text-base">
+                If a supplier ships to your customer, that customer’s address has to reach the
+                supplier — there is no version where it does not. Telling your own customers what
+                you have connected, and having the right to send it, is yours to do rather than
+                ours.
+              </p>
+            </div>
+            <div>
+              <h3 className="text-xl font-bold">Disconnecting stops it</h3>
+              <p className="mt-2 text-base">
+                Revoke a connection and Piggles stops sending immediately, and the stored key is
+                deleted. What the other company already received is theirs to delete — ask them, and
+                their policy says how.
               </p>
             </div>
           </div>
         </div>
-      </section>
+      </Section>
 
-      <section className="bg-base-100 border-base-300 border-y px-6 py-16 sm:py-24">
-        <div className="mx-auto max-w-7xl">
-          <h2 className="text-3xl font-extrabold sm:text-4xl">What you can always do</h2>
-          <ul className="mt-10 grid gap-8 sm:grid-cols-2 lg:grid-cols-4 lg:gap-10">
-            {RIGHTS.map((r) => (
-              <li key={r.title} className="border-base-content border-t-2 pt-5">
-                <h3 className="text-xl font-bold">{r.title}</h3>
-                <p className="mt-2 text-base">{r.body}</p>
-              </li>
-            ))}
-          </ul>
-
-          <p className="mt-14 max-w-[70ch] text-lg">
-            How your information is kept safe and separate is on{' '}
-            <Link href="/trust" className="font-semibold underline">
-              trust
-            </Link>
-            , and every cookie we set is listed on{' '}
-            <Link href="/cookies" className="font-semibold underline">
-              cookies
-            </Link>
-            .
-          </p>
+      <Section>
+        <div className="grid gap-10 lg:grid-cols-2 lg:gap-16">
+          <div>
+            <h2 className="text-3xl font-extrabold sm:text-4xl">Signing in with Google</h2>
+            <p className="mt-6 max-w-[60ch] text-lg">
+              You can create an account with an email and a password, or with Google. Choosing
+              Google means Google tells us your name, your email address and that the sign-in worked
+              — nothing else, and no access to anything in your Google account. It also means Google
+              knows you signed in to Piggles.
+            </p>
+            <p className="mt-4 max-w-[60ch] text-lg">
+              A password works just as well and involves nobody else. Every cookie either route sets
+              is listed on{' '}
+              <Link href="/cookies" className="font-semibold underline">
+                cookies
+              </Link>
+              .
+            </p>
+          </div>
+          <div>
+            <h2 className="text-3xl font-extrabold sm:text-4xl">Where it all sits</h2>
+            <p className="mt-6 max-w-[60ch] text-lg">
+              In managed data centres run by major cloud providers, in a region we can tell you.
+              Several of the companies above operate internationally, so information reaching them
+              may be handled outside the country you are in — which is normal for software of this
+              kind and worth knowing rather than discovering.
+            </p>
+            <p className="mt-4 max-w-[60ch] text-lg">
+              How it is kept separate from every other business, and encrypted on the way and at
+              rest, is on{' '}
+              <Link href="/trust" className="font-semibold underline">
+                trust
+              </Link>
+              .
+            </p>
+          </div>
         </div>
-      </section>
+      </Section>
+
+      <Section className="bg-base-100 border-base-300 border-y">
+        <h2 className="text-3xl font-extrabold sm:text-4xl">What you can always do</h2>
+        <ul className="mt-10 grid gap-8 sm:grid-cols-2 lg:grid-cols-4 lg:gap-10">
+          {RIGHTS.map((r) => (
+            <li key={r.title} className="border-base-content border-t-2 pt-5">
+              <h3 className="text-xl font-bold">{r.title}</h3>
+              <p className="mt-2 text-base">{r.body}</p>
+            </li>
+          ))}
+        </ul>
+        <p className="mt-14 max-w-[70ch] text-lg">
+          How your information is kept safe and separate is on{' '}
+          <Link href="/trust" className="font-semibold underline">
+            trust
+          </Link>
+          , and every cookie we set is listed on{' '}
+          <Link href="/cookies" className="font-semibold underline">
+            cookies
+          </Link>
+          .
+        </p>
+      </Section>
     </>
   );
 }

@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { Section } from '@piggles/ui';
 import Link from 'next/link';
 import { Badge } from '@wizeworks/silicaui-react';
 import { PRODUCT } from '@piggles/config';
@@ -147,72 +148,68 @@ export default async function StatusPage() {
         lede={`Checked when you loaded this page, at ${checkedAt.toUTCString()}. Reload it for a fresh answer — nothing on this page is cached.`}
       />
 
-      <section className="px-6 py-16 sm:py-24">
-        <div className="mx-auto max-w-7xl">
-          <ul className="grid gap-4">
-            {results.map(({ surface, state }) => (
-              <li
-                key={surface.name}
-                className="bg-base-100 border-base-300 rounded-box flex flex-wrap items-center justify-between gap-4 border p-6 sm:p-8"
-              >
-                <div>
-                  <h2 className="text-xl font-extrabold sm:text-2xl">{surface.name}</h2>
-                  <p className="mt-1.5 max-w-[60ch] text-base">{surface.what}</p>
-                  <p className="mt-1 text-base font-semibold">{surface.host}</p>
-                </div>
-                <Badge color={TONE[state]} variant="soft" size="lg">
-                  {LABEL[state]}
-                </Badge>
-              </li>
-            ))}
-          </ul>
-
-          <div className="mt-12 grid gap-10 lg:grid-cols-2 lg:gap-16">
-            <div>
-              <h2 className="text-2xl font-extrabold sm:text-3xl">What a green row means</h2>
-              <p className="mt-4 max-w-[60ch] text-lg">
-                That this part of Piggles answered a moment ago. It does not promise that every
-                feature inside it is working — a service can answer while one thing in it is broken.
-                If something is wrong for you and this page looks fine, that is worth telling us
-                rather than doubting.
-              </p>
-            </div>
-            <div>
-              <h2 className="text-2xl font-extrabold sm:text-3xl">Why there is no percentage</h2>
-              <p className="mt-4 max-w-[60ch] text-lg">
-                Because nobody is measuring one yet. A number nobody measures is a decoration rather
-                than a commitment, and we would rather show you a live check we can stand behind
-                than a figure we cannot. When it is genuinely measured, it appears here.
-              </p>
-            </div>
-          </div>
-
-          <div className="border-base-300 mt-14 border-t pt-8">
-            <h2 className="text-2xl font-extrabold sm:text-3xl">Past incidents</h2>
-            {/* "Nothing recorded" and not an empty list under a heading. An
-                empty list reads as a clean record; there has not been a clean
-                record, there has not been a record. */}
-            <p className="mt-4 max-w-[70ch] text-lg">
-              Nothing recorded yet — and that means exactly what it says, which is that we have not
-              been keeping an incident history rather than that nothing has ever gone wrong. From
-              the day {PRODUCT.name} opens to the public, anything that affects your business or
-              your customers is written up here, in plain language, with what happened and what we
-              did about it.
+      <Section>
+        <ul className="grid gap-4">
+          {results.map(({ surface, state }) => (
+            <li
+              key={surface.name}
+              className="bg-base-100 border-base-300 rounded-box flex flex-wrap items-center justify-between gap-4 border p-6 sm:p-8"
+            >
+              <div>
+                <h2 className="text-xl font-extrabold sm:text-2xl">{surface.name}</h2>
+                <p className="mt-1.5 max-w-[60ch] text-base">{surface.what}</p>
+                <p className="mt-1 text-base font-semibold">{surface.host}</p>
+              </div>
+              <Badge color={TONE[state]} variant="soft" size="lg">
+                {LABEL[state]}
+              </Badge>
+            </li>
+          ))}
+        </ul>
+        <div className="mt-12 grid gap-10 lg:grid-cols-2 lg:gap-16">
+          <div>
+            <h2 className="text-2xl font-extrabold sm:text-3xl">What a green row means</h2>
+            <p className="mt-4 max-w-[60ch] text-lg">
+              That this part of Piggles answered a moment ago. It does not promise that every
+              feature inside it is working — a service can answer while one thing in it is broken.
+              If something is wrong for you and this page looks fine, that is worth telling us
+              rather than doubting.
             </p>
-            <p className="mt-6 text-lg">
-              What we promise about keeping it running is in the{' '}
-              <Link href="/terms" className="font-semibold underline">
-                terms
-              </Link>
-              , and how your information is kept safe is on{' '}
-              <Link href="/trust" className="font-semibold underline">
-                trust
-              </Link>
-              .
+          </div>
+          <div>
+            <h2 className="text-2xl font-extrabold sm:text-3xl">Why there is no percentage</h2>
+            <p className="mt-4 max-w-[60ch] text-lg">
+              Because nobody is measuring one yet. A number nobody measures is a decoration rather
+              than a commitment, and we would rather show you a live check we can stand behind than
+              a figure we cannot. When it is genuinely measured, it appears here.
             </p>
           </div>
         </div>
-      </section>
+        <div className="border-base-300 mt-14 border-t pt-8">
+          <h2 className="text-2xl font-extrabold sm:text-3xl">Past incidents</h2>
+          {/* "Nothing recorded" and not an empty list under a heading. An
+                empty list reads as a clean record; there has not been a clean
+                record, there has not been a record. */}
+          <p className="mt-4 max-w-[70ch] text-lg">
+            Nothing recorded yet — and that means exactly what it says, which is that we have not
+            been keeping an incident history rather than that nothing has ever gone wrong. From the
+            day {PRODUCT.name} opens to the public, anything that affects your business or your
+            customers is written up here, in plain language, with what happened and what we did
+            about it.
+          </p>
+          <p className="mt-6 text-lg">
+            What we promise about keeping it running is in the{' '}
+            <Link href="/terms" className="font-semibold underline">
+              terms
+            </Link>
+            , and how your information is kept safe is on{' '}
+            <Link href="/trust" className="font-semibold underline">
+              trust
+            </Link>
+            .
+          </p>
+        </div>
+      </Section>
     </>
   );
 }

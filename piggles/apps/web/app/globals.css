@@ -59,6 +59,11 @@
  * anywhere reports a problem. */
 @source '../../../packages/mascot/src/**/*.{ts,tsx}';
 
+/* @piggles/ui ships className strings (Section's padding and max-width), so the
+ * same rule applies: unscanned, the panel renders with no layout and nothing
+ * reports it. See packages/ui/CLAUDE.md. */
+@source '../../../packages/ui/src/**/*.{ts,tsx}';
+
 /* Bridge the brand's font tokens into the Tailwind v4 theme, so `font-heading`
  * and `font-sans` EXIST as utilities.
  *
@@ -85,18 +90,12 @@
   --radius-section: var(--radius-section);
 }
 
-/* Fonts. theme.css declares the INTENT with literal family names ('Nunito',
- * 'Inter'), which is what a consumer loading those fonts by name would resolve.
- * next/font hashes the family, so the app re-points the two tokens at the
- * variables `next/font` generates on <html>.
- *
- * Targets `[data-theme]` rather than `:root` deliberately: theme.css sets these
- * inside `[data-theme='light'], [data-theme='dark']`, so matching the specificity
- * and coming later in source order is what makes this win — on the root AND
- * inside any nested theme island. */
+/* Fonts. theme.css names the families literally ('Fredoka', 'Inter'); next/font
+ * hashes them, so the app re-points the tokens at its generated variables.
+ * `[data-theme]`, not `:root` — it matches theme.css's own specificity. */
 [data-theme] {
   --font-sans: var(--font-inter), system-ui, sans-serif;
-  --font-heading: var(--font-nunito), var(--font-inter), system-ui, sans-serif;
+  --font-heading: var(--font-fredoka), var(--font-inter), system-ui, sans-serif;
 }
 
 /* The canvas — `base-300`, the GROUND, and everything else lifts off it.
@@ -241,28 +240,6 @@ h6 {
   }
 }
 
-/* A group hue as READABLE INK, on whichever surface it lands on.
- *
- * The six group hues were measured for AA against white — `money` is lime-700,
- * `web` is indigo-600 — so `text-module` on a dark theme island drops under 3:1
- * and the word reads as switched off. Measured against `base-200` inside
- * `data-theme="dark"`:
- *
- *   | plain `text-module` |  1.4–2.1:1  |  ← unreadable
- *   | this rule           |  6.6–7.1:1  |
- *
- * This is the same lesson close-band.tsx already records: a colour pinned at the
- * call site stops following the surface. So the value is DERIVED from
- * `--color-module` rather than replacing it — change a group hue in
- * @piggles/brand and both branches of this rule move with it, which a pair of
- * hand-picked hex values would not. */
-.ink-module {
-  color: var(--color-module);
-}
-[data-theme='dark'] .ink-module {
-  color: color-mix(in oklab, var(--color-module) 52%, white);
-}
-
 /* The desk in <TheDay>.
  *
  * The one piece of bespoke CSS the film needs, and only because a dot grid is a
@@ -281,46 +258,176 @@ h6 {
   background-size: 26px 26px;
 }
 
-/* The Turn's strikethrough, drawn rather than printed.
+/* `.strike` lived here — a scroll-driven line drawn through the jargon word in
+ * The Turn, so that CRM was readable for a moment and then struck. It went with
+ * the section it was built for: The Turn no longer argues about vocabulary, so
+ * there is no word to cross out. Deleted rather than parked, because dead CSS
+ * with a good comment on it is the most re-addable thing in a stylesheet. */
+
+/* The trade wall in <Whoever>.
  *
- * `text-decoration: line-through` cannot be animated, so the rule is a
- * pseudo-element the width of the word and the scroll position scales it from the
- * left. The point is the ORDER: the jargon is readable for a moment, and then it
- * is struck and the plain word beside it is what is left. A pre-struck word is a
- * layout; a word being struck is the argument happening.
+ * Two columns of trade cards travelling in opposite directions, with the copy
+ * beside them holding still. Bespoke CSS for the same reason `.day-desk` is: a
+ * seamless loop needs `@keyframes` and the soft top/bottom edge needs a
+ * `mask-image`, neither of which is a utility. Everything else about the section
+ * — hues, spacing, card chrome — is a `data-group` bridge or a Tailwind class.
  *
- * The base rule paints the line at full width with no animation, so a browser
- * without scroll-driven timelines — and anyone who asked for reduced motion —
- * still gets the struck word rather than an unmarked one. */
-.strike {
-  position: relative;
-}
-.strike::after {
-  content: '';
-  position: absolute;
-  inset-inline: 0;
-  top: 50%;
-  height: 1px;
-  background: currentColor;
-  transform-origin: left center;
+ * ── WHY THE LANES RUN OPPOSITE WAYS ────────────────────────────────────────
+ *
+ * Two columns travelling together read as ONE LIST MOVING, and a list is a
+ * finite thing with a top and a bottom that the eye starts counting. Opposed,
+ * there is no start to find, which is the literal claim of the heading above
+ * them. The 1.24 multiplier is the other half of that: identical durations put
+ * the two columns into a visible shared beat, and a beat is a length.
+ *
+ * ── HOW THE LOOP IS SEAMLESS ───────────────────────────────────────────────
+ *
+ * Each lane holds TWO copies of its cards and travels exactly one copy's height
+ * (-50%), so the second copy arrives precisely where the first began.
+ *
+ * The lane therefore carries NO gap of its own — the gap belongs to each COPY,
+ * as an internal `gap` plus a matching trailing `pb`. With the gap on the lane
+ * its height is `2C + gap`, so -50% moves `C + gap/2` and the wall jumps half a
+ * gap once every cycle: slow, obvious, and the kind of thing that reads as a
+ * rendering fault rather than a bug. See <TradeLane> in home.tsx, which is
+ * where that arithmetic actually lives.
+ *
+ * The duplicate copy is `aria-hidden` in the markup: eleven trades are
+ * announced once, not twice.
+ *
+ * ── MOTION IS OPT-IN, AND SO IS THE WHOLE LAYOUT ───────────────────────────
+ *
+ * The animation lives inside `prefers-reduced-motion: no-preference`, matching
+ * the rest of this file: anyone who asked for less motion gets a still wall
+ * rather than a slower version of the thing they asked not to have. That is
+ * also why the still frame has to be composed on its own terms — it is a real
+ * state, not a fallback.
+ *
+ * Below `lg` there is no marquee at all. Vertical motion inside a vertically
+ * scrolling page fights the reader's own thumb, and the answer is not a slower
+ * version of that conflict — it is to move along the axis the page is not
+ * using. The wall becomes one horizontal snap row (see the classes in
+ * home.tsx) and this entire block simply does not apply. */
+.trade-wall {
+  --trade-loop: 64s;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  @supports (animation-timeline: view()) {
-    .strike::after {
-      animation: piggles-strike both;
-      animation-timeline: view();
-      animation-range: entry 20% entry 95%;
-      animation-timing-function: var(--ease-out-soft);
+@media (min-width: 64rem) {
+  .trade-wall {
+    -webkit-mask-image: linear-gradient(
+      to bottom,
+      transparent 0,
+      #000 7%,
+      #000 93%,
+      transparent 100%
+    );
+    mask-image: linear-gradient(to bottom, transparent 0, #000 7%, #000 93%, transparent 100%);
+  }
+
+  .trade-lane {
+    will-change: transform;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .trade-lane {
+      animation: piggles-lane-up var(--trade-loop) linear infinite;
+    }
+
+    .trade-lane-down {
+      animation-name: piggles-lane-down;
+      animation-duration: calc(var(--trade-loop) * 1.24);
     }
   }
 }
 
-@keyframes piggles-strike {
+@keyframes piggles-lane-up {
   from {
-    transform: scaleX(0);
+    transform: translateY(0);
   }
   to {
-    transform: scaleX(1);
+    transform: translateY(-50%);
   }
 }
+
+@keyframes piggles-lane-down {
+  from {
+    transform: translateY(-50%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+/* A trade card is a ROOM: a wall, and a floor she stands on.
+ *
+ * ── WHY A FLAT CARD DID NOT WORK ───────────────────────────────────────────
+ *
+ * The batch 07 cuts are light — cream, white and pale wood on transparency —
+ * and they were sitting on `base-200`, which is one step off the `base-300`
+ * page ground. Two near-whites and a hairline: the card barely separated from
+ * the page, and the artwork had nothing behind it to read against. A picture of
+ * a bakery counter needs a wall the way a photograph needs a mat.
+ *
+ * ── WHY TWO TONES AND NOT ONE ──────────────────────────────────────────────
+ *
+ * A single deeper tint fixes the separation and still leaves her floating in a
+ * coloured rectangle. Every cut in the batch stands on something — a counter, a
+ * bench, a stall, a chair — so the card gives that thing a floor to sit on, and
+ * the scene stops being a sticker on a panel and becomes a room with her in it.
+ * It suits the artwork exactly: these are dioramas, and a diorama has a base.
+ *
+ * NOT A GRADIENT. Two solid fills meeting at a hard edge is a horizon, which is
+ * why it reads as a floor at all — a soft ramp between them would be the exact
+ * wash the no-gradients rule exists to stop, and it would read as fog rather
+ * than as ground.
+ *
+ * ── WHY THE FLOOR IS A FIXED HEIGHT AND NOT A PERCENTAGE ───────────────────
+ *
+ * It was `62%` first, and a percentage of a card whose height comes from its
+ * artwork lands somewhere different in every card — behind the supplier's
+ * shoulders, under the salon chair, through the middle of the bakery counter.
+ * A floor that cuts across her waist is worse than no floor.
+ *
+ * Every scene is bottom-anchored and <PigglesMascot size="md"> renders each at
+ * the same CHARACTER height, so the base of the furniture lands within a few
+ * pixels of the same place in all eleven. Measured from the bottom edge, one
+ * number is right for every card — and it stays right on a phone, because `md`
+ * is a pixel height rather than a share of the column.
+ *
+ * ── THE TONES ARE DERIVED, NOT PICKED ──────────────────────────────────────
+ *
+ * Both mixes are `color-mix` into `--color-module`, so a change to a group hue
+ * in @piggles/brand moves the wall and the floor with it. Two hand-picked hex
+ * values per group would be thirty numbers to maintain and would stop following
+ * the token the moment one of them changed. Same reasoning as `.ink-module`
+ * above. `base-100` is the mix partner rather than white, so the card is still
+ * on the surface ladder rather than beside it. */
+.trade-card {
+  --trade-floor: 5.5rem;
+  position: relative;
+  background: color-mix(in oklab, var(--color-module) 13%, var(--color-base-100));
+}
+
+.trade-card::before {
+  content: '';
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+  height: var(--trade-floor);
+  background: color-mix(in oklab, var(--color-module) 30%, var(--color-base-100));
+}
+
+/* The card's own content has to be POSITIONED to paint above that floor. An
+ * absolutely-positioned pseudo-element paints above static block children
+ * regardless of source order, so without this the floor covers the label and
+ * the bottom of every scene — a failure that looks like a broken image rather
+ * than a stacking rule. */
+.trade-card > * {
+  position: relative;
+}
+
+/* The scene's width is set by <TradeCard>, which composes it from the pose's
+ * own framing — see the ladder in home.tsx. The widest scenes are deliberately
+ * over 100% of the card and crop against `overflow-hidden`, because a room
+ * extending past its frame is what a room does, and shrinking it instead is how
+ * the character size drifts back apart. */

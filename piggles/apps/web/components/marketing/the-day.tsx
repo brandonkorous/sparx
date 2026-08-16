@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import { Icon } from '@piggles/ui';
 import { Badge } from '@wizeworks/silicaui-react';
 import { buttonClasses } from '@wizeworks/silicaui-react/server';
 import type { PigglesGroup } from '@piggles/brand';
@@ -288,6 +289,10 @@ const GLYPH = ['size-8', 'size-10', 'size-7'];
 
 /** Beat 0 is the cold open — an empty desk and the headline. */
 const OPENING = 420;
+
+/** Who stands on the empty desk before the film starts. `active` is null at beat
+ *  0, so this is the first mascot anybody sees on the site. */
+const OPENING_POSE: MascotPoseId = 'laptop-coffee';
 const STOPS = [OPENING, ...BEATS.map((b) => b.at)];
 
 const clockOf = (mins: number) =>
@@ -325,7 +330,7 @@ function WindowRows({ rows }: { rows: Row[] }) {
 }
 
 function DeskWindow({ beat, state }: { beat: Beat; state: 'ghost' | 'on' | 'hot' }) {
-  const Icon = appIcon(beat.lights[0]!);
+  const glyph = appIcon(beat.lights[0]!);
   return (
     <div
       data-group={beat.group}
@@ -345,7 +350,7 @@ function DeskWindow({ beat, state }: { beat: Beat; state: 'ghost' | 'on' | 'hot'
         }`}
       >
         <span className="bg-module bg-soft text-module grid size-5 place-items-center rounded-md">
-          <Icon aria-hidden className="size-3" strokeWidth={2.2} />
+          <Icon glyph={glyph} aria-hidden className="size-3" />
         </span>
         {beat.window.title}
       </div>
@@ -470,7 +475,7 @@ export function TheDay() {
       className="bg-base-100 border-base-300 col-start-1 row-start-3 grid grid-cols-8 justify-items-center gap-1 border-t px-2.5 py-2 lg:col-start-1 lg:row-start-2 lg:flex lg:flex-col lg:items-center lg:gap-0.5 lg:border-t-0 lg:border-r lg:px-0 lg:py-3"
     >
       {APPS.map((app) => {
-        const Icon = appIcon(app.id);
+        const glyph = appIcon(app.id);
         const isLit = lit.has(app.id);
         const isHot = active?.lights[0] === app.id;
         return (
@@ -487,7 +492,7 @@ export function TheDay() {
                   : 'text-base-content/45',
             ].join(' ')}
           >
-            <Icon aria-hidden className="size-4 lg:size-5" strokeWidth={1.8} />
+            <Icon glyph={glyph} aria-hidden className="size-4 lg:size-5" />
           </span>
         );
       })}
@@ -633,7 +638,7 @@ export function TheDay() {
             <div className="grid h-full auto-rows-fr grid-cols-[repeat(auto-fill,minmax(9.5rem,1fr))]">
               {Array.from({ length: 120 }, (_, i) => {
                 const app = APPS[i % APPS.length]!;
-                const Icon = appIcon(app.id);
+                const glyph = appIcon(app.id);
                 return (
                   <span
                     key={i}
@@ -645,7 +650,7 @@ export function TheDay() {
                     // this file, and a template would generate nothing.
                     className={`text-module grid place-items-center ${JITTER[i % JITTER.length]}`}
                   >
-                    <Icon aria-hidden className={GLYPH[i % GLYPH.length]} strokeWidth={1.7} />
+                    <Icon glyph={glyph} aria-hidden className={GLYPH[i % GLYPH.length]} />
                   </span>
                 );
               })}
@@ -768,10 +773,16 @@ export function TheDay() {
                 rather than the figure alone: at 144 the prop that says which beat
                 this is was a smudge. On a phone she stays small on purpose; there
                 the copy carries the beat and she is company, not information. */}
+                {/* The fallback is the COLD OPEN's pose — `active` is null at beat
+                    0 — so it is the first mascot anybody sees on the site, and it
+                    ships with `priority`. It was `laptop-coffee` (batch 05); this
+                    is the batch 07 cut. Named once, because it appeared twice and
+                    the two are required to agree: React keys off it to re-mount
+                    on a pose change. */}
                 <div className="pointer-events-none absolute right-2.5 bottom-2 lg:right-auto lg:bottom-[2%] lg:left-[4.5%]">
                   <PigglesMascot
-                    key={active?.pose ?? 'laptop-coffee'}
-                    pose={active?.pose ?? 'laptop-coffee'}
+                    key={active?.pose ?? OPENING_POSE}
+                    pose={active?.pose ?? OPENING_POSE}
                     size={{ base: 'sm', lg: 'md' }}
                     priority
                   />
@@ -817,7 +828,11 @@ export function TheDay() {
                 </>
               )}
             </div>
-            <a className={buttonClasses({ variant: 'outline' })} href="#whoever">
+            {/* `#why`, not `#whoever`: this is the way OUT of the film, so it has to
+                land on whatever comes next. It pointed at the trade wall when that
+                was the next section; <Recognition> is now, and skipping the day
+                should not also skip the beat that explains why the day matters. */}
+            <a className={buttonClasses({ variant: 'outline' })} href="#why">
               Skip the day <ArrowRight className="size-4" />
             </a>
           </div>

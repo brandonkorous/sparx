@@ -47,7 +47,7 @@ import {
 
 export const OG_SIZE = { width: 1200, height: 630 } as const;
 
-// satori needs a font it has; Nunito is not loaded at the edge and shipping the
+// satori needs a font it has; Fredoka is not loaded at the edge and shipping the
 // binary for one image is not worth the weight. The lockup carries the brand —
 // the headline is set in the system stack on purpose.
 const SYSTEM_FONT = 'system-ui, -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif';

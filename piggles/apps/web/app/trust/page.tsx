@@ -1,10 +1,10 @@
 import type { Metadata } from 'next';
+import { FaqSection, Section } from '@piggles/ui';
 import Link from 'next/link';
 import { Card, CardBody } from '@wizeworks/silicaui-react';
 import { buttonClasses } from '@wizeworks/silicaui-react/server';
 import { accountUrl } from '@piggles/config';
 import { PageHero } from '@/components/marketing/page-hero';
-import { Faq } from '@/components/marketing/faq';
 import { CloseBand } from '@/components/marketing/close-band';
 
 // /trust — the page a careful person reads before putting their business on
@@ -111,6 +111,23 @@ const FAQ = [
   },
 ];
 
+/** What every competing page puts here, and why this one does not. Moved from
+ *  the home page — see the section comment below. */
+const ABSENT = [
+  {
+    title: 'A certification badge',
+    body: 'We don’t have one. A badge on a page is the cheapest lie in this industry.',
+  },
+  {
+    title: 'An uptime percentage',
+    body: 'Nobody is measuring it yet. A number nobody measures is a decoration.',
+  },
+  {
+    title: 'A wall of customer logos',
+    body: 'We would have to invent them, and you would have no way of knowing.',
+  },
+];
+
 export default function TrustPage() {
   return (
     <>
@@ -124,62 +141,79 @@ export default function TrustPage() {
         >
           Ask us anything
         </a>
-        <Link
-          className={buttonClasses({ color: 'neutral', variant: 'outline', size: 'lg' })}
-          href="/pricing"
-        >
+        <Link className={buttonClasses({ variant: 'outline', size: 'lg' })} href="/pricing">
           See pricing
         </Link>
       </PageHero>
 
-      <section className="px-6 py-16 sm:py-24">
-        <div className="mx-auto max-w-7xl">
-          <h2 className="text-3xl font-extrabold sm:text-4xl">
-            Seven things that are always true.
-          </h2>
-          <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {PILLARS.map((p) => (
-              <Card key={p.title}>
-                <CardBody>
-                  <h3 className="text-lg font-bold">{p.title}</h3>
-                  <p className="mt-2 text-base">{p.body}</p>
-                </CardBody>
-              </Card>
+      <Section>
+        <h2 className="text-3xl font-extrabold sm:text-4xl">Seven things that are always true.</h2>
+        <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {PILLARS.map((p) => (
+            <Card key={p.title}>
+              <CardBody>
+                <h3 className="text-lg font-bold">{p.title}</h3>
+                <p className="mt-2 text-base">{p.body}</p>
+              </CardBody>
+            </Card>
+          ))}
+        </div>
+      </Section>
+
+      <Section className="bg-base-100 border-base-300 border-y">
+        <div className="grid gap-10 lg:grid-cols-3 lg:gap-16">
+          <div>
+            <h2 className="text-3xl font-extrabold sm:text-4xl">Keeping it running.</h2>
+            <p className="mt-6 text-lg">
+              Security is most of this page, but the thing that actually costs you money on a
+              Saturday is the site being down. That gets treated as seriously.
+            </p>
+          </div>
+          <div className="grid gap-8 sm:grid-cols-2 lg:col-span-2">
+            {OPERATIONS.map((o) => (
+              <div key={o.title}>
+                <h3 className="text-xl font-bold">{o.title}</h3>
+                <p className="mt-2 text-base">{o.body}</p>
+              </div>
             ))}
           </div>
         </div>
-      </section>
+      </Section>
 
-      <section className="bg-base-100 border-base-300 border-y px-6 py-16 sm:py-24">
-        <div className="mx-auto max-w-7xl">
-          <div className="grid gap-10 lg:grid-cols-3 lg:gap-16">
-            <div>
-              <h2 className="text-3xl font-extrabold sm:text-4xl">Keeping it running.</h2>
-              <p className="mt-6 text-lg">
-                Security is most of this page, but the thing that actually costs you money on a
-                Saturday is the site being down. That gets treated as seriously.
-              </p>
-            </div>
-            <div className="grid gap-8 sm:grid-cols-2 lg:col-span-2">
-              {OPERATIONS.map((o) => (
-                <div key={o.title}>
-                  <h3 className="text-xl font-bold">{o.title}</h3>
-                  <p className="mt-2 text-base">{o.body}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* ── THE REFUSAL, WHICH USED TO BE ON THE HOME PAGE ───────────────────
+          Three dashed frames where every competing page puts its proof, each
+          saying why it is empty. It sat on the home page and every sentence in
+          it had "we" as its subject — three cards about our own editorial
+          standards, in a slot a reader gets to while working out whether the
+          software can run their business.
 
-      <section className="px-6 py-16 sm:py-24">
-        <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-3 lg:gap-16">
-          <h2 className="text-3xl font-extrabold sm:text-4xl">Straight answers.</h2>
-          <div className="lg:col-span-2">
-            <Faq items={FAQ} />
-          </div>
-        </div>
-      </section>
+          It is not deleted, because it is the most unusual thing this brand has
+          to say and DESIGN.md §10 is the reason the rest of the site looks the
+          way it does. It belongs HERE, near the bottom of the page somebody
+          opened specifically to find out what kind of company this is — where a
+          paragraph about us is what they came for rather than an interruption.
+
+          The dashed outline is the same one <TheDay> uses for "hasn't happened
+          yet", which is what an absent badge and an unmeasured uptime figure
+          both are. */}
+      <Section>
+        <h2 className="max-w-[26ch] text-3xl font-extrabold sm:text-4xl">
+          Three things you will not find anywhere on this site.
+        </h2>
+        <ul className="mt-10 grid gap-3.5 sm:grid-cols-3">
+          {ABSENT.map((a) => (
+            <li
+              key={a.title}
+              className="border-base-300 rounded-box border-[1.5px] border-dashed p-5 sm:p-7"
+            >
+              <h3 className="text-lg font-extrabold sm:text-xl">{a.title}</h3>
+              <p className="mt-2 text-base">{a.body}</p>
+            </li>
+          ))}
+        </ul>
+      </Section>
+
+      <FaqSection heading="Straight answers." items={FAQ} />
 
       <CloseBand
         heading="Still want to ask a person? That is what they are for."

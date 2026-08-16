@@ -1,26 +1,64 @@
+import Image from 'next/image';
+import { FaqSection, Section } from '@piggles/ui';
 import Link from 'next/link';
 import { Card, CardBody } from '@wizeworks/silicaui-react';
 import { buttonClasses } from '@wizeworks/silicaui-react/server';
-import { PIGGLES_GROUPS, type PigglesGroup } from '@piggles/brand';
-import { accountUrl, appIcon, appsInGroup, PRODUCT } from '@piggles/config';
+import type { PigglesGroup } from '@piggles/brand';
+import { accountUrl, APP_BY_ID, type PigglesAppId, PRODUCT } from '@piggles/config';
+import { MASCOT_POSES, type MascotPoseId } from '@piggles/mascot';
+import { PigglesMascot } from '@piggles/mascot/react';
 import { CloseBand } from './close-band';
-import { Faq } from './faq';
-import { GROUP_COPY } from './groups';
+import { InsteadOf } from './instead-of';
 import { TheDay } from './the-day';
+import { TwoQuestionsForm } from './two-questions';
 
 // meetpiggles.com — the home page.
 //
 // ── THE SHAPE ───────────────────────────────────────────────────────────────
 //
 //   1  The day        — one app window, pinned, with a Thursday running through it
-//   2  Whoever        — whatever kind of business you have
-//   3  The turn       — you don't have a CRM, you have customers
-//   4  All fifteen    — grouped the way a business is
+//   1b Thursday    — and here is the Thursday night you actually had
+//   2  Whatever        — whatever kind of business you have
+//   3  The turn       — stop typing the same thing three times
+//   4  The sixth place — one fact, six copies, and the fifteen that share one
 //   5  Two questions  — what actually happens when you sign up
-//   6  $49
-//   7  Trust          — the boring things, done properly
+//   6  $49            — what your time is worth, then the one price
+//   7  Instead of     — the ten bills this replaces, against the one
 //   8  Questions      — the six people ask before signing anything
 //   9  Close
+//
+// ── THE CONTRACT EVERY SECTION ON THIS PAGE IS HELD TO ──────────────────────
+//
+// **A section lands in three to five seconds, and points somewhere for the rest.**
+// The film is the only exception — it is the thing being pointed at.
+//
+// Three to five seconds is roughly 15–40 words of PROSE. Names in a grid, trade
+// captions on a wall and answers inside a closed accordion do not count against
+// it, because those are scanned rather than read. What counts is the sentences a
+// person has to take in sequence before the section means anything.
+//
+// This was measured on the live page and half of it failed. The turn was 146
+// words, the bento 268, onboarding 202, price 192, trust 198 — and separately,
+// the five sections that WERE short enough (Thursday night, the trade wall,
+// onboarding, the questions, the close) linked to nothing at all. So every
+// section was breaking one half of the rule or the other, and none was doing
+// both. Sections were being written as arguments when the page needs signposts.
+//
+// The three legal homes for depth, in order of preference:
+//
+//   1. **A page of its own.** /apps, /pricing, /trust, /how-it-works,
+//      /who-its-for. Two of those were built for this pass, because the sections
+//      that had to be cut had nowhere to send anybody.
+//   2. **A disclosure.** The FAQ passes at 80 words because six answers are
+//      folded away until asked for.
+//   3. **An optional interaction.** Something a reader can spend a minute on
+//      while the section still lands in three seconds for somebody who ignores
+//      it. The price section held one — a six-field calculator — and it went:
+//      see the header of <Pricing> for why comparing bills was the wrong
+//      argument to put in front of a price.
+//
+// A section that gets longer without earning one of those three is regressing,
+// and the way to check is to read only the prose and count.
 //
 // ── SERVER COMPONENTS, DELIBERATELY ─────────────────────────────────────────
 //
@@ -47,312 +85,464 @@ import { TheDay } from './the-day';
 // shown fifteen apps — "do I have to set all that up?" — and every line of it is
 // something the account app genuinely does today (STATUS.md, "Onboarding").
 
-/** A section is an inset rounded panel on the warm ground. */
-function Section({ children, className = '' }: { children: React.ReactNode; className?: string }) {
-  return (
-    <section className="px-4 sm:px-6">
-      <div
-        className={`rounded-section mx-auto max-w-7xl px-6 py-16 sm:px-10 sm:py-20 lg:px-14 ${className}`}
-      >
-        {children}
-      </div>
-    </section>
-  );
-}
-
-// ── 2 · WHOEVER ──────────────────────────────────────────────────────────────
+// ── 1b · RECOGNITION ─────────────────────────────────────────────────────────
 //
-// The one section with no panel under it. It is nothing but display type, it
-// wants air rather than a container, and it sits directly above the dark turn —
-// so the open ground is also what gives that panel its entrance.
+// The film shows a day going well. This is the day the reader actually had, and
+// it goes immediately after — because a page that only ever shows the good
+// version is a page nobody sees themselves in. Pain first, then the product, is
+// the usual advice; here the product came first because the film IS the
+// argument, so this is the beat that earns it retrospectively: yes, that is a
+// nice Thursday, and here is yours.
 //
-// Ink first, then the five group hues. NOT the brand pink: it measures 2.5:1 on
-// this ground and fails even the 3:1 large-text floor. Pink is a FILL colour
-// here — the theme pairs it with white on-fill ink — and using a fill as an ink
-// is how a heading ends up decorative rather than read.
-const TRADES: { word: string; group?: PigglesGroup }[] = [
-  { word: 'A bakery.' },
-  { word: 'A barber.', group: 'people' },
-  { word: 'A potter.', group: 'sell' },
-  { word: 'A garage.', group: 'web' },
-  { word: 'A market stall.', group: 'money' },
-  { word: 'A salon.', group: 'run' },
-  { word: 'A tailor.' },
-  { word: 'A studio.', group: 'people' },
-  { word: 'A workshop.', group: 'sell' },
-  { word: 'A supplier.', group: 'web' },
-  { word: 'A shed.', group: 'money' },
-];
-
-function Whoever() {
+// ── SHORT, AND IT ASKS FOR SOMETHING ────────────────────────────────────────
+//
+// This was four paragraphs and no buttons first — a recognition beat written as
+// an essay, which is the opposite of recognition: you either see yourself in it
+// in one line or the extra sentences are you explaining somebody's own week back
+// to them. Forty words now, and it ends where the reader is most likely to act,
+// which is the moment they have just agreed the problem is theirs.
+//
+// ── WHY THE PAIN CLAUSE IS NOT PINK ─────────────────────────────────────────
+//
+// The reference this was built from sets the last line of the heading in the
+// brand pink. It cannot ship that way: `--color-primary` measures 2.6:1 as ink
+// on `base-100` and fails even the 3:1 large-text floor. Pink is a FILL in this
+// palette — the theme pairs it with an on-fill ink — and using a fill as an ink
+// is how a heading ends up decorative rather than read. Same measurement as
+// <Whatever> records for the same reason.
+//
+// The emphasis is carried by SCALE instead, and the colour goes where it can be
+// read AND mean something: the four nouns in the paragraph wear the group hue of
+// the app that eventually absorbs them. Every group hue is measured AA on white
+// (4.99–6.98:1), so they are legible, and a reader meets the product's colour
+// system here — in a sentence about their own week — before the trade wall or
+// the nav ever shows it to them.
+function Thursday() {
   return (
-    <section className="px-4 sm:px-6" id="whoever">
-      <div className="mx-auto grid max-w-7xl gap-8 px-6 py-10 sm:px-10 lg:grid-cols-[34%_1fr] lg:items-start lg:gap-14 lg:px-14">
+    <Section variant="panel" className="bg-base-100 shadow">
+      <div id="why" className="grid gap-10 lg:grid-cols-[1.12fr_0.88fr] lg:items-center lg:gap-16">
         <div className="rise">
-          <h2 className="text-3xl font-extrabold sm:text-4xl lg:text-5xl">
-            Whatever kind of business you have.
+          <h2 className="text-4xl leading-[1.04] font-black sm:text-5xl lg:text-6xl">
+            It&rsquo;s Thursday night, and you&rsquo;re still doing the admin.
           </h2>
-          <p className="mt-5 text-lg">
-            Piggles is not a shop product with appointments bolted on, or a booking product that
-            also does invoices. A bakery, a barber and a potter are equally the point — and so is
-            the garage, the market stall and the person who makes things in a shed.
+
+          <p className="mt-6 max-w-[46ch] text-lg sm:text-xl">
+            <b data-group="people" className="text-module font-bold">
+              Bookings
+            </b>{' '}
+            in one app,{' '}
+            <b data-group="money" className="text-module font-bold">
+              invoices
+            </b>{' '}
+            in another,{' '}
+            <b data-group="sell" className="text-module font-bold">
+              stock
+            </b>{' '}
+            in a spreadsheet,{' '}
+            <b data-group="people" className="text-module font-bold">
+              customers
+            </b>{' '}
+            in your phone. None of them have ever spoken to each other.
           </p>
-        </div>
-        <ul className="font-heading flex flex-wrap gap-x-[0.42em] text-[clamp(1.75rem,3.8vw,3.6rem)] leading-[1.12] font-black tracking-tight">
-          {TRADES.map((t) => (
-            <li key={t.word} data-group={t.group} className={t.group ? 'text-module' : ''}>
-              {t.word}
-            </li>
-          ))}
-        </ul>
-      </div>
-    </section>
-  );
-}
 
-// ── 3 · THE TURN ─────────────────────────────────────────────────────────────
-//
-// Left is what the industry calls it; right is what the person doing it would
-// say. Each row carries its group, so the plain word already wears the colour it
-// wears inside the product — the translation and the product are the same
-// translation.
-//
-// The plain word takes `ink-module`, NOT `text-module`. The group hues are
-// measured against white and this is a dark theme island; the raw hue drops
-// under 3:1 here. See the rule in globals.css — the lifted value is derived from
-// `--color-module`, so it still follows a change to the group's colour.
-const TRANSLATIONS: { jargon: string; plain: string; href: string; group: PigglesGroup }[] = [
-  { jargon: 'CRM', plain: 'Customers', href: '/apps/customers', group: 'people' },
-  { jargon: 'CMS', plain: 'Content', href: '/apps/content', group: 'web' },
-  { jargon: 'SEO', plain: 'Get Found', href: '/apps/get_found', group: 'web' },
-  { jargon: 'Inventory management', plain: 'Stock', href: '/apps/stock', group: 'sell' },
-  { jargon: 'Scheduling', plain: 'Bookings', href: '/apps/bookings', group: 'people' },
-  { jargon: 'Financial reporting', plain: 'Money', href: '/apps/money', group: 'money' },
-];
-
-function TheTurn() {
-  return (
-    <section className="px-4 sm:px-6">
-      <div
-        data-theme="dark"
-        className="rounded-section bg-base-200 mx-auto grid max-w-7xl gap-10 px-6 py-16 sm:px-10 sm:py-20 lg:grid-cols-2 lg:items-center lg:gap-16 lg:px-14"
-      >
-        <div className="rise">
-          <h2 className="text-3xl font-extrabold sm:text-4xl lg:text-5xl">
-            Simple doesn&rsquo;t have to mean basic.
-          </h2>
-          <p className="mt-6 text-lg">
-            Business software is rarely hard because it does too much. It is hard because it makes
-            you learn its vocabulary before it will help you.
+          <p className="font-heading mt-7 text-2xl leading-[1.1] font-black sm:text-3xl">
+            That is why we built Piggles.
           </p>
-          <p className="text-accent font-heading mt-7 text-2xl font-black sm:text-3xl lg:text-4xl">
-            You don&rsquo;t have a CRM.
-            <br />
-            You have customers.
-          </p>
-          <p className="mt-7 text-lg">
-            Nothing was removed to get those names. The capability underneath is the same one bigger
-            companies pay a great deal more for — it just stopped asking you to translate.
-          </p>
-        </div>
 
-        {/* Per-row `border-b`, NOT `divide-y`: silicaui registers
-            `border-base-300` but not `divide-base-300`, and an arbitrary
-            `divide-[color:…]` does not compile — the dividers would silently
-            fall back to `currentColor`. */}
-        <ul className="stagger border-base-300 border-t">
-          {TRANSLATIONS.map((t) => (
-            <li key={t.jargon} data-group={t.group} className="border-base-300 border-b">
-              <Link
-                href={t.href}
-                className="flex items-center gap-4 py-4 sm:gap-7 sm:py-5 lg:gap-8 lg:py-6"
-              >
-                <span className="flex-1 text-base sm:text-lg lg:text-xl">
-                  <span className="strike">{t.jargon}</span>
-                </span>
-                <span className="ink-module font-heading flex-1 text-right text-xl font-extrabold sm:text-2xl lg:text-[1.75rem]">
-                  {t.plain}
-                </span>
-              </Link>
-            </li>
-          ))}
-        </ul>
-      </div>
-    </section>
-  );
-}
-
-// ── 4 · ALL FIFTEEN ──────────────────────────────────────────────────────────
-//
-// Six columns, six tiles, three rows:
-//
-//     Your day ██   ·  Your website ████
-//     Selling ███   ·  People ███
-//     Money ██      ·  Running it ████
-//
-// The point of a bento is that the things in it are NOT the same size, because
-// they are not the same size. Six equal cards said the opposite — that Home (one
-// app) and Running it (three) carry equal weight in a day.
-//
-// WIDTH VARIES, HEIGHT DOES NOT. Tiles stretch flush to their row, which is what
-// makes it read as a tiled panel rather than a ragged card wall. Spanning ROWS
-// is the trap: a tall tile for Home, which is a single app, produced a tinted
-// rectangle with 200px of nothing under it. The void is fixed with CONTENT — the
-// two thin tiles carry the group's `long` description instead of its one-line
-// blurb, and the two wide tiles lay their apps out in two internal columns.
-//
-// One tinted tile per hue and no more. The root contract's warning about tinted
-// cards is about a WALL of them competing; here the tint IS the group, six hues,
-// six tiles.
-const BENTO: Record<PigglesGroup, { span: string; cols: string; copy: 'blurb' | 'long' }> = {
-  home: { span: 'lg:col-span-2', cols: '', copy: 'long' },
-  web: { span: 'lg:col-span-4', cols: 'lg:grid-cols-2 lg:gap-x-7', copy: 'blurb' },
-  sell: { span: 'lg:col-span-3', cols: '', copy: 'blurb' },
-  people: { span: 'lg:col-span-3', cols: '', copy: 'blurb' },
-  money: { span: 'lg:col-span-2', cols: '', copy: 'long' },
-  run: { span: 'lg:col-span-4', cols: 'lg:grid-cols-2 lg:gap-x-7', copy: 'blurb' },
-};
-
-function Fifteen() {
-  return (
-    <Section className="bg-base-100">
-      <div className="rise max-w-[62ch]">
-        <h2 className="text-3xl font-extrabold sm:text-4xl lg:text-5xl">
-          All fifteen, grouped the way a business is.
-        </h2>
-        <p className="mt-6 text-lg">
-          Not a features list — the six things a day is actually made of. Every one is included from
-          the first day, and every one is a real place in the software rather than a bullet point on
-          this page.
-        </p>
-      </div>
-
-      <div className="mt-10 grid gap-3.5 sm:grid-cols-2 lg:grid-cols-6">
-        {PIGGLES_GROUPS.map((group) => {
-          const copy = GROUP_COPY[group];
-          const tile = BENTO[group];
-          return (
-            <div
-              key={group}
-              data-group={group}
-              className={`bg-module bg-soft border-base-300 rounded-box flex flex-col border p-5 sm:p-7 ${tile.span}`}
+          <div className="mt-8 flex flex-wrap gap-3">
+            <a
+              className={buttonClasses({ color: 'primary', size: 'lg' })}
+              href={accountUrl('signup', 'home-why')}
             >
-              <h3 className="text-module text-xl font-black sm:text-2xl">{copy.title}</h3>
-              <p className="mt-2.5 max-w-[48ch] text-base">{copy[tile.copy]}</p>
+              Start free for 14 days
+            </a>
+            {/* `/apps`, not the in-page `#apps` anchor it pointed at. An anchor
+                is not a destination — it drops somebody 3,000px down the same
+                page they were already reading, which is the scroll they were
+                going to do anyway. */}
+            <Link className={buttonClasses({ variant: 'outline', size: 'lg' })} href="/apps">
+              See what&rsquo;s included
+            </Link>
+          </div>
+        </div>
 
-              {/* `mt-auto` anchors the list to the bottom of the tile. With
-                  tiles stretched to their row the alternative is copy at the top
-                  and a ragged pocket of nothing underneath — this makes the gap
-                  between the description and the list the thing that varies,
-                  which is what a bento wants. */}
-              <ul className={`mt-auto grid gap-3.5 pt-6 ${tile.cols}`}>
-                {appsInGroup(group).map((app) => {
-                  const Icon = appIcon(app.id);
-                  return (
-                    <li key={app.id} className="flex items-start gap-3">
-                      <span className="bg-module text-module-content grid size-9 shrink-0 place-items-center rounded-[0.625rem]">
-                        <Icon aria-hidden className="size-4" strokeWidth={1.9} />
-                      </span>
-                      <span>
-                        <Link href={`/apps/${app.id}`} className="block font-bold">
-                          {app.label}
-                        </Link>
-                        <span className="mt-0.5 block text-base">{app.purpose}</span>
-                      </span>
-                    </li>
-                  );
-                })}
-              </ul>
-            </div>
-          );
-        })}
+        {/* The alt describes WHAT IS IN THE FRAME, not what the section wants it
+            to mean — public/photos/README.md records a caption written from a
+            filename that shipped describing a picture nobody had opened. */}
+        <Image
+          src="/photos/working-late-portrait.jpg"
+          alt="Someone still working at a laptop after dark, city lights in the window behind them"
+          width={1200}
+          height={1500}
+          sizes="(min-width: 1024px) 42vw, 100vw"
+          className="settle rounded-section h-auto w-full"
+        />
       </div>
     </Section>
   );
 }
 
-// ── 5 · TWO QUESTIONS ────────────────────────────────────────────────────────
-const FIRSTS = [
+// ── 2 · Whatever ──────────────────────────────────────────────────────────────
+//
+// The one section with no panel under it. It wants air rather than a container,
+// and it sits directly above the dark turn — so the open ground is also what
+// gives that panel its entrance. That decision is what makes this the right
+// section to run a full-bleed wall in: nothing has to be cut into a panel.
+//
+// ── IT WAS A LIST OF WORDS, AND WORDS ARE THE SLOW WAY TO DO THIS ───────────
+//
+// The section's job is RECOGNITION — it is the honest substitute DESIGN.md §10
+// names for a logo wall, letting a florist recognise herself without anybody
+// claiming she has already signed up. Reading "A barber." is slower than seeing
+// one, and this was also the only section on the page with no picture in it,
+// sitting between the film and the dark turn. Batch 07 is eleven trades drawn
+// for exactly this: the same character, the same apron, eleven jobs.
+//
+// ── SIZING IS ITS OWN PROBLEM, AND IT IS BELOW ─────────────────────────────
+//
+// Batch 07 is not uniformly framed: aspect ratios run 0.998 (`workshop`) to
+// 1.422 (`supplier`), and how much of a frame Piggles occupies runs 0.439
+// (`shed`) to 0.779 (`supplier`). With eleven scenes on screen together that
+// spread is the whole difficulty of this section — see `scene()` below.
+//
+// ── HUES ───────────────────────────────────────────────────────────────────
+//
+// Five group hues over eleven trades, arranged so no two adjacent cards in a
+// lane share one AND the last does not match the first — the lane loops, so the
+// wrap is an adjacency too. Not the brand pink: it is the CTA colour on this
+// page and a label wearing it competes with the button.
+interface Trade {
+  pose: MascotPoseId;
+  word: string;
+  group: PigglesGroup;
+}
+
+const TRADES: Trade[] = [
+  { pose: 'bakery', word: 'A bakery.', group: 'sell' },
+  { pose: 'barber', word: 'A barber.', group: 'people' },
+  { pose: 'potter', word: 'A potter.', group: 'run' },
+  { pose: 'garage', word: 'A garage.', group: 'web' },
+  { pose: 'market-stall', word: 'A market stall.', group: 'money' },
+  { pose: 'salon', word: 'A salon.', group: 'run' },
+  { pose: 'tailor', word: 'A tailor.', group: 'sell' },
+  { pose: 'art-studio', word: 'A studio.', group: 'people' },
+  { pose: 'workshop', word: 'A workshop.', group: 'web' },
+  { pose: 'supplier', word: 'A supplier.', group: 'money' },
+  { pose: 'shed', word: 'A shed.', group: 'run' },
+];
+
+// ── HOW BIG A SCENE IS, AND WHY IT IS NEITHER OF THE OBVIOUS ANSWERS ────────
+//
+// There are two defensible ways to size eleven scenes in eleven cards and they
+// disagree, so this splits the difference on purpose.
+//
+//   Normalise the CHARACTER — <PigglesMascot size="md"> — and Piggles is exactly
+//   the same height in all eleven. It is the mathematically correct answer and
+//   it looks wrong, because nobody reads the pig: they read the card. A potter
+//   at a wheel is a compact composition and fills 224px of a 350px card; a
+//   garage is a wide one and wants 416px. Same pig, and the potter card reads as
+//   half empty next to a garage that overflows.
+//
+//   Normalise the SCENE — every image the card's width — and every card is
+//   equally full, but the pig then swings from 131px in the garage to 246px in
+//   the potter. At that size she stops being a character in a shop and becomes a
+//   close-up, and the wall stops looking like one character in eleven jobs.
+//
+// So: the midpoint of the two. Each scene renders half way between the width
+// that equalises the character and the width that fills the card. Measured on
+// screen against both extremes — the extremes are each visibly wrong in their
+// own direction and this is not.
+//
+// It is COMPUTED from the catalog rather than eleven hand-tuned numbers, which
+// is what keeps it honest when the art is re-cut: `subject` and the aspect ratio
+// are the two things that decide how pig-dominant a scene is, the ingest
+// measures both, and a new batch re-tunes this with no edit here.
+//
+// Quantised onto a ladder of literal percentage classes for the same reason
+// <PigglesMascot> quantises its widths: Tailwind scans source TEXT, so a
+// computed `w-[${n}%]` generates no class at all and the scene silently falls
+// back to its container. Percentages rather than pixels so it survives a card
+// that is 350px on one screen and 420px on another.
+const CARD_REF = 350;
+const CHARACTER_TARGET = 152;
+const SCENE_STEPS = [
+  { pct: 80, w: 'w-[80%]' },
+  { pct: 85, w: 'w-[85%]' },
+  { pct: 90, w: 'w-[90%]' },
+  { pct: 95, w: 'w-[95%]' },
+  { pct: 100, w: 'w-[100%]' },
+  { pct: 105, w: 'w-[105%]' },
+  { pct: 110, w: 'w-[110%]' },
+];
+
+function scene(pose: MascotPoseId) {
+  const art = MASCOT_POSES[pose];
+  // The width that would put her at CHARACTER_TARGET — the component's own
+  // arithmetic, repeated here because we need the number rather than the class.
+  const even = (CHARACTER_TARGET / art.subject) * (art.width / art.height);
+  const wanted = ((even + CARD_REF) / 2 / CARD_REF) * 100;
+  let step = SCENE_STEPS[0]!;
+  for (const s of SCENE_STEPS) {
+    if (Math.abs(s.pct - wanted) < Math.abs(step.pct - wanted)) step = s;
+  }
+  // `sizes` is a plain string, so it is NOT quantised — it states the real
+  // rendered width at each breakpoint. A `sizes` that disagrees with the
+  // rendered width is invisible: the image looks right and arrives
+  // under-resolved. Card is ~CARD_REF from `lg` and 74vw below it.
+  return {
+    width: step.w,
+    sizes: `(min-width: 1024px) ${Math.round((CARD_REF * step.pct) / 100)}px, ${Math.round((74 * step.pct) / 100)}vw`,
+  };
+}
+
+/** The cards are CONTENT-HEIGHT on purpose. A fixed aspect ratio would leave a
+ *  pocket of empty panel above every scene shorter than the tallest one, and
+ *  the ragged rhythm a wall of cards wants is already sitting in the artwork.
+ *  Taking the height from the art gets that variation for free and leaves no
+ *  hole anywhere.
+ *
+ *  The wall and floor are `.trade-card` in globals.css, derived from this
+ *  card's `data-group` hue. No border: the two tones already separate the card
+ *  from the ground, and a hairline on top of them is a second answer to a
+ *  question that has one. */
+function TradeCard({ trade }: { trade: Trade }) {
+  const { width, sizes } = scene(trade.pose);
+  return (
+    <figure
+      data-group={trade.group}
+      className="trade-card rounded-section flex w-[74vw] shrink-0 snap-center flex-col overflow-hidden shadow sm:w-[46vw] lg:w-auto lg:shrink"
+    >
+      <figcaption className="text-module font-heading px-5 pt-5 text-xl font-black sm:text-2xl lg:px-6 lg:pt-6">
+        {trade.word}
+      </figcaption>
+      {/* No bottom padding, and the scene sits on the card's bottom edge: every
+          cut in the batch is anchored on a counter, bench or table that runs
+          most of its width, so putting that edge ON the card's edge — and on
+          the floor the card draws there — is what makes her stand IN the card
+          rather than float on it.
+
+          `self-center` rather than a centring margin, because the widest scenes
+          are OVER 100% and are meant to crop. An auto margin resolves to zero
+          once the box is wider than its container, so the overflow would go
+          entirely to one side and a garage would sit visibly off-centre; cross-
+          axis centring in a column flex overflows both edges evenly. */}
+      <div className={`mt-4 self-center ${width}`}>
+        <PigglesMascot pose={trade.pose} size="fill" sizes={sizes} />
+      </div>
+    </figure>
+  );
+}
+
+/** One column: two copies of the same cards, travelling exactly one copy's
+ *  height so the second arrives where the first began.
+ *
+ *  `lg:self-start` IS LOAD-BEARING. The two lanes hold different numbers of
+ *  cards, and as grid items of a fixed-height wall they are both sized to the
+ *  TALLER one's row. The short lane then stretches, and a grid distributes that
+ *  slack between its rows — which are the two copies. The visible symptom was a
+ *  ~390px hole between the last card of one copy and the first of the next, in
+ *  the right-hand column only; the invisible one is worse, because a lane taller
+ *  than its content means -50% is no longer one copy and the loop drifts. Both
+ *  vanish when the lane stays content-height.
+ *
+ *  THE GAP BELONGS TO THE COPY, NOT TO THE LANE, and this is the second half of
+ *  the same arithmetic. With `gap` on the lane its height is `2C + gap`, so a -50%
+ *  translation moves `C + gap/2` — half a gap short of where the next copy
+ *  starts, and the wall visibly jumps once every cycle. Giving each copy a
+ *  trailing `pb` equal to its internal gap makes a copy `C + gap` tall and the
+ *  lane exactly twice that, so -50% is precisely one copy. The lane itself must
+ *  therefore carry NO gap. */
+function TradeLane({ trades, down = false }: { trades: Trade[]; down?: boolean }) {
+  return (
+    <div className={`trade-lane contents lg:grid lg:self-start ${down ? 'trade-lane-down' : ''}`}>
+      {[0, 1].map((copy) => (
+        <div
+          key={copy}
+          // The duplicate exists to make the loop seamless and says
+          // nothing new — eleven trades are announced once, not twice.
+          // It is also hidden outright below `lg`, where the wall is a
+          // horizontal row and there is no loop to be seamless.
+          aria-hidden={copy === 1}
+          className={`${copy === 1 ? 'hidden' : 'contents'} lg:grid lg:content-start lg:gap-3.5 lg:pb-3.5`}
+        >
+          {trades.map((trade) => (
+            <TradeCard key={trade.pose} trade={trade} />
+          ))}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function Whatever() {
+  const half = Math.ceil(TRADES.length / 2);
+  return (
+    <Section variant="panel" id="Whatever">
+      <div className="grid gap-8 lg:grid-cols-[1fr_34%] lg:items-start lg:gap-14">
+        {/* Below `lg` this is a horizontal snap row — the motion axis the
+            page itself is not using. From `lg` it becomes the two-lane wall,
+            and globals.css takes over. `-mx-*` lets the row bleed the section's
+            padding on a phone so a card is visibly cut at the edge rather than
+            stopping short of it, which is what says there are more. */}
+        <div className="trade-wall -mx-6 flex snap-x snap-mandatory gap-3.5 overflow-x-auto px-6 pb-2 sm:-mx-10 sm:px-10 lg:mx-0 lg:grid lg:h-[78vh] lg:max-h-[46rem] lg:min-h-[34rem] lg:grid-cols-2 lg:overflow-hidden lg:px-0 lg:pb-0">
+          <TradeLane trades={TRADES.slice(0, half)} />
+          <TradeLane trades={TRADES.slice(half)} down />
+        </div>
+        {/* Sticky, and completely still. The argument has to stay readable
+            while the variety moves past it; a wall that carried the words too
+            would be a carousel, and nobody reads a carousel. */}
+        <div className="rise lg:sticky lg:top-24">
+          <h2 className="text-3xl font-extrabold sm:text-4xl lg:text-5xl">
+            Whatever kind of business you have.
+          </h2>
+          {/* Three sentences became one, and the one that survived is about the
+              READER. The draft said "not a shop product with bookings bolted on,
+              not a booking product that also does invoices" — a true sentence
+              whose subject is our software. What the reader is living with is
+              that every tool they have looked at was built for somebody else's
+              trade and they have been settling. Say that instead.
+
+              The rest of the old paragraph — what is actually different about
+              running a bakery versus a barber — is /who-its-for, which exists
+              because this section made that promise and then offered nowhere to
+              take it. */}
+          <p className="mt-5 text-lg">
+            Piggles is built for the kind of business you actually run, not to make you run the kind
+            of business we imagined. A bakery, a barber, a potter, a garage — whatever you do,
+            it&rsquo;s already in the product.
+          </p>
+          <Link
+            className={`${buttonClasses({ color: 'secondary', size: 'lg' })} mt-7`}
+            href="/who-its-for"
+          >
+            What is different about yours
+          </Link>
+        </div>
+      </div>
+    </Section>
+  );
+}
+
+function AppName({ app }: { app: PigglesAppId }) {
+  const def = APP_BY_ID[app]!;
+  return (
+    <Link href={`/apps/${app}`} data-group={def.group} className="ink-module font-bold">
+      {def.label}
+    </Link>
+  );
+}
+
+const ONCE: { act: string; then: React.ReactNode }[] = [
   {
-    title: 'Set up, not just switched on',
-    body: 'Customers arrives with a pipeline in it. Sell arrives knowing about tax and postage. Money arrives with its accounts. Turning an app on and leaving you an empty screen is not turning it on.',
+    act: 'You type a customer’s name once.',
+    then: (
+      <>
+        It is already in <AppName app="bookings" />, <AppName app="customers" />,{' '}
+        <AppName app="invoices" /> and <AppName app="messages" />.
+      </>
+    ),
   },
   {
-    title: 'What you didn’t pick isn’t locked',
-    body: 'Every one of the fifteen sits behind one tap, permanently, in the same place. The button says Add app and carries no price — because there isn’t one.',
+    act: 'You change a price once.',
+    then: (
+      <>
+        <AppName app="sell" />, <AppName app="stock" /> and <AppName app="site" /> are all showing
+        the new one.
+      </>
+    ),
   },
   {
-    title: 'You can change your mind on Tuesday',
-    body: 'The answer sets what you see first, not what you are allowed to have. Nothing you choose now is a door you have to pay to reopen later.',
+    act: 'You write something once.',
+    then: (
+      <>
+        <AppName app="content" /> keeps it, <AppName app="site" /> shows it,{' '}
+        <AppName app="get_found" /> gets it noticed.
+      </>
+    ),
+  },
+  {
+    act: 'You check one screen in the morning.',
+    then: (
+      <>
+        <AppName app="home" /> has what <AppName app="bookings" />, <AppName app="money" /> and{' '}
+        <AppName app="messages" /> did overnight.
+      </>
+    ),
   },
 ];
 
-/** Which groups the depicted signup has ticked. Three of six, because the answer
- *  sets what you SEE first and never what you are allowed to have. */
-const PICKED: PigglesGroup[] = ['web', 'people', 'money'];
+function TheTurn() {
+  return (
+    <Section variant="panel" className="bg-secondary text-secondary-content shadow">
+      <div className="grid gap-10 lg:grid-cols-2 lg:items-center lg:gap-16">
+        <div className="rise">
+          {/* "Stop wiring your business together" was the draft, and wiring is
+              one abstraction above where the reader lives. Nobody lies awake
+              thinking about integrations; they think about having just typed the
+              same person's name into the fourth thing. The heading has to name
+              the chore, not our word for the category of chore. */}
+          <h2 className="text-3xl font-extrabold sm:text-4xl lg:text-5xl">
+            Stop typing the same thing three times.
+          </h2>
+          {/* `text-primary`, NOT `text-accent`. This is the same dark island
+              close-band.tsx measured — `accent` resolves to a dark rose here and
+              lands at 2.44:1, under the 3:1 floor even at this size, so the
+              loudest line in the section was the least readable one. `primary`
+              measures 6.56:1 on the same ground. */}
+          <p className="text-primary font-heading mt-7 text-2xl font-black sm:text-3xl lg:text-4xl">
+            There is nothing here to connect.
+            <br />
+            It was never apart.
+          </p>
+          <Link className={`${buttonClasses({ color: 'primary', size: 'lg' })} mt-8`} href="/apps">
+            See how the fifteen fit together
+          </Link>
+        </div>
+
+        {/* Per-row `border-t`, NOT `divide-y`: silicaui registers
+            `border-base-300` but not `divide-base-300`, and an arbitrary
+            `divide-[color:…]` does not compile — the dividers would silently
+            fall back to `currentColor`.
+
+            The dividers separate and nothing else. The version before this drew
+            a rule INSIDE each row as a piece of meaning, which is what made the
+            column a diagram; the only lines left are chassis. */}
+        <ul className="stagger">
+          {ONCE.map((o) => (
+            <li
+              key={o.act}
+              className="border-base-300 border-t py-6 first:border-t-0 first:pt-0 last:pb-0"
+            >
+              {/* The gap between these two is the row's whole legibility. At one
+                  step apart the claim and the consequence read as two sentences
+                  of equal weight and the eye has to work out which is which;
+                  `text-2xl`/`text-lg` puts the action first at a glance and the
+                  places second, which is the order the row is meant to be read
+                  in. */}
+              <p className="font-heading text-2xl font-extrabold sm:text-[1.75rem]">{o.act}</p>
+              <p className="mt-2 text-lg">{o.then}</p>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </Section>
+  );
+}
 
 function TwoQuestions() {
   return (
-    <Section className="bg-base-100">
-      <div className="grid gap-8 lg:grid-cols-[1.1fr_0.9fr] lg:items-start lg:gap-14">
-        <div className="rise">
-          <h2 className="text-3xl font-extrabold sm:text-4xl lg:text-5xl">
-            You answer two questions. It arrives set up.
-          </h2>
-          <p className="mt-6 text-lg">
-            Fifteen apps is a lot to look at and nothing to set up. You are not handed an empty
-            workspace and a manual — signing up asks what the business is called and what you want
-            to start with, and the rest is already done when you get there.
-          </p>
-
-          <ul className="stagger mt-9 grid gap-6">
-            {FIRSTS.map((f) => (
-              <li key={f.title} className="border-base-content border-t-2 pt-4">
-                <h3 className="text-xl font-bold">{f.title}</h3>
-                <p className="mt-2 max-w-[56ch] text-base">{f.body}</p>
-              </li>
-            ))}
-          </ul>
-        </div>
-
-        {/* The SIGNUP, not the console. The page already depicts the workspace
-            once, in <TheDay>; showing it again here in a different layout is the
-            exact duplication this page was rebuilt to remove. */}
-        <Card className="settle">
-          <CardBody>
-            <p className="text-base font-bold">Signing up</p>
-
-            <p className="mt-6 text-base font-semibold">What is the business called?</p>
-            <p className="bg-base-200 border-base-300 rounded-field mt-2.5 border px-4 py-4 text-lg">
-              Wildroot Flowers
-            </p>
-
-            <p className="mt-7 text-base font-semibold">What do you want to start with?</p>
-            <ul className="mt-2.5 flex flex-wrap gap-2.5">
-              {PIGGLES_GROUPS.map((group) => {
-                const on = PICKED.includes(group);
-                return (
-                  <li
-                    key={group}
-                    data-group={group}
-                    className={`rounded-field border px-4 py-3 text-base font-semibold ${
-                      on
-                        ? 'bg-module bg-soft border-module text-module'
-                        : 'bg-base-100 border-base-300'
-                    }`}
-                  >
-                    {GROUP_COPY[group].title}
-                  </li>
-                );
-              })}
-            </ul>
-
-            <p className="mt-7 text-base font-semibold">
-              That is the whole form. No card, free for fourteen days.
-            </p>
-          </CardBody>
-        </Card>
+    <Section variant="panel" className="bg-base-100 shadow">
+      <div className="rise max-w-[62ch]">
+        <h2 className="text-3xl font-extrabold sm:text-4xl lg:text-5xl">
+          You answer two questions. It arrives set up.
+        </h2>
+        <p className="mt-6 text-lg">
+          No empty workspace, no manual. What you pick changes what you see first &mdash; never what
+          you are allowed to have. Here are the two, and here is what they cost.
+        </p>
       </div>
+
+      <TwoQuestionsForm />
     </Section>
   );
 }
@@ -385,26 +575,20 @@ function Tick() {
 
 function Pricing() {
   return (
-    <Section className="bg-accent bg-soft">
+    <Section variant="panel" className="bg-accent text-accent-content shadow">
       <div id="price" className="grid gap-10 lg:grid-cols-2 lg:items-center lg:gap-16">
         <div className="rise">
           <h2 className="text-3xl font-extrabold sm:text-4xl lg:text-5xl">
-            $49 a month. All of it.
+            How much is your time worth?
           </h2>
-          <p className="mt-6 text-lg">
-            Every app is included from the first day. There are no tiers to compare, no modules to
-            price up, and nothing behind an upgrade button.
+          <p className="mt-6 max-w-[46ch] text-xl font-semibold">
+            Then why is so much of it spent joining up your own information &mdash; checking one app
+            against another to work out what your business actually did this week?
           </p>
-          <p className="mt-4 text-lg">
-            Your bill changes when your <em>business</em> needs more room — more people on the team,
-            more storage, more email going out. Not because you switched Bookings on.
+          <p className="mt-5 max-w-[46ch] text-lg">
+            Piggles does the joining up. What that hour is worth is yours to decide, and yours to
+            spend on something else.
           </p>
-          <Link
-            className={`${buttonClasses({ color: 'neutral', variant: 'outline' })} mt-7`}
-            href="/pricing"
-          >
-            What counts as more room
-          </Link>
         </div>
 
         <Card className="settle">
@@ -427,6 +611,16 @@ function Pricing() {
               ))}
             </ul>
 
+            {/* RULE #2, standing next to the number it qualifies. This was a
+                paragraph in the left column, where it argued with a heading; the
+                only place it is actually read is beside the price, and it is the
+                one sentence on this page a competitor cannot copy without
+                restructuring their business. */}
+            <p className="mt-6 text-base">
+              Your bill changes when the <em>business</em> needs more room — more people, more
+              storage, more email going out. Never because you switched Bookings on.
+            </p>
+
             <a
               className={`${buttonClasses({ color: 'primary', size: 'xl', block: true })} mt-8`}
               href={accountUrl('signup', 'home-pricing')}
@@ -437,93 +631,6 @@ function Pricing() {
           </CardBody>
         </Card>
       </div>
-    </Section>
-  );
-}
-
-// ── 7 · TRUST ────────────────────────────────────────────────────────────────
-//
-// The section's argument is what it REFUSES to put here, so the refusal is drawn
-// rather than described — in the same dashed outline <TheDay> uses for "hasn't
-// happened yet". Three empty frames where every competing page puts its proof,
-// each saying why it is empty.
-const ABSENT = [
-  {
-    title: 'A certification badge',
-    body: 'We don’t have one. A badge on a page is the cheapest lie in this industry.',
-  },
-  {
-    title: 'An uptime percentage',
-    body: 'Nobody is measuring it yet. A number nobody measures is a decoration.',
-  },
-  {
-    title: 'A wall of customer logos',
-    body: 'We would have to invent them, and you would have no way of knowing.',
-  },
-];
-
-const TRUST = [
-  {
-    title: 'Your data is yours',
-    body: 'Export your customers, products, orders and content whenever you want, in formats other software can read. Leaving is not a support ticket.',
-  },
-  {
-    title: 'Kept separate, kept safe',
-    body: 'Your business is isolated from every other business on Piggles at the database itself, not just in the app. Encrypted in transit and at rest.',
-  },
-  {
-    title: 'It stays up',
-    body: 'Backed up continuously, monitored around the clock, with a public status page so you never have to guess whether it is you.',
-  },
-  {
-    title: 'A person answers',
-    body: 'Support from people who know the product, not a queue that closes your ticket for being inactive.',
-  },
-];
-
-function Trust() {
-  return (
-    <Section className="bg-base-100">
-      <div className="rise max-w-[62ch]">
-        <h2 className="text-3xl font-extrabold sm:text-4xl lg:text-5xl">
-          The boring things, done properly.
-        </h2>
-        <p className="mt-6 text-lg">
-          No badges, no uptime percentage, and no number nobody is measuring yet. Four things that
-          are true, and a page that explains each of them.
-        </p>
-        <Link
-          className={`${buttonClasses({ color: 'neutral', variant: 'outline' })} mt-7`}
-          href="/trust"
-        >
-          How your data is handled
-        </Link>
-      </div>
-
-      <ul className="mt-10 grid gap-3.5 sm:grid-cols-3">
-        {ABSENT.map((a) => (
-          <li
-            key={a.title}
-            className="border-base-300 rounded-box border-[1.5px] border-dashed p-5 sm:p-7"
-          >
-            <h3 className="text-lg font-extrabold sm:text-xl">{a.title}</h3>
-            <p className="mt-2 text-base">{a.body}</p>
-          </li>
-        ))}
-      </ul>
-
-      <p className="font-heading mt-11 text-2xl font-extrabold sm:text-3xl">
-        Here is what is left when you take those out.
-      </p>
-
-      <ul className="stagger mt-7 grid gap-8 sm:grid-cols-2 lg:grid-cols-4 lg:gap-10">
-        {TRUST.map((t) => (
-          <li key={t.title} className="border-base-content border-t-2 pt-5">
-            <h3 className="text-xl font-bold">{t.title}</h3>
-            <p className="mt-2 text-base">{t.body}</p>
-          </li>
-        ))}
-      </ul>
     </Section>
   );
 }
@@ -561,23 +668,15 @@ const QUESTIONS = [
 
 function Questions() {
   return (
-    <Section className="bg-base-100">
-      {/* Two columns with the heading pinned. A full-width stack of six
-          disclosures under a heading left half of the panel empty and was the
-          most "laid out rather than designed" thing on the page. */}
-      <div className="grid gap-6 lg:grid-cols-[0.75fr_1.25fr] lg:items-start lg:gap-14">
-        <div className="rise lg:sticky lg:top-24">
-          <h2 className="text-3xl font-extrabold sm:text-4xl lg:text-5xl">
-            Questions people actually ask.
-          </h2>
-          <p className="mt-5 text-lg">
-            The six that come up before anybody signs anything. Every answer is the one on the
-            pricing and trust pages, not a shorter version of it.
-          </p>
-        </div>
-        <Faq items={QUESTIONS} />
-      </div>
-    </Section>
+    <FaqSection
+      heading={
+        <>
+          Questions people <span className="text-primary">actually</span> ask.
+        </>
+      }
+      lede="The six that come up before anybody signs anything."
+      items={QUESTIONS}
+    />
   );
 }
 
@@ -589,34 +688,17 @@ export function HomePage() {
     // padding, inside the dark — see the-day.tsx.
     <div className="space-y-8 pb-8 sm:space-y-14">
       <TheDay />
-      <Whoever />
+      <Thursday />
+      <Whatever />
       <TheTurn />
-      <Fifteen />
       <TwoQuestions />
       <Pricing />
-      <Trust />
+      <InsteadOf />
       <Questions />
       <CloseBand
         heading={`Go and run the business. ${PRODUCT.name} will handle the business software.`}
         primary={{ label: 'Get Piggles', href: accountUrl('signup', 'home-close') }}
         secondary={{ label: 'Talk to a person', href: accountUrl('contact', 'home-close') }}
-        /* `mascot-base` — the plain wave, arm up, nothing in her hands. Two
-           poses were here before it and each was wrong for a different reason,
-           which is most of why this one is right:
-
-             • `welcome-sign` holds a round disc with an open door on it. Legible
-               at 300px; at the size this band gives her it reads as a lollipop
-               STOP sign held out at the reader. Above a button, "halt" is the one
-               gesture that must not be misread.
-             • `point-right` was correct while she stood to the LEFT of the
-               buttons — her arm extends to the viewer's right, so she aimed at
-               them. She is above them now, and that same arm points off the edge
-               of the band at nothing.
-
-           A wave needs no geometry to work and cannot be misread from any
-           position. It is also the right sentence: the band says "go and run the
-           business", which is a send-off, and a send-off is a wave. */
-        mascot="mascot-base"
         note="$49 a month · free for 14 days · no card needed"
       />
     </div>

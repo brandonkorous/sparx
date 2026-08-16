@@ -1,10 +1,10 @@
 import type { Metadata } from 'next';
+import { FaqSection, Section } from '@piggles/ui';
 import Link from 'next/link';
 import { Card, CardBody, Table } from '@wizeworks/silicaui-react';
 import { buttonClasses } from '@wizeworks/silicaui-react/server';
 import { accountUrl, PRODUCT } from '@piggles/config';
 import { PageHero } from '@/components/marketing/page-hero';
-import { Faq } from '@/components/marketing/faq';
 import { CloseBand } from '@/components/marketing/close-band';
 
 // /pricing — one plan, and the part everyone actually wants to know: what makes
@@ -113,16 +113,13 @@ export default function PricingPage() {
         >
           Start free for 14 days
         </a>
-        <Link
-          className={buttonClasses({ color: 'neutral', variant: 'outline', size: 'lg' })}
-          href="/apps"
-        >
+        <Link className={buttonClasses({ variant: 'outline', size: 'lg' })} href="/apps">
           See the fifteen apps
         </Link>
       </PageHero>
 
-      <section className="px-6 py-16 sm:py-24">
-        <div className="mx-auto grid max-w-7xl gap-12 lg:grid-cols-2 lg:gap-16">
+      <Section>
+        <div className="grid gap-12 lg:grid-cols-2 lg:gap-16">
           <div>
             <h2 className="text-3xl font-extrabold sm:text-4xl">What you get for it</h2>
             <p className="mt-6 text-lg">
@@ -179,40 +176,31 @@ export default function PricingPage() {
             </tbody>
           </Table>
         </div>
-      </section>
+      </Section>
 
-      <section className="bg-base-100 border-base-300 border-y px-6 py-16 sm:py-24">
-        <div className="mx-auto max-w-7xl">
-          <div className="grid gap-10 lg:grid-cols-3 lg:gap-16">
-            <div>
-              <h2 className="text-3xl font-extrabold sm:text-4xl">
-                What we will never charge you for.
-              </h2>
-              <p className="mt-6 text-lg">
-                This is the part worth reading twice, because it is where most business software
-                gets you and where this one has decided not to.
-              </p>
-            </div>
-            <div className="grid gap-8 sm:grid-cols-2 lg:col-span-2">
-              {NEVER.map((n) => (
-                <div key={n.title}>
-                  <h3 className="text-xl font-bold">{n.title}</h3>
-                  <p className="mt-2 text-base">{n.body}</p>
-                </div>
-              ))}
-            </div>
+      <Section className="bg-base-100 border-base-300 border-y">
+        <div className="grid gap-10 lg:grid-cols-3 lg:gap-16">
+          <div>
+            <h2 className="text-3xl font-extrabold sm:text-4xl">
+              What we will never charge you for.
+            </h2>
+            <p className="mt-6 text-lg">
+              This is the part worth reading twice, because it is where most business software gets
+              you and where this one has decided not to.
+            </p>
+          </div>
+          <div className="grid gap-8 sm:grid-cols-2 lg:col-span-2">
+            {NEVER.map((n) => (
+              <div key={n.title}>
+                <h3 className="text-xl font-bold">{n.title}</h3>
+                <p className="mt-2 text-base">{n.body}</p>
+              </div>
+            ))}
           </div>
         </div>
-      </section>
+      </Section>
 
-      <section className="px-6 py-16 sm:py-24">
-        <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-3 lg:gap-16">
-          <h2 className="text-3xl font-extrabold sm:text-4xl">The questions everybody asks.</h2>
-          <div className="lg:col-span-2">
-            <Faq items={FAQ} />
-          </div>
-        </div>
-      </section>
+      <FaqSection heading="The questions everybody asks." items={FAQ} />
 
       <CloseBand
         heading="Fourteen days, no card, all fifteen apps."

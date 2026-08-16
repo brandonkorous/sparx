@@ -29,6 +29,10 @@ import { accountUrl } from '@piggles/config';
 const LINKS = [
   { href: '/apps', label: 'Apps' },
   { href: '/pricing', label: 'Pricing' },
+  // Ahead of Trust deliberately. Most people arriving at the free tools come
+  // from a search that has nothing to do with Piggles, and this is the one nav
+  // item that gives an existing visitor a reason to look at a second page.
+  { href: '/tools', label: 'Free tools' },
   { href: '/trust', label: 'Trust' },
 ];
 

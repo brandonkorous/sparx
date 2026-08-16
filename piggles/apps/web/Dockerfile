@@ -27,7 +27,7 @@ WORKDIR /repo
 FROM base AS builder
 
 # Workspace metadata first — maximises layer cache reuse across source changes.
-COPY pnpm-workspace.yaml pnpm-lock.yaml package.json tsconfig.base.json ./
+COPY pnpm-workspace.yaml pnpm-lock.yaml package.json tsconfig.base.json .npmrc ./
 # Root `patchedDependencies` is hashed BEFORE resolution, so pnpm opens every
 # patch file even under a filter that excludes the package being patched. Absent,
 # the install dies with ENOENT on a package this app does not use.
@@ -37,8 +37,13 @@ COPY piggles/apps/web/package.json piggles/apps/web/
 COPY piggles/packages/brand/package.json piggles/packages/brand/
 COPY piggles/packages/config/package.json piggles/packages/config/
 COPY piggles/packages/mascot/package.json piggles/packages/mascot/
+COPY piggles/packages/ui/package.json piggles/packages/ui/
 
+# The Font Awesome Pro token reaches pnpm as an env var for one command, read
+# from a BuildKit secret mount. It is never COPYed and never lands in a layer.
 RUN --mount=type=cache,id=pnpm,target=/root/.local/share/pnpm/store \
+    --mount=type=secret,id=fontawesome_npm_token \
+    FONTAWESOME_NPM_TOKEN="$(cat /run/secrets/fontawesome_npm_token 2>/dev/null || true)" \
     pnpm install --frozen-lockfile --filter @piggles/web...
 
 # Source for every workspace dep + the app itself. All three ship TypeScript
@@ -48,6 +53,7 @@ RUN --mount=type=cache,id=pnpm,target=/root/.local/share/pnpm/store \
 COPY piggles/packages/brand piggles/packages/brand
 COPY piggles/packages/config piggles/packages/config
 COPY piggles/packages/mascot piggles/packages/mascot
+COPY piggles/packages/ui piggles/packages/ui
 COPY piggles/apps/web piggles/apps/web
 
 # Stamped into the client bundle at build time (NEXT_PUBLIC_* is inlined), and

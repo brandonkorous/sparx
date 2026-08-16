@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { Section } from '@piggles/ui';
 import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
@@ -69,17 +70,14 @@ export default async function AppPage({ params }: { params: Promise<{ app: strin
         >
           Get Piggles — $49/month
         </a>
-        <Link
-          className={buttonClasses({ color: 'neutral', variant: 'outline', size: 'lg' })}
-          href="/apps"
-        >
+        <Link className={buttonClasses({ variant: 'outline', size: 'lg' })} href="/apps">
           All fifteen apps
         </Link>
       </PageHero>
 
       {/* The translation, stated plainly. */}
-      <section className="px-6 py-12">
-        <div className="mx-auto flex max-w-7xl flex-wrap items-baseline gap-x-6 gap-y-3">
+      <Section>
+        <div className="flex flex-wrap items-baseline gap-x-6 gap-y-3">
           <p className="text-lg">
             Most software calls this <strong>{copy.alsoKnownAs[0]}</strong>. In {PRODUCT.name} it is
             called <span className="text-module font-bold">{app.label}</span>, because that is what
@@ -87,33 +85,31 @@ export default async function AppPage({ params }: { params: Promise<{ app: strin
           </p>
           <ul className="flex flex-wrap gap-2">
             {copy.alsoKnownAs.slice(1).map((term) => (
-              <li key={term} className={badgeClasses({ color: 'neutral', variant: 'soft' })}>
+              <li key={term} className={badgeClasses({ color: 'module', variant: 'soft' })}>
                 {term}
               </li>
             ))}
           </ul>
         </div>
-      </section>
+      </Section>
 
-      <section className="bg-base-100 border-base-300 border-y px-6 py-16 sm:py-24">
-        <div className="mx-auto max-w-7xl">
-          <h2 className="text-3xl font-extrabold sm:text-4xl">What {app.label} does</h2>
-          <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {copy.does.map((d) => (
-              <Card key={d.title}>
-                <CardBody>
-                  <h3 className="text-module text-lg font-bold">{d.title}</h3>
-                  <p className="mt-1 text-base">{d.body}</p>
-                </CardBody>
-              </Card>
-            ))}
-          </div>
+      <Section className="bg-base-100 border-base-300 border-y">
+        <h2 className="text-3xl font-extrabold sm:text-4xl">What {app.label} does</h2>
+        <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {copy.does.map((d) => (
+            <Card key={d.title}>
+              <CardBody>
+                <h3 className="text-module text-lg font-bold">{d.title}</h3>
+                <p className="mt-1 text-base">{d.body}</p>
+              </CardBody>
+            </Card>
+          ))}
         </div>
-      </section>
+      </Section>
 
       {copy.photo ? (
-        <section className="px-6 py-16 sm:py-24">
-          <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-2 lg:items-center lg:gap-16">
+        <Section>
+          <div className="grid gap-10 lg:grid-cols-2 lg:items-center lg:gap-16">
             <div className="rounded-box border-base-300 overflow-hidden border">
               <Image
                 src={copy.photo.src}
@@ -129,19 +125,16 @@ export default async function AppPage({ params }: { params: Promise<{ app: strin
                 It is included. All of it, from day one.
               </h2>
               <p className="mt-6 text-lg">
-                {app.label} is not an add-on, an upgrade or a module you switch on and get billed
+                {app.label} is not an add-on, an upgrade or a thing you pay to unlock and get billed
                 for. It is in the $49 plan alongside the other fourteen, whether you open it every
                 morning or twice a year.
               </p>
-              <Link
-                className={`${buttonClasses({ color: 'neutral', variant: 'outline' })} mt-6`}
-                href="/pricing"
-              >
+              <Link className={`${buttonClasses({ color: 'success' })} mt-6`} href="/pricing">
                 What actually changes the price
               </Link>
             </div>
           </div>
-        </section>
+        </Section>
       ) : null}
 
       <section

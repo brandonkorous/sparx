@@ -40,10 +40,7 @@ export default function AppsIndexPage() {
         >
           Get Piggles — $49/month
         </a>
-        <Link
-          className={buttonClasses({ color: 'neutral', variant: 'outline', size: 'lg' })}
-          href="/pricing"
-        >
+        <Link className={buttonClasses({ variant: 'outline', size: 'lg' })} href="/pricing">
           See what changes the price
         </Link>
       </PageHero>

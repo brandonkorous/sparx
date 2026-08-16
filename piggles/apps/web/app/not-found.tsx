@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { Section } from '@piggles/ui';
 import { Card, CardBody } from '@wizeworks/silicaui-react';
 import { buttonClasses } from '@wizeworks/silicaui-react/server';
 import { PIGGLES_GROUPS } from '@piggles/brand';
@@ -21,8 +22,8 @@ import { GROUP_COPY } from '@/components/marketing/groups';
 export default function NotFound() {
   return (
     <>
-      <section className="bg-base-100 border-base-300 border-b px-6 py-16 sm:py-24">
-        <div className="mx-auto grid max-w-7xl gap-8 lg:grid-cols-3 lg:gap-16">
+      <Section className="bg-base-100 border-base-300 border-b">
+        <div className="grid gap-8 lg:grid-cols-3 lg:gap-16">
           <h1 className="text-4xl leading-tight font-extrabold sm:text-5xl lg:col-span-2">
             That page isn&rsquo;t here any more.
           </h1>
@@ -35,19 +36,16 @@ export default function NotFound() {
               <Link className={buttonClasses({ color: 'primary', size: 'lg' })} href="/">
                 Back to the start
               </Link>
-              <Link
-                className={buttonClasses({ color: 'neutral', variant: 'outline', size: 'lg' })}
-                href="/pricing"
-              >
+              <Link className={buttonClasses({ variant: 'outline', size: 'lg' })} href="/pricing">
                 Pricing
               </Link>
             </div>
           </div>
         </div>
-      </section>
+      </Section>
 
-      <section className="px-6 py-16 sm:py-24">
-        <div className="mx-auto grid max-w-7xl gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <Section>
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {PIGGLES_GROUPS.map((group) => (
             <Card key={group} data-group={group} className="bg-module bg-soft">
               <CardBody>
@@ -65,7 +63,7 @@ export default function NotFound() {
             </Card>
           ))}
         </div>
-      </section>
+      </Section>
     </>
   );
 }

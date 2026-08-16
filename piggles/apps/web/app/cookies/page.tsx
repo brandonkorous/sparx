@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { Section } from '@piggles/ui';
 import Link from 'next/link';
 import { Table } from '@wizeworks/silicaui-react';
 import { PRODUCT } from '@piggles/config';
@@ -180,62 +181,55 @@ export default function CookiesPage() {
         lede="A cookie is a small note a website leaves in your browser so the next page knows something the last one did. Here is every one Piggles uses, which of our three sites uses it, and what it is for."
       />
 
-      <section className="px-6 py-16 sm:py-24">
-        <div className="mx-auto max-w-7xl">
-          <h2 className="text-3xl font-extrabold sm:text-4xl">The ones that make it work</h2>
-          <p className="mt-6 max-w-[70ch] text-lg">
-            Without these, signing in does not stay signed in. There is no version of Piggles that
-            works without them, which is why there is no switch for them.
-          </p>
-          <div className="mt-8">
-            <Rows rows={ESSENTIAL} />
-          </div>
+      <Section>
+        <h2 className="text-3xl font-extrabold sm:text-4xl">The ones that make it work</h2>
+        <p className="mt-6 max-w-[70ch] text-lg">
+          Without these, signing in does not stay signed in. There is no version of Piggles that
+          works without them, which is why there is no switch for them.
+        </p>
+        <div className="mt-8">
+          <Rows rows={ESSENTIAL} />
         </div>
-      </section>
+      </Section>
 
-      <section className="bg-base-100 border-base-300 border-y px-6 py-16 sm:py-24">
-        <div className="mx-auto max-w-7xl">
-          <h2 className="text-3xl font-extrabold sm:text-4xl">The ones that tell us what to fix</h2>
-          <p className="mt-6 max-w-[70ch] text-lg">
-            These live inside the workspace at {PRODUCT.hosts.console} — the place you do the work —
-            and nowhere else. They are how we find out that a screen is confusing or that something
-            failed quietly.
-          </p>
-          <div className="mt-8">
-            <Rows rows={PRODUCT_ANALYTICS} />
-          </div>
+      <Section className="bg-base-100 border-base-300 border-y">
+        <h2 className="text-3xl font-extrabold sm:text-4xl">The ones that tell us what to fix</h2>
+        <p className="mt-6 max-w-[70ch] text-lg">
+          These live inside the workspace at {PRODUCT.hosts.console} — the place you do the work —
+          and nowhere else. They are how we find out that a screen is confusing or that something
+          failed quietly.
+        </p>
+        <div className="mt-8">
+          <Rows rows={PRODUCT_ANALYTICS} />
         </div>
-      </section>
+      </Section>
 
-      <section className="px-6 py-16 sm:py-24">
-        <div className="mx-auto max-w-7xl">
-          {/* The count is written out and there are seven of them. It said
+      <Section>
+        {/* The count is written out and there are seven of them. It said
               "Four" while rendering seven — a number nobody would check and
               everybody would believe, on the page whose whole job is being
               checkable. If an entry is added or removed, this word changes. */}
-          <h2 className="text-3xl font-extrabold sm:text-4xl">Seven things worth knowing</h2>
-          <ul className="mt-10 grid gap-8 sm:grid-cols-2 lg:gap-10">
-            {FACTS.map((f) => (
-              <li key={f.title} className="border-base-content border-t-2 pt-5">
-                <h3 className="text-xl font-bold">{f.title}</h3>
-                <p className="mt-2 max-w-[60ch] text-base">{f.body}</p>
-              </li>
-            ))}
-          </ul>
-
-          <p className="mt-14 max-w-[70ch] text-lg">
-            More on how your information is handled is on the{' '}
-            <Link href="/privacy" className="font-semibold underline">
-              privacy page
-            </Link>
-            , and how it is kept safe is on{' '}
-            <Link href="/trust" className="font-semibold underline">
-              trust
-            </Link>
-            .
-          </p>
-        </div>
-      </section>
+        <h2 className="text-3xl font-extrabold sm:text-4xl">Seven things worth knowing</h2>
+        <ul className="mt-10 grid gap-8 sm:grid-cols-2 lg:gap-10">
+          {FACTS.map((f) => (
+            <li key={f.title} className="border-base-content border-t-2 pt-5">
+              <h3 className="text-xl font-bold">{f.title}</h3>
+              <p className="mt-2 max-w-[60ch] text-base">{f.body}</p>
+            </li>
+          ))}
+        </ul>
+        <p className="mt-14 max-w-[70ch] text-lg">
+          More on how your information is handled is on the{' '}
+          <Link href="/privacy" className="font-semibold underline">
+            privacy page
+          </Link>
+          , and how it is kept safe is on{' '}
+          <Link href="/trust" className="font-semibold underline">
+            trust
+          </Link>
+          .
+        </p>
+      </Section>
     </>
   );
 }

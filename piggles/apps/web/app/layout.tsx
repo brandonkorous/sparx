@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { Inter, Nunito } from 'next/font/google';
+import { Fredoka, Inter } from 'next/font/google';
 import { PRODUCT } from '@piggles/config';
 import { SiteHeader } from '@/components/marketing/site-header';
 import { SiteFooter } from '@/components/marketing/site-footer';
@@ -15,12 +15,11 @@ const inter = Inter({
   display: 'swap',
 });
 
-// The display face. 900 is loaded because the board asks for "very round, thick"
-// — Nunito at 700 reads noticeably softer than the wordmark it sits beside.
-const nunito = Nunito({
+// The display face. Variable, not a weight list: Fredoka's wght axis stops at
+// 700, so `font-extrabold` and `font-black` clamp there rather than erroring.
+const fredoka = Fredoka({
   subsets: ['latin'],
-  weight: ['600', '700', '800', '900'],
-  variable: '--font-nunito',
+  variable: '--font-fredoka',
   display: 'swap',
 });
 
@@ -47,7 +46,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     // `light` is the BARE silicaui theme name, and it is the Piggles brand here
     // because this app never loads @sparx/brand/theme.css. See globals.css.
-    <html lang="en" data-theme="light" className={`${inter.variable} ${nunito.variable}`}>
+    <html lang="en" data-theme="light" className={`${inter.variable} ${fredoka.variable}`}>
       <body>
         <SiteHeader />
         <main>{children}</main>
