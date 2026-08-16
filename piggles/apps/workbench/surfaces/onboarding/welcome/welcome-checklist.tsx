@@ -13,7 +13,8 @@
 // inside its own container, and every CTA is a surface to OPEN, never an href —
 // the workbench has no routes.
 
-import { Check } from 'lucide-react';
+import { faCheck } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { Button, Heading, Progress, Text, cx } from '@wizeworks/silicaui-react';
 import type { SurfaceContext } from '../../../lib/surfaces/registry';
 import { useOnboardingProgress } from '../../../lib/onboarding/api';
@@ -87,7 +88,7 @@ function ChecklistItem({ step, ctx }: { step: OnboardingStep; ctx: SurfaceContex
         )}
         aria-hidden
       >
-        {step.done ? <Check className="size-3.5" /> : null}
+        {step.done ? <Icon glyph={faCheck} className="size-3.5" /> : null}
       </span>
       <div className="flex min-w-0 flex-1 flex-col gap-1">
         <p className={cx('font-medium', step.done && '')}>{step.title}</p>

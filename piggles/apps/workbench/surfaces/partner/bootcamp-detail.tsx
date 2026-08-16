@@ -39,7 +39,14 @@ import {
   useToast,
 } from '@wizeworks/silicaui-react';
 import { RichTextEditor } from '@wizeworks/silicaui-editor';
-import { GraduationCap, Rocket, Save, Trash2, XCircle } from 'lucide-react';
+import {
+  faCircleXmark,
+  faFloppyDisk,
+  faGraduationCap,
+  faRocket,
+  faTrashCan,
+} from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { useConfirm } from '../../lib/confirm';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import { afterPaneChange } from '../../lib/defer';
@@ -391,7 +398,7 @@ export function BootcampDetailSurface({ ctx }: { ctx: SurfaceContext }) {
           </Badge>
         ) : (
           <span className="inline-flex items-center gap-1.5">
-            <GraduationCap className="size-4" aria-hidden />
+            <Icon glyph={faGraduationCap} className="size-4" aria-hidden />
             <Text as="span" className="text-sm font-medium">
               New bootcamp
             </Text>
@@ -406,7 +413,7 @@ export function BootcampDetailSurface({ ctx }: { ctx: SurfaceContext }) {
           loading={saving}
           onClick={save}
         >
-          <Save className="size-4" aria-hidden />
+          <Icon glyph={faFloppyDisk} className="size-4" aria-hidden />
           {isNew ? 'Save draft' : 'Save'}
         </Button>
 
@@ -420,7 +427,7 @@ export function BootcampDetailSurface({ ctx }: { ctx: SurfaceContext }) {
               void onPublish();
             }}
           >
-            <Rocket className="size-4" aria-hidden />
+            <Icon glyph={faRocket} className="size-4" aria-hidden />
             Publish
           </Button>
         ) : null}
@@ -435,7 +442,7 @@ export function BootcampDetailSurface({ ctx }: { ctx: SurfaceContext }) {
               void onCancel();
             }}
           >
-            <XCircle className="size-4" aria-hidden />
+            <Icon glyph={faCircleXmark} className="size-4" aria-hidden />
             Cancel
           </Button>
         ) : null}
@@ -762,7 +769,7 @@ export function BootcampDetailSurface({ ctx }: { ctx: SurfaceContext }) {
                   void onDelete();
                 }}
               >
-                <Trash2 className="size-4" aria-hidden />
+                <Icon glyph={faTrashCan} className="size-4" aria-hidden />
                 Delete
               </Button>
             </div>

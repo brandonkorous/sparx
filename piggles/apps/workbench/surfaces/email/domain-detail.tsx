@@ -39,7 +39,8 @@ import {
   Text,
   useToast,
 } from '@wizeworks/silicaui-react';
-import { Plus, RefreshCw, Star, Trash2 } from 'lucide-react';
+import { faArrowsRotate, faPlus, faStar, faTrashCan } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { CopyValue } from '../../components/copy-value';
 import { useConfirm } from '../../lib/confirm';
 import { useDirtySource } from '../../lib/workbench/dirty';
@@ -164,7 +165,7 @@ function AddSendingAddress({ ctx }: { ctx: SurfaceContext }) {
           disabled={trimmed === '' || !looksValid}
           onClick={submit}
         >
-          <Plus className="size-4" aria-hidden />
+          <Icon glyph={faPlus} className="size-4" aria-hidden />
           Add address
         </Button>
       </PaneToolbar>
@@ -415,7 +416,7 @@ function ManageSendingAddress({ ctx, id }: { ctx: SurfaceContext; id: string }) 
 
         {isVerified ? null : (
           <Button size="sm" color="module" loading={verify.isPending} onClick={onCheck}>
-            <RefreshCw className="size-4" aria-hidden />
+            <Icon glyph={faArrowsRotate} className="size-4" aria-hidden />
             Check now
           </Button>
         )}
@@ -427,7 +428,7 @@ function ManageSendingAddress({ ctx, id }: { ctx: SurfaceContext; id: string }) 
             loading={setDefault.isPending}
             onClick={onSetDefault}
           >
-            <Star className="size-4" aria-hidden />
+            <Icon glyph={faStar} className="size-4" aria-hidden />
             Use as default
           </Button>
         ) : null}
@@ -443,7 +444,7 @@ function ManageSendingAddress({ ctx, id }: { ctx: SurfaceContext; id: string }) 
             void onDelete();
           }}
         >
-          <Trash2 className="size-4" aria-hidden />
+          <Icon glyph={faTrashCan} className="size-4" aria-hidden />
         </Button>
       </PaneToolbar>
 
@@ -524,7 +525,7 @@ function ManageSendingAddress({ ctx, id }: { ctx: SurfaceContext; id: string }) 
                   loading={setDefault.isPending}
                   onClick={onSetDefault}
                 >
-                  <Star className="size-4" aria-hidden />
+                  <Icon glyph={faStar} className="size-4" aria-hidden />
                   Use as default
                 </Button>
               )}
@@ -546,7 +547,7 @@ function ManageSendingAddress({ ctx, id }: { ctx: SurfaceContext; id: string }) 
                 void onDelete();
               }}
             >
-              <Trash2 className="size-4" aria-hidden />
+              <Icon glyph={faTrashCan} className="size-4" aria-hidden />
               Remove address
             </Button>
           </div>

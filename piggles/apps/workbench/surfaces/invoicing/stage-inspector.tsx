@@ -25,7 +25,9 @@ import {
   Text,
   Button,
 } from '@wizeworks/silicaui-react';
-import { FileText, Trash2, Workflow, type LucideIcon } from 'lucide-react';
+import { faDiagramProject, faFileText, faTrashCan } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
+import type { PigglesIcon } from '@piggles/ui';
 import type { StageDraft, WorkflowDraft } from './workflow-data';
 import type { DocumentStageType } from './types';
 import { STAGE_TYPES, typeHint, typeLabel } from './stage-presentation';
@@ -34,18 +36,18 @@ import { productCopy } from '../../lib/product';
 
 /** The selected node's identity: a tinted icon + title + one-line subtitle. */
 function PanelHead({
-  icon: Icon,
+  icon: glyph,
   title,
   subtitle,
 }: {
-  icon: LucideIcon;
+  icon: PigglesIcon;
   title: string;
   subtitle: string;
 }) {
   return (
     <header className="border-base-300 flex items-start gap-3 border-b pb-3">
       <span className="bg-module/10 text-module flex size-9 shrink-0 items-center justify-center rounded-lg">
-        <Icon className="size-5" aria-hidden />
+        <Icon glyph={glyph} className="size-5" aria-hidden />
       </span>
       <div className="flex min-w-0 flex-col">
         <Heading level={3} className="truncate text-lg font-semibold">
@@ -90,7 +92,7 @@ function SettingsPanel({ draft, onName, onSlug, onDefault }: StageInspectorProps
   return (
     <Panel>
       <PanelHead
-        icon={Workflow}
+        icon={faDiagramProject}
         title="Workflow settings"
         subtitle="A workflow is the path a document takes, and who sees what along the way."
       />
@@ -169,7 +171,7 @@ function StagePanel({
 
   return (
     <Panel>
-      <PanelHead icon={FileText} title={headline} subtitle={subtitle} />
+      <PanelHead icon={faFileText} title={headline} subtitle={subtitle} />
 
       <div className="grid gap-4 @lg:grid-cols-2">
         <Field>
@@ -327,7 +329,7 @@ function StagePanel({
             onStageRemove(stage.key);
           }}
         >
-          <Trash2 className="size-4" aria-hidden />
+          <Icon glyph={faTrashCan} className="size-4" aria-hidden />
           Remove this stage
         </Button>
         <Text className="text-sm">

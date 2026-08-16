@@ -31,7 +31,14 @@ import {
   Text,
   useToast,
 } from '@wizeworks/silicaui-react';
-import { AlertTriangle, Clock, Plus, UserPlus, Users } from 'lucide-react';
+import {
+  faClock,
+  faExclamationTriangle,
+  faPlus,
+  faUserPlus,
+  faUsers,
+} from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import { afterPaneChange } from '../../lib/defer';
@@ -111,7 +118,7 @@ function PersonRow({
           // Solid, not soft: this is the one row state that means something is
           // happening right now, and it has to win against the soft badges.
           <Badge color="info" size="sm">
-            <Clock className="size-3.5" aria-hidden />
+            <Icon glyph={faClock} className="size-3.5" aria-hidden />
             {formatMinutes(runningMinutes(onTheClockSince, now))}
           </Badge>
         ) : null}
@@ -119,7 +126,7 @@ function PersonRow({
       <td>
         {certs.expired > 0 ? (
           <Badge color="error" size="sm">
-            <AlertTriangle className="size-3.5" aria-hidden />
+            <Icon glyph={faExclamationTriangle} className="size-3.5" aria-hidden />
             {certs.expired === 1 ? '1 expired' : `${String(certs.expired)} expired`}
           </Badge>
         ) : certs.expiring > 0 ? (
@@ -242,7 +249,7 @@ export function PeopleSurface({ ctx }: { ctx: SurfaceContext }) {
             ctx.open('staff.person', { id: 'new' });
           }}
         >
-          <Plus className="size-4" aria-hidden />
+          <Icon glyph={faPlus} className="size-4" aria-hidden />
           <span className="hidden @lg:inline">Add someone</span>
         </Button>
 
@@ -259,7 +266,7 @@ export function PeopleSurface({ ctx }: { ctx: SurfaceContext }) {
       <div className="min-h-0 flex-1 overflow-y-auto">
         {isError ? (
           <EmptyState
-            icon={<Users className="size-6" aria-hidden />}
+            icon={<Icon glyph={faUsers} className="size-6" aria-hidden />}
             title="Could not load your team"
             description="The server could not be reached. Nobody's record is affected."
             actions={
@@ -279,7 +286,7 @@ export function PeopleSurface({ ctx }: { ctx: SurfaceContext }) {
         ) : people.length === 0 ? (
           <Card className="min-h-0 flex-1 items-center justify-center">
             <PaneEmpty
-              icon={<UserPlus className="size-6" aria-hidden />}
+              icon={<Icon glyph={faUserPlus} className="size-6" aria-hidden />}
               title={search.trim() ? 'Nobody matches that' : 'No one on the roster yet'}
               description={
                 search.trim()
@@ -298,7 +305,7 @@ export function PeopleSurface({ ctx }: { ctx: SurfaceContext }) {
                       ctx.open('staff.person', { id: 'new' });
                     }}
                   >
-                    <Plus className="size-4" aria-hidden />
+                    <Icon glyph={faPlus} className="size-4" aria-hidden />
                     Add the first person
                   </Button>
                 )

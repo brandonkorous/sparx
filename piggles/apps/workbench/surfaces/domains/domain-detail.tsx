@@ -41,7 +41,14 @@ import {
   useToast,
 } from '@wizeworks/silicaui-react';
 import { useConfirm } from '../../lib/confirm';
-import { ExternalLink, Link2, RefreshCw, Star, Trash2 } from 'lucide-react';
+import {
+  faArrowUpRightFromSquare,
+  faArrowsRotate,
+  faLink,
+  faStar,
+  faTrashCan,
+} from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { CopyValue } from '../../components/copy-value';
 import { useActiveSiteId } from '../../lib/api/shell-data';
 import { useDirtySource } from '../../lib/workbench/dirty';
@@ -175,7 +182,7 @@ function ConnectDomain({ ctx }: { ctx: SurfaceContext }) {
           disabled={trimmed === '' || chosenSite === ''}
           onClick={submit}
         >
-          <Link2 className="size-4" aria-hidden />
+          <Icon glyph={faLink} className="size-4" aria-hidden />
           Connect
         </Button>
       </PaneToolbar>
@@ -402,14 +409,14 @@ function ManageDomain({ ctx, id }: { ctx: SurfaceContext; id: string }) {
             render={<a href={`https://${domain.host}`} target="_blank" rel="noreferrer" />}
           >
             Visit
-            <ExternalLink className="size-3" aria-hidden />
+            <Icon glyph={faArrowUpRightFromSquare} className="size-3" aria-hidden />
           </Button>
         ) : null}
         {isManaged ? null : (
           <>
             {isLive ? null : (
               <Button size="sm" color="module" loading={verify.isPending} onClick={onCheck}>
-                <RefreshCw className="size-4" aria-hidden />
+                <Icon glyph={faArrowsRotate} className="size-4" aria-hidden />
                 Check now
               </Button>
             )}
@@ -423,7 +430,7 @@ function ManageDomain({ ctx, id }: { ctx: SurfaceContext; id: string }) {
                   void onMakeCanonical();
                 }}
               >
-                <Star className="size-4" aria-hidden />
+                <Icon glyph={faStar} className="size-4" aria-hidden />
                 Make main address
               </Button>
             ) : null}
@@ -439,7 +446,7 @@ function ManageDomain({ ctx, id }: { ctx: SurfaceContext; id: string }) {
                 void onDisconnect();
               }}
             >
-              <Trash2 className="size-4" aria-hidden />
+              <Icon glyph={faTrashCan} className="size-4" aria-hidden />
             </Button>
           </>
         )}

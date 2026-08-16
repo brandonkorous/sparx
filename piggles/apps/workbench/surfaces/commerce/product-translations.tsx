@@ -57,7 +57,14 @@ import {
   useToast,
 } from '@wizeworks/silicaui-react';
 import { useConfirm } from '../../lib/confirm';
-import { Languages, Plus, Save, ServerCrash, Trash2 } from 'lucide-react';
+import {
+  faFloppyDisk,
+  faLanguage,
+  faPlus,
+  faServer,
+  faTrashCan,
+} from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import { FormSection } from '../../components/form-section';
@@ -173,7 +180,7 @@ function AddLanguage({ existing, onAdd }: { existing: string[]; onAdd: (locale: 
             setRaw('');
           }}
         >
-          <Plus className="size-4" aria-hidden />
+          <Icon glyph={faPlus} className="size-4" aria-hidden />
           Add this language
         </Button>
       </div>
@@ -498,7 +505,7 @@ function TranslationEditor({
                   loading={removeTranslation.isPending}
                   onClick={onRemove}
                 >
-                  <Trash2 className="size-4" aria-hidden />
+                  <Icon glyph={faTrashCan} className="size-4" aria-hidden />
                   {isNew ? 'Discard it' : `Remove ${localeName(active)}`}
                 </Button>
               </div>
@@ -540,7 +547,7 @@ export function ProductTranslationsSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar label={`${LABEL} actions`}>
-        <Languages className="size-4 shrink-0" aria-hidden />
+        <Icon glyph={faLanguage} className="size-4 shrink-0" aria-hidden />
         <Heading level={2} className="min-w-0 truncate text-base font-semibold">
           {scope.product.title}
         </Heading>
@@ -558,7 +565,7 @@ export function ProductTranslationsSurface({ ctx }: { ctx: SurfaceContext }) {
             loading={saveState.saving}
             onClick={saveState.save}
           >
-            <Save className="size-4" aria-hidden />
+            <Icon glyph={faFloppyDisk} className="size-4" aria-hidden />
             {saveState.label}
           </Button>
         ) : null}
@@ -578,7 +585,7 @@ export function ProductTranslationsSurface({ ctx }: { ctx: SurfaceContext }) {
 
           {translations.isError ? (
             <EmptyState
-              icon={<ServerCrash className="size-6" aria-hidden />}
+              icon={<Icon glyph={faServer} className="size-6" aria-hidden />}
               title="Could not load the translations"
               description={productErrorMessage(
                 translations.error,

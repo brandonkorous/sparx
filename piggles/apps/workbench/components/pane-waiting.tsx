@@ -1,24 +1,21 @@
 'use client';
 
-// The one loading state the whole workbench shares.
+// The one loading state the whole console shares.
 //
-// Every pane, and the workspace itself while it boots, waits behind THIS — the
-// brand's mascot with a patient, half-lidded "content" face, blinking on its
-// idle loop. A single component so a slow surface, a booting dock, and a lazy
-// chunk all read as the same recognisable "someone's on it" moment rather than
-// three different spinners. Motion comes from @sparx/brand/mascot.css (imported
-// once in globals); without it the face would sit frozen.
+// Every pane, and the workspace itself while it boots, waits behind THIS. A
+// single component so a slow surface, a booting dock, and a lazy chunk all read
+// as the same recognisable "someone's on it" moment rather than three different
+// spinners.
 //
-// ── WHICH MASCOT ────────────────────────────────────────────────────────────
+// The picture is Piggles', resolved through the product adapter: `StateArt`
+// first (lib/console/state-art.tsx draws every state as a POSE, waiting
+// included), then the registered loading mark. Both are configured at module
+// scope in lib/console/product.tsx, so neither branch below can be empty.
 //
-// This component is rendered from `surface-mount.tsx`, which every SHARED
-// surface loads behind — and shared surfaces are rendered by two shells now.
-// Sparky in a Piggles console would be the one brand leak that reaches every
-// pane in the app, so the mark comes from the product adapter (lib/product.ts)
-// and falls back to sparx's when nothing has been registered. That fallback is
-// what keeps sparx's own shell from having to configure anything.
+// There is no third fallback. This file carried one to sparx's mascot, which was
+// unreachable the moment Piggles registered `StateArt` and was a build-time
+// dependency on another brand's artwork for a branch that could never run.
 
-import { SparkMascot } from '@sparx/brand/react';
 import { productCopy, productLoadingMark } from '../lib/product';
 import { useDocumentTheme } from '../lib/use-document-theme';
 import { stateArtNode } from './state-art';
@@ -37,12 +34,7 @@ export function PaneWaiting({ label, module }: { label?: string; module?: string
 
   return (
     <div className="flex h-full flex-col items-center justify-center gap-3 p-6" role="status">
-      {art ??
-        (BrandMark ? (
-          <BrandMark tone={theme} />
-        ) : (
-          <SparkMascot expression="content" tone={theme} size={72} bob blink title="Loading" />
-        ))}
+      {art ?? (BrandMark ? <BrandMark tone={theme} /> : null)}
       {/* A real ink token, never faded — a loading caption is text meant to be
           read. Kept small because the picture is the signal; the word is
           support. Through the copy seam because "Loading…" is a technical word

@@ -34,7 +34,8 @@ import {
   Text,
   Tooltip,
 } from '@wizeworks/silicaui-react';
-import { BarChart3, LineChart, ServerCrash } from 'lucide-react';
+import { faChartColumn, faChartLine, faServer } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import { FormSection } from '../../components/form-section';
@@ -208,7 +209,7 @@ export function DropshipProfitabilitySurface({ ctx: _ctx }: { ctx: SurfaceContex
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar label="Profitability controls">
-        <BarChart3 className="size-4 shrink-0" aria-hidden />
+        <Icon glyph={faChartColumn} className="size-4 shrink-0" aria-hidden />
         <Heading level={2} className="min-w-0 truncate text-base font-semibold">
           Profitability
         </Heading>
@@ -239,7 +240,7 @@ export function DropshipProfitabilitySurface({ ctx: _ctx }: { ctx: SurfaceContex
         <div className="mx-auto flex w-full max-w-3xl flex-col gap-4">
           {analytics.isError ? (
             <EmptyState
-              icon={<ServerCrash className="size-6" aria-hidden />}
+              icon={<Icon glyph={faServer} className="size-6" aria-hidden />}
               title="Could not load profitability"
               description={dropshipErrorMessage(
                 analytics.error,
@@ -267,7 +268,7 @@ export function DropshipProfitabilitySurface({ ctx: _ctx }: { ctx: SurfaceContex
 
               {!hasOrders ? (
                 <EmptyState
-                  icon={<LineChart className="size-6" aria-hidden />}
+                  icon={<Icon glyph={faChartLine} className="size-6" aria-hidden />}
                   title="No dropship sales in this period"
                   description="Once customers buy products your suppliers ship, this fills with your profit, your margin, and how each supplier is doing. Try a longer period above, or check back after your next sale."
                 />

@@ -57,19 +57,20 @@ import {
 } from '@wizeworks/silicaui-react';
 import { useConfirm } from '../../lib/confirm';
 import {
-  Cable,
-  Check,
-  Copy,
-  FileSpreadsheet,
-  KeyRound,
-  Pause,
-  Play,
-  RefreshCw,
-  Save,
-  Server,
-  Trash2,
-  Unlink,
-} from 'lucide-react';
+  faArrowsRotate,
+  faCableCar,
+  faCheck,
+  faCopy,
+  faFileSpreadsheet,
+  faFloppyDisk,
+  faKey,
+  faLinkSlash,
+  faPause,
+  faPlay,
+  faServer,
+  faTrashCan,
+} from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import { FormSection } from '../../components/form-section';
@@ -162,8 +163,8 @@ function sourceAddress(source: InventorySource): string | null {
 }
 
 function TypeIcon({ type, className }: { type: SourceType; className?: string }) {
-  const Icon = type === 'csv' ? FileSpreadsheet : type === 'api' ? Cable : Server;
-  return <Icon className={className} aria-hidden />;
+  const glyph = type === 'csv' ? faFileSpreadsheet : type === 'api' ? faCableCar : faServer;
+  return <Icon glyph={glyph} className={className} aria-hidden />;
 }
 
 /** Only an admin or the account owner may pair a bridge — the server enforces
@@ -268,9 +269,9 @@ function PairingKeyDialog({ result, onClose }: { result: EnrollResult; onClose: 
                 }}
               >
                 {copied ? (
-                  <Check className="size-4" aria-hidden />
+                  <Icon glyph={faCheck} className="size-4" aria-hidden />
                 ) : (
-                  <Copy className="size-4" aria-hidden />
+                  <Icon glyph={faCopy} className="size-4" aria-hidden />
                 )}
               </Button>
             </div>
@@ -638,7 +639,7 @@ function SourceEditor({
             disabled={!canSave}
             onClick={save}
           >
-            <Save className="size-4" aria-hidden />
+            <Icon glyph={faFloppyDisk} className="size-4" aria-hidden />
             Add this source
           </Button>
         </PaneToolbar>
@@ -660,12 +661,12 @@ function SourceEditor({
           >
             {source?.status === 'paused' ? (
               <>
-                <Play className="size-4" aria-hidden />
+                <Icon glyph={faPlay} className="size-4" aria-hidden />
                 <span className="hidden @lg:inline">Turn on</span>
               </>
             ) : (
               <>
-                <Pause className="size-4" aria-hidden />
+                <Icon glyph={faPause} className="size-4" aria-hidden />
                 <span className="hidden @lg:inline">Pause</span>
               </>
             )}
@@ -681,7 +682,7 @@ function SourceEditor({
               disabled={source?.status === 'paused'}
               onClick={runSync}
             >
-              <RefreshCw className="size-4" aria-hidden />
+              <Icon glyph={faArrowsRotate} className="size-4" aria-hidden />
               <span className="hidden @lg:inline">Sync now</span>
             </Button>
           )}
@@ -694,7 +695,7 @@ function SourceEditor({
             disabled={!canSave}
             onClick={save}
           >
-            <Save className="size-4" aria-hidden />
+            <Icon glyph={faFloppyDisk} className="size-4" aria-hidden />
             Save
           </Button>
 
@@ -711,7 +712,7 @@ function SourceEditor({
               void removeSource();
             }}
           >
-            <Trash2 className="size-4" aria-hidden />
+            <Icon glyph={faTrashCan} className="size-4" aria-hidden />
           </Button>
 
           {/* Re-reads liveness/last-sync from the server without remounting, so
@@ -1120,7 +1121,7 @@ function SourceEditor({
                       loading={enroll.isPending}
                       onClick={pairBridge}
                     >
-                      <KeyRound className="size-4" aria-hidden />
+                      <Icon glyph={faKey} className="size-4" aria-hidden />
                       {source.enrolledAt ? 'Generate a new pairing key' : 'Pair this bridge'}
                     </Button>
                     {source.enrolledAt ? (
@@ -1133,7 +1134,7 @@ function SourceEditor({
                           void unpairBridge();
                         }}
                       >
-                        <Unlink className="size-4" aria-hidden />
+                        <Icon glyph={faLinkSlash} className="size-4" aria-hidden />
                         Unpair
                       </Button>
                     ) : null}
@@ -1237,7 +1238,7 @@ function SourceEditor({
                   void removeSource();
                 }}
               >
-                <Trash2 className="size-4" aria-hidden />
+                <Icon glyph={faTrashCan} className="size-4" aria-hidden />
                 Remove
               </Button>
             </div>

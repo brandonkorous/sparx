@@ -64,28 +64,29 @@ import {
   useToast,
 } from '@wizeworks/silicaui-react';
 import {
-  AlertTriangle,
-  Check,
-  ChevronDown,
-  Copy,
-  Eye,
-  History,
-  Mail,
-  Monitor,
-  Moon,
-  MousePointerClick,
-  Pencil,
-  Plus,
-  RotateCcw,
-  Save,
-  Smartphone,
-  SplitSquareHorizontal,
-  Sun,
-  Tags,
-  Trash2,
-  Upload,
-  X,
-} from 'lucide-react';
+  faArrowPointer,
+  faCheck,
+  faChevronDown,
+  faClockRotateLeft,
+  faCopy,
+  faDesktop,
+  faEnvelope,
+  faExclamationTriangle,
+  faEye,
+  faFloppyDisk,
+  faMobile,
+  faMoon,
+  faPencil,
+  faPlus,
+  faRotate,
+  faSun,
+  faTableColumns,
+  faTags,
+  faTrashCan,
+  faUpload,
+  faXmark,
+} from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import {
   EmailBuilder,
   clearLocalSavedBlocks,
@@ -728,7 +729,7 @@ function EmailStudio({ ctx }: { ctx: SurfaceContext }) {
     return (
       <Card className="min-h-0 flex-1 items-center justify-center">
         <PaneEmpty
-          icon={<Mail className="size-6" aria-hidden />}
+          icon={<Icon glyph={faEnvelope} className="size-6" aria-hidden />}
           title="No emails yet"
           description="Create your first email — it opens straight into the editor."
           actions={
@@ -740,7 +741,7 @@ function EmailStudio({ ctx }: { ctx: SurfaceContext }) {
                 void createNew();
               }}
             >
-              <Plus className="size-4" aria-hidden />
+              <Icon glyph={faPlus} className="size-4" aria-hidden />
               New email
             </Button>
           }
@@ -849,7 +850,7 @@ function EmailStudio({ ctx }: { ctx: SurfaceContext }) {
           setRenaming(true);
         }}
       >
-        <Pencil className="size-4" aria-hidden />
+        <Icon glyph={faPencil} className="size-4" aria-hidden />
       </Button>
       <Button
         size="sm"
@@ -863,7 +864,7 @@ function EmailStudio({ ctx }: { ctx: SurfaceContext }) {
           void onNewEmail();
         }}
       >
-        <Plus className="size-4" aria-hidden />
+        <Icon glyph={faPlus} className="size-4" aria-hidden />
       </Button>
       {isCustom ? (
         <Button
@@ -879,7 +880,7 @@ function EmailStudio({ ctx }: { ctx: SurfaceContext }) {
             void onDelete();
           }}
         >
-          <Trash2 className="size-4" aria-hidden />
+          <Icon glyph={faTrashCan} className="size-4" aria-hidden />
         </Button>
       ) : null}
 
@@ -912,7 +913,7 @@ function EmailStudio({ ctx }: { ctx: SurfaceContext }) {
             void onCustomize();
           }}
         >
-          <SplitSquareHorizontal className="size-4" aria-hidden />
+          <Icon glyph={faTableColumns} className="size-4" aria-hidden />
           <span className="hidden @lg:inline">Customize for this site</span>
         </Button>
       ) : null}
@@ -935,7 +936,7 @@ function EmailStudio({ ctx }: { ctx: SurfaceContext }) {
               setHistoryOpen(true);
             }}
           >
-            <History className="size-4" aria-hidden />
+            <Icon glyph={faClockRotateLeft} className="size-4" aria-hidden />
             <span className="hidden @lg:inline">History</span>
           </Button>
         ) : null}
@@ -949,7 +950,7 @@ function EmailStudio({ ctx }: { ctx: SurfaceContext }) {
             void onPreview();
           }}
         >
-          <Eye className="size-4" aria-hidden />
+          <Icon glyph={faEye} className="size-4" aria-hidden />
           <span className="hidden @md:inline">Preview</span>
         </Button>
         <Button
@@ -962,7 +963,7 @@ function EmailStudio({ ctx }: { ctx: SurfaceContext }) {
             void onPublish();
           }}
         >
-          <Upload className="size-4" aria-hidden />
+          <Icon glyph={faUpload} className="size-4" aria-hidden />
           <span className="hidden @md:inline">Publish</span>
         </Button>
         <Button
@@ -974,7 +975,7 @@ function EmailStudio({ ctx }: { ctx: SurfaceContext }) {
             void onSave();
           }}
         >
-          <Save className="size-4" aria-hidden />
+          <Icon glyph={faFloppyDisk} className="size-4" aria-hidden />
           {dirty ? 'Save' : 'Saved'}
         </Button>
       </div>
@@ -1037,7 +1038,7 @@ function MergeTagsMenu() {
       <Popover>
         <PopoverTrigger>
           <Button size="sm" variant="outline" color="neutral">
-            <Tags className="size-4" aria-hidden />
+            <Icon glyph={faTags} className="size-4" aria-hidden />
             <span className="hidden @md:inline">Merge tags</span>
           </Button>
         </PopoverTrigger>
@@ -1103,9 +1104,9 @@ function MergeTagItem({ tag }: { tag: MergeTag }) {
           {tag.sample ? <span className="text-xs">e.g. {tag.sample}</span> : null}
         </span>
         {copied ? (
-          <Check className="size-4 shrink-0" aria-hidden />
+          <Icon glyph={faCheck} className="size-4 shrink-0" aria-hidden />
         ) : (
-          <Copy className="size-4 shrink-0" aria-hidden />
+          <Icon glyph={faCopy} className="size-4 shrink-0" aria-hidden />
         )}
       </button>
     </li>
@@ -1155,7 +1156,7 @@ function TrackingMenu({
       <Popover>
         <PopoverTrigger>
           <Button size="sm" variant="outline" color="neutral">
-            <MousePointerClick className="size-4" aria-hidden />
+            <Icon glyph={faArrowPointer} className="size-4" aria-hidden />
             <span className="hidden @md:inline">Tracking</span>
           </Button>
         </PopoverTrigger>
@@ -1218,9 +1219,13 @@ function CheckRow({ check }: { check: EmailCheck }) {
   return (
     <li className="flex items-start gap-2">
       {check.level === 'pass' ? (
-        <Check className={`mt-0.5 size-4 shrink-0 ${tone}`} aria-hidden />
+        <Icon glyph={faCheck} className={`mt-0.5 size-4 shrink-0 ${tone}`} aria-hidden />
       ) : (
-        <AlertTriangle className={`mt-0.5 size-4 shrink-0 ${tone}`} aria-hidden />
+        <Icon
+          glyph={faExclamationTriangle}
+          className={`mt-0.5 size-4 shrink-0 ${tone}`}
+          aria-hidden
+        />
       )}
       <span className="flex min-w-0 flex-col">
         <span className="font-medium">{check.title}</span>
@@ -1260,7 +1265,8 @@ function PreviewChecks({ checks }: { checks: EmailCheck[] }) {
           {badgeLabel}
         </Badge>
         <span className="min-w-0 flex-1 truncate font-medium">{summary}</span>
-        <ChevronDown
+        <Icon
+          glyph={faChevronDown}
           className={`size-4 shrink-0 transition-transform ${open ? 'rotate-180' : ''}`}
           aria-hidden
         />
@@ -1348,7 +1354,7 @@ function PreviewDialog({
             <DialogTitle>Preview &amp; check</DialogTitle>
             <DialogClose>
               <Button size="sm" variant="ghost" color="neutral" shape="square" aria-label="Close">
-                <X className="size-4" aria-hidden />
+                <Icon glyph={faXmark} className="size-4" aria-hidden />
               </Button>
             </DialogClose>
           </div>
@@ -1381,12 +1387,12 @@ function PreviewDialog({
                       {
                         value: 'light',
                         label: 'Light',
-                        icon: <Sun className="size-4" aria-hidden />,
+                        icon: <Icon glyph={faSun} className="size-4" aria-hidden />,
                       },
                       {
                         value: 'dark',
                         label: 'Dark',
-                        icon: <Moon className="size-4" aria-hidden />,
+                        icon: <Icon glyph={faMoon} className="size-4" aria-hidden />,
                       },
                     ]}
                   />
@@ -1398,12 +1404,12 @@ function PreviewDialog({
                     {
                       value: 'desktop',
                       label: 'Desktop',
-                      icon: <Monitor className="size-4" aria-hidden />,
+                      icon: <Icon glyph={faDesktop} className="size-4" aria-hidden />,
                     },
                     {
                       value: 'mobile',
                       label: 'Mobile',
-                      icon: <Smartphone className="size-4" aria-hidden />,
+                      icon: <Icon glyph={faMobile} className="size-4" aria-hidden />,
                     },
                   ]}
                 />
@@ -1469,7 +1475,7 @@ function HistoryDialog({
             </div>
             <DialogClose>
               <Button size="sm" variant="ghost" color="neutral" shape="square" aria-label="Close">
-                <X className="size-4" aria-hidden />
+                <Icon glyph={faXmark} className="size-4" aria-hidden />
               </Button>
             </DialogClose>
           </div>
@@ -1510,7 +1516,7 @@ function HistoryDialog({
                           onRestore(v);
                         }}
                       >
-                        <RotateCcw className="size-4" aria-hidden />
+                        <Icon glyph={faRotate} className="size-4" aria-hidden />
                         Restore
                       </Button>
                     )}

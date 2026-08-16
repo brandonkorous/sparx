@@ -9,7 +9,8 @@
 // not decoration, so the tint rides the icon rather than washing the whole card.
 
 import { Button, Card, EmptyState, Heading, Text } from '@wizeworks/silicaui-react';
-import { LayoutDashboard, ServerCrash } from 'lucide-react';
+import { faGauge, faServer } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import {
@@ -48,7 +49,7 @@ function DashboardRow({
         onClick={(event) => onOpen(dashboard.id, event)}
       >
         <Card className="flex items-start gap-3 p-4">
-          <LayoutDashboard className="text-module mt-0.5 size-5 shrink-0" aria-hidden />
+          <Icon glyph={faGauge} className="text-module mt-0.5 size-5 shrink-0" aria-hidden />
           <div className="flex min-w-0 flex-col gap-0.5">
             <span className="font-medium">{dashboard.title}</span>
             <Text className="text-sm">{dashboard.description}</Text>
@@ -69,7 +70,7 @@ export function DashboardsListSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar label="Dashboards">
-        <LayoutDashboard className="size-4 shrink-0" aria-hidden />
+        <Icon glyph={faGauge} className="size-4 shrink-0" aria-hidden />
         <Heading level={2} className="min-w-0 truncate text-base font-semibold">
           Dashboards
         </Heading>
@@ -86,7 +87,7 @@ export function DashboardsListSurface({ ctx }: { ctx: SurfaceContext }) {
         <div className="mx-auto flex w-full max-w-2xl flex-col gap-3">
           {dashboards.isError ? (
             <EmptyState
-              icon={<ServerCrash className="size-6" aria-hidden />}
+              icon={<Icon glyph={faServer} className="size-6" aria-hidden />}
               title="Could not load your dashboards"
               description={analyticsErrorMessage(
                 dashboards.error,
@@ -104,7 +105,7 @@ export function DashboardsListSurface({ ctx }: { ctx: SurfaceContext }) {
             </Text>
           ) : (dashboards.data ?? []).length === 0 ? (
             <EmptyState
-              icon={<LayoutDashboard className="size-6" aria-hidden />}
+              icon={<Icon glyph={faGauge} className="size-6" aria-hidden />}
               title="No dashboards yet"
               description={productCopy(
                 'analytics.dashboards.firstRun',

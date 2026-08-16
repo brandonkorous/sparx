@@ -16,21 +16,31 @@
 // surface registry (lib/console/nav.ts), so an app cannot exist without being
 // reachable and a surface cannot exist without living somewhere.
 //
-// ── WHY THERE ARE NO GROUP HEADINGS ─────────────────────────────────────────
+// ── WHAT COMES FIRST ────────────────────────────────────────────────────────
 //
-// The apps come in six colour groups and the groups are NOT labelled. That is a
-// decision, not an omission: the hue is the grouping, and Piggles' whole
-// six-colour system exists so that Sell and Stock reading as one family needs no
-// word above them. A heading here would be an explanation of something already
-// on the screen — and half of them ("Home", over one row) would be an eyebrow.
-// The groups still get their own SidebarGroup, so the spacing does the rest.
+// Yours, then the product. What somebody opens on an ordinary day is about five
+// screens — and those five used to sit UNDER fifteen app rows they never chose.
+// Favourites lead (theirs, and they stay put), then five recents at most, then
+// the apps themselves in folding named families (./rail/app-groups.tsx).
+//
+// The groups only earned headings once favourites and recent moved above them:
+// the rail got longer, and folding is what pays for that. A one-app group still
+// renders bare, because a heading over a single row is an eyebrow.
 //
 // Selecting an app BROWSES it — see ./app-panel.tsx. It never changes what is
 // open, because in a workbench there is no single "current" place to switch away
 // from; a person can have panes from five apps on screen at once.
 
 import { useEffect, useState } from 'react';
-import { Grid2x2Plus, LayoutGrid, PanelLeftIcon, Trash2, X } from 'lucide-react';
+import {
+  faGrid,
+  faGrid2Plus,
+  faLeft,
+  faRight,
+  faTrashCan,
+  faXmark,
+} from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import {
   Button,
   Dialog,
@@ -50,7 +60,6 @@ import {
   FieldControl,
   FieldDescription,
   FieldLabel,
-  Badge,
   Sidebar,
   SidebarContent,
   SidebarFooter,
@@ -62,14 +71,13 @@ import {
   useToast,
 } from '@wizeworks/silicaui-react';
 import { Mark } from '@piggles/brand/react';
-import { PIGGLES_GROUPS, type PigglesGroup } from '@piggles/brand';
 import { useConfirm } from '@/lib/confirm';
 import { afterMenuClose, deferTick } from '@/lib/defer';
 import { useClearRecents, useFavorites, useRecents, useToggleFavorite } from '@/lib/api/shell-data';
 import { useBill } from '@/surfaces/finance/bill-data';
 import { getSurface, resolveTitle, type SurfaceDefinition } from '@/lib/surfaces/registry';
 import {
-  moduleIsVisible,
+  surfaceIsVisible,
   useKnownModules,
   useReachableModules,
 } from '@/lib/surfaces/use-visible-nav';
@@ -83,11 +91,16 @@ import {
   type NamedWorkspace,
 } from '@/lib/workbench/persistence';
 import { clearModeLayouts } from '@/lib/mode-layouts';
-import { useAttention, type AttentionKey } from '@/lib/console/home-data';
+import { useAttention } from '@/lib/console/home-data';
 import { ModuleScope } from '@/components/module-scope';
 import { AllAppsDialog } from './all-apps-dialog';
 import { AppScope } from './app-scope';
+import { AppGroups } from './rail/app-groups';
 import type { ConsoleNavApp } from '@/lib/console/nav';
+
+/** Recents shown on the rail. They sit above the apps now, so an unbounded list
+ *  would push the product itself off the screen — five is a glance, not a log. */
+const RECENT_ON_RAIL = 5;
 
 interface AppRailProps {
   nav: ConsoleNavApp[];
@@ -132,10 +145,15 @@ export function AppRail({
   // show two different numbers for the same thing.
   const attention = useAttention();
 
+  // The SHARED gate, not a second copy of it. This used to test `listed` and the
+  // module by hand and never asked `productHidesSurface`, so a surface Piggles
+  // does not have could still reach the rail by being favourited or simply opened
+  // once — which is how "Modules" came to sit under Recent on a product with no
+  // module pricing. One gate, and the launcher and rail cannot drift again.
   const resolveVisible = (actionId: string): SurfaceDefinition | null => {
     const definition = getSurface(actionId);
     if (!definition || definition.listed === false) return null;
-    if (!moduleIsVisible(definition.module, reachable, known)) return null;
+    if (!surfaceIsVisible(definition, reachable, known)) return null;
     return definition;
   };
 
@@ -143,8 +161,8 @@ export function AppRail({
     .map((favorite) => resolveVisible(favorite.actionId))
     .filter((definition): definition is SurfaceDefinition => definition !== null);
 
-  // A starred surface is already pinned above; showing it again under Recent is
-  // noise, so recents exclude anything already starred.
+  // A favourite is already pinned above; showing it again under Recent is
+  // noise, so recents exclude anything already favourited.
   const favoriteKeys = new Set(favoriteSurfaces.map((definition) => definition.key));
   const recentSurfaces = (recents ?? [])
     .map((recent) => resolveVisible(recent.actionId))
@@ -221,14 +239,6 @@ export function AppRail({
     window.location.reload();
   };
 
-  // Grouped for spacing only — see the header on why there are no labels. The
-  // group ORDER comes from @piggles/brand rather than from first appearance, so
-  // reordering the registry cannot silently reshuffle the rail's families.
-  const byGroup: { group: PigglesGroup; apps: ConsoleNavApp[] }[] = PIGGLES_GROUPS.map((group) => ({
-    group,
-    apps: nav.filter((entry) => entry.group === group),
-  })).filter((section) => section.apps.length > 0);
-
   return (
     // The OUTER scope drives the ACTIVE item's accent. `.sidebar-module` declares
     // its accent on the <aside> itself, and a custom property is dereferenced
@@ -249,61 +259,20 @@ export function AppRail({
       >
         {/* Padding tracks the width: the stock 0.75rem would leave a 48px rail
             with 24px of usable row. */}
+        {/* ── ORDER: yours, then the apps ──────────────────────────────────
+            What somebody actually opens every day is five screens, not fifteen
+            apps, and those five used to sit BELOW fifteen rows they did not
+            choose. Favourites are theirs and stay put; recent is theirs and moves;
+            the apps are the whole product, folded into named families beneath
+            both. Everything not on this rail is behind All apps in the footer. */}
         <SidebarContent className={expanded ? 'pt-2' : 'px-1.5 pt-2'}>
-          {byGroup.map((section) => (
-            <SidebarGroup key={section.group}>
-              {section.apps.map((entry) => (
-                <AppScope key={entry.app.id} app={entry.app.id}>
-                  <Tooltip content={entry.app.purpose} side="right">
-                    <SidebarItem
-                      // A stable handle for the first-run walkthrough, which
-                      // highlights each app's rail icon and must survive a
-                      // restyle.
-                      data-tour={`app-${entry.app.id}`}
-                      // `text-module` inside this item's own scope is what makes
-                      // the rail a colour-coded switcher — Sell burnt orange,
-                      // Customers teal. Active or not: the hue IS the app's
-                      // identity, not a selection state.
-                      icon={<entry.icon className="text-module size-5" aria-hidden />}
-                      // A collapsed Sidebar hides the label visually AND removes
-                      // it from the accessibility tree, so every row needs an
-                      // explicit name — otherwise the whole primary navigation is
-                      // announced as a column of unlabelled buttons.
-                      aria-label={entry.label}
-                      active={browsing === entry.app.id}
-                      // `aria-current` marks what is being BROWSED. Not
-                      // aria-pressed: this is a navigation position, not a toggle.
-                      aria-current={browsing === entry.app.id ? 'true' : undefined}
-                      onClick={() => {
-                        onBrowse(entry.app.id);
-                      }}
-                      // The count of things WAITING in this app — the same five
-                      // server counts Home shows, so the rail and Home can never
-                      // disagree (react-query dedupes them to one request each).
-                      //
-                      // Only ever a real, measured number. A count that is
-                      // loading, failed, unmeasured, or zero renders NOTHING:
-                      // a badge is a claim that something needs doing, and the
-                      // only honest states for it are "n waiting" and silence.
-                      // Zero especially — a grey 0 on every row is noise that
-                      // trains people to stop reading the ones that matter.
-                      trailing={<WaitingBadge appId={entry.app.id} attention={attention} />}
-                    >
-                      {entry.label}
-                    </SidebarItem>
-                  </Tooltip>
-                </AppScope>
-              ))}
-            </SidebarGroup>
-          ))}
-
-          {/* Starred — the person's curated shortcuts. Starred from the topbar
+          {/* Favourites — the person's curated shortcuts. Added from the topbar
               (the focused pane) or removed here; either way this group only
-              appears once something is in it, so somebody who has starred
+              appears once something is in it, so somebody who has favourited
               nothing never sees an empty heading. */}
           {favoriteSurfaces.length > 0 && (
             <SidebarGroup>
-              <SidebarGroupLabel>Starred</SidebarGroupLabel>
+              <SidebarGroupLabel>Favourites</SidebarGroupLabel>
               {favoriteSurfaces.map((definition) => (
                 <SurfaceRow
                   key={definition.key}
@@ -312,7 +281,7 @@ export function AppRail({
                   onOpen={() => {
                     controller.open(definition.key);
                   }}
-                  removeLabel={`Remove ${resolveTitle(definition, {})} from starred`}
+                  removeLabel={`Remove ${resolveTitle(definition, {})} from favourites`}
                   onRemove={() => {
                     toggleFavorite.mutate({ actionId: definition.key, favorited: true });
                   }}
@@ -321,8 +290,10 @@ export function AppRail({
             </SidebarGroup>
           )}
 
-          {/* Recent — automatic history, newest first. No per-row remove: a
-              recent is ephemeral by nature and rolls over on its own, so the only
+          {/* Recent — automatic history, newest first, FIVE at most. It sits
+              above the apps now, and an unbounded list there would push the
+              product itself off the screen; five is a glance, not a log. No
+              per-row remove: a recent rolls over on its own, so the only
               management it earns is clearing the lot, which rides the label to
               keep it out of the launch path. */}
           {recentSurfaces.length > 0 && (
@@ -331,7 +302,7 @@ export function AppRail({
                 <span className="flex w-full items-center justify-between gap-2">
                   Recent
                   <Button
-                    color="neutral"
+                    color="danger"
                     variant="ghost"
                     size="xs"
                     disabled={clearRecents.isPending}
@@ -343,7 +314,7 @@ export function AppRail({
                   </Button>
                 </span>
               </SidebarGroupLabel>
-              {recentSurfaces.map((definition) => (
+              {recentSurfaces.slice(0, RECENT_ON_RAIL).map((definition) => (
                 <SurfaceRow
                   key={definition.key}
                   definition={definition}
@@ -355,6 +326,18 @@ export function AppRail({
               ))}
             </SidebarGroup>
           )}
+
+          {/* Counts come from the same five server queries Home reads, so the
+              rail and Home can never disagree (react-query dedupes them to one
+              request each). What they MEAN, and the rollup onto each group
+              heading, lives in ./rail/waiting.tsx. */}
+          <AppGroups
+            nav={nav}
+            browsing={browsing}
+            expanded={expanded}
+            attention={attention}
+            onBrowse={onBrowse}
+          />
         </SidebarContent>
 
         <SidebarFooter className={expanded ? undefined : 'px-1.5'}>
@@ -372,7 +355,7 @@ export function AppRail({
               becomes a paywall nobody can find the far side of. */}
           <Tooltip content="Everything else Piggles does" side="right" disabled={expanded}>
             <SidebarItem
-              icon={<Grid2x2Plus className="size-5" aria-hidden />}
+              icon={<Icon glyph={faGrid2Plus} className="size-5" aria-hidden />}
               aria-label="All apps"
               onClick={() => {
                 setAllAppsOpen(true);
@@ -386,7 +369,7 @@ export function AppRail({
             <Tooltip content="Saved layouts" side="right" disabled={expanded}>
               <DropdownMenuTrigger>
                 <SidebarItem
-                  icon={<LayoutGrid className="size-5" aria-hidden />}
+                  icon={<Icon glyph={faGrid} className="size-5" aria-hidden />}
                   aria-label="Saved layouts"
                 >
                   Layouts
@@ -413,7 +396,7 @@ export function AppRail({
                         {/* Delete rides inside the row. stopPropagation keeps
                             the row's restore from firing on the same click. */}
                         <Button
-                          color="neutral"
+                          color="danger"
                           variant="ghost"
                           size="xs"
                           shape="square"
@@ -423,7 +406,7 @@ export function AppRail({
                             void removeWorkspace(workspace);
                           }}
                         >
-                          <Trash2 className="size-3.5" aria-hidden />
+                          <Icon glyph={faTrashCan} className="size-3.5" aria-hidden />
                         </Button>
                       </span>
                     </DropdownMenuItem>
@@ -458,9 +441,13 @@ export function AppRail({
               every other row — so this reads as part of the rail rather than a
               loose control bolted underneath. It drives the same SidebarProvider
               the shell owns, so the choice persists. */}
-          <Tooltip content="Collapse to icons" side="right" disabled={expanded}>
+          {/* The tooltip is disabled while expanded, so it only ever appears on
+              the collapsed rail — where the action is Expand, not Collapse. */}
+          <Tooltip content="Expand the app rail" side="right" disabled={expanded}>
             <SidebarItem
-              icon={<PanelLeftIcon className="size-5" aria-hidden />}
+              // The arrow points where the rail is going, so the control shows
+              // its next state rather than its current one.
+              icon={<Icon glyph={expanded ? faLeft : faRight} className="size-5" aria-hidden />}
               aria-label={expanded ? 'Collapse the app rail' : 'Expand the app rail'}
               aria-expanded={expanded}
               onClick={() => {
@@ -498,27 +485,24 @@ export function AppRail({
 }
 
 /**
- * The plan card at the foot of the rail.
+ * A WARNING, when the business is about to stop working. Never a plan card.
  *
- * ── WHY THE CONSOLE SHOWS THIS AT ALL ───────────────────────────────────────
+ * ── THE LINE THIS DRAWS ─────────────────────────────────────────────────────
  *
- * Every Piggles business starts on a trial, and until now the console said
- * nothing about it — so a trial ended by the lights going out, with the person
- * sitting in the app that stopped working and no explanation anywhere in it.
- * That was a known gap; this closes it.
+ * Account management — the plan, the renewal date, payment methods, invoices,
+ * capacity — belongs to getpiggles.com and never appears here
+ * (piggles/CLAUDE.md, "The three surfaces"). This used to sit in the rail
+ * permanently saying "Business plan · Renews 12 Jul", which is exactly that: a
+ * standing account-management fixture in the operating workspace.
  *
- * ── AND WHY IT STILL OBEYS "THE CONSOLE NEVER KNOWS A PRICE" ────────────────
+ * What survives is the half that is operational rather than commercial. A trial
+ * running out or a site already dark is something happening TO the workspace,
+ * and the alternative to saying so is a trial that ends by the lights going out
+ * with no explanation anywhere in the app. So: nothing at all while the account
+ * is healthy, a warning when it is not, and the only action is a door OUT to the
+ * app that owns the conversation.
  *
- * RULE #2 is not "never mention billing", it is that billing LOGIC and prices
- * live in the account service. This card names the plan and says when it renews.
- * It computes nothing, it shows no amount, and its only action is a link OUT to
- * getpiggles, which owns the whole of that conversation. If a number with a
- * currency symbol ever appears in this component, the rule has been broken.
- *
- * The lifecycle STATE is what earns the colour: a live subscription is a calm
- * neutral fact, a trial running out is a warning, and an expired one is a
- * danger — resolved through the same semantic axis every status badge uses, so
- * it reads the way the rest of the product reads.
+ * A door is not management. A number with a currency symbol in here would be.
  */
 function PlanCard({ accountOrigin }: { accountOrigin: string }) {
   const { data: bill } = useBill();
@@ -540,36 +524,24 @@ function PlanCard({ accountOrigin }: { accountOrigin: string }) {
   // returns only this, so the console cannot fetch an amount even by accident.
   // Until that exists, the discipline is the destructure below: read `billing`,
   // never `bill` itself.
-  const { phase, daysLeft, trialEndsAt } = bill.billing;
+  const { phase, daysLeft } = bill.billing;
   const days = daysLeft ?? 0;
 
+  // A healthy account has nothing to say here. Standing billing furniture in the
+  // rail is account management, and account management lives at getpiggles.
+  if (phase !== 'trialing' && phase !== 'grace' && phase !== 'suspended') return null;
+
   const tone: 'neutral' | 'warning' | 'danger' =
-    phase === 'suspended'
-      ? 'danger'
-      : phase === 'grace' || (phase === 'trialing' && days <= 3)
-        ? 'warning'
-        : 'neutral';
+    phase === 'suspended' ? 'danger' : phase === 'grace' || days <= 3 ? 'warning' : 'neutral';
 
-  const heading = phase === 'trialing' ? 'Free trial' : 'Business plan';
-
-  const renewal = trialEndsAt
-    ? new Date(trialEndsAt).toLocaleDateString(undefined, {
-        day: 'numeric',
-        month: 'short',
-        year: 'numeric',
-      })
-    : null;
+  const heading = phase === 'trialing' ? 'Free trial' : 'Action needed';
 
   const detail =
     phase === 'suspended'
       ? 'Your site is offline'
       : phase === 'grace'
         ? `Site stays live ${days} more day${days === 1 ? '' : 's'}`
-        : phase === 'trialing'
-          ? `${days} day${days === 1 ? '' : 's'} left`
-          : renewal
-            ? `Renews ${renewal}`
-            : 'Everything included';
+        : `${days} day${days === 1 ? '' : 's'} left`;
 
   return (
     <div
@@ -595,14 +567,14 @@ function PlanCard({ accountOrigin }: { accountOrigin: string }) {
           window.location.href = `${accountOrigin}/account`;
         }}
       >
-        {tone === 'neutral' ? 'View plan' : 'Keep my business running'}
+        {tone === 'neutral' ? 'Set up payment' : 'Keep my business running'}
       </Button>
     </div>
   );
 }
 
 /**
- * One starred or recent row. A launch shortcut, not a navigation position — it
+ * One favourite or recent row. A launch shortcut, not a navigation position — it
  * never carries an `active` state; clicking opens the surface where any other
  * open would land it.
  *
@@ -610,7 +582,7 @@ function PlanCard({ accountOrigin }: { accountOrigin: string }) {
  * own `ModuleScope`. That is deliberate: a shortcut list is mixed, and what a
  * person needs to see at a glance is which family each row belongs to. Under
  * Piggles the module resolves to the same six group hues the rail above uses, so
- * a starred Orders row is the same burnt orange as the Sell icon — one signal,
+ * a favourited Orders row is the same burnt orange as the Sell icon — one signal,
  * arrived at by two names.
  *
  * The remove control is an absolute SIBLING of the row, not silica's `trailing`
@@ -632,14 +604,14 @@ function SurfaceRow({
   onRemove?: () => void;
   removeLabel?: string;
 }) {
-  const Icon = definition.icon;
+  const glyph = definition.icon;
   const title = resolveTitle(definition, {});
   return (
     <ModuleScope module={definition.module}>
       <div className="group relative">
         <Tooltip content={title} side="right" disabled={expanded}>
           <SidebarItem
-            icon={<Icon className="text-module size-5" aria-hidden />}
+            icon={<Icon glyph={glyph} className="text-module size-5" aria-hidden />}
             aria-label={title}
             onClick={onOpen}
           >
@@ -648,7 +620,7 @@ function SurfaceRow({
         </Tooltip>
         {onRemove && expanded && (
           <Button
-            color="neutral"
+            color="primary"
             variant="ghost"
             size="xs"
             shape="square"
@@ -662,7 +634,7 @@ function SurfaceRow({
               onRemove();
             }}
           >
-            <X className="size-3.5" aria-hidden />
+            <Icon glyph={faXmark} className="size-3.5" aria-hidden />
           </Button>
         )}
       </div>
@@ -720,7 +692,7 @@ function SaveLayoutDialog({
         </Field>
         <DialogFooter>
           <DialogClose>
-            <Button color="neutral" variant="ghost" size="sm">
+            <Button color="primary" variant="ghost" size="sm">
               Cancel
             </Button>
           </DialogClose>
@@ -730,58 +702,5 @@ function SaveLayoutDialog({
         </DialogFooter>
       </DialogContent>
     </Dialog>
-  );
-}
-
-/**
- * The count of things waiting in one app, or nothing at all.
- *
- * ── WHY MOST STATES RENDER NOTHING ──────────────────────────────────────────
- *
- * A badge on a nav row is a claim that something needs doing, and there are only
- * two honest things it can say: "n waiting" or silence. Every other state is
- * silence:
- *
- *   loading    a skeleton in a 20px slot is a flicker, not information
- *   error      a red pip on the rail reports a failed COUNT as a business
- *              problem, which is a lie about the thing it is attached to
- *   unknown    no number was measured, so there is no number to show
- *   zero       nothing is waiting — and a grey 0 on every row is noise that
- *              trains people to stop reading the rows that do have something
- *
- * The zero case is the one worth being firm about. A rail where five of fifteen
- * rows permanently wear a "0" has fifteen things competing for attention and
- * nothing standing out, which is the exact opposite of what a badge is for.
- *
- * Only five apps map to a count. The rest never badge, because nothing behind
- * them is a queue — "Get found" has no inbox.
- */
-const APP_COUNTS: Record<string, AttentionKey> = {
-  sell: 'orders',
-  bookings: 'bookings',
-  messages: 'messages',
-  invoices: 'invoices',
-  stock: 'stock',
-};
-
-function WaitingBadge({
-  appId,
-  attention,
-}: {
-  appId: string;
-  attention: ReturnType<typeof useAttention>;
-}) {
-  const key = APP_COUNTS[appId];
-  if (!key) return null;
-  const count = attention[key];
-  if (count.state !== 'ready' || !count.value) return null;
-
-  return (
-    // The app's own hue, matching the icon beside it and the tile on Home, so
-    // one glance ties all three together. `soft` because a solid pill on a nav
-    // row competes with the row's own selected state.
-    <Badge color="module" variant="soft" size="sm">
-      {count.value > 99 ? '99+' : count.value}
-    </Badge>
   );
 }

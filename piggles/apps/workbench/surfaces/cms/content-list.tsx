@@ -30,7 +30,8 @@ import {
   Table,
   Text,
 } from '@wizeworks/silicaui-react';
-import { FileText, Plus } from 'lucide-react';
+import { faFileText, faPlus } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { ListEmptyState } from '../../components/list-empty-state';
@@ -206,7 +207,7 @@ export function ContentListSurface({ ctx }: { ctx: SurfaceContext }) {
           title="Write something new — hold Shift to open alongside, Alt for a new window"
           onClick={create}
         >
-          <Plus className="size-4" aria-hidden />
+          <Icon glyph={faPlus} className="size-4" aria-hidden />
           <span className="hidden @2xl:inline">New</span>
         </Button>
 
@@ -246,7 +247,7 @@ export function ContentListSurface({ ctx }: { ctx: SurfaceContext }) {
           // A failed load REPLACES the table — "nothing written yet" over a
           // connection failure is a lie about their work, and the worst one to tell.
           <EmptyState
-            icon={<FileText className="size-6" aria-hidden />}
+            icon={<Icon glyph={faFileText} className="size-6" aria-hidden />}
             title="Could not load your content"
             description="This is a problem reaching the server. Nothing you have written is affected — none of it has been lost."
             actions={
@@ -267,7 +268,7 @@ export function ContentListSurface({ ctx }: { ctx: SurfaceContext }) {
           <ListEmptyState
             filtered={narrowed}
             noResults={{
-              icon: <FileText className="size-6" aria-hidden />,
+              icon: <Icon glyph={faFileText} className="size-6" aria-hidden />,
               title: 'Nothing matches that',
               description: emptyAdvice(
                 search.trim(),
@@ -287,7 +288,7 @@ export function ContentListSurface({ ctx }: { ctx: SurfaceContext }) {
                     create({ shiftKey: false, altKey: false });
                   }}
                 >
-                  <Plus className="size-4" aria-hidden />
+                  <Icon glyph={faPlus} className="size-4" aria-hidden />
                   Write something
                 </Button>
               ),

@@ -41,7 +41,15 @@ import {
   Text,
   Tooltip,
 } from '@wizeworks/silicaui-react';
-import { Box, Package, PackageCheck, Plus, Printer, ScanLine, Truck } from 'lucide-react';
+import {
+  faBarcodeRead,
+  faBox,
+  faBoxCheck,
+  faPlus,
+  faPrint,
+  faTruck,
+} from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { useConfirm } from '../../lib/confirm';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
@@ -93,7 +101,7 @@ export function PackBenchSurface({ ctx }: { ctx: SurfaceContext }) {
     return (
       <div className={PANE_SHELL}>
         <EmptyState
-          icon={<Box className="size-6" aria-hidden />}
+          icon={<Icon glyph={faBox} className="size-6" aria-hidden />}
           title="Pick an order to pack"
           description="Open the pack bench from a finished walk or from an order, and it knows what is meant to be in the box."
         />
@@ -106,7 +114,7 @@ export function PackBenchSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar label="Pack bench controls">
-        <PackageCheck className="size-4" aria-hidden />
+        <Icon glyph={faBoxCheck} className="size-4" aria-hidden />
         <span className="text-sm">
           {plural(
             (boxes.data?.items ?? []).filter((b) => b.status !== 'cancelled').length,
@@ -136,7 +144,7 @@ export function PackBenchSurface({ ctx }: { ctx: SurfaceContext }) {
             })();
           }}
         >
-          <Plus className="size-4" aria-hidden />
+          <Icon glyph={faPlus} className="size-4" aria-hidden />
           <span className="hidden @md:inline">Another box</span>
         </Button>
 
@@ -182,7 +190,7 @@ export function PackBenchSurface({ ctx }: { ctx: SurfaceContext }) {
                     })();
                   }}
                 >
-                  <Box className="size-4" aria-hidden />
+                  <Icon glyph={faBox} className="size-4" aria-hidden />
                   Start a box
                 </Button>
               </AlertActions>
@@ -195,7 +203,7 @@ export function PackBenchSurface({ ctx }: { ctx: SurfaceContext }) {
         {sealed.length > 0 ? (
           <Card>
             <div className="border-base-300 flex items-center gap-2 border-b p-3">
-              <Truck className="size-4" aria-hidden />
+              <Icon glyph={faTruck} className="size-4" aria-hidden />
               <span className="font-medium">{plural(sealed.length, 'box', 'boxes')} sealed</span>
             </div>
             <Table size="sm">
@@ -231,7 +239,7 @@ export function PackBenchSurface({ ctx }: { ctx: SurfaceContext }) {
                             void openPackingSlip(box.id);
                           }}
                         >
-                          <Printer className="size-4" aria-hidden />
+                          <Icon glyph={faPrint} className="size-4" aria-hidden />
                         </Button>
                       </Tooltip>
                     </td>
@@ -314,7 +322,7 @@ function ActiveBox({ packageId, ctx }: { packageId: string; ctx: SurfaceContext 
     <div className="flex flex-col gap-3">
       <Card>
         <div className="border-base-300 flex flex-wrap items-center gap-3 border-b p-3">
-          <Package className="size-4" aria-hidden />
+          <Icon glyph={faBox} className="size-4" aria-hidden />
           <span className="font-mono font-semibold">{box.number}</span>
           <Badge color={state.tone} variant="soft" size="sm">
             {state.label}
@@ -322,7 +330,7 @@ function ActiveBox({ packageId, ctx }: { packageId: string; ctx: SurfaceContext 
           <span className="text-sm">for {box.orderNumber}</span>
           {box.scannedCount > 0 && box.scannedCount === box.unitCount ? (
             <Badge color="success" variant="soft" size="sm">
-              <ScanLine className="size-3" aria-hidden />
+              <Icon glyph={faBarcodeRead} className="size-3" aria-hidden />
               Every unit scanned
             </Badge>
           ) : null}
@@ -350,7 +358,7 @@ function ActiveBox({ packageId, ctx }: { packageId: string; ctx: SurfaceContext 
         </div>
         {box.lines.length === 0 ? (
           <EmptyState
-            icon={<Box className="size-6" aria-hidden />}
+            icon={<Icon glyph={faBox} className="size-6" aria-hidden />}
             title="Empty so far"
             description="Scan the first item, or type a quantity against a line below."
           />
@@ -404,7 +412,7 @@ function ActiveBox({ packageId, ctx }: { packageId: string; ctx: SurfaceContext 
                   <td className="hidden text-right whitespace-nowrap @lg:table-cell">
                     {line.scannedQuantity >= line.quantity ? (
                       <Badge color="success" variant="soft" size="sm">
-                        <ScanLine className="size-3" aria-hidden />
+                        <Icon glyph={faBarcodeRead} className="size-3" aria-hidden />
                         {line.scannedQuantity}
                       </Badge>
                     ) : (
@@ -483,7 +491,7 @@ function ActiveBox({ packageId, ctx }: { packageId: string; ctx: SurfaceContext 
               disabled={close.isPending || fulfill.isPending || box.unitCount === 0}
               onClick={sealAndShip}
             >
-              <Truck className="size-4" aria-hidden />
+              <Icon glyph={faTruck} className="size-4" aria-hidden />
               Seal and hand to shipping
             </Button>
 
@@ -558,7 +566,7 @@ function SealedActions({
                 })();
               }}
             >
-              <Truck className="size-4" aria-hidden />
+              <Icon glyph={faTruck} className="size-4" aria-hidden />
               Hand to shipping
             </Button>
           )}
@@ -569,7 +577,7 @@ function SealedActions({
               void openPackingSlip(box.id);
             }}
           >
-            <Printer className="size-4" aria-hidden />
+            <Icon glyph={faPrint} className="size-4" aria-hidden />
             Packing slip
           </Button>
           <Button

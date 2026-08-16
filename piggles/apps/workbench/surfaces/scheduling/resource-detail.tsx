@@ -37,7 +37,8 @@ import {
   useToast,
 } from '@wizeworks/silicaui-react';
 import { useConfirm } from '../../lib/confirm';
-import { Save, Trash2, Users } from 'lucide-react';
+import { faFloppyDisk, faTrashCan, faUsers } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { FormSection } from '../../components/form-section';
 import { SiteScopeField } from '../../components/site-scope-field';
@@ -295,7 +296,7 @@ function ResourceEditor({
           loading={busy}
           onClick={submit}
         >
-          <Save className="size-4" aria-hidden />
+          <Icon glyph={faFloppyDisk} className="size-4" aria-hidden />
           {isNew ? 'Create' : 'Save'}
         </Button>
       </PaneToolbar>
@@ -305,7 +306,7 @@ function ResourceEditor({
           {existing ? (
             <div className="flex flex-col gap-1">
               <Heading level={1} className="flex min-w-0 items-center gap-2 text-2xl font-semibold">
-                <Users className="size-5 shrink-0" aria-hidden />
+                <Icon glyph={faUsers} className="size-5 shrink-0" aria-hidden />
                 <span className="min-w-0 break-words">{existing.name}</span>
               </Heading>
               <Text className="text-sm">{resourceKindLabel(existing.kind)}</Text>
@@ -595,7 +596,7 @@ function ResourceEditor({
                     void onRemove();
                   }}
                 >
-                  <Trash2 className="size-4" aria-hidden />
+                  <Icon glyph={faTrashCan} className="size-4" aria-hidden />
                   {remove.isPending ? 'Removing…' : 'Remove'}
                 </Button>
               </div>

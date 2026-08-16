@@ -25,7 +25,8 @@ import {
   Text,
   useToast,
 } from '@wizeworks/silicaui-react';
-import { KeyRound } from 'lucide-react';
+import { faKey } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import { FormSection } from '../../components/form-section';
 import { MIN_PASSWORD_LENGTH, useChangePassword } from './security-data';
@@ -205,7 +206,7 @@ export function PasswordCard() {
 
       <div className="flex justify-end">
         <Button color="module" size="sm" disabled={!anyTyped || change.isPending} onClick={submit}>
-          <KeyRound className="size-4" aria-hidden />
+          <Icon glyph={faKey} className="size-4" aria-hidden />
           {change.isPending ? 'Changing…' : 'Change password'}
         </Button>
       </div>

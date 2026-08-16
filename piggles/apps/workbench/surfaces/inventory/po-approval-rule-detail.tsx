@@ -38,7 +38,8 @@ import {
   Text,
   useToast,
 } from '@wizeworks/silicaui-react';
-import { Save, Trash2 } from 'lucide-react';
+import { faFloppyDisk, faTrashCan } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { FormSection } from '../../components/form-section';
 import { PANE_SHELL } from '../../components/pane-toolbar';
 import { useConfirm } from '../../lib/confirm';
@@ -397,7 +398,7 @@ export function PoApprovalRuleDetailSurface({ ctx }: { ctx: SurfaceContext }) {
             loading={create.isPending || update.isPending}
             onClick={onSave}
           >
-            <Save className="size-4" aria-hidden />
+            <Icon glyph={faFloppyDisk} className="size-4" aria-hidden />
             {isNew ? 'Set the limit' : 'Save changes'}
           </Button>
           {dirty ? <Text className="text-sm">You have unsaved changes.</Text> : null}
@@ -411,7 +412,7 @@ export function PoApprovalRuleDetailSurface({ ctx }: { ctx: SurfaceContext }) {
                 void onDelete();
               }}
             >
-              <Trash2 className="size-4" aria-hidden />
+              <Icon glyph={faTrashCan} className="size-4" aria-hidden />
               Remove
             </Button>
           ) : null}

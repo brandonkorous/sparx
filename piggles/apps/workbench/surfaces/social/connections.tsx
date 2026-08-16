@@ -31,7 +31,15 @@ import {
   Timestamp,
   useToast,
 } from '@wizeworks/silicaui-react';
-import { LineChart, Link2Off, Plug, Share2, ShieldCheck, Users } from 'lucide-react';
+import {
+  faChartLine,
+  faLinkSlash,
+  faPlug,
+  faShareNodes,
+  faShieldCheck,
+  faUsers,
+} from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { useConfirm } from '../../lib/confirm';
 import { PlatformMark } from '../../components/platform-mark';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
@@ -65,7 +73,7 @@ const COLUMN = 'mx-auto flex w-full max-w-3xl flex-col gap-4';
 
 /** The shape the callback page posts back through `window.opener`. */
 interface CallbackMessage {
-  source: 'sparx-social';
+  source: 'piggles-social';
   code?: string;
   state?: string;
   error?: string;
@@ -75,7 +83,7 @@ function isCallbackMessage(data: unknown): data is CallbackMessage {
   return (
     typeof data === 'object' &&
     data !== null &&
-    (data as { source?: unknown }).source === 'sparx-social'
+    (data as { source?: unknown }).source === 'piggles-social'
   );
 }
 
@@ -90,7 +98,7 @@ function Avatar({ url, size = 40 }: { url: string | null; size?: number }) {
         className={`bg-base-200 flex ${cls} shrink-0 items-center justify-center rounded-full`}
         aria-hidden
       >
-        <Users className="size-4" />
+        <Icon glyph={faUsers} className="size-4" />
       </span>
     );
   }
@@ -207,7 +215,7 @@ function ConnectionCard({
             loading={disconnecting}
             onClick={onDisconnect}
           >
-            <Link2Off className="size-4" aria-hidden />
+            <Icon glyph={faLinkSlash} className="size-4" aria-hidden />
             Disconnect
           </Button>
         ) : null}
@@ -279,7 +287,7 @@ function CatalogRow({
             loading={connecting}
             onClick={onConnect}
           >
-            <Plug className="size-4" aria-hidden />
+            <Icon glyph={faPlug} className="size-4" aria-hidden />
             Connect
           </Button>
         ) : (
@@ -495,7 +503,7 @@ export function SocialConnectionsSurface({ ctx }: { ctx: SurfaceContext }) {
     setConnectingPlatform(platform);
     // Open the popup synchronously in the click handler so the browser does not
     // treat it as an unsolicited pop-up; point it at the platform once resolved.
-    const popup = window.open('', 'sparx-social-connect', 'width=560,height=680');
+    const popup = window.open('', 'piggles-social-connect', 'width=560,height=680');
     const redirectUri = `${window.location.origin}/social/callback`;
     connectUrl.mutate(
       { platform, redirectUri },
@@ -594,7 +602,7 @@ export function SocialConnectionsSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar label="Connections controls">
-        <Share2 className="size-4 shrink-0" aria-hidden />
+        <Icon glyph={faShareNodes} className="size-4 shrink-0" aria-hidden />
         <Heading level={2} className="min-w-0 truncate text-base font-semibold">
           Connections
         </Heading>
@@ -617,7 +625,7 @@ export function SocialConnectionsSurface({ ctx }: { ctx: SurfaceContext }) {
         <div className={COLUMN}>
           {overview.isError ? (
             <EmptyState
-              icon={<Share2 className="size-6" aria-hidden />}
+              icon={<Icon glyph={faShareNodes} className="size-6" aria-hidden />}
               title="Could not load your connections"
               description={socialErrorMessage(
                 overview.error,
@@ -663,7 +671,7 @@ export function SocialConnectionsSurface({ ctx }: { ctx: SurfaceContext }) {
               <FormSection title="Before posts go live">
                 <div className="flex flex-wrap items-center justify-between gap-3">
                   <div className="flex min-w-0 flex-1 items-start gap-2">
-                    <ShieldCheck className="mt-0.5 size-5 shrink-0" aria-hidden />
+                    <Icon glyph={faShieldCheck} className="mt-0.5 size-5 shrink-0" aria-hidden />
                     <Text className="text-sm">
                       Posts need an admin&rsquo;s approval before they go live. This keeps anything
                       drafted — by a teammate or automatically — from reaching your real accounts
@@ -694,7 +702,7 @@ export function SocialConnectionsSurface({ ctx }: { ctx: SurfaceContext }) {
                     visible in the address a customer sees. */}
                 <div className="border-base-300 flex flex-wrap items-center justify-between gap-3 border-t pt-3">
                   <div className="flex min-w-0 flex-1 items-start gap-2">
-                    <LineChart className="mt-0.5 size-5 shrink-0" aria-hidden />
+                    <Icon glyph={faChartLine} className="mt-0.5 size-5 shrink-0" aria-hidden />
                     <Text className="text-sm">
                       Add tracking to links in your posts, so the visits and sales they bring show
                       up in your reports alongside every other way people find you. It adds a short
@@ -725,7 +733,7 @@ export function SocialConnectionsSurface({ ctx }: { ctx: SurfaceContext }) {
                 {connections.length === 0 ? (
                   <EmptyState
                     size="sm"
-                    icon={<Share2 className="size-6" aria-hidden />}
+                    icon={<Icon glyph={faShareNodes} className="size-6" aria-hidden />}
                     title="No accounts connected yet"
                     description="Connect an account below and it appears here, with each page or profile you can post to."
                   />

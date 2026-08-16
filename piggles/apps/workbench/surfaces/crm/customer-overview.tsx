@@ -32,7 +32,8 @@ import {
   Text,
   useToast,
 } from '@wizeworks/silicaui-react';
-import { AlertTriangle, Building2, Inbox } from 'lucide-react';
+import { faBuilding, faExclamationTriangle, faInbox } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { FormSection } from '../../components/form-section';
 import { ModuleScope } from '../../components/module-scope';
@@ -368,7 +369,7 @@ function CompanySuggestion({ ctx, customer }: { ctx: SurfaceContext; customer: C
 
   return (
     <Alert color="module" variant="soft">
-      <Building2 className="size-5 shrink-0" aria-hidden />
+      <Icon glyph={faBuilding} className="size-5 shrink-0" aria-hidden />
       <AlertContent>
         <AlertTitle>Do they work at {suggestion.companyName}?</AlertTitle>
         <AlertDescription>
@@ -477,7 +478,7 @@ export function CustomerOverviewTab({
         // A failure must NEVER look like "nothing here" — say it plainly.
         <Card>
           <EmptyState
-            icon={<AlertTriangle className="size-6" aria-hidden />}
+            icon={<Icon glyph={faExclamationTriangle} className="size-6" aria-hidden />}
             title="Some of this couldn't load"
             description="There was a problem reaching the server, so this customer's deals, tasks, orders and activity aren't showing. Nothing is wrong with the customer — try again in a moment."
           />
@@ -486,7 +487,7 @@ export function CustomerOverviewTab({
         // Genuinely empty — say so, so it reads as NEW, not broken.
         <Card>
           <EmptyState
-            icon={<Inbox className="size-6" aria-hidden />}
+            icon={<Icon glyph={faInbox} className="size-6" aria-hidden />}
             title="Nothing here yet"
             description={`${customerName(customer)} has no deals, tasks, orders or logged activity so far. As soon as any of that happens — or you log a note — it will show up here.`}
           />

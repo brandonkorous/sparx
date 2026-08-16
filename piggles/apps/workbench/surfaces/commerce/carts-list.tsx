@@ -12,7 +12,8 @@
 import { useState } from 'react';
 import { PaneWaiting } from '../../components/pane-waiting';
 import { Badge, Card, EmptyState, Filter, FilterItem, Table } from '@wizeworks/silicaui-react';
-import { ShoppingCart } from 'lucide-react';
+import { faCartShopping } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
@@ -107,7 +108,7 @@ export function CartsListSurface({ ctx }: { ctx: SurfaceContext }) {
       <Card className="min-h-0 flex-1 overflow-y-auto">
         {error ? (
           <EmptyState
-            icon={<ShoppingCart className="size-6" aria-hidden />}
+            icon={<Icon glyph={faCartShopping} className="size-6" aria-hidden />}
             title="Could not load your carts"
             description="This is a problem reaching the server. Your carts are unaffected — nothing has been lost."
           />
@@ -115,7 +116,7 @@ export function CartsListSurface({ ctx }: { ctx: SurfaceContext }) {
           <PaneWaiting label="Loading carts…" />
         ) : rows.length === 0 ? (
           <EmptyState
-            icon={<ShoppingCart className="size-6" aria-hidden />}
+            icon={<Icon glyph={faCartShopping} className="size-6" aria-hidden />}
             title="Nothing here"
             description={emptyBody[filter]}
           />

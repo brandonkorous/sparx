@@ -2,7 +2,8 @@
 
 // One background run, as a row in the jobs rail.
 
-import { CheckCircle2, CircleAlert, Loader2 } from 'lucide-react';
+import { faCircleCheck, faCircleExclamation, faSpinner } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { Badge, Progress, Text } from '@wizeworks/silicaui-react';
 import { describeAgo } from '../../lib/api/activity';
 import type { Job, JobStatus } from '../../lib/api/jobs';
@@ -36,11 +37,15 @@ export function JobCard({ job, ctx }: { job: Job; ctx: SurfaceContext }) {
       <div className="flex items-center justify-between gap-3">
         <span className="flex min-w-0 items-center gap-2">
           {job.status === 'running' ? (
-            <Loader2 className="text-info size-4 shrink-0 animate-spin" aria-hidden />
+            <Icon
+              glyph={faSpinner}
+              className="text-info size-4 shrink-0 animate-spin"
+              aria-hidden
+            />
           ) : job.status === 'failed' ? (
-            <CircleAlert className="text-danger size-4 shrink-0" aria-hidden />
+            <Icon glyph={faCircleExclamation} className="text-danger size-4 shrink-0" aria-hidden />
           ) : (
-            <CheckCircle2 className="text-success size-4 shrink-0" aria-hidden />
+            <Icon glyph={faCircleCheck} className="text-success size-4 shrink-0" aria-hidden />
           )}
           <span className="truncate font-medium">{job.label}</span>
         </span>

@@ -63,7 +63,15 @@ import {
   useToast,
 } from '@wizeworks/silicaui-react';
 import { useConfirm } from '../../lib/confirm';
-import { ChevronLeft, ChevronRight, ImageOff, Star, Trash2, Upload } from 'lucide-react';
+import {
+  faChevronLeft,
+  faChevronRight,
+  faImageSlash,
+  faStar,
+  faTrashCan,
+  faUpload,
+} from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { FormSection } from '../../components/form-section';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { useTabSave } from './product-tab-save';
@@ -419,7 +427,7 @@ export function ProductMediaTab({ product }: { ctx: SurfaceContext; product: Pro
           <PaneWaiting />
         ) : images.length === 0 ? (
           <EmptyState
-            icon={<ImageOff className="size-6" aria-hidden />}
+            icon={<Icon glyph={faImageSlash} className="size-6" aria-hidden />}
             title="No photos yet"
             description="A product with a photo sells; a product without one looks unfinished. Drag pictures onto the box below, or click it to choose files."
             size="sm"
@@ -497,7 +505,7 @@ export function ProductMediaTab({ product }: { ctx: SurfaceContext; product: Pro
           accept={ACCEPTED}
           maxSize={MAX_PHOTO_BYTES}
           disabled={uploading}
-          icon={<Upload className="size-5" aria-hidden />}
+          icon={<Icon glyph={faUpload} className="size-5" aria-hidden />}
           title={uploading ? 'Adding your photos…' : 'Drop photos here, or click to choose files'}
           hint="JPEG, PNG, WebP, AVIF or GIF, up to 8 MB each."
           onFiles={(files) => {
@@ -624,7 +632,7 @@ function ImageDetails({
               onMove(-1);
             }}
           >
-            <ChevronLeft className="size-4" aria-hidden />
+            <Icon glyph={faChevronLeft} className="size-4" aria-hidden />
           </Button>
           <Button
             size="sm"
@@ -639,7 +647,7 @@ function ImageDetails({
               onMove(1);
             }}
           >
-            <ChevronRight className="size-4" aria-hidden />
+            <Icon glyph={faChevronRight} className="size-4" aria-hidden />
           </Button>
           <Button
             size="sm"
@@ -649,7 +657,7 @@ function ImageDetails({
             loading={busy.primary}
             onClick={onSetPrimary}
           >
-            <Star className="size-4" aria-hidden />
+            <Icon glyph={faStar} className="size-4" aria-hidden />
             {image.isPrimary ? 'Main photo' : 'Make it the main photo'}
           </Button>
         </div>
@@ -774,7 +782,7 @@ function ImageDetails({
           Taking this photo off the product leaves the file in your media library.
         </Text>
         <Button size="sm" variant="outline" color="danger" loading={busy.remove} onClick={onRemove}>
-          <Trash2 className="size-4" aria-hidden />
+          <Icon glyph={faTrashCan} className="size-4" aria-hidden />
           Take it off
         </Button>
       </div>

@@ -33,7 +33,8 @@ import {
   Textarea,
   useToast,
 } from '@wizeworks/silicaui-react';
-import { CheckCircle, Plus, Trash2 } from 'lucide-react';
+import { faCheckCircle, faPlus, faTrashCan } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { afterPaneChange } from '../../lib/defer';
 import { PaneScope } from '../../lib/dock/window-boundary';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
@@ -113,7 +114,7 @@ export function ApprovalsSurface({ ctx }: { ctx: SurfaceContext }) {
             ) : items.length === 0 ? (
               <div className="py-2">
                 <EmptyState
-                  icon={<CheckCircle className="size-6" aria-hidden />}
+                  icon={<Icon glyph={faCheckCircle} className="size-6" aria-hidden />}
                   title={search.trim() ? 'Nothing matches that' : 'Nothing waiting'}
                   description={
                     search.trim()
@@ -200,7 +201,7 @@ function QueueRow({
             Reject
           </Button>
           <Button size="sm" color="module" onClick={onApprove}>
-            <CheckCircle className="size-4" aria-hidden />
+            <Icon glyph={faCheckCircle} className="size-4" aria-hidden />
             Approve
           </Button>
         </div>
@@ -377,7 +378,7 @@ function RulesSection() {
               setAdding(true);
             }}
           >
-            <Plus className="size-4" aria-hidden />
+            <Icon glyph={faPlus} className="size-4" aria-hidden />
             Add a rule
           </Button>
         ) : null
@@ -517,7 +518,7 @@ function RuleRow({
         aria-label="Remove this rule"
         onClick={onDelete}
       >
-        <Trash2 className="size-4" aria-hidden />
+        <Icon glyph={faTrashCan} className="size-4" aria-hidden />
       </Button>
     </li>
   );

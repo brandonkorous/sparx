@@ -23,7 +23,8 @@ import {
   Heading,
   Text,
 } from '@wizeworks/silicaui-react';
-import { Boxes, Plus, ServerCrash, Truck } from 'lucide-react';
+import { faBoxes, faPlus, faServer, faTruck } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import { FormSection } from '../../components/form-section';
@@ -135,7 +136,7 @@ export function ShippingSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar label="Shipping controls">
-        <Truck className="size-4 shrink-0" aria-hidden />
+        <Icon glyph={faTruck} className="size-4 shrink-0" aria-hidden />
         <Heading level={2} className="min-w-0 truncate text-base font-semibold">
           Shipping
         </Heading>
@@ -154,7 +155,7 @@ export function ShippingSurface({ ctx }: { ctx: SurfaceContext }) {
         <div className="mx-auto flex w-full max-w-3xl flex-col gap-4">
           {zones.isError ? (
             <EmptyState
-              icon={<ServerCrash className="size-6" aria-hidden />}
+              icon={<Icon glyph={faServer} className="size-6" aria-hidden />}
               title="Could not load your shipping setup"
               description={shippingErrorMessage(
                 zones.error,
@@ -208,7 +209,7 @@ export function ShippingSurface({ ctx }: { ctx: SurfaceContext }) {
                       open('commerce.shipping.zone.detail', 'new', event);
                     }}
                   >
-                    <Plus className="size-4" aria-hidden />
+                    <Icon glyph={faPlus} className="size-4" aria-hidden />
                     Add a region
                   </Button>
                 }
@@ -220,7 +221,7 @@ export function ShippingSurface({ ctx }: { ctx: SurfaceContext }) {
                 ) : zoneRows.length === 0 ? (
                   <EmptyState
                     size="sm"
-                    icon={<Truck className="size-6" aria-hidden />}
+                    icon={<Icon glyph={faTruck} className="size-6" aria-hidden />}
                     title="No delivery regions yet"
                     description="Add your first region — for example one covering your own country — then give it a delivery option and a price."
                   />
@@ -245,7 +246,7 @@ export function ShippingSurface({ ctx }: { ctx: SurfaceContext }) {
                       open('commerce.shipping.profile.detail', 'new', event);
                     }}
                   >
-                    <Plus className="size-4" aria-hidden />
+                    <Icon glyph={faPlus} className="size-4" aria-hidden />
                     Add a group
                   </Button>
                 }
@@ -257,7 +258,7 @@ export function ShippingSurface({ ctx }: { ctx: SurfaceContext }) {
                 ) : profileRows.length === 0 ? (
                   <EmptyState
                     size="sm"
-                    icon={<Boxes className="size-6" aria-hidden />}
+                    icon={<Icon glyph={faBoxes} className="size-6" aria-hidden />}
                     title="No product groups yet"
                     description="Every product ships the same way until you add a group. Add one to price a set of products separately."
                   />

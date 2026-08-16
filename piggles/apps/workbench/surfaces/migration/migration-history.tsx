@@ -12,7 +12,8 @@
 // list that looks like the work was done.
 
 import { Badge, Button, Heading, Text } from '@wizeworks/silicaui-react';
-import { ArrowRight, PackagePlus } from 'lucide-react';
+import { faArrowRight, faBoxOpen } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { ListEmptyState } from '../../components/list-empty-state';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
@@ -74,7 +75,7 @@ function RunRow({ run, onOpen }: { run: RunSummary; onOpen: () => void }) {
 
       <Button variant="ghost" size="sm" onClick={onOpen}>
         See what happened
-        <ArrowRight className="size-4" aria-hidden />
+        <Icon glyph={faArrowRight} className="size-4" aria-hidden />
       </Button>
     </div>
   );
@@ -92,7 +93,7 @@ export function MigrationHistorySurface({ ctx }: { ctx: SurfaceContext }) {
           size="sm"
           onClick={() => ctx.open('platform.migrate', {}, { target: 'tab' })}
         >
-          <PackagePlus className="size-4" aria-hidden />
+          <Icon glyph={faBoxOpen} className="size-4" aria-hidden />
           Move something in
         </Button>
         <div className="ml-auto flex items-center gap-2">
@@ -111,11 +112,11 @@ export function MigrationHistorySurface({ ctx }: { ctx: SurfaceContext }) {
           <ListEmptyState
             filtered={false}
             noResults={{
-              icon: <PackagePlus className="size-6" aria-hidden />,
+              icon: <Icon glyph={faBoxOpen} className="size-6" aria-hidden />,
               title: 'No moves match',
             }}
             firstRun={{
-              icon: <PackagePlus className="size-6" aria-hidden />,
+              icon: <Icon glyph={faBoxOpen} className="size-6" aria-hidden />,
               title: 'Nothing has been moved in yet',
               description:
                 'When you bring a catalogue, a contact list or a blog over from another platform, each move is recorded here with exactly what landed.',

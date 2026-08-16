@@ -32,7 +32,16 @@ import {
   Text,
   useToast,
 } from '@wizeworks/silicaui-react';
-import { File, FileText, Film, ImageIcon, ImageOff, Music, Upload } from 'lucide-react';
+import {
+  faFile,
+  faFileText,
+  faFilm,
+  faImage,
+  faImageSlash,
+  faMusic,
+  faUpload,
+} from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { ListEmptyState } from '../../components/list-empty-state';
@@ -80,15 +89,15 @@ function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
 function kindIcon(kind: MediaKind, className: string) {
   switch (kind) {
     case 'video':
-      return <Film className={className} aria-hidden />;
+      return <Icon glyph={faFilm} className={className} aria-hidden />;
     case 'audio':
-      return <Music className={className} aria-hidden />;
+      return <Icon glyph={faMusic} className={className} aria-hidden />;
     case 'document':
-      return <FileText className={className} aria-hidden />;
+      return <Icon glyph={faFileText} className={className} aria-hidden />;
     case 'image':
-      return <ImageOff className={className} aria-hidden />;
+      return <Icon glyph={faImageSlash} className={className} aria-hidden />;
     default:
-      return <File className={className} aria-hidden />;
+      return <Icon glyph={faFile} className={className} aria-hidden />;
   }
 }
 
@@ -253,7 +262,7 @@ export function MediaListSurface({ ctx }: { ctx: SurfaceContext }) {
             fileRef.current?.click();
           }}
         >
-          <Upload className="size-4" aria-hidden />
+          <Icon glyph={faUpload} className="size-4" aria-hidden />
           <span className="hidden @xl:inline">Upload</span>
         </Button>
 
@@ -293,7 +302,7 @@ export function MediaListSurface({ ctx }: { ctx: SurfaceContext }) {
           // A failed load REPLACES the grid — "no files yet" over a connection
           // failure is a lie about their library, and the worst one to tell.
           <EmptyState
-            icon={<ImageIcon className="size-6" aria-hidden />}
+            icon={<Icon glyph={faImage} className="size-6" aria-hidden />}
             title="Could not load your library"
             description="This is a problem reaching the server. Nothing you have uploaded is affected — none of it has been lost."
             actions={
@@ -314,7 +323,7 @@ export function MediaListSurface({ ctx }: { ctx: SurfaceContext }) {
           <ListEmptyState
             filtered={narrowed}
             noResults={{
-              icon: <ImageIcon className="size-6" aria-hidden />,
+              icon: <Icon glyph={faImage} className="size-6" aria-hidden />,
               title: 'Nothing matches that',
               description: emptyAdvice(
                 search.trim(),
@@ -335,7 +344,7 @@ export function MediaListSurface({ ctx }: { ctx: SurfaceContext }) {
                     fileRef.current?.click();
                   }}
                 >
-                  <Upload className="size-4" aria-hidden />
+                  <Icon glyph={faUpload} className="size-4" aria-hidden />
                   Upload a file
                 </Button>
               ),

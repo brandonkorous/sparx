@@ -27,7 +27,8 @@ import {
   Select,
   Textarea,
 } from '@wizeworks/silicaui-react';
-import { Eye, Save } from 'lucide-react';
+import { faEye, faFloppyDisk } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { EditorLayout } from '../../components/editor-layout';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { FormSection } from '../../components/form-section';
@@ -244,7 +245,7 @@ export function InvoiceEditorSurface({ ctx }: { ctx: SurfaceContext }) {
             ctx.open('invoicing.invoice.preview', { id }, { target: 'beside' });
           }}
         >
-          <Eye className="size-4" aria-hidden />
+          <Icon glyph={faEye} className="size-4" aria-hidden />
           Preview
         </Button>
         <div className="flex-1" />
@@ -261,7 +262,7 @@ export function InvoiceEditorSurface({ ctx }: { ctx: SurfaceContext }) {
             save.mutate();
           }}
         >
-          <Save className="size-4" aria-hidden />
+          <Icon glyph={faFloppyDisk} className="size-4" aria-hidden />
           {save.isPending ? 'Saving…' : 'Save'}
         </Button>
       </PaneToolbar>

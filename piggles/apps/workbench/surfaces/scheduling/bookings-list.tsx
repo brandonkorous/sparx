@@ -20,7 +20,8 @@ import {
   SearchInput,
   Table,
 } from '@wizeworks/silicaui-react';
-import { CalendarClock, Plus } from 'lucide-react';
+import { faCalendarClock, faPlus } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { ListEmptyState } from '../../components/list-empty-state';
@@ -172,7 +173,7 @@ export function BookingsListSurface({ ctx }: { ctx: SurfaceContext }) {
             ctx.open('scheduling.bookings.detail', { id: 'new' }, { target: targetFor(event) });
           }}
         >
-          <Plus className="size-4" aria-hidden />
+          <Icon glyph={faPlus} className="size-4" aria-hidden />
           Take a booking
         </Button>
 
@@ -188,7 +189,7 @@ export function BookingsListSurface({ ctx }: { ctx: SurfaceContext }) {
       <Card className="min-h-0 flex-1 overflow-y-auto">
         {error ? (
           <EmptyState
-            icon={<CalendarClock className="size-6" aria-hidden />}
+            icon={<Icon glyph={faCalendarClock} className="size-6" aria-hidden />}
             title="Could not load your bookings"
             description="Something went wrong reaching the server. It may be a temporary problem — try refreshing in a moment."
           />
@@ -198,7 +199,7 @@ export function BookingsListSurface({ ctx }: { ctx: SurfaceContext }) {
           <ListEmptyState
             filtered={hasFilters}
             noResults={{
-              icon: <CalendarClock className="size-6" aria-hidden />,
+              icon: <Icon glyph={faCalendarClock} className="size-6" aria-hidden />,
               title: 'Nothing matches those filters',
               description:
                 'Try a different search, or widen the status and kind filters to see more.',
@@ -219,7 +220,7 @@ export function BookingsListSurface({ ctx }: { ctx: SurfaceContext }) {
                     );
                   }}
                 >
-                  <Plus className="size-4" aria-hidden />
+                  <Icon glyph={faPlus} className="size-4" aria-hidden />
                   Take a booking
                 </Button>
               ),

@@ -38,7 +38,13 @@ import {
   Text,
   useToast,
 } from '@wizeworks/silicaui-react';
-import { ArrowUpCircle, LayoutTemplate, Rocket, Trash2 } from 'lucide-react';
+import {
+  faArrowCircleUp,
+  faRocket,
+  faTableLayout,
+  faTrashCan,
+} from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { useConfirm } from '../../lib/confirm';
 import { useActiveSiteId, useModuleStates } from '../../lib/api/shell-data';
 import { useSites } from '../sites/data';
@@ -375,7 +381,11 @@ function BlueprintBody({
             />
           ) : (
             <div className="bg-base-200 border-base-300 flex aspect-video w-full items-center justify-center rounded-lg border">
-              <LayoutTemplate className="size-10 [color:var(--color-module)]" aria-hidden />
+              <Icon
+                glyph={faTableLayout}
+                className="size-10 [color:var(--color-module)]"
+                aria-hidden
+              />
             </div>
           )}
 
@@ -426,7 +436,7 @@ function BlueprintBody({
                   void onUpdate();
                 }}
               >
-                <ArrowUpCircle className="size-4" aria-hidden />
+                <Icon glyph={faArrowCircleUp} className="size-4" aria-hidden />
                 Update to {blueprint.version}
               </Button>
             </Alert>
@@ -509,7 +519,7 @@ function BlueprintBody({
                     loading={goLive.isPending}
                     disabled={busy && !goLive.isPending}
                   >
-                    <Rocket className="size-4" aria-hidden />
+                    <Icon glyph={faRocket} className="size-4" aria-hidden />
                     Publish it live on {targetName}
                   </Button>
                 ) : null}
@@ -540,7 +550,7 @@ function BlueprintBody({
                       void onRemove();
                     }}
                   >
-                    <Trash2 className="size-4" aria-hidden />
+                    <Icon glyph={faTrashCan} className="size-4" aria-hidden />
                     Remove
                   </Button>
                 </div>

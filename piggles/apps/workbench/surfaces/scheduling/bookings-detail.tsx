@@ -43,14 +43,15 @@ import {
 } from '@wizeworks/silicaui-react';
 import { useConfirm } from '../../lib/confirm';
 import {
-  CalendarClock,
-  CalendarX2,
-  CheckCheck,
-  CircleCheck,
-  LogIn,
-  Save,
-  UserX,
-} from 'lucide-react';
+  faCalendarClock,
+  faCalendarXmark,
+  faCheckCircle,
+  faCheckDouble,
+  faFloppyDisk,
+  faRightToBracket,
+  faUserXmark,
+} from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { FormSection } from '../../components/form-section';
 import { useDirtySource } from '../../lib/workbench/dirty';
@@ -185,7 +186,7 @@ function BookingCreate({ ctx }: { ctx: SurfaceContext }) {
           loading={create.isPending}
           onClick={submit}
         >
-          <Save className="size-4" aria-hidden />
+          <Icon glyph={faFloppyDisk} className="size-4" aria-hidden />
           Take booking
         </Button>
       </PaneToolbar>
@@ -524,7 +525,7 @@ function BookingManage({ ctx, booking }: { ctx: SurfaceContext; booking: Booking
               });
             }}
           >
-            <CircleCheck className="size-4" aria-hidden />
+            <Icon glyph={faCheckCircle} className="size-4" aria-hidden />
             Confirm
           </Button>
         ) : null}
@@ -544,7 +545,7 @@ function BookingManage({ ctx, booking }: { ctx: SurfaceContext; booking: Booking
               });
             }}
           >
-            <LogIn className="size-4" aria-hidden />
+            <Icon glyph={faRightToBracket} className="size-4" aria-hidden />
             Check in
           </Button>
         ) : null}
@@ -565,7 +566,7 @@ function BookingManage({ ctx, booking }: { ctx: SurfaceContext; booking: Booking
               });
             }}
           >
-            <CheckCheck className="size-4" aria-hidden />
+            <Icon glyph={faCheckDouble} className="size-4" aria-hidden />
             Complete
           </Button>
         ) : null}
@@ -577,7 +578,7 @@ function BookingManage({ ctx, booking }: { ctx: SurfaceContext; booking: Booking
               is, and who it is with. */}
           <div className="flex flex-col gap-1">
             <Heading level={1} className="flex min-w-0 items-center gap-2 text-2xl font-semibold">
-              <CalendarClock className="size-5 shrink-0" aria-hidden />
+              <Icon glyph={faCalendarClock} className="size-5 shrink-0" aria-hidden />
               <span className="min-w-0 break-words">{booking.service.name}</span>
             </Heading>
             <Text className="text-base">
@@ -636,7 +637,7 @@ function BookingManage({ ctx, booking }: { ctx: SurfaceContext; booking: Booking
                   loading={reschedule.isPending}
                   onClick={doReschedule}
                 >
-                  <CalendarClock className="size-4" aria-hidden />
+                  <Icon glyph={faCalendarClock} className="size-4" aria-hidden />
                   Move booking
                 </Button>
               </div>
@@ -654,7 +655,7 @@ function BookingManage({ ctx, booking }: { ctx: SurfaceContext; booking: Booking
                 loading={update.isPending}
                 onClick={saveNotes}
               >
-                <Save className="size-4" aria-hidden />
+                <Icon glyph={faFloppyDisk} className="size-4" aria-hidden />
                 Save
               </Button>
             }
@@ -723,7 +724,7 @@ function BookingManage({ ctx, booking }: { ctx: SurfaceContext; booking: Booking
                       void onNoShow();
                     }}
                   >
-                    <UserX className="size-4" aria-hidden />
+                    <Icon glyph={faUserXmark} className="size-4" aria-hidden />
                     Mark no-show
                   </Button>
                 </div>
@@ -742,7 +743,7 @@ function BookingManage({ ctx, booking }: { ctx: SurfaceContext; booking: Booking
                     void onCancel();
                   }}
                 >
-                  <CalendarX2 className="size-4" aria-hidden />
+                  <Icon glyph={faCalendarXmark} className="size-4" aria-hidden />
                   Cancel booking
                 </Button>
               </div>

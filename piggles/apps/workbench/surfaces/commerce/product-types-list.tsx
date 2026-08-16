@@ -29,7 +29,8 @@ import {
   Table,
   Text,
 } from '@wizeworks/silicaui-react';
-import { Plus, Shapes } from 'lucide-react';
+import { faPlus, faShapes } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { ListEmptyState } from '../../components/list-empty-state';
 import { RefreshButton } from '../../components/refresh-button';
@@ -127,7 +128,7 @@ export function ProductTypesListSurface({ ctx }: { ctx: SurfaceContext }) {
           title="Define a new kind of product — hold Shift to open alongside, Alt for a new window"
           onClick={create}
         >
-          <Plus className="size-4" aria-hidden />
+          <Icon glyph={faPlus} className="size-4" aria-hidden />
           <span className="hidden @2xl:inline">New type</span>
         </Button>
 
@@ -146,7 +147,7 @@ export function ProductTypesListSurface({ ctx }: { ctx: SurfaceContext }) {
           // connection failure is the worst thing to say about a schema.
           <Card className="flex-1">
             <EmptyState
-              icon={<Shapes className="size-6" aria-hidden />}
+              icon={<Icon glyph={faShapes} className="size-6" aria-hidden />}
               title="Could not load your product types"
               description="This is a problem reaching the server. Nothing you have defined is affected."
               actions={
@@ -171,7 +172,7 @@ export function ProductTypesListSurface({ ctx }: { ctx: SurfaceContext }) {
             <ListEmptyState
               filtered={narrowed}
               noResults={{
-                icon: <Shapes className="size-6" aria-hidden />,
+                icon: <Icon glyph={faShapes} className="size-6" aria-hidden />,
                 title: 'Nothing matches that',
                 description: 'Try a different search, or switch the filter back to All.',
               }}
@@ -187,7 +188,7 @@ export function ProductTypesListSurface({ ctx }: { ctx: SurfaceContext }) {
                       create({ shiftKey: false, altKey: false });
                     }}
                   >
-                    <Plus className="size-4" aria-hidden />
+                    <Icon glyph={faPlus} className="size-4" aria-hidden />
                     New type
                   </Button>
                 ),

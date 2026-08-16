@@ -12,7 +12,8 @@
 
 import { Badge, Button, EmptyState, Heading, Text } from '@wizeworks/silicaui-react';
 import { PaneWaiting } from '../../components/pane-waiting';
-import { CreditCard, ServerCrash, Star } from 'lucide-react';
+import { faCreditCard, faServer, faStar } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import { FormSection } from '../../components/form-section';
@@ -68,7 +69,7 @@ function GatewayRow({
           <span className="font-semibold">{gateway.name}</span>
           {gateway.recommended ? (
             <Badge color="module" variant="soft" size="sm">
-              <Star className="size-3" aria-hidden />
+              <Icon glyph={faStar} className="size-3" aria-hidden />
               Recommended
             </Badge>
           ) : null}
@@ -114,7 +115,7 @@ export function PaymentProvidersSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar label="Payment providers controls">
-        <CreditCard className="size-4 shrink-0" aria-hidden />
+        <Icon glyph={faCreditCard} className="size-4 shrink-0" aria-hidden />
         <Heading level={2} className="min-w-0 truncate text-base font-semibold">
           Payment providers
         </Heading>
@@ -135,7 +136,7 @@ export function PaymentProvidersSurface({ ctx }: { ctx: SurfaceContext }) {
         <div className="mx-auto flex w-full max-w-3xl flex-col gap-4">
           {config.isError || catalog.isError ? (
             <EmptyState
-              icon={<ServerCrash className="size-6" aria-hidden />}
+              icon={<Icon glyph={faServer} className="size-6" aria-hidden />}
               title="Could not load your payment providers"
               description={paymentsErrorMessage(
                 config.error ?? catalog.error,

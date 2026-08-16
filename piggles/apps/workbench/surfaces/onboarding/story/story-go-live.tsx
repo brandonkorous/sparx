@@ -2,7 +2,8 @@
 
 import { useEffect, useState, type ReactNode } from 'react';
 import { Button, Heading, Text } from '@wizeworks/silicaui-react';
-import { ExternalLink, Globe } from 'lucide-react';
+import { faArrowUpRightFromSquare, faGlobe } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { industryOf, type StoryState } from '@sparx/story-schemas';
 import { storefrontPreviewUrl, type OnboardingActions } from '../../../lib/onboarding/api';
 import { handleSlug } from '../../../lib/onboarding/story-state';
@@ -90,7 +91,7 @@ export function StoryGoLive({
           color="module"
           variant="link"
           size="lg"
-          iconEnd={<ExternalLink className="size-4" aria-hidden />}
+          iconEnd={<Icon glyph={faArrowUpRightFromSquare} className="size-4" aria-hidden />}
           className="self-start"
           render={
             <a
@@ -150,7 +151,7 @@ export function StoryGoLive({
           (installId), the card also offers a peek at it before it goes public. */}
       <div className="border-base-300 flex items-center justify-between gap-4 rounded-xl border px-5 py-4">
         <div className="flex min-w-0 items-center gap-2.5">
-          <Globe className="text-module size-4 shrink-0" aria-hidden />
+          <Icon glyph={faGlobe} className="text-module size-4 shrink-0" aria-hidden />
           <span className="truncate font-medium">{host}</span>
         </div>
         {previewHref ? (
@@ -158,7 +159,7 @@ export function StoryGoLive({
             variant="outline"
             color="module"
             size="sm"
-            iconEnd={<ExternalLink className="size-3.5" aria-hidden />}
+            iconEnd={<Icon glyph={faArrowUpRightFromSquare} className="size-3.5" aria-hidden />}
             render={
               <a
                 href={previewHref}

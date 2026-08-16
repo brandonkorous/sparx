@@ -10,7 +10,8 @@
 import { useMemo } from 'react';
 import { Alert, Badge, Button, Card, Select, Text } from '@wizeworks/silicaui-react';
 import { Chart, type EChartsOption } from '@wizeworks/silicaui-charts';
-import { Maximize2, Pencil, X } from 'lucide-react';
+import { faExpand, faPencil, faXmark } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 
 import { useModuleColor } from '../analytics/charts';
 import { useRunReport, type DashboardWidget } from './report-builder-data';
@@ -116,7 +117,7 @@ export function ReportWidget({
             aria-label="What this card is called"
             onClick={onRename}
           >
-            <Pencil className="size-4" aria-hidden />
+            <Icon glyph={faPencil} className="size-4" aria-hidden />
           </Button>
           <Button
             color="neutral"
@@ -125,7 +126,7 @@ export function ReportWidget({
             aria-label="Open this report"
             onClick={onOpen}
           >
-            <Maximize2 className="size-4" aria-hidden />
+            <Icon glyph={faExpand} className="size-4" aria-hidden />
           </Button>
           <Button
             color="neutral"
@@ -134,7 +135,7 @@ export function ReportWidget({
             aria-label="Take this off the board"
             onClick={onRemove}
           >
-            <X className="size-4" aria-hidden />
+            <Icon glyph={faXmark} className="size-4" aria-hidden />
           </Button>
         </div>
       </div>

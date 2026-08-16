@@ -15,7 +15,8 @@
 // a reset is triggered — and this owns the rest.
 
 import { Component, Suspense, useEffect, type ErrorInfo, type ReactNode } from 'react';
-import { AlertTriangle } from 'lucide-react';
+import { faExclamationTriangle } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { Button } from '@wizeworks/silicaui-react';
 import { useConfirm } from '../lib/confirm';
 import { isChunkLoadError, reloadOnceForStaleBuild } from '@sparx/app-kit';
@@ -64,7 +65,7 @@ export class PaneErrorBoundary extends Component<PaneErrorBoundaryProps, { error
 
     return (
       <div className="flex h-full flex-col items-center justify-center gap-3 p-6 text-center">
-        <AlertTriangle className="text-warning size-6" aria-hidden />
+        <Icon glyph={faExclamationTriangle} className="text-warning size-6" aria-hidden />
         <div>
           <p className="font-medium">
             {stale ? `A new version of ${productName()} is ready` : 'This panel ran into a problem'}

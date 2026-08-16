@@ -52,13 +52,14 @@ import {
   Timestamp,
 } from '@wizeworks/silicaui-react';
 import {
-  CheckCircle2,
-  RefreshCw,
-  ScanLine,
-  ShieldCheck,
-  TriangleAlert,
-  WifiOff,
-} from 'lucide-react';
+  faArrowsRotate,
+  faBarcodeRead,
+  faCircleCheck,
+  faExclamationTriangle,
+  faShieldCheck,
+  faWifiSlash,
+} from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
@@ -124,11 +125,23 @@ function Verdict({
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div className="flex min-w-0 items-start gap-3">
             {verdict?.tone === 'success' ? (
-              <CheckCircle2 className="text-success mt-0.5 size-8 shrink-0" aria-hidden />
+              <Icon
+                glyph={faCircleCheck}
+                className="text-success mt-0.5 size-8 shrink-0"
+                aria-hidden
+              />
             ) : verdict?.tone === 'danger' ? (
-              <TriangleAlert className="text-danger mt-0.5 size-8 shrink-0" aria-hidden />
+              <Icon
+                glyph={faExclamationTriangle}
+                className="text-danger mt-0.5 size-8 shrink-0"
+                aria-hidden
+              />
             ) : (
-              <ShieldCheck className="text-module mt-0.5 size-8 shrink-0" aria-hidden />
+              <Icon
+                glyph={faShieldCheck}
+                className="text-module mt-0.5 size-8 shrink-0"
+                aria-hidden
+              />
             )}
             <div className="flex min-w-0 flex-col gap-1">
               <Heading level={2} className="text-xl font-semibold">
@@ -162,7 +175,11 @@ function Verdict({
             disabled={rechecking}
             className="shrink-0"
           >
-            <RefreshCw className={rechecking ? 'size-4 animate-spin' : 'size-4'} aria-hidden />
+            <Icon
+              glyph={faArrowsRotate}
+              className={rechecking ? 'size-4 animate-spin' : 'size-4'}
+              aria-hidden
+            />
             {rechecking ? 'Checking…' : 'Check now'}
           </Button>
         </div>
@@ -485,9 +502,17 @@ function FreshnessCard({ sources }: { sources: SourceFreshness[] }) {
                 <div className="flex flex-wrap items-baseline justify-between gap-2">
                   <Text className="flex min-w-0 items-center gap-1.5">
                     {source.isStale ? (
-                      <WifiOff className="text-danger size-4 shrink-0" aria-hidden />
+                      <Icon
+                        glyph={faWifiSlash}
+                        className="text-danger size-4 shrink-0"
+                        aria-hidden
+                      />
                     ) : (
-                      <ScanLine className="text-success size-4 shrink-0" aria-hidden />
+                      <Icon
+                        glyph={faBarcodeRead}
+                        className="text-success size-4 shrink-0"
+                        aria-hidden
+                      />
                     )}
                     <span className="truncate font-medium">{source.name}</span>
                   </Text>

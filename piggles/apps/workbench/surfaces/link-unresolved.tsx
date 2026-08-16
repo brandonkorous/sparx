@@ -28,16 +28,18 @@
 // audience.
 
 import { useEffect } from 'react';
+import { Icon } from '@piggles/ui';
 import { productCopy, productCopyWith, productHidesSurface } from '../lib/product';
 import { Button, EmptyState } from '@wizeworks/silicaui-react';
-import { Ban, HelpCircle, Lock, Building2, type LucideIcon } from 'lucide-react';
+import { faBan, faBuilding, faCircleQuestion, faLock } from '@fortawesome/pro-solid-svg-icons';
+import type { PigglesIcon } from '@piggles/ui';
 import type { SurfaceContext } from '../lib/surfaces/registry';
 import { getSurface } from '../lib/surfaces/registry';
 import { moduleLabel } from '../lib/surfaces/nav';
 import type { UnresolvedReason } from '../lib/workbench/deep-link';
 
 interface Explanation {
-  readonly icon: LucideIcon;
+  readonly icon: PigglesIcon;
   readonly tone: 'warning' | 'info';
   readonly title: string;
   readonly description: string;
@@ -63,7 +65,7 @@ function explain(reason: UnresolvedReason, detail: string): Explanation {
   if (reason === 'module-disabled') {
     const name = moduleNameOf(detail);
     return {
-      icon: Ban,
+      icon: faBan,
       tone: 'warning',
       title: name
         ? `${name} isn't switched on`
@@ -88,7 +90,7 @@ function explain(reason: UnresolvedReason, detail: string): Explanation {
   if (reason === 'no-access') {
     const name = moduleNameOf(detail);
     return {
-      icon: Lock,
+      icon: faLock,
       tone: 'info',
       title: name ? `You don't have access to ${name}` : "You don't have access to this",
       description: name
@@ -99,7 +101,7 @@ function explain(reason: UnresolvedReason, detail: string): Explanation {
 
   if (reason === 'site-unavailable') {
     return {
-      icon: Building2,
+      icon: faBuilding,
       tone: 'warning',
       title: 'That link is for a different business',
       description: `The link says it belongs to “${detail}”, which isn't one of the businesses you can open — or it has been renamed since the link was written. Whoever sent it can send a fresh one.`,
@@ -107,7 +109,7 @@ function explain(reason: UnresolvedReason, detail: string): Explanation {
   }
 
   return {
-    icon: HelpCircle,
+    icon: faCircleQuestion,
     tone: 'warning',
     title: "That link doesn't open anything",
     description: productCopyWith(
@@ -121,7 +123,7 @@ function explain(reason: UnresolvedReason, detail: string): Explanation {
 export function LinkUnresolvedSurface({ ctx }: { ctx: SurfaceContext }) {
   const reason = (ctx.params.reason ?? 'unknown-path') as UnresolvedReason;
   const detail = ctx.params.detail ?? '';
-  const { icon: Icon, tone, title, description, action: suggested } = explain(reason, detail);
+  const { icon, tone, title, description, action: suggested } = explain(reason, detail);
 
   // Drop the action when this product does not HAVE the screen it points at.
   //
@@ -146,6 +148,7 @@ export function LinkUnresolvedSurface({ ctx }: { ctx: SurfaceContext }) {
         className="max-w-md"
         icon={
           <Icon
+            glyph={icon}
             className={tone === 'info' ? 'text-info size-8' : 'text-warning size-8'}
             aria-hidden
           />

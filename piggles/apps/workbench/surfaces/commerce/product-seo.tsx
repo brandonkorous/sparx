@@ -41,7 +41,8 @@ import {
   Text,
   Textarea,
 } from '@wizeworks/silicaui-react';
-import { ImageOff } from 'lucide-react';
+import { faImageSlash } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { useActiveSiteId } from '../../lib/api/shell-data';
 import { FormSection } from '../../components/form-section';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
@@ -339,7 +340,7 @@ export function ProductSeoTab({ product }: { ctx: SurfaceContext; product: Produ
                               />
                             ) : (
                               <span className="flex h-full items-center justify-center">
-                                <ImageOff className="size-4" aria-hidden />
+                                <Icon glyph={faImageSlash} className="size-4" aria-hidden />
                               </span>
                             )}
                           </PickerTile>

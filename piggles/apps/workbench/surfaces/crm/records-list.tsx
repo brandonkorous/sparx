@@ -17,7 +17,8 @@
 import { useEffect, useMemo, useState } from 'react';
 import { PaneWaiting } from '../../components/pane-waiting';
 import { Button, Card, EmptyState, Input, Table, Text } from '@wizeworks/silicaui-react';
-import { Plus, Table2 } from 'lucide-react';
+import { faPlus, faTable } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { ListEmptyState } from '../../components/list-empty-state';
 import { RefreshButton } from '../../components/refresh-button';
@@ -83,7 +84,7 @@ export function RecordsListSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar label={`${labelPlural} list controls`}>
-        <Table2 className="size-4 shrink-0" aria-hidden />
+        <Icon glyph={faTable} className="size-4 shrink-0" aria-hidden />
         <Input
           color="module"
           size="sm"
@@ -104,7 +105,7 @@ export function RecordsListSurface({ ctx }: { ctx: SurfaceContext }) {
             ctx.open('crm.record.detail', { id: 'new', objectKey }, { target: targetFor(event) });
           }}
         >
-          <Plus className="size-4" aria-hidden />
+          <Icon glyph={faPlus} className="size-4" aria-hidden />
           Add {label.toLowerCase()}
         </Button>
         <SavedViewsMenu
@@ -131,7 +132,7 @@ export function RecordsListSurface({ ctx }: { ctx: SurfaceContext }) {
       <Card className="min-h-0 flex-1 overflow-y-auto">
         {records.isError ? (
           <EmptyState
-            icon={<Table2 className="size-6" aria-hidden />}
+            icon={<Icon glyph={faTable} className="size-6" aria-hidden />}
             title={`Could not load these ${labelPlural.toLowerCase()}`}
             description={recordErrorMessage(
               records.error,
@@ -155,7 +156,7 @@ export function RecordsListSurface({ ctx }: { ctx: SurfaceContext }) {
           <ListEmptyState
             filtered={filtered}
             noResults={{
-              icon: <Table2 className="size-6" aria-hidden />,
+              icon: <Icon glyph={faTable} className="size-6" aria-hidden />,
               title: `No ${labelPlural.toLowerCase()} match that search`,
               description: 'Try a different word, or clear the search to see them all.',
               actions: (
@@ -184,7 +185,7 @@ export function RecordsListSurface({ ctx }: { ctx: SurfaceContext }) {
                     openRecord('new', event);
                   }}
                 >
-                  <Plus className="size-4" aria-hidden />
+                  <Icon glyph={faPlus} className="size-4" aria-hidden />
                   Add the first {label.toLowerCase()}
                 </Button>
               ),

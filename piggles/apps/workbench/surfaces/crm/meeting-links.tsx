@@ -56,7 +56,14 @@ import {
   Textarea,
   useToast,
 } from '@wizeworks/silicaui-react';
-import { CalendarClock, Copy, Link2, Pencil, Plus } from 'lucide-react';
+import {
+  faCalendarClock,
+  faCopy,
+  faLink,
+  faPencil,
+  faPlus,
+} from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { PaneScope } from '../../lib/dock/window-boundary';
 import { useConfirm } from '../../lib/confirm';
@@ -222,7 +229,7 @@ export function MeetingLinksSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar label="Booking link actions">
-        <CalendarClock className="size-4 shrink-0" aria-hidden />
+        <Icon glyph={faCalendarClock} className="size-4 shrink-0" aria-hidden />
         <Text as="span" className="text-sm">
           {rows.length === 0
             ? 'No booking links yet'
@@ -242,7 +249,7 @@ export function MeetingLinksSurface({ ctx }: { ctx: SurfaceContext }) {
           }
           onClick={startNew}
         >
-          <Plus className="size-4" aria-hidden />
+          <Icon glyph={faPlus} className="size-4" aria-hidden />
           New booking link
         </Button>
       </PaneToolbar>
@@ -319,7 +326,7 @@ export function MeetingLinksSurface({ ctx }: { ctx: SurfaceContext }) {
                             title="Copy this link"
                             onClick={() => void copy(link)}
                           >
-                            <Copy className="size-4" aria-hidden />
+                            <Icon glyph={faCopy} className="size-4" aria-hidden />
                           </Button>
                           {link.archivedAt ? null : (
                             <>
@@ -333,7 +340,7 @@ export function MeetingLinksSurface({ ctx }: { ctx: SurfaceContext }) {
                                   startEdit(link);
                                 }}
                               >
-                                <Pencil className="size-4" aria-hidden />
+                                <Icon glyph={faPencil} className="size-4" aria-hidden />
                               </Button>
                               <Button
                                 color="module"
@@ -352,7 +359,7 @@ export function MeetingLinksSurface({ ctx }: { ctx: SurfaceContext }) {
                                   });
                                 }}
                               >
-                                <Link2 className="size-4" aria-hidden />
+                                <Icon glyph={faLink} className="size-4" aria-hidden />
                               </Button>
                               <Button
                                 color="danger"

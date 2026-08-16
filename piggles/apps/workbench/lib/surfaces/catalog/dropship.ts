@@ -13,7 +13,7 @@
 // The one deliberate exception is the CROSS-module link on a supplier-order pane,
 // which wears commerce's hue via a nested module scope inside the surface itself.
 
-import { BarChart2, Link2, Package, Truck } from 'lucide-react';
+import { faBox, faChartSimple, faLink, faTruck } from '@fortawesome/pro-solid-svg-icons';
 import type { SurfaceDefinition } from '../registry';
 import { SuppliersListSurface } from '../../../surfaces/dropship/suppliers-list';
 import { SupplierDetailSurface } from '../../../surfaces/dropship/supplier-detail';
@@ -29,7 +29,7 @@ export const DROPSHIP_SURFACES: SurfaceDefinition[] = [
     key: 'dropship.suppliers.list',
     title: 'Suppliers',
     module: 'dropship',
-    icon: Link2,
+    icon: faLink,
     order: 1,
     keywords: ['partners', 'sources', 'vendors', 'connect'],
     component: SuppliersListSurface,
@@ -40,7 +40,7 @@ export const DROPSHIP_SURFACES: SurfaceDefinition[] = [
     key: 'dropship.supplier.detail',
     title: 'Supplier',
     module: 'dropship',
-    icon: Link2,
+    icon: faLink,
     // Opened from the list ({id:'new'} to connect, {id} to manage) — connect is
     // the same surface as manage, so it is a pane, not a launcher entry.
     listed: false,
@@ -52,7 +52,7 @@ export const DROPSHIP_SURFACES: SurfaceDefinition[] = [
     key: 'dropship.products.list',
     title: 'Supplier products',
     module: 'dropship',
-    icon: Package,
+    icon: faBox,
     section: 'Catalog',
     order: 10,
     keywords: ['import', 'listings', 'sync', 'catalog'],
@@ -66,7 +66,7 @@ export const DROPSHIP_SURFACES: SurfaceDefinition[] = [
     key: 'dropship.orders.list',
     title: 'Supplier orders',
     module: 'dropship',
-    icon: Truck,
+    icon: faTruck,
     section: 'Orders',
     order: 20,
     keywords: ['fulfilment', 'fulfillment', 'routing', 'tracking', 'shipments'],
@@ -76,7 +76,7 @@ export const DROPSHIP_SURFACES: SurfaceDefinition[] = [
     key: 'dropship.order.detail',
     title: 'Supplier order',
     module: 'dropship',
-    icon: Truck,
+    icon: faTruck,
     // Reachable from the orders list; opening "a supplier order" cold is not a
     // thing anyone wants, and there is no create counterpart — orders are routed
     // from customer orders, never made by hand.
@@ -89,7 +89,7 @@ export const DROPSHIP_SURFACES: SurfaceDefinition[] = [
     key: 'dropship.analytics',
     title: 'Profitability',
     module: 'dropship',
-    icon: BarChart2,
+    icon: faChartSimple,
     section: 'Reporting',
     order: 30,
     keywords: ['margin', 'profit', 'cost', 'sla', 'performance'],

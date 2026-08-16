@@ -27,7 +27,8 @@
 // bar looks like and which actions it offers.
 
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { X } from 'lucide-react';
+import { faStar, faXmark } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import type { IDockviewPanelHeaderProps } from 'dockview';
 import {
   Button,
@@ -38,19 +39,95 @@ import {
   ContextMenuTrigger,
   PortalContainerProvider,
 } from '@wizeworks/silicaui-react';
+import { Tooltip } from '@wizeworks/silicaui-react';
 import { ModuleScope } from '@/components/module-scope';
+import { useFavorites, useToggleFavorite } from '@/lib/api/shell-data';
 import { getSurface } from '@/lib/surfaces/registry';
 import { useWorkbench } from '@/lib/workbench/context';
 import { usePaneDirty } from '@/lib/workbench/dirty';
 import { useOwnerWindowBody } from '@/lib/dock/window-boundary';
 import { useCopyLink, usePaneLink } from '@/components/copy-pane-link';
 
+/**
+ * Favourite THIS pane's screen, from its own title bar.
+ *
+ * ── WHY IT IS HERE AND NOT IN THE APP TOOLBAR ───────────────────────────────
+ *
+ * It used to sit in the top toolbar and act on "whichever pane has focus". In a
+ * workbench holding five panes at once that is a control with no visible
+ * subject: you press a star at the top of the screen and something changes about
+ * one of the windows below it, and which one depends on where you last clicked.
+ * The tab has no such ambiguity — it IS the screen — so the control belongs on
+ * it, beside the close button that already works the same way.
+ *
+ * A favourite is a SCREEN, never a record: "Invoices" can be one, invoice
+ * INV-000004 cannot, because the rail would fill with rows nobody can maintain.
+ * A pane opened with params is therefore offered nothing rather than a control
+ * that would refuse — the tooltip on the close-neighbour explains why when it is
+ * a near miss.
+ */
+function FavouriteButton({
+  descriptor,
+  title,
+}: {
+  descriptor: { surface: string; params?: Record<string, unknown> } | undefined;
+  title: string;
+}) {
+  const { data: favorites } = useFavorites();
+  const toggle = useToggleFavorite();
+
+  const surfaceKey = descriptor?.surface ?? null;
+  const hasParams = Boolean(descriptor?.params && Object.keys(descriptor.params).length > 0);
+  // A record's pane cannot be favourited, and a disabled star on every entity
+  // tab is chrome that never does anything — so it simply is not offered.
+  if (!surfaceKey || hasParams) return null;
+
+  const favourited = favorites?.some((favorite) => favorite.actionId === surfaceKey) ?? false;
+
+  return (
+    <Tooltip content={favourited ? 'Remove from favourites' : 'Add to favourites'}>
+      <Button
+        color="primary"
+        variant="ghost"
+        size="xs"
+        shape="square"
+        aria-label={favourited ? `Remove ${title} from favourites` : `Add ${title} to favourites`}
+        aria-pressed={favourited}
+        disabled={toggle.isPending}
+        className="shrink-0"
+        onClick={(event) => {
+          // The bar is also the pane's drag handle and its focus target.
+          event.stopPropagation();
+          toggle.mutate({ actionId: surfaceKey, favorited: favourited });
+        }}
+      >
+        {/* FILLED when it is one, HOLLOW when it is not — the same solid glyph
+            stroked instead of filled (see `outline` on @piggles/ui's Icon).
+            State as shape, so it reads at a glance and still reads for anyone
+            the colour does not reach, on a tab that already has a soft module
+            tint sitting behind it.
+
+            `primary` rather than the `warning` this wore in the toolbar: amber
+            is the status axis and means something is WRONG, which a favourite
+            never is. Piggles Pink is the brand's one accent, and "I marked this"
+            is exactly what an accent is for. */}
+        <Icon
+          glyph={faStar}
+          outline={!favourited}
+          className={favourited ? 'text-primary size-3.5' : 'size-3.5'}
+          aria-hidden
+        />
+      </Button>
+    </Tooltip>
+  );
+}
+
 export function PaneTab(props: IDockviewPanelHeaderProps<{ paneId: string }>) {
   const { controller } = useWorkbench();
   const paneId = props.params.paneId;
   const descriptor = controller.getDescriptor(paneId);
   const definition = descriptor ? getSurface(descriptor.surface) : undefined;
-  const Icon = definition?.icon;
+  const glyph = definition?.icon;
 
   const dirty = usePaneDirty(paneId);
   const link = usePaneLink(paneId);
@@ -127,8 +204,8 @@ export function PaneTab(props: IDockviewPanelHeaderProps<{ paneId: string }>) {
           {/* The app's colour lives HERE — one small saturated mark rather than
               a flooded bar. It is the same hue the rail uses for the same app,
               so the two read as one system. */}
-          {Icon ? (
-            <Icon className="text-module size-4 shrink-0" aria-hidden />
+          {glyph ? (
+            <Icon glyph={glyph} className="text-module size-4 shrink-0" aria-hidden />
           ) : (
             <span className="bg-module size-2 shrink-0 rounded-full" aria-hidden />
           )}
@@ -148,6 +225,8 @@ export function PaneTab(props: IDockviewPanelHeaderProps<{ paneId: string }>) {
             />
           ) : null}
 
+          <FavouriteButton descriptor={descriptor} title={title} />
+
           {/* Always visible — not hover-revealed, and never `display: none`.
               Hiding it until hover is a desktop habit that costs more than it
               saves here: it makes closing a background pane a two-step (focus,
@@ -156,7 +235,7 @@ export function PaneTab(props: IDockviewPanelHeaderProps<{ paneId: string }>) {
               tab's width jump as the pointer crosses the strip. The tab is
               min-width 8rem, so the room is already reserved. */}
           <Button
-            color="neutral"
+            color="module"
             variant="ghost"
             size="xs"
             shape="square"
@@ -168,7 +247,7 @@ export function PaneTab(props: IDockviewPanelHeaderProps<{ paneId: string }>) {
               void controller.requestClose(paneId);
             }}
           >
-            <X className="size-3.5" aria-hidden />
+            <Icon glyph={faXmark} className="size-3.5" aria-hidden />
           </Button>
         </ModuleScope>
       </ContextMenuTrigger>

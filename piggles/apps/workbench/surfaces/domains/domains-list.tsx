@@ -27,7 +27,13 @@ import {
   SearchInput,
   Text,
 } from '@wizeworks/silicaui-react';
-import { ExternalLink, GlobeLock, Plus, ShoppingBag } from 'lucide-react';
+import {
+  faArrowUpRightFromSquare,
+  faBagShopping,
+  faEarthAmericas,
+  faPlus,
+} from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { useActiveSiteId } from '../../lib/api/shell-data';
 import { RefreshButton } from '../../components/refresh-button';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
@@ -91,7 +97,7 @@ function AddressRow({
           title={`Open ${domain.host} in a new tab`}
           className="link inline-flex shrink-0 items-center py-3"
         >
-          <ExternalLink className="size-4" aria-hidden />
+          <Icon glyph={faArrowUpRightFromSquare} className="size-4" aria-hidden />
         </a>
       ) : (
         <span className="inline-block size-4 shrink-0" aria-hidden />
@@ -156,7 +162,7 @@ export function DomainsListSurface({ ctx }: { ctx: SurfaceContext }) {
     return (
       <Card className="min-h-0 flex-1 items-center justify-center">
         <PaneEmpty
-          icon={<GlobeLock className="size-6" aria-hidden />}
+          icon={<Icon glyph={faEarthAmericas} className="size-6" aria-hidden />}
           title="Could not load your web addresses"
           description="This is a problem reaching the server. Your addresses are unaffected and still working."
           actions={
@@ -226,9 +232,13 @@ export function DomainsListSurface({ ctx }: { ctx: SurfaceContext }) {
           // eslint-disable-next-line jsx-a11y/anchor-has-content -- children arrive via `render`
           render={<a href={DOMAIN_SHOP_URL} target="_blank" rel="noreferrer" />}
         >
-          <ShoppingBag className="size-4" aria-hidden />
+          <Icon glyph={faBagShopping} className="size-4" aria-hidden />
           <span className="hidden @2xl:inline">Get a domain</span>
-          <ExternalLink className="hidden size-3 @2xl:inline" aria-hidden />
+          <Icon
+            glyph={faArrowUpRightFromSquare}
+            className="hidden size-3 @2xl:inline"
+            aria-hidden
+          />
         </Button>
         <Button
           color="module"
@@ -239,7 +249,7 @@ export function DomainsListSurface({ ctx }: { ctx: SurfaceContext }) {
             ctx.open('platform.settings.domain', { id: 'new' }, { target: targetFor(event) });
           }}
         >
-          <Plus className="size-4" aria-hidden />
+          <Icon glyph={faPlus} className="size-4" aria-hidden />
           Connect a domain
         </Button>
         {/* ALWAYS the last child of a list toolbar — see RefreshButton. */}
@@ -257,7 +267,7 @@ export function DomainsListSurface({ ctx }: { ctx: SurfaceContext }) {
           <PaneWaiting />
         ) : groups.length === 0 ? (
           <EmptyState
-            icon={<GlobeLock className="size-6" aria-hidden />}
+            icon={<Icon glyph={faEarthAmericas} className="size-6" aria-hidden />}
             title={needle ? 'No addresses match that' : 'No web addresses yet'}
             description={
               needle

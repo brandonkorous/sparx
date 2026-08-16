@@ -34,7 +34,15 @@ import {
   useToast,
 } from '@wizeworks/silicaui-react';
 import { useConfirm } from '../../lib/confirm';
-import { Check, EyeOff, MessageSquare, Reply, ServerCrash, Trash2 } from 'lucide-react';
+import {
+  faCheck,
+  faEyeSlash,
+  faMessage,
+  faReply,
+  faServer,
+  faTrashCan,
+} from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
@@ -290,7 +298,7 @@ function ReviewCard({
               setStatus('approved', 'Review published');
             }}
           >
-            <Check className="size-4" aria-hidden />
+            <Icon glyph={faCheck} className="size-4" aria-hidden />
             Publish it
           </Button>
           <Button
@@ -302,7 +310,7 @@ function ReviewCard({
               setStatus('rejected', 'Review hidden');
             }}
           >
-            <EyeOff className="size-4" aria-hidden />
+            <Icon glyph={faEyeSlash} className="size-4" aria-hidden />
             Hide it
           </Button>
           <Button
@@ -313,7 +321,7 @@ function ReviewCard({
               setReplying(true);
             }}
           >
-            <Reply className="size-4" aria-hidden />
+            <Icon glyph={faReply} className="size-4" aria-hidden />
             {review.response ? 'Edit your reply' : 'Reply'}
           </Button>
           <Button
@@ -326,7 +334,7 @@ function ReviewCard({
             loading={remove.isPending}
             onClick={onDelete}
           >
-            <Trash2 className="size-4" aria-hidden />
+            <Icon glyph={faTrashCan} className="size-4" aria-hidden />
           </Button>
         </div>
       )}
@@ -428,7 +436,7 @@ export function ReviewsQueueSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar label="Reviews queue controls">
-        <MessageSquare className="size-4 shrink-0" aria-hidden />
+        <Icon glyph={faMessage} className="size-4 shrink-0" aria-hidden />
         <Heading level={2} className="min-w-0 truncate text-base font-semibold">
           {LABEL}
         </Heading>
@@ -451,7 +459,7 @@ export function ReviewsQueueSurface({ ctx }: { ctx: SurfaceContext }) {
         <div className="mx-auto flex w-full max-w-3xl flex-col gap-4">
           {reviews.isError ? (
             <EmptyState
-              icon={<ServerCrash className="size-6" aria-hidden />}
+              icon={<Icon glyph={faServer} className="size-6" aria-hidden />}
               title="Could not load the reviews queue"
               description={productErrorMessage(
                 reviews.error,
@@ -473,7 +481,7 @@ export function ReviewsQueueSurface({ ctx }: { ctx: SurfaceContext }) {
             <PaneWaiting />
           ) : rows.length === 0 && !focused && !focusPending ? (
             <EmptyState
-              icon={<Check className="size-6" aria-hidden />}
+              icon={<Icon glyph={faCheck} className="size-6" aria-hidden />}
               title="Nothing waiting"
               description="Every review across your whole catalog has had a decision. New ones from customers who didn't buy through a tracked order appear here for you to publish or hide before they go on your website."
             />
@@ -528,7 +536,7 @@ export function ReviewsQueueSurface({ ctx }: { ctx: SurfaceContext }) {
                           bulkSetStatus('approved', 'Published');
                         }}
                       >
-                        <Check className="size-4" aria-hidden />
+                        <Icon glyph={faCheck} className="size-4" aria-hidden />
                         Publish
                       </Button>
                       <Button
@@ -541,7 +549,7 @@ export function ReviewsQueueSurface({ ctx }: { ctx: SurfaceContext }) {
                           bulkSetStatus('rejected', 'Hidden');
                         }}
                       >
-                        <EyeOff className="size-4" aria-hidden />
+                        <Icon glyph={faEyeSlash} className="size-4" aria-hidden />
                         Hide
                       </Button>
                       <Button
@@ -552,7 +560,7 @@ export function ReviewsQueueSurface({ ctx }: { ctx: SurfaceContext }) {
                         disabled={busy}
                         onClick={onBulkDelete}
                       >
-                        <Trash2 className="size-4" aria-hidden />
+                        <Icon glyph={faTrashCan} className="size-4" aria-hidden />
                         Delete
                       </Button>
                       <Button

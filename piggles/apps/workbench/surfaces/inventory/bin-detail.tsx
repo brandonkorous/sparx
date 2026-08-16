@@ -38,7 +38,8 @@ import {
   Tooltip,
   useToast,
 } from '@wizeworks/silicaui-react';
-import { Archive, Grid3x3, QrCode, Save } from 'lucide-react';
+import { faBoxArchive, faFloppyDisk, faGrid, faQrcode } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { useConfirm } from '../../lib/confirm';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
@@ -248,7 +249,7 @@ export function BinDetailSurface({ ctx }: { ctx: SurfaceContext }) {
           disabled={!valid || !changed || create.isPending || update.isPending}
           onClick={submit}
         >
-          <Save className="size-4" aria-hidden />
+          <Icon glyph={faFloppyDisk} className="size-4" aria-hidden />
           Save
         </Button>
 
@@ -261,7 +262,7 @@ export function BinDetailSurface({ ctx }: { ctx: SurfaceContext }) {
               aria-label="Remove this shelf"
               onClick={() => void onArchive()}
             >
-              <Archive className="size-4" aria-hidden />
+              <Icon glyph={faBoxArchive} className="size-4" aria-hidden />
             </Button>
           </Tooltip>
         ) : null}
@@ -277,7 +278,7 @@ export function BinDetailSurface({ ctx }: { ctx: SurfaceContext }) {
                 ctx.open('inventory.bins.labels', { binId: id }, { target: 'beside' });
               }}
             >
-              <QrCode className="size-4" aria-hidden />
+              <Icon glyph={faQrcode} className="size-4" aria-hidden />
             </Button>
           </Tooltip>
         ) : null}
@@ -574,7 +575,7 @@ export function BinDetailSurface({ ctx }: { ctx: SurfaceContext }) {
 
           {isNew && activeLocations.length === 0 ? (
             <EmptyState
-              icon={<Grid3x3 className="size-6" aria-hidden />}
+              icon={<Icon glyph={faGrid} className="size-6" aria-hidden />}
               title="No locations yet"
               description="A shelf lives inside a location, so add the place first."
             />

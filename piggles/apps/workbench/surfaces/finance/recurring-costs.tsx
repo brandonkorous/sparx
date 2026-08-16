@@ -40,7 +40,16 @@ import {
   Textarea,
   useToast,
 } from '@wizeworks/silicaui-react';
-import { CalendarClock, Pencil, Play, Plus, Save, Trash2, X } from 'lucide-react';
+import {
+  faCalendarClock,
+  faFloppyDisk,
+  faPencil,
+  faPlay,
+  faPlus,
+  faTrashCan,
+  faXmark,
+} from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import { FormSection } from '../../components/form-section';
@@ -199,7 +208,7 @@ function TemplateEditor({
           aria-label="Cancel"
           onClick={onDone}
         >
-          <X className="size-4" aria-hidden />
+          <Icon glyph={faXmark} className="size-4" aria-hidden />
         </Button>
       }
     >
@@ -435,7 +444,7 @@ function TemplateEditor({
           loading={save.isPending}
           onClick={onSave}
         >
-          <Save className="size-4" aria-hidden />
+          <Icon glyph={faFloppyDisk} className="size-4" aria-hidden />
           {template ? 'Save' : 'Add it'}
         </Button>
         <Button size="sm" variant="ghost" color="neutral" onClick={onDone}>
@@ -551,7 +560,7 @@ export function RecurringCostsSurface() {
             setEditing(null);
           }}
         >
-          <Plus className="size-4" aria-hidden />
+          <Icon glyph={faPlus} className="size-4" aria-hidden />
           Add a repeating cost
         </Button>
 
@@ -563,7 +572,7 @@ export function RecurringCostsSurface() {
           disabled={templates.length === 0}
           onClick={runGenerate}
         >
-          <Play className="size-4" aria-hidden />
+          <Icon glyph={faPlay} className="size-4" aria-hidden />
           Catch up now
         </Button>
 
@@ -580,7 +589,7 @@ export function RecurringCostsSurface() {
       <div className="min-h-0 flex-1 overflow-y-auto">
         {isError ? (
           <EmptyState
-            icon={<CalendarClock className="size-6" aria-hidden />}
+            icon={<Icon glyph={faCalendarClock} className="size-6" aria-hidden />}
             title="Could not load your repeating costs"
             description="The server could not be reached. Your schedules are unaffected."
             actions={
@@ -626,7 +635,7 @@ export function RecurringCostsSurface() {
             {templates.length === 0 && !adding ? (
               <Card>
                 <EmptyState
-                  icon={<CalendarClock className="size-6" aria-hidden />}
+                  icon={<Icon glyph={faCalendarClock} className="size-6" aria-hidden />}
                   title="No repeating costs yet"
                   description="Rent, insurance, subscriptions, a lease — set each one up once and it is counted every month without anyone typing it in. This is usually the biggest chunk of spending a business forgets to record."
                   actions={
@@ -637,7 +646,7 @@ export function RecurringCostsSurface() {
                         setAdding(true);
                       }}
                     >
-                      <Plus className="size-4" aria-hidden />
+                      <Icon glyph={faPlus} className="size-4" aria-hidden />
                       Add a repeating cost
                     </Button>
                   }
@@ -704,7 +713,7 @@ export function RecurringCostsSurface() {
                           setAdding(false);
                         }}
                       >
-                        <Pencil className="size-4" aria-hidden />
+                        <Icon glyph={faPencil} className="size-4" aria-hidden />
                       </Button>
                       <Button
                         size="sm"
@@ -716,7 +725,7 @@ export function RecurringCostsSurface() {
                           void onDelete(template);
                         }}
                       >
-                        <Trash2 className="size-4" aria-hidden />
+                        <Icon glyph={faTrashCan} className="size-4" aria-hidden />
                       </Button>
                     </div>
                   </div>

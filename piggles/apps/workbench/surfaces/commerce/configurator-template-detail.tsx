@@ -45,7 +45,14 @@ import {
   useToast,
 } from '@wizeworks/silicaui-react';
 import { useConfirm } from '../../lib/confirm';
-import { ArrowDown, ArrowUp, FlaskConical, Plus, Trash2 } from 'lucide-react';
+import {
+  faArrowDown,
+  faArrowUp,
+  faFlask,
+  faPlus,
+  faTrashCan,
+} from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { useQuery } from '@sparx/query';
 import { api } from '../../lib/api/client';
 import { useDirtySource } from '../../lib/workbench/dirty';
@@ -611,7 +618,7 @@ function Editor({
               What you ask them
             </Heading>
             <Button size="sm" variant="outline" color="module" onClick={addQuestion}>
-              <Plus className="size-4" aria-hidden />
+              <Icon glyph={faPlus} className="size-4" aria-hidden />
               Add a question
             </Button>
           </div>
@@ -683,7 +690,7 @@ function Editor({
                       set({ rules: draft.rules.filter((_, i) => i !== index) });
                     }}
                   >
-                    <Trash2 className="size-4" aria-hidden />
+                    <Icon glyph={faTrashCan} className="size-4" aria-hidden />
                   </Button>
                 </div>
               ))}
@@ -709,7 +716,7 @@ function Editor({
                   void onDelete();
                 }}
               >
-                <Trash2 className="size-4" aria-hidden />
+                <Icon glyph={faTrashCan} className="size-4" aria-hidden />
                 Delete this build
               </Button>
             </div>
@@ -794,7 +801,7 @@ function ChoiceRow({
         title="Remove this answer"
         onClick={onRemove}
       >
-        <Trash2 className="size-4" aria-hidden />
+        <Icon glyph={faTrashCan} className="size-4" aria-hidden />
       </Button>
       {deltaLabel(choice.priceDeltaCents, currency) === null ? null : (
         <Text className="w-full text-sm">
@@ -852,7 +859,7 @@ function QuestionCard({
               onMove(-1);
             }}
           >
-            <ArrowUp className="size-4" aria-hidden />
+            <Icon glyph={faArrowUp} className="size-4" aria-hidden />
           </Button>
           <Button
             size="sm"
@@ -866,7 +873,7 @@ function QuestionCard({
               onMove(1);
             }}
           >
-            <ArrowDown className="size-4" aria-hidden />
+            <Icon glyph={faArrowDown} className="size-4" aria-hidden />
           </Button>
           <Button
             size="sm"
@@ -877,7 +884,7 @@ function QuestionCard({
             title="Remove this question"
             onClick={onRemove}
           >
-            <Trash2 className="size-4" aria-hidden />
+            <Icon glyph={faTrashCan} className="size-4" aria-hidden />
           </Button>
         </div>
       </div>
@@ -1007,7 +1014,7 @@ function QuestionCard({
               });
             }}
           >
-            <Plus className="size-4" aria-hidden />
+            <Icon glyph={faPlus} className="size-4" aria-hidden />
             Add an answer
           </Button>
         </div>
@@ -1177,7 +1184,7 @@ function TryItPanel({
         loading={preview.isPending}
         onClick={run}
       >
-        <FlaskConical className="size-4" aria-hidden />
+        <Icon glyph={faFlask} className="size-4" aria-hidden />
         See what they would get
       </Button>
 

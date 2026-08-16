@@ -44,7 +44,8 @@ import {
   useToast,
 } from '@wizeworks/silicaui-react';
 import { useConfirm } from '../../lib/confirm';
-import { Plus, Trash2 } from 'lucide-react';
+import { faPlus, faTrashCan } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import { afterPaneChange } from '../../lib/defer';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
@@ -325,7 +326,7 @@ function DomainEditor({
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar label="Compatibility list actions">
-        <HeaderIcon className="size-4 shrink-0" aria-hidden />
+        <Icon glyph={HeaderIcon} className="size-4 shrink-0" aria-hidden />
         {!isNew && domain ? (
           <Badge color="neutral" variant="soft" size="sm">
             {rootCountLabel(domain)}
@@ -410,7 +411,7 @@ function DomainEditor({
                         set('iconKey', selected ? null : choice.key);
                       }}
                     >
-                      <choice.Icon className="size-5" aria-hidden />
+                      <Icon glyph={choice.Icon} className="size-5" aria-hidden />
                       <span className="text-xs font-normal">{choice.label}</span>
                     </Button>
                   );
@@ -477,7 +478,7 @@ function DomainEditor({
                       );
                     }}
                   >
-                    <Trash2 className="size-4" aria-hidden />
+                    <Icon glyph={faTrashCan} className="size-4" aria-hidden />
                   </Button>
                 </div>
               ))}
@@ -498,7 +499,7 @@ function DomainEditor({
                   set('levels', [...draft.levels, { key: null, label: '', unit: '' }]);
                 }}
               >
-                <Plus className="size-4" aria-hidden />
+                <Icon glyph={faPlus} className="size-4" aria-hidden />
                 Add another level
               </Button>
             </div>
@@ -553,7 +554,7 @@ function DomainEditor({
                         );
                       }}
                     >
-                      <Trash2 className="size-4" aria-hidden />
+                      <Icon glyph={faTrashCan} className="size-4" aria-hidden />
                     </Button>
                   </div>
                 ))}
@@ -568,7 +569,7 @@ function DomainEditor({
                   set('ranges', [...draft.ranges, { key: null, label: '', unit: '' }]);
                 }}
               >
-                <Plus className="size-4" aria-hidden />
+                <Icon glyph={faPlus} className="size-4" aria-hidden />
                 Add a number range
               </Button>
             </div>
@@ -597,7 +598,7 @@ function DomainEditor({
                   void onDelete();
                 }}
               >
-                <Trash2 className="size-4" aria-hidden />
+                <Icon glyph={faTrashCan} className="size-4" aria-hidden />
                 Delete this list
               </Button>
             </div>

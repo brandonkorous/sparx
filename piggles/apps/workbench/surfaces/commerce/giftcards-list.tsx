@@ -14,7 +14,8 @@
 import { useState } from 'react';
 import { PaneWaiting } from '../../components/pane-waiting';
 import { Badge, Button, Card, EmptyState, SearchInput, Table } from '@wizeworks/silicaui-react';
-import { ArrowDown, ArrowUp, Plus, Ticket } from 'lucide-react';
+import { faArrowDown, faArrowUp, faPlus, faTicket } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
@@ -111,9 +112,9 @@ export function GiftCardsListSurface({ ctx }: { ctx: SurfaceContext }) {
         {label}
         {sort.key === key ? (
           sort.dir === 'asc' ? (
-            <ArrowUp className="size-3" aria-hidden />
+            <Icon glyph={faArrowUp} className="size-3" aria-hidden />
           ) : (
-            <ArrowDown className="size-3" aria-hidden />
+            <Icon glyph={faArrowDown} className="size-3" aria-hidden />
           )
         ) : null}
       </button>
@@ -149,7 +150,7 @@ export function GiftCardsListSurface({ ctx }: { ctx: SurfaceContext }) {
             ctx.open('commerce.giftcard.detail', { id: 'new' }, { target: targetFor(event) });
           }}
         >
-          <Plus className="size-4" aria-hidden />
+          <Icon glyph={faPlus} className="size-4" aria-hidden />
           <span className="hidden @lg:inline">Issue a gift card</span>
         </Button>
 
@@ -165,7 +166,7 @@ export function GiftCardsListSurface({ ctx }: { ctx: SurfaceContext }) {
       <Card className="min-h-0 flex-1 overflow-y-auto">
         {error ? (
           <EmptyState
-            icon={<Ticket className="size-6" aria-hidden />}
+            icon={<Icon glyph={faTicket} className="size-6" aria-hidden />}
             title="Could not load your gift cards"
             description="Something went wrong reaching the server. It may be temporary — try again in a moment."
           />
@@ -175,7 +176,7 @@ export function GiftCardsListSurface({ ctx }: { ctx: SurfaceContext }) {
           <ListEmptyState
             filtered={Boolean(search.trim())}
             noResults={{
-              icon: <Ticket className="size-6" aria-hidden />,
+              icon: <Icon glyph={faTicket} className="size-6" aria-hidden />,
               title: 'Nothing matches that search',
               description: 'Try a different word, or clear the search box to see everything.',
             }}

@@ -46,7 +46,14 @@ import {
   useToast,
 } from '@wizeworks/silicaui-react';
 import { useConfirm } from '../../lib/confirm';
-import { Languages, Plus, Save, ServerCrash, Trash2 } from 'lucide-react';
+import {
+  faFloppyDisk,
+  faLanguage,
+  faPlus,
+  faServer,
+  faTrashCan,
+} from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import { FormSection } from '../../components/form-section';
@@ -127,7 +134,7 @@ export function TranslationDetailSurface({ ctx }: { ctx: SurfaceContext }) {
     return (
       <ModuleScope module="commerce" className={PANE_SHELL}>
         <PaneToolbar label="Product translations actions">
-          <Languages className="size-4 shrink-0" aria-hidden />
+          <Icon glyph={faLanguage} className="size-4 shrink-0" aria-hidden />
           <Heading level={2} className="min-w-0 truncate text-base font-semibold">
             {productId === '' ? 'Translations' : title}
           </Heading>
@@ -142,13 +149,13 @@ export function TranslationDetailSurface({ ctx }: { ctx: SurfaceContext }) {
           <div className={COLUMN}>
             {productId === '' ? (
               <EmptyState
-                icon={<Languages className="size-6" aria-hidden />}
+                icon={<Icon glyph={faLanguage} className="size-6" aria-hidden />}
                 title="No product chosen"
                 description="Open a product from the translations list to write its words in another language."
               />
             ) : failed ? (
               <EmptyState
-                icon={<ServerCrash className="size-6" aria-hidden />}
+                icon={<Icon glyph={faServer} className="size-6" aria-hidden />}
                 title="Could not load this product"
                 description={translationErrorMessage(
                   source.error ?? translations.error,
@@ -334,7 +341,7 @@ function Editor({
   return (
     <ModuleScope module="commerce" className={PANE_SHELL}>
       <PaneToolbar label="Product translations actions" wrap>
-        <Languages className="size-4 shrink-0" aria-hidden />
+        <Icon glyph={faLanguage} className="size-4 shrink-0" aria-hidden />
         <Heading level={2} className="min-w-0 truncate text-base font-semibold">
           {product.title}
         </Heading>
@@ -350,7 +357,7 @@ function Editor({
           loading={saveTranslation.isPending}
           onClick={save}
         >
-          <Save className="size-4" aria-hidden />
+          <Icon glyph={faFloppyDisk} className="size-4" aria-hidden />
           {active === '' ? 'Save' : `Save ${localeName(active)}`}
         </Button>
 
@@ -486,7 +493,7 @@ function Editor({
                       loading={removeTranslation.isPending}
                       onClick={onRemove}
                     >
-                      <Trash2 className="size-4" aria-hidden />
+                      <Icon glyph={faTrashCan} className="size-4" aria-hidden />
                       {isNew ? 'Discard it' : `Remove ${localeName(active)}`}
                     </Button>
                   </div>
@@ -591,7 +598,7 @@ function AddLanguage({ existing, onAdd }: { existing: string[]; onAdd: (locale: 
       </Field>
       <div className="flex justify-end">
         <Button size="sm" color="module" disabled={!valid} onClick={commit}>
-          <Plus className="size-4" aria-hidden />
+          <Icon glyph={faPlus} className="size-4" aria-hidden />
           Add this language
         </Button>
       </div>

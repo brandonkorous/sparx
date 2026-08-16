@@ -13,7 +13,8 @@
 
 import { useEffect, useRef, useSyncExternalStore } from 'react';
 import { Badge, Button } from '@wizeworks/silicaui-react';
-import { X } from 'lucide-react';
+import { faXmark } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { getSurface, titleFor } from '../lib/surfaces/registry';
 import { useWorkbench } from '../lib/workbench/context';
 import { StackPaneHost } from '../lib/workbench/stack-host';
@@ -138,7 +139,7 @@ function PaneSwitcher({
       {order.map((paneId) => {
         const descriptor = controller.getDescriptor(paneId);
         const definition = descriptor ? getSurface(descriptor.surface) : undefined;
-        const Icon = definition?.icon;
+        const glyph = definition?.icon;
         const active = paneId === activeId;
 
         return (
@@ -155,7 +156,7 @@ function PaneSwitcher({
                 host.show(paneId);
               }}
             >
-              {Icon ? <Icon className="size-4 shrink-0" aria-hidden /> : null}
+              {glyph ? <Icon glyph={glyph} className="size-4 shrink-0" aria-hidden /> : null}
               <span className="max-w-32 truncate">{host.titleOf(paneId)}</span>
             </Button>
 
@@ -171,7 +172,7 @@ function PaneSwitcher({
                   void controller.requestClose(paneId);
                 }}
               >
-                <X className="size-4" aria-hidden />
+                <Icon glyph={faXmark} className="size-4" aria-hidden />
               </Button>
             ) : null}
           </div>

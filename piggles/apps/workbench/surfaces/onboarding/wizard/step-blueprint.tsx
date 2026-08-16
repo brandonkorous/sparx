@@ -8,7 +8,8 @@
 
 import { useState } from 'react';
 import { Badge, Button, SearchInput, Text } from '@wizeworks/silicaui-react';
-import { Check, PencilRuler } from 'lucide-react';
+import { faCheck, faPencilRuler } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import type { BlueprintVertical, WizardBlueprint } from '../../../lib/onboarding/types';
 
 /** The sentinel the orchestrator reads as "blank canvas, no blueprint". */
@@ -117,7 +118,7 @@ export function StepBlueprint({
         }`}
       >
         <div className="flex min-w-0 items-center gap-3">
-          <PencilRuler className="text-module size-5 shrink-0" aria-hidden />
+          <Icon glyph={faPencilRuler} className="text-module size-5 shrink-0" aria-hidden />
           <div className="min-w-0">
             <p className="font-medium">Start from a blank canvas</p>
             <p className="text-sm">
@@ -168,7 +169,7 @@ function BlueprintCard({
         <span className="absolute top-2.5 right-2.5">
           {selected ? (
             <Badge color="module" variant="solid" size="sm">
-              <Check className="size-3" aria-hidden />
+              <Icon glyph={faCheck} className="size-3" aria-hidden />
               Selected
             </Badge>
           ) : (

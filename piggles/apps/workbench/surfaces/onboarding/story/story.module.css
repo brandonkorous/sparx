@@ -8,7 +8,7 @@
        hover deepens the tint, focus uses an outline ring.
      • No hardcoded colour — every value is a brand token var. A chip's hue comes from
        `--color-module`, which the element sets purely by carrying `data-module="…"`
-       (the @sparx/brand bridge maps the attribute to the hue — no inline style, the
+       (the @piggles/brand bridge maps the attribute to the hue — no inline style, the
        same mechanism as <ModuleScope>).
      • Readable text keeps a real ink; only the dashed placeholder + the "+" affordances
        read quiet, and they lean on border/shape for that, not faded body copy. */

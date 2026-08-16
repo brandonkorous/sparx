@@ -32,7 +32,14 @@ import {
   Textarea,
   useToast,
 } from '@wizeworks/silicaui-react';
-import { Boxes, ChevronDown, ChevronUp, Plus, Trash2 } from 'lucide-react';
+import {
+  faBoxes,
+  faChevronDown,
+  faChevronUp,
+  faPlus,
+  faTrashCan,
+} from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { FormSection } from '../../components/form-section';
@@ -278,7 +285,7 @@ export function ObjectTypeDetailSurface({ ctx }: { ctx: SurfaceContext }) {
     return (
       <div className={PANE_SHELL}>
         <EmptyState
-          icon={<Boxes className="size-6" aria-hidden />}
+          icon={<Icon glyph={faBoxes} className="size-6" aria-hidden />}
           title="Could not open that record type"
           description="This is a problem reaching the server, or the record type has been removed."
         />
@@ -492,7 +499,7 @@ export function ObjectTypeDetailSurface({ ctx }: { ctx: SurfaceContext }) {
             )}
 
             <Button size="sm" color="module" variant="outline" onClick={addField}>
-              <Plus className="size-4" aria-hidden />
+              <Icon glyph={faPlus} className="size-4" aria-hidden />
               Add a detail
             </Button>
           </FormSection>
@@ -586,7 +593,7 @@ function FieldRow({
             onMove(-1);
           }}
         >
-          <ChevronUp className="size-4" aria-hidden />
+          <Icon glyph={faChevronUp} className="size-4" aria-hidden />
         </Button>
         <Button
           size="sm"
@@ -598,7 +605,7 @@ function FieldRow({
             onMove(1);
           }}
         >
-          <ChevronDown className="size-4" aria-hidden />
+          <Icon glyph={faChevronDown} className="size-4" aria-hidden />
         </Button>
         <Button
           size="sm"
@@ -607,7 +614,7 @@ function FieldRow({
           aria-label={`Remove ${field.label}`}
           onClick={onRemove}
         >
-          <Trash2 className="size-4" aria-hidden />
+          <Icon glyph={faTrashCan} className="size-4" aria-hidden />
         </Button>
       </div>
 
@@ -786,7 +793,7 @@ function EnumOptionsEditor({
                 onChange({ ...field, options: options.filter((_, i) => i !== index) });
               }}
             >
-              <Trash2 className="size-4" aria-hidden />
+              <Icon glyph={faTrashCan} className="size-4" aria-hidden />
             </Button>
           </div>
         ))}
@@ -798,7 +805,7 @@ function EnumOptionsEditor({
             onChange({ ...field, options: [...options, { label: '', value: '' }] });
           }}
         >
-          <Plus className="size-4" aria-hidden />
+          <Icon glyph={faPlus} className="size-4" aria-hidden />
           Add a choice
         </Button>
       </div>

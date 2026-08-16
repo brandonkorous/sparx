@@ -43,7 +43,8 @@ import {
   ToggleGroupItem,
   useToast,
 } from '@wizeworks/silicaui-react';
-import { Columns3, List, Plus, Target } from 'lucide-react';
+import { faBullseye, faColumns3, faList, faPlus } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { PaneScope } from '../../lib/dock/window-boundary';
@@ -342,11 +343,11 @@ export function DealsListSurface({ ctx }: { ctx: SurfaceContext }) {
           }}
         >
           <ToggleGroupItem value="board" aria-label="Show the board">
-            <Columns3 className="size-4" aria-hidden />
+            <Icon glyph={faColumns3} className="size-4" aria-hidden />
             <span className="hidden @lg:inline">Board</span>
           </ToggleGroupItem>
           <ToggleGroupItem value="table" aria-label="Show the list">
-            <List className="size-4" aria-hidden />
+            <Icon glyph={faList} className="size-4" aria-hidden />
             <span className="hidden @lg:inline">List</span>
           </ToggleGroupItem>
         </ToggleGroup>
@@ -360,7 +361,7 @@ export function DealsListSurface({ ctx }: { ctx: SurfaceContext }) {
             ctx.open('crm.deal.detail', { id: 'new' }, { target: targetFor(event) });
           }}
         >
-          <Plus className="size-4" aria-hidden />
+          <Icon glyph={faPlus} className="size-4" aria-hidden />
           New deal
         </Button>
         <SavedViewsMenu
@@ -383,7 +384,7 @@ export function DealsListSurface({ ctx }: { ctx: SurfaceContext }) {
       <Card className="min-h-0 flex-1 overflow-hidden">
         {isError ? (
           <EmptyState
-            icon={<Target className="size-6" aria-hidden />}
+            icon={<Icon glyph={faBullseye} className="size-6" aria-hidden />}
             title="Could not load your deals"
             description="Something went wrong reaching the server. It may be a temporary problem — try again in a moment."
             actions={
@@ -402,7 +403,7 @@ export function DealsListSurface({ ctx }: { ctx: SurfaceContext }) {
           <PaneWaiting />
         ) : isBoard && !boardReady ? (
           <EmptyState
-            icon={<Columns3 className="size-6" aria-hidden />}
+            icon={<Icon glyph={faColumns3} className="size-6" aria-hidden />}
             title="No pipeline to show a board for"
             description="A board needs a pipeline — the named steps a deal moves through, from first contact to won or lost. Set one up and every deal gets a column to sit in."
             actions={
@@ -421,7 +422,7 @@ export function DealsListSurface({ ctx }: { ctx: SurfaceContext }) {
           <ListEmptyState
             filtered={filtered}
             noResults={{
-              icon: <Target className="size-6" aria-hidden />,
+              icon: <Icon glyph={faBullseye} className="size-6" aria-hidden />,
               title: 'No deals match those filters',
               description:
                 'Try a different word, or change the filters — closed deals are hidden unless you ask for them.',

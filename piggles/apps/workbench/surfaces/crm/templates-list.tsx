@@ -51,7 +51,8 @@ import {
   Textarea,
   useToast,
 } from '@wizeworks/silicaui-react';
-import { FileText, Pencil, Plus, Undo2 } from 'lucide-react';
+import { faFileText, faPencil, faPlus, faRotateLeft } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { ListEmptyState } from '../../components/list-empty-state';
 import { RefreshButton } from '../../components/refresh-button';
@@ -240,7 +241,7 @@ export function TemplatesListSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar label="Email template actions">
-        <FileText className="size-4 shrink-0" aria-hidden />
+        <Icon glyph={faFileText} className="size-4 shrink-0" aria-hidden />
         <Text as="span" className="text-sm">
           {/* "No templates YET" is only true the first time. Once something has
               been put away it is a lie sitting directly above the thing it
@@ -254,7 +255,7 @@ export function TemplatesListSurface({ ctx }: { ctx: SurfaceContext }) {
               : `${String(live.length)} templates`}
         </Text>
         <Button color="module" size="sm" className="ml-auto shrink-0" onClick={startNew}>
-          <Plus className="size-4" aria-hidden />
+          <Icon glyph={faPlus} className="size-4" aria-hidden />
           New template
         </Button>
         <RefreshButton
@@ -281,7 +282,7 @@ export function TemplatesListSurface({ ctx }: { ctx: SurfaceContext }) {
                 ),
                 actions: (
                   <Button color="module" onClick={startNew}>
-                    <Plus className="size-4" aria-hidden />
+                    <Icon glyph={faPlus} className="size-4" aria-hidden />
                     Write your first template
                   </Button>
                 ),
@@ -375,7 +376,7 @@ export function TemplatesListSurface({ ctx }: { ctx: SurfaceContext }) {
                                 startEdit(template);
                               }}
                             >
-                              <Pencil className="size-4" aria-hidden />
+                              <Icon glyph={faPencil} className="size-4" aria-hidden />
                             </Button>
                             <Button
                               color="danger"
@@ -451,7 +452,7 @@ export function TemplatesListSurface({ ctx }: { ctx: SurfaceContext }) {
                                 });
                               }}
                             >
-                              <Undo2 className="size-4" aria-hidden />
+                              <Icon glyph={faRotateLeft} className="size-4" aria-hidden />
                               Bring it back
                             </Button>
                           </div>

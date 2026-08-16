@@ -21,7 +21,8 @@
 import { useMemo, useState } from 'react';
 import { PaneWaiting } from '../../components/pane-waiting';
 import { Badge, Button, Card, EmptyState, SearchInput, Table } from '@wizeworks/silicaui-react';
-import { ArrowDown, ArrowUp, Plus, Tags } from 'lucide-react';
+import { faArrowDown, faArrowUp, faPlus, faTags } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { ListEmptyState } from '../../components/list-empty-state';
@@ -93,9 +94,9 @@ export function CategoriesListSurface({ ctx }: { ctx: SurfaceContext }) {
         {label}
         {sort?.key === key ? (
           sort.dir === 'asc' ? (
-            <ArrowUp className="size-3" aria-hidden />
+            <Icon glyph={faArrowUp} className="size-3" aria-hidden />
           ) : (
-            <ArrowDown className="size-3" aria-hidden />
+            <Icon glyph={faArrowDown} className="size-3" aria-hidden />
           )
         ) : null}
       </button>
@@ -127,7 +128,7 @@ export function CategoriesListSurface({ ctx }: { ctx: SurfaceContext }) {
             ctx.open('commerce.category.detail', { id: 'new' }, { target: targetFor(event) });
           }}
         >
-          <Plus className="size-4" aria-hidden />
+          <Icon glyph={faPlus} className="size-4" aria-hidden />
           <span className="hidden @lg:inline">Add a category</span>
         </Button>
         <RefreshButton
@@ -151,7 +152,7 @@ export function CategoriesListSurface({ ctx }: { ctx: SurfaceContext }) {
           <ListEmptyState
             filtered={Boolean(search)}
             noResults={{
-              icon: <Tags className="size-6" aria-hidden />,
+              icon: <Icon glyph={faTags} className="size-6" aria-hidden />,
               title: 'Nothing matches that search',
               description: 'Try a different word, or clear the search box to see everything.',
             }}

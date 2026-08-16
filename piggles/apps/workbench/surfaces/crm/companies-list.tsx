@@ -27,7 +27,8 @@ import {
   Select,
   Table,
 } from '@wizeworks/silicaui-react';
-import { Building2, Plus } from 'lucide-react';
+import { faBuilding, faPlus } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { useModuleStates } from '../../lib/api/shell-data';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
@@ -124,7 +125,7 @@ export function CompaniesListSurface({ ctx }: { ctx: SurfaceContext }) {
             ctx.open('crm.account.detail', { id: 'new' }, { target: targetFor(event) });
           }}
         >
-          <Plus className="size-4" aria-hidden />
+          <Icon glyph={faPlus} className="size-4" aria-hidden />
           Add a company
         </Button>
         <SavedViewsMenu
@@ -147,7 +148,7 @@ export function CompaniesListSurface({ ctx }: { ctx: SurfaceContext }) {
       <Card className="min-h-0 flex-1 overflow-y-auto">
         {isError ? (
           <EmptyState
-            icon={<Building2 className="size-6" aria-hidden />}
+            icon={<Icon glyph={faBuilding} className="size-6" aria-hidden />}
             title="Could not load your companies"
             description="Something went wrong reaching the server. It may be a temporary problem — try again in a moment."
             actions={
@@ -168,7 +169,7 @@ export function CompaniesListSurface({ ctx }: { ctx: SurfaceContext }) {
           <ListEmptyState
             filtered={filtered}
             noResults={{
-              icon: <Building2 className="size-6" aria-hidden />,
+              icon: <Icon glyph={faBuilding} className="size-6" aria-hidden />,
               title: 'No companies match those filters',
               description: 'Try a different word, or clear the filters to see them all.',
             }}

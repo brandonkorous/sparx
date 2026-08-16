@@ -31,7 +31,16 @@ import {
   useToast,
 } from '@wizeworks/silicaui-react';
 import { useConfirm } from '../../lib/confirm';
-import { ArrowDown, ArrowUp, Check, EyeOff, ListChecks, MessageSquare, Trash2 } from 'lucide-react';
+import {
+  faArrowDown,
+  faArrowUp,
+  faCheck,
+  faEyeSlash,
+  faListCheck,
+  faMessage,
+  faTrashCan,
+} from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
@@ -225,9 +234,9 @@ export function ReviewsListSurface({ ctx }: { ctx: SurfaceContext }) {
         {label}
         {sort.key === key ? (
           sort.dir === 'asc' ? (
-            <ArrowUp className="size-3" aria-hidden />
+            <Icon glyph={faArrowUp} className="size-3" aria-hidden />
           ) : (
-            <ArrowDown className="size-3" aria-hidden />
+            <Icon glyph={faArrowDown} className="size-3" aria-hidden />
           )
         ) : null}
       </button>
@@ -279,7 +288,7 @@ export function ReviewsListSurface({ ctx }: { ctx: SurfaceContext }) {
             openQueue(event);
           }}
         >
-          <ListChecks className="size-4" aria-hidden />
+          <Icon glyph={faListCheck} className="size-4" aria-hidden />
           <span className="hidden @lg:inline">Work the queue</span>
         </Button>
 
@@ -306,7 +315,7 @@ export function ReviewsListSurface({ ctx }: { ctx: SurfaceContext }) {
               bulkSetStatus('approved', 'Shown');
             }}
           >
-            <Check className="size-4" aria-hidden />
+            <Icon glyph={faCheck} className="size-4" aria-hidden />
             Show
           </Button>
           <Button
@@ -319,7 +328,7 @@ export function ReviewsListSurface({ ctx }: { ctx: SurfaceContext }) {
               bulkSetStatus('rejected', 'Hidden');
             }}
           >
-            <EyeOff className="size-4" aria-hidden />
+            <Icon glyph={faEyeSlash} className="size-4" aria-hidden />
             Hide
           </Button>
           <Button
@@ -330,7 +339,7 @@ export function ReviewsListSurface({ ctx }: { ctx: SurfaceContext }) {
             disabled={busyBulk}
             onClick={onBulkDelete}
           >
-            <Trash2 className="size-4" aria-hidden />
+            <Icon glyph={faTrashCan} className="size-4" aria-hidden />
             Delete
           </Button>
           <Button
@@ -348,7 +357,7 @@ export function ReviewsListSurface({ ctx }: { ctx: SurfaceContext }) {
       <Card className="min-h-0 flex-1 overflow-y-auto">
         {error ? (
           <EmptyState
-            icon={<MessageSquare className="size-6" aria-hidden />}
+            icon={<Icon glyph={faMessage} className="size-6" aria-hidden />}
             title="Could not load the reviews"
             description="Something went wrong reaching the server. Nothing customers wrote has been lost — try again in a moment."
             actions={
@@ -367,7 +376,7 @@ export function ReviewsListSurface({ ctx }: { ctx: SurfaceContext }) {
           <PaneWaiting label="Loading reviews…" />
         ) : rows.length === 0 ? (
           <EmptyState
-            icon={<MessageSquare className="size-6" aria-hidden />}
+            icon={<Icon glyph={faMessage} className="size-6" aria-hidden />}
             title={anyFilter ? 'Nothing matches those filters' : 'No reviews yet'}
             description={
               anyFilter
@@ -489,7 +498,7 @@ export function ReviewsListSurface({ ctx }: { ctx: SurfaceContext }) {
                               setStatusFor(row.id, 'approved', 'Review published');
                             }}
                           >
-                            <Check className="size-4" aria-hidden />
+                            <Icon glyph={faCheck} className="size-4" aria-hidden />
                           </Button>
                         </Tooltip>
                         <Tooltip content="Hide" align="end">
@@ -504,7 +513,7 @@ export function ReviewsListSurface({ ctx }: { ctx: SurfaceContext }) {
                               setStatusFor(row.id, 'rejected', 'Review hidden');
                             }}
                           >
-                            <EyeOff className="size-4" aria-hidden />
+                            <Icon glyph={faEyeSlash} className="size-4" aria-hidden />
                           </Button>
                         </Tooltip>
                       </div>

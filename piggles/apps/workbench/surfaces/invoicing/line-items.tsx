@@ -17,7 +17,8 @@
 
 import { useState } from 'react';
 import { Badge, Button, Input, Text, Tooltip } from '@wizeworks/silicaui-react';
-import { Pencil, Plus, Trash2 } from 'lucide-react';
+import { faPencil, faPlus, faTrashCan } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { MoneyInput } from './money-input';
 import { LineEditorModal, type LineTypeOption } from './line-editor-modal';
 import { type MarkupRuleSummary } from './line-markup';
@@ -242,7 +243,7 @@ export function LineItems({
                             setEditing(line);
                           }}
                         >
-                          <Pencil className="size-4" aria-hidden />
+                          <Icon glyph={faPencil} className="size-4" aria-hidden />
                         </Button>
                       </Tooltip>
                       <Tooltip content="Remove this line">
@@ -258,7 +259,7 @@ export function LineItems({
                             remove(line.key);
                           }}
                         >
-                          <Trash2 className="size-4" aria-hidden />
+                          <Icon glyph={faTrashCan} className="size-4" aria-hidden />
                         </Button>
                       </Tooltip>
                     </div>
@@ -281,7 +282,7 @@ export function LineItems({
               setEditing('new');
             }}
           >
-            <Plus className="size-4" aria-hidden />
+            <Icon glyph={faPlus} className="size-4" aria-hidden />
             Add a line
           </Button>
         </div>

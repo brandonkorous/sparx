@@ -66,13 +66,14 @@ import {
 } from '@wizeworks/silicaui-react';
 import { useConfirm } from '../../lib/confirm';
 import {
-  PackageCheck,
-  PackageX,
-  Search,
-  ShoppingCart,
-  SlidersHorizontal,
-  Truck,
-} from 'lucide-react';
+  faBoxCheck,
+  faBoxOpen,
+  faCartShopping,
+  faMagnifyingGlass,
+  faSliders,
+  faTruck,
+} from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
@@ -268,7 +269,7 @@ export function ReorderListSurface({ ctx }: { ctx: SurfaceContext }) {
     if (isError) {
       return (
         <EmptyState
-          icon={<PackageX className="size-6" aria-hidden />}
+          icon={<Icon glyph={faBoxOpen} className="size-6" aria-hidden />}
           title="Could not work out what needs reordering"
           description="This is a problem reaching the server. Your stock and orders are unaffected — the list just could not be read right now."
         />
@@ -283,7 +284,7 @@ export function ReorderListSurface({ ctx }: { ctx: SurfaceContext }) {
       if (narrowed) {
         return (
           <EmptyState
-            icon={<Search className="size-6" aria-hidden />}
+            icon={<Icon glyph={faMagnifyingGlass} className="size-6" aria-hidden />}
             title="Nothing matches that"
             description={emptyAdvice(search.trim(), locationName, supplierName)}
           />
@@ -295,7 +296,7 @@ export function ReorderListSurface({ ctx }: { ctx: SurfaceContext }) {
       if (summary.data && summary.data.policyCount === 0) {
         return (
           <EmptyState
-            icon={<SlidersHorizontal className="size-6" aria-hidden />}
+            icon={<Icon glyph={faSliders} className="size-6" aria-hidden />}
             title="No reorder rules set up yet"
             description="Nothing can be flagged as running low until you say when to reorder it. Open a product, and on its Stock panel set a reorder level and how many to buy — this list then fills itself in as those items run down."
           />
@@ -303,7 +304,7 @@ export function ReorderListSurface({ ctx }: { ctx: SurfaceContext }) {
       }
       return (
         <EmptyState
-          icon={<PackageCheck className="size-6" aria-hidden />}
+          icon={<Icon glyph={faBoxCheck} className="size-6" aria-hidden />}
           title="Nothing needs reordering"
           description="Every product with a reorder level is comfortably above it. As things run down they will appear here, most urgent first, ready to turn into orders."
         />
@@ -586,7 +587,7 @@ export function ReorderListSurface({ ctx }: { ctx: SurfaceContext }) {
               void onDraft();
             }}
           >
-            <ShoppingCart className="size-4" aria-hidden />
+            <Icon glyph={faCartShopping} className="size-4" aria-hidden />
             Draft {plural(orderCount, 'order', 'orders')}
           </Button>
         </div>
@@ -619,7 +620,7 @@ export function ReorderListSurface({ ctx }: { ctx: SurfaceContext }) {
         />
         {rows.length > 0 ? (
           <Text className="hidden px-1 pb-1 text-sm @xl:block">
-            <Truck className="mr-1 inline size-4 align-text-bottom" aria-hidden />
+            <Icon glyph={faTruck} className="mr-1 inline size-4 align-text-bottom" aria-hidden />
             Choose lines to draft orders · click a row to see how its figures were worked out ·
             shift-click alongside
           </Text>

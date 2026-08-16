@@ -25,7 +25,14 @@ import {
   Timestamp,
   ToolbarSeparator,
 } from '@wizeworks/silicaui-react';
-import { AlertTriangle, ArrowDown, ArrowUp, Plus, Workflow } from 'lucide-react';
+import {
+  faArrowDown,
+  faArrowUp,
+  faDiagramProject,
+  faExclamationTriangle,
+  faPlus,
+} from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { RefreshButton } from '../../components/refresh-button';
 import { ListEmptyState } from '../../components/list-empty-state';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
@@ -120,9 +127,9 @@ export function AutomationsListSurface({ ctx }: { ctx: SurfaceContext }) {
         {label}
         {sort.key === key ? (
           sort.dir === 'asc' ? (
-            <ArrowUp className="size-3" aria-hidden />
+            <Icon glyph={faArrowUp} className="size-3" aria-hidden />
           ) : (
-            <ArrowDown className="size-3" aria-hidden />
+            <Icon glyph={faArrowDown} className="size-3" aria-hidden />
           )
         ) : null}
       </button>
@@ -192,7 +199,7 @@ export function AutomationsListSurface({ ctx }: { ctx: SurfaceContext }) {
             ctx.open('automations.detail', { id: 'new' }, { target: targetFor(event) });
           }}
         >
-          <Plus className="size-4" aria-hidden />
+          <Icon glyph={faPlus} className="size-4" aria-hidden />
           <span className="hidden @lg:inline">New automation</span>
         </Button>
 
@@ -208,7 +215,7 @@ export function AutomationsListSurface({ ctx }: { ctx: SurfaceContext }) {
       <Card className="min-h-0 flex-1 overflow-y-auto">
         {isError ? (
           <EmptyState
-            icon={<Workflow className="size-6" aria-hidden />}
+            icon={<Icon glyph={faDiagramProject} className="size-6" aria-hidden />}
             title="Could not load your automations"
             description="Something went wrong reaching the server. Your rules are unaffected and still running — try again in a moment."
             actions={
@@ -229,7 +236,7 @@ export function AutomationsListSurface({ ctx }: { ctx: SurfaceContext }) {
           <ListEmptyState
             filtered={filtering}
             noResults={{
-              icon: <Workflow className="size-6" aria-hidden />,
+              icon: <Icon glyph={faDiagramProject} className="size-6" aria-hidden />,
               title: 'No automations match those filters',
               description: 'Try a different search, or switch the filters back to Any.',
             }}
@@ -245,7 +252,7 @@ export function AutomationsListSurface({ ctx }: { ctx: SurfaceContext }) {
                     ctx.open('automations.detail', { id: 'new' }, { target: targetFor(event) });
                   }}
                 >
-                  <Plus className="size-4" aria-hidden />
+                  <Icon glyph={faPlus} className="size-4" aria-hidden />
                   New automation
                 </Button>
               ),
@@ -312,7 +319,7 @@ export function AutomationsListSurface({ ctx }: { ctx: SurfaceContext }) {
                             className="text-error inline-flex items-center gap-0.5"
                             title={`${String(automation.errorCount)} failed`}
                           >
-                            <AlertTriangle className="size-3.5" aria-hidden />
+                            <Icon glyph={faExclamationTriangle} className="size-3.5" aria-hidden />
                             {automation.errorCount}
                           </span>
                         ) : null}

@@ -42,7 +42,13 @@ import {
   Text,
   useToast,
 } from '@wizeworks/silicaui-react';
-import { Check, CircleDashed, SkipForward, Undo2 } from 'lucide-react';
+import {
+  faCheck,
+  faCircleDashed,
+  faForwardStep,
+  faRotateLeft,
+} from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { FormSection } from '../../components/form-section';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
@@ -100,11 +106,11 @@ function StepRow({
       <div className="flex items-start gap-3">
         <span className="mt-0.5 shrink-0">
           {done ? (
-            <Check className="text-success size-5" aria-label="Done" />
+            <Icon glyph={faCheck} className="text-success size-5" aria-label="Done" />
           ) : skipped ? (
-            <SkipForward className="text-warning size-5" aria-label="Skipped" />
+            <Icon glyph={faForwardStep} className="text-warning size-5" aria-label="Skipped" />
           ) : (
-            <CircleDashed className="text-module size-5" aria-label="Still to do" />
+            <Icon glyph={faCircleDashed} className="text-module size-5" aria-label="Still to do" />
           )}
         </span>
         <div className="flex min-w-0 flex-1 flex-col gap-1">
@@ -146,7 +152,7 @@ function StepRow({
         </Button>
         {done || skipped ? (
           <Button color="neutral" variant="outline" size="sm" disabled={busy} onClick={onReopen}>
-            <Undo2 className="size-4" aria-hidden />
+            <Icon glyph={faRotateLeft} className="size-4" aria-hidden />
             Put it back
           </Button>
         ) : (
@@ -158,7 +164,7 @@ function StepRow({
               disabled={busy}
               onClick={onComplete}
             >
-              <Check className="size-4" aria-hidden />
+              <Icon glyph={faCheck} className="size-4" aria-hidden />
               Mark it done
             </Button>
             {step.skippable ? (

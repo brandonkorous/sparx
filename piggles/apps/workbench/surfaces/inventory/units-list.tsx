@@ -47,7 +47,8 @@ import {
   useToast,
 } from '@wizeworks/silicaui-react';
 import { useConfirm } from '../../lib/confirm';
-import { Plus, Ruler, Trash2 } from 'lucide-react';
+import { faPlus, faRuler, faTrashCan } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import { FormSection } from '../../components/form-section';
@@ -170,7 +171,7 @@ export function UnitsListSurface({ ctx }: { ctx: SurfaceContext }) {
     if (units.isError) {
       return (
         <EmptyState
-          icon={<Ruler className="size-6" aria-hidden />}
+          icon={<Icon glyph={faRuler} className="size-6" aria-hidden />}
           title="Could not load your units"
           description="This is a problem reaching the server. Your units and everything measured in them are unaffected."
         />
@@ -383,7 +384,7 @@ export function UnitsListSurface({ ctx }: { ctx: SurfaceContext }) {
                               void remove(unit);
                             }}
                           >
-                            <Trash2 className="size-4" aria-hidden />
+                            <Icon glyph={faTrashCan} className="size-4" aria-hidden />
                           </Button>
                         </span>
                       </td>
@@ -409,7 +410,7 @@ export function UnitsListSurface({ ctx }: { ctx: SurfaceContext }) {
     <div className={PANE_SHELL}>
       <PaneToolbar label="Unit actions">
         <span className="inline-flex items-center gap-1.5">
-          <Ruler className="size-4" aria-hidden />
+          <Icon glyph={faRuler} className="size-4" aria-hidden />
           <Text as="span" className="text-sm font-medium">
             Units
           </Text>
@@ -425,7 +426,7 @@ export function UnitsListSurface({ ctx }: { ctx: SurfaceContext }) {
             ctx.setTitle('Units');
           }}
         >
-          <Plus className="size-4" aria-hidden />
+          <Icon glyph={faPlus} className="size-4" aria-hidden />
           Add a unit
         </Button>
         <RefreshButton

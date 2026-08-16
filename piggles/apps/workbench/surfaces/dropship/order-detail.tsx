@@ -29,7 +29,13 @@ import {
   useToast,
 } from '@wizeworks/silicaui-react';
 import { useConfirm } from '../../lib/confirm';
-import { ExternalLink, RotateCcw, ShoppingBag, Truck } from 'lucide-react';
+import {
+  faArrowUpRightFromSquare,
+  faBagShopping,
+  faRotate,
+  faTruck,
+} from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { FormSection } from '../../components/form-section';
 import { ModuleScope } from '../../components/module-scope';
@@ -150,9 +156,9 @@ export function DropshipOrderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
             // eslint-disable-next-line jsx-a11y/anchor-has-content -- children arrive via `render`
             render={<a href={order.trackingUrl} target="_blank" rel="noreferrer" />}
           >
-            <Truck className="size-4" aria-hidden />
+            <Icon glyph={faTruck} className="size-4" aria-hidden />
             Track parcel
-            <ExternalLink className="size-3" aria-hidden />
+            <Icon glyph={faArrowUpRightFromSquare} className="size-3" aria-hidden />
           </Button>
         ) : null}
 
@@ -174,7 +180,7 @@ export function DropshipOrderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
               );
             }}
           >
-            <ShoppingBag className="size-4" aria-hidden />
+            <Icon glyph={faBagShopping} className="size-4" aria-hidden />
             Customer order
           </Button>
         </ModuleScope>
@@ -189,7 +195,7 @@ export function DropshipOrderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
               void onReroute();
             }}
           >
-            <RotateCcw className="size-4" aria-hidden />
+            <Icon glyph={faRotate} className="size-4" aria-hidden />
             Route again
           </Button>
         ) : null}

@@ -37,7 +37,13 @@ import {
   Text,
   useToast,
 } from '@wizeworks/silicaui-react';
-import { Activity, Save, TriangleAlert, UserX } from 'lucide-react';
+import {
+  faExclamationTriangle,
+  faFloppyDisk,
+  faUserXmark,
+  faWavePulse,
+} from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { EditorLayout, EDITOR_RAIL_STICKY } from '../../components/editor-layout';
 import { FormSection } from '../../components/form-section';
 import { describeAgo, useActivity } from '../../lib/api/activity';
@@ -156,7 +162,7 @@ export function TeamMemberSurface({ ctx }: { ctx: SurfaceContext }) {
     return (
       <div className="flex h-full flex-col items-center justify-center p-8">
         <Alert color="error" variant="soft" className="max-w-md">
-          <TriangleAlert />
+          <Icon glyph={faExclamationTriangle} />
           <AlertContent>
             <AlertTitle>Could not load this teammate</AlertTitle>
             <AlertDescription>
@@ -190,7 +196,7 @@ export function TeamMemberSurface({ ctx }: { ctx: SurfaceContext }) {
     return (
       <div className="flex h-full flex-col items-center justify-center p-8">
         <EmptyState
-          icon={<UserX className="size-6" aria-hidden />}
+          icon={<Icon glyph={faUserXmark} className="size-6" aria-hidden />}
           title="This person is no longer on your team"
           description="They may have been removed since you opened this. You can close this panel — everything else in your workspace is unaffected."
           actions={
@@ -257,7 +263,7 @@ export function TeamMemberSurface({ ctx }: { ctx: SurfaceContext }) {
       {editable ? (
         <PaneToolbar label="Teammate actions">
           <Button color="module" size="sm" disabled={!dirty || update.isPending} onClick={save}>
-            <Save className="size-4" aria-hidden />
+            <Icon glyph={faFloppyDisk} className="size-4" aria-hidden />
             {update.isPending ? 'Saving…' : 'Save'}
           </Button>
         </PaneToolbar>
@@ -486,7 +492,7 @@ function MemberActivity({ userId, name }: { userId: string; name: string }) {
       ) : items.length === 0 ? (
         <EmptyState
           size="sm"
-          icon={<Activity className="size-6" aria-hidden />}
+          icon={<Icon glyph={faWavePulse} className="size-6" aria-hidden />}
           title="Nothing yet"
           description={`${name} has not made any changes in this account so far. As soon as they do, it will be listed here.`}
         />

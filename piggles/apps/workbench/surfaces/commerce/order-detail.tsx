@@ -34,7 +34,13 @@ import {
   useToast,
 } from '@wizeworks/silicaui-react';
 import { useConfirm } from '../../lib/confirm';
-import { ExternalLink, Ban, Route, Undo2 } from 'lucide-react';
+import {
+  faArrowUpRightFromSquare,
+  faBan,
+  faRotateLeft,
+  faRoute,
+} from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { useGeneratePickList, pickErrorMessage } from '../inventory/picking-data';
 import { FormSection } from '../../components/form-section';
 import { ModuleScope } from '../../components/module-scope';
@@ -390,7 +396,7 @@ export function OrderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
               })();
             }}
           >
-            <Route className="size-4" aria-hidden />
+            <Icon glyph={faRoute} className="size-4" aria-hidden />
             Send to the warehouse
           </Button>
         ) : null}
@@ -612,7 +618,11 @@ export function OrderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
                           className="link inline-flex items-center gap-1 font-mono text-sm break-all"
                         >
                           {shipment.trackingNumber}
-                          <ExternalLink className="size-3 shrink-0" aria-hidden />
+                          <Icon
+                            glyph={faArrowUpRightFromSquare}
+                            className="size-3 shrink-0"
+                            aria-hidden
+                          />
                         </a>
                       ) : (
                         <span className="font-mono text-sm break-all">
@@ -706,7 +716,7 @@ export function OrderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
                   void onRefund();
                 }}
               >
-                <Undo2 className="size-4" aria-hidden />
+                <Icon glyph={faRotateLeft} className="size-4" aria-hidden />
                 Refund {formatMoney(refundableAmount, currency)}
               </Button>
             </div>
@@ -736,7 +746,7 @@ export function OrderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
                   void onCancel();
                 }}
               >
-                <Ban className="size-4" aria-hidden />
+                <Icon glyph={faBan} className="size-4" aria-hidden />
                 Cancel order
               </Button>
             </div>

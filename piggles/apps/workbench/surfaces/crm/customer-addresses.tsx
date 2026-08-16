@@ -25,7 +25,8 @@ import {
   Switch,
   Text,
 } from '@wizeworks/silicaui-react';
-import { MapPin, Pencil, Plus, Trash2 } from 'lucide-react';
+import { faLocationDot, faPencil, faPlus, faTrashCan } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { useConfirm } from '../../lib/confirm';
 import { FormSection } from '../../components/form-section';
 import {
@@ -90,7 +91,7 @@ function AddressCard({
             onClick={onEdit}
             aria-label="Edit address"
           >
-            <Pencil className="size-3.5" aria-hidden />
+            <Icon glyph={faPencil} className="size-3.5" aria-hidden />
           </Button>
           <Button
             size="xs"
@@ -100,7 +101,7 @@ function AddressCard({
             onClick={onDelete}
             aria-label="Remove address"
           >
-            <Trash2 className="size-3.5" aria-hidden />
+            <Icon glyph={faTrashCan} className="size-3.5" aria-hidden />
           </Button>
         </div>
       </div>
@@ -479,7 +480,7 @@ export function CustomerAddressesSection({ customerId }: { customerId: string })
               setEditing('new');
             }}
           >
-            <Plus className="size-4" aria-hidden />
+            <Icon glyph={faPlus} className="size-4" aria-hidden />
             Add address
           </Button>
         ) : null
@@ -505,7 +506,7 @@ export function CustomerAddressesSection({ customerId }: { customerId: string })
         </Text>
       ) : rows.length === 0 && editing !== 'new' ? (
         <div className="flex items-center gap-2">
-          <MapPin className="size-4 shrink-0" aria-hidden />
+          <Icon glyph={faLocationDot} className="size-4 shrink-0" aria-hidden />
           <Text className="text-sm">No addresses on file yet. Add one to get started.</Text>
         </div>
       ) : (

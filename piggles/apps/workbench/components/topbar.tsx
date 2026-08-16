@@ -12,7 +12,7 @@
 // this app is in several at once — the tabs are the orientation. What earns a
 // place up here is only what applies to the whole window.
 
-import { useRef, useSyncExternalStore } from 'react';
+import { useRef } from 'react';
 import {
   Avatar,
   Button,
@@ -32,35 +32,30 @@ import {
   useToast,
 } from '@wizeworks/silicaui-react';
 import {
-  Building2,
-  Check,
-  ChevronDown,
-  CircleQuestionMark,
-  Cookie,
-  Copy,
-  CreditCard,
-  Globe,
-  LayoutGrid,
-  Plus,
-  LogOut,
-  Moon,
-  Search,
-  Star,
-  Sun,
-} from 'lucide-react';
+  faBuilding,
+  faCheck,
+  faChevronDown,
+  faCircleQuestion,
+  faCookie,
+  faCopy,
+  faCreditCard,
+  faGlobe,
+  faGrid,
+  faMagnifyingGlass,
+  faMoon,
+  faPlus,
+  faRightFromBracket,
+  faSun,
+} from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { Logo } from '@piggles/brand/react';
 import { PRODUCT } from '@piggles/config';
-import {
-  switchSite,
-  useFavorites,
-  useSites,
-  useTenant,
-  useToggleFavorite,
-} from '@/lib/api/shell-data';
+import { switchSite, useSites, useTenant } from '@/lib/api/shell-data';
 import { useConfirm } from '@/lib/confirm';
 import { deferTick } from '@/lib/defer';
 import { useWorkbench } from '@/lib/workbench/context';
 import { NotificationCenter } from '@/components/notification-center';
+import { FeedbackButton } from '@/components/feedback/button';
 import { useFeedback } from '@/components/feedback/provider';
 import { useViewer } from '@/lib/api/shell-data';
 import { switchBusiness, useBusinesses } from '@/lib/console/businesses';
@@ -167,13 +162,6 @@ export function Topbar({
     await switchSite(controller, siteKey, nextSiteId);
   };
 
-  // The focused pane, live — the star follows it.
-  const activeDescriptor = useSyncExternalStore(
-    controller.subscribe,
-    () => controller.getActiveDescriptor(),
-    () => null
-  );
-
   return (
     <Navbar className="border-base-300 bg-base-100 min-h-0 shrink-0 gap-2 border-b py-1.5 pr-3 pl-0">
       <NavbarStart className="gap-1">
@@ -216,9 +204,9 @@ export function Topbar({
                       name a size smaller than the business name sitting right
                       beside it. The bar speaks in one voice: 14px. */}
                   <Button color="neutral" variant="ghost" /*size="sm"*/ className="gap-1.5 text-sm">
-                    <Globe className="size-3.5" aria-hidden />
+                    <Icon glyph={faGlobe} className="size-3.5" aria-hidden />
                     <span className="max-w-44 truncate">{activeSite?.name ?? 'Site'}</span>
-                    <ChevronDown className="size-3" aria-hidden />
+                    <Icon glyph={faChevronDown} className="size-3" aria-hidden />
                   </Button>
                 </DropdownMenuTrigger>
               </Tooltip>
@@ -236,7 +224,9 @@ export function Topbar({
                     >
                       <span className="flex w-full items-center gap-2">
                         <span className="flex-1 truncate">{site.name}</span>
-                        {site.id === siteKey ? <Check className="size-4" aria-hidden /> : null}
+                        {site.id === siteKey ? (
+                          <Icon glyph={faCheck} className="size-4" aria-hidden />
+                        ) : null}
                       </span>
                     </DropdownMenuItem>
                   ))}
@@ -268,7 +258,7 @@ export function Topbar({
             className="w-full justify-start gap-2.5 font-normal"
             onClick={onOpenLauncher}
           >
-            <Search className="size-4 shrink-0" aria-hidden />
+            <Icon glyph={faMagnifyingGlass} className="size-4 shrink-0" aria-hidden />
             <span className="flex-1 truncate text-left">What do you want to do?</span>
             <Kbd /*size="sm"*/>⌘K</Kbd>
           </Button>
@@ -303,9 +293,9 @@ export function Topbar({
             }}
           >
             {windowMode === 'tabs' ? (
-              <Copy className="size-4" aria-hidden />
+              <Icon glyph={faCopy} className="size-4" aria-hidden />
             ) : (
-              <LayoutGrid className="size-4" aria-hidden />
+              <Icon glyph={faGrid} className="size-4" aria-hidden />
             )}
           </Button>
         </Tooltip>
@@ -317,7 +307,7 @@ export function Topbar({
           <Tooltip content="Add something">
             <DropdownMenuTrigger>
               <Button color="primary" /*size="sm"*/ shape="square" aria-label="Add something">
-                <Plus className="size-4" aria-hidden />
+                <Icon glyph={faPlus} className="size-4" aria-hidden />
               </Button>
             </DropdownMenuTrigger>
           </Tooltip>
@@ -338,32 +328,18 @@ export function Topbar({
           </DropdownMenuContent>
         </DropdownMenu>
 
-        <StarButton
-          surfaceKey={activeDescriptor?.surface ?? null}
-          hasParams={Boolean(
-            activeDescriptor?.params && Object.keys(activeDescriptor.params).length > 0
-          )}
-        />
+        {/* The favourite control lives on each pane's TAB, not here. A star in
+            the app toolbar acts on "whichever pane has focus", which in a
+            workbench holding five panes is a control with no visible subject.
+            See FavouriteButton in lib/dock/pane-tab.tsx. */}
 
         <NotificationCenter />
 
-        {/* Help opens the feedback composer, which is a real conversation with a
-            real person at the other end. It is deliberately NOT a link to a help
-            site, because there isn't one — a `?` pointing at a 404 is worse than
-            no `?` at all. */}
-        <Tooltip content="Get help or tell us something">
-          <Button
-            variant="ghost"
-            /*size="sm"*/
-            shape="square"
-            aria-label="Get help or tell us something"
-            onClick={() => {
-              feedback.openSend();
-            }}
-          >
-            <CircleQuestionMark className="size-4" aria-hidden />
-          </Button>
-        </Tooltip>
+        {/* Help opens a real conversation with a real person at the other end —
+            deliberately not a link to a help site, because there isn't one.
+            The control itself lives in components/feedback/button.tsx so it can
+            also carry the unread dot; this was a second copy that could not. */}
+        <FeedbackButton />
 
         <Tooltip content={theme === 'light' ? 'Dark' : 'Light'}>
           <Button
@@ -376,9 +352,9 @@ export function Topbar({
             onClick={onToggleTheme}
           >
             {theme === 'light' ? (
-              <Moon className="size-4" aria-hidden />
+              <Icon glyph={faMoon} className="size-4" aria-hidden />
             ) : (
-              <Sun className="size-4" aria-hidden />
+              <Icon glyph={faSun} className="size-4" aria-hidden />
             )}
           </Button>
         </Tooltip>
@@ -404,7 +380,7 @@ export function Topbar({
                   <span className="max-w-32 truncate text-sm font-semibold">{userName}</span>
                   <span className="max-w-32 truncate text-xs">{roleLabel(viewer?.role)}</span>
                 </span>
-                <ChevronDown className="size-3 shrink-0" aria-hidden />
+                <Icon glyph={faChevronDown} className="size-3 shrink-0" aria-hidden />
               </Button>
             </DropdownMenuTrigger>
           </Tooltip>
@@ -427,7 +403,7 @@ export function Topbar({
                 window.location.href = `${accountOrigin}/account`;
               }}
             >
-              <CreditCard className="size-4" aria-hidden />
+              <Icon glyph={faCreditCard} className="size-4" aria-hidden />
               Your plan and billing
             </DropdownMenuItem>
             {/* The way back to the consent decision — a LINK OUT, like the
@@ -442,7 +418,7 @@ export function Topbar({
                 window.location.href = `${accountOrigin}/cookie-choices`;
               }}
             >
-              <Cookie className="size-4" aria-hidden />
+              <Icon glyph={faCookie} className="size-4" aria-hidden />
               Cookie choices
             </DropdownMenuItem>
             <DropdownMenuSeparator />
@@ -460,7 +436,7 @@ export function Topbar({
                 signOutForm.current?.requestSubmit();
               }}
             >
-              <LogOut className="size-4" aria-hidden />
+              <Icon glyph={faRightFromBracket} className="size-4" aria-hidden />
               Sign out
             </DropdownMenuItem>
           </DropdownMenuContent>
@@ -554,9 +530,9 @@ function BusinessSwitcher({
       <Tooltip content="Switch business — each one is completely separate">
         <DropdownMenuTrigger>
           <Button color="neutral" variant="ghost" /*size="sm"*/ className="gap-1.5 text-sm">
-            <Building2 className="size-3.5" aria-hidden />
+            <Icon glyph={faBuilding} className="size-3.5" aria-hidden />
             <span className="max-w-44 truncate">{activeName ?? 'Business'}</span>
-            <ChevronDown className="size-3" aria-hidden />
+            <Icon glyph={faChevronDown} className="size-3" aria-hidden />
           </Button>
         </DropdownMenuTrigger>
       </Tooltip>
@@ -572,7 +548,9 @@ function BusinessSwitcher({
             >
               <span className="flex w-full items-center gap-2">
                 <span className="flex-1 truncate">{business.name}</span>
-                {business.id === tenant?.id ? <Check className="size-4" aria-hidden /> : null}
+                {business.id === tenant?.id ? (
+                  <Icon glyph={faCheck} className="size-4" aria-hidden />
+                ) : null}
               </span>
             </DropdownMenuItem>
           ))}
@@ -581,50 +559,5 @@ function BusinessSwitcher({
         <DropdownMenuItem disabled>Each business keeps its own everything</DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
-  );
-}
-
-/**
- * Stars the focused SCREEN. Starred items are surface keys — "Invoices", "New
- * invoice" — so one particular invoice cannot be starred; the screen it lives on
- * can.
- */
-function StarButton({ surfaceKey, hasParams }: { surfaceKey: string | null; hasParams: boolean }) {
-  const { data: favorites } = useFavorites();
-  const toggle = useToggleFavorite();
-
-  const starrable = Boolean(surfaceKey) && !hasParams;
-  const favorited = Boolean(
-    surfaceKey && favorites?.some((favorite) => favorite.actionId === surfaceKey)
-  );
-
-  const tooltip = !surfaceKey
-    ? 'Open something to star it'
-    : hasParams
-      ? 'One record can’t be starred — star the screen it lives on'
-      : favorited
-        ? 'Remove from starred'
-        : 'Star this — it goes to the top of the rail and of search';
-
-  return (
-    <Tooltip content={tooltip}>
-      {/* The disabled state keeps the tooltip by staying focusable-adjacent:
-          silica Buttons drop pointer events when disabled, so wrap in a span. */}
-      <span className="inline-flex">
-        <Button
-          variant="ghost"
-          /*size="sm"*/
-          shape="square"
-          disabled={!starrable || toggle.isPending}
-          aria-label={favorited ? 'Remove from starred' : 'Star this'}
-          aria-pressed={favorited}
-          onClick={() => {
-            if (surfaceKey) toggle.mutate({ actionId: surfaceKey, favorited });
-          }}
-        >
-          <Star className={favorited ? 'text-warning size-4 fill-current' : 'size-4'} aria-hidden />
-        </Button>
-      </span>
-    </Tooltip>
   );
 }

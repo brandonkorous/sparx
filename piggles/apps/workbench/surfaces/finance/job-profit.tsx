@@ -32,7 +32,8 @@ import {
   Table,
   Text,
 } from '@wizeworks/silicaui-react';
-import { AlertTriangle, TrendingUp } from 'lucide-react';
+import { faArrowTrendUp, faExclamationTriangle } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
@@ -215,7 +216,7 @@ export function JobProfitSurface({ ctx }: { ctx: SurfaceContext }) {
       <div className="min-h-0 flex-1 overflow-y-auto">
         {isError ? (
           <EmptyState
-            icon={<TrendingUp className="size-6" aria-hidden />}
+            icon={<Icon glyph={faArrowTrendUp} className="size-6" aria-hidden />}
             title="Could not work out what each job made"
             description="The server could not be reached. Nothing you have recorded is affected."
             actions={
@@ -235,7 +236,7 @@ export function JobProfitSurface({ ctx }: { ctx: SurfaceContext }) {
         ) : jobs.length === 0 ? (
           <Card className="min-h-0 flex-1 items-center justify-center">
             <PaneEmpty
-              icon={<TrendingUp className="size-6" aria-hidden />}
+              icon={<Icon glyph={faArrowTrendUp} className="size-6" aria-hidden />}
               title="No completed work in this period"
               description="Once orders are placed or appointments completed, each one appears here with what it made after the goods, the fees and any costs you charged to it. Try a wider period."
             />
@@ -278,7 +279,11 @@ export function JobProfitSurface({ ctx }: { ctx: SurfaceContext }) {
 
             {summary.estimated > 0 ? (
               <Card className="flex items-start gap-3 p-4">
-                <AlertTriangle className="text-warning mt-0.5 size-5 shrink-0" aria-hidden />
+                <Icon
+                  glyph={faExclamationTriangle}
+                  className="text-warning mt-0.5 size-5 shrink-0"
+                  aria-hidden
+                />
                 <div className="flex min-w-0 flex-col gap-1">
                   <Text className="font-medium">
                     {summary.estimated === 1

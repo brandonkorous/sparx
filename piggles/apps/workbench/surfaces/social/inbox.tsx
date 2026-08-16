@@ -34,7 +34,16 @@ import {
   ToggleGroupItem,
   useToast,
 } from '@wizeworks/silicaui-react';
-import { Archive, ExternalLink, Inbox, RotateCcw, Send, ServerCrash, Star } from 'lucide-react';
+import {
+  faArrowUpRightFromSquare,
+  faBoxArchive,
+  faInbox,
+  faPaperPlane,
+  faRotate,
+  faServer,
+  faStar,
+} from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import { useViewer } from '../../lib/api/shell-data';
@@ -88,7 +97,12 @@ function Stars({ rating }: { rating: number }) {
   return (
     <span className={`${ink} inline-flex items-center gap-0.5`} aria-label={`${rating} out of 5`}>
       {[1, 2, 3, 4, 5].map((n) => (
-        <Star key={n} className={`size-3.5 ${n <= rating ? 'fill-current' : ''}`} aria-hidden />
+        <Icon
+          glyph={faStar}
+          key={n}
+          className={`size-3.5 ${n <= rating ? 'fill-current' : ''}`}
+          aria-hidden
+        />
       ))}
     </span>
   );
@@ -254,7 +268,7 @@ function Conversation({
               className="text-module inline-flex w-fit items-center gap-0.5 text-sm underline"
             >
               See it on {root.targetName}
-              <ExternalLink className="size-3.5" aria-hidden />
+              <Icon glyph={faArrowUpRightFromSquare} className="size-3.5" aria-hidden />
             </a>
           ) : null}
           {thread.data.map((item) => (
@@ -284,7 +298,7 @@ function Conversation({
                 loading={reply.isPending}
                 onClick={send}
               >
-                <Send className="size-4" aria-hidden />
+                <Icon glyph={faPaperPlane} className="size-4" aria-hidden />
                 Send reply
               </Button>
               <Button
@@ -298,12 +312,12 @@ function Conversation({
               >
                 {archived ? (
                   <>
-                    <RotateCcw className="size-4" aria-hidden />
+                    <Icon glyph={faRotate} className="size-4" aria-hidden />
                     Put back in the inbox
                   </>
                 ) : (
                   <>
-                    <Archive className="size-4" aria-hidden />
+                    <Icon glyph={faBoxArchive} className="size-4" aria-hidden />
                     Nothing to do
                   </>
                 )}
@@ -376,7 +390,7 @@ export function SocialInboxSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar label="Inbox controls" wrap>
-        <Inbox className="size-4 shrink-0" aria-hidden />
+        <Icon glyph={faInbox} className="size-4 shrink-0" aria-hidden />
         <Heading level={2} className="min-w-0 truncate text-base font-semibold">
           Inbox
         </Heading>
@@ -410,7 +424,7 @@ export function SocialInboxSurface({ ctx }: { ctx: SurfaceContext }) {
         {items.isError ? (
           <Card className="min-h-0 flex-1 items-center justify-center">
             <PaneEmpty
-              icon={<ServerCrash className="size-6" aria-hidden />}
+              icon={<Icon glyph={faServer} className="size-6" aria-hidden />}
               title="Could not load your inbox"
               description={socialErrorMessage(
                 items.error,
@@ -434,7 +448,7 @@ export function SocialInboxSurface({ ctx }: { ctx: SurfaceContext }) {
         ) : list.length === 0 ? (
           <Card className="min-h-0 flex-1 items-center justify-center">
             <PaneEmpty
-              icon={<Inbox className="size-6" aria-hidden />}
+              icon={<Icon glyph={faInbox} className="size-6" aria-hidden />}
               title={status === 'open' ? 'Nothing waiting for a reply' : 'Nothing here'}
               description={
                 status === 'open'

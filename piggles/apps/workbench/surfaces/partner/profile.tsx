@@ -34,7 +34,8 @@ import {
   Textarea,
   useToast,
 } from '@wizeworks/silicaui-react';
-import { Save } from 'lucide-react';
+import { faFloppyDisk } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import { afterPaneChange } from '../../lib/defer';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
@@ -202,7 +203,7 @@ export function ProfileSurface({ ctx }: { ctx: SurfaceContext }) {
           loading={update.isPending}
           onClick={save}
         >
-          <Save className="size-4" aria-hidden />
+          <Icon glyph={faFloppyDisk} className="size-4" aria-hidden />
           Save
         </Button>
         <RefreshButton

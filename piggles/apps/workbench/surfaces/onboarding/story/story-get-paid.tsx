@@ -2,7 +2,8 @@
 
 import { type ReactNode } from 'react';
 import { Button, FieldStatus, Heading, Text } from '@wizeworks/silicaui-react';
-import { CheckCircle } from 'lucide-react';
+import { faCheckCircle } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { industryOf, type StoryState } from '@sparx/story-schemas';
 import type { OnboardingActions } from '../../../lib/onboarding/api';
 import { useStripeConnect } from '../../../lib/onboarding/use-stripe-connect';
@@ -48,7 +49,7 @@ export function StoryGetPaid({
 
       {connected ? (
         <div className="border-success flex items-start gap-3 rounded-xl border px-5 py-4">
-          <CheckCircle className="text-success mt-0.5 size-5 shrink-0" aria-hidden />
+          <Icon glyph={faCheckCircle} className="text-success mt-0.5 size-5 shrink-0" aria-hidden />
           <Text className="max-w-[58ch] text-base">
             You’re set to get paid — Stripe is connected and checkout is ready. Money from your
             customers lands straight in your bank account.

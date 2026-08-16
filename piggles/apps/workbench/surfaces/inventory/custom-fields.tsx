@@ -48,7 +48,8 @@ import {
   Textarea,
   useToast,
 } from '@wizeworks/silicaui-react';
-import { Columns3, Plus, Trash2 } from 'lucide-react';
+import { faColumns3, faPlus, faTrashCan } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { FormSection } from '../../components/form-section';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
@@ -333,7 +334,7 @@ function FieldTable({ fields, entity }: { fields: CustomField[]; entity: CustomF
   if (fields.length === 0) {
     return (
       <EmptyState
-        icon={<Columns3 className="size-6" aria-hidden />}
+        icon={<Icon glyph={faColumns3} className="size-6" aria-hidden />}
         title="No columns of your own here yet"
         description={ENTITY_HELP[entity]}
       />
@@ -425,7 +426,7 @@ function FieldTable({ fields, entity }: { fields: CustomField[]; entity: CustomF
                     })();
                   }}
                 >
-                  <Trash2 className="size-4" aria-hidden />
+                  <Icon glyph={faTrashCan} className="size-4" aria-hidden />
                   Turn off
                 </Button>
               ) : (
@@ -491,7 +492,7 @@ export function InventoryCustomFieldsSurface(_props: { ctx: SurfaceContext }) {
                     setAdding(entity);
                   }}
                 >
-                  <Plus className="size-4" aria-hidden />
+                  <Icon glyph={faPlus} className="size-4" aria-hidden />
                   Add a column
                 </Button>
               }

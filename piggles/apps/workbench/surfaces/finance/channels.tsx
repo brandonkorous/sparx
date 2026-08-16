@@ -21,7 +21,8 @@ import {
   Table,
   Text,
 } from '@wizeworks/silicaui-react';
-import { Store } from 'lucide-react';
+import { faShop } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
@@ -80,7 +81,7 @@ export function ChannelsSurface(_props: { ctx: SurfaceContext }) {
       <div className="min-h-0 flex-1 overflow-y-auto">
         {isError ? (
           <EmptyState
-            icon={<Store className="size-6" aria-hidden />}
+            icon={<Icon glyph={faShop} className="size-6" aria-hidden />}
             title="Could not load your channels"
             description="Something went wrong reaching the server. Try again in a moment."
             actions={
@@ -99,7 +100,7 @@ export function ChannelsSurface(_props: { ctx: SurfaceContext }) {
           <PaneWaiting />
         ) : rows.length === 0 ? (
           <EmptyState
-            icon={<Store className="size-6" aria-hidden />}
+            icon={<Icon glyph={faShop} className="size-6" aria-hidden />}
             title="No sales in this period"
             description="Nothing was sold in the range you picked. Try a longer period, or come back once orders start coming in."
           />

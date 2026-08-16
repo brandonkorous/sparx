@@ -30,7 +30,8 @@ import {
   Timestamp,
   ToolbarSeparator,
 } from '@wizeworks/silicaui-react';
-import { ClipboardList, Route, TriangleAlert } from 'lucide-react';
+import { faClipboardList, faExclamationTriangle, faRoute } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { ListEmptyState } from '../../components/list-empty-state';
@@ -118,7 +119,7 @@ export function PickListsListSurface({ ctx }: { ctx: SurfaceContext }) {
     if (isError) {
       return (
         <EmptyState
-          icon={<Route className="size-6" aria-hidden />}
+          icon={<Icon glyph={faRoute} className="size-6" aria-hidden />}
           title="Could not load the walks"
           description="This is a problem reaching the server. Nobody's walk is affected — the list just could not be read just now."
         />
@@ -134,7 +135,7 @@ export function PickListsListSurface({ ctx }: { ctx: SurfaceContext }) {
         <ListEmptyState
           filtered={narrowed}
           noResults={{
-            icon: <Route className="size-6" aria-hidden />,
+            icon: <Icon glyph={faRoute} className="size-6" aria-hidden />,
             title: 'Nothing matches that',
             description:
               'No walks match those filters. Try clearing the status, or switching back to every location.',
@@ -218,7 +219,7 @@ export function PickListsListSurface({ ctx }: { ctx: SurfaceContext }) {
                 <td className="hidden text-right whitespace-nowrap @xl:table-cell">
                   {walk.shortCount > 0 ? (
                     <Badge color="danger" variant="soft" size="sm">
-                      <TriangleAlert className="size-3" aria-hidden />
+                      <Icon glyph={faExclamationTriangle} className="size-3" aria-hidden />
                       {walk.shortCount}
                     </Badge>
                   ) : (
@@ -308,7 +309,7 @@ export function PickListsListSurface({ ctx }: { ctx: SurfaceContext }) {
             ctx.open('inventory.picking.throughput', {}, { target: targetFor(event) });
           }}
         >
-          <ClipboardList className="size-4" aria-hidden />
+          <Icon glyph={faClipboardList} className="size-4" aria-hidden />
           <span className="hidden @md:inline">How the floor is running</span>
         </Button>
 

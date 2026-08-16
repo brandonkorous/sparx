@@ -39,7 +39,14 @@ import {
   useToast,
 } from '@wizeworks/silicaui-react';
 import { useConfirm } from '../../lib/confirm';
-import { FileText, Receipt, ShoppingCart, Trash2, UserPlus } from 'lucide-react';
+import {
+  faCartShopping,
+  faFileText,
+  faReceipt,
+  faTrashCan,
+  faUserPlus,
+} from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import { afterPaneChange } from '../../lib/defer';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
@@ -752,7 +759,7 @@ function AccountEditor({
                     openList('b2b.orders.list', event);
                   }}
                 >
-                  <ShoppingCart className="size-4" aria-hidden />
+                  <Icon glyph={faCartShopping} className="size-4" aria-hidden />
                   Their orders
                 </Button>
                 <Button
@@ -763,7 +770,7 @@ function AccountEditor({
                     openList('b2b.quotes.list', event);
                   }}
                 >
-                  <FileText className="size-4" aria-hidden />
+                  <Icon glyph={faFileText} className="size-4" aria-hidden />
                   Their quotes
                 </Button>
                 <Button
@@ -774,7 +781,7 @@ function AccountEditor({
                     openList('b2b.invoices.list', event);
                   }}
                 >
-                  <Receipt className="size-4" aria-hidden />
+                  <Icon glyph={faReceipt} className="size-4" aria-hidden />
                   Their invoices
                 </Button>
               </div>
@@ -797,7 +804,7 @@ function AccountEditor({
                   void onDelete();
                 }}
               >
-                <Trash2 className="size-4" aria-hidden />
+                <Icon glyph={faTrashCan} className="size-4" aria-hidden />
                 Remove account
               </Button>
             </div>
@@ -916,7 +923,7 @@ function ContactsSection({ accountId }: { accountId: string }) {
               loading={addContact.isPending}
               onClick={onAdd}
             >
-              <UserPlus className="size-4" aria-hidden />
+              <Icon glyph={faUserPlus} className="size-4" aria-hidden />
               Add
             </Button>
           </div>

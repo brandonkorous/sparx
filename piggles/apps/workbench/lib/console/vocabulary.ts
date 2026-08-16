@@ -126,11 +126,15 @@ export const PIGGLES_SURFACES: Readonly<Record<string, string>> = {
   // Webhooks are developer territory and RULE #3 keeps them out of a
   // non-developer context. The capability is real; the name says what it buys.
   'cms.webhooks.list': 'Tell other software',
+  // Unlisted, so it is never a nav row — but it is the PANE TAB once one is
+  // open, and a tab reading "Webhook" is the jargon the list title avoids.
+  'cms.webhooks.detail': 'Telling other software',
 
   // ── Sell ──────────────────────────────────────────────────────────────────
   // A "collection" is a curated set shown on the site. RULE #3 names the word
   // itself as one a person must never be made to learn.
   'commerce.collections.list': 'Groups of products',
+  'commerce.collection.detail': 'Group of products',
   'commerce.product-types.list': 'Kinds of product',
   'commerce.product-types.detail': 'Kind of product',
   // Fitment is auto-parts trade language. Every business using it is answering

@@ -5,7 +5,14 @@
 // settings). The KEYS are the deep-link + saved-layout contract, carried over
 // verbatim from the stubs these replaced so no bookmark or saved workspace breaks.
 
-import { AtSign, Route, Send, Settings, ShieldOff, Users } from 'lucide-react';
+import {
+  faAt,
+  faGear,
+  faPaperPlane,
+  faRoute,
+  faShieldSlash,
+  faUsers,
+} from '@fortawesome/pro-solid-svg-icons';
 import type { SurfaceDefinition } from '../registry';
 import { BroadcastsListSurface } from '../../../surfaces/email/broadcasts-list';
 import { BroadcastDetailSurface } from '../../../surfaces/email/broadcast-detail';
@@ -23,7 +30,7 @@ export const EMAIL_SURFACES: SurfaceDefinition[] = [
     key: 'email.broadcasts.list',
     title: 'Broadcasts',
     module: 'email',
-    icon: Send,
+    icon: faPaperPlane,
     order: 1,
     keywords: ['newsletter', 'campaign', 'send', 'blast', 'marketing'],
     component: BroadcastsListSurface,
@@ -35,7 +42,7 @@ export const EMAIL_SURFACES: SurfaceDefinition[] = [
     key: 'email.broadcasts.detail',
     title: 'Broadcast',
     module: 'email',
-    icon: Send,
+    icon: faPaperPlane,
     listed: false,
     keywords: ['newsletter', 'campaign', 'send', 'blast', 'marketing'],
     component: BroadcastDetailSurface,
@@ -45,7 +52,7 @@ export const EMAIL_SURFACES: SurfaceDefinition[] = [
     key: 'email.sequences.list',
     title: 'Sequences',
     module: 'email',
-    icon: Route,
+    icon: faRoute,
     order: 2,
     keywords: [
       'sequence',
@@ -68,7 +75,7 @@ export const EMAIL_SURFACES: SurfaceDefinition[] = [
     key: 'email.sequences.detail',
     title: (params) => (params.id === 'new' ? 'New sequence' : 'Sequence'),
     module: 'email',
-    icon: Route,
+    icon: faRoute,
     listed: false,
     keywords: ['sequence', 'journey', 'drip', 'follow up', 'nurture'],
     component: SequenceDetailSurface,
@@ -79,7 +86,7 @@ export const EMAIL_SURFACES: SurfaceDefinition[] = [
     key: 'email.sequences.enrollments',
     title: 'Enrolled people',
     module: 'email',
-    icon: Users,
+    icon: faUsers,
     listed: false,
     keywords: ['enrolled', 'enrollments', 'subscribers', 'sequence', 'people'],
     component: SequenceEnrollmentsSurface,
@@ -90,7 +97,7 @@ export const EMAIL_SURFACES: SurfaceDefinition[] = [
     key: 'email.domains.list',
     title: 'Sending addresses',
     module: 'email',
-    icon: AtSign,
+    icon: faAt,
     section: 'Setup',
     order: 10,
     keywords: ['domains', 'from address', 'dns', 'spf', 'dkim', 'verify', 'sender'],
@@ -103,7 +110,7 @@ export const EMAIL_SURFACES: SurfaceDefinition[] = [
     key: 'email.domains.detail',
     title: (params) => (params.id === 'new' ? 'Add a sending address' : 'Sending address'),
     module: 'email',
-    icon: AtSign,
+    icon: faAt,
     listed: false,
     component: SendingDomainDetailSurface,
   },
@@ -111,7 +118,7 @@ export const EMAIL_SURFACES: SurfaceDefinition[] = [
     key: 'email.suppressions.list',
     title: 'Do not email',
     module: 'email',
-    icon: ShieldOff,
+    icon: faShieldSlash,
     section: 'Setup',
     order: 11,
     // Account-wide list; a second copy is the same list.
@@ -123,7 +130,7 @@ export const EMAIL_SURFACES: SurfaceDefinition[] = [
     key: 'email.settings',
     title: 'Email settings',
     module: 'email',
-    icon: Settings,
+    icon: faGear,
     section: 'Setup',
     order: 12,
     // One settings screen per site; a second copy is meaningless.

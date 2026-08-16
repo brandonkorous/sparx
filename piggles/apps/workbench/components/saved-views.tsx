@@ -52,7 +52,8 @@ import {
   Text,
   useToast,
 } from '@wizeworks/silicaui-react';
-import { Check, Columns3, Star, Trash2 } from 'lucide-react';
+import { faCheck, faColumns3, faStar, faTrashCan } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { useMutation, useQuery, useQueryClient } from '@sparx/query';
 import { api } from '../lib/api/client';
 import { afterCommit, afterMenuClose } from '../lib/defer';
@@ -194,7 +195,7 @@ export function SavedViewsBar({
             size="sm"
             {...(className ? { className } : {})}
           >
-            <Star className="size-4" aria-hidden />
+            <Icon glyph={faStar} className="size-4" aria-hidden />
             {activeName ?? 'Views'}
             {items.length > 0 && !activeName ? (
               <Badge color="neutral" variant="soft" size="sm">
@@ -217,7 +218,7 @@ export function SavedViewsBar({
                 }}
               >
                 {view.id === activeId ? (
-                  <Check className="size-4" aria-hidden />
+                  <Icon glyph={faCheck} className="size-4" aria-hidden />
                 ) : (
                   <span className="size-4" aria-hidden />
                 )}
@@ -266,7 +267,7 @@ export function SavedViewsBar({
                   });
                 }}
               >
-                <Star className="size-4" aria-hidden />
+                <Icon glyph={faStar} className="size-4" aria-hidden />
                 Open this list here by default
               </DropdownMenuItem>
               <DropdownMenuItem
@@ -293,7 +294,7 @@ export function SavedViewsBar({
                   });
                 }}
               >
-                <Trash2 className="size-4" aria-hidden />
+                <Icon glyph={faTrashCan} className="size-4" aria-hidden />
                 Delete this view
               </DropdownMenuItem>
             </>
@@ -421,7 +422,7 @@ export function ColumnChooser({
           variant={hiddenCount > 0 ? 'soft' : 'outline'}
           size="sm"
         >
-          <Columns3 className="size-4" aria-hidden />
+          <Icon glyph={faColumns3} className="size-4" aria-hidden />
           Columns
           {hiddenCount > 0 ? (
             <Badge color="module" variant="soft" size="sm">

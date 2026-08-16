@@ -43,16 +43,17 @@ import {
   Text,
 } from '@wizeworks/silicaui-react';
 import {
-  ArrowDownToLine,
-  ClipboardCheck,
-  CloudUpload,
-  PackageOpen,
-  PackageSearch,
-  Route,
-  Search,
-  Truck,
-  WifiOff,
-} from 'lucide-react';
+  faArrowDownToLine,
+  faBoxMagnifyingGlass,
+  faBoxOpen,
+  faClipboardCheck,
+  faCloudUpload,
+  faMagnifyingGlass,
+  faRoute,
+  faTruck,
+  faWifiSlash,
+} from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { PANE_SHELL } from '../../components/pane-toolbar';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { plural, useStockLocations } from './data';
@@ -75,13 +76,13 @@ type Job = 'lookup' | 'pick' | 'pack' | 'put_away' | 'count' | 'receive';
 // fetch orders, box them, put the delivery away, count a shelf, take a delivery
 // in. Two columns on a phone, three given room — never one long list, because a
 // job switcher you have to scroll is a job switcher nobody uses.
-const JOBS: { value: Job; label: string; hint: string; icon: typeof Search }[] = [
-  { value: 'lookup', label: 'What is this', hint: 'Scan anything', icon: Search },
-  { value: 'pick', label: 'Pick', hint: 'Open a walk', icon: Route },
-  { value: 'pack', label: 'Pack', hint: 'Open an order', icon: PackageOpen },
-  { value: 'put_away', label: 'Put away', hint: 'Item, then shelf', icon: ArrowDownToLine },
-  { value: 'count', label: 'Count', hint: 'Open a count', icon: ClipboardCheck },
-  { value: 'receive', label: 'Receive', hint: 'Open a delivery', icon: Truck },
+const JOBS: { value: Job; label: string; hint: string; icon: typeof faMagnifyingGlass }[] = [
+  { value: 'lookup', label: 'What is this', hint: 'Scan anything', icon: faMagnifyingGlass },
+  { value: 'pick', label: 'Pick', hint: 'Open a walk', icon: faRoute },
+  { value: 'pack', label: 'Pack', hint: 'Open an order', icon: faBoxOpen },
+  { value: 'put_away', label: 'Put away', hint: 'Item, then shelf', icon: faArrowDownToLine },
+  { value: 'count', label: 'Count', hint: 'Open a count', icon: faClipboardCheck },
+  { value: 'receive', label: 'Receive', hint: 'Open a delivery', icon: faTruck },
 ];
 
 /** 44px minimum, everywhere. The smallest target a gloved thumb reliably hits. */
@@ -101,7 +102,7 @@ export function WarehouseModeSurface({ ctx }: { ctx: SurfaceContext }) {
           length a 2px rule is invisible and a filled block is not. */}
       <div className="grid shrink-0 grid-cols-2 gap-2 @lg:grid-cols-3 @3xl:grid-cols-6">
         {JOBS.map((entry) => {
-          const Icon = entry.icon;
+          const glyph = entry.icon;
           const active = job === entry.value;
           return (
             <Button
@@ -114,7 +115,7 @@ export function WarehouseModeSurface({ ctx }: { ctx: SurfaceContext }) {
                 setJob(entry.value);
               }}
             >
-              <Icon className="size-5" aria-hidden />
+              <Icon glyph={glyph} className="size-5" aria-hidden />
               <span>{entry.label}</span>
             </Button>
           );
@@ -153,9 +154,9 @@ export function WarehouseModeSurface({ ctx }: { ctx: SurfaceContext }) {
             }}
           >
             {queue.replaying ? (
-              <CloudUpload className="size-5" aria-hidden />
+              <Icon glyph={faCloudUpload} className="size-5" aria-hidden />
             ) : (
-              <WifiOff className="size-5" aria-hidden />
+              <Icon glyph={faWifiSlash} className="size-5" aria-hidden />
             )}
             {queue.size}
           </Button>
@@ -365,7 +366,7 @@ function PutAwayJob({ warehouseId }: { warehouseId: string }) {
   if (!warehouseId) {
     return (
       <EmptyState
-        icon={<ArrowDownToLine className="size-6" aria-hidden />}
+        icon={<Icon glyph={faArrowDownToLine} className="size-6" aria-hidden />}
         title="Choose where you are first"
         description="Putting something away means putting it on a shelf, and shelves belong to a location."
       />
@@ -375,7 +376,7 @@ function PutAwayJob({ warehouseId }: { warehouseId: string }) {
   if (!bins.isLoading && shelves.length === 0) {
     return (
       <EmptyState
-        icon={<ArrowDownToLine className="size-6" aria-hidden />}
+        icon={<Icon glyph={faArrowDownToLine} className="size-6" aria-hidden />}
         title="This location has no shelves"
         description="Turn shelves on for this location and add the ones you actually have, then stock can be recorded onto them."
       />
@@ -541,7 +542,7 @@ function OpenSomethingJob({
         </Alert>
       ) : (
         <div className="flex items-start gap-3 p-4">
-          <PackageSearch className="size-5 shrink-0" aria-hidden />
+          <Icon glyph={faBoxMagnifyingGlass} className="size-5 shrink-0" aria-hidden />
           <Text className="text-sm">
             {job === 'count'
               ? 'Scan the number printed on the count sheet, or type it. The count opens with the scanner ready.'
@@ -592,7 +593,7 @@ function MyWalksJob({ ctx, warehouseId }: { ctx: SurfaceContext; warehouseId: st
   if (ordered.length === 0) {
     return (
       <EmptyState
-        icon={<Route className="size-6" aria-hidden />}
+        icon={<Icon glyph={faRoute} className="size-6" aria-hidden />}
         title="Nothing to pick right now"
         description="When somebody in the office turns orders into a walk, it shows up here and you can start straight away."
       />

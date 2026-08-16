@@ -14,13 +14,14 @@
 // is a lie an owner would act on: they'd go looking for why their catalog
 // vanished. Honest beats tidy.
 
-import type { LucideIcon } from 'lucide-react';
+import type { PigglesIcon } from '@piggles/ui';
+import { Icon } from '@piggles/ui';
 import { EmptyState } from '@wizeworks/silicaui-react';
 import type { SurfaceContext } from '../lib/surfaces/registry';
 
 interface PlaceholderOptions {
   /** Matches the nav row's icon, so the pane reads as the thing that was clicked. */
-  icon: LucideIcon;
+  icon: PigglesIcon;
   /** What this screen WILL be, in the owner's words — not the surface key. */
   title: string;
   /**
@@ -30,13 +31,13 @@ interface PlaceholderOptions {
   body: string;
 }
 
-export function createPlaceholderSurface({ icon: Icon, title, body }: PlaceholderOptions) {
+export function createPlaceholderSurface({ icon, title, body }: PlaceholderOptions) {
   function PlaceholderSurface(_props: { ctx: SurfaceContext }) {
     return (
       <div className="grid h-full place-items-center overflow-y-auto p-8">
         <EmptyState
           className="max-w-md"
-          icon={<Icon className="text-module size-8" aria-hidden />}
+          icon={<Icon glyph={icon} className="text-module size-8" aria-hidden />}
           title={title}
           description={`${body} This screen is still being built — it will open here when it is ready.`}
         />

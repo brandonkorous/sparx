@@ -20,7 +20,8 @@ import {
   Select,
   Table,
 } from '@wizeworks/silicaui-react';
-import { Receipt } from 'lucide-react';
+import { faReceipt } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
@@ -111,7 +112,7 @@ export function CustomerOrdersSurface({ ctx }: { ctx: SurfaceContext }) {
         <Card className="min-h-0 flex-1 overflow-y-auto">
           {isError ? (
             <EmptyState
-              icon={<Receipt className="size-6" aria-hidden />}
+              icon={<Icon glyph={faReceipt} className="size-6" aria-hidden />}
               title="Could not load orders"
               description="Something went wrong reaching the server. It may be a temporary problem — try again in a moment."
               actions={
@@ -130,7 +131,7 @@ export function CustomerOrdersSurface({ ctx }: { ctx: SurfaceContext }) {
             <PaneWaiting />
           ) : rows.length === 0 ? (
             <EmptyState
-              icon={<Receipt className="size-6" aria-hidden />}
+              icon={<Icon glyph={faReceipt} className="size-6" aria-hidden />}
               title={filtered ? 'No orders match those filters' : 'No orders yet'}
               description={
                 filtered

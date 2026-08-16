@@ -53,7 +53,14 @@ import {
   Tooltip,
   useToast,
 } from '@wizeworks/silicaui-react';
-import { Bookmark, Check, ChevronDown, Trash2, Users } from 'lucide-react';
+import {
+  faBookmark,
+  faCheck,
+  faChevronDown,
+  faTrashCan,
+  faUsers,
+} from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import {
   isConditionGroup,
   type ConditionGroup,
@@ -285,9 +292,9 @@ export function SavedViewsMenu({
               size="sm"
               className="gap-1.5"
             >
-              <Bookmark className="size-4" aria-hidden />
+              <Icon glyph={faBookmark} className="size-4" aria-hidden />
               {selected ? selected.name : 'Views'}
-              <ChevronDown className="size-3" aria-hidden />
+              <Icon glyph={faChevronDown} className="size-3" aria-hidden />
             </Button>
           </DropdownMenuTrigger>
         </Tooltip>
@@ -303,7 +310,9 @@ export function SavedViewsMenu({
             >
               <span className="flex w-full items-center gap-2">
                 <span className="flex-1">Everything</span>
-                {selected === null ? <Check className="size-4 shrink-0" aria-hidden /> : null}
+                {selected === null ? (
+                  <Icon glyph={faCheck} className="size-4 shrink-0" aria-hidden />
+                ) : null}
               </span>
             </DropdownMenuItem>
 
@@ -317,10 +326,14 @@ export function SavedViewsMenu({
                 <span className="flex w-full items-center gap-2">
                   <span className="min-w-0 flex-1 truncate">{view.name}</span>
                   {view.isShared ? (
-                    <Users className="size-3.5 shrink-0" aria-label="Shared with your team" />
+                    <Icon
+                      glyph={faUsers}
+                      className="size-3.5 shrink-0"
+                      aria-label="Shared with your team"
+                    />
                   ) : null}
                   {selectedId === view.id ? (
-                    <Check className="size-4 shrink-0" aria-hidden />
+                    <Icon glyph={faCheck} className="size-4 shrink-0" aria-hidden />
                   ) : null}
                 </span>
               </DropdownMenuItem>
@@ -343,7 +356,7 @@ export function SavedViewsMenu({
               }}
             >
               <span className="flex w-full items-center gap-2">
-                <Bookmark className="size-4 shrink-0" aria-hidden />
+                <Icon glyph={faBookmark} className="size-4 shrink-0" aria-hidden />
                 <span className="flex-1">
                   {changed ? 'Save these filters as a view' : 'Nothing new to save'}
                 </span>
@@ -358,7 +371,7 @@ export function SavedViewsMenu({
                 }}
               >
                 <span className="flex w-full items-center gap-2">
-                  <Trash2 className="size-4 shrink-0" aria-hidden />
+                  <Icon glyph={faTrashCan} className="size-4 shrink-0" aria-hidden />
                   <span className="flex-1">Delete “{selected.name}”</span>
                 </span>
               </DropdownMenuItem>

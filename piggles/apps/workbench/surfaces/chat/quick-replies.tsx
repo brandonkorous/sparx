@@ -33,7 +33,8 @@ import {
   Textarea,
   useToast,
 } from '@wizeworks/silicaui-react';
-import { MessageSquareText, Plus, Trash2 } from 'lucide-react';
+import { faMessageLines, faPlus, faTrashCan } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { useConfirm } from '../../lib/confirm';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import { afterPaneChange } from '../../lib/defer';
@@ -87,7 +88,7 @@ function QuickReplyRow({
         loading={deleting}
         onClick={onDelete}
       >
-        <Trash2 className="size-4" aria-hidden />
+        <Icon glyph={faTrashCan} className="size-4" aria-hidden />
       </Button>
     </li>
   );
@@ -309,7 +310,7 @@ export function ChatQuickRepliesSurface({ ctx }: { ctx: SurfaceContext }) {
                 disabled={!canAdd}
                 onClick={add}
               >
-                <Plus className="size-4" aria-hidden />
+                <Icon glyph={faPlus} className="size-4" aria-hidden />
                 Add quick reply
               </Button>
             </div>
@@ -336,7 +337,7 @@ export function ChatQuickRepliesSurface({ ctx }: { ctx: SurfaceContext }) {
               <PaneWaiting />
             ) : replies.length === 0 ? (
               <EmptyState
-                icon={<MessageSquareText className="size-6" aria-hidden />}
+                icon={<Icon glyph={faMessageLines} className="size-6" aria-hidden />}
                 title="No quick replies yet"
                 description="Add your first one above — the answers you send most often are the ones worth saving."
               />

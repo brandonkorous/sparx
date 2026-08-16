@@ -39,7 +39,8 @@ import {
   Timestamp,
   useToast,
 } from '@wizeworks/silicaui-react';
-import { Save, Send, Trash2 } from 'lucide-react';
+import { faFloppyDisk, faPaperPlane, faTrashCan } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { FormSection } from '../../components/form-section';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { useConfirm } from '../../lib/confirm';
@@ -248,7 +249,7 @@ export function ReportScheduleDetailSurface({ ctx }: { ctx: SurfaceContext }) {
           disabled={!canSave || saving}
           onClick={save}
         >
-          <Save className="size-4" aria-hidden />
+          <Icon glyph={faFloppyDisk} className="size-4" aria-hidden />
           {isNew ? 'Start sending it' : 'Save'}
         </Button>
 
@@ -283,7 +284,7 @@ export function ReportScheduleDetailSurface({ ctx }: { ctx: SurfaceContext }) {
                 });
               }}
             >
-              <Send className="size-4" aria-hidden />
+              <Icon glyph={faPaperPlane} className="size-4" aria-hidden />
               Send now
             </Button>
             <Button
@@ -315,7 +316,7 @@ export function ReportScheduleDetailSurface({ ctx }: { ctx: SurfaceContext }) {
                 })();
               }}
             >
-              <Trash2 className="size-4" aria-hidden />
+              <Icon glyph={faTrashCan} className="size-4" aria-hidden />
               Delete
             </Button>
           </>

@@ -59,18 +59,18 @@ import {
 } from '@wizeworks/silicaui-react';
 import { useConfirm } from '../../lib/confirm';
 import {
-  ArrowRight,
-  Ban,
-  Package,
-  PackagePlus,
-  PackageX,
-  Pencil,
-  Printer,
-  Send,
-  Trash2,
-  Truck,
-  X,
-} from 'lucide-react';
+  faArrowRight,
+  faBan,
+  faBox,
+  faBoxOpen,
+  faPaperPlane,
+  faPencil,
+  faPrint,
+  faTrashCan,
+  faTruck,
+  faXmark,
+} from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import { PaneScope } from '../../lib/dock/window-boundary';
@@ -497,7 +497,7 @@ function ReceiveModal({
               Cancel
             </Button>
             <Button color="module" size="sm" loading={pending} onClick={confirm}>
-              <Truck className="size-4" aria-hidden />
+              <Icon glyph={faTruck} className="size-4" aria-hidden />
               Receive it
             </Button>
           </DialogFooter>
@@ -838,7 +838,7 @@ export function TransferDetailSurface({ ctx }: { ctx: SurfaceContext }) {
       <div className={PANE_SHELL}>
         <Card className="min-h-0 flex-1 items-center justify-center">
           <PaneEmpty
-            icon={<PackageX className="size-6" aria-hidden />}
+            icon={<Icon glyph={faBoxOpen} className="size-6" aria-hidden />}
             title="You need two locations to move stock between"
             description="A transfer sends stock from one of your locations to another, so you need at least two set up before you can start one."
             actions={
@@ -908,7 +908,7 @@ export function TransferDetailSurface({ ctx }: { ctx: SurfaceContext }) {
                 );
               }}
             >
-              <Printer className="size-4" aria-hidden />
+              <Icon glyph={faPrint} className="size-4" aria-hidden />
             </Button>
           </Tooltip>
         ) : null}
@@ -924,7 +924,7 @@ export function TransferDetailSurface({ ctx }: { ctx: SurfaceContext }) {
               void runCancel();
             }}
           >
-            <Ban className="size-4" aria-hidden />
+            <Icon glyph={faBan} className="size-4" aria-hidden />
             Cancel
           </Button>
         ) : null}
@@ -948,7 +948,7 @@ export function TransferDetailSurface({ ctx }: { ctx: SurfaceContext }) {
               void runDispatch();
             }}
           >
-            <Send className="size-4" aria-hidden />
+            <Icon glyph={faPaperPlane} className="size-4" aria-hidden />
             Send it
           </Button>
         ) : null}
@@ -962,7 +962,7 @@ export function TransferDetailSurface({ ctx }: { ctx: SurfaceContext }) {
               setReceiving(true);
             }}
           >
-            <Truck className="size-4" aria-hidden />
+            <Icon glyph={faTruck} className="size-4" aria-hidden />
             Mark received
           </Button>
         ) : null}
@@ -1013,7 +1013,7 @@ export function TransferDetailSurface({ ctx }: { ctx: SurfaceContext }) {
             ) : (
               <div className="border-base-300 flex flex-wrap items-center gap-2 border-t pt-3 text-lg">
                 <span className="font-medium">{from}</span>
-                <ArrowRight className="size-5 shrink-0" aria-hidden />
+                <Icon glyph={faArrowRight} className="size-5 shrink-0" aria-hidden />
                 <span className="font-medium">{to}</span>
               </div>
             )}
@@ -1089,7 +1089,7 @@ export function TransferDetailSurface({ ctx }: { ctx: SurfaceContext }) {
                     setEditing({ line: null });
                   }}
                 >
-                  <PackagePlus className="size-4" aria-hidden />
+                  <Icon glyph={faBoxOpen} className="size-4" aria-hidden />
                   Add item
                 </Button>
               ) : (
@@ -1110,7 +1110,7 @@ export function TransferDetailSurface({ ctx }: { ctx: SurfaceContext }) {
 
             {lines.length === 0 ? (
               <EmptyState
-                icon={<Package className="size-6" aria-hidden />}
+                icon={<Icon glyph={faBox} className="size-6" aria-hidden />}
                 title={editableLines ? 'No items yet' : 'This transfer had no items'}
                 description={
                   editableLines
@@ -1164,7 +1164,7 @@ export function TransferDetailSurface({ ctx }: { ctx: SurfaceContext }) {
                                 setEditing({ line });
                               }}
                             >
-                              <Pencil className="size-4" aria-hidden />
+                              <Icon glyph={faPencil} className="size-4" aria-hidden />
                             </Button>
                             <Button
                               size="sm"
@@ -1176,7 +1176,7 @@ export function TransferDetailSurface({ ctx }: { ctx: SurfaceContext }) {
                                 removeLine(line.key);
                               }}
                             >
-                              <X className="size-4" aria-hidden />
+                              <Icon glyph={faXmark} className="size-4" aria-hidden />
                             </Button>
                           </>
                         ) : null}
@@ -1205,7 +1205,7 @@ export function TransferDetailSurface({ ctx }: { ctx: SurfaceContext }) {
                   void runDelete();
                 }}
               >
-                <Trash2 className="size-4" aria-hidden />
+                <Icon glyph={faTrashCan} className="size-4" aria-hidden />
                 Delete draft
               </Button>
             </div>

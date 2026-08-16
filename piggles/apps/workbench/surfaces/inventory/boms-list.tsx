@@ -23,7 +23,8 @@ import {
   Table,
   Text,
 } from '@wizeworks/silicaui-react';
-import { CookingPot, Plus } from 'lucide-react';
+import { faPlus, faPotFood } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
@@ -55,7 +56,7 @@ export function BomsListSurface({ ctx }: { ctx: SurfaceContext }) {
     if (boms.isError) {
       return (
         <EmptyState
-          icon={<CookingPot className="size-6" aria-hidden />}
+          icon={<Icon glyph={faPotFood} className="size-6" aria-hidden />}
           title="Could not load your recipes"
           description="This is a problem reaching the server. Your recipes are unaffected."
         />
@@ -67,7 +68,7 @@ export function BomsListSurface({ ctx }: { ctx: SurfaceContext }) {
     if (rows.length === 0) {
       return (
         <EmptyState
-          icon={<CookingPot className="size-6" aria-hidden />}
+          icon={<Icon glyph={faPotFood} className="size-6" aria-hidden />}
           title={q || status ? 'Nothing matches that' : 'No recipes yet'}
           description={
             q || status
@@ -82,7 +83,7 @@ export function BomsListSurface({ ctx }: { ctx: SurfaceContext }) {
                   ctx.open('inventory.boms.detail', { id: 'new' }, { target: 'tab' });
                 }}
               >
-                <Plus className="size-4" aria-hidden />
+                <Icon glyph={faPlus} className="size-4" aria-hidden />
                 Write a recipe
               </Button>
             )
@@ -196,7 +197,7 @@ export function BomsListSurface({ ctx }: { ctx: SurfaceContext }) {
             );
           }}
         >
-          <Plus className="size-4" aria-hidden />
+          <Icon glyph={faPlus} className="size-4" aria-hidden />
           <span className="hidden @lg:inline">Write a recipe</span>
         </Button>
         <RefreshButton

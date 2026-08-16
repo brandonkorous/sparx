@@ -36,7 +36,8 @@ import {
   Table,
   ToolbarSeparator,
 } from '@wizeworks/silicaui-react';
-import { ArrowDown, ArrowUp, Package, Plus } from 'lucide-react';
+import { faArrowDown, faArrowUp, faBox, faPlus } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
@@ -164,9 +165,9 @@ export function ProductsListSurface({ ctx }: { ctx: SurfaceContext }) {
         {label}
         {sort.key === key ? (
           sort.dir === 'asc' ? (
-            <ArrowUp className="size-3" aria-hidden />
+            <Icon glyph={faArrowUp} className="size-3" aria-hidden />
           ) : (
-            <ArrowDown className="size-3" aria-hidden />
+            <Icon glyph={faArrowDown} className="size-3" aria-hidden />
           )
         ) : null}
       </button>
@@ -236,7 +237,7 @@ export function ProductsListSurface({ ctx }: { ctx: SurfaceContext }) {
           title="Add a product — hold Shift to open alongside, Alt for a new window"
           onClick={create}
         >
-          <Plus className="size-4" aria-hidden />
+          <Icon glyph={faPlus} className="size-4" aria-hidden />
           <span className="hidden @2xl:inline">Add a product</span>
         </Button>
 
@@ -284,7 +285,7 @@ export function ProductsListSurface({ ctx }: { ctx: SurfaceContext }) {
           // "No products yet" over a connection failure is a lie about the
           // catalog, and the worst possible one to tell someone.
           <EmptyState
-            icon={<Package className="size-6" aria-hidden />}
+            icon={<Icon glyph={faBox} className="size-6" aria-hidden />}
             title="Could not load your products"
             description="This is a problem reaching the server. Your catalog is unaffected — nothing has been lost."
             actions={
@@ -305,7 +306,7 @@ export function ProductsListSurface({ ctx }: { ctx: SurfaceContext }) {
           <ListEmptyState
             filtered={narrowed}
             noResults={{
-              icon: <Package className="size-6" aria-hidden />,
+              icon: <Icon glyph={faBox} className="size-6" aria-hidden />,
               title: 'No products match that',
               description: emptyAdvice(search.trim(), filter === 'all' ? null : active.label),
             }}
@@ -320,7 +321,7 @@ export function ProductsListSurface({ ctx }: { ctx: SurfaceContext }) {
                 'A product is one thing you sell. Add your first one and it can be on your website within a minute.',
               actions: (
                 <Button size="sm" color="module" onClick={create}>
-                  <Plus className="size-4" aria-hidden />
+                  <Icon glyph={faPlus} className="size-4" aria-hidden />
                   Add a product
                 </Button>
               ),

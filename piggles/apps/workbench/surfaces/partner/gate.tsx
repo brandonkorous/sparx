@@ -13,7 +13,8 @@
 import { Button, Card } from '@wizeworks/silicaui-react';
 import { PaneWaiting } from '../../components/pane-waiting';
 import { PaneEmpty } from '../../components/pane-empty';
-import { Award, Lock, ServerCrash } from 'lucide-react';
+import { faAward, faLock, faServer } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { PANE_SHELL } from '../../components/pane-toolbar';
 import { ApiError } from '@sparx/api-client';
 import { productCopy, productCopyWith } from '../../lib/product';
@@ -74,7 +75,7 @@ export function PartnerLoadError({
       error instanceof ApiError && error.message.trim().length > 0 ? error.message : null;
     return (
       <PartnerMessage
-        icon={<Lock className="size-6" aria-hidden />}
+        icon={<Icon glyph={faLock} className="size-6" aria-hidden />}
         title={`${section.charAt(0).toUpperCase()}${section.slice(1)} isn’t available on this account`}
         description={
           reason ??
@@ -85,7 +86,7 @@ export function PartnerLoadError({
   }
   return (
     <PartnerMessage
-      icon={<ServerCrash className="size-6" aria-hidden />}
+      icon={<Icon glyph={faServer} className="size-6" aria-hidden />}
       title={`Could not load ${section}`}
       description="This is a problem reaching the server. Nothing about your partner account has changed — try again in a moment."
       actions={
@@ -104,7 +105,7 @@ export function PartnerLoadError({
 export function NotAPartner({ section }: { section: string }) {
   return (
     <PartnerMessage
-      icon={<Award className="size-6" aria-hidden />}
+      icon={<Icon glyph={faAward} className="size-6" aria-hidden />}
       title={productCopy('partner.gate.title', 'This account isn’t a sparx partner')}
       description={productCopyWith(
         'partner.gate.description',

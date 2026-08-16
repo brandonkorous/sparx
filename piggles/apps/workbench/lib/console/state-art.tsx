@@ -11,7 +11,7 @@
 // dozing next to "Nothing booked this week" has been told something true by
 // something friendly, which is the entire brief.
 //
-// The platform's own answer is a lucide glyph toned by state (red for a failure,
+// The platform's own answer is a Font Awesome glyph toned by state (red for a failure,
 // amber for a filter, the app's hue for a first run). That is a real improvement
 // over five identical grey pictures — but it is still five identical PICTURES
 // told apart by a colour. A character tells them apart by POSE, which carries

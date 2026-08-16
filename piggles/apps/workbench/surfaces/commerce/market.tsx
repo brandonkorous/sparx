@@ -31,7 +31,8 @@ import {
 } from '@wizeworks/silicaui-react';
 import { useConfirm } from '../../lib/confirm';
 import { MARKET_CATEGORIES } from '@sparx/commerce-schemas';
-import { ServerCrash, ShoppingBag } from 'lucide-react';
+import { faBagShopping, faServer } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import { FormSection } from '../../components/form-section';
@@ -334,7 +335,7 @@ function EnrolledBody({ profile, ctx }: { profile: MarketProfile; ctx: SurfaceCo
         {products.isError ? (
           <EmptyState
             size="sm"
-            icon={<ServerCrash className="size-6" aria-hidden />}
+            icon={<Icon glyph={faServer} className="size-6" aria-hidden />}
             title="Could not load your listed products"
             description={productErrorMessage(
               products.error,
@@ -357,7 +358,7 @@ function EnrolledBody({ profile, ctx }: { profile: MarketProfile; ctx: SurfaceCo
         ) : rows.length === 0 ? (
           <EmptyState
             size="sm"
-            icon={<ShoppingBag className="size-6" aria-hidden />}
+            icon={<Icon glyph={faBagShopping} className="size-6" aria-hidden />}
             title="Nothing listed yet"
             description="You're taking part in the marketplace but haven't listed any products on it. Open a product and use its Listings panel to offer it here."
           />
@@ -490,7 +491,7 @@ export function MarketSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar label="sparx.market controls">
-        <ShoppingBag className="size-4 shrink-0" aria-hidden />
+        <Icon glyph={faBagShopping} className="size-4 shrink-0" aria-hidden />
         <Heading level={2} className="min-w-0 truncate text-base font-semibold">
           {LABEL}
         </Heading>
@@ -513,7 +514,7 @@ export function MarketSurface({ ctx }: { ctx: SurfaceContext }) {
         <div className="mx-auto flex w-full max-w-3xl flex-col gap-4">
           {profileQuery.isError ? (
             <EmptyState
-              icon={<ServerCrash className="size-6" aria-hidden />}
+              icon={<Icon glyph={faServer} className="size-6" aria-hidden />}
               title="Could not load sparx.market"
               description={productErrorMessage(
                 profileQuery.error,

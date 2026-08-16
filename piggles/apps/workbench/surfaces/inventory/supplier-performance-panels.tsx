@@ -37,7 +37,8 @@ import {
   Tooltip,
   useToast,
 } from '@wizeworks/silicaui-react';
-import { Calculator, Plus, Trash2 } from 'lucide-react';
+import { faCalculator, faPlus, faTrashCan } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { FormSection } from '../../components/form-section';
 import { afterCommit } from '../../lib/defer';
 import { formatCents, plural, stockErrorMessage } from './data';
@@ -99,7 +100,7 @@ export function SupplierScorecardPanel({ supplierId }: { supplierId: string }) {
         </Text>
         <div>
           <Button color="module" size="sm" loading={recompute.isPending} onClick={onMeasure}>
-            <Calculator className="size-4" aria-hidden />
+            <Icon glyph={faCalculator} className="size-4" aria-hidden />
             Measure now
           </Button>
         </div>
@@ -399,7 +400,7 @@ function PriceLadderRow({ link, currency }: { link: SupplierVariant; currency: s
                       setRungs((current) => current.filter((_, i) => i !== index));
                     }}
                   >
-                    <Trash2 className="size-4" aria-hidden />
+                    <Icon glyph={faTrashCan} className="size-4" aria-hidden />
                   </Button>
                 </td>
               </tr>
@@ -418,7 +419,7 @@ function PriceLadderRow({ link, currency }: { link: SupplierVariant; currency: s
             setRungs((current) => [...current, { minQuantity: '', unitCost: '' }]);
           }}
         >
-          <Plus className="size-4" aria-hidden />
+          <Icon glyph={faPlus} className="size-4" aria-hidden />
           Add a step
         </Button>
         {dirty ? (

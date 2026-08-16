@@ -51,14 +51,15 @@ import {
   useToast,
 } from '@wizeworks/silicaui-react';
 import {
-  AppWindow,
-  Banknote,
-  CalendarClock,
-  CircleAlert,
-  Loader2,
-  ShoppingBag,
-  UserPlus,
-} from 'lucide-react';
+  faBagShopping,
+  faCalendarClock,
+  faCircleExclamation,
+  faMoneyBill,
+  faSpinner,
+  faUserPlus,
+  faWindow,
+} from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { describeAgo, useActivity, NOTABLE_ACTIONS, type ActivityItem } from '../lib/api/activity';
 import { useActiveJobs, type Job } from '../lib/api/jobs';
 import { resolveTitle, getSurface } from '../lib/surfaces/registry';
@@ -88,10 +89,10 @@ function surfaceForActivity(action: string): string {
 
 /** Money in, a new person, a booking, or a sale — the shapes the chip takes. */
 function iconForActivity(action: string) {
-  if (action.startsWith('crm.customer')) return UserPlus;
-  if (action.startsWith('invoicing.payment') || action.includes('.payment.')) return Banknote;
-  if (action.startsWith('booking.')) return CalendarClock;
-  return ShoppingBag;
+  if (action.startsWith('crm.customer')) return faUserPlus;
+  if (action.startsWith('invoicing.payment') || action.includes('.payment.')) return faMoneyBill;
+  if (action.startsWith('booking.')) return faCalendarClock;
+  return faBagShopping;
 }
 
 /**
@@ -263,17 +264,17 @@ export function StatusBar() {
           color, not weight; a bolder offline message would be a fourth voice. */}
       {!online ? (
         <span className="text-danger flex items-center gap-1.5">
-          <CircleAlert className="size-3.5" aria-hidden />
+          <Icon glyph={faCircleExclamation} className="size-3.5" aria-hidden />
           Offline — changes can’t save right now
         </span>
       ) : mutating > 0 ? (
         <span className="flex items-center gap-1.5" role="status">
-          <Loader2 className="size-3.5 animate-spin" aria-hidden />
+          <Icon glyph={faSpinner} className="size-3.5 animate-spin" aria-hidden />
           Saving…
         </span>
       ) : fetching > 0 ? (
         <span className="flex items-center gap-1.5" role="status">
-          <Loader2 className="size-3.5 animate-spin" aria-hidden />
+          <Icon glyph={faSpinner} className="size-3.5 animate-spin" aria-hidden />
           Syncing…
         </span>
       ) : lastSaved ? (
@@ -324,8 +325,14 @@ export function StatusBar() {
             }}
           >
             {(() => {
-              const Icon = iconForActivity(latest.action);
-              return <Icon className={`size-3.5 ${toneForActivity(latest.action)}`} aria-hidden />;
+              const glyph = iconForActivity(latest.action);
+              return (
+                <Icon
+                  glyph={glyph}
+                  className={`size-3.5 ${toneForActivity(latest.action)}`}
+                  aria-hidden
+                />
+              );
             })()}
             <span className="max-w-72 truncate">
               {latest.subject ? `${latest.title} — ${latest.subject}` : latest.title}
@@ -388,7 +395,7 @@ function DetachedChip({ windows }: { windows: DetachedWindow[] }) {
       <Tooltip content="Panes torn into their own windows">
         <DropdownMenuTrigger>
           <Button color="neutral" variant="ghost" size="xs" className="gap-1.5">
-            <AppWindow className="size-3.5" aria-hidden />
+            <Icon glyph={faWindow} className="size-3.5" aria-hidden />
             {windows.length === 1 ? '1 window' : `${String(windows.length)} windows`}
           </Button>
         </DropdownMenuTrigger>
@@ -450,7 +457,7 @@ function JobsChip({ jobs }: { jobs: Job[] }) {
       <Tooltip content="Background work in progress">
         <PopoverTrigger>
           <Button color="neutral" variant="ghost" size="xs" className="gap-1.5">
-            <Loader2 className="size-3.5 animate-spin" aria-hidden />
+            <Icon glyph={faSpinner} className="size-3.5 animate-spin" aria-hidden />
             <span className="max-w-56 truncate">{trigger}</span>
           </Button>
         </PopoverTrigger>

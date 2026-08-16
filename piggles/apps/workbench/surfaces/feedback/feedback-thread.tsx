@@ -13,7 +13,8 @@ import { useEffect, useState } from 'react';
 import { PaneEmpty } from '../../components/pane-empty';
 import { Button, Card, Loading, Textarea, useToast } from '@wizeworks/silicaui-react';
 import { useQueryClient } from '@sparx/query';
-import { MessageSquare } from 'lucide-react';
+import { faMessage } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { describeAgo } from '../../lib/api/activity';
 import {
   MAX_FEEDBACK_BODY,
@@ -85,7 +86,7 @@ export function FeedbackThreadSurface({ ctx }: { ctx: SurfaceContext }) {
     return (
       <Card className="min-h-0 flex-1 items-center justify-center">
         <PaneEmpty
-          icon={<MessageSquare className="size-6" aria-hidden />}
+          icon={<Icon glyph={faMessage} className="size-6" aria-hidden />}
           title="Could not load this conversation"
           description="Close this pane and open the message again from your feedback list."
         />
@@ -93,7 +94,7 @@ export function FeedbackThreadSurface({ ctx }: { ctx: SurfaceContext }) {
     );
   }
 
-  const Icon = CATEGORY_ICON[data.category];
+  const glyph = CATEGORY_ICON[data.category];
 
   return (
     <div className={PANE_SHELL}>
@@ -101,7 +102,7 @@ export function FeedbackThreadSurface({ ctx }: { ctx: SurfaceContext }) {
           carries this subject but truncates it, so the full text earns its place
           here — at the weight of a pane header, matching the list surface. */}
       <PaneToolbar label="Conversation header">
-        <Icon className="mt-0.5 size-4 shrink-0" aria-hidden />
+        <Icon glyph={glyph} className="mt-0.5 size-4 shrink-0" aria-hidden />
         <h2 className="min-w-0 flex-1 text-base font-medium">{deriveTitle(data)}</h2>
         <FeedbackStatusBadge status={data.status} />
       </PaneToolbar>

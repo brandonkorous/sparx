@@ -49,7 +49,8 @@ import {
   ToggleGroupItem,
   ToolbarSeparator,
 } from '@wizeworks/silicaui-react';
-import { Layers, ScanBarcode } from 'lucide-react';
+import { faBarcodeRead, faLayerGroup } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
@@ -180,7 +181,7 @@ export function LotsListSurface({ ctx }: { ctx: SurfaceContext }) {
     if (isError) {
       return (
         <EmptyState
-          icon={<Layers className="size-6" aria-hidden />}
+          icon={<Icon glyph={faLayerGroup} className="size-6" aria-hidden />}
           title={mode === 'lots' ? 'Could not load your batches' : 'Could not load your serials'}
           description="This is a problem reaching the server. Your records are unaffected — they just could not be read just now."
         />
@@ -197,9 +198,9 @@ export function LotsListSurface({ ctx }: { ctx: SurfaceContext }) {
           <EmptyState
             icon={
               mode === 'lots' ? (
-                <Layers className="size-6" aria-hidden />
+                <Icon glyph={faLayerGroup} className="size-6" aria-hidden />
               ) : (
-                <ScanBarcode className="size-6" aria-hidden />
+                <Icon glyph={faBarcodeRead} className="size-6" aria-hidden />
               )
             }
             title="Nothing matches that"
@@ -209,13 +210,13 @@ export function LotsListSurface({ ctx }: { ctx: SurfaceContext }) {
       }
       return mode === 'lots' ? (
         <EmptyState
-          icon={<Layers className="size-6" aria-hidden />}
+          icon={<Icon glyph={faLayerGroup} className="size-6" aria-hidden />}
           title="No batches are being tracked yet"
           description="A batch appears here when you book in a delivery and record its batch code — so you can later trace exactly which run a customer got, and find every unit if a run turns out to be bad."
         />
       ) : (
         <EmptyState
-          icon={<ScanBarcode className="size-6" aria-hidden />}
+          icon={<Icon glyph={faBarcodeRead} className="size-6" aria-hidden />}
           title="No serial numbers are being tracked yet"
           description="A serial number appears here when a unit is booked in with its own number — so a single faulty unit can be traced back to the exact order it left on."
         />
@@ -248,11 +249,11 @@ export function LotsListSurface({ ctx }: { ctx: SurfaceContext }) {
           }}
         >
           <ToggleGroupItem value="lots" aria-label="Show batches">
-            <Layers className="size-4" aria-hidden />
+            <Icon glyph={faLayerGroup} className="size-4" aria-hidden />
             <span className="hidden @md:inline">Batches</span>
           </ToggleGroupItem>
           <ToggleGroupItem value="serials" aria-label="Show serial numbers">
-            <ScanBarcode className="size-4" aria-hidden />
+            <Icon glyph={faBarcodeRead} className="size-4" aria-hidden />
             <span className="hidden @md:inline">Serials</span>
           </ToggleGroupItem>
         </ToggleGroup>

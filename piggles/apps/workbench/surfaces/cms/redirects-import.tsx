@@ -30,7 +30,8 @@ import {
   Textarea,
   useToast,
 } from '@wizeworks/silicaui-react';
-import { ArrowRight, CheckCircle2, Upload } from 'lucide-react';
+import { faArrowRight, faCircleCheck, faUpload } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { FormSection } from '../../components/form-section';
 import { useDirtySource } from '../../lib/workbench/dirty';
@@ -137,7 +138,7 @@ export function RedirectsImportSurface({ ctx }: { ctx: SurfaceContext }) {
           disabled={valid.length === 0}
           onClick={runImport}
         >
-          <Upload className="size-4" aria-hidden />
+          <Icon glyph={faUpload} className="size-4" aria-hidden />
           {valid.length > 1 ? `Import ${valid.length}` : 'Import'}
         </Button>
       </PaneToolbar>
@@ -236,7 +237,7 @@ function PreviewTable({
                     <div className="flex min-w-0 flex-col gap-0.5">
                       <span className="max-w-80 truncate font-mono text-sm">{row.from || '—'}</span>
                       <span className="flex max-w-80 items-center gap-1 font-mono text-sm">
-                        <ArrowRight className="size-3.5 shrink-0" aria-hidden />
+                        <Icon glyph={faArrowRight} className="size-3.5 shrink-0" aria-hidden />
                         <span className="truncate">{row.to || '—'}</span>
                       </span>
                     </div>
@@ -311,7 +312,7 @@ function ImportResult({
               </>
             ) : (
               <span className="flex items-center gap-2">
-                <CheckCircle2 className="size-4 shrink-0" aria-hidden />
+                <Icon glyph={faCircleCheck} className="size-4 shrink-0" aria-hidden />
                 Every redirect on your list is now live.
               </span>
             )}

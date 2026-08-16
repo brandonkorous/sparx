@@ -36,7 +36,8 @@ import {
   Text,
   useToast,
 } from '@wizeworks/silicaui-react';
-import { Check, Compass } from 'lucide-react';
+import { faCheck, faCompass } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { useConfirm } from '../../lib/confirm';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
@@ -76,7 +77,7 @@ function StarterCard({
   selected: boolean;
   onSelect: () => void;
 }) {
-  const Icon = iconForStarter(starter.iconKey);
+  const glyph = iconForStarter(starter.iconKey);
   return (
     <SelectableCard
       name="industry"
@@ -88,7 +89,7 @@ function StarterCard({
       <CardBody className="gap-4">
         <div className="flex items-start gap-3">
           <span className="bg-base-200 flex size-11 shrink-0 items-center justify-center rounded-lg">
-            <Icon className="size-5" aria-hidden />
+            <Icon glyph={glyph} className="size-5" aria-hidden />
           </span>
           <div className="flex min-w-0 flex-1 flex-col gap-1">
             <div className="flex flex-wrap items-center gap-2">
@@ -227,7 +228,7 @@ export function IndustrySurface({ ctx }: { ctx: SurfaceContext }) {
             void onApply();
           }}
         >
-          <Check className="size-4" aria-hidden />
+          <Icon glyph={faCheck} className="size-4" aria-hidden />
           {isReapply ? 'Update setup' : 'Set my industry'}
         </Button>
         <RefreshButton
@@ -331,7 +332,7 @@ export function IndustrySurface({ ctx }: { ctx: SurfaceContext }) {
 
       {/* Sits on the pane, not in a docked strip. */}
       <p className="shrink-0 px-1 text-sm">
-        <Compass className="mr-1 inline size-4 align-[-3px]" aria-hidden />
+        <Icon glyph={faCompass} className="mr-1 inline size-4 align-[-3px]" aria-hidden />
         Not sure? Pick the closest — you can change your industry whenever you like.
       </p>
     </div>

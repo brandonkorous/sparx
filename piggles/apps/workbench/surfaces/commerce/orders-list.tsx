@@ -27,7 +27,8 @@ import {
   Table,
   ToolbarSeparator,
 } from '@wizeworks/silicaui-react';
-import { ArrowDown, ArrowUp, ShoppingBag } from 'lucide-react';
+import { faArrowDown, faArrowUp, faBagShopping } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
@@ -154,9 +155,9 @@ export function OrdersListSurface({ ctx }: { ctx: SurfaceContext }) {
         {label}
         {sort.key === key ? (
           sort.dir === 'asc' ? (
-            <ArrowUp className="size-3" aria-hidden />
+            <Icon glyph={faArrowUp} className="size-3" aria-hidden />
           ) : (
-            <ArrowDown className="size-3" aria-hidden />
+            <Icon glyph={faArrowDown} className="size-3" aria-hidden />
           )
         ) : null}
       </button>
@@ -226,7 +227,7 @@ export function OrdersListSurface({ ctx }: { ctx: SurfaceContext }) {
       <Card className="min-h-0 flex-1 overflow-y-auto">
         {error ? (
           <EmptyState
-            icon={<ShoppingBag className="size-6" aria-hidden />}
+            icon={<Icon glyph={faBagShopping} className="size-6" aria-hidden />}
             title="Could not load your orders"
             description="This is a problem reaching the server. Your orders are unaffected — nothing has been lost."
           />
@@ -237,7 +238,7 @@ export function OrdersListSurface({ ctx }: { ctx: SurfaceContext }) {
           // telling someone to wait for their first sale when they have four
           // hundred and mistyped a name is the worse of the two mistakes.
           <EmptyState
-            icon={<ShoppingBag className="size-6" aria-hidden />}
+            icon={<Icon glyph={faBagShopping} className="size-6" aria-hidden />}
             title={filtered ? 'No orders match that' : 'No orders yet'}
             description={
               filtered

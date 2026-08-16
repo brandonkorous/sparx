@@ -16,7 +16,8 @@
 // switches on, and starts on a free trial.
 
 import { Button, Heading, Text } from '@wizeworks/silicaui-react';
-import { ExternalLink, Share2, UserRound } from 'lucide-react';
+import { faArrowUpRightFromSquare, faShareNodes, faUser } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { productCopy } from '../../lib/product';
@@ -170,7 +171,7 @@ export function ResourcesSurface({ ctx }: { ctx: SurfaceContext }) {
             ctx.open('partner.referrals.list', undefined, { target: targetFor(event) });
           }}
         >
-          <Share2 className="size-4" aria-hidden />
+          <Icon glyph={faShareNodes} className="size-4" aria-hidden />
           Your referral link
         </Button>
         <Button
@@ -182,7 +183,7 @@ export function ResourcesSurface({ ctx }: { ctx: SurfaceContext }) {
             ctx.open('partner.profile', undefined, { target: targetFor(event) });
           }}
         >
-          <UserRound className="size-4" aria-hidden />
+          <Icon glyph={faUser} className="size-4" aria-hidden />
           Your listing
         </Button>
       </PaneToolbar>
@@ -299,9 +300,9 @@ export function ResourcesSurface({ ctx }: { ctx: SurfaceContext }) {
                   ctx.open('partner.referrals.list', undefined, { target: targetFor(event) });
                 }}
               >
-                <Share2 className="size-4" aria-hidden />
+                <Icon glyph={faShareNodes} className="size-4" aria-hidden />
                 Open referrals
-                <ExternalLink className="size-3" aria-hidden />
+                <Icon glyph={faArrowUpRightFromSquare} className="size-3" aria-hidden />
               </Button>
               <Button
                 size="sm"
@@ -311,9 +312,9 @@ export function ResourcesSurface({ ctx }: { ctx: SurfaceContext }) {
                   ctx.open('partner.profile', undefined, { target: targetFor(event) });
                 }}
               >
-                <UserRound className="size-4" aria-hidden />
+                <Icon glyph={faUser} className="size-4" aria-hidden />
                 Edit your listing
-                <ExternalLink className="size-3" aria-hidden />
+                <Icon glyph={faArrowUpRightFromSquare} className="size-3" aria-hidden />
               </Button>
             </div>
           </section>

@@ -45,7 +45,8 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Button } from '@wizeworks/silicaui-react';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { faChevronLeft, faChevronRight } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 
 /** Nothing is scrolled by a fraction of a pixel; sub-pixel layout rounding
  *  otherwise leaves a button enabled at a hard stop. */
@@ -115,7 +116,7 @@ export function ScrollStrip({
             nudge(-1);
           }}
         >
-          <ChevronLeft className="size-4" aria-hidden />
+          <Icon glyph={faChevronLeft} className="size-4" aria-hidden />
         </Button>
       ) : null}
 
@@ -142,7 +143,7 @@ export function ScrollStrip({
             nudge(1);
           }}
         >
-          <ChevronRight className="size-4" aria-hidden />
+          <Icon glyph={faChevronRight} className="size-4" aria-hidden />
         </Button>
       ) : null}
     </div>

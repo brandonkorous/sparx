@@ -47,7 +47,16 @@ import {
   Text,
   useToast,
 } from '@wizeworks/silicaui-react';
-import { Check, FolderPlus, ImageOff, ImagePlus, Plus, Trash2, Upload } from 'lucide-react';
+import {
+  faCheck,
+  faFolderPlus,
+  faImageSlash,
+  faImages,
+  faPlus,
+  faTrashCan,
+  faUpload,
+} from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { PaneScope } from '../../lib/dock/window-boundary';
 import {
   fetchAsset,
@@ -411,7 +420,7 @@ function MediaPickerDialog({
                 fileRef.current?.click();
               }}
             >
-              <Upload className="size-4" aria-hidden />
+              <Icon glyph={faUpload} className="size-4" aria-hidden />
               Upload
             </Button>
           </div>
@@ -496,7 +505,7 @@ function MediaPickerDialog({
                   setCreatingCollection(true);
                 }}
               >
-                <FolderPlus className="size-4" aria-hidden />
+                <Icon glyph={faFolderPlus} className="size-4" aria-hidden />
                 New collection
               </Button>
             )}
@@ -521,7 +530,7 @@ function MediaPickerDialog({
               <PaneWaiting label="Loading your pictures…" />
             ) : assets.length === 0 ? (
               <div className="flex flex-col items-center gap-1 p-8 text-center">
-                <ImageOff className="size-6" aria-hidden />
+                <Icon glyph={faImageSlash} className="size-6" aria-hidden />
                 <Text>
                   {search
                     ? `No pictures match “${search.trim()}”.`
@@ -578,7 +587,7 @@ function MediaPickerDialog({
                           />
                         ) : (
                           <span className="flex h-full items-center justify-center">
-                            <ImageOff className="size-4" aria-hidden />
+                            <Icon glyph={faImageSlash} className="size-4" aria-hidden />
                           </span>
                         )}
                         {isSelected ? (
@@ -604,7 +613,7 @@ function MediaPickerDialog({
                             className="absolute top-1 left-1"
                             aria-label={`Save ${asset.filename} to a collection`}
                           >
-                            <FolderPlus className="size-3.5" aria-hidden />
+                            <Icon glyph={faFolderPlus} className="size-3.5" aria-hidden />
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="start">
@@ -615,7 +624,7 @@ function MediaPickerDialog({
                                   removeAssetFrom(asset.id);
                                 }}
                               >
-                                <Trash2 className="size-4" aria-hidden />
+                                <Icon glyph={faTrashCan} className="size-4" aria-hidden />
                                 Remove from {activeCollection.name}
                               </DropdownMenuItem>
                               <DropdownMenuSeparator />
@@ -664,7 +673,7 @@ function MediaPickerDialog({
                     onResolve(selected);
                   }}
                 >
-                  <Check className="size-4" aria-hidden />
+                  <Icon glyph={faCheck} className="size-4" aria-hidden />
                   {selected.length === 1 ? 'Add 1 picture' : `Add ${selected.length} pictures`}
                 </Button>
               </>
@@ -713,7 +722,7 @@ function AssetTile({
         />
       ) : (
         <span className="flex h-full items-center justify-center">
-          <ImageOff className="size-5" aria-hidden />
+          <Icon glyph={faImageSlash} className="size-5" aria-hidden />
         </span>
       )}
       <button
@@ -723,7 +732,7 @@ function AssetTile({
         className="bg-base-100/90 hover:bg-base-100 absolute top-0.5 right-0.5 flex size-6 items-center justify-center rounded-full"
         onClick={onRemove}
       >
-        <Trash2 className="size-3.5" aria-hidden />
+        <Icon glyph={faTrashCan} className="size-3.5" aria-hidden />
       </button>
     </div>
   );
@@ -803,9 +812,9 @@ export function AssetField({
           }}
         >
           {ids.length === 0 ? (
-            <ImagePlus className="size-4" aria-hidden />
+            <Icon glyph={faImages} className="size-4" aria-hidden />
           ) : (
-            <Plus className="size-4" aria-hidden />
+            <Icon glyph={faPlus} className="size-4" aria-hidden />
           )}
           {ids.length === 0 ? 'Choose a picture' : 'Add another'}
         </Button>
@@ -819,7 +828,7 @@ export function AssetField({
             void choose();
           }}
         >
-          <ImagePlus className="size-4" aria-hidden />
+          <Icon glyph={faImages} className="size-4" aria-hidden />
           Change picture
         </Button>
       )}

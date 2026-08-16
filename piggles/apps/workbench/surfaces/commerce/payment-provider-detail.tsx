@@ -38,7 +38,12 @@ import {
   useToast,
 } from '@wizeworks/silicaui-react';
 import { useConfirm } from '../../lib/confirm';
-import { CheckCircle2, ExternalLink, Trash2 } from 'lucide-react';
+import {
+  faArrowUpRightFromSquare,
+  faCircleCheck,
+  faTrashCan,
+} from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { CopyValue } from '../../components/copy-value';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { FormSection } from '../../components/form-section';
@@ -290,7 +295,7 @@ function SparxPayBody({
       {isActive ? (
         <div className="flex flex-col gap-1">
           <span className="flex items-center gap-2 text-sm font-medium">
-            <CheckCircle2 className="text-success size-4" aria-hidden />
+            <Icon glyph={faCircleCheck} className="text-success size-4" aria-hidden />
             Ready to take card payments
           </span>
           <Text className="text-sm">
@@ -316,7 +321,7 @@ function SparxPayBody({
           ) : null}
           <div>
             <Button size="sm" color="module" loading={onboard.isPending} onClick={start}>
-              <ExternalLink className="size-4" aria-hidden />
+              <Icon glyph={faArrowUpRightFromSquare} className="size-4" aria-hidden />
               {started ? 'Continue setup' : 'Set up sparx Pay'}
             </Button>
           </div>
@@ -595,7 +600,7 @@ function ApiKeysBody({
             loading={remove.isPending}
             onClick={onRemove}
           >
-            <Trash2 className="size-4" aria-hidden />
+            <Icon glyph={faTrashCan} className="size-4" aria-hidden />
             Remove keys
           </Button>
         </div>

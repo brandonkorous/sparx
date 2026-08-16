@@ -40,7 +40,8 @@ import {
   useToast,
 } from '@wizeworks/silicaui-react';
 import { useConfirm } from '../../lib/confirm';
-import { Trash2 } from 'lucide-react';
+import { faTrashCan } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import { afterPaneChange } from '../../lib/defer';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
@@ -776,7 +777,7 @@ function CompanyEditor({
                     void onDelete();
                   }}
                 >
-                  <Trash2 className="size-4" aria-hidden />
+                  <Icon glyph={faTrashCan} className="size-4" aria-hidden />
                   Remove this company
                 </Button>
               ) : null}

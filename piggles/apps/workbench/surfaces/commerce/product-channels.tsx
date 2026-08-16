@@ -45,7 +45,8 @@ import {
 } from '@wizeworks/silicaui-react';
 import { useConfirm } from '../../lib/confirm';
 import { MARKET_CATEGORIES } from '@sparx/commerce-schemas';
-import { Globe2, Link2Off, ServerCrash, Store } from 'lucide-react';
+import { faGlobe, faLinkSlash, faServer, faShop } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import { FormSection } from '../../components/form-section';
@@ -195,7 +196,7 @@ function ListingRow({ listing, productId }: { listing: ChannelListing; productId
             })();
           }}
         >
-          <Link2Off className="size-4" aria-hidden />
+          <Icon glyph={faLinkSlash} className="size-4" aria-hidden />
           Unlink
         </Button>
       </div>
@@ -320,7 +321,7 @@ export function ProductChannelsSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar label={`${LABEL} actions`}>
-        <Globe2 className="size-4 shrink-0" aria-hidden />
+        <Icon glyph={faGlobe} className="size-4 shrink-0" aria-hidden />
         <Heading level={2} className="min-w-0 truncate text-base font-semibold">
           {product.title}
         </Heading>
@@ -345,7 +346,7 @@ export function ProductChannelsSurface({ ctx }: { ctx: SurfaceContext }) {
 
           {listings.isError ? (
             <EmptyState
-              icon={<ServerCrash className="size-6" aria-hidden />}
+              icon={<Icon glyph={faServer} className="size-6" aria-hidden />}
               title="Could not load where this sells"
               description={productErrorMessage(
                 listings.error,
@@ -424,7 +425,7 @@ export function ProductChannelsSurface({ ctx }: { ctx: SurfaceContext }) {
                 {grouped.length === 0 ? (
                   <EmptyState
                     size="sm"
-                    icon={<Store className="size-6" aria-hidden />}
+                    icon={<Icon glyph={faShop} className="size-6" aria-hidden />}
                     title="Not listed on any outside shop"
                     description={`${product.title} has no listing on a marketplace you have connected. Connect a shop under your settings, and its listings appear here once the first sync runs.`}
                   />

@@ -29,7 +29,8 @@ import {
   Switch,
   Textarea,
 } from '@wizeworks/silicaui-react';
-import { Plus, Trash2 } from 'lucide-react';
+import { faPlus, faTrashCan } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { FormSection } from '../../components/form-section';
 import { usePropertySchema, type PropertyField, type PropertySchema } from './object-types-data';
 
@@ -445,7 +446,7 @@ function RepeaterControl({
                   onChange(rows.filter((_, i) => i !== index));
                 }}
               >
-                <Trash2 className="size-4" aria-hidden />
+                <Icon glyph={faTrashCan} className="size-4" aria-hidden />
               </Button>
             )}
           </div>
@@ -470,7 +471,7 @@ function RepeaterControl({
             onChange([...rows, {}]);
           }}
         >
-          <Plus className="size-4" aria-hidden />
+          <Icon glyph={faPlus} className="size-4" aria-hidden />
           Add {itemLabel}
         </Button>
       )}

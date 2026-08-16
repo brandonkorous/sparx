@@ -23,7 +23,14 @@ import {
   Table,
   Timestamp,
 } from '@wizeworks/silicaui-react';
-import { ArrowDown, ArrowUp, History, ListChecks, Target } from 'lucide-react';
+import {
+  faArrowDown,
+  faArrowUp,
+  faBullseye,
+  faClockRotateLeft,
+  faListCheck,
+} from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { RefreshButton } from '../../components/refresh-button';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
@@ -111,9 +118,9 @@ export function AutomationRunsSurface({ ctx }: { ctx: SurfaceContext }) {
         {label}
         {sort.key === key ? (
           sort.dir === 'asc' ? (
-            <ArrowUp className="size-3" aria-hidden />
+            <Icon glyph={faArrowUp} className="size-3" aria-hidden />
           ) : (
-            <ArrowDown className="size-3" aria-hidden />
+            <Icon glyph={faArrowDown} className="size-3" aria-hidden />
           )
         ) : null}
       </button>
@@ -127,7 +134,7 @@ export function AutomationRunsSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar label="Run history controls">
-        <ListChecks className="size-4 shrink-0" aria-hidden />
+        <Icon glyph={faListCheck} className="size-4 shrink-0" aria-hidden />
         <Heading level={2} className="min-w-0 truncate text-base font-semibold">
           {automation ? `${automation.name} — runs` : 'Runs'}
         </Heading>
@@ -140,7 +147,7 @@ export function AutomationRunsSurface({ ctx }: { ctx: SurfaceContext }) {
               setView('results');
             }}
           >
-            <Target className="size-4" aria-hidden />
+            <Icon glyph={faBullseye} className="size-4" aria-hidden />
             Results
           </Button>
           <Button
@@ -151,7 +158,7 @@ export function AutomationRunsSurface({ ctx }: { ctx: SurfaceContext }) {
               setView('runs');
             }}
           >
-            <History className="size-4" aria-hidden />
+            <Icon glyph={faClockRotateLeft} className="size-4" aria-hidden />
             Every run
           </Button>
         </div>
@@ -195,7 +202,7 @@ export function AutomationRunsSurface({ ctx }: { ctx: SurfaceContext }) {
         <Card className="min-h-0 flex-1 overflow-y-auto">
           {isError ? (
             <EmptyState
-              icon={<History className="size-6" aria-hidden />}
+              icon={<Icon glyph={faClockRotateLeft} className="size-6" aria-hidden />}
               title="Could not load these runs"
               description="Something went wrong reaching the server. Try again in a moment."
               actions={
@@ -214,7 +221,7 @@ export function AutomationRunsSurface({ ctx }: { ctx: SurfaceContext }) {
             <PaneWaiting label="Loading runs…" />
           ) : rows.length === 0 ? (
             <EmptyState
-              icon={<History className="size-6" aria-hidden />}
+              icon={<Icon glyph={faClockRotateLeft} className="size-6" aria-hidden />}
               title={filtering ? 'No runs match that' : 'No runs yet'}
               description={
                 filtering

@@ -32,7 +32,8 @@ import {
   useToast,
 } from '@wizeworks/silicaui-react';
 import { useConfirm } from '../../lib/confirm';
-import { Blocks, Trash2 } from 'lucide-react';
+import { faCubes, faTrashCan } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { useQuery } from '@sparx/query';
 import { api } from '../../lib/api/client';
 import { useDirtySource } from '../../lib/workbench/dirty';
@@ -345,7 +346,7 @@ function BundleEditor({
       <PaneToolbar label="Bundle actions">
         {!isNew ? (
           <Badge color="info" variant="soft" size="sm">
-            <Blocks className="size-3" aria-hidden />
+            <Icon glyph={faCubes} className="size-3" aria-hidden />
             <span className="hidden @md:inline">Bundle</span>
           </Badge>
         ) : null}
@@ -463,7 +464,7 @@ function BundleEditor({
                           );
                         }}
                       >
-                        <Trash2 className="size-4" aria-hidden />
+                        <Icon glyph={faTrashCan} className="size-4" aria-hidden />
                       </Button>
                     </div>
                     <div className="flex flex-wrap items-center gap-4">
@@ -662,7 +663,7 @@ function BundleEditor({
                   void onDelete();
                 }}
               >
-                <Trash2 className="size-4" aria-hidden />
+                <Icon glyph={faTrashCan} className="size-4" aria-hidden />
                 Delete this bundle
               </Button>
             </div>

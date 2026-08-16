@@ -38,7 +38,8 @@ import {
   Textarea,
   useToast,
 } from '@wizeworks/silicaui-react';
-import { FileText, LayoutTemplate, Pencil, Trash2 } from 'lucide-react';
+import { faFileText, faPencil, faTableLayout, faTrashCan } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { useConfirm } from '../../lib/confirm';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import { afterPaneChange } from '../../lib/defer';
@@ -272,7 +273,7 @@ function ManagePiece({
             disabled={!piece.placeable}
             onClick={editDesign}
           >
-            <Pencil className="size-4" aria-hidden />
+            <Icon glyph={faPencil} className="size-4" aria-hidden />
             Edit design
           </Button>
           <Button
@@ -404,7 +405,7 @@ function ManagePiece({
                 void onDelete();
               }}
             >
-              <Trash2 className="size-4" aria-hidden />
+              <Icon glyph={faTrashCan} className="size-4" aria-hidden />
               Delete
             </Button>
           </div>
@@ -456,9 +457,9 @@ function UsagePanel({
               className="border-base-300 flex items-center gap-3 border-b py-2 last:border-b-0"
             >
               {row.kind === 'Page' ? (
-                <FileText className="size-4 shrink-0" aria-hidden />
+                <Icon glyph={faFileText} className="size-4 shrink-0" aria-hidden />
               ) : (
-                <LayoutTemplate className="size-4 shrink-0" aria-hidden />
+                <Icon glyph={faTableLayout} className="size-4 shrink-0" aria-hidden />
               )}
               <Text className="min-w-0 flex-1 truncate font-medium">{row.name}</Text>
               <Badge color="neutral" variant="soft" size="sm" className="shrink-0">

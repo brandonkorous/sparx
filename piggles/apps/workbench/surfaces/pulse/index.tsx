@@ -32,7 +32,8 @@
 import { EditorLayout, EDITOR_RAIL_STICKY } from '../../components/editor-layout';
 import { FormSection } from '../../components/form-section';
 import { EmptyState, Text } from '@wizeworks/silicaui-react';
-import { Coffee } from 'lucide-react';
+import { faMugSaucer } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { useAllJobs } from '../../lib/api/jobs';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { ActivityFeed } from './activity-feed';
@@ -77,7 +78,7 @@ export function PulseSurface({ ctx }: { ctx: SurfaceContext }) {
                 <div className={EDITOR_RAIL_STICKY}>
                   {running.length === 0 ? (
                     <EmptyState
-                      icon={<Coffee className="size-5" aria-hidden />}
+                      icon={<Icon glyph={faMugSaucer} className="size-5" aria-hidden />}
                       title="Nothing running"
                       description="Imports and syncs show up here while they work."
                     />

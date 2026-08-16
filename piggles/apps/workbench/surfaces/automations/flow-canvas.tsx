@@ -43,7 +43,8 @@ import {
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { GripVertical, Plus, Target } from 'lucide-react';
+import { faBullseye, faGripDots, faPlus } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { Badge } from '@wizeworks/silicaui-react';
 import type { Action, ConditionGroup, Trigger } from '@sparx/automation-schemas';
 import {
@@ -195,7 +196,7 @@ function SettingsNode({
       rail="first"
       marker={
         <Marker selected={selected}>
-          <Glyph className="size-4" aria-hidden />
+          <Icon glyph={Glyph} className="size-4" aria-hidden />
         </Marker>
       }
     >
@@ -231,7 +232,7 @@ function TriggerNode({
     <StepRow
       marker={
         <Marker selected={selected} tone="module">
-          <Glyph className="size-4" aria-hidden />
+          <Icon glyph={Glyph} className="size-4" aria-hidden />
         </Marker>
       }
     >
@@ -274,7 +275,7 @@ function ConditionsNode({
     <StepRow
       marker={
         <Marker selected={selected} tone="warning">
-          <Glyph className="size-4" aria-hidden />
+          <Icon glyph={Glyph} className="size-4" aria-hidden />
         </Marker>
       }
     >
@@ -377,7 +378,11 @@ function ActionNode({
               </Badge>
             </span>
           ) : null}
-          <GripVertical className="text-base-content/40 ml-auto size-4 shrink-0" aria-hidden />
+          <Icon
+            glyph={faGripDots}
+            className="text-base-content/40 ml-auto size-4 shrink-0"
+            aria-hidden
+          />
         </div>
       </StepRow>
 
@@ -475,7 +480,7 @@ function BranchArmList({
           className="border-base-300 hover:border-module hover:text-module flex w-full items-center gap-2 rounded-lg border border-dashed px-2.5 py-1.5 text-left"
           onClick={() => onInsert(branchNodeId, arm, steps.length)}
         >
-          <Plus className="size-3.5 shrink-0" aria-hidden />
+          <Icon glyph={faPlus} className="size-3.5 shrink-0" aria-hidden />
           <span className="text-sm font-medium">Add a step here</span>
         </button>
       </div>
@@ -516,7 +521,7 @@ function BranchStep({
         onClick={() => onSelect(id)}
         onKeyDown={keySelect(() => onSelect(id))}
       >
-        <Glyph className="size-4 shrink-0" aria-hidden />
+        <Icon glyph={Glyph} className="size-4 shrink-0" aria-hidden />
         <NodeBody title={actionHeadline(action)}>
           <span className="truncate font-mono text-xs">{actionDetail(action)}</span>
         </NodeBody>
@@ -557,7 +562,11 @@ function DragCard({ action }: { action: Action }) {
       <NodeBody title={actionHeadline(action)}>
         <span className="truncate font-mono text-xs">{actionDetail(action)}</span>
       </NodeBody>
-      <GripVertical className="text-base-content/40 ml-auto size-4 shrink-0" aria-hidden />
+      <Icon
+        glyph={faGripDots}
+        className="text-base-content/40 ml-auto size-4 shrink-0"
+        aria-hidden
+      />
     </div>
   );
 }
@@ -584,7 +593,7 @@ function InsertRow({
               : `Insert a step before step ${atIndex + 1}`
           }
         >
-          <Plus className="size-3" aria-hidden />
+          <Icon glyph={faPlus} className="size-3" aria-hidden />
         </button>
       </div>
     </div>
@@ -598,7 +607,7 @@ function AddStepRow({ onClick, hasActions }: { onClick: () => void; hasActions: 
       rail="last"
       marker={
         <div className="bg-base-100 border-base-300 relative z-10 flex size-8 shrink-0 items-center justify-center rounded-lg border border-dashed">
-          <Plus className="size-4" aria-hidden />
+          <Icon glyph={faPlus} className="size-4" aria-hidden />
         </div>
       }
     >
@@ -609,7 +618,11 @@ function AddStepRow({ onClick, hasActions }: { onClick: () => void; hasActions: 
         }`}
         onClick={onClick}
       >
-        <Glyph className={`size-4 shrink-0 ${hasActions ? '' : 'mt-0.5'}`} aria-hidden />
+        <Icon
+          glyph={Glyph}
+          className={`size-4 shrink-0 ${hasActions ? '' : 'mt-0.5'}`}
+          aria-hidden
+        />
         {hasActions ? (
           <span className="text-sm font-medium">Add a step — an action or a wait</span>
         ) : (
@@ -772,7 +785,7 @@ function GoalNode({
       rail="last"
       marker={
         <Marker selected={selected} tone={goal ? 'module' : 'neutral'}>
-          <Target className="size-4" aria-hidden />
+          <Icon glyph={faBullseye} className="size-4" aria-hidden />
         </Marker>
       }
     >

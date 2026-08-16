@@ -40,7 +40,17 @@ import {
   Text,
   useToast,
 } from '@wizeworks/silicaui-react';
-import { Archive, FolderTree, Pencil, Plus, RotateCcw, Save, Trash2, X } from 'lucide-react';
+import {
+  faBoxArchive,
+  faFloppyDisk,
+  faFolderTree,
+  faPencil,
+  faPlus,
+  faRotate,
+  faTrashCan,
+  faXmark,
+} from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import { FormSection } from '../../components/form-section';
@@ -114,7 +124,7 @@ function CategoryEditor({
           aria-label="Cancel"
           onClick={onDone}
         >
-          <X className="size-4" aria-hidden />
+          <Icon glyph={faXmark} className="size-4" aria-hidden />
         </Button>
       }
     >
@@ -184,7 +194,7 @@ function CategoryEditor({
           loading={save.isPending}
           onClick={onSave}
         >
-          <Save className="size-4" aria-hidden />
+          <Icon glyph={faFloppyDisk} className="size-4" aria-hidden />
           {category ? 'Save' : 'Add it'}
         </Button>
         <Button size="sm" variant="ghost" color="neutral" onClick={onDone}>
@@ -296,7 +306,7 @@ export function CategoriesSurface() {
             setEditing(null);
           }}
         >
-          <Plus className="size-4" aria-hidden />
+          <Icon glyph={faPlus} className="size-4" aria-hidden />
           Add a category
         </Button>
 
@@ -423,7 +433,7 @@ export function CategoriesSurface() {
                                   setAdding(false);
                                 }}
                               >
-                                <Pencil className="size-4" aria-hidden />
+                                <Icon glyph={faPencil} className="size-4" aria-hidden />
                               </Button>
                               <Button
                                 size="sm"
@@ -440,9 +450,9 @@ export function CategoriesSurface() {
                                 }}
                               >
                                 {category.archivedAt ? (
-                                  <RotateCcw className="size-4" aria-hidden />
+                                  <Icon glyph={faRotate} className="size-4" aria-hidden />
                                 ) : (
-                                  <Archive className="size-4" aria-hidden />
+                                  <Icon glyph={faBoxArchive} className="size-4" aria-hidden />
                                 )}
                               </Button>
                               {/* Only where it can actually succeed — a built-in
@@ -458,7 +468,7 @@ export function CategoriesSurface() {
                                     void onDelete(category);
                                   }}
                                 >
-                                  <Trash2 className="size-4" aria-hidden />
+                                  <Icon glyph={faTrashCan} className="size-4" aria-hidden />
                                 </Button>
                               )}
                             </div>
@@ -472,7 +482,7 @@ export function CategoriesSurface() {
             })}
 
             <Card className="flex items-start gap-3 p-4">
-              <FolderTree className="mt-0.5 size-5 shrink-0" aria-hidden />
+              <Icon glyph={faFolderTree} className="mt-0.5 size-5 shrink-0" aria-hidden />
               <div className="flex min-w-0 flex-col gap-1">
                 <Text className="font-medium">Why the three groups matter</Text>
                 <Text className="text-sm">

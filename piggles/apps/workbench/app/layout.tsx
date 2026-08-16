@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from 'next';
 import Script from 'next/script';
-import { Inter, Nunito } from 'next/font/google';
+import { Fredoka, Inter } from 'next/font/google';
 import { PRODUCT } from '@piggles/config';
 import { ConsoleProviders } from '@/components/console-providers';
 import { THEME_INIT_SCRIPT } from '@/lib/theme';
@@ -32,12 +32,8 @@ import './globals.css';
 // price (piggles/CLAUDE.md RULE #2).
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter', display: 'swap' });
-const nunito = Nunito({
-  subsets: ['latin'],
-  weight: ['600', '700', '800', '900'],
-  variable: '--font-nunito',
-  display: 'swap',
-});
+// Variable, not a weight list: Fredoka's wght axis stops at 700.
+const fredoka = Fredoka({ subsets: ['latin'], variable: '--font-fredoka', display: 'swap' });
 
 export const metadata: Metadata = {
   title: `${PRODUCT.name}`,
@@ -60,7 +56,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html
       lang="en"
       data-theme="light"
-      className={`${inter.variable} ${nunito.variable}`}
+      className={`${inter.variable} ${fredoka.variable}`}
       suppressHydrationWarning
     >
       <body>

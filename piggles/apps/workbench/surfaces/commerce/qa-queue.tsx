@@ -22,7 +22,14 @@ import {
   Timestamp,
   useToast,
 } from '@wizeworks/silicaui-react';
-import { Check, EyeOff, HelpCircle, Reply, ServerCrash } from 'lucide-react';
+import {
+  faCheck,
+  faCircleQuestion,
+  faEyeSlash,
+  faReply,
+  faServer,
+} from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
@@ -225,7 +232,7 @@ function QuestionCard({
               setAnswering(true);
             }}
           >
-            <Reply className="size-4" aria-hidden />
+            <Icon glyph={faReply} className="size-4" aria-hidden />
             {question.answers.length > 0 ? 'Add another answer' : 'Answer it'}
           </Button>
           <Button
@@ -236,7 +243,7 @@ function QuestionCard({
               setStatus('published', 'Question shown on the page');
             }}
           >
-            <Check className="size-4" aria-hidden />
+            <Icon glyph={faCheck} className="size-4" aria-hidden />
             Show it on the page
           </Button>
           <Button
@@ -249,7 +256,7 @@ function QuestionCard({
               setStatus('rejected', 'Question hidden');
             }}
           >
-            <EyeOff className="size-4" aria-hidden />
+            <Icon glyph={faEyeSlash} className="size-4" aria-hidden />
             Hide it
           </Button>
         </div>
@@ -321,7 +328,7 @@ export function QaQueueSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar label="Questions queue controls">
-        <HelpCircle className="size-4 shrink-0" aria-hidden />
+        <Icon glyph={faCircleQuestion} className="size-4 shrink-0" aria-hidden />
         <Heading level={2} className="min-w-0 truncate text-base font-semibold">
           {LABEL}
         </Heading>
@@ -344,7 +351,7 @@ export function QaQueueSurface({ ctx }: { ctx: SurfaceContext }) {
         <div className="mx-auto flex w-full max-w-3xl flex-col gap-4">
           {questions.isError ? (
             <EmptyState
-              icon={<ServerCrash className="size-6" aria-hidden />}
+              icon={<Icon glyph={faServer} className="size-6" aria-hidden />}
               title="Could not load the questions queue"
               description={productErrorMessage(
                 questions.error,
@@ -366,7 +373,7 @@ export function QaQueueSurface({ ctx }: { ctx: SurfaceContext }) {
             <PaneWaiting />
           ) : rows.length === 0 && !focused && !focusPending ? (
             <EmptyState
-              icon={<Check className="size-6" aria-hidden />}
+              icon={<Icon glyph={faCheck} className="size-6" aria-hidden />}
               title="No questions waiting"
               description="When a shopper asks something on one of your product pages, it appears here for you to answer and show. Nothing goes on a page until you show it."
             />
@@ -420,7 +427,7 @@ export function QaQueueSurface({ ctx }: { ctx: SurfaceContext }) {
                           bulkSetStatus('published', 'Shown');
                         }}
                       >
-                        <Check className="size-4" aria-hidden />
+                        <Icon glyph={faCheck} className="size-4" aria-hidden />
                         Show
                       </Button>
                       <Button
@@ -432,7 +439,7 @@ export function QaQueueSurface({ ctx }: { ctx: SurfaceContext }) {
                           bulkSetStatus('rejected', 'Hidden');
                         }}
                       >
-                        <EyeOff className="size-4" aria-hidden />
+                        <Icon glyph={faEyeSlash} className="size-4" aria-hidden />
                         Hide
                       </Button>
                       <Button

@@ -25,7 +25,8 @@ import {
   PopoverTrigger,
   Tooltip,
 } from '@wizeworks/silicaui-react';
-import { Bell } from 'lucide-react';
+import { faBell } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { describeAgo } from '../lib/api/activity';
 import { useNotifications, type AppNotification } from '../lib/api/notifications';
 import { useWorkbench } from '../lib/workbench/context';
@@ -62,7 +63,7 @@ export function NotificationCenter() {
             // the button's own appearance still comes entirely from its variant.
             className="relative"
           >
-            <Bell className="size-4" aria-hidden />
+            <Icon glyph={faBell} className="size-4" aria-hidden />
             {unreadCount > 0 ? (
               <span
                 className="bg-danger text-danger-content absolute top-0.5 right-0.5 flex h-4 min-w-4 items-center justify-center rounded-full px-1 text-[11px] leading-none tabular-nums"
@@ -97,7 +98,7 @@ export function NotificationCenter() {
           <EmptyState
             size="sm"
             className="py-6"
-            icon={<Bell className="size-5" aria-hidden />}
+            icon={<Icon glyph={faBell} className="size-5" aria-hidden />}
             // Empty is a WIN, and the words have to say so. The first draft read
             // "Nothing needs you" — which lands as *nobody needs you*, from a
             // product, to someone running their own business, on the screen they

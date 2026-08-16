@@ -1,6 +1,12 @@
 // Invoicing — the module the workbench was proved on, so it is the most complete.
 
-import { Eye, FileText, GitBranch, LayoutTemplate, Receipt } from 'lucide-react';
+import {
+  faCodeBranch,
+  faEye,
+  faFileText,
+  faReceipt,
+  faTableLayout,
+} from '@fortawesome/pro-solid-svg-icons';
 import type { SurfaceDefinition } from '../registry';
 import { InvoiceEditorSurface } from '../../../surfaces/invoicing/invoice-editor';
 import { InvoiceListSurface } from '../../../surfaces/invoicing/invoice-list';
@@ -14,7 +20,7 @@ export const INVOICING_SURFACES: SurfaceDefinition[] = [
     key: 'invoicing.invoices.list',
     title: 'Invoices',
     module: 'invoicing',
-    icon: Receipt,
+    icon: faReceipt,
     component: InvoiceListSurface,
     keywords: ['billing', 'receivables', 'ar', 'unpaid', 'quotes', 'estimates'],
     createSurface: 'invoicing.invoice.edit',
@@ -25,7 +31,7 @@ export const INVOICING_SURFACES: SurfaceDefinition[] = [
     key: 'invoicing.invoice.edit',
     title: (params) => (params.id === 'new' ? 'New invoice' : 'Invoice'),
     module: 'invoicing',
-    icon: FileText,
+    icon: faFileText,
     component: InvoiceEditorSurface,
     // Reachable from the list and the nav's `+`, not the launcher — opening
     // "an invoice" with no invoice in mind isn't a thing anyone wants.
@@ -35,7 +41,7 @@ export const INVOICING_SURFACES: SurfaceDefinition[] = [
     key: 'invoicing.invoice.preview',
     title: 'Preview',
     module: 'invoicing',
-    icon: Eye,
+    icon: faEye,
     component: InvoicePreviewSurface,
     listed: false,
     besideWidth: 0.45,
@@ -46,7 +52,7 @@ export const INVOICING_SURFACES: SurfaceDefinition[] = [
     key: 'invoicing.workflows',
     title: 'Workflows',
     module: 'invoicing',
-    icon: GitBranch,
+    icon: faCodeBranch,
     component: WorkflowsListSurface,
     section: 'Setup',
     order: 10,
@@ -58,7 +64,7 @@ export const INVOICING_SURFACES: SurfaceDefinition[] = [
     key: 'invoicing.workflow.edit',
     title: (params) => (params.id === 'new' ? 'New workflow' : 'Workflow'),
     module: 'invoicing',
-    icon: GitBranch,
+    icon: faCodeBranch,
     component: WorkflowEditorSurface,
     // Same reasoning as the invoice editor: reachable from the list and the
     // nav's `+`, never the launcher — "open a workflow" with no workflow in
@@ -69,7 +75,7 @@ export const INVOICING_SURFACES: SurfaceDefinition[] = [
     key: 'invoicing.templates',
     title: 'Print templates',
     module: 'invoicing',
-    icon: LayoutTemplate,
+    icon: faTableLayout,
     section: 'Setup',
     order: 11,
     keywords: ['pdf', 'layout', 'letterhead', 'branding'],

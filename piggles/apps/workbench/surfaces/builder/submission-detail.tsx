@@ -28,7 +28,16 @@ import {
   Text,
   useToast,
 } from '@wizeworks/silicaui-react';
-import { Archive, Ban, Download, Mail, Phone, Trash2, Undo2 } from 'lucide-react';
+import {
+  faBan,
+  faBoxArchive,
+  faDownload,
+  faEnvelope,
+  faPhone,
+  faRotateLeft,
+  faTrashCan,
+} from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { useConfirm } from '../../lib/confirm';
 import { afterPaneChange } from '../../lib/defer';
 import { downloadServerFile, saveBlob } from '../../lib/api/download';
@@ -218,7 +227,7 @@ function SubmissionBody({
                 changeStatus('read', 'Moved back to your inbox');
               }}
             >
-              <Undo2 className="size-4" aria-hidden />
+              <Icon glyph={faRotateLeft} className="size-4" aria-hidden />
               Back to inbox
             </Button>
           ) : (
@@ -230,7 +239,7 @@ function SubmissionBody({
                 changeStatus('archived', 'Marked as handled');
               }}
             >
-              <Archive className="size-4" aria-hidden />
+              <Icon glyph={faBoxArchive} className="size-4" aria-hidden />
               Mark as handled
             </Button>
           )}
@@ -257,7 +266,7 @@ function SubmissionBody({
                 changeStatus('spam', 'Marked as spam');
               }}
             >
-              <Ban className="size-4" aria-hidden />
+              <Icon glyph={faBan} className="size-4" aria-hidden />
               Spam
             </Button>
           )}
@@ -269,7 +278,7 @@ function SubmissionBody({
             title="Download this as a spreadsheet"
             onClick={onExport}
           >
-            <Download className="size-4" aria-hidden />
+            <Icon glyph={faDownload} className="size-4" aria-hidden />
             Export
           </Button>
         </div>
@@ -315,7 +324,7 @@ function SubmissionBody({
                 void onDelete();
               }}
             >
-              <Trash2 className="size-4" aria-hidden />
+              <Icon glyph={faTrashCan} className="size-4" aria-hidden />
               Delete
             </Button>
           </div>
@@ -350,7 +359,7 @@ function IdentityCard({ submission, site }: { submission: FormSubmission; site: 
               // eslint-disable-next-line jsx-a11y/anchor-has-content -- content is the Button's children; the anchor is the render target, and the a11y rule can't see through Button's render prop.
               render={<a href={`mailto:${submission.email}`} />}
             >
-              <Mail className="size-4" aria-hidden />
+              <Icon glyph={faEnvelope} className="size-4" aria-hidden />
               {submission.email}
             </Button>
           ) : null}
@@ -362,7 +371,7 @@ function IdentityCard({ submission, site }: { submission: FormSubmission; site: 
               // eslint-disable-next-line jsx-a11y/anchor-has-content -- content is the Button's children; the anchor is the render target, and the a11y rule can't see through Button's render prop.
               render={<a href={`tel:${submission.phone}`} />}
             >
-              <Phone className="size-4" aria-hidden />
+              <Icon glyph={faPhone} className="size-4" aria-hidden />
               {submission.phone}
             </Button>
           ) : null}
@@ -486,7 +495,7 @@ function Attachments({ id, attachments }: { id: string; attachments: SubmissionA
                 void download(attachment, index);
               }}
             >
-              <Download className="size-4" aria-hidden />
+              <Icon glyph={faDownload} className="size-4" aria-hidden />
               Download
             </Button>
           </li>

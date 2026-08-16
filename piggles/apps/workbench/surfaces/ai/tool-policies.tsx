@@ -40,7 +40,8 @@ import {
   Tooltip,
   useToast,
 } from '@wizeworks/silicaui-react';
-import { KeyRound, RotateCcw, ShieldCheck, Wrench } from 'lucide-react';
+import { faKey, faRotate, faShieldCheck, faWrench } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { useConfirm } from '../../lib/confirm';
 import { useViewer } from '../../lib/api/shell-data';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
@@ -162,7 +163,7 @@ function ToolRow({
               loading={busy}
               onClick={onReset}
             >
-              <RotateCcw className="size-4" aria-hidden />
+              <Icon glyph={faRotate} className="size-4" aria-hidden />
             </Button>
           </Tooltip>
         ) : null}
@@ -316,7 +317,7 @@ export function AiToolPoliciesSurface({ ctx }: { ctx: SurfaceContext }) {
             ctx.open('platform.settings.ai', {}, { target: targetFor(event) });
           }}
         >
-          <KeyRound className="size-4" aria-hidden />
+          <Icon glyph={faKey} className="size-4" aria-hidden />
           AI connections
         </Button>
 
@@ -337,7 +338,7 @@ export function AiToolPoliciesSurface({ ctx }: { ctx: SurfaceContext }) {
               void onResetAll();
             }}
           >
-            <RotateCcw className="size-4" aria-hidden />
+            <Icon glyph={faRotate} className="size-4" aria-hidden />
             Reset all
           </Button>
         ) : null}
@@ -391,7 +392,7 @@ export function AiToolPoliciesSurface({ ctx }: { ctx: SurfaceContext }) {
 
           {!canManage && !isError && !isPending ? (
             <Alert color="info" variant="soft">
-              <ShieldCheck className="size-5" aria-hidden />
+              <Icon glyph={faShieldCheck} className="size-5" aria-hidden />
               <AlertContent>
                 <AlertTitle>You can see these but not change them</AlertTitle>
                 <AlertDescription>
@@ -405,7 +406,7 @@ export function AiToolPoliciesSurface({ ctx }: { ctx: SurfaceContext }) {
           {isError ? (
             <Card>
               <EmptyState
-                icon={<Wrench className="size-6" aria-hidden />}
+                icon={<Icon glyph={faWrench} className="size-6" aria-hidden />}
                 title="Could not load your tool settings"
                 description="This is a problem reaching the server. Your current settings are unaffected."
                 actions={
@@ -427,7 +428,7 @@ export function AiToolPoliciesSurface({ ctx }: { ctx: SurfaceContext }) {
           ) : groups.length === 0 ? (
             <Card>
               <EmptyState
-                icon={<Wrench className="size-6" aria-hidden />}
+                icon={<Icon glyph={faWrench} className="size-6" aria-hidden />}
                 title="No tools available yet"
                 description="There is nothing here for a connected app to use yet. This usually fills in as you turn on more parts of your business."
               />
@@ -482,7 +483,7 @@ export function AiToolPoliciesSurface({ ctx }: { ctx: SurfaceContext }) {
 }
 
 function GroupIcon({ module }: { module: WorkbenchModule | null }) {
-  const Icon = module ? moduleIcon(module) : null;
-  if (!Icon) return <Wrench className="text-module size-5 shrink-0" aria-hidden />;
-  return <Icon className="text-module size-5 shrink-0" aria-hidden />;
+  const glyph = module ? moduleIcon(module) : null;
+  if (!glyph) return <Icon glyph={faWrench} className="text-module size-5 shrink-0" aria-hidden />;
+  return <Icon glyph={glyph} className="text-module size-5 shrink-0" aria-hidden />;
 }

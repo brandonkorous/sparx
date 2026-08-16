@@ -48,7 +48,16 @@ import {
   useToast,
 } from '@wizeworks/silicaui-react';
 import { useConfirm } from '../../lib/confirm';
-import { Archive, ClipboardList, Plus, Save, Star, Trash2, Truck } from 'lucide-react';
+import {
+  faBoxArchive,
+  faClipboardList,
+  faFloppyDisk,
+  faPlus,
+  faStar,
+  faTrashCan,
+  faTruck,
+} from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import { FormSection } from '../../components/form-section';
@@ -289,7 +298,7 @@ function PurchasingLinks({
               setAdding(true);
             }}
           >
-            <Plus className="size-4" aria-hidden />
+            <Icon glyph={faPlus} className="size-4" aria-hidden />
             Add an item
           </Button>
         )
@@ -316,7 +325,7 @@ function PurchasingLinks({
                   </Text>
                   {link.isPreferred ? (
                     <Badge color="module" variant="soft" size="sm">
-                      <Star className="size-3" aria-hidden />
+                      <Icon glyph={faStar} className="size-3" aria-hidden />
                       Preferred
                     </Badge>
                   ) : null}
@@ -339,7 +348,7 @@ function PurchasingLinks({
                   void removeLink(link);
                 }}
               >
-                <Trash2 className="size-4" aria-hidden />
+                <Icon glyph={faTrashCan} className="size-4" aria-hidden />
               </Button>
             </li>
           ))}
@@ -490,7 +499,7 @@ function SupplierPurchaseOrders({ supplierId, ctx }: { supplierId: string; ctx: 
                 }}
               >
                 <div className="flex min-w-0 items-center gap-2">
-                  <ClipboardList className="size-4 shrink-0" aria-hidden />
+                  <Icon glyph={faClipboardList} className="size-4 shrink-0" aria-hidden />
                   <Text className="font-mono font-medium">{po.number}</Text>
                 </div>
                 <div className="flex flex-wrap items-center gap-2">
@@ -683,7 +692,7 @@ export function SupplierDetailSurface({ ctx }: { ctx: SurfaceContext }) {
           </Badge>
         ) : (
           <span className="inline-flex items-center gap-1.5">
-            <Truck className="size-4" aria-hidden />
+            <Icon glyph={faTruck} className="size-4" aria-hidden />
             <Text as="span" className="text-sm font-medium">
               New supplier
             </Text>
@@ -698,7 +707,7 @@ export function SupplierDetailSurface({ ctx }: { ctx: SurfaceContext }) {
           loading={saving}
           onClick={save}
         >
-          <Save className="size-4" aria-hidden />
+          <Icon glyph={faFloppyDisk} className="size-4" aria-hidden />
           {isNew ? 'Add supplier' : 'Save'}
         </Button>
 
@@ -1048,7 +1057,7 @@ export function SupplierDetailSurface({ ctx }: { ctx: SurfaceContext }) {
                       void onArchive();
                     }}
                   >
-                    <Archive className="size-4" aria-hidden />
+                    <Icon glyph={faBoxArchive} className="size-4" aria-hidden />
                     Retire
                   </Button>
                 </div>

@@ -27,7 +27,8 @@ import {
   Table,
   Tooltip,
 } from '@wizeworks/silicaui-react';
-import { Gauge, PackageX, Snail } from 'lucide-react';
+import { faBoxOpen, faGauge, faTurtle } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { formatCents, plural } from './data';
 import { slowMoverLabel, slowMoverTone, useSlowMovers } from './planning-data';
@@ -65,7 +66,7 @@ function SlowMoverPanel({ ctx, locationId }: { ctx: SurfaceContext; locationId: 
   if (report.isError) {
     return (
       <EmptyState
-        icon={<PackageX className="size-6" aria-hidden />}
+        icon={<Icon glyph={faBoxOpen} className="size-6" aria-hidden />}
         title="Could not work out what is not selling"
         description="This is a problem reaching the server, not a finding about your stock. Nothing here is a real answer until it loads — try again in a moment."
       />
@@ -119,13 +120,13 @@ function SlowMoverPanel({ ctx, locationId }: { ctx: SurfaceContext; locationId: 
       {rows.length === 0 ? (
         measured ? (
           <EmptyState
-            icon={<Snail className="size-6" aria-hidden />}
+            icon={<Icon glyph={faTurtle} className="size-6" aria-hidden />}
             title="Everything is moving"
             description="Nothing is sitting beyond the horizon you set, and nothing has gone quiet. Either the buying is well judged, or there is not enough history yet to tell."
           />
         ) : (
           <EmptyState
-            icon={<Gauge className="size-6" aria-hidden />}
+            icon={<Icon glyph={faGauge} className="size-6" aria-hidden />}
             title="Nothing has been checked yet"
             description="This list is empty because no pass has been made over your sales — not because everything is moving. Press “Work it out now” above to find out which it is."
           />

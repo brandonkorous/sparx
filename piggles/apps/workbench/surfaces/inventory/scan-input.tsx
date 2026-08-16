@@ -31,7 +31,13 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Alert, Badge, Button, Input, Kbd, Text } from '@wizeworks/silicaui-react';
-import { Camera, CameraOff, ScanLine, WifiOff } from 'lucide-react';
+import {
+  faBarcodeRead,
+  faCamera,
+  faCameraSlash,
+  faWifiSlash,
+} from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { scanTone, type ScanActionResult, type ScanOutcome } from './scan-data';
 
 /* ── Sound ──────────────────────────────────────────────────────────────── */
@@ -187,7 +193,7 @@ function CameraScanner({
         </div>
       )}
       <Button variant="outline" color="neutral" size="sm" onClick={onClose}>
-        <CameraOff className="size-4" aria-hidden />
+        <Icon glyph={faCameraSlash} className="size-4" aria-hidden />
         Close camera
       </Button>
     </div>
@@ -285,7 +291,7 @@ export function ScanInput({
           size={large ? 'xl' : 'md'}
           disabled={disabled === true || busy === true || value.trim().length === 0}
         >
-          <ScanLine className="size-4" aria-hidden />
+          <Icon glyph={faBarcodeRead} className="size-4" aria-hidden />
           {busy ? 'Working…' : 'Enter'}
         </Button>
         {hasCamera ? (
@@ -299,7 +305,7 @@ export function ScanInput({
               setCameraOpen((open) => !open);
             }}
           >
-            <Camera className="size-4" aria-hidden />
+            <Icon glyph={faCamera} className="size-4" aria-hidden />
           </Button>
         ) : null}
       </form>
@@ -317,7 +323,7 @@ export function ScanInput({
 
       {queued > 0 ? (
         <Alert color="warning" variant="soft" size="sm">
-          <WifiOff className="size-4" aria-hidden />
+          <Icon glyph={faWifiSlash} className="size-4" aria-hidden />
           <span>
             {queued} scan{queued === 1 ? '' : 's'} saved on this device. They will sync by
             themselves when the connection is back — keep going.

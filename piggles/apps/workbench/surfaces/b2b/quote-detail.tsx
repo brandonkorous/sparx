@@ -22,7 +22,8 @@ import {
   Heading,
   Text,
 } from '@wizeworks/silicaui-react';
-import { Building2, ExternalLink } from 'lucide-react';
+import { faArrowUpRightFromSquare, faBuilding } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { ModuleScope } from '../../components/module-scope';
 import { FormSection } from '../../components/form-section';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
@@ -127,7 +128,7 @@ function QuoteView({ ctx, quote }: { ctx: SurfaceContext; quote: QuoteRow }) {
             ctx.open('invoicing.invoice.edit', { id: quote.id }, { target: targetFor(event) });
           }}
         >
-          <ExternalLink className="size-4" aria-hidden />
+          <Icon glyph={faArrowUpRightFromSquare} className="size-4" aria-hidden />
           Price &amp; respond
         </Button>
       </PaneToolbar>
@@ -202,7 +203,7 @@ function QuoteView({ ctx, quote }: { ctx: SurfaceContext; quote: QuoteRow }) {
                       );
                     }}
                   >
-                    <Building2 className="size-4" aria-hidden />
+                    <Icon glyph={faBuilding} className="size-4" aria-hidden />
                     Open account
                   </Button>
                 </div>

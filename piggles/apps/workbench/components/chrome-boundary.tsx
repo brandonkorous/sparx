@@ -28,7 +28,8 @@
 // carrying on without that strip, or reloading.
 
 import { Component, type ErrorInfo, type ReactNode } from 'react';
-import { AlertTriangle } from 'lucide-react';
+import { faExclamationTriangle } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { Button } from '@wizeworks/silicaui-react';
 import { isChunkLoadError, reloadOnceForStaleBuild } from '@sparx/app-kit';
 import { reportCrash } from '../lib/analytics';
@@ -114,7 +115,7 @@ export class ChromeBoundary extends Component<ChromeBoundaryProps, { failed: boo
           role="status"
           title={message}
         >
-          <AlertTriangle className="size-5" aria-label={message} />
+          <Icon glyph={faExclamationTriangle} className="size-5" aria-label={message} />
         </div>
       );
     }
@@ -131,7 +132,7 @@ export class ChromeBoundary extends Component<ChromeBoundaryProps, { failed: boo
         }`}
         role="status"
       >
-        <AlertTriangle className="size-4 shrink-0" aria-hidden />
+        <Icon glyph={faExclamationTriangle} className="size-4 shrink-0" aria-hidden />
         {/* Wraps rather than truncates. The sentence ENDS in the instruction, so
             clipping it drops the only actionable half and leaves a warning with
             no way out — a two-line strip is cheap by comparison, and this state

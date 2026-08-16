@@ -59,19 +59,20 @@ import {
 } from '@wizeworks/silicaui-react';
 import { useConfirm } from '../../lib/confirm';
 import {
-  ClipboardCheck,
-  History,
-  Lock,
-  MapPin,
-  Package,
-  PackageX,
-  Printer,
-  Save,
-  ShieldCheck,
-  Sparkles,
-  SlidersHorizontal,
-  Warehouse,
-} from 'lucide-react';
+  faBox,
+  faBoxOpen,
+  faClipboardCheck,
+  faClockRotateLeft,
+  faFloppyDisk,
+  faLocationDot,
+  faLock,
+  faPrint,
+  faShieldCheck,
+  faSliders,
+  faSparkles,
+  faWarehouse,
+} from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import { useDirtySource } from '../../lib/workbench/dirty';
@@ -316,7 +317,7 @@ function CountForm({
             void submit();
           }}
         >
-          <Save className="size-4" aria-hidden />
+          <Icon glyph={faFloppyDisk} className="size-4" aria-hidden />
           Save this count
         </Button>
         <Button size="sm" variant="ghost" color="neutral" onClick={onDone}>
@@ -542,7 +543,7 @@ function ManagementForm({
             void submit();
           }}
         >
-          <Save className="size-4" aria-hidden />
+          <Icon glyph={faFloppyDisk} className="size-4" aria-hidden />
           Save
         </Button>
         <Button size="sm" variant="ghost" color="neutral" onClick={onDone}>
@@ -579,7 +580,7 @@ function LocationCard({
     <section className="card bg-base-100 flex flex-col gap-3 p-4">
       <div className="border-base-300 flex flex-wrap items-start justify-between gap-2 border-b pb-2">
         <div className="flex min-w-0 items-center gap-2">
-          <MapPin className="size-4 shrink-0" aria-hidden />
+          <Icon glyph={faLocationDot} className="size-4 shrink-0" aria-hidden />
           <Heading level={3} className="min-w-0 text-lg font-semibold">
             {locationLabel(level)}
           </Heading>
@@ -600,7 +601,7 @@ function LocationCard({
               aria-label="Where this number came from"
               onClick={onExplain}
             >
-              <ShieldCheck className="size-4" aria-hidden />
+              <Icon glyph={faShieldCheck} className="size-4" aria-hidden />
             </Button>
           </Tooltip>
         </div>
@@ -654,7 +655,7 @@ function LocationCard({
             setEditing((open) => !open);
           }}
         >
-          <SlidersHorizontal className="size-4" aria-hidden />
+          <Icon glyph={faSliders} className="size-4" aria-hidden />
           {level.reorderPoint === null ? 'Set a reorder rule' : 'Change how this is managed'}
         </Button>
       </div>
@@ -717,7 +718,7 @@ function BarcodesSection({
               ctx.open('inventory.barcodes.labels', { variantId }, { target: 'beside' });
             }}
           >
-            <Printer className="size-4" aria-hidden />
+            <Icon glyph={faPrint} className="size-4" aria-hidden />
             Print labels
           </Button>
         ) : null}
@@ -757,7 +758,7 @@ function BarcodesSection({
               );
             }}
           >
-            <Sparkles className="size-4" aria-hidden />
+            <Icon glyph={faSparkles} className="size-4" aria-hidden />
             {generate.isPending ? 'Creating…' : 'Create a barcode'}
           </Button>
         </div>
@@ -833,7 +834,7 @@ function HoldsSection({ holds }: { holds: ReturnType<typeof useStockHolds>['data
             <Text className="text-sm">
               {hold.expiresAt === null ? (
                 <span className="inline-flex items-center gap-1">
-                  <Lock className="size-3" aria-hidden />
+                  <Icon glyph={faLock} className="size-3" aria-hidden />
                   Held until it ships
                 </span>
               ) : (
@@ -861,7 +862,7 @@ function HistorySection({ history }: { history: ReturnType<typeof useStockHistor
     <section className="card bg-base-100 flex flex-col gap-3 p-4">
       <div className="border-base-300 flex flex-col gap-0.5 border-b pb-2">
         <Heading level={2} className="flex items-center gap-2 text-lg font-semibold">
-          <History className="size-4" aria-hidden />
+          <Icon glyph={faClockRotateLeft} className="size-4" aria-hidden />
           Recent changes
         </Heading>
         <Text className="text-sm">Every change to this item’s counts, newest first.</Text>
@@ -937,7 +938,7 @@ export function StockItemSurface({ ctx }: { ctx: SurfaceContext }) {
       <div className={PANE_SHELL}>
         <Card className="min-h-0 flex-1 items-center justify-center">
           <PaneEmpty
-            icon={<PackageX className="size-6" aria-hidden />}
+            icon={<Icon glyph={faBoxOpen} className="size-6" aria-hidden />}
             title="No item was chosen"
             description="This pane shows the stock of one item. Open it from the Stock list by clicking a row."
             actions={
@@ -1059,7 +1060,7 @@ export function StockItemSurface({ ctx }: { ctx: SurfaceContext }) {
               );
             }}
           >
-            <Package className="size-4" aria-hidden />
+            <Icon glyph={faBox} className="size-4" aria-hidden />
             <span className="hidden @xl:inline">Open product</span>
           </Button>
         ) : null}
@@ -1073,7 +1074,7 @@ export function StockItemSurface({ ctx }: { ctx: SurfaceContext }) {
             startCount(levels[0]?.warehouseId ?? null);
           }}
         >
-          <ClipboardCheck className="size-4" aria-hidden />
+          <Icon glyph={faClipboardCheck} className="size-4" aria-hidden />
           Record a count
         </Button>
 
@@ -1136,7 +1137,7 @@ export function StockItemSurface({ ctx }: { ctx: SurfaceContext }) {
           {/* Three genuinely different problems, three different answers. */}
           {locations.length === 0 ? (
             <EmptyState
-              icon={<Warehouse className="size-6" aria-hidden />}
+              icon={<Icon glyph={faWarehouse} className="size-6" aria-hidden />}
               title="You have nowhere to keep stock yet"
               description="Counts are always kept per place — a shop, a warehouse, a garage. Set up at least one and you can start recording how many of this you have."
               actions={
@@ -1222,7 +1223,7 @@ export function StockItemSurface({ ctx }: { ctx: SurfaceContext }) {
                         startCount(location.id);
                       }}
                     >
-                      <ClipboardCheck className="size-4" aria-hidden />
+                      <Icon glyph={faClipboardCheck} className="size-4" aria-hidden />
                       Count it here
                     </Button>
                   </li>

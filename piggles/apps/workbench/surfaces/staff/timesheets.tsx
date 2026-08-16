@@ -37,14 +37,15 @@ import {
   useToast,
 } from '@wizeworks/silicaui-react';
 import {
-  CalendarDays,
-  ChevronLeft,
-  ChevronRight,
-  Clock,
-  Download,
-  RefreshCw,
-  Users,
-} from 'lucide-react';
+  faArrowsRotate,
+  faCalendarDays,
+  faChevronLeft,
+  faChevronRight,
+  faClock,
+  faDownload,
+  faUsers,
+} from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import { afterPaneChange } from '../../lib/defer';
@@ -96,7 +97,7 @@ function PersonRow({
         {row.openEntries > 0 ? (
           <div className="mt-1">
             <Badge color="info" size="sm">
-              <Clock className="size-3.5" aria-hidden />
+              <Icon glyph={faClock} className="size-3.5" aria-hidden />
               {row.openEntries === 1
                 ? 'Still clocked in'
                 : `${String(row.openEntries)} clocks open`}
@@ -288,7 +289,7 @@ export function TimesheetsSurface({ ctx }: { ctx: SurfaceContext }) {
               setRange((current) => monthShift(current, -1));
             }}
           >
-            <ChevronLeft className="size-4" aria-hidden />
+            <Icon glyph={faChevronLeft} className="size-4" aria-hidden />
           </Button>
           <Text as="span" className="min-w-32 text-center text-sm font-medium">
             {periodLabel(range.from, range.to)}
@@ -303,7 +304,7 @@ export function TimesheetsSurface({ ctx }: { ctx: SurfaceContext }) {
               setRange((current) => monthShift(current, 1));
             }}
           >
-            <ChevronRight className="size-4" aria-hidden />
+            <Icon glyph={faChevronRight} className="size-4" aria-hidden />
           </Button>
         </div>
 
@@ -344,7 +345,7 @@ export function TimesheetsSurface({ ctx }: { ctx: SurfaceContext }) {
       <div className="min-h-0 flex-1 overflow-y-auto">
         {timesheet.isError ? (
           <EmptyState
-            icon={<CalendarDays className="size-6" aria-hidden />}
+            icon={<Icon glyph={faCalendarDays} className="size-6" aria-hidden />}
             title="Could not load this period"
             description="The server could not be reached. No hours are affected."
             actions={
@@ -364,7 +365,7 @@ export function TimesheetsSurface({ ctx }: { ctx: SurfaceContext }) {
         ) : rows.length === 0 ? (
           <Card className="min-h-0 flex-1 items-center justify-center">
             <PaneEmpty
-              icon={<Users className="size-6" aria-hidden />}
+              icon={<Icon glyph={faUsers} className="size-6" aria-hidden />}
               title="No hours in this period"
               description="Once people clock in, or somebody types in the time they worked, it appears here for you to check and approve."
             />
@@ -466,7 +467,7 @@ export function TimesheetsSurface({ ctx }: { ctx: SurfaceContext }) {
                 loading={derive.isPending}
                 onClick={doDerive}
               >
-                <RefreshCw className="size-4" aria-hidden />
+                <Icon glyph={faArrowsRotate} className="size-4" aria-hidden />
                 Re-file this period
               </Button>
             </Card>
@@ -491,7 +492,7 @@ export function TimesheetsSurface({ ctx }: { ctx: SurfaceContext }) {
                   void doExport();
                 }}
               >
-                <Download className="size-4" aria-hidden />
+                <Icon glyph={faDownload} className="size-4" aria-hidden />
                 Download the hours
               </Button>
             </Card>

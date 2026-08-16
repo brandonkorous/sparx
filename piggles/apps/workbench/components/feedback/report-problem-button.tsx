@@ -21,7 +21,8 @@
 // (`workbench:platform.migrate.run`) already carries more precisely.
 
 import { Button, type ButtonProps } from '@wizeworks/silicaui-react';
-import { LifeBuoy } from 'lucide-react';
+import { faLifeRing } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { useFeedback } from './provider';
 
 export interface ReportProblemButtonProps {
@@ -70,7 +71,7 @@ export function ReportProblemButton({
         });
       }}
     >
-      <LifeBuoy className="size-4" aria-hidden />
+      <Icon glyph={faLifeRing} className="size-4" aria-hidden />
       {label}
     </Button>
   );

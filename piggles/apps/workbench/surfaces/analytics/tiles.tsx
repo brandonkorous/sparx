@@ -16,7 +16,13 @@
 
 import { Badge, Skeleton, Text, Tooltip } from '@wizeworks/silicaui-react';
 import { Sparkline } from '@wizeworks/silicaui-charts';
-import { ArrowDownRight, ArrowUpRight, Minus, TriangleAlert } from 'lucide-react';
+import {
+  faArrowDownRight,
+  faArrowUpRight,
+  faExclamationTriangle,
+  faMinus,
+} from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import type { OpenTarget } from '../../lib/surfaces/registry';
 import { DonutChart, TrendChart, useModuleColor } from './charts';
 import type {
@@ -95,11 +101,11 @@ function DeltaChip({ compare }: { compare: NonNullable<MetricResult['compare']> 
   const up = compare.deltaPct > 0;
   const flat = compare.deltaPct === 0;
   const tone = flat ? 'neutral' : up ? 'success' : 'danger';
-  const Icon = flat ? Minus : up ? ArrowUpRight : ArrowDownRight;
+  const glyph = flat ? faMinus : up ? faArrowUpRight : faArrowDownRight;
   return (
     <Tooltip content="vs previous period">
       <Badge color={tone} variant="soft" size="sm">
-        <Icon className="size-3.5" aria-hidden />
+        <Icon glyph={glyph} className="size-3.5" aria-hidden />
         {Math.abs(compare.deltaPct)}%
       </Badge>
     </Tooltip>
@@ -295,7 +301,11 @@ function StatusLine({ result, tile }: { result: MetricResult; tile: DashboardTil
   if (result.status === 'error') {
     return (
       <div className="flex items-start gap-2">
-        <TriangleAlert className="text-warning mt-0.5 size-4 shrink-0" aria-hidden />
+        <Icon
+          glyph={faExclamationTriangle}
+          className="text-warning mt-0.5 size-4 shrink-0"
+          aria-hidden
+        />
         <Text className="text-sm">{result.message ?? 'Couldn’t load this just now.'}</Text>
       </div>
     );

@@ -23,7 +23,8 @@ import {
   Text,
   Timestamp,
 } from '@wizeworks/silicaui-react';
-import { ShieldCheck } from 'lucide-react';
+import { faShieldCheck } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import type { GateLogEntry } from '@sparx/automation-schemas';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { FormSection } from '../../components/form-section';
@@ -111,7 +112,7 @@ function StepCard({ step }: { step: AutomationRunStepRow }) {
       {gates.length > 0 ? (
         <div className="border-base-300 flex flex-col gap-1.5 border-t pt-2">
           <div className="flex items-center gap-1.5">
-            <ShieldCheck className="size-3.5 shrink-0" aria-hidden />
+            <Icon glyph={faShieldCheck} className="size-3.5 shrink-0" aria-hidden />
             <Text as="span" className="text-sm font-medium">
               Policy checks
             </Text>

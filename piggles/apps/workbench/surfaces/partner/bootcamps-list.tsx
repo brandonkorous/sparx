@@ -19,7 +19,8 @@ import {
   Table,
   Text,
 } from '@wizeworks/silicaui-react';
-import { GraduationCap, Plus } from 'lucide-react';
+import { faGraduationCap, faPlus } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
@@ -102,7 +103,7 @@ export function BootcampsListSurface({ ctx }: { ctx: SurfaceContext }) {
             title="New bootcamp — hold Shift to open alongside, Alt for a new window"
             onClick={openNew}
           >
-            <Plus className="size-4" aria-hidden />
+            <Icon glyph={faPlus} className="size-4" aria-hidden />
             New bootcamp
           </Button>
         ) : (
@@ -144,7 +145,7 @@ export function BootcampsListSurface({ ctx }: { ctx: SurfaceContext }) {
 
             {bootcamps.length === 0 ? (
               <EmptyState
-                icon={<GraduationCap className="size-6" aria-hidden />}
+                icon={<Icon glyph={faGraduationCap} className="size-6" aria-hidden />}
                 title="No bootcamps yet"
                 description={
                   canHost
@@ -154,7 +155,7 @@ export function BootcampsListSurface({ ctx }: { ctx: SurfaceContext }) {
                 actions={
                   canHost ? (
                     <Button size="sm" color="module" onClick={openNew}>
-                      <Plus className="size-4" aria-hidden />
+                      <Icon glyph={faPlus} className="size-4" aria-hidden />
                       New bootcamp
                     </Button>
                   ) : undefined

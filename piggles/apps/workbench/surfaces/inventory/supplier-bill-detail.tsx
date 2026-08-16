@@ -50,7 +50,14 @@ import {
   Timestamp,
   useToast,
 } from '@wizeworks/silicaui-react';
-import { Ban, Banknote, Check, MessageCircleWarning, Receipt } from 'lucide-react';
+import {
+  faBan,
+  faCheck,
+  faCommentExclamation,
+  faMoneyBill,
+  faReceipt,
+} from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { PANE_SHELL } from '../../components/pane-toolbar';
 import { useConfirm } from '../../lib/confirm';
 import { afterCommit } from '../../lib/defer';
@@ -101,7 +108,7 @@ function ExistingBill({ ctx, id }: { ctx: SurfaceContext; id: string }) {
     return (
       <div className={PANE_SHELL}>
         <EmptyState
-          icon={<Receipt className="size-6" aria-hidden />}
+          icon={<Icon glyph={faReceipt} className="size-6" aria-hidden />}
           title="Could not load that bill"
           description="This is a problem reaching the server, not a statement that the bill is gone. Try again in a moment."
         />
@@ -399,7 +406,7 @@ function ExistingBill({ ctx, id }: { ctx: SurfaceContext; id: string }) {
                   loading={accept.isPending}
                   onClick={onAccept}
                 >
-                  <Check className="size-4" aria-hidden />
+                  <Icon glyph={faCheck} className="size-4" aria-hidden />
                   Accept the difference
                 </Button>
                 <Button
@@ -409,7 +416,7 @@ function ExistingBill({ ctx, id }: { ctx: SurfaceContext; id: string }) {
                   loading={dispute.isPending}
                   onClick={onDispute}
                 >
-                  <MessageCircleWarning className="size-4" aria-hidden />
+                  <Icon glyph={faCommentExclamation} className="size-4" aria-hidden />
                   Query it with them
                 </Button>
               </div>
@@ -418,7 +425,7 @@ function ExistingBill({ ctx, id }: { ctx: SurfaceContext; id: string }) {
             <div className="flex flex-wrap items-end gap-2">
               {data.status !== 'approved' ? (
                 <Button color="module" loading={approve.isPending} onClick={onApprove}>
-                  <Check className="size-4" aria-hidden />
+                  <Icon glyph={faCheck} className="size-4" aria-hidden />
                   Approve to pay
                 </Button>
               ) : null}
@@ -446,7 +453,7 @@ function ExistingBill({ ctx, id }: { ctx: SurfaceContext; id: string }) {
                   void onPay();
                 }}
               >
-                <Banknote className="size-4" aria-hidden />
+                <Icon glyph={faMoneyBill} className="size-4" aria-hidden />
                 Record the payment
               </Button>
               <Button
@@ -458,7 +465,7 @@ function ExistingBill({ ctx, id }: { ctx: SurfaceContext; id: string }) {
                   void onCancel();
                 }}
               >
-                <Ban className="size-4" aria-hidden />
+                <Icon glyph={faBan} className="size-4" aria-hidden />
                 Cancel
               </Button>
             </div>

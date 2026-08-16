@@ -45,19 +45,20 @@ import {
   useToast,
 } from '@wizeworks/silicaui-react';
 import {
-  CalendarClock,
-  Check,
-  CopyPlus,
-  ExternalLink,
-  Image as ImageIcon,
-  RefreshCw,
-  Repeat,
-  Save,
-  Send,
-  ShieldCheck,
-  Trash2,
-  X,
-} from 'lucide-react';
+  faArrowUpRightFromSquare,
+  faArrowsRotate,
+  faCalendarClock,
+  faCheck,
+  faClone,
+  faFloppyDisk,
+  faImage,
+  faPaperPlane,
+  faRepeat,
+  faShieldCheck,
+  faTrashCan,
+  faXmark,
+} from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { useConfirm } from '../../lib/confirm';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import { afterPaneChange } from '../../lib/defer';
@@ -223,7 +224,7 @@ function DestinationPicker({
                 }`}
                 aria-hidden
               >
-                {on ? <Check className="size-3.5" /> : null}
+                {on ? <Icon glyph={faCheck} className="size-3.5" /> : null}
               </span>
             </button>
             {on && body.trim() !== '' ? (
@@ -371,7 +372,7 @@ function PreviewNotes({
   if (preview.notes.length === 0) {
     return (
       <span className="text-success inline-flex items-center gap-1 text-sm">
-        <Check className="size-3.5" aria-hidden />
+        <Icon glyph={faCheck} className="size-3.5" aria-hidden />
         Reads fine here.
       </span>
     );
@@ -411,7 +412,7 @@ function MediaThumbs({ ids }: { ids: string[] }) {
               />
             ) : (
               <span className="flex h-full items-center justify-center">
-                <ImageIcon className="size-5" aria-hidden />
+                <Icon glyph={faImage} className="size-5" aria-hidden />
               </span>
             )}
           </div>
@@ -476,7 +477,7 @@ function TargetResults({
                 className="text-module inline-flex items-center gap-0.5 text-sm underline"
               >
                 View
-                <ExternalLink className="size-3.5" aria-hidden />
+                <Icon glyph={faArrowUpRightFromSquare} className="size-3.5" aria-hidden />
               </a>
             ) : null}
             {retryable ? (
@@ -489,7 +490,7 @@ function TargetResults({
                   onRetry(target.id, target.targetName);
                 }}
               >
-                <RefreshCw className="size-3.5" aria-hidden />
+                <Icon glyph={faArrowsRotate} className="size-3.5" aria-hidden />
                 Try {target.targetName} again
               </Button>
             ) : null}
@@ -718,7 +719,7 @@ function PostMetricsSection({
           loading={refresh.isPending || collecting}
           onClick={doRefresh}
         >
-          <RefreshCw className="size-4" aria-hidden />
+          <Icon glyph={faArrowsRotate} className="size-4" aria-hidden />
           Refresh numbers
         </Button>
       }
@@ -1007,7 +1008,7 @@ function ComposeNew({ ctx }: { ctx: SurfaceContext }) {
             run('draft');
           }}
         >
-          <Save className="size-4" aria-hidden />
+          <Icon glyph={faFloppyDisk} className="size-4" aria-hidden />
           Save draft
         </Button>
       </PaneToolbar>
@@ -1175,7 +1176,7 @@ function ComposeNew({ ctx }: { ctx: SurfaceContext }) {
 
                   {requireApproval ? (
                     <div className="flex items-start gap-2">
-                      <ShieldCheck className="mt-0.5 size-4 shrink-0" aria-hidden />
+                      <Icon glyph={faShieldCheck} className="mt-0.5 size-4 shrink-0" aria-hidden />
                       <Text className="text-sm">
                         Approval is on, so a post you schedule or submit waits for an admin before
                         it goes live.
@@ -1211,7 +1212,7 @@ function ComposeNew({ ctx }: { ctx: SurfaceContext }) {
                           run('schedule');
                         }}
                       >
-                        <CalendarClock className="size-4" aria-hidden />
+                        <Icon glyph={faCalendarClock} className="size-4" aria-hidden />
                         Schedule
                       </Button>
                     </div>
@@ -1227,7 +1228,7 @@ function ComposeNew({ ctx }: { ctx: SurfaceContext }) {
                           run('submit');
                         }}
                       >
-                        <Send className="size-4" aria-hidden />
+                        <Icon glyph={faPaperPlane} className="size-4" aria-hidden />
                         Submit for approval
                       </Button>
                       {isAdmin ? (
@@ -1240,7 +1241,7 @@ function ComposeNew({ ctx }: { ctx: SurfaceContext }) {
                             run('publish');
                           }}
                         >
-                          <Send className="size-4" aria-hidden />
+                          <Icon glyph={faPaperPlane} className="size-4" aria-hidden />
                           Publish now
                         </Button>
                       ) : null}
@@ -1267,7 +1268,7 @@ function ComposeNew({ ctx }: { ctx: SurfaceContext }) {
 
             {selectedDestinations.length === 0 ? (
               <div className="border-base-300 flex flex-col items-center justify-center gap-2 rounded-xl border border-dashed p-8 text-center">
-                <ImageIcon className="size-6" aria-hidden />
+                <Icon glyph={faImage} className="size-6" aria-hidden />
                 <Text className="text-sm">No destinations picked yet.</Text>
               </div>
             ) : (
@@ -1587,7 +1588,7 @@ function ComposeManage({ ctx, post }: { ctx: SurfaceContext; post: Post }) {
             loading={duplicate.isPending}
             onClick={doDuplicate}
           >
-            <CopyPlus className="size-4" aria-hidden />
+            <Icon glyph={faClone} className="size-4" aria-hidden />
             Post this again
           </Button>
         ) : null}
@@ -1599,7 +1600,7 @@ function ComposeManage({ ctx, post }: { ctx: SurfaceContext; post: Post }) {
             loading={update.isPending}
             onClick={saveChanges}
           >
-            <Save className="size-4" aria-hidden />
+            <Icon glyph={faFloppyDisk} className="size-4" aria-hidden />
             Save changes
           </Button>
         ) : null}
@@ -1618,7 +1619,7 @@ function ComposeManage({ ctx, post }: { ctx: SurfaceContext; post: Post }) {
             loading={remove.isPending}
             onClick={doDelete}
           >
-            <Trash2 className="size-4" aria-hidden />
+            <Icon glyph={faTrashCan} className="size-4" aria-hidden />
           </Button>
         ) : null}
       </PaneToolbar>
@@ -1715,7 +1716,7 @@ function ComposeManage({ ctx, post }: { ctx: SurfaceContext; post: Post }) {
                     className="text-module inline-flex items-center gap-0.5 text-sm underline"
                   >
                     {post.link}
-                    <ExternalLink className="size-3.5" aria-hidden />
+                    <Icon glyph={faArrowUpRightFromSquare} className="size-3.5" aria-hidden />
                   </a>
                 ) : null}
                 <MediaThumbs ids={post.mediaAssetIds} />
@@ -1802,7 +1803,7 @@ function ComposeManage({ ctx, post }: { ctx: SurfaceContext; post: Post }) {
                         loading={approve.isPending}
                         onClick={doApprove}
                       >
-                        <Check className="size-4" aria-hidden />
+                        <Icon glyph={faCheck} className="size-4" aria-hidden />
                         Approve
                       </Button>
                       <Button
@@ -1812,7 +1813,7 @@ function ComposeManage({ ctx, post }: { ctx: SurfaceContext; post: Post }) {
                         loading={reject.isPending}
                         onClick={doReject}
                       >
-                        <X className="size-4" aria-hidden />
+                        <Icon glyph={faXmark} className="size-4" aria-hidden />
                         Send back
                       </Button>
                     </div>
@@ -1827,7 +1828,7 @@ function ComposeManage({ ctx, post }: { ctx: SurfaceContext; post: Post }) {
                       loading={submit.isPending}
                       onClick={doSubmit}
                     >
-                      <Send className="size-4" aria-hidden />
+                      <Icon glyph={faPaperPlane} className="size-4" aria-hidden />
                       Submit for approval
                     </Button>
                   ) : null}
@@ -1859,7 +1860,7 @@ function ComposeManage({ ctx, post }: { ctx: SurfaceContext; post: Post }) {
                       loading={schedule.isPending}
                       onClick={doSchedule}
                     >
-                      <CalendarClock className="size-4" aria-hidden />
+                      <Icon glyph={faCalendarClock} className="size-4" aria-hidden />
                       {post.scheduledAt ? 'Reschedule' : 'Schedule'}
                     </Button>
                   </div>
@@ -1877,7 +1878,7 @@ function ComposeManage({ ctx, post }: { ctx: SurfaceContext; post: Post }) {
                         loading={publish.isPending}
                         onClick={doPublish}
                       >
-                        <Send className="size-4" aria-hidden />
+                        <Icon glyph={faPaperPlane} className="size-4" aria-hidden />
                         {post.status === 'failed' ? 'Try publishing again' : 'Publish now'}
                       </Button>
                     </div>
@@ -1893,7 +1894,7 @@ function ComposeManage({ ctx, post }: { ctx: SurfaceContext; post: Post }) {
               <FormSection title="Keep this one around">
                 <div className="flex flex-wrap items-center justify-between gap-3">
                   <div className="flex min-w-0 flex-1 items-start gap-2">
-                    <Repeat className="mt-0.5 size-5 shrink-0" aria-hidden />
+                    <Icon glyph={faRepeat} className="mt-0.5 size-5 shrink-0" aria-hidden />
                     <Text className="text-sm">
                       {productCopy(
                         'social.evergreen.explain',
@@ -1940,7 +1941,7 @@ function ComposeManage({ ctx, post }: { ctx: SurfaceContext; post: Post }) {
 
             {post.targets.length === 0 ? (
               <div className="border-base-300 flex flex-col items-center justify-center gap-2 rounded-xl border border-dashed p-8 text-center">
-                <ImageIcon className="size-6" aria-hidden />
+                <Icon glyph={faImage} className="size-6" aria-hidden />
                 <Text className="text-sm">Nowhere to preview.</Text>
               </div>
             ) : (

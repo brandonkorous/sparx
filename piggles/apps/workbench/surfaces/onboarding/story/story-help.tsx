@@ -1,7 +1,8 @@
 'use client';
 
 import { type ReactNode } from 'react';
-import { ChevronDown, Plus, X } from 'lucide-react';
+import { faChevronDown, faPlus, faXmark } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { Heading, Text } from '@wizeworks/silicaui-react';
 
 // The legend that sits under the story canvas — a quiet key to the sentence's
@@ -39,7 +40,7 @@ export function StoryHelp(): ReactNode {
           glyph={
             <span className="border-base-300 inline-flex items-center gap-0.5 rounded-full border px-2 py-0.5 text-xs font-medium">
               phrase
-              <ChevronDown size={12} strokeWidth={2.4} aria-hidden />
+              <Icon glyph={faChevronDown} size={12} aria-hidden />
             </span>
           }
         >
@@ -50,7 +51,7 @@ export function StoryHelp(): ReactNode {
         <HelpRow
           glyph={
             <span className="border-module text-module inline-flex size-6 items-center justify-center rounded-full border border-dashed">
-              <Plus size={13} strokeWidth={2.4} aria-hidden />
+              <Icon glyph={faPlus} size={13} aria-hidden />
             </span>
           }
         >
@@ -61,7 +62,7 @@ export function StoryHelp(): ReactNode {
         <HelpRow
           glyph={
             <span className="bg-base-200 inline-flex size-6 items-center justify-center rounded-full">
-              <X size={12} strokeWidth={2.6} aria-hidden />
+              <Icon glyph={faXmark} size={12} aria-hidden />
             </span>
           }
         >

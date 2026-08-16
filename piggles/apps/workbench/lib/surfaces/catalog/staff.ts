@@ -18,7 +18,13 @@
 // hiding the row entirely would leave an admin unable to find the screen from
 // the launcher.
 
-import { CalendarDays, CalendarOff, ClipboardClock, ContactRound, ShieldCheck } from 'lucide-react';
+import {
+  faAddressBook,
+  faCalendarDays,
+  faCalendarXmark,
+  faClipboardClock,
+  faShieldCheck,
+} from '@fortawesome/pro-solid-svg-icons';
 import type { SurfaceDefinition } from '../registry';
 import { PeopleSurface } from '../../../surfaces/staff/people';
 import { PersonSurface } from '../../../surfaces/staff/person';
@@ -32,7 +38,7 @@ export const STAFF_SURFACES: SurfaceDefinition[] = [
     key: 'staff.people',
     title: 'People',
     module: 'staff',
-    icon: ContactRound,
+    icon: faAddressBook,
     component: PeopleSurface,
     order: 1,
     createSurface: 'staff.person',
@@ -43,7 +49,7 @@ export const STAFF_SURFACES: SurfaceDefinition[] = [
     key: 'staff.person',
     title: (params) => (params.id === 'new' ? 'New person' : 'Person'),
     module: 'staff',
-    icon: ContactRound,
+    icon: faAddressBook,
     component: PersonSurface,
     // Reached from the roster or the `+`. Opening "a person" with nobody in mind
     // is not a thing anyone wants.
@@ -55,7 +61,7 @@ export const STAFF_SURFACES: SurfaceDefinition[] = [
     key: 'staff.timesheets',
     title: 'Timesheets',
     module: 'staff',
-    icon: ClipboardClock,
+    icon: faClipboardClock,
     component: TimesheetsSurface,
     singleton: true,
     section: 'Hours and pay',
@@ -77,7 +83,7 @@ export const STAFF_SURFACES: SurfaceDefinition[] = [
     key: 'staff.schedule',
     title: 'Schedule',
     module: 'staff',
-    icon: CalendarDays,
+    icon: faCalendarDays,
     component: ScheduleSurface,
     singleton: true,
     section: 'Planning',
@@ -88,7 +94,7 @@ export const STAFF_SURFACES: SurfaceDefinition[] = [
     key: 'staff.timeoff',
     title: 'Time off',
     module: 'staff',
-    icon: CalendarOff,
+    icon: faCalendarXmark,
     component: TimeOffSurface,
     singleton: true,
     section: 'Planning',
@@ -101,7 +107,7 @@ export const STAFF_SURFACES: SurfaceDefinition[] = [
     key: 'staff.certifications',
     title: 'Tickets and licences',
     module: 'staff',
-    icon: ShieldCheck,
+    icon: faShieldCheck,
     component: CertificationsSurface,
     singleton: true,
     section: 'Compliance',

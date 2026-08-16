@@ -33,7 +33,8 @@ import {
   useToast,
 } from '@wizeworks/silicaui-react';
 import { useConfirm } from '../../lib/confirm';
-import { Trash2 } from 'lucide-react';
+import { faTrashCan } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import { afterPaneChange } from '../../lib/defer';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
@@ -479,7 +480,7 @@ function TierEditor({ ctx, id, tier }: { ctx: SurfaceContext; id: string; tier?:
                   void onDelete();
                 }}
               >
-                <Trash2 className="size-4" aria-hidden />
+                <Icon glyph={faTrashCan} className="size-4" aria-hidden />
                 Remove tier
               </Button>
             </div>
@@ -689,7 +690,7 @@ function OverrideRow({
         aria-label={`Remove ${name}`}
         onClick={onRemove}
       >
-        <Trash2 className="size-4" aria-hidden />
+        <Icon glyph={faTrashCan} className="size-4" aria-hidden />
       </Button>
     </li>
   );

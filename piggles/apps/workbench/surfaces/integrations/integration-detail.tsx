@@ -37,7 +37,14 @@ import {
   Text,
   useToast,
 } from '@wizeworks/silicaui-react';
-import { Link2, Pause, Play, RefreshCw, Trash2 } from 'lucide-react';
+import {
+  faArrowsRotate,
+  faLink,
+  faPause,
+  faPlay,
+  faTrashCan,
+} from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { useConfirm } from '../../lib/confirm';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import { afterPaneChange } from '../../lib/defer';
@@ -305,7 +312,7 @@ function ConnectIntegration({
           disabled={!canSubmit}
           onClick={submit}
         >
-          <Link2 className="size-4" aria-hidden />
+          <Icon glyph={faLink} className="size-4" aria-hidden />
           Connect
         </Button>
       </PaneToolbar>
@@ -314,7 +321,7 @@ function ConnectIntegration({
         <div className={COLUMN}>
           <div className="flex items-start gap-3">
             <span className="bg-base-200 flex size-11 shrink-0 items-center justify-center rounded-lg">
-              <KindIcon className="size-6" aria-hidden />
+              <Icon glyph={KindIcon} className="size-6" aria-hidden />
             </span>
             <div className="flex min-w-0 flex-col gap-1">
               <Heading level={1} className="text-2xl font-semibold">
@@ -551,7 +558,7 @@ function ManageIntegration({
         {canEdit ? (
           <>
             <Button size="sm" color="module" loading={test.isPending} onClick={onTest}>
-              <RefreshCw className="size-4" aria-hidden />
+              <Icon glyph={faArrowsRotate} className="size-4" aria-hidden />
               Test connection
             </Button>
             <Button
@@ -563,12 +570,12 @@ function ManageIntegration({
             >
               {installation.enabled ? (
                 <>
-                  <Pause className="size-4" aria-hidden />
+                  <Icon glyph={faPause} className="size-4" aria-hidden />
                   Pause
                 </>
               ) : (
                 <>
-                  <Play className="size-4" aria-hidden />
+                  <Icon glyph={faPlay} className="size-4" aria-hidden />
                   Switch on
                 </>
               )}
@@ -581,7 +588,7 @@ function ManageIntegration({
         <div className={COLUMN}>
           <div className="flex items-start gap-3">
             <span className="bg-base-200 flex size-11 shrink-0 items-center justify-center rounded-lg">
-              <KindIcon className="size-6" aria-hidden />
+              <Icon glyph={KindIcon} className="size-6" aria-hidden />
             </span>
             <div className="flex min-w-0 flex-col gap-1">
               <Heading level={1} className="text-2xl font-semibold">
@@ -657,7 +664,7 @@ function ManageIntegration({
                     void onDisconnect();
                   }}
                 >
-                  <Trash2 className="size-4" aria-hidden />
+                  <Icon glyph={faTrashCan} className="size-4" aria-hidden />
                   Disconnect
                 </Button>
               </div>

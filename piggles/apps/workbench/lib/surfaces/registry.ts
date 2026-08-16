@@ -7,7 +7,7 @@
 // rule enforceable rather than aspirational.
 
 import type { ComponentType } from 'react';
-import type { LucideIcon } from 'lucide-react';
+import type { PigglesIcon } from '@piggles/ui';
 import type { WorkbenchModule } from '../../components/module-scope';
 import type { PaneDescriptor, SurfaceParams } from './descriptor';
 import { productSurfaceTitle } from '../product';
@@ -86,7 +86,7 @@ export interface SurfaceDefinition {
    * every module route independently.
    */
   readonly requiresModules?: readonly string[];
-  readonly icon: LucideIcon;
+  readonly icon: PigglesIcon;
   readonly component: ComponentType<{ ctx: SurfaceContext }>;
   /**
    * At most one instance may be open across ALL windows. For surfaces where a
@@ -129,19 +129,17 @@ export interface SurfaceDefinition {
   readonly createSurface?: string;
   /** Tooltip for that `+`, e.g. 'New invoice'. Falls back to 'New'. */
   readonly createLabel?: string;
-  /**
-   * A live count of things WAITING on a person here — posts to approve, comments to
-   * answer — rendered as a badge on this surface's nav row.
-   *
-   * A React hook, not a number: the count has to stay current without anyone reloading,
-   * and the surface that owns the data is the only place that knows how to read it. It is
-   * called from a dedicated child component per row, so hook order stays stable.
-   *
-   * Return `0`/`null` for "nothing waiting" — a badge showing zero is worse than no badge,
-   * because it trains people to ignore the thing that is supposed to catch their eye. Use
-   * this ONLY where a number means someone has to act; a row count is not attention.
-   */
-  readonly useBadgeCount?: () => number | null | undefined;
+  // There is deliberately NO `useBadgeCount` here any more.
+  //
+  // It let a surface badge its own nav row from its own hook, which worked and
+  // stopped there: a per-row React hook cannot be summed by the rail above it,
+  // so Social's Inbox showed four waiting in the panel while Get Found and its
+  // group showed nothing — one question, two answers, on one screen.
+  //
+  // A waiting count is now declared ONCE in lib/console/home-data.ts, against
+  // the screen it describes, and every level derives from that. Adding a new one
+  // is a SOURCES entry plus a COUNT_SURFACE line. Reintroducing a per-surface
+  // hook reintroduces the split.
 
   /**
    * Params to open this row with, when the row is not simply "the surface".

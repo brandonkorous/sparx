@@ -14,7 +14,8 @@
 
 import { Badge, Button, Card, EmptyState, Table, useToast } from '@wizeworks/silicaui-react';
 import { PaneWaiting } from '../../components/pane-waiting';
-import { Phone, PhoneCall, Plus, Trash2 } from 'lucide-react';
+import { faPhone, faPhoneVolume, faPlus, faTrashCan } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { useConfirm } from '../../lib/confirm';
 import { useSites } from '../../lib/api/shell-data';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
@@ -95,7 +96,7 @@ export function PhoneSystemsListSurface({ ctx }: { ctx: SurfaceContext }) {
           title="Connect a phone system — hold Shift to open alongside, Alt for a new window"
           onClick={connectPhoneSystem}
         >
-          <Plus className="size-4" aria-hidden />
+          <Icon glyph={faPlus} className="size-4" aria-hidden />
           Connect a phone system
         </Button>
         <RefreshButton
@@ -112,19 +113,19 @@ export function PhoneSystemsListSurface({ ctx }: { ctx: SurfaceContext }) {
         <Card className="min-h-0 flex-1">
           {moduleOff ? (
             <EmptyState
-              icon={<PhoneCall className="size-6" aria-hidden />}
+              icon={<Icon glyph={faPhoneVolume} className="size-6" aria-hidden />}
               title="Turn on Customers to connect a phone system"
               description="Connecting a phone system puts a Call button on every customer’s record, and writes each call onto their history without anyone having to remember to log it."
             />
           ) : forbidden ? (
             <EmptyState
-              icon={<PhoneCall className="size-6" aria-hidden />}
+              icon={<Icon glyph={faPhoneVolume} className="size-6" aria-hidden />}
               title="Only an owner or admin can set this up"
               description="Connecting a phone system means handing over an account token, so it is kept to the people who run the account. Ask one of them to connect it — once it is done, everyone on your team gets the Call button."
             />
           ) : isError ? (
             <EmptyState
-              icon={<PhoneCall className="size-6" aria-hidden />}
+              icon={<Icon glyph={faPhoneVolume} className="size-6" aria-hidden />}
               title="Could not load your phone systems"
               description="Something went wrong reaching the server. It may be temporary — try again in a moment."
               actions={
@@ -143,7 +144,7 @@ export function PhoneSystemsListSurface({ ctx }: { ctx: SurfaceContext }) {
             <PaneWaiting />
           ) : rows.length === 0 ? (
             <EmptyState
-              icon={<PhoneCall className="size-6" aria-hidden />}
+              icon={<Icon glyph={faPhoneVolume} className="size-6" aria-hidden />}
               title="No phone system connected yet"
               description={productCopy(
                 'crm.phoneSystems.description',
@@ -209,7 +210,7 @@ export function PhoneSystemsListSurface({ ctx }: { ctx: SurfaceContext }) {
                             void remove(row.id, row.fromNumber);
                           }}
                         >
-                          <Trash2 className="size-4" aria-hidden />
+                          <Icon glyph={faTrashCan} className="size-4" aria-hidden />
                           <span className="sr-only">Disconnect</span>
                         </Button>
                       </div>
@@ -223,7 +224,7 @@ export function PhoneSystemsListSurface({ ctx }: { ctx: SurfaceContext }) {
       </div>
 
       <p className="shrink-0 px-1 text-xs">
-        <Phone className="mr-1 inline size-3" aria-hidden />
+        <Icon glyph={faPhone} className="mr-1 inline size-3" aria-hidden />
         {productCopy(
           'crm.phone.tokenNote',
           'To change the token on a connected number, disconnect it and connect it again — Piggles never shows a token back, so there is nothing to edit in place.'

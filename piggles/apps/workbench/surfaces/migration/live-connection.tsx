@@ -37,7 +37,15 @@ import {
   Input,
   Text,
 } from '@wizeworks/silicaui-react';
-import { CircleCheck, Link2, Loader2, Lock, Plug, RotateCcw } from 'lucide-react';
+import {
+  faCheckCircle,
+  faLink,
+  faLock,
+  faPlug,
+  faRotate,
+  faSpinner,
+} from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { validateRows, type CanonicalEntity, type MappedEntity } from '@sparx/migration';
 import { ReportProblemButton } from '../../components/feedback/report-problem-button';
 import {
@@ -300,9 +308,9 @@ export function LiveConnection({
                   {entry.label}
                 </Heading>
                 {entry.done ? (
-                  <CircleCheck className="text-success size-4" aria-hidden />
+                  <Icon glyph={faCheckCircle} className="text-success size-4" aria-hidden />
                 ) : pulling ? (
-                  <Loader2 className="size-4 animate-spin" aria-hidden />
+                  <Icon glyph={faSpinner} className="size-4 animate-spin" aria-hidden />
                 ) : null}
               </div>
               <Text className="text-2xl font-semibold tabular-nums">
@@ -335,7 +343,7 @@ export function LiveConnection({
                   void run();
                 }}
               >
-                <RotateCcw className="size-4" aria-hidden />
+                <Icon glyph={faRotate} className="size-4" aria-hidden />
                 Try again
               </Button>
               <Button
@@ -435,7 +443,7 @@ export function LiveConnection({
           <Alert color="info" variant="soft">
             <AlertContent>
               <AlertTitle>
-                <Lock className="mr-2 inline size-4" aria-hidden />
+                <Icon glyph={faLock} className="mr-2 inline size-4" aria-hidden />
                 {locked.map((resource) => resource.label).join(' and ')} are waiting on a module
               </AlertTitle>
               <AlertDescription>
@@ -467,7 +475,7 @@ export function LiveConnection({
               void run();
             }}
           >
-            <Plug className="size-4" aria-hidden />
+            <Icon glyph={faPlug} className="size-4" aria-hidden />
             Read {readyCount === 0 ? 'nothing yet' : `these ${readyCount}`}
           </Button>
           <Button
@@ -564,9 +572,9 @@ export function LiveConnection({
           }}
         >
           {connect.isPending ? (
-            <Loader2 className="size-4 animate-spin" aria-hidden />
+            <Icon glyph={faSpinner} className="size-4 animate-spin" aria-hidden />
           ) : (
-            <Link2 className="size-4" aria-hidden />
+            <Icon glyph={faLink} className="size-4" aria-hidden />
           )}
           {connect.isPending ? 'Checking…' : 'Check this works'}
         </Button>

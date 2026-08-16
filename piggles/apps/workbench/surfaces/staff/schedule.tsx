@@ -37,7 +37,15 @@ import {
   Text,
   useToast,
 } from '@wizeworks/silicaui-react';
-import { CalendarDays, ChevronLeft, ChevronRight, Plus, Send, Trash2 } from 'lucide-react';
+import {
+  faCalendarDays,
+  faChevronLeft,
+  faChevronRight,
+  faPaperPlane,
+  faPlus,
+  faTrashCan,
+} from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import { useConfirm } from '../../lib/confirm';
@@ -269,7 +277,7 @@ export function ScheduleSurface({ ctx }: { ctx: SurfaceContext }) {
               setRange((current) => shiftRange(current, -1));
             }}
           >
-            <ChevronLeft className="size-4" aria-hidden />
+            <Icon glyph={faChevronLeft} className="size-4" aria-hidden />
           </Button>
           <Text as="span" className="min-w-40 text-center text-sm font-medium">
             {new Date(`${range.from}T00:00:00.000Z`).toLocaleDateString(undefined, {
@@ -293,7 +301,7 @@ export function ScheduleSurface({ ctx }: { ctx: SurfaceContext }) {
               setRange((current) => shiftRange(current, 1));
             }}
           >
-            <ChevronRight className="size-4" aria-hidden />
+            <Icon glyph={faChevronRight} className="size-4" aria-hidden />
           </Button>
         </div>
 
@@ -316,7 +324,7 @@ export function ScheduleSurface({ ctx }: { ctx: SurfaceContext }) {
             loading={publish.isPending}
             onClick={doPublish}
           >
-            <Send className="size-4" aria-hidden />
+            <Icon glyph={faPaperPlane} className="size-4" aria-hidden />
             Publish {String(drafts.length)} {drafts.length === 1 ? 'shift' : 'shifts'}
           </Button>
         ) : null}
@@ -334,7 +342,7 @@ export function ScheduleSurface({ ctx }: { ctx: SurfaceContext }) {
       <div className="min-h-0 flex-1 overflow-y-auto">
         {shifts.isError ? (
           <EmptyState
-            icon={<CalendarDays className="size-6" aria-hidden />}
+            icon={<Icon glyph={faCalendarDays} className="size-6" aria-hidden />}
             title="Could not load the rota"
             description="The server could not be reached. Nothing on the schedule is affected."
             actions={
@@ -352,7 +360,7 @@ export function ScheduleSurface({ ctx }: { ctx: SurfaceContext }) {
         ) : (people.data?.items.length ?? 0) === 0 ? (
           <Card className="min-h-0 flex-1 items-center justify-center">
             <PaneEmpty
-              icon={<CalendarDays className="size-6" aria-hidden />}
+              icon={<Icon glyph={faCalendarDays} className="size-6" aria-hidden />}
               title="Nobody to schedule yet"
               description="Add people to your team first, then you can build a week around them."
               actions={
@@ -408,7 +416,7 @@ export function ScheduleSurface({ ctx }: { ctx: SurfaceContext }) {
                           openNew(day);
                         }}
                       >
-                        <Plus className="size-4" aria-hidden />
+                        <Icon glyph={faPlus} className="size-4" aria-hidden />
                       </Button>
                     </div>
 
@@ -579,7 +587,7 @@ export function ScheduleSurface({ ctx }: { ctx: SurfaceContext }) {
                   if (shift) void doDelete(shift);
                 }}
               >
-                <Trash2 className="size-4" aria-hidden />
+                <Icon glyph={faTrashCan} className="size-4" aria-hidden />
                 Remove
               </Button>
             ) : null}

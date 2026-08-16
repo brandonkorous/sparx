@@ -33,7 +33,14 @@ import {
   Textarea,
   useToast,
 } from '@wizeworks/silicaui-react';
-import { ArrowDown, ArrowUp, UserPlus, Wallet, X } from 'lucide-react';
+import {
+  faArrowDown,
+  faArrowUp,
+  faUserPlus,
+  faWallet,
+  faXmark,
+} from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { afterPaneChange } from '../../lib/defer';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
@@ -132,9 +139,9 @@ export function AccountCreditSurface({ ctx: _ctx }: { ctx: SurfaceContext }) {
         {label}
         {sort.key === key ? (
           sort.dir === 'asc' ? (
-            <ArrowUp className="size-3" aria-hidden />
+            <Icon glyph={faArrowUp} className="size-3" aria-hidden />
           ) : (
-            <ArrowDown className="size-3" aria-hidden />
+            <Icon glyph={faArrowDown} className="size-3" aria-hidden />
           )
         ) : null}
       </button>
@@ -171,7 +178,7 @@ export function AccountCreditSurface({ ctx: _ctx }: { ctx: SurfaceContext }) {
             setSelected(null);
           }}
         >
-          <UserPlus className="size-4" aria-hidden />
+          <Icon glyph={faUserPlus} className="size-4" aria-hidden />
           Grant credit
         </Button>
         <RefreshButton
@@ -222,7 +229,7 @@ export function AccountCreditSurface({ ctx: _ctx }: { ctx: SurfaceContext }) {
               <PaneWaiting />
             ) : rows.length === 0 ? (
               <EmptyState
-                icon={<Wallet className="size-6" aria-hidden />}
+                icon={<Icon glyph={faWallet} className="size-6" aria-hidden />}
                 title={search.trim() ? 'Nobody matches that search' : 'No store credit yet'}
                 description={
                   search.trim()
@@ -331,7 +338,7 @@ function CustomerFinder({
           aria-label="Cancel"
           onClick={onCancel}
         >
-          <X className="size-4" aria-hidden />
+          <Icon glyph={faXmark} className="size-4" aria-hidden />
         </Button>
       </div>
       <SearchInput
@@ -445,7 +452,7 @@ function CustomerCredit({
           aria-label="Close"
           onClick={onClose}
         >
-          <X className="size-4" aria-hidden />
+          <Icon glyph={faXmark} className="size-4" aria-hidden />
         </Button>
       </div>
 
@@ -528,7 +535,7 @@ function CustomerCredit({
           loading={grant.isPending}
           onClick={submit}
         >
-          <Wallet className="size-4" aria-hidden />
+          <Icon glyph={faWallet} className="size-4" aria-hidden />
           Add credit
         </Button>
       </div>

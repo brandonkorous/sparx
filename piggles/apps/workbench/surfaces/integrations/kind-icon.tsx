@@ -2,39 +2,40 @@
 // shipping connection reads the same wherever it appears.
 
 import {
-  Bot,
-  CreditCard,
-  Fingerprint,
-  PackageOpen,
-  Plug,
-  ReceiptText,
-  Repeat,
-  Share2,
-  Store,
-  Truck,
-} from 'lucide-react';
-import type { LucideIcon } from 'lucide-react';
+  faBoxOpen,
+  faCreditCard,
+  faFingerprint,
+  faPlug,
+  faReceipt,
+  faRepeat,
+  faRobot,
+  faShareNodes,
+  faShop,
+  faTruck,
+} from '@fortawesome/pro-solid-svg-icons';
+import type { PigglesIcon } from '@piggles/ui';
+
 import type { IntegrationCategory } from './data';
 import type { ProviderKind } from './provider-connection';
 
-export function categoryIcon(category: IntegrationCategory): LucideIcon {
+export function categoryIcon(category: IntegrationCategory): PigglesIcon {
   switch (category) {
     case 'payments':
-      return CreditCard;
+      return faCreditCard;
     case 'shipping':
-      return Truck;
+      return faTruck;
     case 'tax':
-      return ReceiptText;
+      return faReceipt;
     case 'sales_channels':
-      return Store;
+      return faShop;
     case 'social':
-      return Share2;
+      return faShareNodes;
     case 'dropship':
-      return PackageOpen;
+      return faBoxOpen;
     case 'ai':
-      return Bot;
+      return faRobot;
     default:
-      return Plug;
+      return faPlug;
   }
 }
 
@@ -48,14 +49,14 @@ export function categoryIcon(category: IntegrationCategory): LucideIcon {
  * implements them, but a historical row could still carry either and must render
  * rather than fall through to a generic plug.
  */
-export function providerKindIcon(kind: ProviderKind): LucideIcon {
+export function providerKindIcon(kind: ProviderKind): PigglesIcon {
   switch (kind) {
     case 'payment':
-      return CreditCard;
+      return faCreditCard;
     case 'subscription_billing':
-      return Repeat;
+      return faRepeat;
     case 'identity':
-      return Fingerprint;
+      return faFingerprint;
     default:
       return categoryIcon(kind);
   }

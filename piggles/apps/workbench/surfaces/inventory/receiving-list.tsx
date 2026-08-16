@@ -19,7 +19,8 @@
 import { useState } from 'react';
 import { PaneWaiting } from '../../components/pane-waiting';
 import { Button, Card, EmptyState, SearchInput, Table, Text } from '@wizeworks/silicaui-react';
-import { PackageCheck, Plus } from 'lucide-react';
+import { faBoxCheck, faPlus } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
@@ -69,7 +70,7 @@ export function ReceivingListSurface({ ctx }: { ctx: SurfaceContext }) {
     if (isError) {
       return (
         <EmptyState
-          icon={<PackageCheck className="size-6" aria-hidden />}
+          icon={<Icon glyph={faBoxCheck} className="size-6" aria-hidden />}
           title="Could not load your deliveries"
           description="This is a problem reaching the server. Your records are unaffected — the list just could not be read just now."
         />
@@ -83,7 +84,7 @@ export function ReceivingListSurface({ ctx }: { ctx: SurfaceContext }) {
     if (rows.length === 0) {
       return (
         <EmptyState
-          icon={<PackageCheck className="size-6" aria-hidden />}
+          icon={<Icon glyph={faBoxCheck} className="size-6" aria-hidden />}
           title={searching ? 'No delivery matches that' : 'No deliveries booked in yet'}
           description={
             searching
@@ -93,7 +94,7 @@ export function ReceivingListSurface({ ctx }: { ctx: SurfaceContext }) {
           actions={
             searching ? undefined : (
               <Button size="sm" color="module" onClick={startReceiving}>
-                <Plus className="size-4" aria-hidden />
+                <Icon glyph={faPlus} className="size-4" aria-hidden />
                 Receive a delivery
               </Button>
             )
@@ -179,7 +180,7 @@ export function ReceivingListSurface({ ctx }: { ctx: SurfaceContext }) {
           className="ml-auto shrink-0 whitespace-nowrap"
           onClick={startReceiving}
         >
-          <Plus className="size-4" aria-hidden />
+          <Icon glyph={faPlus} className="size-4" aria-hidden />
           <span className="hidden @lg:inline">Receive a delivery</span>
         </Button>
 

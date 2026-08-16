@@ -39,7 +39,8 @@ import {
   Text,
   useToast,
 } from '@wizeworks/silicaui-react';
-import { Plus, Receipt, Wallet } from 'lucide-react';
+import { faPlus, faReceipt, faWallet } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { ListEmptyState } from '../../components/list-empty-state';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
@@ -201,7 +202,7 @@ function QuickEntry({
             loading={save.isPending}
             onClick={submit}
           >
-            <Plus className="size-4" aria-hidden />
+            <Icon glyph={faPlus} className="size-4" aria-hidden />
             Record
           </Button>
           <Button size="sm" variant="ghost" color="neutral" onClick={onOpenFull}>
@@ -419,7 +420,7 @@ export function SpendingListSurface({ ctx }: { ctx: SurfaceContext }) {
       <div className="min-h-0 flex-1 overflow-y-auto">
         {isError ? (
           <EmptyState
-            icon={<Wallet className="size-6" aria-hidden />}
+            icon={<Icon glyph={faWallet} className="size-6" aria-hidden />}
             title="Could not load your spending"
             description="The server could not be reached. Nothing you have recorded is affected — try again in a moment."
             actions={
@@ -463,7 +464,7 @@ export function SpendingListSurface({ ctx }: { ctx: SurfaceContext }) {
                 <ListEmptyState
                   filtered={isFiltered}
                   noResults={{
-                    icon: <Receipt className="size-6" aria-hidden />,
+                    icon: <Icon glyph={faReceipt} className="size-6" aria-hidden />,
                     title: 'No costs match those filters',
                     description:
                       'Try a wider period, or clear the filters to see everything you have recorded.',
@@ -474,13 +475,13 @@ export function SpendingListSurface({ ctx }: { ctx: SurfaceContext }) {
                     ),
                   }}
                   firstRun={{
-                    icon: <Receipt className="size-6" aria-hidden />,
+                    icon: <Icon glyph={faReceipt} className="size-6" aria-hidden />,
                     title: 'Nothing recorded yet',
                     description:
                       'Record what the business pays for — parts, wages, rent, software, fuel — and it will be counted against what you earn. Use the row above for a quick one, or open the full form for a bill with a due date and a receipt.',
                     actions: (
                       <Button size="sm" color="module" onClick={openNew}>
-                        <Plus className="size-4" aria-hidden />
+                        <Icon glyph={faPlus} className="size-4" aria-hidden />
                         Record a cost
                       </Button>
                     ),

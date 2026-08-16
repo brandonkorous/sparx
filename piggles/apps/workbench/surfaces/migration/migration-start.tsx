@@ -27,7 +27,14 @@ import {
   Heading,
   Text,
 } from '@wizeworks/silicaui-react';
-import { ArrowRight, FileDown, History, Lock, Plug } from 'lucide-react';
+import {
+  faArrowRight,
+  faClockRotateLeft,
+  faFileArrowDown,
+  faLock,
+  faPlug,
+} from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { ModuleScope } from '../../components/module-scope';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
@@ -73,13 +80,15 @@ function VendorTile({ vendor, onPick }: { vendor: VendorCard; onPick: () => void
               variant={entity.connectorOnly === true ? 'outline' : 'soft'}
               size="sm"
             >
-              {entity.connectorOnly === true ? <Plug className="size-3" aria-hidden /> : null}
+              {entity.connectorOnly === true ? (
+                <Icon glyph={faPlug} className="size-3" aria-hidden />
+              ) : null}
               {entity.label}
             </Badge>
           ))}
           {locked.map((entity) => (
             <Badge key={entity.entity} color="neutral" variant="outline" size="sm">
-              <Lock className="size-3" aria-hidden />
+              <Icon glyph={faLock} className="size-3" aria-hidden />
               {entity.label}
             </Badge>
           ))}
@@ -102,7 +111,7 @@ function VendorTile({ vendor, onPick }: { vendor: VendorCard; onPick: () => void
 
         <Button color="module" size="sm" onClick={onPick} className="mt-auto self-start">
           Move from {vendor.name}
-          <ArrowRight className="size-4" aria-hidden />
+          <Icon glyph={faArrowRight} className="size-4" aria-hidden />
         </Button>
       </div>
     </ModuleScope>
@@ -128,7 +137,7 @@ export function MigrationStartSurface({ ctx }: { ctx: SurfaceContext }) {
           size="sm"
           onClick={() => ctx.open('platform.migrate.history', {}, { target: 'tab' })}
         >
-          <History className="size-4" aria-hidden />
+          <Icon glyph={faClockRotateLeft} className="size-4" aria-hidden />
           Past moves
         </Button>
         <div className="ml-auto flex items-center gap-2">
@@ -192,7 +201,7 @@ export function MigrationStartSurface({ ctx }: { ctx: SurfaceContext }) {
             className="self-start"
             onClick={() => ctx.open('platform.migrate.run', {}, { target: 'tab' })}
           >
-            <FileDown className="size-4" aria-hidden />
+            <Icon glyph={faFileArrowDown} className="size-4" aria-hidden />
             Start with a file
           </Button>
         </div>

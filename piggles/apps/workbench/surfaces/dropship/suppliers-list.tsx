@@ -25,7 +25,14 @@ import {
   Timestamp,
   ToolbarSeparator,
 } from '@wizeworks/silicaui-react';
-import { ArrowDown, ArrowUp, Link2, PackageSearch, Plus } from 'lucide-react';
+import {
+  faArrowDown,
+  faArrowUp,
+  faBoxMagnifyingGlass,
+  faLink,
+  faPlus,
+} from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
@@ -94,9 +101,9 @@ export function SuppliersListSurface({ ctx }: { ctx: SurfaceContext }) {
         {label}
         {sort.key === key ? (
           sort.dir === 'asc' ? (
-            <ArrowUp className="size-3" aria-hidden />
+            <Icon glyph={faArrowUp} className="size-3" aria-hidden />
           ) : (
-            <ArrowDown className="size-3" aria-hidden />
+            <Icon glyph={faArrowDown} className="size-3" aria-hidden />
           )
         ) : null}
       </button>
@@ -152,7 +159,7 @@ export function SuppliersListSurface({ ctx }: { ctx: SurfaceContext }) {
             ctx.open('dropship.supplier.detail', { id: 'new' }, { target: targetFor(event) });
           }}
         >
-          <Plus className="size-4" aria-hidden />
+          <Icon glyph={faPlus} className="size-4" aria-hidden />
           <span className="hidden @lg:inline">Connect a supplier</span>
         </Button>
 
@@ -168,7 +175,7 @@ export function SuppliersListSurface({ ctx }: { ctx: SurfaceContext }) {
       <Card className="min-h-0 flex-1 overflow-y-auto">
         {error ? (
           <EmptyState
-            icon={<Link2 className="size-6" aria-hidden />}
+            icon={<Icon glyph={faLink} className="size-6" aria-hidden />}
             title="Could not load your suppliers"
             description="Something went wrong reaching the server. Your suppliers are unaffected — try again in a moment."
           />
@@ -178,7 +185,7 @@ export function SuppliersListSurface({ ctx }: { ctx: SurfaceContext }) {
           <ListEmptyState
             filtered={Boolean(search) || status !== 'all'}
             noResults={{
-              icon: <Link2 className="size-6" aria-hidden />,
+              icon: <Icon glyph={faLink} className="size-6" aria-hidden />,
               title: 'No suppliers match those filters',
               description: 'Try a different word, or switch the status filter back to All.',
             }}
@@ -198,7 +205,7 @@ export function SuppliersListSurface({ ctx }: { ctx: SurfaceContext }) {
                     );
                   }}
                 >
-                  <Plus className="size-4" aria-hidden />
+                  <Icon glyph={faPlus} className="size-4" aria-hidden />
                   Connect a supplier
                 </Button>
               ),
@@ -271,7 +278,7 @@ export function SuppliersListSurface({ ctx }: { ctx: SurfaceContext }) {
                           );
                         }}
                       >
-                        <PackageSearch className="size-4" aria-hidden />
+                        <Icon glyph={faBoxMagnifyingGlass} className="size-4" aria-hidden />
                       </Button>
                     </td>
                   </tr>

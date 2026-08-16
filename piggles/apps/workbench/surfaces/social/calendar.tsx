@@ -34,7 +34,14 @@ import {
   ToggleGroup,
   ToggleGroupItem,
 } from '@wizeworks/silicaui-react';
-import { CalendarPlus, ChevronLeft, ChevronRight, Plus, ServerCrash } from 'lucide-react';
+import {
+  faCalendarPlus,
+  faChevronLeft,
+  faChevronRight,
+  faPlus,
+  faServer,
+} from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { slotOccurrences } from '@sparx/social/cadence';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
@@ -203,7 +210,7 @@ function EmptySlotChip({
         canWrite ? 'hover:bg-module hover:bg-soft cursor-pointer' : 'cursor-default'
       }`}
     >
-      <CalendarPlus className="size-3 shrink-0" aria-hidden />
+      <Icon glyph={faCalendarPlus} className="size-3 shrink-0" aria-hidden />
       <span className="min-w-0 flex-1 truncate text-xs">
         <span className="font-semibold">{formatTime(at.toISOString())}</span> free
       </span>
@@ -285,7 +292,7 @@ function DayCell({
               className="text-module opacity-0 transition-opacity group-hover/day:opacity-100"
               aria-hidden
             >
-              <Plus className="size-4" />
+              <Icon glyph={faPlus} className="size-4" />
             </span>
           ) : null}
         </div>
@@ -659,7 +666,7 @@ export function PostsCalendar({
               setCursor((c) => step(c, -1));
             }}
           >
-            <ChevronLeft className="size-4" aria-hidden />
+            <Icon glyph={faChevronLeft} className="size-4" aria-hidden />
           </Button>
           <Button
             size="sm"
@@ -678,7 +685,7 @@ export function PostsCalendar({
               setCursor((c) => step(c, 1));
             }}
           >
-            <ChevronRight className="size-4" aria-hidden />
+            <Icon glyph={faChevronRight} className="size-4" aria-hidden />
           </Button>
         </div>
 
@@ -748,7 +755,7 @@ export function SocialCalendarSurface({ ctx }: { ctx: SurfaceContext }) {
       <div className={PANE_SHELL}>
         <Card className="min-h-0 flex-1 items-center justify-center">
           <PaneEmpty
-            icon={<ServerCrash className="size-6" aria-hidden />}
+            icon={<Icon glyph={faServer} className="size-6" aria-hidden />}
             title="Could not load your posts"
             description={socialErrorMessage(
               posts.error,
@@ -784,7 +791,7 @@ export function SocialCalendarSurface({ ctx }: { ctx: SurfaceContext }) {
               board.openNew(event);
             }}
           >
-            <Plus className="size-4" aria-hidden />
+            <Icon glyph={faPlus} className="size-4" aria-hidden />
             New post
           </Button>
         ) : null}

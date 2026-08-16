@@ -35,7 +35,8 @@ import {
   Timestamp,
   useToast,
 } from '@wizeworks/silicaui-react';
-import { CalendarClock, Receipt, Truck } from 'lucide-react';
+import { faCalendarClock, faReceipt, faTruck } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { FormSection } from '../../components/form-section';
 import { afterCommit } from '../../lib/defer';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
@@ -235,7 +236,7 @@ function Reschedule({ purchaseOrderId, expectedArrivalAt }: Props) {
           </FieldDescription>
         </Field>
         <Button color="module" disabled={!dirty} loading={reschedule.isPending} onClick={onSave}>
-          <CalendarClock className="size-4" aria-hidden />
+          <Icon glyph={faCalendarClock} className="size-4" aria-hidden />
           Record it
         </Button>
       </div>
@@ -331,7 +332,7 @@ function Notices({ purchaseOrderId, ctx }: Props) {
             ctx.open('inventory.advance-ship-notices', {}, { target: 'tab' });
           }}
         >
-          <Truck className="size-4" aria-hidden />
+          <Icon glyph={faTruck} className="size-4" aria-hidden />
           See everything on the way
         </Button>
       </div>
@@ -407,7 +408,7 @@ function Bills({ purchaseOrderId, currency, ctx }: Props) {
             ctx.open('inventory.supplier-bills.detail', { id: 'new', purchaseOrderId });
           }}
         >
-          <Receipt className="size-4" aria-hidden />
+          <Icon glyph={faReceipt} className="size-4" aria-hidden />
           Enter their invoice
         </Button>
       </div>

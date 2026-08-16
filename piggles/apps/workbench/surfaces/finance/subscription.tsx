@@ -27,7 +27,8 @@ import {
 } from '@wizeworks/silicaui-react';
 import { ApiError } from '@sparx/api-client';
 import { buildPath } from '@sparx/links';
-import { CreditCard, ExternalLink } from 'lucide-react';
+import { faArrowUpRightFromSquare, faCreditCard } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
@@ -168,7 +169,7 @@ export function SubscriptionSurface({ ctx }: { ctx: SurfaceContext }) {
       <div className="min-h-0 flex-1 overflow-y-auto">
         {isError ? (
           <EmptyState
-            icon={<CreditCard className="size-6" aria-hidden />}
+            icon={<Icon glyph={faCreditCard} className="size-6" aria-hidden />}
             title="Could not load your bill"
             description="Something went wrong reaching the server. Your subscription is unaffected — try again in a moment."
             actions={
@@ -326,7 +327,7 @@ export function SubscriptionSurface({ ctx }: { ctx: SurfaceContext }) {
                   loading={portal.isPending || checkout.isPending}
                   onClick={openBilling}
                 >
-                  <ExternalLink className="size-4" aria-hidden />
+                  <Icon glyph={faArrowUpRightFromSquare} className="size-4" aria-hidden />
                   {inSetup ? 'Set up billing' : bill.card ? 'Manage billing & card' : 'Add a card'}
                 </Button>
               </div>

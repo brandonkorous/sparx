@@ -37,7 +37,14 @@ import {
   useToast,
 } from '@wizeworks/silicaui-react';
 import { useConfirm } from '../../lib/confirm';
-import { Briefcase, Plus, Save, Trash2, X } from 'lucide-react';
+import {
+  faBriefcase,
+  faFloppyDisk,
+  faPlus,
+  faTrashCan,
+  faXmark,
+} from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { FormSection } from '../../components/form-section';
 import { useDirtySource } from '../../lib/workbench/dirty';
@@ -341,7 +348,7 @@ function ServiceEditor({
           loading={busy}
           onClick={submit}
         >
-          <Save className="size-4" aria-hidden />
+          <Icon glyph={faFloppyDisk} className="size-4" aria-hidden />
           {isNew ? 'Create service' : 'Save'}
         </Button>
       </PaneToolbar>
@@ -351,7 +358,7 @@ function ServiceEditor({
           {existing ? (
             <div className="flex flex-col gap-1">
               <Heading level={1} className="flex min-w-0 items-center gap-2 text-2xl font-semibold">
-                <Briefcase className="size-5 shrink-0" aria-hidden />
+                <Icon glyph={faBriefcase} className="size-5 shrink-0" aria-hidden />
                 <span className="min-w-0 break-words">{existing.name}</span>
               </Heading>
               <Text className="text-sm">{bookingTypeLabel(existing.bookingType)}</Text>
@@ -718,14 +725,14 @@ function ServiceEditor({
                       removeRequirement(index);
                     }}
                   >
-                    <X className="size-4" aria-hidden />
+                    <Icon glyph={faXmark} className="size-4" aria-hidden />
                   </Button>
                 </div>
               ))}
 
               <div>
                 <Button size="sm" variant="soft" color="module" onClick={addRequirement}>
-                  <Plus className="size-4" aria-hidden />
+                  <Icon glyph={faPlus} className="size-4" aria-hidden />
                   Add something it needs
                 </Button>
               </div>
@@ -876,7 +883,7 @@ function ServiceEditor({
                     void onRemove();
                   }}
                 >
-                  <Trash2 className="size-4" aria-hidden />
+                  <Icon glyph={faTrashCan} className="size-4" aria-hidden />
                   {remove.isPending ? 'Removing…' : 'Remove'}
                 </Button>
               </div>

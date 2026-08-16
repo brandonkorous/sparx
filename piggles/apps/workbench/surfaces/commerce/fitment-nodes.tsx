@@ -31,7 +31,17 @@ import {
   useToast,
 } from '@wizeworks/silicaui-react';
 import { useConfirm } from '../../lib/confirm';
-import { ArrowDown, ArrowUp, Check, ChevronRight, Pencil, Plus, Trash2, X } from 'lucide-react';
+import {
+  faArrowDown,
+  faArrowUp,
+  faCheck,
+  faChevronRight,
+  faPencil,
+  faPlus,
+  faTrashCan,
+  faXmark,
+} from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import {
   dimensionSummary,
   fitmentErrorMessage,
@@ -225,7 +235,7 @@ export function FitmentNodeManager({ domain }: { domain: FitmentDomain }) {
         </Button>
         {path.map((step, index) => (
           <span key={step.id} className="flex items-center gap-1">
-            <ChevronRight className="size-3 shrink-0" aria-hidden />
+            <Icon glyph={faChevronRight} className="size-3 shrink-0" aria-hidden />
             <Button
               size="sm"
               variant="ghost"
@@ -273,7 +283,7 @@ export function FitmentNodeManager({ domain }: { domain: FitmentDomain }) {
             disabled={addValue.trim() === ''}
             onClick={onAdd}
           >
-            <Plus className="size-4" aria-hidden />
+            <Icon glyph={faPlus} className="size-4" aria-hidden />
             Add
           </Button>
         </div>
@@ -348,7 +358,7 @@ export function FitmentNodeManager({ domain }: { domain: FitmentDomain }) {
                         saveRename(node);
                       }}
                     >
-                      <Check className="size-4" aria-hidden />
+                      <Icon glyph={faCheck} className="size-4" aria-hidden />
                     </Button>
                     <Button
                       size="sm"
@@ -361,7 +371,7 @@ export function FitmentNodeManager({ domain }: { domain: FitmentDomain }) {
                         setEditingId(null);
                       }}
                     >
-                      <X className="size-4" aria-hidden />
+                      <Icon glyph={faXmark} className="size-4" aria-hidden />
                     </Button>
                   </>
                 ) : (
@@ -380,7 +390,7 @@ export function FitmentNodeManager({ domain }: { domain: FitmentDomain }) {
                             ? `No ${nextLevel?.label.toLowerCase() ?? ''}`.trim()
                             : `${String(node.childCount)} ${pluralize(nextLevel?.label.toLowerCase() ?? 'entry', node.childCount)}`}
                         </Badge>
-                        <ChevronRight className="size-4 shrink-0" aria-hidden />
+                        <Icon glyph={faChevronRight} className="size-4 shrink-0" aria-hidden />
                       </button>
                     ) : (
                       <span className="min-w-0 flex-1 truncate px-2 py-1 font-medium">
@@ -401,7 +411,7 @@ export function FitmentNodeManager({ domain }: { domain: FitmentDomain }) {
                           move(index, -1);
                         }}
                       >
-                        <ArrowUp className="size-4" aria-hidden />
+                        <Icon glyph={faArrowUp} className="size-4" aria-hidden />
                       </Button>
                       <Button
                         size="sm"
@@ -415,7 +425,7 @@ export function FitmentNodeManager({ domain }: { domain: FitmentDomain }) {
                           move(index, 1);
                         }}
                       >
-                        <ArrowDown className="size-4" aria-hidden />
+                        <Icon glyph={faArrowDown} className="size-4" aria-hidden />
                       </Button>
                       <Button
                         size="sm"
@@ -428,7 +438,7 @@ export function FitmentNodeManager({ domain }: { domain: FitmentDomain }) {
                           startRename(node);
                         }}
                       >
-                        <Pencil className="size-4" aria-hidden />
+                        <Icon glyph={faPencil} className="size-4" aria-hidden />
                       </Button>
                       <Button
                         size="sm"
@@ -441,7 +451,7 @@ export function FitmentNodeManager({ domain }: { domain: FitmentDomain }) {
                           void onDelete(node);
                         }}
                       >
-                        <Trash2 className="size-4" aria-hidden />
+                        <Icon glyph={faTrashCan} className="size-4" aria-hidden />
                       </Button>
                     </div>
                   </>

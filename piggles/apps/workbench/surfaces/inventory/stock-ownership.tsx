@@ -33,7 +33,8 @@ import {
   Text,
   ToolbarSeparator,
 } from '@wizeworks/silicaui-react';
-import { Handshake, PackageSearch } from 'lucide-react';
+import { faBoxMagnifyingGlass, faHandshake } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { useState } from 'react';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
@@ -64,7 +65,7 @@ export function StockOwnershipSurface({ ctx }: { ctx: SurfaceContext }) {
     if (list.isError) {
       return (
         <EmptyState
-          icon={<PackageSearch className="size-6" aria-hidden />}
+          icon={<Icon glyph={faBoxMagnifyingGlass} className="size-6" aria-hidden />}
           title="Could not load ownership"
           description="This is a problem reaching the server, not a finding about your stock. Try again in a moment."
         />
@@ -76,7 +77,7 @@ export function StockOwnershipSurface({ ctx }: { ctx: SurfaceContext }) {
     if (rows.length === 0) {
       return (
         <EmptyState
-          icon={<Handshake className="size-6" aria-hidden />}
+          icon={<Icon glyph={faHandshake} className="size-6" aria-hidden />}
           title="Everything on your shelves is yours"
           description="Nothing is marked as consignment, customer-owned, or belonging to a warehouse partner. Set it on an item's stock screen when you start holding goods you have not bought."
         />

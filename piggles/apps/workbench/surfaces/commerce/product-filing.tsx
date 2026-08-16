@@ -62,7 +62,8 @@ import {
   SearchInput,
   Text,
 } from '@wizeworks/silicaui-react';
-import { Layers, Tags, X } from 'lucide-react';
+import { faLayerGroup, faTags, faXmark } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { FormSection } from '../../components/form-section';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import {
@@ -158,7 +159,7 @@ function CategorySection({
         <InlineWaiting label="Loading your categories…" />
       ) : all.length === 0 ? (
         <Nothing
-          icon={<Tags className="size-5" aria-hidden />}
+          icon={<Icon glyph={faTags} className="size-5" aria-hidden />}
           line="You have not made any categories yet. They are what builds the menu shoppers browse down."
           actionLabel="Set up categories"
           onAction={(event) => {
@@ -296,7 +297,7 @@ function CollectionSection({
         <InlineWaiting label="Loading your collections…" />
       ) : (all ?? []).length === 0 ? (
         <Nothing
-          icon={<Layers className="size-5" aria-hidden />}
+          icon={<Icon glyph={faLayerGroup} className="size-5" aria-hidden />}
           line="You have not made any collections yet. They are how you show a themed group of products on your website."
           actionLabel="Set up collections"
           onAction={(event) => {
@@ -455,7 +456,7 @@ function ChosenSummary({
                   onRemove(item.id);
                 }}
               >
-                <X className="size-3.5" aria-hidden />
+                <Icon glyph={faXmark} className="size-3.5" aria-hidden />
               </Button>
             </span>
           </li>

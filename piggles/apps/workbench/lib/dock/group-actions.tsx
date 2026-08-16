@@ -35,16 +35,18 @@ import {
   Tooltip,
 } from '@wizeworks/silicaui-react';
 import {
-  AppWindow,
-  Maximize2,
-  Minimize2,
-  MoreHorizontal,
-  PanelsTopLeft,
-  PictureInPicture2,
-  X,
-} from 'lucide-react';
+  faCompress,
+  faEllipsis,
+  faExpand,
+  faPictureInPicture,
+  faWindow,
+  faXmark,
+} from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { ChromeWindowBoundary } from '@/lib/dock/window-boundary';
 import { useWorkbench } from '@/lib/workbench/context';
+import { useWindowMode } from '@/lib/window-mode-context';
+import { TabScrollButtons } from './tab-scroll';
 
 export function GroupActions(props: IDockviewHeaderActionsProps) {
   const { controller } = useWorkbench();
@@ -76,15 +78,26 @@ export function GroupActions(props: IDockviewHeaderActionsProps) {
   const detached = location === 'popout';
   const floating = location === 'floating';
 
+  // Windows mode has no grid, so "tidy this back into" it is an offer nothing
+  // can honour — the window would be lifted straight back out (window-mode.ts).
+  // The whole-workspace toggle is where somebody goes back to tiling.
+  const gridless = useWindowMode() === 'windows';
+
   return (
     // Keeps these buttons' tooltips and menus in the group's OWN window once it
     // has been torn off — the same fix the panes get, chrome-sized.
     <ChromeWindowBoundary api={props.api}>
+      {/* Reaching the tabs that no longer fit. At this end rather than at the
+          strip's own edges because these are window controls: everything that
+          acts on the bar itself sits together, and a pair of arrows floating
+          mid-bar would compete with the tabs they are there to move. */}
+      <TabScrollButtons />
+
       <DropdownMenu>
         <Tooltip content="More">
           <DropdownMenuTrigger>
             <Button color="neutral" variant="ghost" size="xs" shape="square" aria-label="More">
-              <MoreHorizontal className="size-3.5" aria-hidden />
+              <Icon glyph={faEllipsis} className="size-3.5" aria-hidden />
             </Button>
           </DropdownMenuTrigger>
         </Tooltip>
@@ -95,7 +108,7 @@ export function GroupActions(props: IDockviewHeaderActionsProps) {
             {/* Floating is meaningless for a popout — it is already its own OS
                 window — so the item is simply absent there rather than present
                 and disabled. */}
-            {!detached ? (
+            {!detached && !gridless ? (
               <DropdownMenuItem
                 onClick={() => {
                   if (floating) {
@@ -108,7 +121,7 @@ export function GroupActions(props: IDockviewHeaderActionsProps) {
                   }
                 }}
               >
-                <PictureInPicture2 className="size-4" aria-hidden />
+                <Icon glyph={faPictureInPicture} className="size-4" aria-hidden />
                 {floating ? 'Tidy this back into the grid' : 'Let this float freely'}
               </DropdownMenuItem>
             ) : null}
@@ -123,9 +136,9 @@ export function GroupActions(props: IDockviewHeaderActionsProps) {
               }}
             >
               {detached ? (
-                <PanelsTopLeft className="size-4" aria-hidden />
+                <Icon glyph={faWindow} className="size-4" aria-hidden />
               ) : (
-                <AppWindow className="size-4" aria-hidden />
+                <Icon glyph={faWindow} className="size-4" aria-hidden />
               )}
               {detached ? 'Bring this back' : 'Move to its own window'}
             </DropdownMenuItem>
@@ -169,9 +182,9 @@ export function GroupActions(props: IDockviewHeaderActionsProps) {
             }}
           >
             {maximized ? (
-              <Minimize2 className="size-3.5" aria-hidden />
+              <Icon glyph={faCompress} className="size-3.5" aria-hidden />
             ) : (
-              <Maximize2 className="size-3.5" aria-hidden />
+              <Icon glyph={faExpand} className="size-3.5" aria-hidden />
             )}
           </Button>
         </Tooltip>
@@ -194,7 +207,7 @@ export function GroupActions(props: IDockviewHeaderActionsProps) {
             })();
           }}
         >
-          <X className="size-3.5" aria-hidden />
+          <Icon glyph={faXmark} className="size-3.5" aria-hidden />
         </Button>
       </Tooltip>
     </ChromeWindowBoundary>

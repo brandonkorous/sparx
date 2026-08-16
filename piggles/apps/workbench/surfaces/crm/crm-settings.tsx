@@ -36,7 +36,8 @@ import {
   Text,
   useToast,
 } from '@wizeworks/silicaui-react';
-import { SlidersHorizontal } from 'lucide-react';
+import { faSliders } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { FormSection } from '../../components/form-section';
@@ -143,7 +144,7 @@ export function CrmSettingsSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar label="CRM behaviour actions">
-        <SlidersHorizontal className="size-4 shrink-0" aria-hidden />
+        <Icon glyph={faSliders} className="size-4 shrink-0" aria-hidden />
         <Text as="span" className="text-sm">
           These apply to the business you are working in.
         </Text>

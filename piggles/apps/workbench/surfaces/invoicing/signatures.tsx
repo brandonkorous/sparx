@@ -39,7 +39,8 @@ import {
   Text,
   useToast,
 } from '@wizeworks/silicaui-react';
-import { Copy, PenLine } from 'lucide-react';
+import { faCopy, faPenLine } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { useConfirm } from '../../lib/confirm';
 import { PaneScope } from '../../lib/dock/window-boundary';
 import { FormSection } from '../../components/form-section';
@@ -171,7 +172,7 @@ export function SignaturesSection({
               setAsking(true);
             }}
           >
-            <PenLine className="size-4" aria-hidden />
+            <Icon glyph={faPenLine} className="size-4" aria-hidden />
             {live ? 'Ask someone else' : 'Ask for a signature'}
           </Button>
         )
@@ -194,7 +195,7 @@ export function SignaturesSection({
                   toast.add({ title: 'Link copied', type: 'success' });
                 }}
               >
-                <Copy className="size-4" aria-hidden />
+                <Icon glyph={faCopy} className="size-4" aria-hidden />
                 Copy the link
               </Button>
               <Button

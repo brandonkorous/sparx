@@ -45,7 +45,8 @@ import {
   useToast,
 } from '@wizeworks/silicaui-react';
 import { useConfirm } from '../../lib/confirm';
-import { Package, Trash2 } from 'lucide-react';
+import { faBox, faTrashCan } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { useActiveSiteId } from '../../lib/api/shell-data';
 import { afterPaneChange } from '../../lib/defer';
 import { useTabSave } from './product-tab-save';
@@ -476,7 +477,7 @@ export function ProductOverviewTab({ ctx, product }: { ctx: SurfaceContext; prod
               void toggleRetired();
             }}
           >
-            <Package className="size-4" aria-hidden />
+            <Icon glyph={faBox} className="size-4" aria-hidden />
             {retired ? 'Bring it back' : 'Retire it'}
           </Button>
         </div>
@@ -495,7 +496,7 @@ export function ProductOverviewTab({ ctx, product }: { ctx: SurfaceContext; prod
               void onDelete();
             }}
           >
-            <Trash2 className="size-4" aria-hidden />
+            <Icon glyph={faTrashCan} className="size-4" aria-hidden />
             Delete this product
           </Button>
         </div>

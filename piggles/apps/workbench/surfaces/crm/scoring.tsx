@@ -40,7 +40,8 @@ import {
   Text,
   useToast,
 } from '@wizeworks/silicaui-react';
-import { Gauge, Plus, RefreshCw, Trash2 } from 'lucide-react';
+import { faArrowsRotate, faGauge, faPlus, faTrashCan } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import { useConfirm } from '../../lib/confirm';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
@@ -265,7 +266,7 @@ function RuleRow({
           onClick={onRemove}
           aria-label="Remove rule"
         >
-          <Trash2 className="size-4" aria-hidden />
+          <Icon glyph={faTrashCan} className="size-4" aria-hidden />
         </Button>
       </div>
 
@@ -410,7 +411,7 @@ export function ScoringSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar label="Scoring controls">
-        <Gauge className="size-4 shrink-0" aria-hidden />
+        <Icon glyph={faGauge} className="size-4 shrink-0" aria-hidden />
         <Heading level={2} className="min-w-0 truncate text-base font-semibold">
           Scoring
         </Heading>
@@ -440,7 +441,8 @@ export function ScoringSurface({ ctx }: { ctx: SurfaceContext }) {
             void onRecompute();
           }}
         >
-          <RefreshCw
+          <Icon
+            glyph={faArrowsRotate}
             className={`size-4 ${recompute.isPending ? 'animate-spin' : ''}`}
             aria-hidden
           />
@@ -474,7 +476,7 @@ export function ScoringSurface({ ctx }: { ctx: SurfaceContext }) {
                   setRules((prev) => [...prev, emptyRule()]);
                 }}
               >
-                <Plus className="size-4" aria-hidden />
+                <Icon glyph={faPlus} className="size-4" aria-hidden />
                 Add a rule
               </Button>
             }

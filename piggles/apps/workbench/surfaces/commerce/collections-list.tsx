@@ -27,7 +27,8 @@ import {
   Table,
   ToolbarSeparator,
 } from '@wizeworks/silicaui-react';
-import { ArrowDown, ArrowUp, Layers, Plus } from 'lucide-react';
+import { faArrowDown, faArrowUp, faLayerGroup, faPlus } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { ListEmptyState } from '../../components/list-empty-state';
@@ -126,9 +127,9 @@ export function CollectionsListSurface({ ctx }: { ctx: SurfaceContext }) {
         {label}
         {sort.key === key ? (
           sort.dir === 'asc' ? (
-            <ArrowUp className="size-3" aria-hidden />
+            <Icon glyph={faArrowUp} className="size-3" aria-hidden />
           ) : (
-            <ArrowDown className="size-3" aria-hidden />
+            <Icon glyph={faArrowDown} className="size-3" aria-hidden />
           )
         ) : null}
       </button>
@@ -183,7 +184,7 @@ export function CollectionsListSurface({ ctx }: { ctx: SurfaceContext }) {
             ctx.open('commerce.collection.detail', { id: 'new' }, { target: targetFor(event) });
           }}
         >
-          <Plus className="size-4" aria-hidden />
+          <Icon glyph={faPlus} className="size-4" aria-hidden />
           <span className="hidden @lg:inline">Add a collection</span>
         </Button>
 
@@ -208,7 +209,7 @@ export function CollectionsListSurface({ ctx }: { ctx: SurfaceContext }) {
           <ListEmptyState
             filtered={anyFilter}
             noResults={{
-              icon: <Layers className="size-6" aria-hidden />,
+              icon: <Icon glyph={faLayerGroup} className="size-6" aria-hidden />,
               title: 'Nothing matches those filters',
               description: 'Try a different word, or switch the filter back to All.',
             }}

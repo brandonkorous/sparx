@@ -26,7 +26,8 @@ import {
   Text,
   useToast,
 } from '@wizeworks/silicaui-react';
-import { RefreshCw, Search, ShieldCheck } from 'lucide-react';
+import { faArrowsRotate, faMagnifyingGlass, faShieldCheck } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
@@ -291,7 +292,7 @@ export function AuditsListSurface({ ctx }: { ctx: SurfaceContext }) {
           loading={reindex.isPending}
           onClick={rescan}
         >
-          <RefreshCw className="size-4" aria-hidden />
+          <Icon glyph={faArrowsRotate} className="size-4" aria-hidden />
           <span className="hidden @lg:inline">Rescan the site</span>
         </Button>
         <RefreshButton
@@ -308,7 +309,7 @@ export function AuditsListSurface({ ctx }: { ctx: SurfaceContext }) {
         {audits.isError ? (
           <Card className="min-h-0 flex-1 items-center justify-center">
             <PaneEmpty
-              icon={<Search className="size-6" aria-hidden />}
+              icon={<Icon glyph={faMagnifyingGlass} className="size-6" aria-hidden />}
               title="Could not load your site checks"
               description="This is a problem reaching the server. Your pages are unaffected — the scores just could not be read."
               actions={
@@ -329,12 +330,12 @@ export function AuditsListSurface({ ctx }: { ctx: SurfaceContext }) {
         ) : nothingScored ? (
           <Card className="min-h-0 flex-1 items-center justify-center">
             <PaneEmpty
-              icon={<ShieldCheck className="size-6" aria-hidden />}
+              icon={<Icon glyph={faShieldCheck} className="size-6" aria-hidden />}
               title="No pages checked yet"
               description="Run a scan to score every page on your site for how easily people can find it. It takes a moment, and you can come back to a list of what to fix first."
               actions={
                 <Button size="sm" color="module" loading={reindex.isPending} onClick={rescan}>
-                  <RefreshCw className="size-4" aria-hidden />
+                  <Icon glyph={faArrowsRotate} className="size-4" aria-hidden />
                   Scan now
                 </Button>
               }
@@ -369,7 +370,7 @@ export function AuditsListSurface({ ctx }: { ctx: SurfaceContext }) {
               {matches.length === 0 ? (
                 <div className="p-8">
                   <EmptyState
-                    icon={<Search className="size-6" aria-hidden />}
+                    icon={<Icon glyph={faMagnifyingGlass} className="size-6" aria-hidden />}
                     title={needle || typeFilter ? 'No pages match that' : 'No pages to show'}
                     description={
                       needle || typeFilter

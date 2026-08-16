@@ -57,7 +57,14 @@ import {
   useToast,
 } from '@wizeworks/silicaui-react';
 import { useConfirm } from '../../lib/confirm';
-import { ChevronDown, ChevronRight, Plus, Undo2, X } from 'lucide-react';
+import {
+  faChevronDown,
+  faChevronRight,
+  faPlus,
+  faRotateLeft,
+  faXmark,
+} from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import { useTabSave } from './product-tab-save';
 import { FormSection } from '../../components/form-section';
@@ -579,7 +586,7 @@ export function ProductVariantsTab({ product }: { ctx: SurfaceContext; product: 
               void fillTheRest(empty);
             }}
           >
-            <Plus className="size-4" aria-hidden />
+            <Icon glyph={faPlus} className="size-4" aria-hidden />
             Give them all the same price
           </Button>
         </div>
@@ -966,9 +973,9 @@ function VariantRow({
         }}
       >
         {isOpen ? (
-          <ChevronDown className="size-4 shrink-0" aria-hidden />
+          <Icon glyph={faChevronDown} className="size-4 shrink-0" aria-hidden />
         ) : (
-          <ChevronRight className="size-4 shrink-0" aria-hidden />
+          <Icon glyph={faChevronRight} className="size-4 shrink-0" aria-hidden />
         )}
         <span className="min-w-0 flex-1 truncate font-medium">{label}</span>
         <span className="tabular-nums">{formatCents(cents(draft.price), variant.currency)}</span>
@@ -1212,7 +1219,7 @@ function VariantRow({
                   onRetire(variant);
                 }}
               >
-                <X className="size-4" aria-hidden />
+                <Icon glyph={faXmark} className="size-4" aria-hidden />
                 Stop selling it
               </Button>
             </div>
@@ -1251,7 +1258,7 @@ function OptionalMoney({
               onChange(0);
             }}
           >
-            <Plus className="size-4" aria-hidden />
+            <Icon glyph={faPlus} className="size-4" aria-hidden />
             {addLabel}
           </Button>
         </div>
@@ -1274,7 +1281,7 @@ function OptionalMoney({
               onChange(null);
             }}
           >
-            <X className="size-4" aria-hidden />
+            <Icon glyph={faXmark} className="size-4" aria-hidden />
           </Button>
         </div>
       )}
@@ -1361,7 +1368,7 @@ function RetiredSection({
               onRestore(variant);
             }}
           >
-            <Undo2 className="size-4" aria-hidden />
+            <Icon glyph={faRotateLeft} className="size-4" aria-hidden />
             Sell it again
           </Button>
         </div>

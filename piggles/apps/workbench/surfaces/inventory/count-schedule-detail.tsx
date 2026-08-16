@@ -38,7 +38,8 @@ import {
   Timestamp,
   useToast,
 } from '@wizeworks/silicaui-react';
-import { CalendarClock, Save, Trash2 } from 'lucide-react';
+import { faCalendarClock, faFloppyDisk, faTrashCan } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { useConfirm } from '../../lib/confirm';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import { PANE_SHELL } from '../../components/pane-toolbar';
@@ -468,7 +469,11 @@ export function CountScheduleDetailSurface({ ctx }: { ctx: SurfaceContext }) {
       {existing.data ? (
         <Card className="flex flex-col gap-1 p-4">
           <Heading level={3} className="text-base">
-            <CalendarClock className="mr-1 inline size-4 align-text-bottom" aria-hidden />
+            <Icon
+              glyph={faCalendarClock}
+              className="mr-1 inline size-4 align-text-bottom"
+              aria-hidden
+            />
             History
           </Heading>
           <Text className="text-sm">
@@ -501,7 +506,7 @@ export function CountScheduleDetailSurface({ ctx }: { ctx: SurfaceContext }) {
 
       <div className="flex flex-wrap items-center gap-2">
         <Button color="module" disabled={!canSave} loading={save.isPending} onClick={onSave}>
-          <Save className="size-4" aria-hidden />
+          <Icon glyph={faFloppyDisk} className="size-4" aria-hidden />
           {isNew ? 'Set it up' : 'Save changes'}
         </Button>
         {!isNew ? (
@@ -514,7 +519,7 @@ export function CountScheduleDetailSurface({ ctx }: { ctx: SurfaceContext }) {
               void onDelete();
             }}
           >
-            <Trash2 className="size-4" aria-hidden />
+            <Icon glyph={faTrashCan} className="size-4" aria-hidden />
             Delete
           </Button>
         ) : null}

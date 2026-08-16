@@ -31,7 +31,16 @@ import {
   Textarea,
   useToast,
 } from '@wizeworks/silicaui-react';
-import { Archive, Building2, Pencil, Plus, RotateCcw, Save, X } from 'lucide-react';
+import {
+  faBoxArchive,
+  faBuilding,
+  faFloppyDisk,
+  faPencil,
+  faPlus,
+  faRotate,
+  faXmark,
+} from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { ListEmptyState } from '../../components/list-empty-state';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
@@ -140,7 +149,7 @@ function VendorEditor({ vendor, onDone }: { vendor: Vendor | null; onDone: () =>
           aria-label="Cancel"
           onClick={onDone}
         >
-          <X className="size-4" aria-hidden />
+          <Icon glyph={faXmark} className="size-4" aria-hidden />
         </Button>
       }
     >
@@ -264,7 +273,7 @@ function VendorEditor({ vendor, onDone }: { vendor: Vendor | null; onDone: () =>
           loading={save.isPending}
           onClick={onSave}
         >
-          <Save className="size-4" aria-hidden />
+          <Icon glyph={faFloppyDisk} className="size-4" aria-hidden />
           {vendor ? 'Save' : 'Add them'}
         </Button>
         <Button size="sm" variant="ghost" color="neutral" onClick={onDone}>
@@ -367,7 +376,7 @@ export function VendorsListSurface() {
             setEditing(null);
           }}
         >
-          <Plus className="size-4" aria-hidden />
+          <Icon glyph={faPlus} className="size-4" aria-hidden />
           Add
         </Button>
 
@@ -396,7 +405,7 @@ export function VendorsListSurface() {
       <div className="min-h-0 flex-1 overflow-y-auto">
         {isError ? (
           <EmptyState
-            icon={<Building2 className="size-6" aria-hidden />}
+            icon={<Icon glyph={faBuilding} className="size-6" aria-hidden />}
             title="Could not load who you pay"
             description="The server could not be reached. Your records are unaffected."
             actions={
@@ -441,7 +450,7 @@ export function VendorsListSurface() {
                 <ListEmptyState
                   filtered={search.trim() !== ''}
                   noResults={{
-                    icon: <Building2 className="size-6" aria-hidden />,
+                    icon: <Icon glyph={faBuilding} className="size-6" aria-hidden />,
                     title: 'Nobody matches that',
                     description:
                       'Try part of a name, an email, or the account number you have with them.',
@@ -459,7 +468,7 @@ export function VendorsListSurface() {
                     ),
                   }}
                   firstRun={{
-                    icon: <Building2 className="size-6" aria-hidden />,
+                    icon: <Icon glyph={faBuilding} className="size-6" aria-hidden />,
                     title: 'Nobody recorded yet',
                     description:
                       'Add the businesses and people you pay — a parts wholesaler, a landlord, a subcontractor — and every cost can name one. Then this list tells you where the money actually goes.',
@@ -471,7 +480,7 @@ export function VendorsListSurface() {
                           setAdding(true);
                         }}
                       >
-                        <Plus className="size-4" aria-hidden />
+                        <Icon glyph={faPlus} className="size-4" aria-hidden />
                         Add someone you pay
                       </Button>
                     ),
@@ -543,7 +552,7 @@ export function VendorsListSurface() {
                         setAdding(false);
                       }}
                     >
-                      <Pencil className="size-4" aria-hidden />
+                      <Icon glyph={faPencil} className="size-4" aria-hidden />
                     </Button>
                     <Button
                       size="sm"
@@ -558,9 +567,9 @@ export function VendorsListSurface() {
                       }}
                     >
                       {vendor.archivedAt ? (
-                        <RotateCcw className="size-4" aria-hidden />
+                        <Icon glyph={faRotate} className="size-4" aria-hidden />
                       ) : (
-                        <Archive className="size-4" aria-hidden />
+                        <Icon glyph={faBoxArchive} className="size-4" aria-hidden />
                       )}
                     </Button>
                   </div>

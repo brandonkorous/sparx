@@ -27,7 +27,8 @@
 import { useMemo, useState } from 'react';
 import { Alert, Button, NativeSelect, Text, ToolbarSeparator } from '@wizeworks/silicaui-react';
 import { barcodeSvg, encodeBarcode } from '@sparx/commerce-schemas';
-import { Printer } from 'lucide-react';
+import { faPrint } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { PrintSheet } from '../../components/print-sheet';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
@@ -93,7 +94,7 @@ export function DocumentLabelSurface({ ctx }: { ctx: SurfaceContext }) {
             window.print();
           }}
         >
-          <Printer className="size-4" aria-hidden />
+          <Icon glyph={faPrint} className="size-4" aria-hidden />
           Print
         </Button>
 

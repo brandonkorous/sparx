@@ -23,7 +23,8 @@ import {
   Select,
   Table,
 } from '@wizeworks/silicaui-react';
-import { ArrowDown, ArrowUp, Plus, Settings2 } from 'lucide-react';
+import { faArrowDown, faArrowUp, faPlus, faSliders } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { ListEmptyState } from '../../components/list-empty-state';
@@ -105,9 +106,9 @@ export function ConfiguratorListSurface({ ctx }: { ctx: SurfaceContext }) {
         {label}
         {sort.key === key ? (
           sort.dir === 'asc' ? (
-            <ArrowUp className="size-3" aria-hidden />
+            <Icon glyph={faArrowUp} className="size-3" aria-hidden />
           ) : (
-            <ArrowDown className="size-3" aria-hidden />
+            <Icon glyph={faArrowDown} className="size-3" aria-hidden />
           )
         ) : null}
       </button>
@@ -158,7 +159,7 @@ export function ConfiguratorListSurface({ ctx }: { ctx: SurfaceContext }) {
             );
           }}
         >
-          <Plus className="size-4" aria-hidden />
+          <Icon glyph={faPlus} className="size-4" aria-hidden />
           <span className="hidden @lg:inline">Set up a build</span>
         </Button>
         <RefreshButton
@@ -182,7 +183,7 @@ export function ConfiguratorListSurface({ ctx }: { ctx: SurfaceContext }) {
           <ListEmptyState
             filtered={anyFilter}
             noResults={{
-              icon: <Settings2 className="size-6" aria-hidden />,
+              icon: <Icon glyph={faSliders} className="size-6" aria-hidden />,
               title: 'Nothing matches those filters',
               description: 'Try a different word, or clear the filters to see everything.',
             }}

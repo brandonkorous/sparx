@@ -29,7 +29,8 @@
 // signal a product has stopped paying attention to the person using it.
 
 import { Card, CardBody, Heading, Text } from '@wizeworks/silicaui-react';
-import { ArrowRight, Check } from 'lucide-react';
+import { faArrowRight, faCheck } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { PigglesMascot } from '@piggles/mascot/react';
 import type { SurfaceContext } from '@/lib/surfaces/registry';
 import { ModuleScope } from '@/components/module-scope';
@@ -167,7 +168,7 @@ function StepRow({ step, state, ctx }: { step: Step; state: StepState; ctx: Surf
               filled shape rather than a colour shift — "done" should be legible
               at a glance from across the desk (DESIGN.md RULE #4). */}
           <span className={markerClass(state)} aria-hidden>
-            {done ? <Check className="size-4" /> : null}
+            {done ? <Icon glyph={faCheck} className="size-4" /> : null}
           </span>
 
           <span className="min-w-0 flex-1">
@@ -188,7 +189,11 @@ function StepRow({ step, state, ctx }: { step: Step; state: StepState; ctx: Surf
               sentence needs, which turns three tidy rows into twelve. */}
           {/* Stays centred on the row while the tick and the label align to the
               top — it belongs to the whole row, not to the first line of it. */}
-          <ArrowRight className="hidden size-5 shrink-0 self-center @[26rem]:block" aria-hidden />
+          <Icon
+            glyph={faArrowRight}
+            className="hidden size-5 shrink-0 self-center @[26rem]:block"
+            aria-hidden
+          />
         </button>
       </li>
     </ModuleScope>

@@ -35,15 +35,16 @@ import {
   useToast,
 } from '@wizeworks/silicaui-react';
 import {
-  Ban,
-  CheckCircle2,
-  MessageSquare,
-  MoreHorizontal,
-  RotateCcw,
-  Send,
-  Sparkles,
-  UserCheck,
-} from 'lucide-react';
+  faBan,
+  faCircleCheck,
+  faEllipsis,
+  faMessage,
+  faPaperPlane,
+  faRotate,
+  faSparkles,
+  faUserCheck,
+} from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { useConfirm } from '../../lib/confirm';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import { afterPaneChange } from '../../lib/defer';
@@ -158,7 +159,7 @@ function MessageBubble({
           </Text>
           {isAi ? (
             <Badge color="info" variant="soft" size="sm">
-              <Sparkles className="size-3" aria-hidden />
+              <Icon glyph={faSparkles} className="size-3" aria-hidden />
               AI
             </Badge>
           ) : null}
@@ -244,7 +245,7 @@ function Composer({ id, disabled }: { id: string; disabled: boolean }) {
         <DropdownMenu>
           <DropdownMenuTrigger>
             <Button size="sm" variant="ghost" color="neutral" disabled={disabled}>
-              <MessageSquare className="size-4" aria-hidden />
+              <Icon glyph={faMessage} className="size-4" aria-hidden />
               Quick replies
             </Button>
           </DropdownMenuTrigger>
@@ -283,7 +284,7 @@ function Composer({ id, disabled }: { id: string; disabled: boolean }) {
           loading={send.isPending}
           disabled={disabled || body.trim() === ''}
         >
-          <Send className="size-4" aria-hidden />
+          <Icon glyph={faPaperPlane} className="size-4" aria-hidden />
           Send
         </Button>
       </div>
@@ -470,7 +471,7 @@ export function ChatThreadSurface({ ctx }: { ctx: SurfaceContext }) {
             loading={update.isPending}
             onClick={onReopen}
           >
-            <RotateCcw className="size-4" aria-hidden />
+            <Icon glyph={faRotate} className="size-4" aria-hidden />
             Reopen
           </Button>
         ) : isSpam ? (
@@ -481,12 +482,12 @@ export function ChatThreadSurface({ ctx }: { ctx: SurfaceContext }) {
             loading={update.isPending}
             onClick={onReopen}
           >
-            <RotateCcw className="size-4" aria-hidden />
+            <Icon glyph={faRotate} className="size-4" aria-hidden />
             Not spam
           </Button>
         ) : (
           <Button size="sm" color="module" loading={update.isPending} onClick={onResolve}>
-            <CheckCircle2 className="size-4" aria-hidden />
+            <Icon glyph={faCircleCheck} className="size-4" aria-hidden />
             Resolve
           </Button>
         )}
@@ -500,13 +501,13 @@ export function ChatThreadSurface({ ctx }: { ctx: SurfaceContext }) {
               shape="square"
               aria-label="More actions"
             >
-              <MoreHorizontal className="size-4" aria-hidden />
+              <Icon glyph={faEllipsis} className="size-4" aria-hidden />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent>
             {viewer?.userId && data.assignedToId !== viewer.userId ? (
               <DropdownMenuItem onClick={onAssignToMe}>
-                <UserCheck className="size-4" aria-hidden />
+                <Icon glyph={faUserCheck} className="size-4" aria-hidden />
                 Assign to me
               </DropdownMenuItem>
             ) : null}
@@ -516,7 +517,7 @@ export function ChatThreadSurface({ ctx }: { ctx: SurfaceContext }) {
                   void onMarkSpam();
                 }}
               >
-                <Ban className="size-4" aria-hidden />
+                <Icon glyph={faBan} className="size-4" aria-hidden />
                 Mark as spam
               </DropdownMenuItem>
             ) : null}

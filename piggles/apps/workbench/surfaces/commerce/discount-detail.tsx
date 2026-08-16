@@ -39,7 +39,8 @@ import {
   useToast,
 } from '@wizeworks/silicaui-react';
 import { useConfirm } from '../../lib/confirm';
-import { Power, Trash2 } from 'lucide-react';
+import { faPowerOff, faTrashCan } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import { afterPaneChange } from '../../lib/defer';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
@@ -852,7 +853,7 @@ function DiscountEditor({
                     loading={activate.isPending}
                     onClick={onActivate}
                   >
-                    <Power className="size-4" aria-hidden />
+                    <Icon glyph={faPowerOff} className="size-4" aria-hidden />
                     Switch on
                   </Button>
                 </div>
@@ -871,7 +872,7 @@ function DiscountEditor({
                     void onRetire();
                   }}
                 >
-                  <Trash2 className="size-4" aria-hidden />
+                  <Icon glyph={faTrashCan} className="size-4" aria-hidden />
                   Retire this discount
                 </Button>
               </div>

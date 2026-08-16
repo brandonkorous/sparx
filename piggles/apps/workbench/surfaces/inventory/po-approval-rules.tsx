@@ -25,7 +25,8 @@ import {
   Table,
   Text,
 } from '@wizeworks/silicaui-react';
-import { PlusCircle, ShieldCheck } from 'lucide-react';
+import { faCirclePlus, faShieldCheck } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { PaneWaiting } from '../../components/pane-waiting';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
@@ -55,7 +56,7 @@ export function PoApprovalRulesSurface({ ctx }: { ctx: SurfaceContext }) {
     if (rules.isError) {
       return (
         <EmptyState
-          icon={<ShieldCheck className="size-6" aria-hidden />}
+          icon={<Icon glyph={faShieldCheck} className="size-6" aria-hidden />}
           title="Could not load your spending limits"
           description="This is a problem reaching the server, not a statement that you have none. Try again in a moment."
         />
@@ -67,7 +68,7 @@ export function PoApprovalRulesSurface({ ctx }: { ctx: SurfaceContext }) {
     if (rows.length === 0) {
       return (
         <EmptyState
-          icon={<ShieldCheck className="size-6" aria-hidden />}
+          icon={<Icon glyph={faShieldCheck} className="size-6" aria-hidden />}
           title="No spending limits set"
           description="Every purchase order goes straight to the supplier the moment somebody sends it. Set a limit and orders over it wait for a named person to approve them first — the usual reason is a business where more than one person can buy."
           actions={
@@ -77,7 +78,7 @@ export function PoApprovalRulesSurface({ ctx }: { ctx: SurfaceContext }) {
                 ctx.open('inventory.purchase-orders.approval-rules.detail', { id: 'new' });
               }}
             >
-              <PlusCircle className="size-4" aria-hidden />
+              <Icon glyph={faCirclePlus} className="size-4" aria-hidden />
               Set a limit
             </Button>
           }
@@ -144,7 +145,7 @@ export function PoApprovalRulesSurface({ ctx }: { ctx: SurfaceContext }) {
             ctx.open('inventory.purchase-orders.approval-rules.detail', { id: 'new' });
           }}
         >
-          <PlusCircle className="size-4" aria-hidden />
+          <Icon glyph={faCirclePlus} className="size-4" aria-hidden />
           New limit
         </Button>
         <RefreshButton

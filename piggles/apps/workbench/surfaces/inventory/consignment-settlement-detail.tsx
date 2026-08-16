@@ -27,7 +27,13 @@ import {
   Timestamp,
   useToast,
 } from '@wizeworks/silicaui-react';
-import { CheckCheck, RefreshCw, ReceiptText, Wallet } from 'lucide-react';
+import {
+  faArrowsRotate,
+  faCheckDouble,
+  faReceipt,
+  faWallet,
+} from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { PaneWaiting } from '../../components/pane-waiting';
 import { useEffect } from 'react';
 import { FormSection } from '../../components/form-section';
@@ -70,7 +76,7 @@ export function ConsignmentSettlementDetailSurface({ ctx }: { ctx: SurfaceContex
     return (
       <div className={PANE_SHELL}>
         <EmptyState
-          icon={<ReceiptText className="size-6" aria-hidden />}
+          icon={<Icon glyph={faReceipt} className="size-6" aria-hidden />}
           title="Could not load that settlement"
           description="It may have been cancelled, or the server is unreachable."
         />
@@ -123,7 +129,7 @@ export function ConsignmentSettlementDetailSurface({ ctx }: { ctx: SurfaceContex
                 });
               }}
             >
-              <RefreshCw className="size-4" aria-hidden />
+              <Icon glyph={faArrowsRotate} className="size-4" aria-hidden />
               Rebuild
             </Button>
             <Button
@@ -154,7 +160,7 @@ export function ConsignmentSettlementDetailSurface({ ctx }: { ctx: SurfaceContex
                 });
               }}
             >
-              <CheckCheck className="size-4" aria-hidden />
+              <Icon glyph={faCheckDouble} className="size-4" aria-hidden />
               Close the period
             </Button>
           </>
@@ -178,7 +184,7 @@ export function ConsignmentSettlementDetailSurface({ ctx }: { ctx: SurfaceContex
               });
             }}
           >
-            <Wallet className="size-4" aria-hidden />
+            <Icon glyph={faWallet} className="size-4" aria-hidden />
             Mark as paid
           </Button>
         ) : null}
@@ -277,7 +283,7 @@ export function ConsignmentSettlementDetailSurface({ ctx }: { ctx: SurfaceContex
         <div className="p-0">
           {data.lines.length === 0 ? (
             <EmptyState
-              icon={<ReceiptText className="size-6" aria-hidden />}
+              icon={<Icon glyph={faReceipt} className="size-6" aria-hidden />}
               title="Nothing sold in this period"
               description="No consigned stock of theirs moved between these dates. The period can still be closed at zero, which is a useful thing to be able to send."
             />

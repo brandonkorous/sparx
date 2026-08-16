@@ -13,7 +13,8 @@
 import { useState } from 'react';
 import { PaneWaiting } from '../../components/pane-waiting';
 import { Badge, Button, Card, EmptyState, Table } from '@wizeworks/silicaui-react';
-import { Boxes, Plus } from 'lucide-react';
+import { faBoxes, faPlus } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
@@ -61,7 +62,7 @@ export function ObjectTypesListSurface({ ctx }: { ctx: SurfaceContext }) {
             ctx.open('crm.object-type.detail', { key: 'new' }, { target: targetFor(event) });
           }}
         >
-          <Plus className="size-4" aria-hidden />
+          <Icon glyph={faPlus} className="size-4" aria-hidden />
           New record type
         </Button>
         <RefreshButton
@@ -76,13 +77,13 @@ export function ObjectTypesListSurface({ ctx }: { ctx: SurfaceContext }) {
       <Card className="min-h-0 flex-1 overflow-y-auto">
         {moduleOff ? (
           <EmptyState
-            icon={<Boxes className="size-6" aria-hidden />}
+            icon={<Icon glyph={faBoxes} className="size-6" aria-hidden />}
             title="Turn on Customers to see your record types"
             description="Record types appear once the customers module is switched on. They are the kinds of things you keep track of — customers, companies, deals — and the extra details you record on each."
           />
         ) : isError ? (
           <EmptyState
-            icon={<Boxes className="size-6" aria-hidden />}
+            icon={<Icon glyph={faBoxes} className="size-6" aria-hidden />}
             title="Could not load your record types"
             description="Something went wrong reaching the server. It may be a temporary problem — try again in a moment."
             actions={
@@ -103,7 +104,7 @@ export function ObjectTypesListSurface({ ctx }: { ctx: SurfaceContext }) {
           // With `list` self-healing the built-ins, an empty list means the
           // "put away" filter hid everything — never "you have nothing."
           <EmptyState
-            icon={<Boxes className="size-6" aria-hidden />}
+            icon={<Icon glyph={faBoxes} className="size-6" aria-hidden />}
             title="Nothing to show with this filter"
             description="Every record type you have is put away. Switch the filter above to see them."
           />

@@ -23,7 +23,14 @@ import {
   Textarea,
   useToast,
 } from '@wizeworks/silicaui-react';
-import { CheckCheck, Inbox, PencilLine, ServerCrash, X } from 'lucide-react';
+import {
+  faCheckDouble,
+  faInbox,
+  faPencilLine,
+  faServer,
+  faXmark,
+} from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { useConfirm } from '../../lib/confirm';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
@@ -193,7 +200,7 @@ function ApprovalCard({
               disabled={busy}
               onClick={onApprove}
             >
-              <CheckCheck className="size-4" aria-hidden />
+              <Icon glyph={faCheckDouble} className="size-4" aria-hidden />
               {goesLiveNow ? 'Approve & post now' : 'Approve'}
             </Button>
             <Button
@@ -205,7 +212,7 @@ function ApprovalCard({
                 setSendingBack((current) => !current);
               }}
             >
-              <X className="size-4" aria-hidden />
+              <Icon glyph={faXmark} className="size-4" aria-hidden />
               Send back
             </Button>
             <Button
@@ -217,7 +224,7 @@ function ApprovalCard({
                 onOpen(event);
               }}
             >
-              <PencilLine className="size-4" aria-hidden />
+              <Icon glyph={faPencilLine} className="size-4" aria-hidden />
               Change it first
             </Button>
           </div>
@@ -289,7 +296,7 @@ export function SocialApprovalsSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar label="Approvals controls">
-        <Inbox className="size-4 shrink-0" aria-hidden />
+        <Icon glyph={faInbox} className="size-4 shrink-0" aria-hidden />
         <Heading level={2} className="min-w-0 truncate text-base font-semibold">
           Approvals
         </Heading>
@@ -312,7 +319,7 @@ export function SocialApprovalsSurface({ ctx }: { ctx: SurfaceContext }) {
         <div className="mx-auto flex w-full max-w-3xl flex-col gap-4">
           {posts.isError ? (
             <EmptyState
-              icon={<ServerCrash className="size-6" aria-hidden />}
+              icon={<Icon glyph={faServer} className="size-6" aria-hidden />}
               title="Could not load the approvals inbox"
               description={socialErrorMessage(
                 posts.error,
@@ -334,7 +341,7 @@ export function SocialApprovalsSurface({ ctx }: { ctx: SurfaceContext }) {
             <PaneWaiting />
           ) : pending.length === 0 ? (
             <EmptyState
-              icon={<Inbox className="size-6" aria-hidden />}
+              icon={<Icon glyph={faInbox} className="size-6" aria-hidden />}
               title="Nothing waiting for approval"
               description="When a teammate submits a post, or an automation drafts one, it lands here for an admin to approve before it goes live."
             />

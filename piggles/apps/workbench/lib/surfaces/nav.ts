@@ -10,28 +10,28 @@
 // `order`, not here. This module only groups and sorts.
 
 import {
-  Bot,
-  Boxes,
-  Building2,
-  CalendarClock,
-  ContactRound,
-  CreditCard,
-  FileText,
-  Globe,
-  Handshake,
-  LayoutDashboard,
-  Mail,
-  MessageSquare,
-  Newspaper,
-  Search,
-  Share2,
-  ShoppingCart,
-  Store,
-  Truck,
-  Users,
-  Workflow,
-  type LucideIcon,
-} from 'lucide-react';
+  faAddressBook,
+  faBoxes,
+  faBuilding,
+  faCalendarClock,
+  faCartShopping,
+  faCreditCard,
+  faDiagramProject,
+  faEnvelope,
+  faFileText,
+  faGauge,
+  faGlobe,
+  faHandshake,
+  faMagnifyingGlass,
+  faMessage,
+  faNewspaper,
+  faRobot,
+  faShareNodes,
+  faShop,
+  faTruck,
+  faUsers,
+} from '@fortawesome/pro-solid-svg-icons';
+import type { PigglesIcon } from '@piggles/ui';
 import { listedSurfaces, resolveTitle, type SurfaceDefinition } from './registry';
 import { productModuleLabel, productSectionTitle } from '../product';
 import type { WorkbenchModule } from '../../components/module-scope';
@@ -189,29 +189,29 @@ function moduleRank(module: WorkbenchModule): number {
  * happened to sort first. The rail is the most persistent piece of UI in the
  * app; its icons should be chosen, not emergent.
  */
-const MODULE_ICONS: Partial<Record<WorkbenchModule, LucideIcon>> = {
-  platform: LayoutDashboard,
-  commerce: ShoppingCart,
-  crm: Users,
-  invoicing: FileText,
-  inventory: Boxes,
-  cms: Newspaper,
-  builder: Globe,
-  email: Mail,
-  b2b: Building2,
-  finance: CreditCard,
+const MODULE_ICONS: Partial<Record<WorkbenchModule, PigglesIcon>> = {
+  platform: faGauge,
+  commerce: faCartShopping,
+  crm: faUsers,
+  invoicing: faFileText,
+  inventory: faBoxes,
+  cms: faNewspaper,
+  builder: faGlobe,
+  email: faEnvelope,
+  b2b: faBuilding,
+  finance: faCreditCard,
   // A person on a card, NOT `Users` — that is Customers, and the rail's two
   // people-shaped modules must not be the same glyph at 16px.
-  staff: ContactRound,
-  scheduling: CalendarClock,
-  social: Share2,
-  dropship: Truck,
-  automations: Workflow,
-  seo: Search,
-  chat: MessageSquare,
-  ai: Bot,
-  partner: Handshake,
-  storefront: Store,
+  staff: faAddressBook,
+  scheduling: faCalendarClock,
+  social: faShareNodes,
+  dropship: faTruck,
+  automations: faDiagramProject,
+  seo: faMagnifyingGlass,
+  chat: faMessage,
+  ai: faRobot,
+  partner: faHandshake,
+  storefront: faShop,
 };
 
 /**
@@ -224,7 +224,7 @@ const MODULE_ICONS: Partial<Record<WorkbenchModule, LucideIcon>> = {
  * `null` for a module with no chosen icon — callers pick their own fallback,
  * since there is no sensible generic stand-in for "some module".
  */
-export function moduleIcon(module: WorkbenchModule): LucideIcon | null {
+export function moduleIcon(module: WorkbenchModule): PigglesIcon | null {
   return MODULE_ICONS[module] ?? null;
 }
 

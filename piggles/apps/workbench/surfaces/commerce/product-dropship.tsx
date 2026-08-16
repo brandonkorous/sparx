@@ -38,7 +38,8 @@ import {
   useToast,
 } from '@wizeworks/silicaui-react';
 import { useConfirm } from '../../lib/confirm';
-import { PackageCheck, RefreshCcw, ServerCrash, Truck } from 'lucide-react';
+import { faArrowsRotate, faBoxCheck, faServer, faTruck } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import { FormSection } from '../../components/form-section';
@@ -266,7 +267,7 @@ function SupplierCard({
           loading={busyId === link.id && reimport.isPending}
           onClick={onReimport}
         >
-          <RefreshCcw className="size-4" aria-hidden />
+          <Icon glyph={faArrowsRotate} className="size-4" aria-hidden />
           Pull it again
         </Button>
       </div>
@@ -291,7 +292,7 @@ export function ProductDropshipSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar label={`${LABEL} actions`}>
-        <Truck className="size-4 shrink-0" aria-hidden />
+        <Icon glyph={faTruck} className="size-4 shrink-0" aria-hidden />
         <Heading level={2} className="min-w-0 truncate text-base font-semibold">
           {product.title}
         </Heading>
@@ -316,7 +317,7 @@ export function ProductDropshipSurface({ ctx }: { ctx: SurfaceContext }) {
 
           {dropship.isError ? (
             <EmptyState
-              icon={<ServerCrash className="size-6" aria-hidden />}
+              icon={<Icon glyph={faServer} className="size-6" aria-hidden />}
               title="Could not load who ships this"
               description={productErrorMessage(
                 dropship.error,
@@ -355,7 +356,7 @@ export function ProductDropshipSurface({ ctx }: { ctx: SurfaceContext }) {
                 <FormSection title="Who ships this">
                   <EmptyState
                     size="sm"
-                    icon={<PackageCheck className="size-6" aria-hidden />}
+                    icon={<Icon glyph={faBoxCheck} className="size-6" aria-hidden />}
                     title="You ship this one yourself"
                     description={`${product.title} is not linked to any supplier, so when someone buys it you pick it, pack it and post it. That is how most products work — nothing is missing here.`}
                   />

@@ -24,7 +24,8 @@ import {
   Table,
   ToolbarSeparator,
 } from '@wizeworks/silicaui-react';
-import { ArrowDown, ArrowUp, Banknote } from 'lucide-react';
+import { faArrowDown, faArrowUp, faMoneyBill } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
@@ -156,9 +157,9 @@ export function PayoutsListSurface({ ctx }: { ctx: SurfaceContext }) {
         {label}
         {sort.key === key ? (
           sort.dir === 'asc' ? (
-            <ArrowUp className="size-3" aria-hidden />
+            <Icon glyph={faArrowUp} className="size-3" aria-hidden />
           ) : (
-            <ArrowDown className="size-3" aria-hidden />
+            <Icon glyph={faArrowDown} className="size-3" aria-hidden />
           )
         ) : null}
       </button>
@@ -221,7 +222,7 @@ export function PayoutsListSurface({ ctx }: { ctx: SurfaceContext }) {
       <Card className="min-h-0 flex-1 overflow-y-auto">
         {isError ? (
           <EmptyState
-            icon={<Banknote className="size-6" aria-hidden />}
+            icon={<Icon glyph={faMoneyBill} className="size-6" aria-hidden />}
             title="Could not load payouts"
             description="Something went wrong reaching the server. Your deposits are unaffected — try again in a moment."
             actions={
@@ -240,7 +241,7 @@ export function PayoutsListSurface({ ctx }: { ctx: SurfaceContext }) {
           <PaneWaiting label="Loading payouts…" />
         ) : rows.length === 0 ? (
           <EmptyState
-            icon={<Banknote className="size-6" aria-hidden />}
+            icon={<Icon glyph={faMoneyBill} className="size-6" aria-hidden />}
             title={filtering ? 'No payouts match those filters' : 'No payouts yet'}
             description={
               filtering

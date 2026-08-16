@@ -25,7 +25,8 @@ import {
   useToast,
 } from '@wizeworks/silicaui-react';
 import { useConfirm } from '../../lib/confirm';
-import { Link2Off, ServerCrash, Store } from 'lucide-react';
+import { faLinkSlash, faServer, faShop } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import { FormSection } from '../../components/form-section';
@@ -125,7 +126,7 @@ function ConnectionRow({
           loading={disconnect.isPending}
           onClick={onDisconnect}
         >
-          <Link2Off className="size-4" aria-hidden />
+          <Icon glyph={faLinkSlash} className="size-4" aria-hidden />
           Disconnect
         </Button>
       </div>
@@ -167,7 +168,7 @@ export function ChannelsSurface({ ctx: _ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar label="Sales channels controls">
-        <Store className="size-4 shrink-0" aria-hidden />
+        <Icon glyph={faShop} className="size-4 shrink-0" aria-hidden />
         <Heading level={2} className="min-w-0 truncate text-base font-semibold">
           {LABEL}
         </Heading>
@@ -190,7 +191,7 @@ export function ChannelsSurface({ ctx: _ctx }: { ctx: SurfaceContext }) {
         <div className="mx-auto flex w-full max-w-3xl flex-col gap-4">
           {channels.isError ? (
             <EmptyState
-              icon={<ServerCrash className="size-6" aria-hidden />}
+              icon={<Icon glyph={faServer} className="size-6" aria-hidden />}
               title="Could not load your sales channels"
               description={productErrorMessage(
                 channels.error,
@@ -227,7 +228,7 @@ export function ChannelsSurface({ ctx: _ctx }: { ctx: SurfaceContext }) {
                 {connections.length === 0 ? (
                   <EmptyState
                     size="sm"
-                    icon={<Store className="size-6" aria-hidden />}
+                    icon={<Icon glyph={faShop} className="size-6" aria-hidden />}
                     title="No shops connected yet"
                     description="Once you connect an outside shop, it appears here with how many of your products are listed on it and whether it's up to date."
                   />

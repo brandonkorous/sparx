@@ -29,7 +29,8 @@ import {
   Text,
   Timestamp,
 } from '@wizeworks/silicaui-react';
-import { PackageSearch, Truck } from 'lucide-react';
+import { faBoxMagnifyingGlass, faTruck } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
@@ -72,7 +73,7 @@ export function AsnListSurface({ ctx }: { ctx: SurfaceContext }) {
     if (notices.isError) {
       return (
         <EmptyState
-          icon={<PackageSearch className="size-6" aria-hidden />}
+          icon={<Icon glyph={faBoxMagnifyingGlass} className="size-6" aria-hidden />}
           title="Could not load what is on the way"
           description="This is a problem reaching the server, not a statement that nothing has shipped. Try again in a moment."
         />
@@ -84,7 +85,7 @@ export function AsnListSurface({ ctx }: { ctx: SurfaceContext }) {
     if (rows.length === 0) {
       return (
         <EmptyState
-          icon={<Truck className="size-6" aria-hidden />}
+          icon={<Icon glyph={faTruck} className="size-6" aria-hidden />}
           title={view === 'overdue' ? 'Nothing is missing' : 'Nothing on the way'}
           description={
             view === 'overdue'

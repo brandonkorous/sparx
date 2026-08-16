@@ -31,7 +31,8 @@ import {
   Text,
   useToast,
 } from '@wizeworks/silicaui-react';
-import { HandCoins } from 'lucide-react';
+import { faHandHoldingDollar } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { api } from '../../lib/api/client';
 import { PaneScope } from '../../lib/dock/window-boundary';
 import { FormSection } from '../../components/form-section';
@@ -212,7 +213,7 @@ function RecordPaymentDialog({ doc }: { doc: BillingDocument }) {
       >
         <DialogTrigger>
           <Button color="module" variant="soft" size="sm">
-            <HandCoins className="size-4" aria-hidden />
+            <Icon glyph={faHandHoldingDollar} className="size-4" aria-hidden />
             Record a payment
           </Button>
         </DialogTrigger>

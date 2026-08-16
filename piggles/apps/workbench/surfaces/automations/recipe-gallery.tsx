@@ -32,7 +32,8 @@ import {
   Text,
   useToast,
 } from '@wizeworks/silicaui-react';
-import { Settings2, Sparkles } from 'lucide-react';
+import { faSliders, faSparkles } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { RefreshButton } from '../../components/refresh-button';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { ModuleScope, type WorkbenchModule } from '../../components/module-scope';
@@ -108,7 +109,7 @@ function RecipeCard({
   const setStatus = useSetAutomationStatus(automation.id);
   const state = automationState(automation.status);
   const on = isOn(automation.status);
-  const Icon = meta.icon;
+  const glyph = meta.icon;
 
   const toggle = (next: boolean) => {
     setStatus.mutate(next ? 'active' : 'paused', {
@@ -137,7 +138,7 @@ function RecipeCard({
         <CardBody className="flex h-full flex-col gap-3">
           <div className="flex items-start justify-between gap-3">
             <span className="bg-module text-module-content flex size-10 shrink-0 items-center justify-center rounded-lg">
-              <Icon className="size-5" strokeWidth={2} aria-hidden />
+              <Icon glyph={glyph} className="size-5" aria-hidden />
             </span>
             {automation.locked ? (
               <div className="flex items-center gap-2">
@@ -180,7 +181,7 @@ function RecipeCard({
               title="Customize this automation — hold Shift to open alongside, Alt for a new window"
               onClick={onCustomize}
             >
-              <Settings2 className="size-4" aria-hidden />
+              <Icon glyph={faSliders} className="size-4" aria-hidden />
               Customize
             </Button>
           </div>
@@ -294,7 +295,7 @@ export function RecipeGallerySurface({ ctx }: { ctx: SurfaceContext }) {
 
           {isError ? (
             <EmptyState
-              icon={<Sparkles className="size-6" aria-hidden />}
+              icon={<Icon glyph={faSparkles} className="size-6" aria-hidden />}
               title="Could not load your recipes"
               description="Something went wrong reaching the server. Whatever you have switched on is unaffected and still running — try again in a moment."
               actions={
@@ -314,7 +315,7 @@ export function RecipeGallerySurface({ ctx }: { ctx: SurfaceContext }) {
           ) : grouped.length === 0 ? (
             filtering ? (
               <EmptyState
-                icon={<Sparkles className="size-6" aria-hidden />}
+                icon={<Icon glyph={faSparkles} className="size-6" aria-hidden />}
                 title="No recipes match that"
                 description={productCopy(
                   'automations.recipes.noResults',
@@ -336,7 +337,7 @@ export function RecipeGallerySurface({ ctx }: { ctx: SurfaceContext }) {
               />
             ) : (
               <EmptyState
-                icon={<Sparkles className="size-6" aria-hidden />}
+                icon={<Icon glyph={faSparkles} className="size-6" aria-hidden />}
                 title="No recipes yet"
                 description={productCopy(
                   'automations.recipes.firstRun',
@@ -350,7 +351,7 @@ export function RecipeGallerySurface({ ctx }: { ctx: SurfaceContext }) {
               return (
                 <section key={group.key} className="flex flex-col gap-3">
                   <div className="flex items-start gap-3">
-                    <GroupIcon className="mt-0.5 size-5 shrink-0" aria-hidden />
+                    <Icon glyph={GroupIcon} className="mt-0.5 size-5 shrink-0" aria-hidden />
                     <div className="flex flex-col gap-0.5">
                       <h2 className="text-lg font-semibold">{group.title}</h2>
                       <p className="text-base">{group.blurb}</p>

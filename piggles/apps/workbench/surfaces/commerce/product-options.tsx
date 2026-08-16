@@ -65,7 +65,15 @@ import {
   useToast,
 } from '@wizeworks/silicaui-react';
 import { useConfirm } from '../../lib/confirm';
-import { ChevronDown, ChevronUp, Plus, Shapes, Trash2, X } from 'lucide-react';
+import {
+  faChevronDown,
+  faChevronUp,
+  faPlus,
+  faShapes,
+  faTrashCan,
+  faXmark,
+} from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import { FormSection } from '../../components/form-section';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
@@ -557,7 +565,7 @@ export function ProductOptionsTab({ product }: { ctx: SurfaceContext; product: P
               disabled={draft.length >= 8}
               onClick={addOption}
             >
-              <Plus className="size-4" aria-hidden />
+              <Icon glyph={faPlus} className="size-4" aria-hidden />
               Add another choice
             </Button>
           </div>
@@ -584,7 +592,7 @@ function NoChoicesYet({ onAdd, hadChoices }: { onAdd: () => void; hadChoices: bo
   return (
     <div className="flex min-h-64 items-center justify-center">
       <EmptyState
-        icon={<Shapes className="size-6" aria-hidden />}
+        icon={<Icon glyph={faShapes} className="size-6" aria-hidden />}
         // Two genuinely different situations. "You removed them, nothing is
         // committed yet" and "you never had any" read identically if you only
         // write one of them — and the first is the one where a stray click is
@@ -597,7 +605,7 @@ function NoChoicesYet({ onAdd, hadChoices }: { onAdd: () => void; hadChoices: bo
         }
         actions={
           <Button size="sm" color="module" onClick={onAdd}>
-            <Plus className="size-4" aria-hidden />
+            <Icon glyph={faPlus} className="size-4" aria-hidden />
             Add a choice
           </Button>
         }
@@ -646,7 +654,7 @@ function OptionCard({
               onMove(-1);
             }}
           >
-            <ChevronUp className="size-4" aria-hidden />
+            <Icon glyph={faChevronUp} className="size-4" aria-hidden />
           </Button>
           <Button
             size="sm"
@@ -659,7 +667,7 @@ function OptionCard({
               onMove(1);
             }}
           >
-            <ChevronDown className="size-4" aria-hidden />
+            <Icon glyph={faChevronDown} className="size-4" aria-hidden />
           </Button>
         </div>
       }
@@ -741,7 +749,7 @@ function OptionCard({
               setValues([...option.values, { key: nextKey(), value: '', swatchHex: null }]);
             }}
           >
-            <Plus className="size-4" aria-hidden />
+            <Icon glyph={faPlus} className="size-4" aria-hidden />
             Add {name === '' ? 'an option' : `a ${name.toLowerCase()}`}
           </Button>
         </div>
@@ -757,7 +765,7 @@ function OptionCard({
           says exactly which.
         </Text>
         <Button size="sm" variant="ghost" color="danger" onClick={onRemove}>
-          <Trash2 className="size-4" aria-hidden />
+          <Icon glyph={faTrashCan} className="size-4" aria-hidden />
           Remove {name === '' ? 'this choice' : name}
         </Button>
       </div>
@@ -839,7 +847,7 @@ function ValueRow({
             onMove(-1);
           }}
         >
-          <ChevronUp className="size-4" aria-hidden />
+          <Icon glyph={faChevronUp} className="size-4" aria-hidden />
         </Button>
         <Button
           size="sm"
@@ -852,7 +860,7 @@ function ValueRow({
             onMove(1);
           }}
         >
-          <ChevronDown className="size-4" aria-hidden />
+          <Icon glyph={faChevronDown} className="size-4" aria-hidden />
         </Button>
         {/* No confirm here on purpose: nothing is destroyed until the commit, and
             a dialog on every removed row would train people to click straight
@@ -865,7 +873,7 @@ function ValueRow({
           aria-label={`Remove ${label}`}
           onClick={onRemove}
         >
-          <X className="size-4" aria-hidden />
+          <Icon glyph={faXmark} className="size-4" aria-hidden />
         </Button>
       </div>
     </div>

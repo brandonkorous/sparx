@@ -1,7 +1,7 @@
 // The Recipe Gallery's presentation catalog — a curated, pure-data mapping from a
 // shipped SYSTEM automation's `name` to how it should read to a non-technical
 // business owner: a GOAL group it belongs to ("Get paid on time"), a friendly
-// title, a plain-English one-liner, a lucide glyph, and the module hue its icon
+// title, a plain-English one-liner, a Font Awesome glyph, and the module hue its icon
 // wears.
 //
 // It is deliberately KEYED BY THE AUTOMATION NAME. The ~45 system automations are
@@ -16,51 +16,48 @@
 // workbench; it does not depend on the dashboard.
 
 import {
-  Bell,
-  BellRing,
-  Building2,
-  CalendarClock,
-  CircleAlert,
-  CircleCheck,
-  CircleDollarSign,
-  CirclePause,
-  CirclePlay,
-  CircleX,
-  ClipboardCheck,
-  Clock,
-  CreditCard,
-  FileText,
-  Gift,
-  HandCoins,
-  Inbox,
-  LayoutGrid,
-  LifeBuoy,
-  ListChecks,
-  Megaphone,
-  MessageSquareWarning,
-  Newspaper,
-  PackageCheck,
-  PackageMinus,
-  PackageOpen,
-  PackagePlus,
-  PackageX,
-  Receipt,
-  Repeat,
-  RotateCcw,
-  ShieldAlert,
-  ShoppingCart,
-  Smile,
-  Sparkles,
-  Star,
-  StickyNote,
-  Tag,
-  Trophy,
-  Truck,
-  Undo2,
-  UserPlus,
-  Users,
-  type LucideIcon,
-} from 'lucide-react';
+  faBell,
+  faBellRing,
+  faBoxCheck,
+  faBoxOpen,
+  faBuilding,
+  faBullhorn,
+  faCalendarClock,
+  faCartShopping,
+  faCheckCircle,
+  faCircleDollar,
+  faCircleExclamation,
+  faCirclePause,
+  faCirclePlay,
+  faCircleXmark,
+  faClipboardCheck,
+  faClock,
+  faCreditCard,
+  faFaceSmile,
+  faFileText,
+  faGift,
+  faGrid,
+  faHandHoldingDollar,
+  faInbox,
+  faLifeRing,
+  faListCheck,
+  faMessageExclamation,
+  faNewspaper,
+  faNoteSticky,
+  faReceipt,
+  faRepeat,
+  faRotate,
+  faRotateLeft,
+  faShieldExclamation,
+  faSparkles,
+  faStar,
+  faTag,
+  faTrophy,
+  faTruck,
+  faUserPlus,
+  faUsers,
+} from '@fortawesome/pro-solid-svg-icons';
+import type { PigglesIcon } from '@piggles/ui';
 import type { WorkbenchModule } from '../../components/module-scope';
 import { productCopy } from '../../lib/product';
 
@@ -84,7 +81,7 @@ export interface GoalGroup {
   title: string;
   /** One readable line under the heading saying what this whole group is for. */
   blurb: string;
-  icon: LucideIcon;
+  icon: PigglesIcon;
 }
 
 /** Goal groups in the order they appear down the gallery. "More" is always last —
@@ -94,59 +91,59 @@ export const GOAL_GROUPS: readonly GoalGroup[] = [
     key: 'welcome',
     title: 'Welcome & grow',
     blurb: 'Greet new customers and accounts, and turn website enquiries into contacts.',
-    icon: Sparkles,
+    icon: faSparkles,
   },
   {
     key: 'recover',
     title: 'Recover lost sales',
     blurb:
       'Gently bring back a sale that nearly slipped away — a left-behind cart or a payment that did not go through.',
-    icon: LifeBuoy,
+    icon: faLifeRing,
   },
   {
     key: 'retain',
     title: 'Keep customers coming back',
     blurb: 'Stay in touch after the sale so customers return, and learn how you are doing.',
-    icon: Repeat,
+    icon: faRepeat,
   },
   {
     key: 'loyalty',
     title: 'Reward loyalty',
     blurb: 'Spot your best customers automatically so you can treat them well.',
-    icon: Gift,
+    icon: faGift,
   },
   {
     key: 'getpaid',
     title: 'Get paid on time',
     blurb:
       'Remind customers before invoices are due, chase the ones that are late, and confirm payments.',
-    icon: HandCoins,
+    icon: faHandHoldingDollar,
   },
   {
     key: 'aftersale',
     title: 'Keep customers in the loop',
     blurb:
       'Send the routine updates people expect — deliveries, refunds, returns and subscription changes — without lifting a finger.',
-    icon: Truck,
+    icon: faTruck,
   },
   {
     key: 'stayontop',
     title: 'Stay on top of things',
     blurb:
       'Get a heads-up when something needs you — a big order, low stock, a new lead or an unanswered chat.',
-    icon: Bell,
+    icon: faBell,
   },
   {
     key: 'audience',
     title: 'Grow your audience',
     blurb: 'Share what is new on your social accounts the moment you publish.',
-    icon: Megaphone,
+    icon: faBullhorn,
   },
   {
     key: 'more',
     title: 'More helpers',
     blurb: productCopy('automations.recipes.otherGroup', 'Other automations sparx set up for you.'),
-    icon: LayoutGrid,
+    icon: faGrid,
   },
 ];
 
@@ -163,7 +160,7 @@ export interface RecipeMeta {
   title: string;
   /** One plain-English line: what it does for the owner, present tense. */
   blurb: string;
-  icon: LucideIcon;
+  icon: PigglesIcon;
   /** Which module hue the card's icon wears. Any registered module identity. */
   module: WorkbenchModule;
 }
@@ -177,7 +174,7 @@ export const RECIPES: readonly RecipeMeta[] = [
     goal: 'welcome',
     title: 'Welcome new customers',
     blurb: 'Sends a warm welcome email the moment someone becomes a customer.',
-    icon: UserPlus,
+    icon: faUserPlus,
     module: 'crm',
   },
   {
@@ -186,7 +183,7 @@ export const RECIPES: readonly RecipeMeta[] = [
     title: 'Handle your website form submissions',
     blurb:
       'When someone fills in a form on your site, emails you, replies to them, and saves them as a contact.',
-    icon: Inbox,
+    icon: faInbox,
     module: 'cms',
   },
   {
@@ -194,7 +191,7 @@ export const RECIPES: readonly RecipeMeta[] = [
     goal: 'welcome',
     title: 'Onboard new wholesale accounts',
     blurb: 'Opens a to-do to get a new wholesale account set up and looked after.',
-    icon: Users,
+    icon: faUsers,
     module: 'b2b',
   },
   {
@@ -202,7 +199,7 @@ export const RECIPES: readonly RecipeMeta[] = [
     goal: 'welcome',
     title: 'Welcome approved wholesale accounts',
     blurb: 'Emails a wholesale account’s main contact once their account is approved.',
-    icon: Building2,
+    icon: faBuilding,
     module: 'b2b',
   },
 
@@ -212,7 +209,7 @@ export const RECIPES: readonly RecipeMeta[] = [
     goal: 'recover',
     title: 'Remind shoppers about their cart',
     blurb: 'Emails a shopper a couple of hours after they leave items behind without checking out.',
-    icon: ShoppingCart,
+    icon: faCartShopping,
     module: 'commerce',
   },
   {
@@ -220,7 +217,7 @@ export const RECIPES: readonly RecipeMeta[] = [
     goal: 'recover',
     title: 'Ask a shopper to retry a failed payment',
     blurb: 'Emails a customer when their payment does not go through, so they can try again.',
-    icon: CreditCard,
+    icon: faCreditCard,
     module: 'commerce',
   },
   {
@@ -228,7 +225,7 @@ export const RECIPES: readonly RecipeMeta[] = [
     goal: 'recover',
     title: 'Nudge before a quote expires',
     blurb: 'Reminds a wholesale customer when their quote is about to run out.',
-    icon: Clock,
+    icon: faClock,
     module: 'b2b',
   },
 
@@ -238,7 +235,7 @@ export const RECIPES: readonly RecipeMeta[] = [
     goal: 'retain',
     title: 'Win back quiet customers',
     blurb: 'Emails a customer who used to buy but has gone quiet for a while.',
-    icon: Repeat,
+    icon: faRepeat,
     module: 'crm',
   },
   {
@@ -246,7 +243,7 @@ export const RECIPES: readonly RecipeMeta[] = [
     goal: 'retain',
     title: 'Ask happy customers for a review',
     blurb: 'Emails a customer a few days after their order arrives, asking how it went.',
-    icon: Star,
+    icon: faStar,
     module: 'commerce',
   },
   {
@@ -254,7 +251,7 @@ export const RECIPES: readonly RecipeMeta[] = [
     goal: 'retain',
     title: 'Ask how a chat went',
     blurb: 'Emails a short survey shortly after a chat conversation is wrapped up.',
-    icon: Smile,
+    icon: faFaceSmile,
     module: 'chat',
   },
 
@@ -264,7 +261,7 @@ export const RECIPES: readonly RecipeMeta[] = [
     goal: 'loyalty',
     title: 'Flag your best customers as VIP',
     blurb: 'Labels a customer “VIP” once their total spend passes your threshold.',
-    icon: Trophy,
+    icon: faTrophy,
     module: 'crm',
   },
 
@@ -274,7 +271,7 @@ export const RECIPES: readonly RecipeMeta[] = [
     goal: 'getpaid',
     title: 'Remind before an invoice is due',
     blurb: 'Sends a friendly heads-up three days before an invoice needs paying.',
-    icon: CalendarClock,
+    icon: faCalendarClock,
     module: 'invoicing',
   },
   {
@@ -282,7 +279,7 @@ export const RECIPES: readonly RecipeMeta[] = [
     goal: 'getpaid',
     title: 'Chase an invoice a week overdue',
     blurb: 'Emails the customer when an invoice is seven days past due.',
-    icon: CircleAlert,
+    icon: faCircleExclamation,
     module: 'invoicing',
   },
   {
@@ -290,7 +287,7 @@ export const RECIPES: readonly RecipeMeta[] = [
     goal: 'getpaid',
     title: 'Send a second overdue notice',
     blurb: 'Emails a firmer reminder when an invoice is two weeks past due.',
-    icon: CircleAlert,
+    icon: faCircleExclamation,
     module: 'invoicing',
   },
   {
@@ -298,7 +295,7 @@ export const RECIPES: readonly RecipeMeta[] = [
     goal: 'getpaid',
     title: 'Send a final overdue notice',
     blurb: 'Emails a final reminder when an invoice is a month past due.',
-    icon: ShieldAlert,
+    icon: faShieldExclamation,
     module: 'invoicing',
   },
   {
@@ -306,7 +303,7 @@ export const RECIPES: readonly RecipeMeta[] = [
     goal: 'getpaid',
     title: 'Send a receipt when you are paid',
     blurb: 'Emails the customer a receipt as soon as an invoice is paid in full.',
-    icon: Receipt,
+    icon: faReceipt,
     module: 'invoicing',
   },
   {
@@ -314,7 +311,7 @@ export const RECIPES: readonly RecipeMeta[] = [
     goal: 'getpaid',
     title: 'Follow up when a quote is approved',
     blurb: 'Opens a to-do to move things along once a customer approves a quote or estimate.',
-    icon: ClipboardCheck,
+    icon: faClipboardCheck,
     module: 'invoicing',
   },
   {
@@ -322,7 +319,7 @@ export const RECIPES: readonly RecipeMeta[] = [
     goal: 'getpaid',
     title: 'Remind wholesale accounts before due',
     blurb: 'Emails a wholesale account three days before a net-terms invoice is due.',
-    icon: CalendarClock,
+    icon: faCalendarClock,
     module: 'b2b',
   },
   {
@@ -330,7 +327,7 @@ export const RECIPES: readonly RecipeMeta[] = [
     goal: 'getpaid',
     title: 'Handle overdue wholesale accounts',
     blurb: 'Chases past-due wholesale invoices and puts an account on hold if they stay unpaid.',
-    icon: ShieldAlert,
+    icon: faShieldExclamation,
     module: 'b2b',
   },
 
@@ -340,7 +337,7 @@ export const RECIPES: readonly RecipeMeta[] = [
     goal: 'aftersale',
     title: 'Tell customers their order arrived',
     blurb: 'Emails the customer once their order is marked delivered.',
-    icon: PackageCheck,
+    icon: faBoxCheck,
     module: 'commerce',
   },
   {
@@ -348,7 +345,7 @@ export const RECIPES: readonly RecipeMeta[] = [
     goal: 'aftersale',
     title: 'Confirm a cancelled order',
     blurb: 'Emails the customer when their order is cancelled.',
-    icon: PackageX,
+    icon: faBoxOpen,
     module: 'commerce',
   },
   {
@@ -356,7 +353,7 @@ export const RECIPES: readonly RecipeMeta[] = [
     goal: 'aftersale',
     title: 'Confirm a refund by email',
     blurb: 'Emails the customer when you refund their order.',
-    icon: RotateCcw,
+    icon: faRotate,
     module: 'commerce',
   },
   {
@@ -364,7 +361,7 @@ export const RECIPES: readonly RecipeMeta[] = [
     goal: 'aftersale',
     title: 'Note refunds on the customer',
     blurb: 'Adds a note to the customer’s history whenever an order is refunded.',
-    icon: StickyNote,
+    icon: faNoteSticky,
     module: 'crm',
   },
   {
@@ -372,7 +369,7 @@ export const RECIPES: readonly RecipeMeta[] = [
     goal: 'aftersale',
     title: 'Confirm an approved return',
     blurb: 'Emails the customer with next steps when you approve their return.',
-    icon: Undo2,
+    icon: faRotateLeft,
     module: 'commerce',
   },
   {
@@ -380,7 +377,7 @@ export const RECIPES: readonly RecipeMeta[] = [
     goal: 'aftersale',
     title: 'Confirm returned items arrived',
     blurb: 'Emails the customer once their returned items reach you.',
-    icon: PackageOpen,
+    icon: faBoxOpen,
     module: 'commerce',
   },
   {
@@ -388,7 +385,7 @@ export const RECIPES: readonly RecipeMeta[] = [
     goal: 'aftersale',
     title: 'Confirm a return refund',
     blurb: 'Emails the customer when a refund for their return is issued.',
-    icon: CircleDollarSign,
+    icon: faCircleDollar,
     module: 'commerce',
   },
   {
@@ -396,7 +393,7 @@ export const RECIPES: readonly RecipeMeta[] = [
     goal: 'aftersale',
     title: 'Welcome new subscribers',
     blurb: 'Emails the customer when a new subscription starts.',
-    icon: Repeat,
+    icon: faRepeat,
     module: 'commerce',
   },
   {
@@ -404,7 +401,7 @@ export const RECIPES: readonly RecipeMeta[] = [
     goal: 'aftersale',
     title: 'Confirm a subscription renewal',
     blurb: 'Emails the customer each time their subscription renews and reorders.',
-    icon: RotateCcw,
+    icon: faRotate,
     module: 'commerce',
   },
   {
@@ -412,7 +409,7 @@ export const RECIPES: readonly RecipeMeta[] = [
     goal: 'aftersale',
     title: 'Flag a failed subscription payment',
     blurb: 'Emails the customer when a subscription renewal payment fails, so they can fix it.',
-    icon: CreditCard,
+    icon: faCreditCard,
     module: 'commerce',
   },
   {
@@ -420,7 +417,7 @@ export const RECIPES: readonly RecipeMeta[] = [
     goal: 'aftersale',
     title: 'Confirm a paused subscription',
     blurb: 'Emails the customer when their subscription is paused.',
-    icon: CirclePause,
+    icon: faCirclePause,
     module: 'commerce',
   },
   {
@@ -428,7 +425,7 @@ export const RECIPES: readonly RecipeMeta[] = [
     goal: 'aftersale',
     title: 'Confirm a resumed subscription',
     blurb: 'Emails the customer when their subscription starts up again.',
-    icon: CirclePlay,
+    icon: faCirclePlay,
     module: 'commerce',
   },
   {
@@ -436,7 +433,7 @@ export const RECIPES: readonly RecipeMeta[] = [
     goal: 'aftersale',
     title: 'Confirm a cancelled subscription',
     blurb: 'Emails the customer when their subscription is cancelled.',
-    icon: CircleX,
+    icon: faCircleXmark,
     module: 'commerce',
   },
   {
@@ -444,7 +441,7 @@ export const RECIPES: readonly RecipeMeta[] = [
     goal: 'aftersale',
     title: 'Tell buyers an order is approved',
     blurb: 'Emails a wholesale buyer when their pending order is approved.',
-    icon: CircleCheck,
+    icon: faCheckCircle,
     module: 'b2b',
   },
   {
@@ -452,7 +449,7 @@ export const RECIPES: readonly RecipeMeta[] = [
     goal: 'aftersale',
     title: 'Tell buyers an order was not approved',
     blurb: 'Emails a wholesale buyer when their pending order is not approved.',
-    icon: CircleX,
+    icon: faCircleXmark,
     module: 'b2b',
   },
   {
@@ -460,7 +457,7 @@ export const RECIPES: readonly RecipeMeta[] = [
     goal: 'aftersale',
     title: 'Send wholesale quotes to buyers',
     blurb: 'Emails a wholesale customer their quote details when a quote is submitted.',
-    icon: FileText,
+    icon: faFileText,
     module: 'b2b',
   },
 
@@ -470,7 +467,7 @@ export const RECIPES: readonly RecipeMeta[] = [
     goal: 'stayontop',
     title: 'Alert me to big orders',
     blurb: 'Emails your team when a large order comes in and is paid.',
-    icon: BellRing,
+    icon: faBellRing,
     module: 'commerce',
   },
   {
@@ -478,7 +475,7 @@ export const RECIPES: readonly RecipeMeta[] = [
     goal: 'stayontop',
     title: 'Warn me when stock runs low',
     blurb: 'Emails your team when a product is running low so you can restock.',
-    icon: PackageMinus,
+    icon: faBoxOpen,
     module: 'commerce',
   },
   {
@@ -487,7 +484,7 @@ export const RECIPES: readonly RecipeMeta[] = [
     title: 'Auto-draft restock orders',
     blurb:
       'Drafts a purchase order to your supplier when a product hits its reorder point — you review and send it.',
-    icon: PackagePlus,
+    icon: faBoxOpen,
     module: 'inventory',
   },
   {
@@ -495,7 +492,7 @@ export const RECIPES: readonly RecipeMeta[] = [
     goal: 'stayontop',
     title: 'Follow up with new leads',
     blurb: 'Opens a follow-up to-do, due tomorrow, whenever a new sales lead comes in.',
-    icon: ListChecks,
+    icon: faListCheck,
     module: 'crm',
   },
   {
@@ -503,7 +500,7 @@ export const RECIPES: readonly RecipeMeta[] = [
     goal: 'stayontop',
     title: 'Invoice a won deal',
     blurb: 'Opens a to-do to raise the invoice as soon as a deal is marked won.',
-    icon: Trophy,
+    icon: faTrophy,
     module: 'crm',
   },
   {
@@ -511,7 +508,7 @@ export const RECIPES: readonly RecipeMeta[] = [
     goal: 'stayontop',
     title: 'Alert me to unanswered chats',
     blurb: 'Emails your team when a live chat has gone unanswered for a few minutes.',
-    icon: MessageSquareWarning,
+    icon: faMessageExclamation,
     module: 'chat',
   },
   {
@@ -519,7 +516,7 @@ export const RECIPES: readonly RecipeMeta[] = [
     goal: 'stayontop',
     title: 'Notify me of failed payments',
     blurb: 'Shows you a notification when a customer’s payment fails.',
-    icon: BellRing,
+    icon: faBellRing,
     module: 'commerce',
   },
   {
@@ -527,7 +524,7 @@ export const RECIPES: readonly RecipeMeta[] = [
     goal: 'stayontop',
     title: 'Notify me when something sells out',
     blurb: 'Shows you a notification when a product runs out of stock.',
-    icon: PackageX,
+    icon: faBoxOpen,
     module: 'inventory',
   },
   {
@@ -535,7 +532,7 @@ export const RECIPES: readonly RecipeMeta[] = [
     goal: 'stayontop',
     title: 'Notify me of failed subscription payments',
     blurb: 'Shows you a notification when a subscription renewal payment fails.',
-    icon: Bell,
+    icon: faBell,
     module: 'commerce',
   },
 
@@ -545,7 +542,7 @@ export const RECIPES: readonly RecipeMeta[] = [
     goal: 'audience',
     title: 'Announce new products on social',
     blurb: 'Drafts a social post when you publish a new product, ready for you to review.',
-    icon: Tag,
+    icon: faTag,
     module: 'social',
   },
   {
@@ -553,7 +550,7 @@ export const RECIPES: readonly RecipeMeta[] = [
     goal: 'audience',
     title: 'Announce new articles on social',
     blurb: 'Drafts a social post when you publish a new article, ready for you to review.',
-    icon: Newspaper,
+    icon: faNewspaper,
     module: 'social',
   },
 ];

@@ -14,7 +14,8 @@
 // headline counts and the most-saved products in a single read.
 
 import { Badge, Button, EmptyState, Heading, Text } from '@wizeworks/silicaui-react';
-import { Heart, ServerCrash } from 'lucide-react';
+import { faHeart, faServer } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
@@ -80,7 +81,7 @@ export function WishlistsSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar label="Wishlists controls">
-        <Heart className="size-4 shrink-0" aria-hidden />
+        <Icon glyph={faHeart} className="size-4 shrink-0" aria-hidden />
         <Heading level={2} className="min-w-0 truncate text-base font-semibold">
           {LABEL}
         </Heading>
@@ -98,7 +99,7 @@ export function WishlistsSurface({ ctx }: { ctx: SurfaceContext }) {
         <div className="mx-auto flex w-full max-w-3xl flex-col gap-4">
           {analytics.isError ? (
             <EmptyState
-              icon={<ServerCrash className="size-6" aria-hidden />}
+              icon={<Icon glyph={faServer} className="size-6" aria-hidden />}
               title="Could not load wishlists"
               description={productErrorMessage(
                 analytics.error,
@@ -120,7 +121,7 @@ export function WishlistsSurface({ ctx }: { ctx: SurfaceContext }) {
             <InlineWaiting />
           ) : data.itemCount === 0 ? (
             <EmptyState
-              icon={<Heart className="size-6" aria-hidden />}
+              icon={<Icon glyph={faHeart} className="size-6" aria-hidden />}
               title="Nobody has saved anything yet"
               description="When a shopper saves a product for later, it shows up here. Once a few have, this becomes a good list of what to keep in stock or put on offer — the things people want but haven't bought."
             />

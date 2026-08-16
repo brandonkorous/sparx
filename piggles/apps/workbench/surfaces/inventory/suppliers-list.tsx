@@ -29,7 +29,8 @@ import {
   ToggleGroup,
   ToggleGroupItem,
 } from '@wizeworks/silicaui-react';
-import { Archive, Plus, Truck } from 'lucide-react';
+import { faBoxArchive, faPlus, faTruck } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
@@ -77,7 +78,7 @@ export function SuppliersListSurface({ ctx }: { ctx: SurfaceContext }) {
     if (isError) {
       return (
         <EmptyState
-          icon={<Truck className="size-6" aria-hidden />}
+          icon={<Icon glyph={faTruck} className="size-6" aria-hidden />}
           title="Could not load your suppliers"
           description="This is a problem reaching the server. Your suppliers are unaffected — the list just could not be read just now."
         />
@@ -97,14 +98,14 @@ export function SuppliersListSurface({ ctx }: { ctx: SurfaceContext }) {
             ctx.open('inventory.suppliers.detail', { id: 'new' }, { target: 'tab' });
           }}
         >
-          <Plus className="size-4" aria-hidden />
+          <Icon glyph={faPlus} className="size-4" aria-hidden />
           New supplier
         </Button>
       );
       if (searching) {
         return (
           <EmptyState
-            icon={<Truck className="size-6" aria-hidden />}
+            icon={<Icon glyph={faTruck} className="size-6" aria-hidden />}
             title="No supplier matches that"
             description="Try part of a supplier's name or their short code. Retired suppliers are hidden unless you include archived ones."
           />
@@ -116,7 +117,7 @@ export function SuppliersListSurface({ ctx }: { ctx: SurfaceContext }) {
       if (!includeArchived) {
         return (
           <EmptyState
-            icon={<Truck className="size-6" aria-hidden />}
+            icon={<Icon glyph={faTruck} className="size-6" aria-hidden />}
             title="No active suppliers"
             description="Every supplier you buy from is retired, or you have not added one yet. Add a supplier to start ordering stock, or include archived ones to see retired records."
             actions={addSupplier}
@@ -125,7 +126,7 @@ export function SuppliersListSurface({ ctx }: { ctx: SurfaceContext }) {
       }
       return (
         <EmptyState
-          icon={<Truck className="size-6" aria-hidden />}
+          icon={<Icon glyph={faTruck} className="size-6" aria-hidden />}
           title="No suppliers yet"
           description="A supplier is a business you buy stock from. Add your first one and you can raise purchase orders against it."
           actions={addSupplier}
@@ -237,7 +238,7 @@ export function SuppliersListSurface({ ctx }: { ctx: SurfaceContext }) {
             aria-label="Include archived suppliers"
             title="Include archived suppliers"
           >
-            <Archive className="size-4" aria-hidden />
+            <Icon glyph={faBoxArchive} className="size-4" aria-hidden />
             <span className="hidden @2xl:inline">Archived</span>
           </ToggleGroupItem>
         </ToggleGroup>
@@ -250,7 +251,7 @@ export function SuppliersListSurface({ ctx }: { ctx: SurfaceContext }) {
             ctx.open('inventory.suppliers.detail', { id: 'new' }, { target: 'tab' });
           }}
         >
-          <Plus className="size-4" aria-hidden />
+          <Icon glyph={faPlus} className="size-4" aria-hidden />
           <span className="hidden @lg:inline">New supplier</span>
         </Button>
 

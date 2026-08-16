@@ -27,7 +27,8 @@ import {
 import { useConfirm } from '../../lib/confirm';
 import { PaneEmpty } from '../../components/pane-empty';
 import { PaneWaiting } from '../../components/pane-waiting';
-import { Check, CopyCheck } from 'lucide-react';
+import { faCheck, faClipboardCheck } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { useState } from 'react';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
@@ -143,7 +144,7 @@ export function DuplicatesSurface({ ctx }: { ctx: SurfaceContext }) {
         {isError ? (
           <Card className="min-h-0 flex-1 items-center justify-center">
             <PaneEmpty
-              icon={<CopyCheck className="size-6" aria-hidden />}
+              icon={<Icon glyph={faClipboardCheck} className="size-6" aria-hidden />}
               title="Could not check for duplicates"
               description="Something went wrong reaching the server. It may be a temporary problem — try again in a moment."
               actions={
@@ -164,7 +165,7 @@ export function DuplicatesSurface({ ctx }: { ctx: SurfaceContext }) {
         ) : clusters.length === 0 ? (
           <Card className="min-h-0 flex-1 items-center justify-center">
             <PaneEmpty
-              icon={<CopyCheck className="size-6" aria-hidden />}
+              icon={<Icon glyph={faClipboardCheck} className="size-6" aria-hidden />}
               title="No duplicates found"
               description="Every customer looks unique — nobody shares an email address, or a name and company. We check whenever you reopen this, so come back after a busy spell."
             />
@@ -196,7 +197,7 @@ export function DuplicatesSurface({ ctx }: { ctx: SurfaceContext }) {
                   loading={bulkMerge.isPending}
                   onClick={() => void mergeCertain()}
                 >
-                  <CopyCheck className="size-4" aria-hidden />
+                  <Icon glyph={faClipboardCheck} className="size-4" aria-hidden />
                   Merge {certainCount === 1 ? 'it' : 'all ' + String(certainCount)}
                 </Button>
               </div>
@@ -320,7 +321,7 @@ function DuplicateCard({
               void onMerge();
             }}
           >
-            <CopyCheck className="size-4" aria-hidden />
+            <Icon glyph={faClipboardCheck} className="size-4" aria-hidden />
             Merge into this one
           </Button>
         </footer>
@@ -357,7 +358,7 @@ function CandidateRow({
           aria-pressed={isPrimary}
           onClick={onKeep}
         >
-          {isPrimary ? <Check className="size-4" aria-hidden /> : null}
+          {isPrimary ? <Icon glyph={faCheck} className="size-4" aria-hidden /> : null}
           {isPrimary ? 'Keeping' : 'Keep this one'}
         </Button>
       ) : null}

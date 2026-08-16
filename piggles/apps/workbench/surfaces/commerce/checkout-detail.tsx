@@ -28,7 +28,8 @@ import {
   useToast,
 } from '@wizeworks/silicaui-react';
 import { useConfirm } from '../../lib/confirm';
-import { CreditCard, ShoppingCart } from 'lucide-react';
+import { faCartShopping, faCreditCard } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { FormSection } from '../../components/form-section';
 import { ModuleScope } from '../../components/module-scope';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
@@ -135,7 +136,7 @@ export function CheckoutSessionDetailSurface({ ctx }: { ctx: SurfaceContext }) {
       <div className={PANE_SHELL}>
         <div className="flex min-h-0 flex-1 items-center justify-center">
           <EmptyState
-            icon={<CreditCard className="size-6" aria-hidden />}
+            icon={<Icon glyph={faCreditCard} className="size-6" aria-hidden />}
             title="This checkout is no longer here"
             description="It may have been completed into an order or cleared away after timing out. Nothing is wrong — there is just nothing to show."
           />
@@ -259,7 +260,7 @@ export function CheckoutSessionDetailSurface({ ctx }: { ctx: SurfaceContext }) {
                 ctx.open('commerce.cart.detail', { id: session.cartId }, { target: 'beside' });
               }}
             >
-              <ShoppingCart className="size-4" aria-hidden />
+              <Icon glyph={faCartShopping} className="size-4" aria-hidden />
               See the basket
             </Button>
           </FormSection>

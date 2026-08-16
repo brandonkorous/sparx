@@ -16,7 +16,8 @@
 import { useState } from 'react';
 import { PaneWaiting } from '../../components/pane-waiting';
 import { Badge, Card, EmptyState, Filter, FilterItem, Table } from '@wizeworks/silicaui-react';
-import { Undo2 } from 'lucide-react';
+import { faRotateLeft } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
@@ -112,7 +113,7 @@ export function ReturnsListSurface({ ctx }: { ctx: SurfaceContext }) {
       <Card className="min-h-0 flex-1 overflow-y-auto">
         {error ? (
           <EmptyState
-            icon={<Undo2 className="size-6" aria-hidden />}
+            icon={<Icon glyph={faRotateLeft} className="size-6" aria-hidden />}
             title="Could not load your returns"
             description="This is a problem reaching the server. Your returns are unaffected — nothing has been lost."
           />
@@ -120,7 +121,7 @@ export function ReturnsListSurface({ ctx }: { ctx: SurfaceContext }) {
           <PaneWaiting label="Loading returns…" />
         ) : rows.length === 0 ? (
           <EmptyState
-            icon={<Undo2 className="size-6" aria-hidden />}
+            icon={<Icon glyph={faRotateLeft} className="size-6" aria-hidden />}
             title={filtered ? 'Nothing at this stage' : 'No returns yet'}
             description={
               filtered

@@ -41,7 +41,8 @@ import {
   Textarea,
   useToast,
 } from '@wizeworks/silicaui-react';
-import { Bot, Save } from 'lucide-react';
+import { faFloppyDisk, faRobot } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import { afterPaneChange } from '../../lib/defer';
 import { useViewer } from '../../lib/api/shell-data';
@@ -323,7 +324,7 @@ export function ChatSettingsSurface({ ctx }: { ctx: SurfaceContext }) {
           disabled={!canEdit || !dirty}
           onClick={save}
         >
-          <Save className="size-4" aria-hidden />
+          <Icon glyph={faFloppyDisk} className="size-4" aria-hidden />
           Save changes
         </Button>
         <RefreshButton
@@ -586,7 +587,7 @@ export function ChatSettingsSurface({ ctx }: { ctx: SurfaceContext }) {
 
             {draft.aiEnabled && !config.aiKeyConfigured && keyInput.trim() === '' ? (
               <Alert color="warning" variant="soft">
-                <Bot className="size-5" aria-hidden />
+                <Icon glyph={faRobot} className="size-5" aria-hidden />
                 <AlertContent>
                   <AlertTitle>Connect a key to turn this on</AlertTitle>
                   <AlertDescription>

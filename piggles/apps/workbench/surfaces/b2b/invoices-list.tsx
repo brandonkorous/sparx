@@ -22,7 +22,8 @@ import {
   Text,
   ToolbarSeparator,
 } from '@wizeworks/silicaui-react';
-import { Plus, Receipt, X } from 'lucide-react';
+import { faPlus, faReceipt, faXmark } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { ListEmptyState } from '../../components/list-empty-state';
@@ -141,7 +142,7 @@ export function InvoicesListSurface({ ctx }: { ctx: SurfaceContext }) {
             );
           }}
         >
-          <Plus className="size-4" aria-hidden />
+          <Icon glyph={faPlus} className="size-4" aria-hidden />
           Raise an invoice
         </Button>
 
@@ -167,7 +168,7 @@ export function InvoicesListSurface({ ctx }: { ctx: SurfaceContext }) {
               ctx.open('b2b.invoices.list', {}, { target: 'replace' });
             }}
           >
-            <X className="size-4" aria-hidden />
+            <Icon glyph={faXmark} className="size-4" aria-hidden />
             Show all invoices
           </Button>
         </div>
@@ -176,7 +177,7 @@ export function InvoicesListSurface({ ctx }: { ctx: SurfaceContext }) {
       <Card className="min-h-0 flex-1 overflow-y-auto">
         {isError ? (
           <EmptyState
-            icon={<Receipt className="size-6" aria-hidden />}
+            icon={<Icon glyph={faReceipt} className="size-6" aria-hidden />}
             title="Could not load your invoices"
             description="This is a problem reaching the server. Your invoices are unaffected — nothing has been lost."
           />
@@ -186,7 +187,7 @@ export function InvoicesListSurface({ ctx }: { ctx: SurfaceContext }) {
           <ListEmptyState
             filtered={narrowed}
             noResults={{
-              icon: <Receipt className="size-6" aria-hidden />,
+              icon: <Icon glyph={faReceipt} className="size-6" aria-hidden />,
               title: 'No invoices match that',
               description: 'Try a different word, or switch back to All to see every invoice.',
             }}

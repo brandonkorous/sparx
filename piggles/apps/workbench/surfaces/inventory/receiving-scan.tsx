@@ -42,7 +42,13 @@ import {
   Timestamp,
   Tooltip,
 } from '@wizeworks/silicaui-react';
-import { CircleCheck, PackageCheck, TriangleAlert, Undo2 } from 'lucide-react';
+import {
+  faBoxCheck,
+  faCheckCircle,
+  faExclamationTriangle,
+  faRotateLeft,
+} from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { useConfirm } from '../../lib/confirm';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
@@ -153,7 +159,7 @@ export function ReceivingScanSurface({ ctx }: { ctx: SurfaceContext }) {
             void postIt();
           }}
         >
-          <PackageCheck className="size-4" aria-hidden />
+          <Icon glyph={faBoxCheck} className="size-4" aria-hidden />
           {post.isPending ? 'Booking in…' : 'Book it in'}
         </Button>
 
@@ -255,7 +261,7 @@ export function ReceivingScanSurface({ ctx }: { ctx: SurfaceContext }) {
         {/* The scoreboard. */}
         {lines.length === 0 ? (
           <EmptyState
-            icon={<PackageCheck className="size-6" aria-hidden />}
+            icon={<Icon glyph={faBoxCheck} className="size-6" aria-hidden />}
             title="Nothing on this order"
             description="This purchase order has no lines, so there is nothing to receive against it."
           />
@@ -311,7 +317,11 @@ export function ReceivingScanSurface({ ctx }: { ctx: SurfaceContext }) {
                   </td>
                   <td className="text-right tabular-nums">
                     {line.outstanding === 0 ? (
-                      <CircleCheck className="text-success inline size-4" aria-label="All in" />
+                      <Icon
+                        glyph={faCheckCircle}
+                        className="text-success inline size-4"
+                        aria-label="All in"
+                      />
                     ) : (
                       <span className="font-medium">{line.outstanding}</span>
                     )}
@@ -326,7 +336,7 @@ export function ReceivingScanSurface({ ctx }: { ctx: SurfaceContext }) {
             somebody has to deal with, which means it has to persist. */}
         {data.unresolved.length > 0 ? (
           <Alert color="warning" variant="soft">
-            <TriangleAlert className="size-5 shrink-0" aria-hidden />
+            <Icon glyph={faExclamationTriangle} className="size-5 shrink-0" aria-hidden />
             <AlertContent>
               <AlertTitle>
                 {plural(data.unresolved.length, 'scan', 'scans')} did not match anything
@@ -384,7 +394,7 @@ export function ReceivingScanSurface({ ctx }: { ctx: SurfaceContext }) {
                           undo.mutate(event.id);
                         }}
                       >
-                        <Undo2 className="size-3.5" aria-hidden />
+                        <Icon glyph={faRotateLeft} className="size-3.5" aria-hidden />
                         Undo
                       </Button>
                     </div>

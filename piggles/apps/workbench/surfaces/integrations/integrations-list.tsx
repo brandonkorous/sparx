@@ -43,7 +43,8 @@ import {
   ToggleGroupItem,
   Tooltip,
 } from '@wizeworks/silicaui-react';
-import { Lock, Plug, Plus } from 'lucide-react';
+import { faLock, faPlug, faPlus } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { RefreshButton } from '../../components/refresh-button';
 import { ModuleScope, type WorkbenchModule } from '../../components/module-scope';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
@@ -135,7 +136,7 @@ function IntegrationTile({
 }) {
   const { connection } = integration;
   const connectable = isConnectable(integration);
-  const Icon = categoryIcon(integration.category);
+  const glyph = categoryIcon(integration.category);
 
   return (
     <ClickableCard
@@ -144,7 +145,7 @@ function IntegrationTile({
     >
       <div className="flex w-full min-w-0 items-start gap-2">
         <span className="bg-module text-module-content flex size-8 shrink-0 items-center justify-center rounded-lg">
-          <Icon className="size-4" aria-hidden />
+          <Icon glyph={glyph} className="size-4" aria-hidden />
         </span>
         <span className="flex min-w-0 flex-1 flex-col">
           <span className="truncate font-medium">{integration.name}</span>
@@ -165,7 +166,7 @@ function IntegrationTile({
           </Badge>
         ) : connectable ? (
           <span className="text-module inline-flex items-center gap-1 text-sm font-medium">
-            <Plus className="size-4" aria-hidden />
+            <Icon glyph={faPlus} className="size-4" aria-hidden />
             Connect
           </span>
         ) : (
@@ -247,7 +248,7 @@ function CategoryGroup({
         // mean a tenant can only discover a capability they already know about, which is
         // the failure this panel exists to fix.
         <div className="border-base-300 rounded-box flex items-center gap-2 border border-dashed px-3 py-2">
-          <Lock className="size-4 shrink-0" aria-hidden />
+          <Icon glyph={faLock} className="size-4 shrink-0" aria-hidden />
           <Text className="text-sm">{lockedReason(view)}</Text>
         </div>
       )}
@@ -326,7 +327,7 @@ export function IntegrationsListSurface({ ctx }: { ctx: SurfaceContext }) {
     return (
       <Card className="min-h-0 flex-1 items-center justify-center">
         <PaneEmpty
-          icon={<Plug className="size-6" aria-hidden />}
+          icon={<Icon glyph={faPlug} className="size-6" aria-hidden />}
           title="Could not load your integrations"
           description="This is a problem reaching the server. Your existing connections are unaffected and still working."
           actions={
@@ -430,7 +431,7 @@ export function IntegrationsListSurface({ ctx }: { ctx: SurfaceContext }) {
           </div>
         ) : groups.length === 0 ? (
           <EmptyState
-            icon={<Plug className="size-6" aria-hidden />}
+            icon={<Icon glyph={faPlug} className="size-6" aria-hidden />}
             title="Nothing matches those filters"
             description="Try a different search, or clear the filters to see everything you can connect."
             actions={

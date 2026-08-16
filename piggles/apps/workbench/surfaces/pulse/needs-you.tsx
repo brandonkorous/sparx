@@ -19,7 +19,8 @@
 
 import { useState } from 'react';
 import { Badge, Button, EmptyState, Text, Tooltip } from '@wizeworks/silicaui-react';
-import { Bell, Check } from 'lucide-react';
+import { faBell, faCheck } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { FormSection } from '../../components/form-section';
 import { ListPagination, type PageSize } from '../../components/list-pagination';
 import { describeAgo } from '../../lib/api/activity';
@@ -117,7 +118,7 @@ export function NeedsYou({ ctx }: { ctx: SurfaceContext }) {
 
       {empty ? (
         <EmptyState
-          icon={<Bell className="size-6" aria-hidden />}
+          icon={<Icon glyph={faBell} className="size-6" aria-hidden />}
           // Empty is a WIN here, not an absence, and the words have to say so.
           // The first draft read "Nothing needs you" — which lands as *nobody
           // needs you*, from a product, to someone running their own business,
@@ -268,7 +269,7 @@ function NoticeRow({
             }
             onClick={onRead}
           >
-            <Check className="size-4" aria-hidden />
+            <Icon glyph={faCheck} className="size-4" aria-hidden />
           </Button>
         </Tooltip>
       ) : null}

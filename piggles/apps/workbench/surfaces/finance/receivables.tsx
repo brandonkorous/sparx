@@ -27,7 +27,8 @@ import {
   Table,
   Text,
 } from '@wizeworks/silicaui-react';
-import { ArrowDown, ArrowUp, CheckCircle2, ReceiptText } from 'lucide-react';
+import { faArrowDown, faArrowUp, faCircleCheck, faReceipt } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
@@ -160,9 +161,9 @@ export function ReceivablesSurface({ ctx }: { ctx: SurfaceContext }) {
         {label}
         {sort.key === key ? (
           sort.dir === 'asc' ? (
-            <ArrowUp className="size-3" aria-hidden />
+            <Icon glyph={faArrowUp} className="size-3" aria-hidden />
           ) : (
-            <ArrowDown className="size-3" aria-hidden />
+            <Icon glyph={faArrowDown} className="size-3" aria-hidden />
           )
         ) : null}
       </button>
@@ -222,7 +223,7 @@ export function ReceivablesSurface({ ctx }: { ctx: SurfaceContext }) {
       <div className="min-h-0 flex-1 overflow-y-auto">
         {isError ? (
           <EmptyState
-            icon={<ReceiptText className="size-6" aria-hidden />}
+            icon={<Icon glyph={faReceipt} className="size-6" aria-hidden />}
             title="Could not load what you're owed"
             description="This can happen if invoicing isn't switched on for this business, or the server couldn't be reached. Your invoices are unaffected."
             actions={
@@ -242,7 +243,7 @@ export function ReceivablesSurface({ ctx }: { ctx: SurfaceContext }) {
         ) : allPaidUp ? (
           <Card className="min-h-0 flex-1 items-center justify-center">
             <PaneEmpty
-              icon={<CheckCircle2 className="size-6" aria-hidden />}
+              icon={<Icon glyph={faCircleCheck} className="size-6" aria-hidden />}
               title="You're all paid up"
               description="Every invoice you've sent has been paid. When something is invoiced but still owed, it'll show here — sorted by how late it is."
             />
@@ -290,7 +291,7 @@ export function ReceivablesSurface({ ctx }: { ctx: SurfaceContext }) {
             {rows.length === 0 ? (
               <Card>
                 <EmptyState
-                  icon={<ReceiptText className="size-6" aria-hidden />}
+                  icon={<Icon glyph={faReceipt} className="size-6" aria-hidden />}
                   title="No invoices match those filters"
                   description="Try a different search, or switch the aging filter back to All. Your total outstanding above still counts every open invoice."
                 />

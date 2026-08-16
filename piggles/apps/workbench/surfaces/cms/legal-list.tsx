@@ -38,7 +38,17 @@ import {
   useToast,
 } from '@wizeworks/silicaui-react';
 import { useConfirm } from '../../lib/confirm';
-import { Check, Eye, EyeOff, Link2, Plus, Scale, SquarePen, Trash2 } from 'lucide-react';
+import {
+  faCheck,
+  faEye,
+  faEyeSlash,
+  faLink,
+  faPenSquare,
+  faPlus,
+  faScaleBalanced,
+  faTrashCan,
+} from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { FormSection } from '../../components/form-section';
 import { RefreshButton } from '../../components/refresh-button';
@@ -178,7 +188,7 @@ export function LegalListSurface({ ctx }: { ctx: SurfaceContext }) {
       <Card className="min-h-0 flex-1 overflow-y-auto">
         {checklist.isError ? (
           <EmptyState
-            icon={<Scale className="size-6" aria-hidden />}
+            icon={<Icon glyph={faScaleBalanced} className="size-6" aria-hidden />}
             title="Could not load your legal pages"
             description="This is a problem reaching the server. None of your pages are affected — nothing has been lost."
             actions={
@@ -331,7 +341,7 @@ function ChecklistRows({
                     onAdd(item);
                   }}
                 >
-                  <Plus className="size-4" aria-hidden />
+                  <Icon glyph={faPlus} className="size-4" aria-hidden />
                   Add
                 </Button>
               ) : (
@@ -346,7 +356,7 @@ function ChecklistRows({
                         onAcknowledge(item);
                       }}
                     >
-                      <Check className="size-4" aria-hidden />
+                      <Icon glyph={faCheck} className="size-4" aria-hidden />
                       Mark reviewed
                     </Button>
                   ) : null}
@@ -359,7 +369,7 @@ function ChecklistRows({
                       onEdit(item, event);
                     }}
                   >
-                    <SquarePen className="size-4" aria-hidden />
+                    <Icon glyph={faPenSquare} className="size-4" aria-hidden />
                     Edit text
                   </Button>
                 </>
@@ -520,7 +530,7 @@ function PlacementsSection({ items, placements }: PlacementsSectionProps) {
                   >
                     <div className="flex min-w-0 flex-[1_1_16rem] flex-col">
                       <div className="flex flex-wrap items-center gap-2">
-                        <Link2 className="size-4 shrink-0" aria-hidden />
+                        <Icon glyph={faLink} className="size-4 shrink-0" aria-hidden />
                         <Text className="font-medium">{name}</Text>
                         {!row.enabled ? (
                           <Badge color="neutral" variant="soft" size="sm">
@@ -555,9 +565,9 @@ function PlacementsSection({ items, placements }: PlacementsSectionProps) {
                         }}
                       >
                         {row.enabled ? (
-                          <EyeOff className="size-4" aria-hidden />
+                          <Icon glyph={faEyeSlash} className="size-4" aria-hidden />
                         ) : (
-                          <Eye className="size-4" aria-hidden />
+                          <Icon glyph={faEye} className="size-4" aria-hidden />
                         )}
                         {row.enabled ? 'Hide' : 'Show'}
                       </Button>
@@ -570,7 +580,7 @@ function PlacementsSection({ items, placements }: PlacementsSectionProps) {
                           void removeRow(row);
                         }}
                       >
-                        <Trash2 className="size-4" aria-hidden />
+                        <Icon glyph={faTrashCan} className="size-4" aria-hidden />
                         Remove
                       </Button>
                     </div>
@@ -607,7 +617,7 @@ function PlacementsSection({ items, placements }: PlacementsSectionProps) {
                 loading={add.isPending}
                 onClick={linkChosen}
               >
-                <Plus className="size-4" aria-hidden />
+                <Icon glyph={faPlus} className="size-4" aria-hidden />
                 Link to footer
               </Button>
             </div>

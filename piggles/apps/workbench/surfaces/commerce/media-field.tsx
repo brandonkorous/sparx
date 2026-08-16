@@ -28,7 +28,8 @@ import {
   Text,
   useToast,
 } from '@wizeworks/silicaui-react';
-import { ImageOff, ImagePlus, Trash2, Upload } from 'lucide-react';
+import { faImageSlash, faImages, faTrashCan, faUpload } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { PaneScope } from '../../lib/dock/window-boundary';
 import { api } from '../../lib/api/client';
 import { useMediaAssets, useUploadMedia, type MediaAsset } from './products-data';
@@ -135,7 +136,7 @@ export function MediaField({
             />
           ) : (
             <span className="flex h-full items-center justify-center">
-              <ImageOff className="size-5" aria-hidden />
+              <Icon glyph={faImageSlash} className="size-5" aria-hidden />
             </span>
           )}
         </div>
@@ -149,7 +150,7 @@ export function MediaField({
               setOpen(true);
             }}
           >
-            <ImagePlus className="size-4" aria-hidden />
+            <Icon glyph={faImages} className="size-4" aria-hidden />
             {value ? 'Change picture' : 'Choose a picture'}
           </Button>
           {value ? (
@@ -161,7 +162,7 @@ export function MediaField({
                 onChange(null);
               }}
             >
-              <Trash2 className="size-4" aria-hidden />
+              <Icon glyph={faTrashCan} className="size-4" aria-hidden />
               Remove
             </Button>
           ) : null}
@@ -275,7 +276,7 @@ function MediaPickerDialog({
                 fileRef.current?.click();
               }}
             >
-              <Upload className="size-4" aria-hidden />
+              <Icon glyph={faUpload} className="size-4" aria-hidden />
               Upload
             </Button>
           </div>
@@ -299,7 +300,7 @@ function MediaPickerDialog({
               <PaneWaiting label="Loading your pictures…" />
             ) : assets.length === 0 ? (
               <div className="flex flex-col items-center gap-1 p-8 text-center">
-                <ImageOff className="size-6" aria-hidden />
+                <Icon glyph={faImageSlash} className="size-6" aria-hidden />
                 <Text>
                   {search
                     ? `No pictures match “${search.trim()}”.`
@@ -334,7 +335,7 @@ function MediaPickerDialog({
                         />
                       ) : (
                         <span className="flex h-full items-center justify-center">
-                          <ImageOff className="size-4" aria-hidden />
+                          <Icon glyph={faImageSlash} className="size-4" aria-hidden />
                         </span>
                       )}
                     </button>

@@ -28,7 +28,8 @@ import {
   ToggleGroupItem,
   ToolbarSeparator,
 } from '@wizeworks/silicaui-react';
-import { Briefcase, EyeOff, Plus } from 'lucide-react';
+import { faBriefcase, faEyeSlash, faPlus } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { ListEmptyState } from '../../components/list-empty-state';
@@ -104,7 +105,7 @@ export function ServicesListSurface({ ctx }: { ctx: SurfaceContext }) {
     if (isError) {
       return (
         <EmptyState
-          icon={<Briefcase className="size-6" aria-hidden />}
+          icon={<Icon glyph={faBriefcase} className="size-6" aria-hidden />}
           title="Could not load your services"
           description="This is a problem reaching the server. Your services are unaffected — the list just could not be read just now."
           actions={
@@ -131,7 +132,7 @@ export function ServicesListSurface({ ctx }: { ctx: SurfaceContext }) {
         <ListEmptyState
           filtered={narrowed}
           noResults={{
-            icon: <Briefcase className="size-6" aria-hidden />,
+            icon: <Icon glyph={faBriefcase} className="size-6" aria-hidden />,
             title: 'Nothing matches that',
             description: emptyAdvice(search.trim(), typeLabel, activeOnly),
           }}
@@ -147,7 +148,7 @@ export function ServicesListSurface({ ctx }: { ctx: SurfaceContext }) {
                   openNew({ shiftKey: false, altKey: false });
                 }}
               >
-                <Plus className="size-4" aria-hidden />
+                <Icon glyph={faPlus} className="size-4" aria-hidden />
                 New service
               </Button>
             ),
@@ -272,7 +273,7 @@ export function ServicesListSurface({ ctx }: { ctx: SurfaceContext }) {
             aria-label="Hide switched-off services"
             title="Hide switched-off services"
           >
-            <EyeOff className="size-4" aria-hidden />
+            <Icon glyph={faEyeSlash} className="size-4" aria-hidden />
             <span className="hidden @2xl:inline">Active only</span>
           </ToggleGroupItem>
         </ToggleGroup>
@@ -284,7 +285,7 @@ export function ServicesListSurface({ ctx }: { ctx: SurfaceContext }) {
           title="New service — hold Shift to open alongside, Alt for a new window"
           onClick={openNew}
         >
-          <Plus className="size-4" aria-hidden />
+          <Icon glyph={faPlus} className="size-4" aria-hidden />
           <span className="hidden @lg:inline">New service</span>
         </Button>
 

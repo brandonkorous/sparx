@@ -1,14 +1,25 @@
 // Site — designing what visitors actually see.
 //
-// Six nav rows, mirroring the tested dashboard shape (docs/40 + the dashboard
-// builder manifest): the two builders lead (Editor · Email), then the design
-// assets (Site · Blueprints · Saved pieces), then the Forms inbox. There is NO
-// separate "pages" or "email designs" list — the silica <Builder> owns page
-// selection + site layout (header/footer/menus), and the email studio owns its
-// own email switcher — so listing those separately would duplicate a picker the
-// editor already ships.
+// The builders lead, in the order someone works: a Page, the Header & footer that
+// wraps every page, the Look & feel underneath both, then Email designs. Each is
+// ONE document in its own pane, so several can be open at once — a page beside the
+// header it wears, or two pages side by side.
+//
+// `builder.studio` is the OLD whole-site editor, still listed while the per-document
+// panes land (the cutover is Phase 9 of piggles/docs/features/builder). Then the
+// design assets (Site · Blueprints · Saved pieces), and the Forms inbox.
 
-import { BarChart3, Component, Globe, Inbox, LayoutTemplate, Mail, Pencil } from 'lucide-react';
+import {
+  faChartColumn,
+  faCube,
+  faEnvelope,
+  faFileLines,
+  faGlobe,
+  faInbox,
+  faPalette,
+  faPencil,
+  faTableLayout,
+} from '@fortawesome/pro-solid-svg-icons';
 import type { SurfaceDefinition } from '../registry';
 import { StudioSurface } from '../../../surfaces/builder/studio/studio-surface';
 import { SiteIdentitySurface } from '../../../surfaces/builder/site-identity';
@@ -17,6 +28,10 @@ import { BlueprintDetailSurface } from '../../../surfaces/builder/blueprint-deta
 import { SavedPiecesListSurface } from '../../../surfaces/builder/saved-pieces-list';
 import { SavedPieceDetailSurface } from '../../../surfaces/builder/saved-piece-detail';
 import { EmailEditorSurface } from '../../../surfaces/builder/email/email-editor';
+import { ThemePaneSurface } from '../../../surfaces/studio/theme-pane';
+import { LayoutPaneSurface } from '../../../surfaces/studio/layout-pane';
+import { PagePaneSurface } from '../../../surfaces/studio/page-pane';
+import { PiecePaneSurface } from '../../../surfaces/studio/piece-pane';
 import { FormSubmissionsListSurface } from '../../../surfaces/builder/form-submissions-list';
 import { SubmissionDetailSurface } from '../../../surfaces/builder/submission-detail';
 import { PageResultsSurface } from '../../../surfaces/builder/page-results';
@@ -27,7 +42,7 @@ export const BUILDER_SURFACES: SurfaceDefinition[] = [
     key: 'builder.studio',
     title: 'Editor',
     module: 'builder',
-    icon: Pencil,
+    icon: faPencil,
     order: 1,
     // 'header'/'footer'/'menu' land here now: site layout is edited on the
     // editor's canvas, not a separate surface.
@@ -49,11 +64,47 @@ export const BUILDER_SURFACES: SurfaceDefinition[] = [
     component: StudioSurface,
   },
   {
+    key: 'builder.theme',
+    title: 'Look & feel',
+    module: 'builder',
+    icon: faPalette,
+    order: 4,
+    keywords: ['theme', 'colours', 'colors', 'fonts', 'brand', 'style', 'look'],
+    // A theme is TENANT-wide and reusable across sites, so this is its own pane
+    // rather than a mode inside the page editor — open it beside a page and a
+    // colour change repaints that page as it is dragged.
+    component: ThemePaneSurface,
+  },
+  {
+    key: 'builder.page',
+    title: 'Page',
+    module: 'builder',
+    icon: faFileLines,
+    order: 2,
+    keywords: ['page', 'edit page', 'design page', 'home page', 'about', 'landing'],
+    // ONE page, opened with `{ pageId }` — several of these can be open at once, on
+    // different pages, because each is its own document. Opened with no page it
+    // asks which one, rather than showing a blank canvas.
+    component: PagePaneSurface,
+  },
+  {
+    key: 'builder.layout',
+    title: 'Header & footer',
+    module: 'builder',
+    icon: faTableLayout,
+    order: 3,
+    keywords: ['header', 'footer', 'menu', 'nav', 'navigation', 'layout', 'chrome', 'logo bar'],
+    // The chrome every page renders inside. Its own pane rather than a mode in the
+    // page editor: a site has ONE of these, it publishes on its own, and open beside
+    // a page it shows the header that page will actually wear.
+    component: LayoutPaneSurface,
+  },
+  {
     key: 'builder.email',
     title: 'Email designs',
     module: 'builder',
-    icon: Mail,
-    order: 2,
+    icon: faEnvelope,
+    order: 6,
     keywords: ['newsletter', 'template', 'campaign design', 'email'],
     // The email studio — silica `<EmailBuilder>` with a built-in switcher +
     // new/rename/delete/fork/publish. One surface, no separate list.
@@ -65,7 +116,7 @@ export const BUILDER_SURFACES: SurfaceDefinition[] = [
     key: 'builder.site',
     title: 'Site',
     module: 'builder',
-    icon: Globe,
+    icon: faGlobe,
     section: 'Design',
     order: 10,
     keywords: ['identity', 'name', 'tagline', 'logo', 'favicon', 'social', 'brand'],
@@ -77,7 +128,7 @@ export const BUILDER_SURFACES: SurfaceDefinition[] = [
     key: 'builder.blueprints',
     title: 'Blueprints',
     module: 'builder',
-    icon: LayoutTemplate,
+    icon: faTableLayout,
     section: 'Design',
     order: 11,
     keywords: ['templates', 'starters', 'themes'],
@@ -87,7 +138,7 @@ export const BUILDER_SURFACES: SurfaceDefinition[] = [
     key: 'builder.blueprint',
     title: 'Blueprint',
     module: 'builder',
-    icon: LayoutTemplate,
+    icon: faTableLayout,
     component: BlueprintDetailSurface,
     // Opened from the gallery with `{ key }`.
     listed: false,
@@ -96,7 +147,7 @@ export const BUILDER_SURFACES: SurfaceDefinition[] = [
     key: 'builder.components',
     title: 'Saved pieces',
     module: 'builder',
-    icon: Component,
+    icon: faCube,
     section: 'Design',
     order: 12,
     keywords: ['components', 'blocks', 'reusable', 'sections'],
@@ -105,10 +156,22 @@ export const BUILDER_SURFACES: SurfaceDefinition[] = [
     component: SavedPiecesListSurface,
   },
   {
+    key: 'builder.piece',
+    title: 'Saved piece',
+    module: 'builder',
+    icon: faCube,
+    order: 5,
+    keywords: ['saved piece', 'reusable', 'component', 'edit piece', 'shared design'],
+    // ONE master, opened with `{ pieceId }`. Open it beside a page that uses it and
+    // the page repaints as you type — the same document in two panes, which is what
+    // the per-document session is for.
+    component: PiecePaneSurface,
+  },
+  {
     key: 'builder.component',
     title: 'Saved piece',
     module: 'builder',
-    icon: Component,
+    icon: faCube,
     component: SavedPieceDetailSurface,
     listed: false,
   },
@@ -118,7 +181,7 @@ export const BUILDER_SURFACES: SurfaceDefinition[] = [
     key: 'builder.pages',
     title: 'Page results',
     module: 'builder',
-    icon: BarChart3,
+    icon: faChartColumn,
     section: 'Results',
     order: 15,
     keywords: ['analytics', 'traffic', 'views', 'visitors', 'performance', 'conversion', 'speed'],
@@ -132,7 +195,7 @@ export const BUILDER_SURFACES: SurfaceDefinition[] = [
     key: 'builder.forms',
     title: 'Form submissions',
     module: 'builder',
-    icon: Inbox,
+    icon: faInbox,
     section: 'Forms',
     order: 20,
     keywords: ['contact', 'enquiries', 'leads', 'messages'],
@@ -142,7 +205,7 @@ export const BUILDER_SURFACES: SurfaceDefinition[] = [
     key: 'builder.submission',
     title: 'Submission',
     module: 'builder',
-    icon: Inbox,
+    icon: faInbox,
     component: SubmissionDetailSurface,
     listed: false,
   },

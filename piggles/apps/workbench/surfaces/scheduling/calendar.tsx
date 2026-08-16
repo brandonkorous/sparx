@@ -32,7 +32,13 @@ import {
   ToolbarSeparator,
   Tooltip,
 } from '@wizeworks/silicaui-react';
-import { CalendarOff, ChevronLeft, ChevronRight, Link2 } from 'lucide-react';
+import {
+  faCalendarXmark,
+  faChevronLeft,
+  faChevronRight,
+  faLink,
+} from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
@@ -164,7 +170,7 @@ export function CalendarSurface({ ctx }: { ctx: SurfaceContext }) {
     if (isError) {
       return (
         <EmptyState
-          icon={<CalendarOff className="size-6" aria-hidden />}
+          icon={<Icon glyph={faCalendarXmark} className="size-6" aria-hidden />}
           title="Could not load your diary"
           description="This is a problem reaching the server. Nothing in your diary has changed — the bookings just could not be read just now."
           actions={
@@ -237,7 +243,7 @@ export function CalendarSurface({ ctx }: { ctx: SurfaceContext }) {
               step(-1);
             }}
           >
-            <ChevronLeft className="size-4" aria-hidden />
+            <Icon glyph={faChevronLeft} className="size-4" aria-hidden />
           </Button>
           <Button
             size="sm"
@@ -249,7 +255,7 @@ export function CalendarSurface({ ctx }: { ctx: SurfaceContext }) {
               step(1);
             }}
           >
-            <ChevronRight className="size-4" aria-hidden />
+            <Icon glyph={faChevronRight} className="size-4" aria-hidden />
           </Button>
         </Join>
 
@@ -305,7 +311,7 @@ export function CalendarSurface({ ctx }: { ctx: SurfaceContext }) {
               ctx.open('scheduling.calendar.connections', {}, { target: 'beside' });
             }}
           >
-            <Link2 className="size-4" aria-hidden />
+            <Icon glyph={faLink} className="size-4" aria-hidden />
           </Button>
         </Tooltip>
 

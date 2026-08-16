@@ -25,7 +25,8 @@ import {
   Text,
   Timestamp,
 } from '@wizeworks/silicaui-react';
-import { History } from 'lucide-react';
+import { faClockRotateLeft } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { PaneWaiting } from '../../components/pane-waiting';
 import { FormSection } from '../../components/form-section';
 import { ACTIVITY_MAX, activityKindLabel, activityTone, type ActivityEntry } from './security-data';
@@ -85,7 +86,7 @@ export function ActivityCard({
         <PaneWaiting label="Loading your activity…" />
       ) : rows.length === 0 ? (
         <EmptyState
-          icon={<History className="size-6" aria-hidden />}
+          icon={<Icon glyph={faClockRotateLeft} className="size-6" aria-hidden />}
           title="Nothing has happened yet"
           description="As you and your team work in your account, everything you do shows up here."
         />

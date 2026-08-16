@@ -36,7 +36,8 @@ import {
   Table,
   ToolbarSeparator,
 } from '@wizeworks/silicaui-react';
-import { ArrowDown, ArrowUp, GitBranch, Plus } from 'lucide-react';
+import { faArrowDown, faArrowUp, faCodeBranch, faPlus } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
@@ -130,9 +131,9 @@ export function WorkflowsListSurface({ ctx }: { ctx: SurfaceContext }) {
         {label}
         {sort?.key === key ? (
           sort.dir === 'asc' ? (
-            <ArrowUp className="size-3" aria-hidden />
+            <Icon glyph={faArrowUp} className="size-3" aria-hidden />
           ) : (
-            <ArrowDown className="size-3" aria-hidden />
+            <Icon glyph={faArrowDown} className="size-3" aria-hidden />
           )
         ) : null}
       </button>
@@ -187,7 +188,7 @@ export function WorkflowsListSurface({ ctx }: { ctx: SurfaceContext }) {
             ctx.open('invoicing.workflow.edit', { id: 'new' }, { target: targetFor(event) });
           }}
         >
-          <Plus className="size-4" aria-hidden />
+          <Icon glyph={faPlus} className="size-4" aria-hidden />
           <span className="hidden @lg:inline">New workflow</span>
         </Button>
 
@@ -205,7 +206,7 @@ export function WorkflowsListSurface({ ctx }: { ctx: SurfaceContext }) {
       <Card className="min-h-0 flex-1 overflow-y-auto">
         {isError ? (
           <EmptyState
-            icon={<GitBranch className="size-6" aria-hidden />}
+            icon={<Icon glyph={faCodeBranch} className="size-6" aria-hidden />}
             title="Could not load your workflows"
             description={workflowErrorMessage(
               error,
@@ -227,7 +228,7 @@ export function WorkflowsListSurface({ ctx }: { ctx: SurfaceContext }) {
           <PaneWaiting label="Loading workflows…" />
         ) : rows.length === 0 ? (
           <EmptyState
-            icon={<GitBranch className="size-6" aria-hidden />}
+            icon={<Icon glyph={faCodeBranch} className="size-6" aria-hidden />}
             title={
               needle || state !== 'active' ? 'Nothing matches those filters' : 'No workflows yet'
             }

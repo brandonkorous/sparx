@@ -36,7 +36,8 @@ import {
   FilterItem,
   Table,
 } from '@wizeworks/silicaui-react';
-import { BarChart3 } from 'lucide-react';
+import { faChartColumn } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
@@ -142,7 +143,7 @@ export function PageResultsSurface({ ctx }: { ctx: SurfaceContext }) {
 
         {error && !staleAfterFailure ? (
           <EmptyState
-            icon={<BarChart3 className="size-6" aria-hidden />}
+            icon={<Icon glyph={faChartColumn} className="size-6" aria-hidden />}
             title="Could not load your page results"
             description="This is a problem reaching the server. Nothing about your site or your figures has changed."
             actions={
@@ -161,7 +162,7 @@ export function PageResultsSurface({ ctx }: { ctx: SurfaceContext }) {
           <PaneWaiting label="Adding up your pages…" />
         ) : rows.length === 0 ? (
           <EmptyState
-            icon={<BarChart3 className="size-6" aria-hidden />}
+            icon={<Icon glyph={faChartColumn} className="size-6" aria-hidden />}
             title="No pages yet"
             description="Once you have built a page and someone has visited it, this is where you find out how it did — how many people saw it, how many of them bought something, and how quickly it appeared for them."
           />

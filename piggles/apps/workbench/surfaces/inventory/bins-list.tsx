@@ -38,7 +38,8 @@ import {
   ToolbarSeparator,
   Tooltip,
 } from '@wizeworks/silicaui-react';
-import { Grid3x3, QrCode, Search } from 'lucide-react';
+import { faGrid, faMagnifyingGlass, faQrcode } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
@@ -120,7 +121,7 @@ export function BinsListSurface({ ctx }: { ctx: SurfaceContext }) {
     if (isError) {
       return (
         <EmptyState
-          icon={<Grid3x3 className="size-6" aria-hidden />}
+          icon={<Icon glyph={faGrid} className="size-6" aria-hidden />}
           title="Could not load your shelves"
           description="This is a problem reaching the server. Your shelves and their stock are unaffected — they just could not be read just now."
         />
@@ -138,9 +139,9 @@ export function BinsListSurface({ ctx }: { ctx: SurfaceContext }) {
         <EmptyState
           icon={
             narrowed ? (
-              <Search className="size-6" aria-hidden />
+              <Icon glyph={faMagnifyingGlass} className="size-6" aria-hidden />
             ) : (
-              <Grid3x3 className="size-6" aria-hidden />
+              <Icon glyph={faGrid} className="size-6" aria-hidden />
             )
           }
           title={narrowed ? 'Nothing matches that' : 'No shelves set up yet'}
@@ -268,7 +269,7 @@ export function BinsListSurface({ ctx }: { ctx: SurfaceContext }) {
               );
             }}
           >
-            <QrCode className="size-4" aria-hidden />
+            <Icon glyph={faQrcode} className="size-4" aria-hidden />
             Labels
           </Button>
         </Tooltip>

@@ -46,7 +46,8 @@ import {
   Timestamp,
   useToast,
 } from '@wizeworks/silicaui-react';
-import { Calculator, Save, SlidersHorizontal } from 'lucide-react';
+import { faCalculator, faFloppyDisk, faSliders } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import { FormSection } from '../../components/form-section';
@@ -387,7 +388,7 @@ export function PlanningSettingsSurface({ ctx }: { ctx: SurfaceContext }) {
               loading={recompute.isPending}
               onClick={onRecompute}
             >
-              <Calculator className="size-4" aria-hidden />
+              <Icon glyph={faCalculator} className="size-4" aria-hidden />
               Work these out now
             </Button>
           }
@@ -415,7 +416,7 @@ export function PlanningSettingsSurface({ ctx }: { ctx: SurfaceContext }) {
     <div className={PANE_SHELL}>
       <PaneToolbar label="Planning settings actions">
         <span className="inline-flex items-center gap-1.5">
-          <SlidersHorizontal className="size-4" aria-hidden />
+          <Icon glyph={faSliders} className="size-4" aria-hidden />
           <Text as="span" className="text-sm font-medium">
             Planning settings
           </Text>
@@ -434,7 +435,7 @@ export function PlanningSettingsSurface({ ctx }: { ctx: SurfaceContext }) {
           loading={save.isPending}
           onClick={onSave}
         >
-          <Save className="size-4" aria-hidden />
+          <Icon glyph={faFloppyDisk} className="size-4" aria-hidden />
           Save
         </Button>
         <RefreshButton

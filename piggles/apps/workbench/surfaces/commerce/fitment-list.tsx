@@ -16,7 +16,8 @@
 import { useMemo, useState } from 'react';
 import { PaneWaiting } from '../../components/pane-waiting';
 import { Button, Card, EmptyState, SearchInput, Table, useToast } from '@wizeworks/silicaui-react';
-import { Plus, Puzzle, Sparkles } from 'lucide-react';
+import { faPlus, faPuzzlePiece, faSparkles } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import { afterPaneChange } from '../../lib/defer';
@@ -93,7 +94,7 @@ export function FitmentListSurface({ ctx }: { ctx: SurfaceContext }) {
             setPickerOpen(true);
           }}
         >
-          <Sparkles className="size-4" aria-hidden />
+          <Icon glyph={faSparkles} className="size-4" aria-hidden />
           <span className="hidden @xl:inline">Starter library</span>
         </Button>
         <Button
@@ -103,7 +104,7 @@ export function FitmentListSurface({ ctx }: { ctx: SurfaceContext }) {
           title="Build a list from scratch — hold Shift to open alongside, Alt for a new window"
           onClick={create}
         >
-          <Plus className="size-4" aria-hidden />
+          <Icon glyph={faPlus} className="size-4" aria-hidden />
           <span className="hidden @xl:inline">Add a list</span>
         </Button>
         <RefreshButton
@@ -118,7 +119,7 @@ export function FitmentListSurface({ ctx }: { ctx: SurfaceContext }) {
       <Card className="min-h-0 flex-1 overflow-y-auto">
         {isError ? (
           <EmptyState
-            icon={<Puzzle className="size-6" aria-hidden />}
+            icon={<Icon glyph={faPuzzlePiece} className="size-6" aria-hidden />}
             title="Could not load your compatibility lists"
             description="This is a problem reaching the server. Your lists are unaffected — nothing has been lost."
             actions={
@@ -140,13 +141,13 @@ export function FitmentListSurface({ ctx }: { ctx: SurfaceContext }) {
           // someone to set up their first list when they have twelve and mistyped
           // is the worse mistake.
           <EmptyState
-            icon={<Puzzle className="size-6" aria-hidden />}
+            icon={<Icon glyph={faPuzzlePiece} className="size-6" aria-hidden />}
             title="No lists match that"
             description="Try part of the list's name or one of its levels — or clear the search to see them all."
           />
         ) : domains.length === 0 ? (
           <EmptyState
-            icon={<Puzzle className="size-6" aria-hidden />}
+            icon={<Icon glyph={faPuzzlePiece} className="size-6" aria-hidden />}
             title="No compatibility lists yet"
             description="A compatibility list lets shoppers filter to just the products that fit what they own — a vehicle, a phone, a machine. Start from a ready-made list, or build your own."
             actions={
@@ -158,7 +159,7 @@ export function FitmentListSurface({ ctx }: { ctx: SurfaceContext }) {
                     setPickerOpen(true);
                   }}
                 >
-                  <Sparkles className="size-4" aria-hidden />
+                  <Icon glyph={faSparkles} className="size-4" aria-hidden />
                   Start from a ready-made list
                 </Button>
                 <Button
@@ -169,7 +170,7 @@ export function FitmentListSurface({ ctx }: { ctx: SurfaceContext }) {
                     create({ shiftKey: false, altKey: false });
                   }}
                 >
-                  <Plus className="size-4" aria-hidden />
+                  <Icon glyph={faPlus} className="size-4" aria-hidden />
                   Build one from scratch
                 </Button>
               </div>
@@ -186,7 +187,7 @@ export function FitmentListSurface({ ctx }: { ctx: SurfaceContext }) {
             </thead>
             <tbody>
               {matches.map((domain) => {
-                const Icon = resolveFitmentIcon(domain.iconKey);
+                const glyph = resolveFitmentIcon(domain.iconKey);
                 return (
                   <tr
                     key={domain.id}
@@ -204,7 +205,7 @@ export function FitmentListSurface({ ctx }: { ctx: SurfaceContext }) {
                   >
                     <td>
                       <span className="flex items-center gap-2">
-                        <Icon className="size-4 shrink-0" aria-hidden />
+                        <Icon glyph={glyph} className="size-4 shrink-0" aria-hidden />
                         <span className="min-w-0 truncate font-medium">{domain.displayName}</span>
                       </span>
                       {/* On a narrow pane the "what it narrows down" column is

@@ -23,7 +23,9 @@ import { useState } from 'react';
 import { PaneEmpty } from '../../components/pane-empty';
 import { PaneWaiting } from '../../components/pane-waiting';
 import { Badge, Button, Card, Filter, FilterItem, Heading, Text } from '@wizeworks/silicaui-react';
-import { LayoutTemplate } from 'lucide-react';
+import { faTableLayout } from '@fortawesome/pro-solid-svg-icons';
+
+import { Icon } from '@piggles/ui';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
@@ -79,7 +81,7 @@ function BlueprintCard({
         />
       ) : (
         <div className="bg-base-200 flex aspect-video w-full items-center justify-center">
-          <LayoutTemplate className="size-8 [color:var(--color-module)]" aria-hidden />
+          <Icon glyph={faTableLayout} className="size-8 [color:var(--color-module)]" aria-hidden />
         </div>
       )}
 
@@ -183,7 +185,7 @@ export function BlueprintsListSurface({ ctx }: { ctx: SurfaceContext }) {
           // connection failure is the wrong story to tell.
           <Card className="min-h-0 flex-1 items-center justify-center">
             <PaneEmpty
-              icon={<LayoutTemplate className="size-6" aria-hidden />}
+              icon={<Icon glyph={faTableLayout} className="size-6" aria-hidden />}
               title="Could not load the designs"
               description="This is a problem reaching the server. Your site and anything you have already added are unaffected."
               actions={
@@ -204,7 +206,7 @@ export function BlueprintsListSurface({ ctx }: { ctx: SurfaceContext }) {
         ) : rows.length === 0 ? (
           <Card className="min-h-0 flex-1 items-center justify-center">
             <PaneEmpty
-              icon={<LayoutTemplate className="size-6" aria-hidden />}
+              icon={<Icon glyph={faTableLayout} className="size-6" aria-hidden />}
               title={installedOnly ? 'Nothing added to this site yet' : 'No designs available'}
               description={
                 installedOnly

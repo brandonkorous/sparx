@@ -2,19 +2,20 @@
 
 import { type ReactNode } from 'react';
 import {
-  Briefcase,
-  Car,
-  ChevronDown,
-  Cpu,
-  Dumbbell,
-  Plus,
-  Scissors,
-  Shirt,
-  Sparkles,
-  Utensils,
-  Warehouse,
-  X,
-} from 'lucide-react';
+  faBriefcase,
+  faCar,
+  faChevronDown,
+  faDumbbell,
+  faMicrochip,
+  faPlus,
+  faScissors,
+  faShirt,
+  faSparkles,
+  faUtensils,
+  faWarehouse,
+  faXmark,
+} from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { Popover } from './popover';
 import styles from './story.module.css';
 
@@ -22,27 +23,27 @@ import styles from './story.module.css';
 // inputs the sentence is assembled from. Each is a scoped-CSS element, not a
 // re-skinned control — the composer is a bespoke inline-prose builder.
 //
-// A chip's module hue is set purely by `data-module="…"`: the @sparx/brand bridge
+// A chip's module hue is set purely by `data-module="…"`: the @piggles/brand bridge
 // maps that attribute to `--color-module`, which the CSS module reads. No inline
 // style, no colour table — the same mechanism as <ModuleScope>.
 
 type MenuRender = (close: () => void) => ReactNode;
 
-const INDUSTRY_ICONS: Record<string, typeof Sparkles> = {
-  shirt: Shirt,
-  utensils: Utensils,
-  cpu: Cpu,
-  car: Car,
-  scissors: Scissors,
-  dumbbell: Dumbbell,
-  briefcase: Briefcase,
-  warehouse: Warehouse,
-  sparkles: Sparkles,
+const INDUSTRY_ICONS: Record<string, typeof faSparkles> = {
+  shirt: faShirt,
+  utensils: faUtensils,
+  cpu: faMicrochip,
+  car: faCar,
+  scissors: faScissors,
+  dumbbell: faDumbbell,
+  briefcase: faBriefcase,
+  warehouse: faWarehouse,
+  sparkles: faSparkles,
 };
 
 export function IndustryIcon({ icon, size }: { icon: string; size?: number }): ReactNode {
-  const Cmp = INDUSTRY_ICONS[icon] ?? Sparkles;
-  return <Cmp size={size ?? 18} strokeWidth={1.8} />;
+  const glyph = INDUSTRY_ICONS[icon] ?? faSparkles;
+  return <Icon glyph={glyph} size={size ?? 18} />;
 }
 
 /** A dashed "ghost" slot that pulses to invite the next choice. */
@@ -52,7 +53,7 @@ export function GhostTok({ label, menu }: { label: string; menu: MenuRender }): 
       button={({ onClick, expanded }) => (
         <button type="button" className={styles.ghost} onClick={onClick} aria-expanded={expanded}>
           <span>{label}</span>
-          <ChevronDown className={styles.chev} size={20} strokeWidth={2.2} aria-hidden />
+          <Icon glyph={faChevronDown} className={styles.chev} size={20} aria-hidden />
         </button>
       )}
     >
@@ -88,7 +89,7 @@ export function ChipTok({
         >
           {icon ? <span className={styles.ico}>{icon}</span> : null}
           <span>{label}</span>
-          <ChevronDown className={styles.chev} size={20} strokeWidth={2.2} aria-hidden />
+          <Icon glyph={faChevronDown} className={styles.chev} size={20} aria-hidden />
         </button>
       )}
     >
@@ -121,7 +122,7 @@ export function ClauseChip({
             title="Change this"
           >
             <span>{phrase}</span>
-            <ChevronDown className={styles.chev} size={20} strokeWidth={2.2} aria-hidden />
+            <Icon glyph={faChevronDown} className={styles.chev} size={20} aria-hidden />
           </button>
           <button
             type="button"
@@ -132,7 +133,7 @@ export function ClauseChip({
             }}
             aria-label={`Remove ${phrase}`}
           >
-            <X size={12} strokeWidth={2.6} aria-hidden />
+            <Icon glyph={faXmark} size={12} aria-hidden />
           </button>
         </span>
       )}
@@ -161,7 +162,7 @@ export function AddButton({
             onClick={onClick}
             aria-expanded={expanded}
           >
-            <Plus size={16} strokeWidth={2.4} aria-hidden /> add to your story
+            <Icon glyph={faPlus} size={16} aria-hidden /> add to your story
           </button>
         ) : (
           <button
@@ -171,7 +172,7 @@ export function AddButton({
             aria-expanded={expanded}
             aria-label={kind === 'in' ? 'Add to this sentence' : 'Start a new sentence'}
           >
-            <Plus size={12} strokeWidth={2.4} aria-hidden />
+            <Icon glyph={faPlus} size={12} aria-hidden />
           </button>
         )
       }

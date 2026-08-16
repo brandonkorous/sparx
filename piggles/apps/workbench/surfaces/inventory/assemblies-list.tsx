@@ -23,7 +23,8 @@ import {
   Text,
   Timestamp,
 } from '@wizeworks/silicaui-react';
-import { Hammer, Plus } from 'lucide-react';
+import { faHammer, faPlus } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
@@ -66,7 +67,7 @@ export function AssembliesListSurface({ ctx }: { ctx: SurfaceContext }) {
     if (runs.isError) {
       return (
         <EmptyState
-          icon={<Hammer className="size-6" aria-hidden />}
+          icon={<Icon glyph={faHammer} className="size-6" aria-hidden />}
           title="Could not load your runs"
           description="This is a problem reaching the server. Nothing you have made is affected."
         />
@@ -78,7 +79,7 @@ export function AssembliesListSurface({ ctx }: { ctx: SurfaceContext }) {
     if (rows.length === 0) {
       return (
         <EmptyState
-          icon={<Hammer className="size-6" aria-hidden />}
+          icon={<Icon glyph={faHammer} className="size-6" aria-hidden />}
           title={q || status || locationId ? 'Nothing matches that' : 'Nothing made yet'}
           description={
             q || status || locationId
@@ -226,7 +227,7 @@ export function AssembliesListSurface({ ctx }: { ctx: SurfaceContext }) {
             );
           }}
         >
-          <Plus className="size-4" aria-hidden />
+          <Icon glyph={faPlus} className="size-4" aria-hidden />
           <span className="hidden @lg:inline">Plan a run</span>
         </Button>
         <RefreshButton

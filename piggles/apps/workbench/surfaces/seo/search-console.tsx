@@ -31,7 +31,14 @@ import {
   Text,
   useToast,
 } from '@wizeworks/silicaui-react';
-import { Check, Link2, Plug, RefreshCw, Trash2 } from 'lucide-react';
+import {
+  faArrowsRotate,
+  faCheck,
+  faLink,
+  faPlug,
+  faTrashCan,
+} from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { useConfirm } from '../../lib/confirm';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { FormSection } from '../../components/form-section';
@@ -52,7 +59,7 @@ const COLUMN = 'mx-auto flex w-full max-w-2xl flex-col gap-4';
 
 /** The shape the callback page posts back through `window.opener`. */
 interface CallbackMessage {
-  source: 'sparx-gsc';
+  source: 'piggles-gsc';
   code?: string;
   state?: string;
   error?: string;
@@ -62,7 +69,7 @@ function isCallbackMessage(data: unknown): data is CallbackMessage {
   return (
     typeof data === 'object' &&
     data !== null &&
-    (data as { source?: unknown }).source === 'sparx-gsc'
+    (data as { source?: unknown }).source === 'piggles-gsc'
   );
 }
 
@@ -129,7 +136,7 @@ function SitePicker({
               }}
             >
               <span className="truncate font-mono text-sm">{site.siteUrl}</span>
-              <Link2 className="size-4 shrink-0" aria-hidden />
+              <Icon glyph={faLink} className="size-4 shrink-0" aria-hidden />
             </Button>
           </li>
         ))}
@@ -226,7 +233,7 @@ function SearchConsole({ ctx }: { ctx: SurfaceContext }) {
     setConnectFailure(null);
     // Open the popup synchronously in the click handler so the browser does not
     // treat it as an unsolicited pop-up; point it at Google once the URL resolves.
-    const popup = window.open('', 'sparx-gsc-connect', 'width=560,height=680');
+    const popup = window.open('', 'piggles-gsc-connect', 'width=560,height=680');
     const redirectUri = `${window.location.origin}/seo/search-console/callback`;
     connectUrl.mutate(redirectUri, {
       onSuccess: ({ url }) => {
@@ -346,7 +353,7 @@ function SearchConsole({ ctx }: { ctx: SurfaceContext }) {
             void status.refetch();
           }}
         >
-          <RefreshCw className="size-4" aria-hidden />
+          <Icon glyph={faArrowsRotate} className="size-4" aria-hidden />
         </Button>
       </PaneToolbar>
 
@@ -390,7 +397,7 @@ function SearchConsole({ ctx }: { ctx: SurfaceContext }) {
               <FormSection title="Connected">
                 <div className="flex flex-wrap items-center gap-2">
                   <Badge color="success" variant="soft" size="sm">
-                    <Check className="size-3.5" aria-hidden />
+                    <Icon glyph={faCheck} className="size-3.5" aria-hidden />
                     Connected
                   </Badge>
                   {connection?.siteUrl ? (
@@ -412,7 +419,7 @@ function SearchConsole({ ctx }: { ctx: SurfaceContext }) {
                     loading={sync.isPending}
                     onClick={runSync}
                   >
-                    <RefreshCw className="size-4" aria-hidden />
+                    <Icon glyph={faArrowsRotate} className="size-4" aria-hidden />
                     Pull in the latest now
                   </Button>
                   <Button
@@ -424,7 +431,7 @@ function SearchConsole({ ctx }: { ctx: SurfaceContext }) {
                       void onDisconnect();
                     }}
                   >
-                    <Trash2 className="size-4" aria-hidden />
+                    <Icon glyph={faTrashCan} className="size-4" aria-hidden />
                     Disconnect
                   </Button>
                 </div>
@@ -446,7 +453,7 @@ function SearchConsole({ ctx }: { ctx: SurfaceContext }) {
                       loading={loadSites.isPending}
                       onClick={choosePickList}
                     >
-                      <Link2 className="size-4" aria-hidden />
+                      <Icon glyph={faLink} className="size-4" aria-hidden />
                       Choose a site
                     </Button>
                   </>
@@ -474,7 +481,7 @@ function SearchConsole({ ctx }: { ctx: SurfaceContext }) {
                   loading={connecting}
                   onClick={connect}
                 >
-                  <Plug className="size-4" aria-hidden />
+                  <Icon glyph={faPlug} className="size-4" aria-hidden />
                   {state === 'error' ? 'Reconnect Google' : 'Connect Google'}
                 </Button>
               </FormSection>

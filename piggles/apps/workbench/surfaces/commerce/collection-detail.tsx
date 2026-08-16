@@ -39,7 +39,8 @@ import {
   useToast,
 } from '@wizeworks/silicaui-react';
 import { useConfirm } from '../../lib/confirm';
-import { RefreshCw, Trash2 } from 'lucide-react';
+import { faArrowsRotate, faTrashCan } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { api } from '../../lib/api/client';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import { afterPaneChange } from '../../lib/defer';
@@ -566,7 +567,7 @@ function CollectionEditor({
                     title="Re-check which products match these conditions"
                     onClick={onReindex}
                   >
-                    <RefreshCw className="size-4" aria-hidden />
+                    <Icon glyph={faArrowsRotate} className="size-4" aria-hidden />
                     Update matches
                   </Button>
                 ) : undefined
@@ -700,7 +701,7 @@ function CollectionEditor({
                     void onDelete();
                   }}
                 >
-                  <Trash2 className="size-4" aria-hidden />
+                  <Icon glyph={faTrashCan} className="size-4" aria-hidden />
                   Delete this collection
                 </Button>
               </div>

@@ -9,7 +9,8 @@
 // not a form — two facts and a confirm — so it is a confirm dialog, never a modal.
 
 import { Badge, Button, Heading, Text, useToast } from '@wizeworks/silicaui-react';
-import { Award, Check } from 'lucide-react';
+import { faAward, faCheck } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { useConfirm } from '../../lib/confirm';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
@@ -156,7 +157,11 @@ export function TierSurface(_props: { ctx: SurfaceContext }) {
                   <ul className="flex flex-col gap-2">
                     {meta.unlocks.map((unlock) => (
                       <li key={unlock} className="flex items-start gap-2">
-                        <Check className="text-module mt-0.5 size-4 shrink-0" aria-hidden />
+                        <Icon
+                          glyph={faCheck}
+                          className="text-module mt-0.5 size-4 shrink-0"
+                          aria-hidden
+                        />
                         <Text className="text-sm">{unlock}</Text>
                       </li>
                     ))}
@@ -185,7 +190,7 @@ export function TierSurface(_props: { ctx: SurfaceContext }) {
                     void applyForNext();
                   }}
                 >
-                  <Award className="size-4" aria-hidden />
+                  <Icon glyph={faAward} className="size-4" aria-hidden />
                   Apply for {TIERS[upcoming].label}
                 </Button>
               ) : (

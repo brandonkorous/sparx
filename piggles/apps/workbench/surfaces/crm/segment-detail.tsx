@@ -34,7 +34,8 @@ import {
   useToast,
 } from '@wizeworks/silicaui-react';
 import { useConfirm } from '../../lib/confirm';
-import { Archive } from 'lucide-react';
+import { faBoxArchive } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import { afterPaneChange } from '../../lib/defer';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
@@ -646,7 +647,7 @@ function SegmentEditor({
                   void onArchive();
                 }}
               >
-                <Archive className="size-4" aria-hidden />
+                <Icon glyph={faBoxArchive} className="size-4" aria-hidden />
                 Archive this segment
               </Button>
             </div>

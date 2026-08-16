@@ -40,7 +40,8 @@ import {
   Textarea,
   useToast,
 } from '@wizeworks/silicaui-react';
-import { LifeBuoy, Trash2 } from 'lucide-react';
+import { faLifeRing, faTrashCan } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { useConfirm } from '../../lib/confirm';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import { afterPaneChange } from '../../lib/defer';
@@ -622,7 +623,7 @@ function TicketEditor({ ctx, id, view }: { ctx: SurfaceContext; id: string; view
 
           {isNew ? (
             <div className="flex items-center gap-2">
-              <LifeBuoy className="size-4" aria-hidden />
+              <Icon glyph={faLifeRing} className="size-4" aria-hidden />
               <Text>
                 A reply deadline is attached automatically, based on the hours you work and how
                 urgent this is.
@@ -650,7 +651,7 @@ function TicketEditor({ ctx, id, view }: { ctx: SurfaceContext; id: string; view
                   void onDelete();
                 }}
               >
-                <Trash2 className="size-4" aria-hidden />
+                <Icon glyph={faTrashCan} className="size-4" aria-hidden />
                 Delete this request
               </Button>
             </div>

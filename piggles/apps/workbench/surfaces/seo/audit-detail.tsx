@@ -30,7 +30,8 @@ import {
   Heading,
   Text,
 } from '@wizeworks/silicaui-react';
-import { CheckCircle2, Lightbulb } from 'lucide-react';
+import { faCircleCheck, faLightbulb } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
@@ -232,7 +233,7 @@ function AuditDetail({ ctx, type, id }: { ctx: SurfaceContext; type: EntityType;
                 rather than a hollow prompt. */}
             {card.fixFirst ? (
               <Alert color="info" variant="soft">
-                <Lightbulb className="size-5" aria-hidden />
+                <Icon glyph={faLightbulb} className="size-5" aria-hidden />
                 <AlertContent>
                   <AlertTitle>Fix this first</AlertTitle>
                   <AlertDescription>{card.fixFirst}</AlertDescription>
@@ -240,7 +241,7 @@ function AuditDetail({ ctx, type, id }: { ctx: SurfaceContext; type: EntityType;
               </Alert>
             ) : (
               <Alert color="success" variant="soft">
-                <CheckCircle2 className="size-5" aria-hidden />
+                <Icon glyph={faCircleCheck} className="size-5" aria-hidden />
                 <AlertContent>
                   <AlertTitle>Nothing to fix</AlertTitle>
                   <AlertDescription>

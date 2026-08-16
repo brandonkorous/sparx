@@ -12,7 +12,9 @@
 import { useMemo } from 'react';
 import Image from 'next/image';
 import { Avatar, AvatarGroup } from '@wizeworks/silicaui-react';
-import { MessageSquareText, Video } from 'lucide-react';
+import { faMessageLines, faVideo } from '@fortawesome/pro-solid-svg-icons';
+
+import { Icon } from '@piggles/ui';
 import { PlatformMark } from '../../components/platform-mark';
 import { useMediaAssets, type MediaAsset } from '../cms/media';
 import { focalClassFor } from './post-preview';
@@ -132,7 +134,7 @@ export function PostThumb({
         className={`${box} bg-module bg-soft text-module flex items-center justify-center`}
         aria-hidden
       >
-        <MessageSquareText className={glyph} />
+        <Icon glyph={faMessageLines} className={glyph} />
       </span>
     );
   }
@@ -143,7 +145,7 @@ export function PostThumb({
   if (asset && isVideoAsset(asset)) {
     return (
       <span className={`${box} bg-base-200 flex items-center justify-center`}>
-        <Video className={glyph} aria-hidden />
+        <Icon glyph={faVideo} className={glyph} aria-hidden />
       </span>
     );
   }
@@ -161,7 +163,7 @@ export function PostThumb({
         />
       ) : (
         <span className="flex h-full items-center justify-center">
-          <MessageSquareText className={`${glyph} opacity-40`} aria-hidden />
+          <Icon glyph={faMessageLines} className={`${glyph} opacity-40`} aria-hidden />
         </span>
       )}
       {extra > 0 && size !== 'xs' ? (
@@ -204,7 +206,7 @@ export function PostCover({
   if (!leadId) {
     return (
       <div className={`${box} bg-module bg-soft text-module flex items-center justify-center`}>
-        <MessageSquareText className="size-8" aria-hidden />
+        <Icon glyph={faMessageLines} className="size-8" aria-hidden />
       </div>
     );
   }
@@ -215,7 +217,7 @@ export function PostCover({
   if (asset && isVideoAsset(asset)) {
     return (
       <div className={`${box} flex items-center justify-center`}>
-        <Video className="size-8" aria-hidden />
+        <Icon glyph={faVideo} className="size-8" aria-hidden />
       </div>
     );
   }
@@ -236,7 +238,7 @@ export function PostCover({
       ) : (
         // The asset row exists but its file has not finished processing.
         <div className="flex h-full items-center justify-center">
-          <MessageSquareText className="size-8 opacity-40" aria-hidden />
+          <Icon glyph={faMessageLines} className="size-8 opacity-40" aria-hidden />
         </div>
       )}
       {extra > 0 ? (

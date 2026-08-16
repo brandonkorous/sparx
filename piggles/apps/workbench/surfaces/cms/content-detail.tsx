@@ -48,7 +48,13 @@ import {
   useToast,
 } from '@wizeworks/silicaui-react';
 import { useConfirm } from '../../lib/confirm';
-import { CalendarClock, RotateCcw, Send, Trash2 } from 'lucide-react';
+import {
+  faCalendarClock,
+  faPaperPlane,
+  faRotate,
+  faTrashCan,
+} from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { PaneScope } from '../../lib/dock/window-boundary';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import { afterPaneChange } from '../../lib/defer';
@@ -691,7 +697,7 @@ function ManageBody({
         <div className="ml-auto flex flex-wrap items-center gap-2">
           {!isPublished ? (
             <Button size="sm" color="module" loading={publish.isPending} onClick={publishNow}>
-              <Send className="size-4" aria-hidden />
+              <Icon glyph={faPaperPlane} className="size-4" aria-hidden />
               {isScheduled ? 'Publish now' : 'Publish'}
             </Button>
           ) : null}
@@ -705,7 +711,7 @@ function ManageBody({
                 setScheduleOpen(true);
               }}
             >
-              <CalendarClock className="size-4" aria-hidden />
+              <Icon glyph={faCalendarClock} className="size-4" aria-hidden />
               Schedule…
             </Button>
           ) : null}
@@ -799,7 +805,7 @@ function ManageBody({
                 void onDelete();
               }}
             >
-              <Trash2 className="size-4" aria-hidden />
+              <Icon glyph={faTrashCan} className="size-4" aria-hidden />
               Delete
             </Button>
           </div>
@@ -913,7 +919,7 @@ function RevisionHistory({
                     void run(revision.revision_number);
                   }}
                 >
-                  <RotateCcw className="size-4" aria-hidden />
+                  <Icon glyph={faRotate} className="size-4" aria-hidden />
                   Bring back
                 </Button>
               )}

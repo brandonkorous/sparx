@@ -29,7 +29,8 @@ import {
   Text,
   Tooltip,
 } from '@wizeworks/silicaui-react';
-import { BarChart3, LineChart, ServerCrash } from 'lucide-react';
+import { faChartColumn, faChartLine, faServer } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import { FormSection } from '../../components/form-section';
@@ -130,7 +131,7 @@ export function ReportsSurface({ ctx: _ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar label="Reports controls">
-        <BarChart3 className="size-4 shrink-0" aria-hidden />
+        <Icon glyph={faChartColumn} className="size-4 shrink-0" aria-hidden />
         <Heading level={2} className="min-w-0 truncate text-base font-semibold">
           Reports
         </Heading>
@@ -161,7 +162,7 @@ export function ReportsSurface({ ctx: _ctx }: { ctx: SurfaceContext }) {
         <div className="mx-auto flex w-full max-w-3xl flex-col gap-4">
           {summary.isError ? (
             <EmptyState
-              icon={<ServerCrash className="size-6" aria-hidden />}
+              icon={<Icon glyph={faServer} className="size-6" aria-hidden />}
               title="Could not load your reports"
               description={reportsErrorMessage(
                 summary.error,
@@ -188,7 +189,7 @@ export function ReportsSurface({ ctx: _ctx }: { ctx: SurfaceContext }) {
 
               {!hasSales ? (
                 <EmptyState
-                  icon={<LineChart className="size-6" aria-hidden />}
+                  icon={<Icon glyph={faChartLine} className="size-6" aria-hidden />}
                   title="No sales in this period"
                   description="Once orders come in, this fills with your revenue, your best sellers, and where the sales came from. Try a longer period above, or check back after your next sale."
                 />

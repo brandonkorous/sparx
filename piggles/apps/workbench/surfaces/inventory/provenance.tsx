@@ -39,7 +39,12 @@ import {
   Text,
   Timestamp,
 } from '@wizeworks/silicaui-react';
-import { CheckCircle2, ExternalLink, TriangleAlert } from 'lucide-react';
+import {
+  faArrowUpRightFromSquare,
+  faCircleCheck,
+  faExclamationTriangle,
+} from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
@@ -61,7 +66,7 @@ function ReconcileBanner({ data }: { data: StockProvenance }) {
   if (data.reconciles) {
     return (
       <Alert color="success" variant="soft">
-        <CheckCircle2 className="size-5 shrink-0" aria-hidden />
+        <Icon glyph={faCircleCheck} className="size-5 shrink-0" aria-hidden />
         <AlertContent>
           <AlertTitle>This number adds up</AlertTitle>
           <AlertDescription>
@@ -75,7 +80,7 @@ function ReconcileBanner({ data }: { data: StockProvenance }) {
   }
   return (
     <Alert color="danger" variant="soft">
-      <TriangleAlert className="size-5 shrink-0" aria-hidden />
+      <Icon glyph={faExclamationTriangle} className="size-5 shrink-0" aria-hidden />
       <AlertContent>
         <AlertTitle>This number does not add up</AlertTitle>
         <AlertDescription>
@@ -396,7 +401,7 @@ export function ProvenanceSurface({ ctx }: { ctx: SurfaceContext }) {
               ctx.open('inventory.stock.item', { variantId: data.variantId });
             }}
           >
-            <ExternalLink className="size-4" aria-hidden />
+            <Icon glyph={faArrowUpRightFromSquare} className="size-4" aria-hidden />
             Open the item
           </Button>
         ) : null}

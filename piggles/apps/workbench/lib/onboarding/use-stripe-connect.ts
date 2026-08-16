@@ -16,7 +16,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import type { OnboardingActions } from './api';
 
 interface StripeMessage {
-  source: 'sparx-stripe';
+  source: 'piggles-stripe';
   /** The popup returned from Stripe's hosted onboarding (no OAuth code any more). */
   done?: boolean;
   error?: string;
@@ -26,7 +26,7 @@ function isStripeMessage(data: unknown): data is StripeMessage {
   return (
     typeof data === 'object' &&
     data !== null &&
-    (data as { source?: unknown }).source === 'sparx-stripe'
+    (data as { source?: unknown }).source === 'piggles-stripe'
   );
 }
 
@@ -94,7 +94,7 @@ export function useStripeConnect(
     void actions
       .startPaymentsOnboarding(callback, callback)
       .then(({ url }) => {
-        const popup = window.open(url, 'sparx-stripe-connect', 'width=520,height=720');
+        const popup = window.open(url, 'piggles-stripe-connect', 'width=520,height=720');
         if (!popup) {
           setConnecting(false);
           setError('Your browser blocked the Stripe window. Allow pop-ups and try again.');

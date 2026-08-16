@@ -31,7 +31,8 @@ import {
   ToggleGroupItem,
   ToolbarSeparator,
 } from '@wizeworks/silicaui-react';
-import { Printer, QrCode } from 'lucide-react';
+import { faPrint, faQrcode } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { PrintSheet } from '../../components/print-sheet';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
@@ -187,7 +188,7 @@ export function BinLabelsSurface({ ctx }: { ctx: SurfaceContext }) {
             window.print();
           }}
         >
-          <Printer className="size-4" aria-hidden />
+          <Icon glyph={faPrint} className="size-4" aria-hidden />
           Print {bins.length > 0 ? plural(bins.length, 'label', 'labels') : 'labels'}
         </Button>
 
@@ -258,7 +259,7 @@ export function BinLabelsSurface({ ctx }: { ctx: SurfaceContext }) {
           <PaneWaiting label="Loading shelves…" />
         ) : bins.length === 0 ? (
           <EmptyState
-            icon={<QrCode className="size-6" aria-hidden />}
+            icon={<Icon glyph={faQrcode} className="size-6" aria-hidden />}
             title="No shelves to label"
             description="Choose a location that has shelves set up, or add some first."
           />

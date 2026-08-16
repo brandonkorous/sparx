@@ -22,7 +22,9 @@ import {
   Text,
   Textarea,
 } from '@wizeworks/silicaui-react';
-import { Filter, Target, type LucideIcon } from 'lucide-react';
+import { faBullseye, faFilter } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
+import type { PigglesIcon } from '@piggles/ui';
 import { IfElseConfig } from '@sparx/automation-schemas';
 import type { Action, ConditionGroup, Trigger } from '@sparx/automation-schemas';
 import type { SiteInfo } from '../../lib/api/shell-data';
@@ -50,18 +52,18 @@ const EVERY_SITE = '__all__';
 
 /** The selected node's identity: a tinted icon + title + one-line subtitle. */
 function PanelHead({
-  icon: Icon,
+  icon: glyph,
   title,
   subtitle,
 }: {
-  icon: LucideIcon;
+  icon: PigglesIcon;
   title: string;
   subtitle: string;
 }) {
   return (
     <header className="border-base-300 flex items-start gap-3 border-b pb-3">
       <span className="bg-module/10 text-module flex size-9 shrink-0 items-center justify-center rounded-lg">
-        <Icon className="size-5" aria-hidden />
+        <Icon glyph={glyph} className="size-5" aria-hidden />
       </span>
       <div className="flex min-w-0 flex-col">
         <Heading level={3} className="truncate text-lg font-semibold">
@@ -251,7 +253,7 @@ function TriggerPanel({ trigger, onTrigger, enabledModules }: InspectorProps) {
 function ConditionsPanel({ conditions, onConditions }: InspectorProps) {
   return (
     <Panel>
-      <PanelHead icon={Filter} title="Only run if…" subtitle={conditionsHeadline(conditions)} />
+      <PanelHead icon={faFilter} title="Only run if…" subtitle={conditionsHeadline(conditions)} />
       <Text className="text-sm">
         Narrow it down so the rule only acts in the cases you want. Leave this empty to run every
         time.
@@ -383,7 +385,7 @@ function GoalPanel({ goal, onGoal }: InspectorProps) {
   return (
     <Panel>
       <PanelHead
-        icon={Target}
+        icon={faBullseye}
         title="What you’re aiming for"
         subtitle="Optional — how you’ll know it worked"
       />
@@ -415,7 +417,7 @@ function GoalPanel({ goal, onGoal }: InspectorProps) {
             onGoal({ logic: 'AND', conditions: [{ field: '', operator: 'eq', value: '' }] });
           }}
         >
-          <Target className="size-4 shrink-0" aria-hidden />
+          <Icon glyph={faBullseye} className="size-4 shrink-0" aria-hidden />
           <span className="text-sm font-medium">Set what you’re aiming for</span>
         </button>
       )}

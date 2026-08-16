@@ -50,7 +50,16 @@ import {
   Input,
   Text,
 } from '@wizeworks/silicaui-react';
-import { ArrowUpRight, CalendarClock, Check, CircleCheck, LogIn, UserX, X } from 'lucide-react';
+import {
+  faArrowUpRight,
+  faCalendarClock,
+  faCheck,
+  faCheckCircle,
+  faRightToBracket,
+  faUserXmark,
+  faXmark,
+} from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 // The pane's imperative-confirm wrapper — the app standardised on this over the
 // raw silica hook (it yields the flushSync commit before returning).
 import { useConfirm } from '../../lib/confirm';
@@ -369,7 +378,7 @@ function LoadedModal({
                 disabled={anyPending}
                 onClick={onConfirm}
               >
-                <Check className="size-4" aria-hidden />
+                <Icon glyph={faCheck} className="size-4" aria-hidden />
                 Confirm
               </Button>
             ) : null}
@@ -381,7 +390,7 @@ function LoadedModal({
                 disabled={anyPending}
                 onClick={onCheckIn}
               >
-                <LogIn className="size-4" aria-hidden />
+                <Icon glyph={faRightToBracket} className="size-4" aria-hidden />
                 Check in
               </Button>
             ) : null}
@@ -393,7 +402,7 @@ function LoadedModal({
                 disabled={anyPending}
                 onClick={onComplete}
               >
-                <CircleCheck className="size-4" aria-hidden />
+                <Icon glyph={faCheckCircle} className="size-4" aria-hidden />
                 Complete
               </Button>
             ) : null}
@@ -432,7 +441,7 @@ function LoadedModal({
                 disabled={!canMove}
                 onClick={onMove}
               >
-                <CalendarClock className="size-4" aria-hidden />
+                <Icon glyph={faCalendarClock} className="size-4" aria-hidden />
                 Move booking
               </Button>
             </div>
@@ -459,7 +468,7 @@ function LoadedModal({
                   void onNoShow();
                 }}
               >
-                <UserX className="size-4" aria-hidden />
+                <Icon glyph={faUserXmark} className="size-4" aria-hidden />
                 Mark no-show
               </Button>
             ) : null}
@@ -474,7 +483,7 @@ function LoadedModal({
                   void onCancel();
                 }}
               >
-                <X className="size-4" aria-hidden />
+                <Icon glyph={faXmark} className="size-4" aria-hidden />
                 Cancel booking
               </Button>
             ) : null}
@@ -487,7 +496,7 @@ function LoadedModal({
           Close
         </Button>
         <Button color="module" variant="soft" size="sm" onClick={openFullBooking}>
-          <ArrowUpRight className="size-4" aria-hidden />
+          <Icon glyph={faArrowUpRight} className="size-4" aria-hidden />
           Open full booking
         </Button>
       </DialogFooter>

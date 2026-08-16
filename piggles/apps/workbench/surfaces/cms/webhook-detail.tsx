@@ -45,7 +45,8 @@ import {
   useToast,
 } from '@wizeworks/silicaui-react';
 import { useConfirm } from '../../lib/confirm';
-import { Copy, Trash2 } from 'lucide-react';
+import { faCopy, faTrashCan } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import { afterPaneChange } from '../../lib/defer';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
@@ -231,7 +232,7 @@ function SecretBox({ value, onCopy }: { value: string; onCopy?: () => void }) {
       <code className="min-w-0 flex-1 font-mono text-sm break-all">{value}</code>
       {onCopy ? (
         <Button size="sm" variant="soft" color="module" className="shrink-0" onClick={onCopy}>
-          <Copy className="size-4" aria-hidden />
+          <Icon glyph={faCopy} className="size-4" aria-hidden />
           Copy
         </Button>
       ) : null}
@@ -648,7 +649,7 @@ function ManageBody({
                 void onDelete();
               }}
             >
-              <Trash2 className="size-4" aria-hidden />
+              <Icon glyph={faTrashCan} className="size-4" aria-hidden />
               Delete
             </Button>
           </div>

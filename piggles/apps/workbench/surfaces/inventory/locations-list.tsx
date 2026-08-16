@@ -40,7 +40,8 @@ import {
   ToggleGroupItem,
   ToolbarSeparator,
 } from '@wizeworks/silicaui-react';
-import { EyeOff, Plus, Warehouse } from 'lucide-react';
+import { faEyeSlash, faPlus, faWarehouse } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { ListEmptyState } from '../../components/list-empty-state';
@@ -123,7 +124,7 @@ export function LocationsListSurface({ ctx }: { ctx: SurfaceContext }) {
     if (isError) {
       return (
         <EmptyState
-          icon={<Warehouse className="size-6" aria-hidden />}
+          icon={<Icon glyph={faWarehouse} className="size-6" aria-hidden />}
           title="Could not load your locations"
           description="This is a problem reaching the server. Your locations are unaffected — the list just could not be read just now."
           actions={
@@ -150,7 +151,7 @@ export function LocationsListSurface({ ctx }: { ctx: SurfaceContext }) {
         <ListEmptyState
           filtered={narrowed}
           noResults={{
-            icon: <Warehouse className="size-6" aria-hidden />,
+            icon: <Icon glyph={faWarehouse} className="size-6" aria-hidden />,
             title: 'Nothing matches that',
             description: emptyAdvice(search.trim(), typeLabel, includeClosed),
           }}
@@ -169,7 +170,7 @@ export function LocationsListSurface({ ctx }: { ctx: SurfaceContext }) {
                   openNew({ shiftKey: false, altKey: false });
                 }}
               >
-                <Plus className="size-4" aria-hidden />
+                <Icon glyph={faPlus} className="size-4" aria-hidden />
                 New location
               </Button>
             ),
@@ -304,7 +305,7 @@ export function LocationsListSurface({ ctx }: { ctx: SurfaceContext }) {
             aria-label="Also show closed locations"
             title="Also show closed locations"
           >
-            <EyeOff className="size-4" aria-hidden />
+            <Icon glyph={faEyeSlash} className="size-4" aria-hidden />
             <span className="hidden @2xl:inline">Show closed</span>
           </ToggleGroupItem>
         </ToggleGroup>
@@ -316,7 +317,7 @@ export function LocationsListSurface({ ctx }: { ctx: SurfaceContext }) {
           title="New location — hold Shift to open alongside, Alt for a new window"
           onClick={openNew}
         >
-          <Plus className="size-4" aria-hidden />
+          <Icon glyph={faPlus} className="size-4" aria-hidden />
           <span className="hidden @lg:inline">New location</span>
         </Button>
 

@@ -36,7 +36,8 @@ import {
   Text,
   useToast,
 } from '@wizeworks/silicaui-react';
-import { Clock } from 'lucide-react';
+import { faClock } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import { timezoneOptions, type TimezoneOption } from '../../lib/timezones';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
@@ -571,7 +572,7 @@ function PolicyEditor({
                     }}
                   />
                 </div>
-                <Clock className="size-4" aria-hidden />
+                <Icon glyph={faClock} className="size-4" aria-hidden />
                 <Text>
                   per cent of the time used — so an hour’s promise goes amber at{' '}
                   {Number.isFinite(warn) ? Math.max(1, Math.floor((60 * warn) / 100)) : 48} minutes.

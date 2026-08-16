@@ -11,7 +11,8 @@
 import { useEffect, useMemo, useState } from 'react';
 import { PaneWaiting } from '../../components/pane-waiting';
 import { Badge, Button, Card, SearchInput, Select, Table } from '@wizeworks/silicaui-react';
-import { Plus, Users } from 'lucide-react';
+import { faPlus, faUsers } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { ListEmptyState } from '../../components/list-empty-state';
@@ -210,7 +211,7 @@ export function CustomersListSurface({ ctx }: { ctx: SurfaceContext }) {
             ctx.open('crm.customer.detail', { id: 'new' }, { target: targetFor(event) });
           }}
         >
-          <Plus className="size-4" aria-hidden />
+          <Icon glyph={faPlus} className="size-4" aria-hidden />
           Add a customer
         </Button>
         <SavedViewsMenu
@@ -234,7 +235,7 @@ export function CustomersListSurface({ ctx }: { ctx: SurfaceContext }) {
       <Card className="min-h-0 flex-1 overflow-y-auto">
         {isError ? (
           <PaneLoadError
-            icon={<Users className="size-6" aria-hidden />}
+            icon={<Icon glyph={faUsers} className="size-6" aria-hidden />}
             title="Could not load your customers"
             description="Something went wrong reaching the server. It may be a temporary problem — try again in a moment."
             onRetry={() => {
@@ -247,7 +248,7 @@ export function CustomersListSurface({ ctx }: { ctx: SurfaceContext }) {
           <ListEmptyState
             filtered={filtered}
             noResults={{
-              icon: <Users className="size-6" aria-hidden />,
+              icon: <Icon glyph={faUsers} className="size-6" aria-hidden />,
               title: 'Nobody matches those filters',
               description:
                 'Try a different word, or clear the filters to see everyone. Someone you expect to see may be filed under a different kind.',

@@ -43,7 +43,8 @@ import {
   useToast,
 } from '@wizeworks/silicaui-react';
 import { useConfirm } from '../../lib/confirm';
-import { Ban, Building2, HandCoins } from 'lucide-react';
+import { faBan, faBuilding, faHandHoldingDollar } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import { afterPaneChange } from '../../lib/defer';
 import { PaneScope } from '../../lib/dock/window-boundary';
@@ -573,7 +574,7 @@ function InvoiceManage({ ctx, invoice }: { ctx: SurfaceContext; invoice: Invoice
                       );
                     }}
                   >
-                    <Building2 className="size-4" aria-hidden />
+                    <Icon glyph={faBuilding} className="size-4" aria-hidden />
                     Open account
                   </Button>
                 </div>
@@ -596,7 +597,7 @@ function InvoiceManage({ ctx, invoice }: { ctx: SurfaceContext; invoice: Invoice
                     void onWriteOff();
                   }}
                 >
-                  <Ban className="size-4" aria-hidden />
+                  <Icon glyph={faBan} className="size-4" aria-hidden />
                   Write off
                 </Button>
               ) : null}
@@ -661,7 +662,7 @@ function MarkPaidDialog({ invoice }: { invoice: InvoiceRow }) {
       >
         <DialogTrigger>
           <Button color="module" variant="soft" size="sm">
-            <HandCoins className="size-4" aria-hidden />
+            <Icon glyph={faHandHoldingDollar} className="size-4" aria-hidden />
             Mark as paid
           </Button>
         </DialogTrigger>

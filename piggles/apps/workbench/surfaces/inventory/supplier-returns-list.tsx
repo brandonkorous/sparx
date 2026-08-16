@@ -27,7 +27,8 @@ import {
   Text,
   Timestamp,
 } from '@wizeworks/silicaui-react';
-import { PackageX, PlusCircle, Undo2 } from 'lucide-react';
+import { faBoxOpen, faCirclePlus, faRotateLeft } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
@@ -73,7 +74,7 @@ export function SupplierReturnsListSurface({ ctx }: { ctx: SurfaceContext }) {
     if (report.isError) {
       return (
         <EmptyState
-          icon={<PackageX className="size-6" aria-hidden />}
+          icon={<Icon glyph={faBoxOpen} className="size-6" aria-hidden />}
           title="Could not load your returns"
           description="This is a problem reaching the server, not a statement that nothing is owed. Try again in a moment."
         />
@@ -85,7 +86,7 @@ export function SupplierReturnsListSurface({ ctx }: { ctx: SurfaceContext }) {
     if (rows.length === 0) {
       return (
         <EmptyState
-          icon={<Undo2 className="size-6" aria-hidden />}
+          icon={<Icon glyph={faRotateLeft} className="size-6" aria-hidden />}
           title={view === 'awaiting' ? 'Nothing is waiting on a credit' : 'Nothing sent back'}
           description={
             view === 'awaiting'
@@ -99,7 +100,7 @@ export function SupplierReturnsListSurface({ ctx }: { ctx: SurfaceContext }) {
                 ctx.open('inventory.supplier-returns.detail', { id: 'new' });
               }}
             >
-              <PlusCircle className="size-4" aria-hidden />
+              <Icon glyph={faCirclePlus} className="size-4" aria-hidden />
               Send something back
             </Button>
           }
@@ -225,7 +226,7 @@ export function SupplierReturnsListSurface({ ctx }: { ctx: SurfaceContext }) {
             ctx.open('inventory.supplier-returns.detail', { id: 'new' });
           }}
         >
-          <PlusCircle className="size-4" aria-hidden />
+          <Icon glyph={faCirclePlus} className="size-4" aria-hidden />
           Send something back
         </Button>
         <RefreshButton

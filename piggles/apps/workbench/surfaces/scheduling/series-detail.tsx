@@ -38,7 +38,13 @@ import {
   useToast,
 } from '@wizeworks/silicaui-react';
 import { useConfirm } from '../../lib/confirm';
-import { CalendarRange, Repeat, Save, Square } from 'lucide-react';
+import {
+  faCalendarRange,
+  faFloppyDisk,
+  faRepeat,
+  faSquare,
+} from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { FormSection } from '../../components/form-section';
 import { useDirtySource } from '../../lib/workbench/dirty';
@@ -338,7 +344,7 @@ function SeriesCreate({ ctx }: { ctx: SurfaceContext }) {
           loading={create.isPending}
           onClick={submit}
         >
-          <Save className="size-4" aria-hidden />
+          <Icon glyph={faFloppyDisk} className="size-4" aria-hidden />
           Set it up
         </Button>
       </PaneToolbar>
@@ -535,7 +541,7 @@ function SeriesManage({ ctx, series }: { ctx: SurfaceContext; series: BookingSer
         <div className={COLUMN}>
           <div className="flex flex-col gap-1">
             <Heading level={1} className="flex min-w-0 items-center gap-2 text-2xl font-semibold">
-              <Repeat className="size-5 shrink-0" aria-hidden />
+              <Icon glyph={faRepeat} className="size-5 shrink-0" aria-hidden />
               <span className="min-w-0 break-words">{series.serviceName ?? 'A service'}</span>
             </Heading>
             <Text className="text-base">{humanizeRrule(series.rrule)}.</Text>
@@ -563,7 +569,7 @@ function SeriesManage({ ctx, series }: { ctx: SurfaceContext; series: BookingSer
                         openOccurrence(occurrence.id);
                       }}
                     >
-                      <CalendarRange className="size-4 shrink-0" aria-hidden />
+                      <Icon glyph={faCalendarRange} className="size-4 shrink-0" aria-hidden />
                       <span className="min-w-0 flex-1 font-medium">
                         {formatWhen(occurrence.startAt)}
                       </span>
@@ -595,7 +601,7 @@ function SeriesManage({ ctx, series }: { ctx: SurfaceContext; series: BookingSer
                     void onStop('future');
                   }}
                 >
-                  <Square className="size-4" aria-hidden />
+                  <Icon glyph={faSquare} className="size-4" aria-hidden />
                   Stop making new ones
                 </Button>
                 <Button

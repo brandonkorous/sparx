@@ -44,7 +44,15 @@ import {
   useToast,
 } from '@wizeworks/silicaui-react';
 import { useConfirm } from '../../lib/confirm';
-import { Check, Pencil, Plus, Tags, Trash2, X } from 'lucide-react';
+import {
+  faCheck,
+  faPencil,
+  faPlus,
+  faTags,
+  faTrashCan,
+  faXmark,
+} from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import { afterPaneChange } from '../../lib/defer';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
@@ -330,7 +338,7 @@ function ManageTaxonomy({ ctx, taxKey }: { ctx: SurfaceContext; taxKey: string }
     return (
       <Card className="min-h-0 flex-1 items-center justify-center">
         <PaneEmpty
-          icon={<Tags className="size-6" aria-hidden />}
+          icon={<Icon glyph={faTags} className="size-6" aria-hidden />}
           title="This no longer exists"
           description="The way to file content you opened has been removed. Open another from the list."
         />
@@ -597,7 +605,7 @@ function ManageBody({
                 void onDelete();
               }}
             >
-              <Trash2 className="size-4" aria-hidden />
+              <Icon glyph={faTrashCan} className="size-4" aria-hidden />
               Delete
             </Button>
           </div>
@@ -779,7 +787,7 @@ function TermRow({
             setEditing(true);
           }}
         >
-          <Pencil className="size-4" aria-hidden />
+          <Icon glyph={faPencil} className="size-4" aria-hidden />
         </Button>
         <Button
           size="sm"
@@ -793,7 +801,7 @@ function TermRow({
             void onDelete();
           }}
         >
-          <Trash2 className="size-4" aria-hidden />
+          <Icon glyph={faTrashCan} className="size-4" aria-hidden />
         </Button>
       </div>
     </div>
@@ -965,7 +973,7 @@ function TermEditor({
             onDone();
           }}
         >
-          <X className="size-4" aria-hidden />
+          <Icon glyph={faXmark} className="size-4" aria-hidden />
           Cancel
         </Button>
         <Button
@@ -975,7 +983,7 @@ function TermEditor({
           loading={update.isPending}
           onClick={save}
         >
-          <Check className="size-4" aria-hidden />
+          <Icon glyph={faCheck} className="size-4" aria-hidden />
           Save
         </Button>
       </div>
@@ -1072,7 +1080,7 @@ function AddTermForm({
           disabled={trimmed === ''}
           loading={create.isPending}
         >
-          <Plus className="size-4" aria-hidden />
+          <Icon glyph={faPlus} className="size-4" aria-hidden />
           Add
         </Button>
       </div>

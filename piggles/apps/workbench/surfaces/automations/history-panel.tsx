@@ -10,7 +10,8 @@
 
 import { Badge, Button, Text, Timestamp, useToast } from '@wizeworks/silicaui-react';
 import { useConfirm } from '../../lib/confirm';
-import { History, RotateCcw } from 'lucide-react';
+import { faClockRotateLeft, faRotate } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { afterPaneChange } from '../../lib/defer';
 import {
   automationErrorMessage,
@@ -59,7 +60,7 @@ function VersionRow({
           }
           onClick={onRestore}
         >
-          <RotateCcw className="size-4" aria-hidden />
+          <Icon glyph={faRotate} className="size-4" aria-hidden />
           Restore
         </Button>
       )}
@@ -129,7 +130,7 @@ export function HistoryPanel({
   if (!versions || versions.length === 0) {
     return (
       <div className="flex items-center gap-2">
-        <History className="size-4 shrink-0" aria-hidden />
+        <Icon glyph={faClockRotateLeft} className="size-4 shrink-0" aria-hidden />
         <Text className="text-sm">No published versions yet.</Text>
       </div>
     );

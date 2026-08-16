@@ -32,7 +32,8 @@ import {
   Text,
   useToast,
 } from '@wizeworks/silicaui-react';
-import { CheckCircle2, Check, ReceiptText } from 'lucide-react';
+import { faCheck, faCircleCheck, faReceipt } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import { afterPaneChange } from '../../lib/defer';
@@ -145,7 +146,7 @@ function BillRow({
             onPay();
           }}
         >
-          <Check className="size-4" aria-hidden />
+          <Icon glyph={faCheck} className="size-4" aria-hidden />
           <span className="hidden @2xl:inline">Paid</span>
         </Button>
       </td>
@@ -267,7 +268,7 @@ export function BillsToPaySurface({ ctx }: { ctx: SurfaceContext }) {
       <div className="min-h-0 flex-1 overflow-y-auto">
         {isError ? (
           <EmptyState
-            icon={<ReceiptText className="size-6" aria-hidden />}
+            icon={<Icon glyph={faReceipt} className="size-6" aria-hidden />}
             title="Could not load what you owe"
             description="The server could not be reached. Nothing you have recorded is affected."
             actions={
@@ -287,7 +288,7 @@ export function BillsToPaySurface({ ctx }: { ctx: SurfaceContext }) {
         ) : allSettled ? (
           <Card className="min-h-0 flex-1 items-center justify-center">
             <PaneEmpty
-              icon={<CheckCircle2 className="size-6" aria-hidden />}
+              icon={<Icon glyph={faCircleCheck} className="size-6" aria-hidden />}
               title="Nothing outstanding"
               description="Every cost you have recorded is marked as paid. When you record one that is not yet settled, it will appear here — sorted by how late it is."
             />
@@ -333,7 +334,7 @@ export function BillsToPaySurface({ ctx }: { ctx: SurfaceContext }) {
             {rows.length === 0 ? (
               <Card>
                 <EmptyState
-                  icon={<CheckCircle2 className="size-6" aria-hidden />}
+                  icon={<Icon glyph={faCircleCheck} className="size-6" aria-hidden />}
                   title={band === 'overdue' ? 'Nothing is late' : 'Nothing coming up'}
                   description={
                     band === 'overdue'

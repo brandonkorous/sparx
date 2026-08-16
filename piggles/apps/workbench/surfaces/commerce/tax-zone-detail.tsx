@@ -36,7 +36,8 @@ import {
   useToast,
 } from '@wizeworks/silicaui-react';
 import { useConfirm } from '../../lib/confirm';
-import { Plus, Trash2 } from 'lucide-react';
+import { faPlus, faTrashCan } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { FormSection } from '../../components/form-section';
 import { useDirtySource } from '../../lib/workbench/dirty';
@@ -419,7 +420,7 @@ function ZoneEditor({ ctx, id, zone }: { ctx: SurfaceContext; id: string; zone?:
                   void onDelete();
                 }}
               >
-                <Trash2 className="size-4" aria-hidden />
+                <Icon glyph={faTrashCan} className="size-4" aria-hidden />
                 Delete this place
               </Button>
             </div>
@@ -549,7 +550,7 @@ function ZoneTaxRatesEditor({ zoneId }: { zoneId: string }) {
                   onDelete(rate);
                 }}
               >
-                <Trash2 className="size-4" aria-hidden />
+                <Icon glyph={faTrashCan} className="size-4" aria-hidden />
               </Button>
             </div>
           ))}
@@ -627,7 +628,7 @@ function ZoneTaxRatesEditor({ zoneId }: { zoneId: string }) {
             disabled={!canAdd}
             onClick={add}
           >
-            <Plus className="size-4" aria-hidden />
+            <Icon glyph={faPlus} className="size-4" aria-hidden />
             Add this rate
           </Button>
         </div>

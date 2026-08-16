@@ -25,7 +25,8 @@ import {
   ToggleGroup,
   ToggleGroupItem,
 } from '@wizeworks/silicaui-react';
-import { LayoutDashboard, ServerCrash } from 'lucide-react';
+import { faGauge, faServer } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import {
@@ -112,7 +113,7 @@ export function DashboardViewSurface({ ctx }: { ctx: SurfaceContext }) {
       <div className={PANE_SHELL}>
         <div className="min-h-0 flex-1 overflow-y-auto p-4">
           <EmptyState
-            icon={<LayoutDashboard className="size-6" aria-hidden />}
+            icon={<Icon glyph={faGauge} className="size-6" aria-hidden />}
             title="This dashboard isn’t switched on"
             description={productCopy(
               'analytics.dashboard.moduleOff',
@@ -129,7 +130,7 @@ export function DashboardViewSurface({ ctx }: { ctx: SurfaceContext }) {
       <div className={PANE_SHELL}>
         <div className="min-h-0 flex-1 overflow-y-auto p-4">
           <EmptyState
-            icon={<ServerCrash className="size-6" aria-hidden />}
+            icon={<Icon glyph={faServer} className="size-6" aria-hidden />}
             title="Could not load this dashboard"
             description={analyticsErrorMessage(
               dashboard.error,
@@ -157,7 +158,7 @@ export function DashboardViewSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <ModuleScope module={module} className={PANE_SHELL}>
       <PaneToolbar label="Dashboard controls">
-        <LayoutDashboard className="size-4 shrink-0" aria-hidden />
+        <Icon glyph={faGauge} className="size-4 shrink-0" aria-hidden />
         <Heading level={2} className="min-w-0 truncate text-base font-semibold">
           {config?.title ?? 'Dashboard'}
         </Heading>
@@ -222,7 +223,7 @@ export function DashboardViewSurface({ ctx }: { ctx: SurfaceContext }) {
 
               {query.isError ? (
                 <EmptyState
-                  icon={<ServerCrash className="size-6" aria-hidden />}
+                  icon={<Icon glyph={faServer} className="size-6" aria-hidden />}
                   title="Could not load the figures"
                   description={analyticsErrorMessage(
                     query.error,

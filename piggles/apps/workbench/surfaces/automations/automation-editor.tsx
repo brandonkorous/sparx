@@ -27,7 +27,15 @@ import {
   useToast,
 } from '@wizeworks/silicaui-react';
 import { arrayMove } from '@dnd-kit/sortable';
-import { History, ListChecks, Power, Trash2, Undo2, Upload } from 'lucide-react';
+import {
+  faClockRotateLeft,
+  faListCheck,
+  faPowerOff,
+  faRotateLeft,
+  faTrashCan,
+  faUpload,
+} from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import type { Action, ConditionGroup, Trigger } from '@sparx/automation-schemas';
 import { useActiveSiteId, useModuleStates, useSites } from '../../lib/api/shell-data';
 import { useDirtySource } from '../../lib/workbench/dirty';
@@ -669,7 +677,7 @@ export function AutomationEditor({
                 setMobilePane('edit');
               }}
             >
-              <History className="size-4" aria-hidden />
+              <Icon glyph={faClockRotateLeft} className="size-4" aria-hidden />
               History
             </Button>
             <Button
@@ -680,7 +688,7 @@ export function AutomationEditor({
               loading={setStatusMut.isPending}
               onClick={onToggleStatus}
             >
-              <Power className="size-4" aria-hidden />
+              <Icon glyph={faPowerOff} className="size-4" aria-hidden />
               {status === 'active' ? 'Pause' : 'Turn on'}
             </Button>
             <Button
@@ -697,7 +705,7 @@ export function AutomationEditor({
                 );
               }}
             >
-              <ListChecks className="size-4" aria-hidden />
+              <Icon glyph={faListCheck} className="size-4" aria-hidden />
               Runs
             </Button>
             {showDiscard ? (
@@ -711,7 +719,7 @@ export function AutomationEditor({
                   void onDiscard();
                 }}
               >
-                <Undo2 className="size-4" aria-hidden />
+                <Icon glyph={faRotateLeft} className="size-4" aria-hidden />
                 Discard draft
               </Button>
             ) : null}
@@ -726,7 +734,7 @@ export function AutomationEditor({
                   void onPublish();
                 }}
               >
-                <Upload className="size-4" aria-hidden />
+                <Icon glyph={faUpload} className="size-4" aria-hidden />
                 Publish
               </Button>
             ) : null}
@@ -753,7 +761,7 @@ export function AutomationEditor({
                 void onDelete();
               }}
             >
-              <Trash2 className="size-4" aria-hidden />
+              <Icon glyph={faTrashCan} className="size-4" aria-hidden />
             </Button>
           </>
         ) : (

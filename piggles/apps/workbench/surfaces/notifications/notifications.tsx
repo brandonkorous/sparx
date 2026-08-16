@@ -29,7 +29,8 @@ import {
   Text,
   useToast,
 } from '@wizeworks/silicaui-react';
-import { Save } from 'lucide-react';
+import { faFloppyDisk } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { FormSection } from '../../components/form-section';
@@ -66,7 +67,7 @@ function CategoryRow({
   channel: NotificationChannel;
   onChange: (value: NotificationChannel) => void;
 }) {
-  const Icon = meta.icon;
+  const glyph = meta.icon;
   const selectId = `notify-${meta.key}`;
   return (
     <div className="border-base-300 flex flex-col gap-3 rounded-lg border p-3 @md:flex-row @md:items-center @md:gap-4">
@@ -75,7 +76,7 @@ function CategoryRow({
         className="flex min-w-0 flex-1 items-start gap-3"
       >
         <span className="bg-module soft flex size-9 shrink-0 items-center justify-center rounded-lg">
-          <Icon className="text-module size-5" aria-hidden />
+          <Icon glyph={glyph} className="text-module size-5" aria-hidden />
         </span>
         <div className="flex min-w-0 flex-col gap-0.5">
           <label htmlFor={selectId} className="text-base font-semibold">
@@ -183,7 +184,7 @@ export function NotificationsSurface({ ctx }: { ctx: SurfaceContext }) {
           disabled={!dirty || isPending || save.isPending}
           onClick={onSave}
         >
-          <Save className="size-4" aria-hidden />
+          <Icon glyph={faFloppyDisk} className="size-4" aria-hidden />
           {save.isPending ? 'Saving…' : 'Save'}
         </Button>
         <RefreshButton

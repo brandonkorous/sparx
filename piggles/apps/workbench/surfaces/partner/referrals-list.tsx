@@ -14,7 +14,8 @@
 
 import { useState } from 'react';
 import { Badge, Button, EmptyState, Heading, Input, Table, Text } from '@wizeworks/silicaui-react';
-import { Check, Copy, Share2 } from 'lucide-react';
+import { faCheck, faCopy, faShareNodes } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
@@ -70,9 +71,9 @@ function ReferralLink({ code }: { code: string }) {
           }}
         >
           {copied ? (
-            <Check className="size-4" aria-hidden />
+            <Icon glyph={faCheck} className="size-4" aria-hidden />
           ) : (
-            <Copy className="size-4" aria-hidden />
+            <Icon glyph={faCopy} className="size-4" aria-hidden />
           )}
           {copied ? 'Copied' : 'Copy link'}
         </Button>
@@ -141,7 +142,7 @@ export function ReferralsListSurface(_props: { ctx: SurfaceContext }) {
 
             {referrals.length === 0 ? (
               <EmptyState
-                icon={<Share2 className="size-6" aria-hidden />}
+                icon={<Icon glyph={faShareNodes} className="size-6" aria-hidden />}
                 title="No referrals yet"
                 description="Share your link above. New businesses that sign up through it appear here, with how far they’ve got and the commission rate you’ll earn."
               />

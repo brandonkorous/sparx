@@ -50,7 +50,8 @@ import {
   Table,
   Text,
 } from '@wizeworks/silicaui-react';
-import { BarChart3, Download, TrendingUp } from 'lucide-react';
+import { faArrowTrendUp, faChartColumn, faDownload } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
@@ -144,7 +145,7 @@ function ExportButton({ reportKey, filters }: { reportKey: string; filters: Repo
       // right to flag even when the runtime output is fine.
       render={
         <a href={reportCsvPath(reportKey, filters)} download>
-          <Download className="size-4" aria-hidden />
+          <Icon glyph={faDownload} className="size-4" aria-hidden />
           Spreadsheet
         </a>
       }
@@ -290,7 +291,7 @@ function GmroiCard({
       <div className="border-base-300 flex flex-wrap items-start justify-between gap-2 border-b pb-2">
         <div className="flex min-w-0 flex-col gap-0.5">
           <Heading level={2} className="flex items-center gap-2 text-lg font-semibold">
-            <TrendingUp className="size-4" aria-hidden />
+            <Icon glyph={faArrowTrendUp} className="size-4" aria-hidden />
             What your stock earned
           </Heading>
           <Text className="text-sm">
@@ -788,7 +789,7 @@ export function PerformanceReportsSurface({ ctx }: { ctx: SurfaceContext }) {
     if (sellThrough.isError) {
       return (
         <EmptyState
-          icon={<BarChart3 className="size-6" aria-hidden />}
+          icon={<Icon glyph={faChartColumn} className="size-6" aria-hidden />}
           title="Could not work out your figures"
           description="This is a problem reaching the server. Your stock and its history are unaffected — the figures just could not be worked out just now."
         />
@@ -804,7 +805,7 @@ export function PerformanceReportsSurface({ ctx }: { ctx: SurfaceContext }) {
     if (nothingHappened) {
       return (
         <EmptyState
-          icon={<TrendingUp className="size-6" aria-hidden />}
+          icon={<Icon glyph={faArrowTrendUp} className="size-6" aria-hidden />}
           title="Nothing to measure yet"
           description="These figures appear once you have stock on a shelf and orders going through it. Book in a delivery and record a sale, and every number on this screen starts working."
         />

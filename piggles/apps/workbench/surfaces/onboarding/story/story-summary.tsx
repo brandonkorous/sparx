@@ -2,7 +2,8 @@
 
 import type { ReactNode } from 'react';
 import { Badge, Text } from '@wizeworks/silicaui-react';
-import { Check } from 'lucide-react';
+import { faCheck } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { industryOf } from '@sparx/story-schemas';
 import { ModuleScope } from '../../../components/module-scope';
 import {
@@ -114,7 +115,7 @@ export function StoryExtras({
           <span className="font-mono text-sm font-medium">{slug}.sparx.zone</span>
           <span className="ml-auto">
             <Badge color="success" variant="soft" size="sm">
-              <Check className="size-3" aria-hidden /> free
+              <Icon glyph={faCheck} className="size-3" aria-hidden /> free
             </Badge>
           </span>
         </div>

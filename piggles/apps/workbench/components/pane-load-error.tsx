@@ -69,7 +69,8 @@
 // screen is broken" — a bigger claim than the truth.
 
 import type { ReactNode } from 'react';
-import { TriangleAlert } from 'lucide-react';
+import { faExclamationTriangle } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { Button, EmptyState } from '@wizeworks/silicaui-react';
 import { hasStateArt, StateArt } from './state-art';
 
@@ -152,13 +153,13 @@ export function PaneLoadError({
         // The tone is decided HERE rather than at the call site precisely because
         // there are a hundred call sites: the caller passes its own glyph, this
         // decides what a failure looks like, and changing that decision is one
-        // edit. Wrapping works because lucide strokes `currentColor` — no prop to
+        // edit. Wrapping works because the glyph fills `currentColor` — no prop to
         // reach the chip with, and re-skinning silica's chip from out here would
         // be the RULE #1 violation this is avoiding.
         icon={
           branded ? undefined : (
             <span className={missing ? 'text-warning' : 'text-error'}>
-              {icon ?? <TriangleAlert className="size-6" aria-hidden />}
+              {icon ?? <Icon glyph={faExclamationTriangle} className="size-6" aria-hidden />}
             </span>
           )
         }

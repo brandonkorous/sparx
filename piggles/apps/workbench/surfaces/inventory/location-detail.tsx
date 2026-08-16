@@ -49,7 +49,13 @@ import {
   useToast,
 } from '@wizeworks/silicaui-react';
 import { useConfirm } from '../../lib/confirm';
-import { Archive, MapPin, Save, Warehouse } from 'lucide-react';
+import {
+  faBoxArchive,
+  faFloppyDisk,
+  faLocationDot,
+  faWarehouse,
+} from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { FormSection } from '../../components/form-section';
 import { useDirtySource } from '../../lib/workbench/dirty';
@@ -351,7 +357,7 @@ function LocationEditor({
           loading={busy}
           onClick={submit}
         >
-          <Save className="size-4" aria-hidden />
+          <Icon glyph={faFloppyDisk} className="size-4" aria-hidden />
           {isNew ? 'Create location' : 'Save'}
         </Button>
       </PaneToolbar>
@@ -364,7 +370,7 @@ function LocationEditor({
           {existing ? (
             <div className="flex flex-col gap-1">
               <Heading level={1} className="flex min-w-0 items-center gap-2 text-2xl font-semibold">
-                <Warehouse className="size-5 shrink-0" aria-hidden />
+                <Icon glyph={faWarehouse} className="size-5 shrink-0" aria-hidden />
                 <span className="min-w-0 break-words">{existing.name}</span>
               </Heading>
               <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
@@ -373,7 +379,7 @@ function LocationEditor({
                   <>
                     <span aria-hidden>·</span>
                     <span className="inline-flex items-center gap-1">
-                      <MapPin className="size-3.5 shrink-0" aria-hidden />
+                      <Icon glyph={faLocationDot} className="size-3.5 shrink-0" aria-hidden />
                       <Text as="span" className="text-sm">
                         {place}
                       </Text>
@@ -647,7 +653,7 @@ function LocationEditor({
                     void onArchive();
                   }}
                 >
-                  <Archive className="size-4" aria-hidden />
+                  <Icon glyph={faBoxArchive} className="size-4" aria-hidden />
                   {archive.isPending ? 'Archiving…' : 'Archive'}
                 </Button>
               </div>

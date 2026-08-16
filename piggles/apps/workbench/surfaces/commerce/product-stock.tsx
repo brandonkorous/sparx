@@ -53,17 +53,18 @@ import {
   useToast,
 } from '@wizeworks/silicaui-react';
 import {
-  Boxes,
-  ClipboardCheck,
-  History,
-  Lock,
-  MapPin,
-  PackageX,
-  Save,
-  ShieldCheck,
-  SlidersHorizontal,
-  Warehouse,
-} from 'lucide-react';
+  faBoxOpen,
+  faBoxes,
+  faClipboardCheck,
+  faClockRotateLeft,
+  faFloppyDisk,
+  faLocationDot,
+  faLock,
+  faShieldCheck,
+  faSliders,
+  faWarehouse,
+} from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import { useDirtySource } from '../../lib/workbench/dirty';
@@ -397,7 +398,7 @@ function CountForm({
           loading={setCount.isPending}
           onClick={submit}
         >
-          <Save className="size-4" aria-hidden />
+          <Icon glyph={faFloppyDisk} className="size-4" aria-hidden />
           Save this count
         </Button>
         <Button size="sm" variant="ghost" color="neutral" onClick={onDone}>
@@ -548,7 +549,7 @@ function ReorderForm({
           loading={save.isPending}
           onClick={submit}
         >
-          <Save className="size-4" aria-hidden />
+          <Icon glyph={faFloppyDisk} className="size-4" aria-hidden />
           Save this rule
         </Button>
         <Button size="sm" variant="ghost" color="neutral" onClick={onDone}>
@@ -583,7 +584,7 @@ function LevelRow({
     <div className="border-base-300 flex flex-col gap-2 border-t pt-3 first:border-t-0 first:pt-0">
       <div className="flex flex-wrap items-start justify-between gap-2">
         <div className="flex min-w-0 items-center gap-2">
-          <MapPin className="size-4 shrink-0" aria-hidden />
+          <Icon glyph={faLocationDot} className="size-4 shrink-0" aria-hidden />
           <Text className="min-w-0 font-semibold">{level.warehouseName}</Text>
         </div>
         <div className="flex shrink-0 items-center gap-2">
@@ -601,7 +602,7 @@ function LevelRow({
               aria-label="Where this number came from"
               onClick={onExplain}
             >
-              <ShieldCheck className="size-4" aria-hidden />
+              <Icon glyph={faShieldCheck} className="size-4" aria-hidden />
             </Button>
           </Tooltip>
         </div>
@@ -651,7 +652,7 @@ function LevelRow({
             setEditingRule((open) => !open);
           }}
         >
-          <SlidersHorizontal className="size-4" aria-hidden />
+          <Icon glyph={faSliders} className="size-4" aria-hidden />
           {level.reorderPoint === null ? 'Set a reorder rule' : 'Change the rule'}
         </Button>
       </div>
@@ -715,7 +716,7 @@ function VariantCard({
             setCounting((open) => !open);
           }}
         >
-          <ClipboardCheck className="size-4" aria-hidden />
+          <Icon glyph={faClipboardCheck} className="size-4" aria-hidden />
           Record a count
         </Button>
       </div>
@@ -786,7 +787,7 @@ function HoldsSection({ reservations }: { reservations: StockReservation[] }) {
             <Text className="text-sm">
               {hold.expiresAt === null ? (
                 <span className="inline-flex items-center gap-1">
-                  <Lock className="size-3" aria-hidden />
+                  <Icon glyph={faLock} className="size-3" aria-hidden />
                   Held until it ships
                 </span>
               ) : (
@@ -813,7 +814,7 @@ function HistorySection({ movements }: { movements: StockMovement[] }) {
     <section className="card bg-base-100 flex flex-col gap-3 p-4">
       <div className="border-base-300 flex flex-col gap-0.5 border-b pb-2">
         <Heading level={3} className="flex items-center gap-2 text-lg font-semibold">
-          <History className="size-4" aria-hidden />
+          <Icon glyph={faClockRotateLeft} className="size-4" aria-hidden />
           Recent changes
         </Heading>
         <Text className="text-sm">Every change to this product’s counts, newest first.</Text>
@@ -959,7 +960,7 @@ function StockBody({ ctx, scope }: { ctx: SurfaceContext; scope: ReadyScope }) {
     if (variants.length === 0) {
       return (
         <EmptyState
-          icon={<PackageX className="size-6" aria-hidden />}
+          icon={<Icon glyph={faBoxOpen} className="size-6" aria-hidden />}
           title="There is nothing to count yet"
           description="This product has no versions, so there is nothing that can be stocked or sold. Add one on the product itself and it will appear here."
           actions={
@@ -984,7 +985,7 @@ function StockBody({ ctx, scope }: { ctx: SurfaceContext; scope: ReadyScope }) {
     if (locations.length === 0) {
       return (
         <EmptyState
-          icon={<Warehouse className="size-6" aria-hidden />}
+          icon={<Icon glyph={faWarehouse} className="size-6" aria-hidden />}
           title="You have nowhere to keep stock yet"
           description="Counts are always kept per place — a shop, a warehouse, a garage. Set up at least one and you can start recording how many of this product you have."
           actions={
@@ -1073,7 +1074,7 @@ function StockBody({ ctx, scope }: { ctx: SurfaceContext; scope: ReadyScope }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar label="Stock actions">
-        <Warehouse className="size-4 shrink-0" aria-hidden />
+        <Icon glyph={faWarehouse} className="size-4 shrink-0" aria-hidden />
         <Heading level={2} className="min-w-0 truncate text-base font-semibold">
           {scope.product.title}
         </Heading>
@@ -1091,7 +1092,7 @@ function StockBody({ ctx, scope }: { ctx: SurfaceContext; scope: ReadyScope }) {
             size="sm"
             className="ml-auto hidden @md:inline-flex"
           >
-            <Boxes className="size-3" aria-hidden />
+            <Icon glyph={faBoxes} className="size-3" aria-hidden />
             {String(totals.available)} to sell
           </Badge>
         ) : null}

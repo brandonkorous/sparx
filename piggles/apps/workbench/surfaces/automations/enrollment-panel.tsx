@@ -18,7 +18,8 @@
 // says so and offers to fix it.
 
 import { Badge, Card, Heading, Table, Text } from '@wizeworks/silicaui-react';
-import { Target, TrendingDown } from 'lucide-react';
+import { faArrowTrendDown, faBullseye } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { actionLabel } from './automations-catalog';
 import { useEnrollment, type EnrollmentAnalytics, type StepDropOff } from './automations-data';
 import { productCopyWith } from '../../lib/product';
@@ -92,7 +93,7 @@ function Funnel({ data }: { data: EnrollmentAnalytics }) {
         </Card>
       ) : (
         <Card className="border-warning/40 bg-warning/10 flex items-start gap-3 p-5">
-          <Target className="text-warning mt-0.5 size-5 shrink-0" aria-hidden />
+          <Icon glyph={faBullseye} className="text-warning mt-0.5 size-5 shrink-0" aria-hidden />
           <div className="flex flex-col gap-1">
             <Heading level={3} className="text-lg font-semibold">
               You haven’t said what you’re aiming for
@@ -260,7 +261,7 @@ export function EnrollmentPanel({ automationId }: { automationId: string }) {
   if (data.funnel.entered === 0) {
     return (
       <Card className="flex items-start gap-3 p-5">
-        <TrendingDown className="mt-0.5 size-5 shrink-0" aria-hidden />
+        <Icon glyph={faArrowTrendDown} className="mt-0.5 size-5 shrink-0" aria-hidden />
         <div className="flex flex-col gap-1">
           <Heading level={3} className="text-lg font-semibold">
             This hasn’t run yet

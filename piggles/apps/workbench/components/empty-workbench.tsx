@@ -7,7 +7,9 @@
 // still framed the space. An empty screen with no way out is a dead end, so
 // this always offers the way back in.
 
-import { LayoutGrid } from 'lucide-react';
+import { faGrid } from '@fortawesome/pro-solid-svg-icons';
+
+import { Icon } from '@piggles/ui';
 import { Button, EmptyState } from '@wizeworks/silicaui-react';
 import { useWorkbench } from '../lib/workbench/context';
 
@@ -18,7 +20,7 @@ export function EmptyWorkbench() {
     <div className="grid h-full place-items-center p-6">
       <EmptyState
         className="max-w-sm"
-        icon={<LayoutGrid className="size-8" aria-hidden />}
+        icon={<Icon glyph={faGrid} className="size-8" aria-hidden />}
         title="Nothing open"
         description="Pick something from the menu to get started. Whatever you open stays open until you close it."
         actions={

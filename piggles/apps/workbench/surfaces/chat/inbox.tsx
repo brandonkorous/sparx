@@ -27,7 +27,8 @@ import {
   SearchInput,
   ToolbarSeparator,
 } from '@wizeworks/silicaui-react';
-import { Globe, Inbox, UserCheck } from 'lucide-react';
+import { faGlobe, faInbox, faUserCheck } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { useSites } from '../../lib/api/shell-data';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
@@ -115,7 +116,7 @@ function ConversationRow({
           </Badge>
           <span className="flex items-center gap-1 text-xs whitespace-nowrap">
             {conversation.assignedToId ? (
-              <UserCheck className="size-3" aria-label="Assigned" />
+              <Icon glyph={faUserCheck} className="size-3" aria-label="Assigned" />
             ) : null}
             {describeAgo(when)}
           </span>
@@ -225,7 +226,7 @@ export function ChatInboxSurface({ ctx }: { ctx: SurfaceContext }) {
             resetWindow();
           }}
         >
-          <UserCheck className="size-4" aria-hidden />
+          <Icon glyph={faUserCheck} className="size-4" aria-hidden />
           Mine
         </Button>
         <Button
@@ -240,7 +241,7 @@ export function ChatInboxSurface({ ctx }: { ctx: SurfaceContext }) {
             resetWindow();
           }}
         >
-          <Globe className="size-4" aria-hidden />
+          <Icon glyph={faGlobe} className="size-4" aria-hidden />
           All sites
         </Button>
 
@@ -257,7 +258,7 @@ export function ChatInboxSurface({ ctx }: { ctx: SurfaceContext }) {
       <Card className="min-h-0 flex-1 overflow-y-auto">
         {error ? (
           <EmptyState
-            icon={<Inbox className="size-6" aria-hidden />}
+            icon={<Icon glyph={faInbox} className="size-6" aria-hidden />}
             title="Could not load your conversations"
             description="This is a problem reaching the server. Your conversations are unaffected — nothing has been lost."
           />
@@ -265,7 +266,7 @@ export function ChatInboxSurface({ ctx }: { ctx: SurfaceContext }) {
           <PaneWaiting label="Loading conversations…" />
         ) : rows.length === 0 ? (
           <EmptyState
-            icon={<Inbox className="size-6" aria-hidden />}
+            icon={<Icon glyph={faInbox} className="size-6" aria-hidden />}
             title={filtered ? 'No conversations match that' : 'No conversations yet'}
             description={
               filtered

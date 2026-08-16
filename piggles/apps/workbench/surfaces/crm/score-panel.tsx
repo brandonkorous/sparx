@@ -39,7 +39,8 @@ import {
   Text,
   useToast,
 } from '@wizeworks/silicaui-react';
-import { Gauge } from 'lucide-react';
+import { faGauge } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { FormSection } from '../../components/form-section';
 import { useTeamRoster } from '../../lib/api/team';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
@@ -293,7 +294,7 @@ export function ScorePanel({
     return (
       <FormSection title="Score">
         <Alert color="module" variant="soft">
-          <Gauge className="size-5 shrink-0" aria-hidden />
+          <Icon glyph={faGauge} className="size-5 shrink-0" aria-hidden />
           <AlertContent>
             <AlertTitle>You haven&rsquo;t said what makes a {noun} worth chasing</AlertTitle>
             <AlertDescription>

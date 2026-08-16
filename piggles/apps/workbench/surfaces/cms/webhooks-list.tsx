@@ -24,7 +24,8 @@ import {
   Table,
   Text,
 } from '@wizeworks/silicaui-react';
-import { Plus, Webhook } from 'lucide-react';
+import { faPlus, faWebhook } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { ListEmptyState } from '../../components/list-empty-state';
 import { RefreshButton } from '../../components/refresh-button';
@@ -100,7 +101,7 @@ export function WebhooksListSurface({ ctx }: { ctx: SurfaceContext }) {
           title="Set up a new webhook — hold Shift to open alongside, Alt for a new window"
           onClick={create}
         >
-          <Plus className="size-4" aria-hidden />
+          <Icon glyph={faPlus} className="size-4" aria-hidden />
           <span className="hidden @xl:inline">New webhook</span>
         </Button>
 
@@ -138,7 +139,7 @@ export function WebhooksListSurface({ ctx }: { ctx: SurfaceContext }) {
 
         {error && !staleAfterFailure ? (
           <EmptyState
-            icon={<Webhook className="size-6" aria-hidden />}
+            icon={<Icon glyph={faWebhook} className="size-6" aria-hidden />}
             title="Could not load your webhooks"
             description="This is a problem reaching the server. None of your webhooks have been changed or lost."
             actions={
@@ -159,7 +160,7 @@ export function WebhooksListSurface({ ctx }: { ctx: SurfaceContext }) {
           <ListEmptyState
             filtered={term !== ''}
             noResults={{
-              icon: <Webhook className="size-6" aria-hidden />,
+              icon: <Icon glyph={faWebhook} className="size-6" aria-hidden />,
               title: 'Nothing matches that',
               description:
                 'No webhook has a name or address matching that. Clear the search to see them all.',
@@ -176,7 +177,7 @@ export function WebhooksListSurface({ ctx }: { ctx: SurfaceContext }) {
                     create({ shiftKey: false, altKey: false });
                   }}
                 >
-                  <Plus className="size-4" aria-hidden />
+                  <Icon glyph={faPlus} className="size-4" aria-hidden />
                   Set up a webhook
                 </Button>
               ),

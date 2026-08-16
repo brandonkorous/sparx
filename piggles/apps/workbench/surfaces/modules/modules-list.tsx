@@ -35,7 +35,8 @@ import {
   Text,
   useToast,
 } from '@wizeworks/silicaui-react';
-import { Layers } from 'lucide-react';
+import { faLayerGroup } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { useConfirm } from '../../lib/confirm';
 import { useViewer } from '../../lib/api/shell-data';
 import { RefreshButton } from '../../components/refresh-button';
@@ -94,7 +95,7 @@ function ModuleCard({
   const isBundled = row.source === 'bundled';
   const isOn = row.enabled && !isBundled;
   const blockers = row.requiredBy;
-  const Icon = meta.icon;
+  const glyph = meta.icon;
 
   // A module that comes free with another, or one that something else is built
   // on, cannot be switched here — the switch shows the true state but is locked.
@@ -134,7 +135,7 @@ function ModuleCard({
           <span
             className={`flex h-10 w-10 items-center justify-center rounded-lg bg-module-${hue}`}
           >
-            <Icon size={20} className="text-white" strokeWidth={2} aria-hidden />
+            <Icon glyph={glyph} size={20} className="text-white" aria-hidden />
           </span>
           <Switch
             color={`module-${hue}`}
@@ -270,7 +271,7 @@ export function ModulesSurface({ ctx: _ctx }: { ctx: SurfaceContext }) {
     return (
       <Card className="min-h-0 flex-1 items-center justify-center">
         <PaneEmpty
-          icon={<Layers className="size-6" aria-hidden />}
+          icon={<Icon glyph={faLayerGroup} className="size-6" aria-hidden />}
           title="Could not load your modules"
           description="This is a problem reaching the server. Whatever you have switched on is unaffected and still working."
           actions={
@@ -351,7 +352,7 @@ export function ModulesSurface({ ctx: _ctx }: { ctx: SurfaceContext }) {
             <PaneWaiting />
           ) : visible.length === 0 ? (
             <EmptyState
-              icon={<Layers className="size-6" aria-hidden />}
+              icon={<Icon glyph={faLayerGroup} className="size-6" aria-hidden />}
               title="No modules match that"
               description={productCopy(
                 'modules.noResults',

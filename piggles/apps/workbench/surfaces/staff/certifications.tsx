@@ -30,7 +30,8 @@ import {
   Table,
   Text,
 } from '@wizeworks/silicaui-react';
-import { AlertTriangle, ShieldCheck } from 'lucide-react';
+import { faExclamationTriangle, faShieldCheck } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
@@ -105,7 +106,7 @@ export function CertificationsSurface({ ctx }: { ctx: SurfaceContext }) {
       <div className="min-h-0 flex-1 overflow-y-auto">
         {certs.isError ? (
           <EmptyState
-            icon={<ShieldCheck className="size-6" aria-hidden />}
+            icon={<Icon glyph={faShieldCheck} className="size-6" aria-hidden />}
             title="Could not load qualifications"
             description="The server could not be reached. Nothing on file is affected."
             actions={
@@ -125,7 +126,7 @@ export function CertificationsSurface({ ctx }: { ctx: SurfaceContext }) {
         ) : all.length === 0 ? (
           <Card className="min-h-0 flex-1 items-center justify-center">
             <PaneEmpty
-              icon={<ShieldCheck className="size-6" aria-hidden />}
+              icon={<Icon glyph={faShieldCheck} className="size-6" aria-hidden />}
               title="Nothing recorded yet"
               description={productCopy(
                 'staff.certifications.description',
@@ -151,7 +152,7 @@ export function CertificationsSurface({ ctx }: { ctx: SurfaceContext }) {
               // qualified for work they may be about to be assigned.
               <Card className="bg-error text-error-content flex flex-col gap-1 p-4">
                 <div className="flex items-center gap-2">
-                  <AlertTriangle className="size-5" aria-hidden />
+                  <Icon glyph={faExclamationTriangle} className="size-5" aria-hidden />
                   <Heading level={2} className="text-lg font-semibold">
                     {expired === 1
                       ? 'One qualification has expired'
@@ -188,7 +189,7 @@ export function CertificationsSurface({ ctx }: { ctx: SurfaceContext }) {
             {rows.length === 0 ? (
               <Card>
                 <EmptyState
-                  icon={<ShieldCheck className="size-6" aria-hidden />}
+                  icon={<Icon glyph={faShieldCheck} className="size-6" aria-hidden />}
                   title="Nothing in this window"
                   description="Switch to Everything to see the full list, including qualifications that do not expire."
                 />

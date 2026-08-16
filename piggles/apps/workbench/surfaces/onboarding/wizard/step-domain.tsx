@@ -28,7 +28,8 @@ import {
   SearchInput,
   Text,
 } from '@wizeworks/silicaui-react';
-import { Check, Clock, Globe, Lock, X } from 'lucide-react';
+import { faCheck, faClock, faGlobe, faLock, faXmark } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { api } from '../../../lib/api/client';
 import { ApiError } from '@sparx/api-client';
 import type { OnboardingActions } from '../../../lib/onboarding/api';
@@ -149,7 +150,7 @@ export function StepDomain({
       {selected ? (
         <div className="border-module ring-module flex items-center justify-between gap-4 rounded-xl border px-4 py-3.5 ring-1">
           <div className="flex min-w-0 items-center gap-2.5">
-            <Globe className="text-module size-4 shrink-0" aria-hidden />
+            <Icon glyph={faGlobe} className="text-module size-4 shrink-0" aria-hidden />
             <div className="min-w-0">
               <p className="truncate font-medium">{selected.domain}</p>
               <p className="text-sm">
@@ -162,7 +163,7 @@ export function StepDomain({
             variant="ghost"
             size="sm"
             onClick={onClear}
-            iconStart={<X className="size-3.5" aria-hidden />}
+            iconStart={<Icon glyph={faXmark} className="size-3.5" aria-hidden />}
           >
             Use free address
           </Button>
@@ -208,7 +209,7 @@ export function StepDomain({
       ) : null}
 
       <div className="border-base-300 flex items-start gap-2.5 rounded-xl border px-4 py-3.5">
-        <Clock className="mt-0.5 size-4 shrink-0" aria-hidden />
+        <Icon glyph={faClock} className="mt-0.5 size-4 shrink-0" aria-hidden />
         <p className="text-sm">
           A custom domain is the one optional paid add-on — you are charged only when you publish,
           at the Launch step, never for signing up.
@@ -247,7 +248,7 @@ function DomainRow({
       <div className="min-w-0">
         <p className="truncate font-medium">{suggestion.domain}</p>
         <span className="mt-0.5 flex items-center gap-1.5">
-          <Check className="text-success size-3.5" aria-hidden />
+          <Icon glyph={faCheck} className="text-success size-3.5" aria-hidden />
           <span className="text-success text-sm">
             {featured ? 'Available · best match' : 'Available'}
           </span>
@@ -385,7 +386,7 @@ function ContactPanel({
   return (
     <div className="border-base-300 bg-base-100 flex max-w-xl flex-col gap-5 rounded-xl border p-6">
       <div className="flex items-center gap-2.5">
-        <Globe className="text-module size-5 shrink-0" aria-hidden />
+        <Icon glyph={faGlobe} className="text-module size-5 shrink-0" aria-hidden />
         <div className="min-w-0">
           <p className="font-medium">{target.domain}</p>
           <p className="text-sm">
@@ -415,7 +416,7 @@ function ContactPanel({
           />
           <label htmlFor="wp-privacy" className="flex flex-col">
             <span className="flex items-center gap-1.5 text-sm font-medium">
-              <Lock className="size-3.5" aria-hidden /> Keep my details private
+              <Icon glyph={faLock} className="size-3.5" aria-hidden /> Keep my details private
             </span>
             <span className="text-sm">Hidden from the public WHOIS record.</span>
           </label>

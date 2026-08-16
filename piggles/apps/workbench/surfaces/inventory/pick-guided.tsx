@@ -46,7 +46,16 @@ import {
   Text,
   Textarea,
 } from '@wizeworks/silicaui-react';
-import { ArrowRight, Check, Package, PartyPopper, Route, SkipForward, X } from 'lucide-react';
+import {
+  faArrowRight,
+  faBox,
+  faCheck,
+  faForwardStep,
+  faPartyHorn,
+  faRoute,
+  faXmark,
+} from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { PANE_SHELL } from '../../components/pane-toolbar';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { plural } from './data';
@@ -83,7 +92,7 @@ export function PickGuidedSurface({ ctx }: { ctx: SurfaceContext }) {
     return (
       <div className={PANE_SHELL}>
         <EmptyState
-          icon={<Route className="size-6" aria-hidden />}
+          icon={<Icon glyph={faRoute} className="size-6" aria-hidden />}
           title="Could not open that walk"
           description="It may have been abandoned. Go back to the list and pick another."
         />
@@ -201,7 +210,7 @@ export function PickGuidedSurface({ ctx }: { ctx: SurfaceContext }) {
                     })();
                   }}
                 >
-                  <Check className="size-5" aria-hidden />
+                  <Icon glyph={faCheck} className="size-5" aria-hidden />
                   Got all {current.quantity - current.pickedQuantity}
                 </Button>
 
@@ -214,7 +223,7 @@ export function PickGuidedSurface({ ctx }: { ctx: SurfaceContext }) {
                     setShorting(true);
                   }}
                 >
-                  <X className="size-5" aria-hidden />
+                  <Icon glyph={faXmark} className="size-5" aria-hidden />
                   Not there
                 </Button>
 
@@ -234,7 +243,7 @@ export function PickGuidedSurface({ ctx }: { ctx: SurfaceContext }) {
                     })();
                   }}
                 >
-                  <SkipForward className="size-5" aria-hidden />
+                  <Icon glyph={faForwardStep} className="size-5" aria-hidden />
                   Come back to it
                 </Button>
               </div>
@@ -459,7 +468,7 @@ function FinishedPanel({
       <Alert color="success" variant="soft">
         <AlertContent>
           <AlertTitle>
-            <PartyPopper className="mr-1 inline size-5" aria-hidden />
+            <Icon glyph={faPartyHorn} className="mr-1 inline size-5" aria-hidden />
             Walk {walk.number} is done
           </AlertTitle>
           <AlertDescription>
@@ -483,9 +492,9 @@ function FinishedPanel({
             });
           }}
         >
-          <Package className="size-5" aria-hidden />
+          <Icon glyph={faBox} className="size-5" aria-hidden />
           Pack {order.orderNumber}
-          <ArrowRight className="size-5" aria-hidden />
+          <Icon glyph={faArrowRight} className="size-5" aria-hidden />
         </Button>
       ))}
     </div>

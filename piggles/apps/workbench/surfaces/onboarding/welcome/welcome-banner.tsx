@@ -10,7 +10,8 @@
 // Renders nothing at all when it doesn't apply, so a caller can drop it in
 // unconditionally.
 
-import { ArrowRight } from 'lucide-react';
+import { faArrowRight } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { Alert, Button } from '@wizeworks/silicaui-react';
 import type { SurfaceContext } from '../../../lib/surfaces/registry';
 import { useOnboarding, useOnboardingProgress } from '../../../lib/onboarding/api';
@@ -51,7 +52,7 @@ export function WelcomeBanner({ ctx }: { ctx: SurfaceContext }) {
         }}
       >
         Pick up where you left off
-        <ArrowRight className="size-4" aria-hidden />
+        <Icon glyph={faArrowRight} className="size-4" aria-hidden />
       </Button>
     </Alert>
   );

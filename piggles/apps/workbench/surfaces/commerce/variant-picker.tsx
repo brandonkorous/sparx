@@ -10,7 +10,8 @@
 
 import { useMemo, useState } from 'react';
 import { Badge, SearchInput, Text } from '@wizeworks/silicaui-react';
-import { PackageSearch } from 'lucide-react';
+import { faBoxMagnifyingGlass } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { formatCents } from './products-data';
 import { useVariantCatalog, type VariantChoice } from './bundles-data';
 
@@ -67,7 +68,7 @@ export function VariantPicker({
         </Text>
       ) : results.length === 0 ? (
         <div className="flex items-center gap-2">
-          <PackageSearch className="size-5" aria-hidden />
+          <Icon glyph={faBoxMagnifyingGlass} className="size-5" aria-hidden />
           <Text className="text-sm">
             {search.trim()
               ? `No product matches “${search.trim()}”.`

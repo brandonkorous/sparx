@@ -20,7 +20,8 @@
 import { useMemo, useState } from 'react';
 import { useQuery } from '@sparx/query';
 import { Button, Combobox, Text } from '@wizeworks/silicaui-react';
-import { X } from 'lucide-react';
+import { faXmark } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { api } from '../../lib/api/client';
 import { formatMoney } from './types';
 
@@ -188,7 +189,7 @@ export function ProductPicker({
               onClear();
             }}
           >
-            <X className="size-4" aria-hidden />
+            <Icon glyph={faXmark} className="size-4" aria-hidden />
           </Button>
         ) : null}
       </div>

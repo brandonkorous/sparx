@@ -2,7 +2,7 @@
 //
 // The component renders NOTHING but a data attribute. The actual mapping —
 // `data-module="x"` ⇒ `--color-module: var(--color-module-x)` — lives in
-// @sparx/brand/theme.css next to the tokens themselves, so styling stays
+// @piggles/brand/theme.css next to the tokens themselves, so styling stays
 // entirely in CSS. No inline `style` (banned: it bypasses the token system),
 // no JS color table that can drift from brand.
 //
@@ -17,7 +17,7 @@
 
 import type { ReactNode } from 'react';
 
-/** Every module identity carried in @sparx/brand/theme.css. */
+/** Every module identity carried in @piggles/brand/theme.css. */
 export const WORKBENCH_MODULES = [
   'storefront',
   'builder',

@@ -33,7 +33,8 @@ import {
   Text,
   Timestamp,
 } from '@wizeworks/silicaui-react';
-import { CalendarClock, PackageSearch } from 'lucide-react';
+import { faBoxMagnifyingGlass, faCalendarClock } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
@@ -62,7 +63,7 @@ export function LateOrdersSurface({ ctx }: { ctx: SurfaceContext }) {
     if (report.isError) {
       return (
         <EmptyState
-          icon={<PackageSearch className="size-6" aria-hidden />}
+          icon={<Icon glyph={faBoxMagnifyingGlass} className="size-6" aria-hidden />}
           title="Could not check what is overdue"
           description="This is a problem reaching the server, not a finding about your orders. Try again in a moment."
         />
@@ -74,7 +75,7 @@ export function LateOrdersSurface({ ctx }: { ctx: SurfaceContext }) {
     if (rows.length === 0) {
       return (
         <EmptyState
-          icon={<CalendarClock className="size-6" aria-hidden />}
+          icon={<Icon glyph={faCalendarClock} className="size-6" aria-hidden />}
           title="Nothing is overdue"
           description={
             undated > 0

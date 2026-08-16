@@ -10,7 +10,8 @@
 
 import { useState } from 'react';
 import { Button, SearchInput, Text } from '@wizeworks/silicaui-react';
-import { UserRound, X } from 'lucide-react';
+import { faUser, faXmark } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { customerName, useCustomerSearch, type CustomerLite } from './bookings-data';
 
 export function CustomerPicker({
@@ -28,7 +29,7 @@ export function CustomerPicker({
   if (value) {
     return (
       <div className="border-base-300 bg-base-100 flex items-center gap-2 rounded-md border p-2">
-        <UserRound className="size-4 shrink-0" aria-hidden />
+        <Icon glyph={faUser} className="size-4 shrink-0" aria-hidden />
         <span className="min-w-0 flex-1">
           <span className="block font-medium">{customerName(value)}</span>
           {value.email ? (
@@ -48,7 +49,7 @@ export function CustomerPicker({
             setQuery('');
           }}
         >
-          <X className="size-4" aria-hidden />
+          <Icon glyph={faXmark} className="size-4" aria-hidden />
         </Button>
       </div>
     );

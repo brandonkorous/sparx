@@ -27,7 +27,8 @@ import {
   Timestamp,
   ToolbarSeparator,
 } from '@wizeworks/silicaui-react';
-import { ArrowDown, ArrowUp, Truck } from 'lucide-react';
+import { faArrowDown, faArrowUp, faTruck } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
@@ -138,9 +139,9 @@ export function DropshipOrdersListSurface({ ctx }: { ctx: SurfaceContext }) {
         {label}
         {sort.key === key ? (
           sort.dir === 'asc' ? (
-            <ArrowUp className="size-3" aria-hidden />
+            <Icon glyph={faArrowUp} className="size-3" aria-hidden />
           ) : (
-            <ArrowDown className="size-3" aria-hidden />
+            <Icon glyph={faArrowDown} className="size-3" aria-hidden />
           )
         ) : null}
       </button>
@@ -220,7 +221,7 @@ export function DropshipOrdersListSurface({ ctx }: { ctx: SurfaceContext }) {
       <Card className="min-h-0 flex-1 overflow-y-auto">
         {error ? (
           <EmptyState
-            icon={<Truck className="size-6" aria-hidden />}
+            icon={<Icon glyph={faTruck} className="size-6" aria-hidden />}
             title="Could not load supplier orders"
             description="Something went wrong reaching the server. Try again in a moment."
           />
@@ -228,7 +229,7 @@ export function DropshipOrdersListSurface({ ctx }: { ctx: SurfaceContext }) {
           <PaneWaiting label="Loading supplier orders…" />
         ) : rows.length === 0 ? (
           <EmptyState
-            icon={<Truck className="size-6" aria-hidden />}
+            icon={<Icon glyph={faTruck} className="size-6" aria-hidden />}
             title={anyFilter ? 'No orders match those filters' : 'No supplier orders yet'}
             description={
               anyFilter

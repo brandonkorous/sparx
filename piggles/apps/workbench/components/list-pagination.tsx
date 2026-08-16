@@ -33,7 +33,8 @@
 // numbers would look more consistent and behave worse.
 
 import { Button, NativeSelect, Pagination, Text } from '@wizeworks/silicaui-react';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { faChevronLeft, faChevronRight } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 
 /** Rows per window. The server caps a single request at 250 (see MAX_TAKE). */
 export const PAGE_SIZES = [25, 50, 100] as const;
@@ -130,7 +131,7 @@ export function ListPagination({
               disabled={busy || !onNewer}
               onClick={onNewer}
             >
-              <ChevronLeft className="size-4" aria-hidden />
+              <Icon glyph={faChevronLeft} className="size-4" aria-hidden />
               Newer
             </Button>
             <Button
@@ -141,7 +142,7 @@ export function ListPagination({
               onClick={onOlder}
             >
               Older
-              <ChevronRight className="size-4" aria-hidden />
+              <Icon glyph={faChevronRight} className="size-4" aria-hidden />
             </Button>
           </div>
         ) : null}

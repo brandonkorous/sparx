@@ -11,7 +11,8 @@
 import { useMemo, useState } from 'react';
 import { useQuery } from '@sparx/query';
 import { Badge, Button, Checkbox, SearchInput, Text } from '@wizeworks/silicaui-react';
-import { Package, X } from 'lucide-react';
+import { faBox, faXmark } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { api } from '../../lib/api/client';
 import type { ProductRow } from './products-data';
 import { InlineWaiting } from '../../components/inline-waiting';
@@ -97,7 +98,7 @@ export function CollectionProductsEditor({
                         toggle(id, false);
                       }}
                     >
-                      <X className="size-3.5" aria-hidden />
+                      <Icon glyph={faXmark} className="size-3.5" aria-hidden />
                     </Button>
                   </span>
                 </li>
@@ -123,7 +124,7 @@ export function CollectionProductsEditor({
         <InlineWaiting label="Searching…" />
       ) : results.length === 0 ? (
         <div className="flex items-center gap-2">
-          <Package className="size-5" aria-hidden />
+          <Icon glyph={faBox} className="size-5" aria-hidden />
           <Text>
             {search.trim()
               ? `No product matches “${search.trim()}”.`

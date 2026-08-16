@@ -13,7 +13,8 @@
 
 import { useQuery } from '@sparx/query';
 import { Badge, Button, Table, Tooltip, useToast } from '@wizeworks/silicaui-react';
-import { Printer } from 'lucide-react';
+import { faPrint } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { api } from '../../lib/api/client';
 import { openServerHtml } from '../../lib/api/html-artifact';
 import { FormSection } from '../../components/form-section';
@@ -89,7 +90,7 @@ export function HistorySection({ doc }: { doc: BillingDocument }) {
                       open(snapshot);
                     }}
                   >
-                    <Printer className="size-4" aria-hidden />
+                    <Icon glyph={faPrint} className="size-4" aria-hidden />
                   </Button>
                 </Tooltip>
               </td>

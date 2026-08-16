@@ -33,15 +33,16 @@ import {
   Timestamp,
 } from '@wizeworks/silicaui-react';
 import {
-  ArrowRight,
-  Clock,
-  KeyRound,
-  PenLine,
-  Plug,
-  Server,
-  ShieldCheck,
-  Wrench,
-} from 'lucide-react';
+  faArrowRight,
+  faClock,
+  faKey,
+  faPenLine,
+  faPlug,
+  faServer,
+  faShieldCheck,
+  faWrench,
+} from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { PaneEmpty } from '../../components/pane-empty';
 import { PaneWaiting } from '../../components/pane-waiting';
@@ -154,7 +155,7 @@ export function AiOverviewSurface({ ctx }: { ctx: SurfaceContext }) {
       return (
         <Card className="min-h-0 flex-1 items-center justify-center">
           <PaneEmpty
-            icon={<Server className="size-6" aria-hidden />}
+            icon={<Icon glyph={faServer} className="size-6" aria-hidden />}
             title="Could not load your AI usage"
             description="This is a problem reaching the server. Your connected apps and keys are unaffected."
             actions={
@@ -241,7 +242,7 @@ export function AiOverviewSurface({ ctx }: { ctx: SurfaceContext }) {
             <UsageChart points={points} />
           ) : (
             <EmptyState
-              icon={<Server className="size-5" aria-hidden />}
+              icon={<Icon glyph={faServer} className="size-5" aria-hidden />}
               title="No activity yet"
               description="This fills in once a connected app starts working with your data. Connect one below to begin."
             />
@@ -305,7 +306,7 @@ export function AiOverviewSurface({ ctx }: { ctx: SurfaceContext }) {
         <Card className="flex flex-col gap-4 p-5">
           <div className="flex items-start gap-3">
             <span className="bg-module soft flex size-10 shrink-0 items-center justify-center rounded-lg">
-              <Plug className="text-module size-5" aria-hidden />
+              <Icon glyph={faPlug} className="text-module size-5" aria-hidden />
             </span>
             <div className="flex min-w-0 flex-col">
               <Heading level={2} className="text-lg font-semibold">
@@ -340,10 +341,14 @@ export function AiOverviewSurface({ ctx }: { ctx: SurfaceContext }) {
               }}
             >
               {s.apiKeysTotal > 0 ? 'Open AI connections' : 'Create your first key'}
-              <ArrowRight className="size-4" aria-hidden />
+              <Icon glyph={faArrowRight} className="size-4" aria-hidden />
             </Button>
             <div className="flex items-start gap-2">
-              <ShieldCheck className="text-module mt-0.5 size-4 shrink-0" aria-hidden />
+              <Icon
+                glyph={faShieldCheck}
+                className="text-module mt-0.5 size-4 shrink-0"
+                aria-hidden
+              />
               <Text className="text-sm">
                 Keys are limited and can be switched off, so an app only ever does what you allow.
               </Text>
@@ -355,7 +360,7 @@ export function AiOverviewSurface({ ctx }: { ctx: SurfaceContext }) {
             each. These are the two different ways AI touches the business. */}
         <div className="grid gap-4 @3xl:grid-cols-2">
           <AreaLink
-            icon={<PenLine className="text-module size-5" aria-hidden />}
+            icon={<Icon glyph={faPenLine} className="text-module size-5" aria-hidden />}
             title="Instructions"
             description={productCopy(
               'ai.instructions.summary',
@@ -367,7 +372,7 @@ export function AiOverviewSurface({ ctx }: { ctx: SurfaceContext }) {
             }}
           />
           <AreaLink
-            icon={<Wrench className="text-module size-5" aria-hidden />}
+            icon={<Icon glyph={faWrench} className="text-module size-5" aria-hidden />}
             title="Permissions"
             description="What an AI app you've connected may look up or change in your business — switch off anything it shouldn't reach."
             cta="Open Permissions"
@@ -396,7 +401,7 @@ export function AiOverviewSurface({ ctx }: { ctx: SurfaceContext }) {
             open(CONNECTIONS_SURFACE, event);
           }}
         >
-          <KeyRound className="size-4" aria-hidden />
+          <Icon glyph={faKey} className="size-4" aria-hidden />
           AI connections
         </Button>
         <RefreshButton
@@ -421,7 +426,7 @@ function ActivityRow({ item, label }: { item: AiActivityItem; label: string }) {
   const failed = isFailedOutcome(item.outcome);
   return (
     <li className="border-base-300 flex items-start gap-3 border-b px-4 py-2.5 last:border-b-0">
-      <Clock className="text-module mt-0.5 size-4 shrink-0" aria-hidden />
+      <Icon glyph={faClock} className="text-module mt-0.5 size-4 shrink-0" aria-hidden />
       <span className="flex min-w-0 flex-1 flex-col">
         <span className="flex items-center gap-2">
           <span className="min-w-0 truncate font-medium">{label}</span>

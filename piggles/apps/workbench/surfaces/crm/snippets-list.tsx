@@ -47,7 +47,8 @@ import {
   Textarea,
   useToast,
 } from '@wizeworks/silicaui-react';
-import { Pencil, Plus, TextQuote, Trash2 } from 'lucide-react';
+import { faPencil, faPlus, faQuoteLeft, faTrashCan } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { ListEmptyState } from '../../components/list-empty-state';
 import { RefreshButton } from '../../components/refresh-button';
@@ -226,7 +227,7 @@ export function SnippetsListSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar label="Saved paragraph actions">
-        <TextQuote className="size-4 shrink-0" aria-hidden />
+        <Icon glyph={faQuoteLeft} className="size-4 shrink-0" aria-hidden />
         <Text as="span" className="text-sm">
           {rows.length === 0
             ? 'No saved paragraphs yet'
@@ -235,7 +236,7 @@ export function SnippetsListSurface({ ctx }: { ctx: SurfaceContext }) {
               : `${String(rows.length)} saved paragraphs`}
         </Text>
         <Button color="module" size="sm" className="ml-auto shrink-0" onClick={startNew}>
-          <Plus className="size-4" aria-hidden />
+          <Icon glyph={faPlus} className="size-4" aria-hidden />
           New paragraph
         </Button>
         <RefreshButton
@@ -257,7 +258,7 @@ export function SnippetsListSurface({ ctx }: { ctx: SurfaceContext }) {
                   'Save a paragraph once — your hours, your returns policy, your usual lead time — give it a short name like hours, and anyone writing an email can type ;hours and press space to drop the whole thing in. Change the wording here and everybody is saying the new version from the next email onwards.',
                 actions: (
                   <Button color="module" onClick={startNew}>
-                    <Plus className="size-4" aria-hidden />
+                    <Icon glyph={faPlus} className="size-4" aria-hidden />
                     Save your first paragraph
                   </Button>
                 ),
@@ -326,7 +327,7 @@ export function SnippetsListSurface({ ctx }: { ctx: SurfaceContext }) {
                               startEdit(snippet);
                             }}
                           >
-                            <Pencil className="size-4" aria-hidden />
+                            <Icon glyph={faPencil} className="size-4" aria-hidden />
                           </Button>
                           <Button
                             color="danger"
@@ -336,7 +337,7 @@ export function SnippetsListSurface({ ctx }: { ctx: SurfaceContext }) {
                             title="Delete it"
                             onClick={() => void destroy(snippet)}
                           >
-                            <Trash2 className="size-4" aria-hidden />
+                            <Icon glyph={faTrashCan} className="size-4" aria-hidden />
                           </Button>
                         </div>
                       </td>

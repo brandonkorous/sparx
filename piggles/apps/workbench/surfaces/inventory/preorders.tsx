@@ -46,7 +46,8 @@ import {
   ToolbarSeparator,
   useToast,
 } from '@wizeworks/silicaui-react';
-import { CalendarClock, CalendarPlus } from 'lucide-react';
+import { faCalendarClock, faCalendarPlus } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { PaneWaiting } from '../../components/pane-waiting';
 import { useState } from 'react';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
@@ -86,7 +87,7 @@ export function PreordersSurface(_props: { ctx: SurfaceContext }) {
     if (list.isError) {
       return (
         <EmptyState
-          icon={<CalendarClock className="size-6" aria-hidden />}
+          icon={<Icon glyph={faCalendarClock} className="size-6" aria-hidden />}
           title="Could not load your preorders"
           description="This is a problem reaching the server. Try again in a moment."
         />
@@ -98,7 +99,7 @@ export function PreordersSurface(_props: { ctx: SurfaceContext }) {
     if (rows.length === 0) {
       return (
         <EmptyState
-          icon={<CalendarPlus className="size-6" aria-hidden />}
+          icon={<Icon glyph={faCalendarPlus} className="size-6" aria-hidden />}
           title="No preorders running"
           description="Open one from a product's stock screen when you want to take orders for something before it arrives — a production run, a seasonal line, a restock you have already paid for."
         />

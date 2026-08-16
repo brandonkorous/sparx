@@ -60,7 +60,15 @@ import {
   useToast,
 } from '@wizeworks/silicaui-react';
 import { useConfirm } from '../../lib/confirm';
-import { Plus, Send, TriangleAlert, UserX, Users, X } from 'lucide-react';
+import {
+  faExclamationTriangle,
+  faPaperPlane,
+  faPlus,
+  faUserXmark,
+  faUsers,
+  faXmark,
+} from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { ListPagination, type PageSize } from '../../components/list-pagination';
 import { PaneScope } from '../../lib/dock/window-boundary';
 import { useViewer } from '../../lib/api/shell-data';
@@ -480,7 +488,7 @@ export function TeamSurface({ ctx }: { ctx: SurfaceContext }) {
     return (
       <div className="flex h-full flex-col items-center justify-center p-8">
         <Alert color="error" variant="soft" className="max-w-md">
-          <TriangleAlert />
+          <Icon glyph={faExclamationTriangle} />
           <AlertContent>
             <AlertTitle>Could not load your team</AlertTitle>
             <AlertDescription>
@@ -562,7 +570,7 @@ export function TeamSurface({ ctx }: { ctx: SurfaceContext }) {
               setInviting(true);
             }}
           >
-            <Plus className="size-4" aria-hidden />
+            <Icon glyph={faPlus} className="size-4" aria-hidden />
             Invite someone
           </Button>
         ) : null}
@@ -589,7 +597,7 @@ export function TeamSurface({ ctx }: { ctx: SurfaceContext }) {
             <PaneWaiting label="Loading your team…" />
           ) : people.length === 0 ? (
             <EmptyState
-              icon={<Users className="size-6" aria-hidden />}
+              icon={<Icon glyph={faUsers} className="size-6" aria-hidden />}
               title="It is just you for now"
               description={
                 canManage
@@ -605,7 +613,7 @@ export function TeamSurface({ ctx }: { ctx: SurfaceContext }) {
                            happened, quotes back the words that found nothing so the typo is
                            visible, and offers the way out: put the whole team back. */
             <EmptyState
-              icon={<Users className="size-6" aria-hidden />}
+              icon={<Icon glyph={faUsers} className="size-6" aria-hidden />}
               title={`Nobody here matches "${search.trim()}"`}
               description="Try part of their name, their email address, or the job they do here — like Editor."
               actions={
@@ -723,7 +731,7 @@ export function TeamSurface({ ctx }: { ctx: SurfaceContext }) {
                                       resendInvitation(person);
                                     }}
                                   >
-                                    <Send className="size-4" aria-hidden />
+                                    <Icon glyph={faPaperPlane} className="size-4" aria-hidden />
                                   </Button>
                                 </Tooltip>
                                 <Tooltip content="Cancel this invitation">
@@ -739,7 +747,7 @@ export function TeamSurface({ ctx }: { ctx: SurfaceContext }) {
                                       revokeInvitation(person);
                                     }}
                                   >
-                                    <X className="size-4" aria-hidden />
+                                    <Icon glyph={faXmark} className="size-4" aria-hidden />
                                   </Button>
                                 </Tooltip>
                               </>
@@ -757,7 +765,7 @@ export function TeamSurface({ ctx }: { ctx: SurfaceContext }) {
                                     removeMember(person);
                                   }}
                                 >
-                                  <UserX className="size-4" aria-hidden />
+                                  <Icon glyph={faUserXmark} className="size-4" aria-hidden />
                                 </Button>
                               </Tooltip>
                             ) : null}

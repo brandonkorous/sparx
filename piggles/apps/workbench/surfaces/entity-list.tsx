@@ -11,7 +11,9 @@ import { useState, type ReactNode } from 'react';
 import { PaneWaiting } from '../components/pane-waiting';
 import { useQuery } from '@sparx/query';
 import { Badge, Button, Card, EmptyState, SearchInput, Table } from '@wizeworks/silicaui-react';
-import { Plus, type LucideIcon } from 'lucide-react';
+import { faPlus } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
+import type { PigglesIcon } from '@piggles/ui';
 import { api } from '../lib/api/client';
 import type { OpenTarget, SurfaceContext } from '../lib/surfaces/registry';
 import { RefreshButton } from '../components/refresh-button';
@@ -43,7 +45,7 @@ export interface EntityListConfig<T> {
   searchPlaceholder: string;
   emptyTitle: string;
   emptyBody: string;
-  emptyIcon?: LucideIcon;
+  emptyIcon?: PigglesIcon;
 }
 
 /** Modifier held at activation decides placement — same contract as the launcher. */
@@ -64,7 +66,7 @@ export function createEntityListSurface<T>(config: EntityListConfig<T>) {
     });
 
     const rows = data ?? [];
-    const Icon = config.emptyIcon;
+    const glyph = config.emptyIcon;
 
     const open = (row: T, event: { shiftKey: boolean; altKey: boolean }) => {
       if (!config.detailSurface) return;
@@ -107,7 +109,7 @@ export function createEntityListSurface<T>(config: EntityListConfig<T>) {
                 ctx.open(config.createSurface!, { id: 'new' }, { target: targetFor(event) });
               }}
             >
-              <Plus className="size-4" aria-hidden />
+              <Icon glyph={faPlus} className="size-4" aria-hidden />
               {config.createLabel ?? 'New'}
             </Button>
           ) : null}
@@ -136,7 +138,7 @@ export function createEntityListSurface<T>(config: EntityListConfig<T>) {
             <ListEmptyState
               filtered={Boolean(search)}
               noResults={{
-                icon: Icon ? <Icon className="size-6" aria-hidden /> : undefined,
+                icon: glyph ? <Icon glyph={glyph} className="size-6" aria-hidden /> : undefined,
                 title: 'Nothing matches that search',
                 description: 'Try a different word, or clear the search box to see everything.',
               }}

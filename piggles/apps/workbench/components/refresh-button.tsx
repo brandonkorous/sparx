@@ -22,7 +22,8 @@
 // and means nobody ever scans a toolbar hunting for refresh.
 
 import { Button, Timestamp, Tooltip } from '@wizeworks/silicaui-react';
-import { RefreshCw } from 'lucide-react';
+import { faArrowsRotate } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 
 interface RefreshButtonProps {
   /** `isFetching` from the query — true for a background refetch too, which is
@@ -80,7 +81,7 @@ export function RefreshButton({ isFetching, updatedAt, onRefresh, className }: R
         loading={isFetching}
         onClick={onRefresh}
       >
-        <RefreshCw className="size-4" aria-hidden />
+        <Icon glyph={faArrowsRotate} className="size-4" aria-hidden />
       </Button>
     </Tooltip>
   );

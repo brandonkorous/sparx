@@ -40,7 +40,13 @@ import {
   Text,
   useToast,
 } from '@wizeworks/silicaui-react';
-import { ArrowDownRight, ArrowUpRight, RefreshCw, TrendingUp } from 'lucide-react';
+import {
+  faArrowDownRight,
+  faArrowTrendUp,
+  faArrowUpRight,
+  faArrowsRotate,
+} from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import { afterPaneChange } from '../../lib/defer';
@@ -97,9 +103,9 @@ function Movement({
     <span className="inline-flex items-center gap-1.5">
       <Badge color={change.tone} variant="soft" size="sm">
         {change.up ? (
-          <ArrowUpRight className="size-3" aria-hidden />
+          <Icon glyph={faArrowUpRight} className="size-3" aria-hidden />
         ) : (
-          <ArrowDownRight className="size-3" aria-hidden />
+          <Icon glyph={faArrowDownRight} className="size-3" aria-hidden />
         )}
         {change.label}
       </Badge>
@@ -227,7 +233,7 @@ export function ProfitSurface({ ctx }: { ctx: SurfaceContext }) {
           loading={recompute.isPending}
           onClick={rebuild}
         >
-          <RefreshCw className="size-4" aria-hidden />
+          <Icon glyph={faArrowsRotate} className="size-4" aria-hidden />
           Rebuild figures
         </Button>
 
@@ -239,7 +245,7 @@ export function ProfitSurface({ ctx }: { ctx: SurfaceContext }) {
             ctx.open('finance.jobs', {}, { target: 'tab' });
           }}
         >
-          <TrendingUp className="size-4" aria-hidden />
+          <Icon glyph={faArrowTrendUp} className="size-4" aria-hidden />
           By job
         </Button>
 
@@ -256,7 +262,7 @@ export function ProfitSurface({ ctx }: { ctx: SurfaceContext }) {
       <div className="min-h-0 flex-1 overflow-y-auto">
         {isError ? (
           <EmptyState
-            icon={<TrendingUp className="size-6" aria-hidden />}
+            icon={<Icon glyph={faArrowTrendUp} className="size-6" aria-hidden />}
             title="Could not work out your profit"
             description="The server could not be reached. Nothing you have recorded is affected."
             actions={
@@ -276,7 +282,7 @@ export function ProfitSurface({ ctx }: { ctx: SurfaceContext }) {
         ) : isUntouched(data.current) ? (
           <Card className="min-h-0 flex-1 items-center justify-center">
             <PaneEmpty
-              icon={<TrendingUp className="size-6" aria-hidden />}
+              icon={<Icon glyph={faArrowTrendUp} className="size-6" aria-hidden />}
               title="Nothing to measure in this period"
               description="No money came in and no costs were recorded, so there is no profit figure to give you — which is not the same as breaking even. Record some spending, or pick a wider period."
               actions={

@@ -41,15 +41,16 @@ import {
   Tooltip,
 } from '@wizeworks/silicaui-react';
 import {
-  Ban,
-  ClipboardCheck,
-  Package,
-  Printer,
-  Route,
-  ScanLine,
-  TriangleAlert,
-  UserRound,
-} from 'lucide-react';
+  faBan,
+  faBarcodeRead,
+  faBox,
+  faClipboardCheck,
+  faExclamationTriangle,
+  faPrint,
+  faRoute,
+  faUser,
+} from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { useConfirm } from '../../lib/confirm';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
@@ -108,7 +109,7 @@ export function PickListDetailSurface({ ctx }: { ctx: SurfaceContext }) {
     return (
       <div className={PANE_SHELL}>
         <EmptyState
-          icon={<Route className="size-6" aria-hidden />}
+          icon={<Icon glyph={faRoute} className="size-6" aria-hidden />}
           title="Could not open that walk"
           description="It may have been abandoned, or the server could not be reached."
         />
@@ -147,7 +148,7 @@ export function PickListDetailSurface({ ctx }: { ctx: SurfaceContext }) {
               ctx.open('inventory.picking.guided', { id: walk.id }, { target: targetFor(event) });
             }}
           >
-            <ScanLine className="size-4" aria-hidden />
+            <Icon glyph={faBarcodeRead} className="size-4" aria-hidden />
             <span className="hidden @md:inline">Work this walk</span>
           </Button>
         ) : null}
@@ -169,7 +170,7 @@ export function PickListDetailSurface({ ctx }: { ctx: SurfaceContext }) {
               );
             }}
           >
-            <Printer className="size-4" aria-hidden />
+            <Icon glyph={faPrint} className="size-4" aria-hidden />
           </Button>
         </Tooltip>
 
@@ -200,7 +201,7 @@ export function PickListDetailSurface({ ctx }: { ctx: SurfaceContext }) {
                 })();
               }}
             >
-              <Ban className="size-4" aria-hidden />
+              <Icon glyph={faBan} className="size-4" aria-hidden />
             </Button>
           </Tooltip>
         ) : null}
@@ -247,7 +248,7 @@ export function PickListDetailSurface({ ctx }: { ctx: SurfaceContext }) {
                       );
                     }}
                   >
-                    <ClipboardCheck className="size-4" aria-hidden />
+                    <Icon glyph={faClipboardCheck} className="size-4" aria-hidden />
                     Open the count
                   </Button>
                 </AlertActions>
@@ -309,7 +310,7 @@ export function PickListDetailSurface({ ctx }: { ctx: SurfaceContext }) {
                   })();
                 }}
               >
-                <UserRound className="size-4" aria-hidden />
+                <Icon glyph={faUser} className="size-4" aria-hidden />
                 Assign
               </Button>
               {walk.assignedTo ? (
@@ -332,7 +333,7 @@ export function PickListDetailSurface({ ctx }: { ctx: SurfaceContext }) {
         {groups.map((group) => (
           <Card key={group.key}>
             <div className="border-base-300 flex items-center gap-2 border-b p-3">
-              <Package className="size-4" aria-hidden />
+              <Icon glyph={faBox} className="size-4" aria-hidden />
               <span className="font-mono font-semibold">{group.label}</span>
               <span className="text-sm">{plural(group.lines.length, 'item', 'items')}</span>
             </div>
@@ -388,14 +389,14 @@ export function PickListDetailSurface({ ctx }: { ctx: SurfaceContext }) {
                         <span className="flex items-center gap-1">
                           <Badge color={lineState.tone} variant="soft" size="sm">
                             {line.status === 'short' ? (
-                              <TriangleAlert className="size-3" aria-hidden />
+                              <Icon glyph={faExclamationTriangle} className="size-3" aria-hidden />
                             ) : null}
                             {lineState.label}
                           </Badge>
                           {line.verifiedByScan ? (
                             <Tooltip content="Confirmed by a scan, not a tap">
                               <Badge color="success" variant="outline" size="sm">
-                                <ScanLine className="size-3" aria-hidden />
+                                <Icon glyph={faBarcodeRead} className="size-3" aria-hidden />
                               </Badge>
                             </Tooltip>
                           ) : null}
@@ -433,7 +434,7 @@ export function PickListDetailSurface({ ctx }: { ctx: SurfaceContext }) {
                       );
                     }}
                   >
-                    <Package className="size-4" aria-hidden />
+                    <Icon glyph={faBox} className="size-4" aria-hidden />
                     Pack {order.orderNumber}
                   </Button>
                 ))}

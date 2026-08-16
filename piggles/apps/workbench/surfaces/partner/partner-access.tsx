@@ -46,7 +46,16 @@ import {
   Tooltip,
   useToast,
 } from '@wizeworks/silicaui-react';
-import { Handshake, Plus, Send, Settings2, TriangleAlert, UserMinus, X } from 'lucide-react';
+import {
+  faExclamationTriangle,
+  faHandshake,
+  faPaperPlane,
+  faPlus,
+  faSliders,
+  faUserMinus,
+  faXmark,
+} from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { useConfirm } from '../../lib/confirm';
 import { PaneScope } from '../../lib/dock/window-boundary';
 import { useViewer } from '../../lib/api/shell-data';
@@ -270,7 +279,7 @@ function PartnerRow({
                 className="whitespace-nowrap"
                 onClick={onManage}
               >
-                <Settings2 className="size-4" aria-hidden />
+                <Icon glyph={faSliders} className="size-4" aria-hidden />
                 Manage access
               </Button>
               <Tooltip content="Withdraw this partner's access">
@@ -283,7 +292,7 @@ function PartnerRow({
                   aria-label={`Withdraw ${name}'s access`}
                   onClick={onRevoke}
                 >
-                  <UserMinus className="size-4" aria-hidden />
+                  <Icon glyph={faUserMinus} className="size-4" aria-hidden />
                 </Button>
               </Tooltip>
             </>
@@ -299,7 +308,7 @@ function PartnerRow({
                   aria-label={`Send the invitation to ${person.email} again`}
                   onClick={onResend}
                 >
-                  <Send className="size-4" aria-hidden />
+                  <Icon glyph={faPaperPlane} className="size-4" aria-hidden />
                 </Button>
               </Tooltip>
               <Tooltip content="Cancel this invitation">
@@ -312,7 +321,7 @@ function PartnerRow({
                   aria-label={`Cancel the invitation to ${person.email}`}
                   onClick={onCancel}
                 >
-                  <X className="size-4" aria-hidden />
+                  <Icon glyph={faXmark} className="size-4" aria-hidden />
                 </Button>
               </Tooltip>
             </>
@@ -420,7 +429,7 @@ export function PartnerAccessSurface({ ctx }: { ctx: SurfaceContext }) {
       <div className={PANE_SHELL}>
         <div className="flex h-full flex-col items-center justify-center p-8">
           <Alert color="error" variant="soft" className="max-w-md">
-            <TriangleAlert />
+            <Icon glyph={faExclamationTriangle} />
             <AlertContent>
               <AlertTitle>Could not load partner access</AlertTitle>
               <AlertDescription>
@@ -465,7 +474,7 @@ export function PartnerAccessSurface({ ctx }: { ctx: SurfaceContext }) {
               setInviting(true);
             }}
           >
-            <Plus className="size-4" aria-hidden />
+            <Icon glyph={faPlus} className="size-4" aria-hidden />
             Invite a partner
           </Button>
         ) : null}
@@ -501,7 +510,7 @@ export function PartnerAccessSurface({ ctx }: { ctx: SurfaceContext }) {
               <PaneWaiting label="Loading partner access…" />
             ) : partners.length === 0 ? (
               <EmptyState
-                icon={<Handshake className="size-6" aria-hidden />}
+                icon={<Icon glyph={faHandshake} className="size-6" aria-hidden />}
                 title="No partners have access yet"
                 description={
                   canManage
@@ -517,7 +526,7 @@ export function PartnerAccessSurface({ ctx }: { ctx: SurfaceContext }) {
                         setInviting(true);
                       }}
                     >
-                      <Plus className="size-4" aria-hidden />
+                      <Icon glyph={faPlus} className="size-4" aria-hidden />
                       Invite a partner
                     </Button>
                   ) : undefined

@@ -10,7 +10,8 @@
 
 import { useState } from 'react';
 import { Button, useToast } from '@wizeworks/silicaui-react';
-import { Check, Copy } from 'lucide-react';
+import { faCheck, faCopy } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 
 export function CopyValue({ value, label }: { value: string; label: string }) {
   const toast = useToast();
@@ -54,9 +55,9 @@ export function CopyValue({ value, label }: { value: string; label: string }) {
         }}
       >
         {copied ? (
-          <Check className="size-4" aria-hidden />
+          <Icon glyph={faCheck} className="size-4" aria-hidden />
         ) : (
-          <Copy className="size-4" aria-hidden />
+          <Icon glyph={faCopy} className="size-4" aria-hidden />
         )}
       </Button>
     </div>

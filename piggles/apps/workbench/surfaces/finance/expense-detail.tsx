@@ -53,7 +53,15 @@ import {
   Textarea,
   useToast,
 } from '@wizeworks/silicaui-react';
-import { Banknote, CircleDollarSign, Paperclip, Plus, Save, Trash2 } from 'lucide-react';
+import {
+  faCircleDollar,
+  faFloppyDisk,
+  faMoneyBill,
+  faPaperclip,
+  faPlus,
+  faTrashCan,
+} from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import { FormSection } from '../../components/form-section';
@@ -283,7 +291,7 @@ function AllocationEditor({
                   onChange(allocations.filter((_, i) => i !== index));
                 }}
               >
-                <Trash2 className="size-4" aria-hidden />
+                <Icon glyph={faTrashCan} className="size-4" aria-hidden />
               </Button>
             </li>
           ))}
@@ -378,7 +386,7 @@ function AllocationEditor({
                 {hit.subtitle ? (
                   <span className="hidden truncate text-sm @lg:inline">{hit.subtitle}</span>
                 ) : null}
-                <Plus className="size-4 shrink-0" aria-hidden />
+                <Icon glyph={faPlus} className="size-4 shrink-0" aria-hidden />
               </button>
             ))
           )}
@@ -432,7 +440,7 @@ function Receipts({
             void add();
           }}
         >
-          <Paperclip className="size-4" aria-hidden />
+          <Icon glyph={faPaperclip} className="size-4" aria-hidden />
           Attach
         </Button>
       }
@@ -449,7 +457,7 @@ function Receipts({
               key={assetId}
               className="border-base-300 flex items-center gap-2 rounded-lg border p-3"
             >
-              <Paperclip className="size-4 shrink-0" aria-hidden />
+              <Icon glyph={faPaperclip} className="size-4 shrink-0" aria-hidden />
               <Text className="min-w-0 flex-1 truncate">
                 {known.get(assetId) ?? pickedNames[assetId] ?? 'Attached file'}
               </Text>
@@ -463,7 +471,7 @@ function Receipts({
                   onChange(assetIds.filter((id) => id !== assetId));
                 }}
               >
-                <Trash2 className="size-4" aria-hidden />
+                <Icon glyph={faTrashCan} className="size-4" aria-hidden />
               </Button>
             </li>
           ))}
@@ -661,7 +669,7 @@ function ExpenseDetail({ ctx }: { ctx: SurfaceContext }) {
           </Badge>
         ) : (
           <span className="inline-flex items-center gap-1.5">
-            <CircleDollarSign className="size-4" aria-hidden />
+            <Icon glyph={faCircleDollar} className="size-4" aria-hidden />
             <Text as="span" className="text-sm font-medium">
               New cost
             </Text>
@@ -682,7 +690,7 @@ function ExpenseDetail({ ctx }: { ctx: SurfaceContext }) {
             loading={setPaid.isPending}
             onClick={togglePaid}
           >
-            <Banknote className="size-4" aria-hidden />
+            <Icon glyph={faMoneyBill} className="size-4" aria-hidden />
             {expense.data.paidAt ? 'Mark as not paid' : 'Mark as paid'}
           </Button>
         ) : null}
@@ -696,7 +704,7 @@ function ExpenseDetail({ ctx }: { ctx: SurfaceContext }) {
             loading={save.isPending}
             onClick={onSave}
           >
-            <Save className="size-4" aria-hidden />
+            <Icon glyph={faFloppyDisk} className="size-4" aria-hidden />
             {isNew ? 'Record cost' : 'Save'}
           </Button>
         )}
@@ -1044,7 +1052,7 @@ function ExpenseDetail({ ctx }: { ctx: SurfaceContext }) {
                       void onDelete();
                     }}
                   >
-                    <Trash2 className="size-4" aria-hidden />
+                    <Icon glyph={faTrashCan} className="size-4" aria-hidden />
                     Delete
                   </Button>
                 </div>

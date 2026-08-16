@@ -35,7 +35,15 @@ import {
   useToast,
 } from '@wizeworks/silicaui-react';
 import { useConfirm } from '../../lib/confirm';
-import { CalendarOff, Clock, Plus, Trash2, Users, X } from 'lucide-react';
+import {
+  faCalendarXmark,
+  faClock,
+  faPlus,
+  faTrashCan,
+  faUsers,
+  faXmark,
+} from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { FormSection } from '../../components/form-section';
 import { RefreshButton } from '../../components/refresh-button';
@@ -218,7 +226,7 @@ function WeeklyHours({ week, onChange }: { week: WeekDraft; onChange: (next: Wee
                             setDay(day.value, next);
                           }}
                         >
-                          <X className="size-4" aria-hidden />
+                          <Icon glyph={faXmark} className="size-4" aria-hidden />
                         </Button>
                       </div>
                     );
@@ -232,7 +240,7 @@ function WeeklyHours({ week, onChange }: { week: WeekDraft; onChange: (next: Wee
                         setDay(day.value, [...windows, { ...DEFAULT_WINDOW }]);
                       }}
                     >
-                      <Plus className="size-4" aria-hidden />
+                      <Icon glyph={faPlus} className="size-4" aria-hidden />
                       Add another block
                     </Button>
                   </div>
@@ -367,14 +375,14 @@ function Closures({
         <div className="divide-base-300 flex flex-col divide-y">
           {relevant.map((exception) => {
             const hours = customHoursOf(exception);
-            const Icon = hours ? Clock : CalendarOff;
+            const glyph = hours ? faClock : faCalendarXmark;
             const title = exceptionReason(exception, hours ? 'Special hours' : 'Closed');
             const detail = hours
               ? `${exceptionRange(exception)} · ${minutesToClock(hours.startMinute)} – ${minutesToClock(hours.endMinute)}`
               : exceptionRange(exception);
             return (
               <div key={exception.id} className="flex items-center gap-3 py-2">
-                <Icon className="size-4 shrink-0" aria-hidden />
+                <Icon glyph={glyph} className="size-4 shrink-0" aria-hidden />
                 <div className="flex min-w-0 flex-1 flex-col">
                   <Text as="span" className="truncate font-medium">
                     {title}
@@ -400,7 +408,7 @@ function Closures({
                     void onDelete(exception);
                   }}
                 >
-                  <Trash2 className="size-4" aria-hidden />
+                  <Icon glyph={faTrashCan} className="size-4" aria-hidden />
                 </Button>
               </div>
             );
@@ -558,7 +566,7 @@ function Closures({
             loading={create.isPending}
             onClick={add}
           >
-            <Plus className="size-4" aria-hidden />
+            <Icon glyph={faPlus} className="size-4" aria-hidden />
             {customHours ? 'Add special hours' : 'Add closure'}
           </Button>
           {!rangeValid ? (
@@ -714,7 +722,7 @@ export function AvailabilitySurface({ ctx }: { ctx: SurfaceContext }) {
         <div className={COLUMN}>
           <div className="flex flex-col gap-1">
             <Heading level={1} className="flex items-center gap-2 text-2xl font-semibold">
-              <Clock className="size-5 shrink-0" aria-hidden />
+              <Icon glyph={faClock} className="size-5 shrink-0" aria-hidden />
               Availability
             </Heading>
             <Text className="text-sm">
@@ -805,7 +813,7 @@ function Body({
     return (
       <Card className="p-8">
         <div className="mx-auto flex max-w-md flex-col items-center gap-3 text-center">
-          <Users className="size-6" aria-hidden />
+          <Icon glyph={faUsers} className="size-6" aria-hidden />
           <Heading level={2} className="text-lg font-semibold">
             Add someone or something first
           </Heading>

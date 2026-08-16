@@ -1,7 +1,7 @@
 'use client';
 
 import { useMemo } from 'react';
-import type { LucideIcon } from 'lucide-react';
+import type { PigglesIcon } from '@piggles/ui';
 import { APPS, appIcon, moduleTerm, type PigglesAppDef } from '@piggles/config';
 import type { PigglesGroup } from '@piggles/brand';
 import { useVisibleNav } from '@/lib/surfaces/use-visible-nav';
@@ -54,7 +54,7 @@ export interface ConsoleNavApp {
   /** Rail label. The registry's, never a module's. */
   label: string;
   group: PigglesGroup;
-  icon: LucideIcon;
+  icon: PigglesIcon;
   /** The app's primary module — what its panes wear as a hue by default, and
    *  what its chrome sets `data-module` to. The first of the app's modules that
    *  actually has surfaces, so an app whose lead module is restricted still
@@ -203,59 +203,6 @@ export function useConsoleNav(): ConsoleNavApp[] {
 
     return apps;
   }, [visible]);
-}
-
-/** Every app in the registry, whether or not it is switched on. */
-export interface ConsoleApp {
-  app: PigglesAppDef;
-  label: string;
-  group: PigglesGroup;
-  icon: LucideIcon;
-  /** Whether this app has anything behind it right now — i.e. at least one of
-   *  its modules is active AND reachable by this person. */
-  active: boolean;
-  /** Screens available, or 0 for an app that has not been added. */
-  count: number;
-}
-
-/**
- * The full catalogue — the answer to "what else is there?".
- *
- * ── WHY THIS IS NOT `useConsoleNav()` ───────────────────────────────────────
- *
- * The rail is built from what is ACTIVE, because an app with no active modules
- * has no screens to list and an empty panel is worse than no row. But "not on
- * the rail" must never mean "does not exist" — Piggles has one plan with
- * everything in it, so an app the owner did not ask for at signup is not
- * something they have to buy, it is something they have not switched on yet.
- *
- * That distinction only survives if the un-added apps are somewhere a person can
- * SEE them. This is that list. Adding one is a tap, instantly, with no price
- * attached — which is what makes onboarding's question a preference rather than
- * a purchase (piggles/CLAUDE.md RULE #2: it HIDES, it never gates).
- *
- * Built from the REGISTRY rather than from the visible nav, because the whole
- * point is the apps the visible nav cannot see.
- */
-export function useAllApps(): ConsoleApp[] {
-  const live = useConsoleNav();
-
-  return useMemo(() => {
-    const byId = new Map(live.map((entry) => [entry.app.id, entry]));
-    return [...APPS]
-      .sort((a, b) => a.navOrder - b.navOrder)
-      .map((app) => {
-        const entry = byId.get(app.id);
-        return {
-          app,
-          label: app.label,
-          group: app.group,
-          icon: appIcon(app.id),
-          active: entry !== undefined,
-          count: entry?.count ?? 0,
-        };
-      });
-  }, [live]);
 }
 
 /**

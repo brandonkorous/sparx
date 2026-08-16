@@ -18,20 +18,19 @@
  * silicaui's base-layer `light` / `dark` defaults. See the header of
  * @piggles/brand/layers.css.
  *
- * Piggles claims the BARE theme names. That is safe because this app never
- * imports @sparx/brand/theme.css — only the four sparx apps do, and no shared
- * package pulls it in. Do not add a sparx stylesheet here. */
+ * Piggles claims the BARE theme names. That is safe because this app loads no
+ * sparx stylesheet at all and no shared package pulls one in. Do not add one. */
 @import '@piggles/brand/layers.css';
 @import 'tailwindcss';
 @import '@piggles/brand/theme.css';
 
 /* Rules that close a hole in a silicaui component, and the toast surface. Both
  * are written entirely in tokens — they name no colour of their own — so they
- * resolve to Piggles' values here and sparx's over there. They live under
- * @sparx/brand for historical reasons only; there is nothing sparx about them.
- * (@sparx/brand/theme.css, which IS sparx, is deliberately not imported.) */
-@import '@sparx/brand/silica-gaps.css';
-@import '@sparx/brand/toast.css';
+ * resolve to Piggles' values here and sparx's over there. That is why they sit
+ * in @wizeworks/silica-corrections: a fix both brands need cannot live inside
+ * one brand's package, or deleting that brand deletes the other's fix. */
+@import '@wizeworks/silica-corrections/silica-gaps.css';
+@import '@wizeworks/silica-corrections/toast.css';
 
 /* Everything the shared surfaces need in order to render correctly: the site
  * canvas safelist, the field-description correction, the [data-module] field
@@ -74,6 +73,11 @@
  * anywhere reports a problem. */
 @source '../../../packages/mascot/src/**/*.{ts,tsx}';
 
+/* @piggles/ui ships className strings (Section's padding and max-width), so the
+ * same rule applies: unscanned, the panel renders with no layout and nothing
+ * reports it. See packages/ui/CLAUDE.md. */
+@source '../../../packages/ui/src/**/*.{ts,tsx}';
+
 /* The CMS block editor's own surface styles (`.sparx-content-editor`), plus a
  * scan so Tailwind emits the utility classes its TOOLBAR carries in TSX. The
  * stylesheet is written on tokens this app defines, so it wears Piggles' values. */
@@ -103,6 +107,14 @@
 @source '../../../../packages/builder-schemas/src/site-chrome.ts';
 @source '../../../../packages/builder-schemas/src/starters.ts';
 @source '../../../../packages/builder-schemas/src/box-to-class.ts';
+
+/* The per-document builders (`@sparx/studio`). Its rails and canvas ship className
+ * strings — the selection ring, the layer indents, the Inspector's whole control
+ * vocabulary — and none of them appear in this app's own TSX. Without this line
+ * every one of those classes resolves to nothing, while typecheck, lint and the
+ * build all pass and the panes render as unstyled boxes. That failure has already
+ * happened once here, to @piggles/brand's marks. */
+@source '../../../../packages/studio/src';
 
 /* THE SHARED AUTHORING VOCABULARY — the same file apps/site imports, so the
  * canvas and the published page cannot disagree about what an author may write.
@@ -155,18 +167,19 @@
   --font-sans: var(--font-sans);
   --font-heading: var(--font-heading);
   --font-mono: var(--font-mono);
+
+  /* `rounded-section` — board radiusXl, used by <Section> from @piggles/ui.
+   * Declared inside [data-theme], which @theme cannot read, so it is bridged
+   * per app or the utility does not exist and panels ship square. */
+  --radius-section: var(--radius-section);
 }
 
-/* Fonts. theme.css declares the INTENT with literal family names ('Nunito',
- * 'Inter'); next/font hashes the family, so the app re-points the two tokens at
- * the variables next/font generates on <html>. Targets `[data-theme]` rather
- * than `:root` deliberately — theme.css sets these inside
- * `[data-theme='light'], [data-theme='dark']`, so matching the specificity and
- * coming later in source order is what makes this win, on the root AND inside
- * any nested theme island. */
+/* Fonts. theme.css names the families literally ('Fredoka', 'Inter'); next/font
+ * hashes them, so the app re-points the tokens at its generated variables.
+ * `[data-theme]`, not `:root` — it matches theme.css's own specificity. */
 [data-theme] {
   --font-sans: var(--font-inter), system-ui, sans-serif;
-  --font-heading: var(--font-nunito), var(--font-inter), system-ui, sans-serif;
+  --font-heading: var(--font-fredoka), var(--font-inter), system-ui, sans-serif;
 }
 
 /* Headings wear the display face. Piggles' roundness is carried by the type as

@@ -54,7 +54,14 @@ import {
   useToast,
 } from '@wizeworks/silicaui-react';
 import { useConfirm } from '../../lib/confirm';
-import { CookingPot, Hammer, Plus, Save, Trash2 } from 'lucide-react';
+import {
+  faFloppyDisk,
+  faHammer,
+  faPlus,
+  faPotFood,
+  faTrashCan,
+} from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import { FormSection } from '../../components/form-section';
@@ -398,7 +405,7 @@ export function BomDetailSurface({ ctx }: { ctx: SurfaceContext }) {
     <div className={PANE_SHELL}>
       <PaneToolbar label="Recipe actions">
         <span className="inline-flex items-center gap-1.5">
-          <CookingPot className="size-4" aria-hidden />
+          <Icon glyph={faPotFood} className="size-4" aria-hidden />
           <Text as="span" className="text-sm font-medium">
             {isNew ? 'New recipe' : (bom.data?.name ?? 'Recipe')}
           </Text>
@@ -417,7 +424,7 @@ export function BomDetailSurface({ ctx }: { ctx: SurfaceContext }) {
           loading={saveBom.isPending}
           onClick={save}
         >
-          <Save className="size-4" aria-hidden />
+          <Icon glyph={faFloppyDisk} className="size-4" aria-hidden />
           Save
         </Button>
 
@@ -460,7 +467,7 @@ export function BomDetailSurface({ ctx }: { ctx: SurfaceContext }) {
               void remove();
             }}
           >
-            <Trash2 className="size-4" aria-hidden />
+            <Icon glyph={faTrashCan} className="size-4" aria-hidden />
           </Button>
         ) : null}
         {isNew ? null : (
@@ -662,7 +669,7 @@ export function BomDetailSurface({ ctx }: { ctx: SurfaceContext }) {
                   loading={lookup.isPending}
                   onClick={addComponent}
                 >
-                  <Plus className="size-4" aria-hidden />
+                  <Icon glyph={faPlus} className="size-4" aria-hidden />
                   Add
                 </Button>
               </div>
@@ -774,7 +781,7 @@ export function BomDetailSurface({ ctx }: { ctx: SurfaceContext }) {
                               }));
                             }}
                           >
-                            <Trash2 className="size-4" aria-hidden />
+                            <Icon glyph={faTrashCan} className="size-4" aria-hidden />
                           </Button>
                         </td>
                       </tr>
@@ -798,7 +805,7 @@ export function BomDetailSurface({ ctx }: { ctx: SurfaceContext }) {
               <div className="border-base-300 flex flex-wrap items-start justify-between gap-2 border-b pb-2">
                 <div className="flex min-w-0 flex-col gap-0.5">
                   <Heading level={2} className="flex items-center gap-2 text-lg font-semibold">
-                    <Hammer className="size-4" aria-hidden />
+                    <Icon glyph={faHammer} className="size-4" aria-hidden />
                     What the shelves allow
                   </Heading>
                   <Text className="text-sm">

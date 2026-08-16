@@ -3,7 +3,15 @@
 // Only ever visible to a tenant that has joined the partner programme; the rail
 // gates the whole module the same way it gates every other one.
 
-import { Award, BookOpen, Building2, Coins, GraduationCap, Share2, UserRound } from 'lucide-react';
+import {
+  faAward,
+  faBookOpen,
+  faBuilding,
+  faCoins,
+  faGraduationCap,
+  faShareNodes,
+  faUser,
+} from '@fortawesome/pro-solid-svg-icons';
 import type { SurfaceDefinition } from '../registry';
 import { ReferralsListSurface } from '../../../surfaces/partner/referrals-list';
 import { ClientsListSurface } from '../../../surfaces/partner/clients-list';
@@ -19,7 +27,7 @@ export const PARTNER_SURFACES: SurfaceDefinition[] = [
     key: 'partner.referrals.list',
     title: 'Referrals',
     module: 'partner',
-    icon: Share2,
+    icon: faShareNodes,
     component: ReferralsListSurface,
     // One shared ledger + link — a second copy is the same list.
     singleton: true,
@@ -32,7 +40,7 @@ export const PARTNER_SURFACES: SurfaceDefinition[] = [
     key: 'partner.clients.list',
     title: 'Clients',
     module: 'partner',
-    icon: Building2,
+    icon: faBuilding,
     component: ClientsListSurface,
     singleton: true,
     section: 'Your clients',
@@ -43,7 +51,7 @@ export const PARTNER_SURFACES: SurfaceDefinition[] = [
     key: 'partner.commissions.list',
     title: 'Commissions',
     module: 'partner',
-    icon: Coins,
+    icon: faCoins,
     component: CommissionsSurface,
     singleton: true,
     section: 'Your clients',
@@ -56,7 +64,7 @@ export const PARTNER_SURFACES: SurfaceDefinition[] = [
     key: 'partner.tier',
     title: 'Your tier',
     module: 'partner',
-    icon: Award,
+    icon: faAward,
     component: TierSurface,
     singleton: true,
     section: 'The programme',
@@ -67,7 +75,7 @@ export const PARTNER_SURFACES: SurfaceDefinition[] = [
     key: 'partner.bootcamps',
     title: 'Bootcamps',
     module: 'partner',
-    icon: GraduationCap,
+    icon: faGraduationCap,
     component: BootcampsListSurface,
     section: 'The programme',
     order: 21,
@@ -82,7 +90,7 @@ export const PARTNER_SURFACES: SurfaceDefinition[] = [
     key: 'partner.bootcamp.detail',
     title: 'Bootcamp',
     module: 'partner',
-    icon: GraduationCap,
+    icon: faGraduationCap,
     component: BootcampDetailSurface,
     listed: false,
     keywords: ['bootcamp', 'cohort', 'training', 'publish'],
@@ -91,7 +99,7 @@ export const PARTNER_SURFACES: SurfaceDefinition[] = [
     key: 'partner.resources',
     title: 'Resources',
     module: 'partner',
-    icon: BookOpen,
+    icon: faBookOpen,
     component: ResourcesSurface,
     singleton: true,
     section: 'The programme',
@@ -102,7 +110,7 @@ export const PARTNER_SURFACES: SurfaceDefinition[] = [
     key: 'partner.profile',
     title: 'Your listing',
     module: 'partner',
-    icon: UserRound,
+    icon: faUser,
     component: ProfileSurface,
     singleton: true,
     section: 'The programme',

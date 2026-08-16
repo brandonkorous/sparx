@@ -75,7 +75,13 @@ import {
   Switch,
   Textarea,
 } from '@wizeworks/silicaui-react';
-import { ChevronDown, ImageOff, ImagePlus, Trash2 } from 'lucide-react';
+import {
+  faChevronDown,
+  faImageSlash,
+  faImages,
+  faTrashCan,
+} from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { FRAME_NONE } from '@sparx/builder-schemas';
 import { useMediaPicker } from '../../cms/media-picker';
 import { usePageSettings, useProductTypeChoices, type PageSettingsDto } from './data';
@@ -411,7 +417,7 @@ export function PageSettingsPanel({ pageId, pageName, siteName, saved, onChange,
                 />
               ) : (
                 <span className="flex h-full items-center justify-center">
-                  <ImageOff className="size-5" aria-hidden />
+                  <Icon glyph={faImageSlash} className="size-5" aria-hidden />
                 </span>
               )}
             </div>
@@ -424,7 +430,7 @@ export function PageSettingsPanel({ pageId, pageName, siteName, saved, onChange,
                   void chooseImage();
                 }}
               >
-                <ImagePlus className="size-4" aria-hidden />
+                <Icon glyph={faImages} className="size-4" aria-hidden />
                 {draft.ogImage ? 'Change' : 'Choose a picture'}
               </Button>
               {draft.ogImage ? (
@@ -436,7 +442,7 @@ export function PageSettingsPanel({ pageId, pageName, siteName, saved, onChange,
                     set('ogImage', '');
                   }}
                 >
-                  <Trash2 className="size-4" aria-hidden />
+                  <Icon glyph={faTrashCan} className="size-4" aria-hidden />
                   Remove
                 </Button>
               ) : null}
@@ -513,7 +519,8 @@ export function PageSettingsPanel({ pageId, pageName, siteName, saved, onChange,
               setShowAdvanced((v) => !v);
             }}
           >
-            <ChevronDown
+            <Icon
+              glyph={faChevronDown}
               className={`size-4 transition-transform ${showAdvanced ? '' : '-rotate-90'}`}
               aria-hidden
             />

@@ -46,7 +46,15 @@ import {
   Text,
   Timestamp,
 } from '@wizeworks/silicaui-react';
-import { BarChart3, Boxes, CalendarClock, Clock, Coins, MapPin } from 'lucide-react';
+import {
+  faBoxes,
+  faCalendarClock,
+  faChartColumn,
+  faClock,
+  faCoins,
+  faLocationDot,
+} from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
@@ -247,7 +255,7 @@ function LocationsCard({ summary }: { summary: InventorySummary }) {
           <li key={location.warehouseId} className="flex flex-col gap-1">
             <div className="flex flex-wrap items-baseline justify-between gap-2">
               <Text className="flex min-w-0 items-center gap-1.5">
-                <MapPin className="size-4 shrink-0" aria-hidden />
+                <Icon glyph={faLocationDot} className="size-4 shrink-0" aria-hidden />
                 <span className="truncate font-medium">{location.name}</span>
               </Text>
               <Text className="text-sm tabular-nums">
@@ -421,7 +429,7 @@ function TurnoverCard({ report, currency }: { report: TurnoverReport; currency: 
     <section className="card bg-base-100 flex flex-col gap-3 p-4">
       <div className="border-base-300 flex flex-col gap-0.5 border-b pb-2">
         <Heading level={2} className="flex items-center gap-2 text-lg font-semibold">
-          <Clock className="size-4" aria-hidden />
+          <Icon glyph={faClock} className="size-4" aria-hidden />
           Selling pace, in detail
         </Heading>
         <Text className="text-sm">
@@ -626,7 +634,7 @@ function AsOfCard({ locationId }: { locationId: string }) {
       <div className="border-base-300 flex flex-wrap items-start justify-between gap-2 border-b pb-2">
         <div className="flex min-w-0 flex-col gap-0.5">
           <Heading level={2} className="flex items-center gap-2 text-lg font-semibold">
-            <CalendarClock className="size-4" aria-hidden />
+            <Icon glyph={faCalendarClock} className="size-4" aria-hidden />
             What it was worth on a date
           </Heading>
           <Text className="text-sm">
@@ -750,7 +758,7 @@ function CostOfGoodsCard({
     <section className="card bg-base-100 flex flex-col gap-3 p-4">
       <div className="border-base-300 flex flex-col gap-0.5 border-b pb-2">
         <Heading level={2} className="flex items-center gap-2 text-lg font-semibold">
-          <Coins className="size-4" aria-hidden />
+          <Icon glyph={faCoins} className="size-4" aria-hidden />
           What the goods that left cost you
         </Heading>
         <Text className="text-sm">
@@ -850,7 +858,7 @@ export function ReportsSurface({ ctx }: { ctx: SurfaceContext }) {
     if (summary.isError) {
       return (
         <EmptyState
-          icon={<BarChart3 className="size-6" aria-hidden />}
+          icon={<Icon glyph={faChartColumn} className="size-6" aria-hidden />}
           title="Could not load your reports"
           description="This is a problem reaching the server. Your stock and its history are unaffected — the figures just could not be worked out just now."
         />
@@ -869,7 +877,7 @@ export function ReportsSurface({ ctx }: { ctx: SurfaceContext }) {
     if (nothingCounted) {
       return (
         <EmptyState
-          icon={<Boxes className="size-6" aria-hidden />}
+          icon={<Icon glyph={faBoxes} className="size-6" aria-hidden />}
           title="Nothing to report on yet"
           description="These figures appear once you have stock counted somewhere. Open a product and use its Stock panel to record how many you have — value, ageing and selling pace all build from there."
         />

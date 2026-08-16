@@ -31,7 +31,8 @@ import {
   useToast,
 } from '@wizeworks/silicaui-react';
 import { useConfirm } from '../../lib/confirm';
-import { Minus, Plus } from 'lucide-react';
+import { faMinus, faPlus } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import { afterPaneChange } from '../../lib/defer';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
@@ -504,7 +505,7 @@ function GiftCardBody({ card }: { card: GiftCardDetail }) {
               void runAdjust(1);
             }}
           >
-            <Plus className="size-4" aria-hidden />
+            <Icon glyph={faPlus} className="size-4" aria-hidden />
             Add to balance
           </Button>
           <Button
@@ -517,7 +518,7 @@ function GiftCardBody({ card }: { card: GiftCardDetail }) {
               void runAdjust(-1);
             }}
           >
-            <Minus className="size-4" aria-hidden />
+            <Icon glyph={faMinus} className="size-4" aria-hidden />
             Take off balance
           </Button>
         </div>

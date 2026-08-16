@@ -82,7 +82,8 @@ import {
   TabsTab,
   useToast,
 } from '@wizeworks/silicaui-react';
-import { Clock, Globe, RotateCcw, Sparkles, User } from 'lucide-react';
+import { faClock, faGlobe, faRotate, faSparkles, faUser } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { useConfirm } from '../../../lib/confirm';
 import {
   builderErrorMessage,
@@ -152,18 +153,18 @@ function byDay<T extends { createdAt: string }>(rows: T[]): { day: string; rows:
  * indistinguishable again — and a restore is `warning`, because a version that came
  * from a rollback is a recovery event, not a routine save.
  */
-function draftActor(source: string): { label: string; color: string; icon: typeof User } {
-  if (source === 'agent') return { label: 'Assistant saved', color: 'module-ai', icon: Sparkles };
-  if (source === 'restore') return { label: 'Restored', color: 'warning', icon: RotateCcw };
-  return { label: 'You saved', color: 'info', icon: User };
+function draftActor(source: string): { label: string; color: string; icon: typeof faUser } {
+  if (source === 'agent') return { label: 'Assistant saved', color: 'module-ai', icon: faSparkles };
+  if (source === 'restore') return { label: 'Restored', color: 'warning', icon: faRotate };
+  return { label: 'You saved', color: 'info', icon: faUser };
 }
 
 /** The same for the published ladder. A release's `source` is `publish` or `restore` —
  *  never `agent`, since publishing is always a deliberate act. `success` for a release
  *  (it went live); `warning` for a rollback, which is an intervention in the live site. */
-function releaseActor(source: string): { label: string; color: string; icon: typeof User } {
-  if (source === 'restore') return { label: 'Rolled back', color: 'warning', icon: RotateCcw };
-  return { label: 'Published', color: 'success', icon: Globe };
+function releaseActor(source: string): { label: string; color: string; icon: typeof faUser } {
+  if (source === 'restore') return { label: 'Rolled back', color: 'warning', icon: faRotate };
+  return { label: 'Published', color: 'success', icon: faGlobe };
 }
 
 /**
@@ -203,7 +204,7 @@ interface RowProps {
   createdAt: string;
   pageCount: number;
   /** Who made it — the identity axis. Always present; always colored. */
-  actor: { label: string; color: string; icon: typeof User };
+  actor: { label: string; color: string; icon: typeof faUser };
   /** The version in force. `solid` for the live one, because the public is looking
    *  at it — the strongest state on the panel earns the strongest weight. */
   state?: { label: string; solid: boolean };
@@ -224,7 +225,7 @@ function HistoryRow({ createdAt, pageCount, actor, state, action, pending, onAct
           {CLOCK.format(new Date(createdAt))} · {pageCount} page{pageCount === 1 ? '' : 's'}
         </div>
         <Badge color={actor.color} variant="soft" size="sm">
-          <ActorIcon className="size-3.5 shrink-0" aria-hidden />
+          <Icon glyph={ActorIcon} className="size-3.5 shrink-0" aria-hidden />
           {actor.label}
         </Badge>
       </ListColGrow>
@@ -235,7 +236,7 @@ function HistoryRow({ createdAt, pageCount, actor, state, action, pending, onAct
       ) : null}
       {action ? (
         <Button size="sm" color={action.color} loading={pending} onClick={onAct}>
-          <RotateCcw className="size-4" aria-hidden />
+          <Icon glyph={faRotate} className="size-4" aria-hidden />
           {action.label}
         </Button>
       ) : null}
@@ -374,7 +375,7 @@ export function VersionHistoryPanel({ onReload }: Props) {
         ) : !versions.data || versions.data.length === 0 ? (
           <EmptyState
             size="sm"
-            icon={<Clock className="text-module-builder size-5" aria-hidden />}
+            icon={<Icon glyph={faClock} className="text-module-builder size-5" aria-hidden />}
             title="Nothing saved yet"
             description="Every time you (or your assistant) save, a version lands here."
           />
@@ -429,7 +430,7 @@ export function VersionHistoryPanel({ onReload }: Props) {
         ) : !releases.data || releases.data.length === 0 ? (
           <EmptyState
             size="sm"
-            icon={<Clock className="text-module-builder size-5" aria-hidden />}
+            icon={<Icon glyph={faClock} className="text-module-builder size-5" aria-hidden />}
             title="Not published yet"
             description="Every version you put live is kept here, so you can go back to it."
           />

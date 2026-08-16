@@ -15,7 +15,8 @@
 // do the same thing.
 
 import { Badge, EmptyState, Heading, Text } from '@wizeworks/silicaui-react';
-import { Building2 } from 'lucide-react';
+import { faBuilding } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
@@ -100,7 +101,7 @@ export function ClientsListSurface(_props: { ctx: SurfaceContext }) {
         <div className="min-h-0 flex-1 overflow-y-auto">
           <div className={COLUMN}>
             <EmptyState
-              icon={<Building2 className="size-6" aria-hidden />}
+              icon={<Icon glyph={faBuilding} className="size-6" aria-hidden />}
               title="No clients yet"
               description="Refer a business with your link, or ask a client to add you to their account as a consultant. Accounts you refer or manage will appear here."
             />

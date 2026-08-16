@@ -11,7 +11,8 @@
 import { useState } from 'react';
 import { PaneWaiting } from '../../components/pane-waiting';
 import { Badge, Card, EmptyState, Filter, FilterItem, Table } from '@wizeworks/silicaui-react';
-import { CreditCard } from 'lucide-react';
+import { faCreditCard } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
@@ -102,7 +103,7 @@ export function CheckoutSessionsListSurface({ ctx }: { ctx: SurfaceContext }) {
       <Card className="min-h-0 flex-1 overflow-y-auto">
         {error ? (
           <EmptyState
-            icon={<CreditCard className="size-6" aria-hidden />}
+            icon={<Icon glyph={faCreditCard} className="size-6" aria-hidden />}
             title="Could not load checkout sessions"
             description="This is a problem reaching the server. Your sales are unaffected — nothing has been lost."
           />
@@ -110,7 +111,7 @@ export function CheckoutSessionsListSurface({ ctx }: { ctx: SurfaceContext }) {
           <PaneWaiting label="Loading checkout sessions…" />
         ) : rows.length === 0 ? (
           <EmptyState
-            icon={<CreditCard className="size-6" aria-hidden />}
+            icon={<Icon glyph={faCreditCard} className="size-6" aria-hidden />}
             title={filtered ? 'Nothing at this step' : 'No checkout sessions'}
             description={
               filtered

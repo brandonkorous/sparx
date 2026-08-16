@@ -21,7 +21,8 @@ import {
   Select,
   Table,
 } from '@wizeworks/silicaui-react';
-import { Plus, Route } from 'lucide-react';
+import { faPlus, faRoute } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { RefreshButton } from '../../components/refresh-button';
 import { ListEmptyState } from '../../components/list-empty-state';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
@@ -108,7 +109,7 @@ export function SequencesListSurface({ ctx }: { ctx: SurfaceContext }) {
             ctx.open('email.sequences.detail', { id: 'new' }, { target: targetFor(event) });
           }}
         >
-          <Plus className="size-4" aria-hidden />
+          <Icon glyph={faPlus} className="size-4" aria-hidden />
           <span className="hidden @lg:inline">New sequence</span>
         </Button>
 
@@ -124,7 +125,7 @@ export function SequencesListSurface({ ctx }: { ctx: SurfaceContext }) {
       <Card className="min-h-0 flex-1 overflow-y-auto">
         {isError ? (
           <EmptyState
-            icon={<Route className="size-6" aria-hidden />}
+            icon={<Icon glyph={faRoute} className="size-6" aria-hidden />}
             title="Could not load your sequences"
             description="Something went wrong reaching the server. Anyone already in a sequence is unaffected — try again in a moment."
             actions={
@@ -145,7 +146,7 @@ export function SequencesListSurface({ ctx }: { ctx: SurfaceContext }) {
           <ListEmptyState
             filtered={filtering}
             noResults={{
-              icon: <Route className="size-6" aria-hidden />,
+              icon: <Icon glyph={faRoute} className="size-6" aria-hidden />,
               title: 'No sequences match those filters',
               description: 'Try a different search, or switch the status filter back to Any.',
             }}
@@ -161,7 +162,7 @@ export function SequencesListSurface({ ctx }: { ctx: SurfaceContext }) {
                     ctx.open('email.sequences.detail', { id: 'new' }, { target: targetFor(event) });
                   }}
                 >
-                  <Plus className="size-4" aria-hidden />
+                  <Icon glyph={faPlus} className="size-4" aria-hidden />
                   New sequence
                 </Button>
               ),

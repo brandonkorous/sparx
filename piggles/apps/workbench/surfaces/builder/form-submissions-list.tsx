@@ -30,7 +30,8 @@ import {
   Table,
   Text,
 } from '@wizeworks/silicaui-react';
-import { Inbox } from 'lucide-react';
+import { faInbox } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { ListPagination, type PageSize } from '../../components/list-pagination';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
@@ -218,7 +219,7 @@ export function FormSubmissionsListSurface({ ctx }: { ctx: SurfaceContext }) {
           // A failed load REPLACES the table — "nothing submitted yet" over a
           // connection failure is a lie about their enquiries, the worst one to tell.
           <EmptyState
-            icon={<Inbox className="size-6" aria-hidden />}
+            icon={<Icon glyph={faInbox} className="size-6" aria-hidden />}
             title="Could not load your submissions"
             description="This is a problem reaching the server. Nothing anyone sent has been lost — none of it is affected."
             actions={
@@ -237,7 +238,7 @@ export function FormSubmissionsListSurface({ ctx }: { ctx: SurfaceContext }) {
           <PaneWaiting />
         ) : rows.length === 0 ? (
           <EmptyState
-            icon={<Inbox className="size-6" aria-hidden />}
+            icon={<Icon glyph={faInbox} className="size-6" aria-hidden />}
             title={narrowed ? 'Nothing matches that' : 'No submissions yet'}
             description={
               narrowed

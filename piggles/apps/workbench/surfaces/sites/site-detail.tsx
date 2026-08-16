@@ -30,7 +30,13 @@ import {
   useToast,
 } from '@wizeworks/silicaui-react';
 import { useConfirm } from '../../lib/confirm';
-import { ExternalLink, Save, Star, Trash2 } from 'lucide-react';
+import {
+  faArrowUpRightFromSquare,
+  faFloppyDisk,
+  faStar,
+  faTrashCan,
+} from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { useWorkbench } from '../../lib/workbench/context';
 import { useActiveSiteId, useModuleStates, switchSite } from '../../lib/api/shell-data';
 import { useDirtySource } from '../../lib/workbench/dirty';
@@ -392,7 +398,7 @@ function ManageSite({ ctx, id }: { ctx: SurfaceContext; id: string }) {
             );
           }}
         >
-          <Save className="size-4" aria-hidden />
+          <Icon glyph={faFloppyDisk} className="size-4" aria-hidden />
           {update.isPending ? 'Saving…' : 'Save'}
         </Button>
       </PaneToolbar>
@@ -415,7 +421,7 @@ function ManageSite({ ctx, id }: { ctx: SurfaceContext; id: string }) {
                 className="link inline-flex w-fit items-center gap-1 font-mono text-sm"
               >
                 {host}
-                <ExternalLink className="size-3" aria-hidden />
+                <Icon glyph={faArrowUpRightFromSquare} className="size-3" aria-hidden />
               </a>
             ) : (
               <Text className="text-sm">No web address yet</Text>
@@ -538,7 +544,7 @@ function ManageSite({ ctx, id }: { ctx: SurfaceContext; id: string }) {
                     });
                   }}
                 >
-                  <Star className="size-4" aria-hidden />
+                  <Icon glyph={faStar} className="size-4" aria-hidden />
                   {makePrimary.isPending ? 'Working…' : 'Make primary'}
                 </Button>
               </div>
@@ -559,7 +565,7 @@ function ManageSite({ ctx, id }: { ctx: SurfaceContext; id: string }) {
                     void onDelete();
                   }}
                 >
-                  <Trash2 className="size-4" aria-hidden />
+                  <Icon glyph={faTrashCan} className="size-4" aria-hidden />
                   {remove.isPending ? 'Deleting…' : 'Delete this site'}
                 </Button>
               </div>

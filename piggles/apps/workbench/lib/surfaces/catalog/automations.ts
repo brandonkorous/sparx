@@ -13,7 +13,12 @@
 // automations hue. The module tags a rule carries (Customers, Email, …) wear
 // THEIR module's hue via a nested scope inside the surface itself.
 
-import { History, ListChecks, Sparkles, Workflow } from 'lucide-react';
+import {
+  faClockRotateLeft,
+  faDiagramProject,
+  faListCheck,
+  faSparkles,
+} from '@fortawesome/pro-solid-svg-icons';
 import type { SurfaceDefinition } from '../registry';
 import { AutomationsListSurface } from '../../../surfaces/automations/automations-list';
 import { RecipeGallerySurface } from '../../../surfaces/automations/recipe-gallery';
@@ -29,7 +34,7 @@ export const AUTOMATION_SURFACES: SurfaceDefinition[] = [
     key: 'automations.list',
     title: 'Automations',
     module: 'automations',
-    icon: Workflow,
+    icon: faDiagramProject,
     order: 1,
     keywords: ['rules', 'when this then that', 'triggers', 'workflow', 'jobs'],
     component: AutomationsListSurface,
@@ -43,7 +48,7 @@ export const AUTOMATION_SURFACES: SurfaceDefinition[] = [
     key: 'automations.recipes',
     title: 'Recipe library',
     module: 'automations',
-    icon: Sparkles,
+    icon: faSparkles,
     order: 2,
     keywords: ['templates', 'recipes', 'pre-built', 'library', 'turn on', 'ready-made', 'gallery'],
     component: RecipeGallerySurface,
@@ -52,7 +57,7 @@ export const AUTOMATION_SURFACES: SurfaceDefinition[] = [
     key: 'automations.detail',
     title: 'Automation',
     module: 'automations',
-    icon: Workflow,
+    icon: faDiagramProject,
     // Opened from the list ({id:'new'} to build one, {id} to manage) — create is
     // the same surface as manage, so it is a pane, not a launcher entry.
     listed: false,
@@ -64,7 +69,7 @@ export const AUTOMATION_SURFACES: SurfaceDefinition[] = [
     key: 'automations.runs',
     title: 'Automation runs',
     module: 'automations',
-    icon: ListChecks,
+    icon: faListCheck,
     // Always scoped to one rule ({automationId}) and reached from that rule's
     // toolbar — opening "runs" cold has no rule to show.
     listed: false,
@@ -74,7 +79,7 @@ export const AUTOMATION_SURFACES: SurfaceDefinition[] = [
     key: 'automations.run',
     title: 'Automation run',
     module: 'automations',
-    icon: ListChecks,
+    icon: faListCheck,
     // One run + its step timeline, reached from a run row.
     listed: false,
     component: AutomationRunDetailSurface,
@@ -85,7 +90,7 @@ export const AUTOMATION_SURFACES: SurfaceDefinition[] = [
     key: 'automations.reports',
     title: 'Activity & reports',
     module: 'automations',
-    icon: History,
+    icon: faClockRotateLeft,
     section: 'Reporting',
     order: 20,
     keywords: ['runs', 'success rate', 'activity', 'history', 'performance'],

@@ -12,7 +12,8 @@
 
 import { useState } from 'react';
 import { Badge, Switch } from '@wizeworks/silicaui-react';
-import { ChevronDown } from 'lucide-react';
+import { faChevronDown } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { ModuleScope, type WorkbenchModule } from '../../../components/module-scope';
 import {
   SWITCHBOARD_MODULES,
@@ -102,7 +103,8 @@ function ModuleRow({
         >
           <span className="flex items-center gap-2">
             <span className="font-medium">{m.name}</span>
-            <ChevronDown
+            <Icon
+              glyph={faChevronDown}
               className={`size-4 transition-transform duration-200 ${open ? 'rotate-180' : ''}`}
               aria-hidden
             />

@@ -6,12 +6,13 @@
 // reading is usually about a pane you still have open, and a dialog would cover
 // the very thing under discussion. As a surface it opens beside that pane
 // (⇧-click), tears off to a second monitor, survives in a saved layout, and can
-// be starred — none of which an overlay can do.
+// be favourited — none of which an overlay can do.
 
 import { Button, Card, EmptyState, Table } from '@wizeworks/silicaui-react';
 import { PaneEmpty } from '../../components/pane-empty';
 import { PaneWaiting } from '../../components/pane-waiting';
-import { MessageSquarePlus, RefreshCw } from 'lucide-react';
+import { faArrowsRotate, faMessagePlus } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { describeAgo } from '../../lib/api/activity';
 import { useMyFeedback, type FeedbackSubmission } from '../../lib/api/feedback';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
@@ -38,7 +39,7 @@ export function FeedbackListSurface({ ctx }: { ctx: SurfaceContext }) {
     return (
       <Card className="min-h-0 flex-1 items-center justify-center">
         <PaneEmpty
-          icon={<MessageSquarePlus className="size-6" aria-hidden />}
+          icon={<Icon glyph={faMessagePlus} className="size-6" aria-hidden />}
           title="Could not load your feedback"
           description="This is a problem reaching the server, not a problem with anything you sent. Nothing was lost."
           actions={
@@ -49,7 +50,7 @@ export function FeedbackListSurface({ ctx }: { ctx: SurfaceContext }) {
                 void refetch();
               }}
             >
-              <RefreshCw className="size-4" aria-hidden />
+              <Icon glyph={faArrowsRotate} className="size-4" aria-hidden />
               Try again
             </Button>
           }
@@ -75,7 +76,7 @@ export function FeedbackListSurface({ ctx }: { ctx: SurfaceContext }) {
             feedback.openSend({ source: 'button' });
           }}
         >
-          <MessageSquarePlus className="size-4" aria-hidden />
+          <Icon glyph={faMessagePlus} className="size-4" aria-hidden />
           Send feedback
         </Button>
       </PaneToolbar>
@@ -85,7 +86,7 @@ export function FeedbackListSurface({ ctx }: { ctx: SurfaceContext }) {
           <PaneWaiting />
         ) : rows.length === 0 ? (
           <EmptyState
-            icon={<MessageSquarePlus className="size-6" aria-hidden />}
+            icon={<Icon glyph={faMessagePlus} className="size-6" aria-hidden />}
             title="You haven’t sent anything yet"
             description="Tell us what’s broken, what’s missing, or what you wish worked differently. A real person reads every message, and replies land right here."
             actions={
@@ -113,7 +114,7 @@ export function FeedbackListSurface({ ctx }: { ctx: SurfaceContext }) {
               </thead>
               <tbody>
                 {rows.map((submission) => {
-                  const Icon = CATEGORY_ICON[submission.category];
+                  const glyph = CATEGORY_ICON[submission.category];
                   const replies = submission.messageCount ?? 0;
                   return (
                     <tr
@@ -132,7 +133,7 @@ export function FeedbackListSurface({ ctx }: { ctx: SurfaceContext }) {
                     >
                       <td>
                         <div className="flex items-center gap-2">
-                          <Icon className="size-4 shrink-0" aria-hidden />
+                          <Icon glyph={glyph} className="size-4 shrink-0" aria-hidden />
                           <span className="min-w-0 truncate font-medium">
                             {deriveTitle(submission)}
                           </span>

@@ -32,7 +32,14 @@ import {
   useToast,
 } from '@wizeworks/silicaui-react';
 import { useConfirm } from '../../lib/confirm';
-import { CreditCard, Pause, Play, Repeat2, Square } from 'lucide-react';
+import {
+  faCreditCard,
+  faPause,
+  faPlay,
+  faRepeat,
+  faSquare,
+} from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { FormSection } from '../../components/form-section';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
@@ -221,7 +228,7 @@ function DetailBody({ sub }: { sub: SubscriptionDetail }) {
           <div className="flex flex-wrap items-center gap-2">
             {paused ? (
               <Button size="sm" color="module" loading={resume.isPending} onClick={onResume}>
-                <Play className="size-4" aria-hidden />
+                <Icon glyph={faPlay} className="size-4" aria-hidden />
                 Resume it
               </Button>
             ) : (
@@ -232,7 +239,7 @@ function DetailBody({ sub }: { sub: SubscriptionDetail }) {
                 loading={pause.isPending}
                 onClick={onPause}
               >
-                <Pause className="size-4" aria-hidden />
+                <Icon glyph={faPause} className="size-4" aria-hidden />
                 Pause it
               </Button>
             )}
@@ -280,7 +287,7 @@ function DetailBody({ sub }: { sub: SubscriptionDetail }) {
           </Badge>
           {sub.paymentMethod ? (
             <Text as="span" className="flex items-center gap-2 font-medium">
-              <CreditCard className="size-4" aria-hidden />
+              <Icon glyph={faCreditCard} className="size-4" aria-hidden />
               {cardLabel(sub.paymentMethod)}
               {sub.paymentMethod.expMonth && sub.paymentMethod.expYear ? (
                 <Text as="span" className="text-sm">
@@ -399,7 +406,7 @@ function DetailBody({ sub }: { sub: SubscriptionDetail }) {
                 >
                   <div className="flex min-w-0 flex-col gap-0.5">
                     <div className="flex flex-wrap items-center gap-2">
-                      <CreditCard className="size-4 shrink-0" aria-hidden />
+                      <Icon glyph={faCreditCard} className="size-4 shrink-0" aria-hidden />
                       <Text as="span" className="font-medium">
                         Attempt {attempt.attemptNumber}
                       </Text>
@@ -459,7 +466,7 @@ function DetailBody({ sub }: { sub: SubscriptionDetail }) {
               loading={cancel.isPending}
               onClick={onStop}
             >
-              <Square className="size-4" aria-hidden />
+              <Icon glyph={faSquare} className="size-4" aria-hidden />
               Stop it
             </Button>
           </div>
@@ -494,7 +501,7 @@ export function SubscriptionDetailSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar label="Repeat order actions">
-        <Repeat2 className="size-4 shrink-0" aria-hidden />
+        <Icon glyph={faRepeat} className="size-4 shrink-0" aria-hidden />
         <Heading level={2} className="min-w-0 truncate text-base font-semibold">
           {sub?.customerName ?? 'Repeat order'}
         </Heading>

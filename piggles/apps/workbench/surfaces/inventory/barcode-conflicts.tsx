@@ -23,7 +23,8 @@ import {
   Text,
   Tooltip,
 } from '@wizeworks/silicaui-react';
-import { ArrowLeftRight, CircleCheck, Eraser } from 'lucide-react';
+import { faArrowRightArrowLeft, faCheckCircle, faEraser } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { useConfirm } from '../../lib/confirm';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
@@ -67,7 +68,7 @@ export function BarcodeConflictsSurface({ ctx }: { ctx: SurfaceContext }) {
     if (isError) {
       return (
         <EmptyState
-          icon={<ArrowLeftRight className="size-6" aria-hidden />}
+          icon={<Icon glyph={faArrowRightArrowLeft} className="size-6" aria-hidden />}
           title="Could not check for shared barcodes"
           description="This is a problem reaching the server. Your codes are unaffected."
         />
@@ -79,7 +80,7 @@ export function BarcodeConflictsSurface({ ctx }: { ctx: SurfaceContext }) {
     if (rows.length === 0) {
       return (
         <EmptyState
-          icon={<CircleCheck className="size-6" aria-hidden />}
+          icon={<Icon glyph={faCheckCircle} className="size-6" aria-hidden />}
           title="Every barcode points at one thing"
           description="Nothing to sort out. Scanning any registered code will bring up exactly one item."
         />
@@ -124,7 +125,7 @@ export function BarcodeConflictsSurface({ ctx }: { ctx: SurfaceContext }) {
                       void takeIt(row);
                     }}
                   >
-                    <ArrowLeftRight className="size-4" aria-hidden />
+                    <Icon glyph={faArrowRightArrowLeft} className="size-4" aria-hidden />
                     {row.productTitle} owns it
                   </Button>
                 </Tooltip>
@@ -138,7 +139,7 @@ export function BarcodeConflictsSurface({ ctx }: { ctx: SurfaceContext }) {
                       void clearIt(row);
                     }}
                   >
-                    <Eraser className="size-4" aria-hidden />
+                    <Icon glyph={faEraser} className="size-4" aria-hidden />
                     Remove it from this item
                   </Button>
                 </Tooltip>

@@ -14,7 +14,8 @@
 import { useState } from 'react';
 import { PaneWaiting } from '../../components/pane-waiting';
 import { Badge, Card, EmptyState, Filter, FilterItem, Table } from '@wizeworks/silicaui-react';
-import { Repeat2 } from 'lucide-react';
+import { faRepeat } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
@@ -69,7 +70,7 @@ export function SubscriptionsListSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar label="Subscriptions list controls" wrap>
-        <Repeat2 className="size-4 shrink-0" aria-hidden />
+        <Icon glyph={faRepeat} className="size-4 shrink-0" aria-hidden />
         <Filter
           color="module"
           value={filter}
@@ -99,7 +100,7 @@ export function SubscriptionsListSurface({ ctx }: { ctx: SurfaceContext }) {
       <Card className="min-h-0 flex-1 overflow-y-auto">
         {error ? (
           <EmptyState
-            icon={<Repeat2 className="size-6" aria-hidden />}
+            icon={<Icon glyph={faRepeat} className="size-6" aria-hidden />}
             title="Could not load repeat orders"
             description="This is a problem reaching the server. Nobody’s repeat order has changed — nothing has been lost."
           />
@@ -107,7 +108,7 @@ export function SubscriptionsListSurface({ ctx }: { ctx: SurfaceContext }) {
           <PaneWaiting label="Loading repeat orders…" />
         ) : rows.length === 0 ? (
           <EmptyState
-            icon={<Repeat2 className="size-6" aria-hidden />}
+            icon={<Icon glyph={faRepeat} className="size-6" aria-hidden />}
             title={filtered ? 'None match that' : 'No repeat orders yet'}
             description={
               filtered

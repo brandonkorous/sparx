@@ -34,7 +34,8 @@ import {
   Timestamp,
   ToolbarSeparator,
 } from '@wizeworks/silicaui-react';
-import { Handshake, ReceiptText } from 'lucide-react';
+import { faHandshake, faReceipt } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { PaneWaiting } from '../../components/pane-waiting';
 import { useState } from 'react';
 import { FormSection } from '../../components/form-section';
@@ -127,7 +128,7 @@ export function ConsignmentSettlementsSurface({ ctx }: { ctx: SurfaceContext }) 
               <PaneWaiting label="Working out what is owed…" />
             ) : behind.length === 0 ? (
               <EmptyState
-                icon={<Handshake className="size-6" aria-hidden />}
+                icon={<Icon glyph={faHandshake} className="size-6" aria-hidden />}
                 title="Nothing is outstanding"
                 description="Either you hold no consigned stock, or every sale from it has already been settled with its owner."
               />
@@ -189,7 +190,7 @@ export function ConsignmentSettlementsSurface({ ctx }: { ctx: SurfaceContext }) 
               <PaneWaiting label="Loading settlements…" />
             ) : rows.length === 0 ? (
               <EmptyState
-                icon={<ReceiptText className="size-6" aria-hidden />}
+                icon={<Icon glyph={faReceipt} className="size-6" aria-hidden />}
                 title="No settlement periods yet"
                 description="A settlement closes a stretch of time against one owner: everything of theirs that sold, at the cost agreed when it arrived, with a document to pay against."
               />

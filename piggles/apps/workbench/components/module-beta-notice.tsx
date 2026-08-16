@@ -43,7 +43,8 @@ import {
   type ReactNode,
 } from 'react';
 import { Alert, AlertContent, AlertDescription, AlertTitle, Text } from '@wizeworks/silicaui-react';
-import { Info } from 'lucide-react';
+import { faCircleInfo } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import type { WorkbenchModule } from './module-scope';
 import { isBetaModule } from '../lib/surfaces/nav';
 import { productCopy } from '../lib/product';
@@ -183,7 +184,7 @@ export function PaneBetaNotice() {
         dismiss(module);
       }}
     >
-      <Info aria-hidden />
+      <Icon glyph={faCircleInfo} aria-hidden />
       <AlertContent>
         <AlertTitle>{notice.title}</AlertTitle>
         <AlertDescription>

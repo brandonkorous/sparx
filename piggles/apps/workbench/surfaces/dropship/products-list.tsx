@@ -31,7 +31,14 @@ import {
   useToast,
 } from '@wizeworks/silicaui-react';
 import { useConfirm } from '../../lib/confirm';
-import { ArrowDown, ArrowUp, Package, PackagePlus, RefreshCcw } from 'lucide-react';
+import {
+  faArrowDown,
+  faArrowUp,
+  faArrowsRotate,
+  faBox,
+  faBoxOpen,
+} from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
@@ -155,7 +162,7 @@ function ProductRow({
           <img src={product.images[0]} alt="" className="bg-base-200 size-8 rounded object-cover" />
         ) : (
           <span className="bg-base-200 flex size-8 items-center justify-center rounded" aria-hidden>
-            <Package className="size-4" />
+            <Icon glyph={faBox} className="size-4" />
           </span>
         )}
       </td>
@@ -189,11 +196,11 @@ function ProductRow({
             loading={reimport.isPending}
             onClick={onReimport}
           >
-            <RefreshCcw className="size-4" aria-hidden />
+            <Icon glyph={faArrowsRotate} className="size-4" aria-hidden />
           </Button>
         ) : (
           <Button size="sm" color="module" loading={importer.isPending} onClick={onImport}>
-            <PackagePlus className="size-4" aria-hidden />
+            <Icon glyph={faBoxOpen} className="size-4" aria-hidden />
             Import
           </Button>
         )}
@@ -269,9 +276,9 @@ export function DropshipProductsListSurface({ ctx }: { ctx: SurfaceContext }) {
         {label}
         {sort.key === key ? (
           sort.dir === 'asc' ? (
-            <ArrowUp className="size-3" aria-hidden />
+            <Icon glyph={faArrowUp} className="size-3" aria-hidden />
           ) : (
-            <ArrowDown className="size-3" aria-hidden />
+            <Icon glyph={faArrowDown} className="size-3" aria-hidden />
           )
         ) : null}
       </button>
@@ -345,13 +352,13 @@ export function DropshipProductsListSurface({ ctx }: { ctx: SurfaceContext }) {
       <Card className="min-h-0 flex-1 overflow-y-auto">
         {error ? (
           <EmptyState
-            icon={<Package className="size-6" aria-hidden />}
+            icon={<Icon glyph={faBox} className="size-6" aria-hidden />}
             title="Could not load supplier products"
             description="Something went wrong reaching the server. Try again in a moment."
           />
         ) : noSuppliers ? (
           <EmptyState
-            icon={<Package className="size-6" aria-hidden />}
+            icon={<Icon glyph={faBox} className="size-6" aria-hidden />}
             title="No suppliers connected"
             description="Supplier products appear once you connect a supplier and sync its catalog. Connect one to start importing products to sell."
             actions={
@@ -370,7 +377,7 @@ export function DropshipProductsListSurface({ ctx }: { ctx: SurfaceContext }) {
           <PaneWaiting label="Loading products…" />
         ) : rows.length === 0 ? (
           <EmptyState
-            icon={<Package className="size-6" aria-hidden />}
+            icon={<Icon glyph={faBox} className="size-6" aria-hidden />}
             title={anyFilter ? 'No products match those filters' : 'Nothing from this supplier yet'}
             description={
               anyFilter

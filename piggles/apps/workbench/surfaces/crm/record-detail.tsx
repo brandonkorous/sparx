@@ -28,7 +28,8 @@ import {
   Text,
   useToast,
 } from '@wizeworks/silicaui-react';
-import { Table2, Trash2 } from 'lucide-react';
+import { faTable, faTrashCan } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { FormSection } from '../../components/form-section';
 import { useDirtySource } from '../../lib/workbench/dirty';
@@ -149,7 +150,7 @@ export function RecordDetailSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar label={`${label} actions`}>
-        <Table2 className="size-4 shrink-0" aria-hidden />
+        <Icon glyph={faTable} className="size-4 shrink-0" aria-hidden />
         <Text as="span" className="truncate text-sm">
           {isNew ? `New ${label.toLowerCase()}` : title}
         </Text>
@@ -162,7 +163,7 @@ export function RecordDetailSurface({ ctx }: { ctx: SurfaceContext }) {
             title="Remove it"
             onClick={() => void onDelete()}
           >
-            <Trash2 className="size-4" aria-hidden />
+            <Icon glyph={faTrashCan} className="size-4" aria-hidden />
           </Button>
         ) : null}
         <Button

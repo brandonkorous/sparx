@@ -10,7 +10,8 @@
 import { useEffect } from 'react';
 import { PaneWaiting } from '../../components/pane-waiting';
 import { Badge, Button, Card, EmptyState, Heading, Table, Text } from '@wizeworks/silicaui-react';
-import { Banknote } from 'lucide-react';
+import { faMoneyBill } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
@@ -55,7 +56,7 @@ export function PayoutDetailSurface({ ctx }: { ctx: SurfaceContext }) {
       <div className="min-h-0 flex-1 overflow-y-auto">
         {isError ? (
           <EmptyState
-            icon={<Banknote className="size-6" aria-hidden />}
+            icon={<Icon glyph={faMoneyBill} className="size-6" aria-hidden />}
             title="Could not load this deposit"
             description="Something went wrong reaching the server. Try again in a moment."
             actions={

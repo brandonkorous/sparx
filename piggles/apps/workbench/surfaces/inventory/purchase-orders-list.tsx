@@ -29,7 +29,8 @@ import {
   Text,
   ToolbarSeparator,
 } from '@wizeworks/silicaui-react';
-import { ClipboardList, Plus } from 'lucide-react';
+import { faClipboardList, faPlus } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { ListEmptyState } from '../../components/list-empty-state';
@@ -113,7 +114,7 @@ export function PurchaseOrdersListSurface({ ctx }: { ctx: SurfaceContext }) {
     if (isError) {
       return (
         <EmptyState
-          icon={<ClipboardList className="size-6" aria-hidden />}
+          icon={<Icon glyph={faClipboardList} className="size-6" aria-hidden />}
           title="Could not load your purchase orders"
           description="This is a problem reaching the server. Your orders are unaffected — the list just could not be read just now."
         />
@@ -129,7 +130,7 @@ export function PurchaseOrdersListSurface({ ctx }: { ctx: SurfaceContext }) {
         <ListEmptyState
           filtered={narrowed}
           noResults={{
-            icon: <ClipboardList className="size-6" aria-hidden />,
+            icon: <Icon glyph={faClipboardList} className="size-6" aria-hidden />,
             title: 'No orders match that',
             description: emptyAdvice(),
           }}
@@ -145,7 +146,7 @@ export function PurchaseOrdersListSurface({ ctx }: { ctx: SurfaceContext }) {
                   ctx.open('inventory.purchase-orders.detail', { id: 'new' }, { target: 'tab' });
                 }}
               >
-                <Plus className="size-4" aria-hidden />
+                <Icon glyph={faPlus} className="size-4" aria-hidden />
                 New purchase order
               </Button>
             ),
@@ -284,7 +285,7 @@ export function PurchaseOrdersListSurface({ ctx }: { ctx: SurfaceContext }) {
             ctx.open('inventory.purchase-orders.detail', { id: 'new' }, { target: 'tab' });
           }}
         >
-          <Plus className="size-4" aria-hidden />
+          <Icon glyph={faPlus} className="size-4" aria-hidden />
           <span className="hidden @lg:inline">New order</span>
         </Button>
 

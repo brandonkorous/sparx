@@ -36,7 +36,8 @@ import {
   useToast,
 } from '@wizeworks/silicaui-react';
 import { useConfirm } from '../../lib/confirm';
-import { PackageCheck } from 'lucide-react';
+import { faBoxCheck } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { FormSection } from '../../components/form-section';
 import { ModuleScope } from '../../components/module-scope';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
@@ -366,7 +367,7 @@ function ReturnDetailBody({ detail }: { detail: ReturnDetail }) {
                       void onReceive();
                     }}
                   >
-                    <PackageCheck className="size-4" aria-hidden />
+                    <Icon glyph={faBoxCheck} className="size-4" aria-hidden />
                     Received
                   </Button>
                 </ActionRow>

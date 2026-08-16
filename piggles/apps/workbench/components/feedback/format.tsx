@@ -4,7 +4,13 @@
 // form, the history list, and the thread agree on icons, titles, and tone.
 
 import { Badge } from '@wizeworks/silicaui-react';
-import { Heart, HelpCircle, Lightbulb, TriangleAlert, type LucideIcon } from 'lucide-react';
+import {
+  faCircleQuestion,
+  faExclamationTriangle,
+  faHeart,
+  faLightbulb,
+} from '@fortawesome/pro-solid-svg-icons';
+import type { PigglesIcon } from '@piggles/ui';
 import {
   FEEDBACK_STATUS_LABELS,
   type FeedbackCategory,
@@ -12,11 +18,11 @@ import {
   type FeedbackSubmission,
 } from '../../lib/api/feedback';
 
-export const CATEGORY_ICON: Record<FeedbackCategory, LucideIcon> = {
-  idea: Lightbulb,
-  problem: TriangleAlert,
-  question: HelpCircle,
-  praise: Heart,
+export const CATEGORY_ICON: Record<FeedbackCategory, PigglesIcon> = {
+  idea: faLightbulb,
+  problem: faExclamationTriangle,
+  question: faCircleQuestion,
+  praise: faHeart,
 };
 
 /**

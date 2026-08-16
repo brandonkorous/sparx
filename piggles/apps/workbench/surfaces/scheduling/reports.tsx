@@ -45,7 +45,8 @@ import {
   Text,
 } from '@wizeworks/silicaui-react';
 import { Chart, type EChartsOption } from '@wizeworks/silicaui-charts';
-import { BarChart3, CalendarClock } from 'lucide-react';
+import { faCalendarClock, faChartColumn } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
@@ -478,7 +479,7 @@ export function SchedulingReportsSurface({ ctx: _ctx }: { ctx: SurfaceContext })
     if (isModuleDisabled(report.error)) {
       return (
         <EmptyState
-          icon={<CalendarClock className="size-6" aria-hidden />}
+          icon={<Icon glyph={faCalendarClock} className="size-6" aria-hidden />}
           title="Bookings aren&rsquo;t switched on"
           description="These reports appear once the scheduling module is enabled for this account. Turn it on to start taking appointments and see how the diary is doing."
         />
@@ -488,7 +489,7 @@ export function SchedulingReportsSurface({ ctx: _ctx }: { ctx: SurfaceContext })
     if (report.isError) {
       return (
         <EmptyState
-          icon={<BarChart3 className="size-6" aria-hidden />}
+          icon={<Icon glyph={faChartColumn} className="size-6" aria-hidden />}
           title="Could not load your reports"
           description="This is a problem reaching the server. Your bookings are unaffected — the figures just could not be worked out just now."
           actions={
@@ -528,7 +529,7 @@ export function SchedulingReportsSurface({ ctx: _ctx }: { ctx: SurfaceContext })
     if (nothingEver) {
       return (
         <EmptyState
-          icon={<CalendarClock className="size-6" aria-hidden />}
+          icon={<Icon glyph={faCalendarClock} className="size-6" aria-hidden />}
           title="Nothing booked yet"
           description="These figures build from your bookings. As soon as appointments start coming in — from your site, over the phone, or added here — this fills in with how full the diary runs, what people book most, and how often they turn up."
         />

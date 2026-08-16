@@ -51,7 +51,8 @@ import {
   ToolbarSeparator,
   useToast,
 } from '@wizeworks/silicaui-react';
-import { CalendarX2, Percent, Trash2 } from 'lucide-react';
+import { faCalendarXmark, faPercent, faTrashCan } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { useState } from 'react';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
@@ -113,7 +114,7 @@ export function ExpiringStockSurface(_props: { ctx: SurfaceContext }) {
     if (report.isError) {
       return (
         <EmptyState
-          icon={<CalendarX2 className="size-6" aria-hidden />}
+          icon={<Icon glyph={faCalendarXmark} className="size-6" aria-hidden />}
           title="Could not check what is expiring"
           description="This is a problem reaching the server, not a finding about your stock. Try again in a moment."
         />
@@ -125,7 +126,7 @@ export function ExpiringStockSurface(_props: { ctx: SurfaceContext }) {
     if (items.length === 0) {
       return (
         <EmptyState
-          icon={<CalendarX2 className="size-6" aria-hidden />}
+          icon={<Icon glyph={faCalendarXmark} className="size-6" aria-hidden />}
           title="Nothing is close to expiring"
           description="No batch in this window is running out of time. Batches with no date at all would be listed here too, so this really is clear."
         />
@@ -190,7 +191,7 @@ export function ExpiringStockSurface(_props: { ctx: SurfaceContext }) {
                       setActing({ lot, kind: 'markdown' });
                     }}
                   >
-                    <Percent className="size-3.5" aria-hidden />
+                    <Icon glyph={faPercent} className="size-3.5" aria-hidden />
                     Mark down
                   </Button>
                   <Button
@@ -201,7 +202,7 @@ export function ExpiringStockSurface(_props: { ctx: SurfaceContext }) {
                       setActing({ lot, kind: 'writeOff' });
                     }}
                   >
-                    <Trash2 className="size-3.5" aria-hidden />
+                    <Icon glyph={faTrashCan} className="size-3.5" aria-hidden />
                     Write off
                   </Button>
                 </span>

@@ -19,7 +19,8 @@
 
 import Image from 'next/image';
 import { Button } from '@wizeworks/silicaui-react';
-import { ImageOff, ImagePlus, Trash2 } from 'lucide-react';
+import { faImageSlash, faImages, faTrashCan } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import type { EmailBuilderHost } from '@wizeworks/silicaui-builder/email/react';
 import type { EmailNode } from '@wizeworks/silicaui-builder/email';
 import { useMediaPicker } from '../../cms/media-picker';
@@ -82,7 +83,7 @@ function EmailAssetPanel({
           />
         ) : (
           <span className="flex h-full items-center justify-center">
-            <ImageOff className="size-5" aria-hidden />
+            <Icon glyph={faImageSlash} className="size-5" aria-hidden />
           </span>
         )}
       </div>
@@ -95,7 +96,7 @@ function EmailAssetPanel({
             void choose();
           }}
         >
-          <ImagePlus className="size-4" aria-hidden />
+          <Icon glyph={faImages} className="size-4" aria-hidden />
           {current ? 'Change' : `Choose a ${spec.noun}`}
         </Button>
         {current && spec.removable ? (
@@ -107,7 +108,7 @@ function EmailAssetPanel({
               update({ [spec.field]: '' });
             }}
           >
-            <Trash2 className="size-4" aria-hidden />
+            <Icon glyph={faTrashCan} className="size-4" aria-hidden />
             Remove
           </Button>
         ) : null}

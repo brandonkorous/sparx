@@ -10,18 +10,19 @@
 // surface has to reason about.
 
 import { useMutation, useQuery, useQueryClient } from '@sparx/query';
-import type { LucideIcon } from 'lucide-react';
 import {
-  Boxes,
-  CalendarClock,
-  FileText,
-  Globe,
-  Package,
-  ReceiptText,
-  ShieldCheck,
-  Users,
-  Wrench,
-} from 'lucide-react';
+  faBox,
+  faBoxes,
+  faCalendarClock,
+  faFileText,
+  faGlobe,
+  faReceipt,
+  faShieldCheck,
+  faUsers,
+  faWrench,
+} from '@fortawesome/pro-solid-svg-icons';
+import type { PigglesIcon } from '@piggles/ui';
+
 import { api } from '../../lib/api/client';
 import type { WorkbenchModule } from '../../components/module-scope';
 
@@ -75,7 +76,7 @@ export interface CategoryMeta {
   key: NotificationCategory;
   label: string;
   description: string;
-  icon: LucideIcon;
+  icon: PigglesIcon;
   /** Which part of sparx this belongs to, for the row's accent. Null = account. */
   module: WorkbenchModule | null;
 }
@@ -85,63 +86,63 @@ export const NOTIFICATION_CATEGORY_META: readonly CategoryMeta[] = [
     key: 'orders',
     label: 'Orders & sales',
     description: 'A new order comes in, or one needs a second look before it ships.',
-    icon: Package,
+    icon: faBox,
     module: 'commerce',
   },
   {
     key: 'payments',
     label: 'Payments & billing',
     description: 'A payment goes through or fails, a refund is issued, or an invoice is paid.',
-    icon: ReceiptText,
+    icon: faReceipt,
     module: 'invoicing',
   },
   {
     key: 'inventory',
     label: 'Stock levels',
     description: 'Something is running low or has sold out and may need reordering.',
-    icon: Boxes,
+    icon: faBoxes,
     module: 'inventory',
   },
   {
     key: 'customers',
     label: 'Customers & enquiries',
     description: 'Someone signs up, sends a message, asks a question, or leaves a review.',
-    icon: Users,
+    icon: faUsers,
     module: 'crm',
   },
   {
     key: 'content',
     label: 'Content & forms',
     description: 'A scheduled page or post goes live, or someone fills in a form on your site.',
-    icon: FileText,
+    icon: faFileText,
     module: 'cms',
   },
   {
     key: 'bookings',
     label: 'Bookings & appointments',
     description: 'An appointment is booked, moved, or cancelled.',
-    icon: CalendarClock,
+    icon: faCalendarClock,
     module: 'scheduling',
   },
   {
     key: 'sites',
     label: 'Sites & web addresses',
     description: 'A web address goes live, or one needs your attention to stay secure.',
-    icon: Globe,
+    icon: faGlobe,
     module: 'platform',
   },
   {
     key: 'team',
     label: 'Team & security',
     description: 'Someone joins or leaves, a role changes, or a sign-in looks unusual.',
-    icon: ShieldCheck,
+    icon: faShieldCheck,
     module: 'platform',
   },
   {
     key: 'system',
     label: 'Background tasks',
     description: 'A long job you started — an import, an export, a bulk change — finishes.',
-    icon: Wrench,
+    icon: faWrench,
     module: 'platform',
   },
 ] as const;

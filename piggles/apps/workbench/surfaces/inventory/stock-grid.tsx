@@ -42,7 +42,8 @@ import {
   Text,
   useToast,
 } from '@wizeworks/silicaui-react';
-import { Download, Grid3x3, Save, Undo2 } from 'lucide-react';
+import { faDownload, faFloppyDisk, faGrid, faRotateLeft } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import { useConfirm } from '../../lib/confirm';
@@ -355,7 +356,7 @@ export function StockGridSurface(_props: { ctx: SurfaceContext }) {
               })}
               download
             >
-              <Download className="size-4" aria-hidden />
+              <Icon glyph={faDownload} className="size-4" aria-hidden />
               Export
             </a>
           }
@@ -431,7 +432,7 @@ export function StockGridSurface(_props: { ctx: SurfaceContext }) {
             disabled={pending.edits.length === 0 || save.isPending}
             onClick={onSave}
           >
-            <Save className="size-4" aria-hidden />
+            <Icon glyph={faFloppyDisk} className="size-4" aria-hidden />
             Save {pending.edits.length}
           </Button>
           <Button
@@ -442,7 +443,7 @@ export function StockGridSurface(_props: { ctx: SurfaceContext }) {
               setDraft({});
             }}
           >
-            <Undo2 className="size-4" aria-hidden />
+            <Icon glyph={faRotateLeft} className="size-4" aria-hidden />
             Discard
           </Button>
         </div>
@@ -462,7 +463,7 @@ export function StockGridSurface(_props: { ctx: SurfaceContext }) {
       <div className="min-h-0 flex-1 overflow-auto">
         {rows.length === 0 ? (
           <EmptyState
-            icon={<Grid3x3 className="size-6" aria-hidden />}
+            icon={<Icon glyph={faGrid} className="size-6" aria-hidden />}
             title={search === '' ? 'No stock to show' : `Nothing matches ${search}`}
             description={
               search === ''

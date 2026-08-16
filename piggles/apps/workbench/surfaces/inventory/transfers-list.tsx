@@ -38,7 +38,8 @@ import {
   Timestamp,
   ToolbarSeparator,
 } from '@wizeworks/silicaui-react';
-import { ArrowLeftRight, ArrowRight, Plus } from 'lucide-react';
+import { faArrowRight, faArrowRightArrowLeft, faPlus } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { ListEmptyState } from '../../components/list-empty-state';
@@ -127,7 +128,7 @@ export function TransfersListSurface({ ctx }: { ctx: SurfaceContext }) {
     if (isError) {
       return (
         <EmptyState
-          icon={<ArrowLeftRight className="size-6" aria-hidden />}
+          icon={<Icon glyph={faArrowRightArrowLeft} className="size-6" aria-hidden />}
           title="Could not load your transfers"
           description="This is a problem reaching the server. Your transfers are unaffected — they just could not be read just now."
         />
@@ -143,7 +144,7 @@ export function TransfersListSurface({ ctx }: { ctx: SurfaceContext }) {
         <ListEmptyState
           filtered={narrowed}
           noResults={{
-            icon: <ArrowLeftRight className="size-6" aria-hidden />,
+            icon: <Icon glyph={faArrowRightArrowLeft} className="size-6" aria-hidden />,
             title: 'Nothing matches that',
             description: emptyAdvice(search.trim(), statusLabel, locationName),
           }}
@@ -153,7 +154,7 @@ export function TransfersListSurface({ ctx }: { ctx: SurfaceContext }) {
               'A transfer moves stock from one of your locations to another and keeps a record of it in motion. Start one when you need to send stock somewhere else.',
             actions: (
               <Button size="sm" color="module" onClick={openNew}>
-                <Plus className="size-4" aria-hidden />
+                <Icon glyph={faPlus} className="size-4" aria-hidden />
                 New transfer
               </Button>
             ),
@@ -204,7 +205,7 @@ export function TransfersListSurface({ ctx }: { ctx: SurfaceContext }) {
                         answer. */}
                     <span className="flex min-w-0 items-center gap-1 truncate text-sm @lg:hidden">
                       {from}
-                      <ArrowRight className="size-3 shrink-0" aria-hidden />
+                      <Icon glyph={faArrowRight} className="size-3 shrink-0" aria-hidden />
                       {to}
                     </span>
                   </span>
@@ -212,7 +213,7 @@ export function TransfersListSurface({ ctx }: { ctx: SurfaceContext }) {
                 <td className="hidden max-w-64 @lg:table-cell">
                   <span className="flex min-w-0 items-center gap-1.5 truncate">
                     <span className="truncate">{from}</span>
-                    <ArrowRight className="size-3.5 shrink-0" aria-hidden />
+                    <Icon glyph={faArrowRight} className="size-3.5 shrink-0" aria-hidden />
                     <span className="truncate">{to}</span>
                   </span>
                 </td>
@@ -301,7 +302,7 @@ export function TransfersListSurface({ ctx }: { ctx: SurfaceContext }) {
           className="ml-auto shrink-0 whitespace-nowrap"
           onClick={openNew}
         >
-          <Plus className="size-4" aria-hidden />
+          <Icon glyph={faPlus} className="size-4" aria-hidden />
           <span className="hidden @lg:inline">New transfer</span>
         </Button>
 

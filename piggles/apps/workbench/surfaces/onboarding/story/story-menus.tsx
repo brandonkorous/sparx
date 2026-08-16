@@ -1,7 +1,8 @@
 'use client';
 
 import { useEffect, useRef, useState, type ReactNode } from 'react';
-import { Sparkles } from 'lucide-react';
+import { faSparkles } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import {
   CLAUSE,
   INDUSTRIES,
@@ -192,7 +193,7 @@ export function IndustryMenu({
           }}
         >
           <span className={styles.badge} data-module="builder">
-            <Sparkles size={16} strokeWidth={1.8} aria-hidden />
+            <Icon glyph={faSparkles} size={16} aria-hidden />
           </span>
           <span className={styles.ot}>
             <span>Use “{q}”</span>

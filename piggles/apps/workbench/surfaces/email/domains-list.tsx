@@ -14,7 +14,8 @@ import { useMemo, useState } from 'react';
 import { PaneEmpty } from '../../components/pane-empty';
 import { PaneWaiting } from '../../components/pane-waiting';
 import { Badge, Button, Card, Heading, SearchInput, Text } from '@wizeworks/silicaui-react';
-import { MailWarning, Plus, Send } from 'lucide-react';
+import { faEnvelopeCircleCheck, faPaperPlane, faPlus } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { RefreshButton } from '../../components/refresh-button';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { ListEmptyState } from '../../components/list-empty-state';
@@ -89,7 +90,7 @@ export function SendingDomainsListSurface({ ctx }: { ctx: SurfaceContext }) {
     return (
       <Card className="min-h-0 flex-1 items-center justify-center">
         <PaneEmpty
-          icon={<MailWarning className="size-6" aria-hidden />}
+          icon={<Icon glyph={faEnvelopeCircleCheck} className="size-6" aria-hidden />}
           title="Could not load your sending addresses"
           description="This is a problem reaching the server. Your addresses are unaffected — nothing has been lost."
           actions={
@@ -139,7 +140,7 @@ export function SendingDomainsListSurface({ ctx }: { ctx: SurfaceContext }) {
             ctx.open('email.domains.detail', { id: 'new' }, { target: targetFor(event) });
           }}
         >
-          <Plus className="size-4" aria-hidden />
+          <Icon glyph={faPlus} className="size-4" aria-hidden />
           Add a sending address
         </Button>
         {/* ALWAYS the last child of a list toolbar — see RefreshButton. */}
@@ -159,7 +160,7 @@ export function SendingDomainsListSurface({ ctx }: { ctx: SurfaceContext }) {
           <ListEmptyState
             filtered={needle !== ''}
             noResults={{
-              icon: <Send className="size-6" aria-hidden />,
+              icon: <Icon glyph={faPaperPlane} className="size-6" aria-hidden />,
               title: 'No addresses match that',
               description: 'Try part of the address, or clear the search to see them all.',
             }}
@@ -175,7 +176,7 @@ export function SendingDomainsListSurface({ ctx }: { ctx: SurfaceContext }) {
                     ctx.open('email.domains.detail', { id: 'new' }, { target: targetFor(event) });
                   }}
                 >
-                  <Plus className="size-4" aria-hidden />
+                  <Icon glyph={faPlus} className="size-4" aria-hidden />
                   Add a sending address
                 </Button>
               ),

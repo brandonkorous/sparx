@@ -54,7 +54,14 @@ import {
   useToast,
 } from '@wizeworks/silicaui-react';
 import { useConfirm } from '../../lib/confirm';
-import { Ban, CheckCircle2, CookingPot, Hammer, Lock } from 'lucide-react';
+import {
+  faBan,
+  faCircleCheck,
+  faHammer,
+  faLock,
+  faPotFood,
+} from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import { FormSection } from '../../components/form-section';
@@ -160,7 +167,7 @@ function PlanRun({ ctx }: { ctx: SurfaceContext }) {
     <div className={PANE_SHELL}>
       <PaneToolbar label="Plan a run actions">
         <span className="inline-flex items-center gap-1.5">
-          <Hammer className="size-4" aria-hidden />
+          <Icon glyph={faHammer} className="size-4" aria-hidden />
           <Text as="span" className="text-sm font-medium">
             Plan a run
           </Text>
@@ -206,7 +213,7 @@ function PlanRun({ ctx }: { ctx: SurfaceContext }) {
                   ctx.open('inventory.boms.detail', { id: 'new' }, { target: 'tab' });
                 }}
               >
-                <CookingPot className="size-4" aria-hidden />
+                <Icon glyph={faPotFood} className="size-4" aria-hidden />
                 Write a recipe
               </Button>
             </Alert>
@@ -466,7 +473,7 @@ function ViewRun({ ctx, id }: { ctx: SurfaceContext; id: string }) {
     <div className={PANE_SHELL}>
       <PaneToolbar label="Run actions">
         <span className="inline-flex items-center gap-1.5">
-          <Hammer className="size-4" aria-hidden />
+          <Icon glyph={faHammer} className="size-4" aria-hidden />
           <Text as="span" className="font-mono text-sm font-medium">
             {data.number}
           </Text>
@@ -485,7 +492,7 @@ function ViewRun({ ctx, id }: { ctx: SurfaceContext; id: string }) {
               void doRelease();
             }}
           >
-            <Lock className="size-4" aria-hidden />
+            <Icon glyph={faLock} className="size-4" aria-hidden />
             Hold the parts
           </Button>
         ) : null}
@@ -501,7 +508,7 @@ function ViewRun({ ctx, id }: { ctx: SurfaceContext; id: string }) {
               void doComplete();
             }}
           >
-            <CheckCircle2 className="size-4" aria-hidden />
+            <Icon glyph={faCircleCheck} className="size-4" aria-hidden />
             Mark it made
           </Button>
         ) : null}
@@ -518,7 +525,7 @@ function ViewRun({ ctx, id }: { ctx: SurfaceContext; id: string }) {
               void doCancel();
             }}
           >
-            <Ban className="size-4" aria-hidden />
+            <Icon glyph={faBan} className="size-4" aria-hidden />
           </Button>
         ) : (
           <span className="ml-auto" />

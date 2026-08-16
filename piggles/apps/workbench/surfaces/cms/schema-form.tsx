@@ -30,7 +30,8 @@ import {
   Text,
   Textarea,
 } from '@wizeworks/silicaui-react';
-import { Plus, Trash2 } from 'lucide-react';
+import { faPlus, faTrashCan } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { ContentBlockEditor } from '@sparx/cms-editor/editor';
 import {
   entryTitle,
@@ -555,7 +556,7 @@ function RepeaterField({
                     remove(index);
                   }}
                 >
-                  <Trash2 className="size-4" aria-hidden />
+                  <Icon glyph={faTrashCan} className="size-4" aria-hidden />
                 </Button>
               </div>
               <BodyFields
@@ -579,7 +580,7 @@ function RepeaterField({
           disabled={atMax || Boolean(disabled)}
           onClick={add}
         >
-          <Plus className="size-4" aria-hidden />
+          <Icon glyph={faPlus} className="size-4" aria-hidden />
           Add {itemNoun}
         </Button>
         {atMax ? (

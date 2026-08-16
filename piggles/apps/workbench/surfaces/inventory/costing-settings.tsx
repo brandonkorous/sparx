@@ -44,7 +44,8 @@ import {
   Text,
   useToast,
 } from '@wizeworks/silicaui-react';
-import { Save, Scale } from 'lucide-react';
+import { faFloppyDisk, faScaleBalanced } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import { FormSection } from '../../components/form-section';
@@ -287,7 +288,7 @@ export function CostingSettingsSurface({ ctx }: { ctx: SurfaceContext }) {
     <div className={PANE_SHELL}>
       <PaneToolbar label="Stock valuation actions">
         <span className="inline-flex items-center gap-1.5">
-          <Scale className="size-4" aria-hidden />
+          <Icon glyph={faScaleBalanced} className="size-4" aria-hidden />
           <Text as="span" className="text-sm font-medium">
             How stock is valued
           </Text>
@@ -306,7 +307,7 @@ export function CostingSettingsSurface({ ctx }: { ctx: SurfaceContext }) {
           loading={savePolicy.isPending}
           onClick={save}
         >
-          <Save className="size-4" aria-hidden />
+          <Icon glyph={faFloppyDisk} className="size-4" aria-hidden />
           Save
         </Button>
         <RefreshButton

@@ -35,7 +35,7 @@ WORKDIR /repo
 # ----- Install + build -----
 FROM base AS builder
 
-COPY pnpm-workspace.yaml pnpm-lock.yaml package.json tsconfig.base.json ./
+COPY pnpm-workspace.yaml pnpm-lock.yaml package.json tsconfig.base.json .npmrc ./
 # Hashed before resolution — needed whatever the filter excludes. The console is
 # the app that actually consumes it: silicaui-react sits on Base UI.
 COPY patches ./patches
@@ -46,10 +46,28 @@ COPY piggles/packages/auth-handoff/package.json piggles/packages/auth-handoff/
 COPY piggles/packages/brand/package.json piggles/packages/brand/
 COPY piggles/packages/config/package.json piggles/packages/config/
 COPY piggles/packages/mascot/package.json piggles/packages/mascot/
+COPY piggles/packages/ui/package.json piggles/packages/ui/
 
-# The platform libraries the ~450 forked surfaces sit on. These are LIBRARIES
-# under packages/ — depending on one couples nothing, because deleting sparx's
-# apps does not delete them (piggles/CLAUDE.md, "The guard").
+# The platform libraries the ~450 forked surfaces sit on. Brand-blind by policy:
+# none of them may state a sparx value, and the scope rename to @wizeworks/*
+# (piggles/docs/migration, phase A3) is what will make that legible in the name.
+#
+# NEITHER `packages/brand` NOR `packages/ui` IS IN THIS LIST ANY MORE, and that
+# took two edits rather than one. Dropping them as direct dependencies was easy —
+# the console imported neither. The image still pulled them in regardless, via:
+#
+#     @piggles/console → @sparx/cms-editor → @sparx/ui → @sparx/brand
+#
+# So sparx's actual brand package was inside the Piggles image by way of the CMS
+# editor, and "nothing renders from it" is not the test the migration has to
+# pass. The chain turned out to be held up by exactly two things: `cn`, a
+# 26-line tailwind-merge wrapper with no brand in it, and a type from a module
+# manifest written for the removed dashboard that nothing consumed. `cn` moved to
+# @wizeworks/silica-corrections (re-exported from @sparx/ui, so admin was
+# untouched) and the four dead manifests were deleted. Broken 2026-08-16.
+#
+# If either package reappears below, something re-coupled — find the new edge
+# rather than adding the COPY line back.
 COPY packages/api-client/package.json packages/api-client/
 COPY packages/api-core/package.json packages/api-core/
 COPY packages/app-kit/package.json packages/app-kit/
@@ -57,7 +75,6 @@ COPY packages/attribution/package.json packages/attribution/
 COPY packages/auth/package.json packages/auth/
 COPY packages/automation-schemas/package.json packages/automation-schemas/
 COPY packages/blueprints/package.json packages/blueprints/
-COPY packages/brand/package.json packages/brand/
 COPY packages/builder-schemas/package.json packages/builder-schemas/
 COPY packages/cms-editor/package.json packages/cms-editor/
 COPY packages/cms-schemas/package.json packages/cms-schemas/
@@ -81,17 +98,22 @@ COPY packages/migration/package.json packages/migration/
 COPY packages/modules/package.json packages/modules/
 COPY packages/query/package.json packages/query/
 COPY packages/silica-catalog/package.json packages/silica-catalog/
+COPY packages/silica-corrections/package.json packages/silica-corrections/
 COPY packages/site-themes/package.json packages/site-themes/
+COPY packages/studio/package.json packages/studio/
 COPY packages/sitebuilder-schemas/package.json packages/sitebuilder-schemas/
 COPY packages/social/package.json packages/social/
 COPY packages/story-schemas/package.json packages/story-schemas/
-COPY packages/ui/package.json packages/ui/
 
 # Root postinstall runs `pnpm --filter @sparx/db db:generate`.
 COPY packages/db/prisma packages/db/prisma
 COPY packages/db/prisma.config.ts packages/db/prisma.config.ts
 
+# The Font Awesome Pro token reaches pnpm as an env var for one command, read
+# from a BuildKit secret mount. It is never COPYed and never lands in a layer.
 RUN --mount=type=cache,id=pnpm,target=/root/.local/share/pnpm/store \
+    --mount=type=secret,id=fontawesome_npm_token \
+    FONTAWESOME_NPM_TOKEN="$(cat /run/secrets/fontawesome_npm_token 2>/dev/null || true)" \
     pnpm install --frozen-lockfile --filter @piggles/console...
 
 # Source for every workspace dep + the app itself.
@@ -99,6 +121,7 @@ COPY piggles/packages/auth-handoff piggles/packages/auth-handoff
 COPY piggles/packages/brand piggles/packages/brand
 COPY piggles/packages/config piggles/packages/config
 COPY piggles/packages/mascot piggles/packages/mascot
+COPY piggles/packages/ui piggles/packages/ui
 COPY packages/api-client packages/api-client
 COPY packages/api-core packages/api-core
 COPY packages/app-kit packages/app-kit
@@ -106,7 +129,6 @@ COPY packages/attribution packages/attribution
 COPY packages/auth packages/auth
 COPY packages/automation-schemas packages/automation-schemas
 COPY packages/blueprints packages/blueprints
-COPY packages/brand packages/brand
 COPY packages/builder-schemas packages/builder-schemas
 COPY packages/cms-editor packages/cms-editor
 COPY packages/cms-schemas packages/cms-schemas
@@ -128,11 +150,12 @@ COPY packages/migration packages/migration
 COPY packages/modules packages/modules
 COPY packages/query packages/query
 COPY packages/silica-catalog packages/silica-catalog
+COPY packages/silica-corrections packages/silica-corrections
 COPY packages/site-themes packages/site-themes
+COPY packages/studio packages/studio
 COPY packages/sitebuilder-schemas packages/sitebuilder-schemas
 COPY packages/social packages/social
 COPY packages/story-schemas packages/story-schemas
-COPY packages/ui packages/ui
 COPY piggles/apps/workbench piggles/apps/workbench
 
 RUN pnpm --filter @sparx/db db:generate

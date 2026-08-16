@@ -34,7 +34,8 @@ import {
   Timestamp,
   useToast,
 } from '@wizeworks/silicaui-react';
-import { CalendarClock, Plus, Send } from 'lucide-react';
+import { faCalendarClock, faPaperPlane, faPlus } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import { afterCommit } from '../../lib/defer';
@@ -106,7 +107,7 @@ function SendNowButton({ schedule }: { schedule: ReportSchedule }) {
         });
       }}
     >
-      <Send className="size-4" aria-hidden />
+      <Icon glyph={faPaperPlane} className="size-4" aria-hidden />
       Send now
     </Button>
   );
@@ -128,7 +129,7 @@ export function ReportSchedulesSurface({ ctx }: { ctx: SurfaceContext }) {
     if (schedules.isError) {
       return (
         <EmptyState
-          icon={<CalendarClock className="size-6" aria-hidden />}
+          icon={<Icon glyph={faCalendarClock} className="size-6" aria-hidden />}
           title="Could not load your scheduled reports"
           description="This is a problem reaching the server. Nothing has stopped sending — the list just could not be loaded."
         />
@@ -140,7 +141,7 @@ export function ReportSchedulesSurface({ ctx }: { ctx: SurfaceContext }) {
     if (items.length === 0) {
       return (
         <EmptyState
-          icon={<CalendarClock className="size-6" aria-hidden />}
+          icon={<Icon glyph={faCalendarClock} className="size-6" aria-hidden />}
           title="Nothing is being sent to anyone"
           description="Pick a report, say who should get it and how often, and it arrives in their inbox — the spreadsheet attached and the headline numbers in the body. An accountant who wants the month-end valuation does not need a login to receive one."
         >
@@ -150,7 +151,7 @@ export function ReportSchedulesSurface({ ctx }: { ctx: SurfaceContext }) {
               ctx.open('inventory.reports.schedule', { id: 'new' });
             }}
           >
-            <Plus className="size-4" aria-hidden />
+            <Icon glyph={faPlus} className="size-4" aria-hidden />
             Send a report to someone
           </Button>
         </EmptyState>
@@ -279,7 +280,7 @@ export function ReportSchedulesSurface({ ctx }: { ctx: SurfaceContext }) {
             ctx.open('inventory.reports.schedule', { id: 'new' });
           }}
         >
-          <Plus className="size-4" aria-hidden />
+          <Icon glyph={faPlus} className="size-4" aria-hidden />
           Send a report
         </Button>
 

@@ -43,7 +43,14 @@ import {
   ToolbarSeparator,
   Tooltip,
 } from '@wizeworks/silicaui-react';
-import { ArrowDown, ArrowUp, Boxes, ShieldCheck, TrendingDown } from 'lucide-react';
+import {
+  faArrowDown,
+  faArrowTrendDown,
+  faArrowUp,
+  faBoxes,
+  faShieldCheck,
+} from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { SavedViewsBar } from '../../components/saved-views';
@@ -166,9 +173,9 @@ export function StockListSurface({ ctx }: { ctx: SurfaceContext }) {
         {label}
         {sort.key === key ? (
           sort.dir === 'asc' ? (
-            <ArrowUp className="size-3" aria-hidden />
+            <Icon glyph={faArrowUp} className="size-3" aria-hidden />
           ) : (
-            <ArrowDown className="size-3" aria-hidden />
+            <Icon glyph={faArrowDown} className="size-3" aria-hidden />
           )
         ) : null}
       </button>
@@ -195,7 +202,7 @@ export function StockListSurface({ ctx }: { ctx: SurfaceContext }) {
     if (isError) {
       return (
         <EmptyState
-          icon={<Boxes className="size-6" aria-hidden />}
+          icon={<Icon glyph={faBoxes} className="size-6" aria-hidden />}
           title="Could not load your stock"
           description="This is a problem reaching the server. Your stock is unaffected — the numbers just could not be read just now."
         />
@@ -212,7 +219,7 @@ export function StockListSurface({ ctx }: { ctx: SurfaceContext }) {
       if (lowOnly && search.trim() === '') {
         return (
           <EmptyState
-            icon={<TrendingDown className="size-6" aria-hidden />}
+            icon={<Icon glyph={faArrowTrendDown} className="size-6" aria-hidden />}
             title={
               locationName ? `Nothing is running low at ${locationName}` : 'Nothing is running low'
             }
@@ -222,7 +229,7 @@ export function StockListSurface({ ctx }: { ctx: SurfaceContext }) {
       }
       return (
         <EmptyState
-          icon={<Boxes className="size-6" aria-hidden />}
+          icon={<Icon glyph={faBoxes} className="size-6" aria-hidden />}
           title={narrowed ? 'Nothing matches that' : 'Nothing is being counted yet'}
           description={
             narrowed
@@ -327,7 +334,7 @@ export function StockListSurface({ ctx }: { ctx: SurfaceContext }) {
                         explain(level);
                       }}
                     >
-                      <ShieldCheck className="size-4" aria-hidden />
+                      <Icon glyph={faShieldCheck} className="size-4" aria-hidden />
                     </Button>
                   </Tooltip>
                 </td>
@@ -404,7 +411,7 @@ export function StockListSurface({ ctx }: { ctx: SurfaceContext }) {
             aria-label="Only show what is running low"
             title="Only show what is running low"
           >
-            <TrendingDown className="size-4" aria-hidden />
+            <Icon glyph={faArrowTrendDown} className="size-4" aria-hidden />
             <span className="hidden @2xl:inline">Running low</span>
           </ToggleGroupItem>
         </ToggleGroup>

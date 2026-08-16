@@ -7,7 +7,7 @@
 // screen lands, `stub(...)` becomes a normal entry and nothing else changes:
 // same key, so saved layouts and deep links survive the swap.
 
-import type { LucideIcon } from 'lucide-react';
+import type { PigglesIcon } from '@piggles/ui';
 import type { SurfaceDefinition } from '../registry';
 import type { WorkbenchModule } from '../../../components/module-scope';
 import { createPlaceholderSurface } from '../../../surfaces/placeholder';
@@ -16,7 +16,7 @@ interface StubOptions {
   key: string;
   title: string;
   module: WorkbenchModule;
-  icon: LucideIcon;
+  icon: PigglesIcon;
   /** What this screen is for, in plain language. Shown in the pane. */
   body: string;
   section?: string;

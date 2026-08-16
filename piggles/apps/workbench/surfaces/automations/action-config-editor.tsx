@@ -24,7 +24,8 @@ import {
   Text,
   Textarea,
 } from '@wizeworks/silicaui-react';
-import { Code2, Trash2 } from 'lucide-react';
+import { faCode, faTrashCan } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import type { Action } from '@sparx/automation-schemas';
 import {
   actionDef,
@@ -423,7 +424,7 @@ export function ActionConfigEditor({
                   setJsonMode((v) => !v);
                 }}
               >
-                <Code2 className="size-4" aria-hidden />
+                <Icon glyph={faCode} className="size-4" aria-hidden />
                 {jsonMode ? 'Simple fields' : 'Edit as JSON'}
               </Button>
             </div>
@@ -474,7 +475,7 @@ export function ActionConfigEditor({
 
       <div className="border-base-300 border-t pt-3">
         <Button variant="outline" color="danger" size="sm" onClick={onRemove}>
-          <Trash2 className="size-4" aria-hidden />
+          <Icon glyph={faTrashCan} className="size-4" aria-hidden />
           Remove this step
         </Button>
       </div>

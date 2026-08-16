@@ -43,7 +43,17 @@ import {
   Textarea,
   useToast,
 } from '@wizeworks/silicaui-react';
-import { ImageIcon, ImagePlus, Palette, PanelTop, Plus, Save, Trash2, X } from 'lucide-react';
+import {
+  faFloppyDisk,
+  faImage,
+  faImages,
+  faPalette,
+  faPlus,
+  faTrashCan,
+  faWindowMaximize,
+  faXmark,
+} from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { PANE_SHELL, PaneToolbar } from '../../components/pane-toolbar';
 import { FormSection } from '../../components/form-section';
 import { useActiveSiteId } from '../../lib/api/shell-data';
@@ -235,7 +245,7 @@ function IdentityEditor({
           disabled={!dirty}
           onClick={onSave}
         >
-          <Save className="size-4" aria-hidden />
+          <Icon glyph={faFloppyDisk} className="size-4" aria-hidden />
           Save
         </Button>
       </PaneToolbar>
@@ -443,7 +453,7 @@ function IdentityEditor({
                 ctx.open('builder.studio', { mode: 'layout' }, { target: targetFor(event) });
               }}
             >
-              <PanelTop className="size-4" aria-hidden />
+              <Icon glyph={faWindowMaximize} className="size-4" aria-hidden />
               Design the header &amp; footer
             </Button>
             <Button
@@ -454,7 +464,7 @@ function IdentityEditor({
                 ctx.open('builder.studio', { mode: 'theme' }, { target: targetFor(event) });
               }}
             >
-              <Palette className="size-4" aria-hidden />
+              <Icon glyph={faPalette} className="size-4" aria-hidden />
               Colours &amp; type
             </Button>
           </div>
@@ -520,7 +530,8 @@ function BrandImageField({
               unoptimized
             />
           ) : (
-            <ImageIcon
+            <Icon
+              glyph={faImage}
               className={dark ? 'text-neutral-content size-5' : 'text-base-content size-5'}
               aria-hidden
             />
@@ -535,7 +546,7 @@ function BrandImageField({
               void choose();
             }}
           >
-            <ImagePlus className="size-4" aria-hidden />
+            <Icon glyph={faImages} className="size-4" aria-hidden />
             {value ? 'Change' : 'Choose a picture'}
           </Button>
           {value ? (
@@ -547,7 +558,7 @@ function BrandImageField({
                 onChange(null);
               }}
             >
-              <Trash2 className="size-4" aria-hidden />
+              <Icon glyph={faTrashCan} className="size-4" aria-hidden />
               Remove
             </Button>
           ) : null}
@@ -671,7 +682,7 @@ function SocialLinksEditor({
                   removeRow(index);
                 }}
               >
-                <X className="size-4" aria-hidden />
+                <Icon glyph={faXmark} className="size-4" aria-hidden />
               </Button>
             </div>
           );
@@ -679,7 +690,7 @@ function SocialLinksEditor({
       )}
       <div>
         <Button type="button" variant="soft" color="module" size="sm" onClick={addRow}>
-          <Plus className="size-4" aria-hidden />
+          <Icon glyph={faPlus} className="size-4" aria-hidden />
           Add link
         </Button>
       </div>

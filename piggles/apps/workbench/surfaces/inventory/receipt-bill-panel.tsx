@@ -37,7 +37,8 @@ import {
   Text,
   useToast,
 } from '@wizeworks/silicaui-react';
-import { Receipt } from 'lucide-react';
+import { faReceipt } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { useMutation, useQuery } from '@sparx/query';
 import { api } from '../../lib/api/client';
 import { FormSection } from '../../components/form-section';
@@ -330,7 +331,7 @@ export function ReceiptBillPanel({
             );
           }}
         >
-          <Receipt className="size-4" aria-hidden />
+          <Icon glyph={faReceipt} className="size-4" aria-hidden />
           Enter this invoice
         </Button>
       </div>

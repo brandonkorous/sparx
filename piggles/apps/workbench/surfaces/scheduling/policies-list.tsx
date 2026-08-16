@@ -12,7 +12,8 @@
 import { useState } from 'react';
 import { PaneWaiting } from '../../components/pane-waiting';
 import { Button, Card, EmptyState, SearchInput, Table, Text } from '@wizeworks/silicaui-react';
-import { Plus, ShieldCheck } from 'lucide-react';
+import { faPlus, faShieldCheck } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { ListEmptyState } from '../../components/list-empty-state';
@@ -64,7 +65,7 @@ export function PoliciesListSurface({ ctx }: { ctx: SurfaceContext }) {
     if (isError) {
       return (
         <EmptyState
-          icon={<ShieldCheck className="size-6" aria-hidden />}
+          icon={<Icon glyph={faShieldCheck} className="size-6" aria-hidden />}
           title="Could not load your booking rules"
           description="This is a problem reaching the server. Your rules are unaffected — the list just could not be read just now."
           actions={
@@ -91,7 +92,7 @@ export function PoliciesListSurface({ ctx }: { ctx: SurfaceContext }) {
         <ListEmptyState
           filtered={narrowed}
           noResults={{
-            icon: <ShieldCheck className="size-6" aria-hidden />,
+            icon: <Icon glyph={faShieldCheck} className="size-6" aria-hidden />,
             title: 'Nothing matches that',
             description: 'Try part of a rule set’s name.',
           }}
@@ -107,7 +108,7 @@ export function PoliciesListSurface({ ctx }: { ctx: SurfaceContext }) {
                   openNew({ shiftKey: false, altKey: false });
                 }}
               >
-                <Plus className="size-4" aria-hidden />
+                <Icon glyph={faPlus} className="size-4" aria-hidden />
                 New rule set
               </Button>
             ),
@@ -177,7 +178,7 @@ export function PoliciesListSurface({ ctx }: { ctx: SurfaceContext }) {
           title="New rule set — hold Shift to open alongside, Alt for a new window"
           onClick={openNew}
         >
-          <Plus className="size-4" aria-hidden />
+          <Icon glyph={faPlus} className="size-4" aria-hidden />
           <span className="hidden @lg:inline">New rule set</span>
         </Button>
 

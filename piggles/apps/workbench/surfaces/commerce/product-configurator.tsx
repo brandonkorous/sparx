@@ -68,16 +68,17 @@ import {
 } from '@wizeworks/silicaui-react';
 import { useConfirm } from '../../lib/confirm';
 import {
-  ArrowDown,
-  ArrowUp,
-  Blocks,
-  FlaskConical,
-  Plus,
-  Save,
-  Settings2,
-  Trash2,
-  Undo2,
-} from 'lucide-react';
+  faArrowDown,
+  faArrowUp,
+  faCubes,
+  faFlask,
+  faFloppyDisk,
+  faPlus,
+  faRotateLeft,
+  faSliders,
+  faTrashCan,
+} from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import { useDirtySource } from '../../lib/workbench/dirty';
@@ -382,7 +383,7 @@ function ChoiceRow({
         title="Remove this answer"
         onClick={onRemove}
       >
-        <Trash2 className="size-4" aria-hidden />
+        <Icon glyph={faTrashCan} className="size-4" aria-hidden />
       </Button>
       {deltaLabel(choice.priceDeltaCents, currency) === null ? null : (
         <Text className="w-full text-sm">
@@ -443,7 +444,7 @@ function QuestionCard({
               onMove(-1);
             }}
           >
-            <ArrowUp className="size-4" aria-hidden />
+            <Icon glyph={faArrowUp} className="size-4" aria-hidden />
           </Button>
           <Button
             size="sm"
@@ -457,7 +458,7 @@ function QuestionCard({
               onMove(1);
             }}
           >
-            <ArrowDown className="size-4" aria-hidden />
+            <Icon glyph={faArrowDown} className="size-4" aria-hidden />
           </Button>
           <Button
             size="sm"
@@ -468,7 +469,7 @@ function QuestionCard({
             title="Remove this question"
             onClick={onRemove}
           >
-            <Trash2 className="size-4" aria-hidden />
+            <Icon glyph={faTrashCan} className="size-4" aria-hidden />
           </Button>
         </div>
       </div>
@@ -600,7 +601,7 @@ function QuestionCard({
               });
             }}
           >
-            <Plus className="size-4" aria-hidden />
+            <Icon glyph={faPlus} className="size-4" aria-hidden />
             Add an answer
           </Button>
         </div>
@@ -779,7 +780,7 @@ function TryItPanel({
         loading={preview.isPending}
         onClick={run}
       >
-        <FlaskConical className="size-4" aria-hidden />
+        <Icon glyph={faFlask} className="size-4" aria-hidden />
         See what they would get
       </Button>
 
@@ -1064,7 +1065,7 @@ function TemplateEditor({
             });
           }}
         >
-          <Plus className="size-4" aria-hidden />
+          <Icon glyph={faPlus} className="size-4" aria-hidden />
           Add a question
         </Button>
       </div>
@@ -1141,7 +1142,7 @@ function TemplateEditor({
                   set({ rules: draft.rules.filter((_, i) => i !== index) });
                 }}
               >
-                <Trash2 className="size-4" aria-hidden />
+                <Icon glyph={faTrashCan} className="size-4" aria-hidden />
               </Button>
             </div>
           ))}
@@ -1167,7 +1168,7 @@ function TemplateEditor({
               void onDelete();
             }}
           >
-            <Trash2 className="size-4" aria-hidden />
+            <Icon glyph={faTrashCan} className="size-4" aria-hidden />
             Delete this build
           </Button>
         </div>
@@ -1303,7 +1304,7 @@ function ConfiguratorBody({
         <>
           <BundleSection bundles={bundles.data?.items ?? []} />
           <EmptyState
-            icon={<Settings2 className="size-6" aria-hidden />}
+            icon={<Icon glyph={faSliders} className="size-6" aria-hidden />}
             title="This product is bought as it comes"
             description="Nobody is asked anything when they buy it. Set up a build if it is made to order — if a customer picks a size, a finish, an engraving, or anything else that changes what they get or what it costs."
             actions={
@@ -1314,7 +1315,7 @@ function ConfiguratorBody({
                   setDraft(emptyDraft(scope.product.title));
                 }}
               >
-                <Plus className="size-4" aria-hidden />
+                <Icon glyph={faPlus} className="size-4" aria-hidden />
                 Set up a build
               </Button>
             }
@@ -1402,7 +1403,7 @@ function ConfiguratorBody({
               setDraft(emptyDraft(scope.product.title));
             }}
           >
-            <Plus className="size-4" aria-hidden />
+            <Icon glyph={faPlus} className="size-4" aria-hidden />
             Set up another build
           </Button>
         )}
@@ -1415,7 +1416,7 @@ function ConfiguratorBody({
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar label="Configurator actions">
-        <Settings2 className="size-4 shrink-0" aria-hidden />
+        <Icon glyph={faSliders} className="size-4 shrink-0" aria-hidden />
         <Heading level={2} className="min-w-0 truncate text-base font-semibold">
           {scope.product.title}
         </Heading>
@@ -1426,7 +1427,7 @@ function ConfiguratorBody({
         ) : null}
         {liveCount > 0 ? (
           <Badge color="success" variant="soft" size="sm">
-            <Blocks className="size-3" aria-hidden />
+            <Icon glyph={faCubes} className="size-3" aria-hidden />
             <span className="hidden @md:inline">Built to order</span>
           </Badge>
         ) : null}
@@ -1447,7 +1448,7 @@ function ConfiguratorBody({
                 setDraft(null);
               }}
             >
-              <Undo2 className="size-4" aria-hidden />
+              <Icon glyph={faRotateLeft} className="size-4" aria-hidden />
               <span className="hidden @md:inline">Discard</span>
             </Button>
             <Button
@@ -1457,7 +1458,7 @@ function ConfiguratorBody({
               loading={create.isPending || update.isPending}
               onClick={save}
             >
-              <Save className="size-4" aria-hidden />
+              <Icon glyph={faFloppyDisk} className="size-4" aria-hidden />
               {draft.id === NEW ? (
                 <>
                   <span className="hidden @md:inline">Set this build up</span>

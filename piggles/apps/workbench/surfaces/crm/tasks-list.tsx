@@ -18,7 +18,8 @@ import {
   Select,
   Table,
 } from '@wizeworks/silicaui-react';
-import { ListChecks, Plus } from 'lucide-react';
+import { faListCheck, faPlus } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { ListEmptyState } from '../../components/list-empty-state';
@@ -106,7 +107,7 @@ export function TasksListSurface({ ctx }: { ctx: SurfaceContext }) {
             ctx.open('crm.task.detail', { id: 'new' }, { target: targetFor(event) });
           }}
         >
-          <Plus className="size-4" aria-hidden />
+          <Icon glyph={faPlus} className="size-4" aria-hidden />
           New task
         </Button>
         <RefreshButton
@@ -121,7 +122,7 @@ export function TasksListSurface({ ctx }: { ctx: SurfaceContext }) {
       <Card className="min-h-0 flex-1 overflow-y-auto">
         {isError ? (
           <EmptyState
-            icon={<ListChecks className="size-6" aria-hidden />}
+            icon={<Icon glyph={faListCheck} className="size-6" aria-hidden />}
             title="Could not load your tasks"
             description="Something went wrong reaching the server. It may be a temporary problem — try again in a moment."
             actions={
@@ -142,7 +143,7 @@ export function TasksListSurface({ ctx }: { ctx: SurfaceContext }) {
           <ListEmptyState
             filtered={filtered}
             noResults={{
-              icon: <ListChecks className="size-6" aria-hidden />,
+              icon: <Icon glyph={faListCheck} className="size-6" aria-hidden />,
               title: 'No tasks match those filters',
               description:
                 'Try a different word, or change the filter — done and cancelled tasks are hidden unless you ask for them.',

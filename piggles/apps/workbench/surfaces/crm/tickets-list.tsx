@@ -25,7 +25,8 @@ import {
   Select,
   Table,
 } from '@wizeworks/silicaui-react';
-import { LifeBuoy, Plus } from 'lucide-react';
+import { faLifeRing, faPlus } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { ListEmptyState } from '../../components/list-empty-state';
@@ -180,7 +181,7 @@ export function TicketsListSurface({ ctx }: { ctx: SurfaceContext }) {
             ctx.open('crm.ticket.detail', { id: 'new' }, { target: targetFor(event) });
           }}
         >
-          <Plus className="size-4" aria-hidden />
+          <Icon glyph={faPlus} className="size-4" aria-hidden />
           New request
         </Button>
         {/* No sort: this queue is ordered by what runs out first, which is
@@ -206,7 +207,7 @@ export function TicketsListSurface({ ctx }: { ctx: SurfaceContext }) {
       <Card className="min-h-0 flex-1 overflow-y-auto">
         {isError ? (
           <EmptyState
-            icon={<LifeBuoy className="size-6" aria-hidden />}
+            icon={<Icon glyph={faLifeRing} className="size-6" aria-hidden />}
             title="Could not load the support queue"
             description="Something went wrong reaching the server. It may be a temporary problem — try again in a moment."
             actions={
@@ -227,7 +228,7 @@ export function TicketsListSurface({ ctx }: { ctx: SurfaceContext }) {
           <ListEmptyState
             filtered={filtered}
             noResults={{
-              icon: <LifeBuoy className="size-6" aria-hidden />,
+              icon: <Icon glyph={faLifeRing} className="size-6" aria-hidden />,
               title: 'Nothing matches those filters',
               // The one empty state that is genuinely good news gets said as
               // good news — a support lead who filters to "Late" and sees

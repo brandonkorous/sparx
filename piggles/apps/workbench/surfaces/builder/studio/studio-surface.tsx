@@ -52,7 +52,8 @@ import {
   type DataSource,
 } from '@sparx/builder-schemas';
 import { Badge, Button, Card, useToast } from '@wizeworks/silicaui-react';
-import { Eye, Globe, Save } from 'lucide-react';
+import { faEye, faFloppyDisk, faGlobe } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { useQueryClient } from '@sparx/query';
 import { useConfirm } from '../../../lib/confirm';
 import { PANE_SHELL } from '../../../components/pane-toolbar';
@@ -210,7 +211,7 @@ export function StudioSurface({ ctx }: { ctx: SurfaceContext }) {
       <div className={`${PANE_SHELL} p-2`}>
         <Card className="min-h-0 flex-1 items-center justify-center">
           <PaneLoadError
-            icon={<Globe className="size-6" aria-hidden />}
+            icon={<Icon glyph={faGlobe} className="size-6" aria-hidden />}
             title="Could not load your site"
             description="This is a problem reaching the server, or the site builder is switched off for this account. Your site itself is unaffected."
             onRetry={() => {
@@ -1123,7 +1124,7 @@ function StudioEditor({
                 void onPreview();
               }}
             >
-              <Eye className="size-4" aria-hidden />
+              <Icon glyph={faEye} className="size-4" aria-hidden />
               Preview
             </Button>
             <Button
@@ -1136,7 +1137,7 @@ function StudioEditor({
                 void onSave();
               }}
             >
-              <Save className="size-4" aria-hidden />
+              <Icon glyph={faFloppyDisk} className="size-4" aria-hidden />
               {unsaved ? 'Save' : 'Saved'}
             </Button>
             {pageIdParam && validPageIds.has(pageIdParam) ? (

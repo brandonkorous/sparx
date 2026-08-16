@@ -24,7 +24,8 @@ import {
   Text,
   Tooltip,
 } from '@wizeworks/silicaui-react';
-import { BarChart3, LineChart, ServerCrash } from 'lucide-react';
+import { faChartColumn, faChartLine, faServer } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { RefreshButton } from '../../components/refresh-button';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { FormSection } from '../../components/form-section';
@@ -172,7 +173,7 @@ export function AutomationsReportsSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar label="Automations report controls" wrap>
-        <BarChart3 className="size-4 shrink-0" aria-hidden />
+        <Icon glyph={faChartColumn} className="size-4 shrink-0" aria-hidden />
         <Heading level={2} className="min-w-0 truncate text-base font-semibold">
           Activity &amp; reports
         </Heading>
@@ -211,7 +212,7 @@ export function AutomationsReportsSurface({ ctx }: { ctx: SurfaceContext }) {
         <div className="mx-auto flex w-full max-w-3xl flex-col gap-4">
           {series.isError && summary.isError ? (
             <EmptyState
-              icon={<ServerCrash className="size-6" aria-hidden />}
+              icon={<Icon glyph={faServer} className="size-6" aria-hidden />}
               title="Could not load the report"
               description={automationErrorMessage(
                 series.error ?? summary.error,
@@ -281,7 +282,7 @@ export function AutomationsReportsSurface({ ctx }: { ctx: SurfaceContext }) {
                   </Text>
                 ) : rows.length === 0 ? (
                   <EmptyState
-                    icon={<LineChart className="size-6" aria-hidden />}
+                    icon={<Icon glyph={faChartLine} className="size-6" aria-hidden />}
                     title="No automations yet"
                     description="Once you create rules, they show up here with how much they run and how reliably."
                   />

@@ -46,7 +46,15 @@ import {
   useToast,
 } from '@wizeworks/silicaui-react';
 import { useConfirm } from '../../lib/confirm';
-import { ChevronDown, ChevronRight, ChevronUp, GripVertical, Plus, Trash2 } from 'lucide-react';
+import {
+  faChevronDown,
+  faChevronRight,
+  faChevronUp,
+  faGripDots,
+  faPlus,
+  faTrashCan,
+} from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import { afterPaneChange } from '../../lib/defer';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
@@ -523,7 +531,7 @@ function EditType({
                   void onDelete();
                 }}
               >
-                <Trash2 className="size-4" aria-hidden />
+                <Icon glyph={faTrashCan} className="size-4" aria-hidden />
                 Delete
               </Button>
             </div>
@@ -865,7 +873,7 @@ function FieldRow({
     >
       <div className="flex items-start gap-2 p-3">
         <div className="flex shrink-0 flex-col items-center pt-0.5">
-          <GripVertical className="size-4 cursor-grab" aria-hidden />
+          <Icon glyph={faGripDots} className="size-4 cursor-grab" aria-hidden />
         </div>
 
         <button
@@ -876,9 +884,9 @@ function FieldRow({
         >
           <span className="flex flex-wrap items-center gap-2">
             {expanded ? (
-              <ChevronDown className="size-4 shrink-0" aria-hidden />
+              <Icon glyph={faChevronDown} className="size-4 shrink-0" aria-hidden />
             ) : (
-              <ChevronRight className="size-4 shrink-0" aria-hidden />
+              <Icon glyph={faChevronRight} className="size-4 shrink-0" aria-hidden />
             )}
             <span className="text-base font-semibold">{label}</span>
             {field.key ? <span className="font-mono text-sm">{field.key}</span> : null}
@@ -907,7 +915,7 @@ function FieldRow({
               onMove(index, index - 1);
             }}
           >
-            <ChevronUp className="size-4" aria-hidden />
+            <Icon glyph={faChevronUp} className="size-4" aria-hidden />
           </Button>
           <Button
             size="sm"
@@ -921,7 +929,7 @@ function FieldRow({
               onMove(index, index + 1);
             }}
           >
-            <ChevronDown className="size-4" aria-hidden />
+            <Icon glyph={faChevronDown} className="size-4" aria-hidden />
           </Button>
           <Button
             size="sm"
@@ -932,7 +940,7 @@ function FieldRow({
             title="Remove this attribute"
             onClick={onRemove}
           >
-            <Trash2 className="size-4" aria-hidden />
+            <Icon glyph={faTrashCan} className="size-4" aria-hidden />
           </Button>
         </div>
       </div>
@@ -1605,7 +1613,7 @@ function EnumConfig({
               setOptions(field.options.filter((_, i) => i !== index));
             }}
           >
-            <Trash2 className="size-4" aria-hidden />
+            <Icon glyph={faTrashCan} className="size-4" aria-hidden />
           </Button>
         </div>
       ))}
@@ -1619,7 +1627,7 @@ function EnumConfig({
             setOptions([...field.options, { value: '', label: '' }]);
           }}
         >
-          <Plus className="size-4" aria-hidden />
+          <Icon glyph={faPlus} className="size-4" aria-hidden />
           Add a choice
         </Button>
       </div>

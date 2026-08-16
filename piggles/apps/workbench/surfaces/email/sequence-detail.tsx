@@ -37,7 +37,17 @@ import {
   Text,
   useToast,
 } from '@wizeworks/silicaui-react';
-import { ArrowDown, ArrowUp, Clock, Mail, Plus, Power, Trash2, Users } from 'lucide-react';
+import {
+  faArrowDown,
+  faArrowUp,
+  faClock,
+  faEnvelope,
+  faPlus,
+  faPowerOff,
+  faTrashCan,
+  faUsers,
+} from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import type { SequenceStep } from '@sparx/email-sequences/schemas';
 import { useActiveSiteId, useSites } from '../../lib/api/shell-data';
 import { useDirtySource } from '../../lib/workbench/dirty';
@@ -451,7 +461,7 @@ function SequenceEditor({ ctx, sequence }: { ctx: SurfaceContext; sequence?: Seq
                 );
               }}
             >
-              <Users className="size-4" aria-hidden />
+              <Icon glyph={faUsers} className="size-4" aria-hidden />
               <span className="hidden @md:inline">Enrolled</span>
             </Button>
             <Button
@@ -462,7 +472,7 @@ function SequenceEditor({ ctx, sequence }: { ctx: SurfaceContext; sequence?: Seq
               loading={statusMut.isPending}
               onClick={onToggleStatus}
             >
-              <Power className="size-4" aria-hidden />
+              <Icon glyph={faPowerOff} className="size-4" aria-hidden />
               {status === 'active' ? 'Pause' : 'Turn on'}
             </Button>
             <Button
@@ -488,7 +498,7 @@ function SequenceEditor({ ctx, sequence }: { ctx: SurfaceContext; sequence?: Seq
                 void onDelete();
               }}
             >
-              <Trash2 className="size-4" aria-hidden />
+              <Icon glyph={faTrashCan} className="size-4" aria-hidden />
             </Button>
           </>
         ) : (
@@ -671,19 +681,19 @@ function StepEditor({
       description="Each step waits a while, then sends one email. They run in order, top to bottom."
       action={
         <Button size="sm" color="module" variant="soft" onClick={onAdd}>
-          <Plus className="size-4" aria-hidden />
+          <Icon glyph={faPlus} className="size-4" aria-hidden />
           Add an email
         </Button>
       }
     >
       {steps.length === 0 ? (
         <div className="border-base-300 flex flex-col items-center gap-2 rounded-lg border border-dashed p-6 text-center">
-          <Mail className="size-6" aria-hidden />
+          <Icon glyph={faEnvelope} className="size-6" aria-hidden />
           <Text className="text-sm">
             No emails yet. Add the first one — it usually goes out the moment someone is enrolled.
           </Text>
           <Button size="sm" color="module" variant="soft" onClick={onAdd}>
-            <Plus className="size-4" aria-hidden />
+            <Icon glyph={faPlus} className="size-4" aria-hidden />
             Add an email
           </Button>
         </div>
@@ -759,7 +769,7 @@ function StepCard({
             {index === 0 ? 'First email' : `Email ${String(index + 1)}`}
           </Heading>
           <span className="inline-flex items-center gap-1 text-sm">
-            <Clock className="size-3.5" aria-hidden />
+            <Icon glyph={faClock} className="size-3.5" aria-hidden />
             {formatDelay(step.delaySeconds)}
           </span>
         </div>
@@ -775,7 +785,7 @@ function StepCard({
               onMove(-1);
             }}
           >
-            <ArrowUp className="size-4" aria-hidden />
+            <Icon glyph={faArrowUp} className="size-4" aria-hidden />
           </Button>
           <Button
             size="sm"
@@ -788,7 +798,7 @@ function StepCard({
               onMove(1);
             }}
           >
-            <ArrowDown className="size-4" aria-hidden />
+            <Icon glyph={faArrowDown} className="size-4" aria-hidden />
           </Button>
           <Button
             size="sm"
@@ -798,7 +808,7 @@ function StepCard({
             aria-label="Remove this email"
             onClick={onRemove}
           >
-            <Trash2 className="size-4" aria-hidden />
+            <Icon glyph={faTrashCan} className="size-4" aria-hidden />
           </Button>
         </div>
       </div>

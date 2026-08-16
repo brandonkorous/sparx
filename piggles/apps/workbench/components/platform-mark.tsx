@@ -12,7 +12,7 @@
 // construction, so there is no light/dark question and no token to reach for.
 //
 // ARTWORK. The paths and the hex values are the real marks, taken from simple-icons
-// (https://simpleicons.org, CC0 1.0) — the source lucide itself points at for the brands
+// (https://simpleicons.org, CC0 1.0) — the source commonly pointed at for the brands
 // it does not carry. They are vendored rather than installed: nine icons that change maybe
 // once a decade do not justify a dependency, and copying them keeps the bundle flat.
 //

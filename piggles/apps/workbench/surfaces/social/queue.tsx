@@ -30,7 +30,8 @@ import {
   SearchInput,
   Text,
 } from '@wizeworks/silicaui-react';
-import { Plus, Send, ServerCrash } from 'lucide-react';
+import { faPaperPlane, faPlus, faServer } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
@@ -194,7 +195,7 @@ export function SocialQueueSurface({ ctx }: { ctx: SurfaceContext }) {
       <div className={PANE_SHELL}>
         <Card className="min-h-0 flex-1 items-center justify-center">
           <PaneEmpty
-            icon={<ServerCrash className="size-6" aria-hidden />}
+            icon={<Icon glyph={faServer} className="size-6" aria-hidden />}
             title="Could not load your posts"
             description={socialErrorMessage(
               posts.error,
@@ -239,7 +240,7 @@ export function SocialQueueSurface({ ctx }: { ctx: SurfaceContext }) {
               board.openNew(event);
             }}
           >
-            <Plus className="size-4" aria-hidden />
+            <Icon glyph={faPlus} className="size-4" aria-hidden />
             New post
           </Button>
         ) : null}
@@ -259,7 +260,7 @@ export function SocialQueueSurface({ ctx }: { ctx: SurfaceContext }) {
         ) : all.length === 0 ? (
           <Card className="min-h-0 flex-1 items-center justify-center">
             <PaneEmpty
-              icon={<Send className="size-6" aria-hidden />}
+              icon={<Icon glyph={faPaperPlane} className="size-6" aria-hidden />}
               title="No posts yet"
               description="Write a post once and send it to every account you have connected. Drafts, scheduled posts and everything you have already sent will show up here."
               actions={
@@ -271,7 +272,7 @@ export function SocialQueueSurface({ ctx }: { ctx: SurfaceContext }) {
                       board.openNew(event);
                     }}
                   >
-                    <Plus className="size-4" aria-hidden />
+                    <Icon glyph={faPlus} className="size-4" aria-hidden />
                     New post
                   </Button>
                 ) : undefined
@@ -287,13 +288,13 @@ export function SocialQueueSurface({ ctx }: { ctx: SurfaceContext }) {
 
             {matches.length === 0 ? (
               <EmptyState
-                icon={<Send className="size-6" aria-hidden />}
+                icon={<Icon glyph={faPaperPlane} className="size-6" aria-hidden />}
                 title="No posts match that"
                 description="Try different words, or clear the search to see them all."
               />
             ) : grouped.length === 0 ? (
               <EmptyState
-                icon={<Send className="size-6" aria-hidden />}
+                icon={<Icon glyph={faPaperPlane} className="size-6" aria-hidden />}
                 title="Nothing in this stage"
                 description="No posts are at this stage right now. Tap the stage again to see everything."
               />

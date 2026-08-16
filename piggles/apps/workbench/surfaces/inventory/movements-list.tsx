@@ -42,7 +42,12 @@ import {
   ToolbarSeparator,
   Tooltip,
 } from '@wizeworks/silicaui-react';
-import { History, Search, ShieldCheck } from 'lucide-react';
+import {
+  faClockRotateLeft,
+  faMagnifyingGlass,
+  faShieldCheck,
+} from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
@@ -152,7 +157,7 @@ export function MovementsListSurface({ ctx }: { ctx: SurfaceContext }) {
     if (isError) {
       return (
         <EmptyState
-          icon={<History className="size-6" aria-hidden />}
+          icon={<Icon glyph={faClockRotateLeft} className="size-6" aria-hidden />}
           title="Could not load the history"
           description="This is a problem reaching the server. Your records are unaffected — they just could not be read just now."
         />
@@ -168,9 +173,9 @@ export function MovementsListSurface({ ctx }: { ctx: SurfaceContext }) {
         <EmptyState
           icon={
             narrowed ? (
-              <Search className="size-6" aria-hidden />
+              <Icon glyph={faMagnifyingGlass} className="size-6" aria-hidden />
             ) : (
-              <History className="size-6" aria-hidden />
+              <Icon glyph={faClockRotateLeft} className="size-6" aria-hidden />
             )
           }
           title={narrowed ? 'Nothing matches that' : 'Nothing has moved yet'}
@@ -281,7 +286,7 @@ export function MovementsListSurface({ ctx }: { ctx: SurfaceContext }) {
                       explain(movement);
                     }}
                   >
-                    <ShieldCheck className="size-4" aria-hidden />
+                    <Icon glyph={faShieldCheck} className="size-4" aria-hidden />
                   </Button>
                 </Tooltip>
               </td>

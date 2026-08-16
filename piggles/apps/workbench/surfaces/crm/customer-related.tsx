@@ -12,15 +12,16 @@
 import { Badge, Card, EmptyState, Table, Text } from '@wizeworks/silicaui-react';
 import { PaneWaiting } from '../../components/pane-waiting';
 import {
-  Activity,
-  FileText,
-  Handshake,
-  ListTodo,
-  Phone,
-  Receipt,
-  Repeat,
-  StickyNote,
-} from 'lucide-react';
+  faFileText,
+  faHandshake,
+  faList,
+  faNoteSticky,
+  faPhone,
+  faReceipt,
+  faRepeat,
+  faWavePulse,
+} from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { useQuery } from '@sparx/query';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { api } from '../../lib/api/client';
@@ -139,7 +140,7 @@ export function CustomerOrdersTab({
         isPending={isPending}
         isError={isError}
         isEmpty={rows.length === 0}
-        icon={<Receipt className="size-6" aria-hidden />}
+        icon={<Icon glyph={faReceipt} className="size-6" aria-hidden />}
         emptyTitle="No orders yet"
         emptyDescription="When this customer places an order, it shows here. Orders are placed at checkout, never typed up in the CRM."
       >
@@ -230,7 +231,7 @@ export function CustomerInvoicesTab({
         isPending={isPending}
         isError={isError}
         isEmpty={rows.length === 0}
-        icon={<FileText className="size-6" aria-hidden />}
+        icon={<Icon glyph={faFileText} className="size-6" aria-hidden />}
         emptyTitle="Nothing billed yet"
         emptyDescription="Invoices and quotes made out to this person show here, with what is still owed on each. Raise one from Invoicing and pick them as the customer."
       >
@@ -289,7 +290,7 @@ export function CustomerDealsTab({ ctx, customerId }: { ctx: SurfaceContext; cus
       isPending={isPending}
       isError={isError}
       isEmpty={rows.length === 0}
-      icon={<Handshake className="size-6" aria-hidden />}
+      icon={<Icon glyph={faHandshake} className="size-6" aria-hidden />}
       emptyTitle="No deals with this customer"
       emptyDescription="A deal is a sale you are working on. Use “Deal” in the toolbar and it opens already linked to this customer."
     >
@@ -349,7 +350,7 @@ export function CustomerTasksTab({ ctx, customerId }: { ctx: SurfaceContext; cus
       isPending={isPending}
       isError={isError}
       isEmpty={rows.length === 0}
-      icon={<ListTodo className="size-6" aria-hidden />}
+      icon={<Icon glyph={faList} className="size-6" aria-hidden />}
       emptyTitle="Nothing to do for this customer"
       emptyDescription="Tasks are the follow-ups you owe this person — “call back”, “send the quote”. Use “Task” in the toolbar and it opens already linked to this customer."
     >
@@ -427,7 +428,7 @@ export function CustomerSubscriptionsTab({
         isPending={isPending}
         isError={isError}
         isEmpty={rows.length === 0}
-        icon={<Repeat className="size-6" aria-hidden />}
+        icon={<Icon glyph={faRepeat} className="size-6" aria-hidden />}
         emptyTitle="No repeat orders"
         emptyDescription="When this customer sets up a subscription — a standing order that renews on its own — it shows here."
       >
@@ -569,7 +570,7 @@ export function CustomerNotesTab({
         isPending={isPending}
         isError={isError}
         isEmpty={rows.length === 0}
-        icon={<StickyNote className="size-6" aria-hidden />}
+        icon={<Icon glyph={faNoteSticky} className="size-6" aria-hidden />}
         emptyTitle="No notes yet"
         emptyDescription="Jot the first one down with the Note button above. It is only ever seen by your team."
       >
@@ -661,7 +662,7 @@ function CustomerCalls({ customerId }: { customerId: string }) {
       isPending={isPending}
       isError={isError}
       isEmpty={calls.length === 0}
-      icon={<Phone className="size-6" aria-hidden />}
+      icon={<Icon glyph={faPhone} className="size-6" aria-hidden />}
       emptyTitle="No calls yet"
       emptyDescription="Ring them, or write up a call you have already had, with the Log a call button above. Each one keeps how long you talked and how it went."
     >
@@ -720,7 +721,7 @@ export function CustomerActivityTab({ customerId }: { customerId: string }) {
       isPending={isPending}
       isError={isError}
       isEmpty={rows.length === 0}
-      icon={<Activity className="size-6" aria-hidden />}
+      icon={<Icon glyph={faWavePulse} className="size-6" aria-hidden />}
       emptyTitle="Nothing has happened yet"
       emptyDescription="Notes, orders, emails and account changes involving this customer all land here as they happen, newest first."
     >

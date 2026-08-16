@@ -31,7 +31,8 @@ import {
   Timestamp,
   useToast,
 } from '@wizeworks/silicaui-react';
-import { Check, UserPlus, Users } from 'lucide-react';
+import { faCheck, faUserPlus, faUsers } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { PaneScope } from '../../lib/dock/window-boundary';
 import { useConfirm } from '../../lib/confirm';
 import { RefreshButton } from '../../components/refresh-button';
@@ -104,7 +105,7 @@ export function SequenceEnrollmentsSurface({ ctx }: { ctx: SurfaceContext }) {
     <div className={PANE_SHELL}>
       <PaneToolbar label={`People in ${sequenceName}`}>
         <span className="inline-flex min-w-0 items-center gap-2">
-          <Users className="text-module size-4 shrink-0" aria-hidden />
+          <Icon glyph={faUsers} className="text-module size-4 shrink-0" aria-hidden />
           <span className="truncate font-medium">{sequenceName}</span>
         </span>
 
@@ -134,7 +135,7 @@ export function SequenceEnrollmentsSurface({ ctx }: { ctx: SurfaceContext }) {
             setEnrollOpen(true);
           }}
         >
-          <UserPlus className="size-4" aria-hidden />
+          <Icon glyph={faUserPlus} className="size-4" aria-hidden />
           <span className="hidden @lg:inline">Enrol someone</span>
         </Button>
 
@@ -150,7 +151,7 @@ export function SequenceEnrollmentsSurface({ ctx }: { ctx: SurfaceContext }) {
       <Card className="min-h-0 flex-1 overflow-y-auto">
         {isError ? (
           <EmptyState
-            icon={<Users className="size-6" aria-hidden />}
+            icon={<Icon glyph={faUsers} className="size-6" aria-hidden />}
             title="Could not load who is enrolled"
             description="Something went wrong reaching the server. Try again in a moment."
             actions={
@@ -171,7 +172,7 @@ export function SequenceEnrollmentsSurface({ ctx }: { ctx: SurfaceContext }) {
           <ListEmptyState
             filtered={filtering}
             noResults={{
-              icon: <Users className="size-6" aria-hidden />,
+              icon: <Icon glyph={faUsers} className="size-6" aria-hidden />,
               title: 'Nobody matches that filter',
               description: 'Switch the filter back to Everyone to see all enrolled people.',
             }}
@@ -187,7 +188,7 @@ export function SequenceEnrollmentsSurface({ ctx }: { ctx: SurfaceContext }) {
                     setEnrollOpen(true);
                   }}
                 >
-                  <UserPlus className="size-4" aria-hidden />
+                  <Icon glyph={faUserPlus} className="size-4" aria-hidden />
                   Enrol someone
                 </Button>
               ),
@@ -447,7 +448,11 @@ function EnrollModal({
                             ) : null}
                           </span>
                           {chosen ? (
-                            <Check className="text-module size-4 shrink-0" aria-hidden />
+                            <Icon
+                              glyph={faCheck}
+                              className="text-module size-4 shrink-0"
+                              aria-hidden
+                            />
                           ) : null}
                         </button>
                       );

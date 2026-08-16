@@ -17,9 +17,9 @@
 // sections, SidebarItem for rows, and a sibling button for the quick-create `+`.
 
 import { useEffect, useRef, useState } from 'react';
-import { Pin, PinOff, Plus } from 'lucide-react';
+import { faPlus, faThumbtack, faThumbtackSlash } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import {
-  Badge,
   Button,
   SearchInput,
   Sidebar,
@@ -36,7 +36,11 @@ import {
 import { resolveTitle, type OpenTarget, type SurfaceDefinition } from '@/lib/surfaces/registry';
 import { useWorkbench } from '@/lib/workbench/context';
 import { AppScope } from './app-scope';
+import { surfaceWaiting, WaitingBadge } from './rail/waiting';
+import { useAttention } from '@/lib/console/home-data';
 import type { ConsoleNavApp } from '@/lib/console/nav';
+
+type Attention = ReturnType<typeof useAttention>;
 
 interface AppPanelProps {
   entry: ConsoleNavApp;
@@ -73,25 +77,22 @@ function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
 /**
  * The count of things waiting on a person in one screen, as a badge on its row.
  *
- * Its own component so the surface's `useBadgeCount` hook is called at a stable
- * position — a hook called inside a `.map()` would change order as the filter
- * changes the row set. Renders nothing at zero: a badge showing "0" trains
- * people to stop looking at badges.
+ * ── THE SAME NUMBER THE RAIL IS SHOWING ─────────────────────────────────────
+ *
+ * This is the bottom of the three levels: the screen owns the count, its app
+ * sums its screens, its group sums its apps (components/rail/waiting.tsx). The
+ * app rail badge beside "Sell" IS the sum of the badges in this panel, so the
+ * two can never tell a person different things — and it wears the identical
+ * badge, because a warning-coloured pill here and a module-coloured one there
+ * read as two different kinds of fact.
+ *
+ * ONE source. There used to be two — this, and a `useBadgeCount` hook the
+ * surface declared for itself — and the second could not roll up, so a panel
+ * badge had no counterpart on the rail. See the note where that field was, in
+ * lib/surfaces/registry.ts.
  */
-function NavBadge({ surface }: { surface: SurfaceDefinition }) {
-  const useCount = surface.useBadgeCount;
-  if (!useCount) return null;
-  return <NavBadgeCount useCount={useCount} />;
-}
-
-function NavBadgeCount({ useCount }: { useCount: () => number | null | undefined }) {
-  const count = useCount();
-  if (!count || count <= 0) return null;
-  return (
-    <Badge color="warning" variant="soft" size="sm">
-      {count > 99 ? '99+' : count}
-    </Badge>
-  );
+function NavBadge({ surface, attention }: { surface: SurfaceDefinition; attention: Attention }) {
+  return <WaitingBadge count={surfaceWaiting(surface.key, attention)} />;
 }
 
 /** React key for a nav row. The surface key alone stopped being unique the
@@ -123,6 +124,10 @@ export function AppPanel({
   const listRef = useRef<HTMLDivElement>(null);
   const [filter, setFilter] = useState('');
   const appId = entry.app.id;
+  // Same query keys the rail and Home read — react-query dedupes them to one
+  // request each, which is what makes the three levels physically unable to
+  // disagree.
+  const attention = useAttention();
 
   // Reset the filter when switching apps — a stale filter from the last app
   // reads as "this app is empty".
@@ -208,7 +213,7 @@ export function AppPanel({
                 item opened up, so its header has to be recognisably that item.
                 An abstract dot named nothing and forced the eye back to the rail
                 to confirm what had been clicked. */}
-            <AppIcon className="text-module size-5 shrink-0" aria-hidden />
+            <Icon glyph={AppIcon} className="text-module size-5 shrink-0" aria-hidden />
             {/* The name of the column, so it reads as at least as important as
                 the rows under it. At `text-sm` it was 14px heading a list of
                 16px items — a heading smaller than its own contents, which
@@ -229,9 +234,9 @@ export function AppPanel({
                 onClick={onTogglePin}
               >
                 {pinned ? (
-                  <PinOff className="size-3.5" aria-hidden />
+                  <Icon glyph={faThumbtackSlash} className="size-3.5" aria-hidden />
                 ) : (
-                  <Pin className="size-3.5" aria-hidden />
+                  <Icon glyph={faThumbtack} className="size-3.5" aria-hidden />
                 )}
               </Button>
             </Tooltip>
@@ -294,11 +299,13 @@ export function AppPanel({
                           //
                           // The hue comes from the <AppScope> around the whole
                           // panel, so nothing here names a colour.
-                          icon={<surface.icon className="text-module size-4" aria-hidden />}
+                          icon={
+                            <Icon glyph={surface.icon} className="text-module size-4" aria-hidden />
+                          }
                           // `trailing` is for badges and chevrons —
                           // non-interactive, so the count can live inside the
                           // row's button.
-                          trailing={<NavBadge surface={surface} />}
+                          trailing={<NavBadge surface={surface} attention={attention} />}
                           onKeyDown={onItemKeyDown}
                           onClick={(event) => {
                             openSurface(surface, event);
@@ -326,7 +333,7 @@ export function AppPanel({
                               if (!pinned) onDismiss();
                             }}
                           >
-                            <Plus className="size-3.5" aria-hidden />
+                            <Icon glyph={faPlus} className="size-3.5" aria-hidden />
                           </Button>
                         </Tooltip>
                       ) : null}

@@ -9,7 +9,16 @@
 
 import { useEffect, useState } from 'react';
 import { Button, Text } from '@wizeworks/silicaui-react';
-import { Boxes, ExternalLink, Globe, PencilRuler, Receipt, Rocket, TrendingUp } from 'lucide-react';
+import {
+  faArrowTrendUp,
+  faArrowUpRightFromSquare,
+  faBoxes,
+  faGlobe,
+  faPencilRuler,
+  faReceipt,
+  faRocket,
+} from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { storefrontPreviewUrl, type OnboardingActions } from '../../../lib/onboarding/api';
 import type { PendingDomain, WizardBlueprint } from '../../../lib/onboarding/types';
 
@@ -89,9 +98,9 @@ export function StepLaunch({
       <div className="flex flex-col items-center gap-4 text-center">
         <span className="bg-module flex size-14 items-center justify-center rounded-full">
           {installId ? (
-            <Rocket className="text-module-content size-7" aria-hidden />
+            <Icon glyph={faRocket} className="text-module-content size-7" aria-hidden />
           ) : (
-            <PencilRuler className="text-module-content size-7" aria-hidden />
+            <Icon glyph={faPencilRuler} className="text-module-content size-7" aria-hidden />
           )}
         </span>
         <div className="flex flex-col gap-2">
@@ -126,7 +135,7 @@ export function StepLaunch({
 
       <div className="border-base-300 bg-base-100 flex items-center justify-between gap-4 rounded-xl border px-5 py-4">
         <div className="flex min-w-0 items-center gap-2.5">
-          <Globe className="text-module size-4 shrink-0" aria-hidden />
+          <Icon glyph={faGlobe} className="text-module size-4 shrink-0" aria-hidden />
           <span className="truncate font-medium">{host}</span>
         </div>
         {previewHref ? (
@@ -134,7 +143,7 @@ export function StepLaunch({
             variant="outline"
             color="module"
             size="sm"
-            iconEnd={<ExternalLink className="size-3.5" aria-hidden />}
+            iconEnd={<Icon glyph={faArrowUpRightFromSquare} className="size-3.5" aria-hidden />}
             render={
               <a
                 href={previewHref}
@@ -152,7 +161,7 @@ export function StepLaunch({
       {pendingDomain ? (
         <div className="border-module ring-module rounded-xl border px-5 py-4 ring-1">
           <div className="flex items-center gap-2">
-            <Globe className="text-module size-4" aria-hidden />
+            <Icon glyph={faGlobe} className="text-module size-4" aria-hidden />
             <span className="text-module text-sm font-medium">Custom domain</span>
           </div>
           <div className="mt-1 flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
@@ -188,17 +197,17 @@ export function StepLaunch({
 
       <div className="border-base-300 bg-base-100 flex flex-col gap-4 rounded-xl border p-5">
         <ValuePoint
-          icon={<Boxes className="text-module size-4" aria-hidden />}
+          icon={<Icon glyph={faBoxes} className="text-module size-4" aria-hidden />}
           title="One platform, not a patched-together stack"
           body="Your site, content, customers, and email run on one database — nothing to integrate, sync, or keep in step."
         />
         <ValuePoint
-          icon={<Receipt className="text-module size-4" aria-hidden />}
+          icon={<Icon glyph={faReceipt} className="text-module size-4" aria-hidden />}
           title="One login, one invoice"
           body="Flat per-module pricing — no per-seat fees, no cut of every order, no surprise overages. Turn modules on and off anytime."
         />
         <ValuePoint
-          icon={<TrendingUp className="text-module size-4" aria-hidden />}
+          icon={<Icon glyph={faArrowTrendUp} className="text-module size-4" aria-hidden />}
           title="Built to grow with you"
           body="From your first sale to enterprise volume on the same platform — and an AI-native API so it can all be run in plain English."
         />
@@ -231,7 +240,7 @@ function LaunchSuccess({ slug, host }: { slug: string; host: string }) {
   return (
     <div className="mx-auto flex w-full max-w-2xl flex-col items-center gap-4 text-center">
       <span className="bg-module flex size-14 items-center justify-center rounded-full">
-        <Rocket className="text-module-content size-7" aria-hidden />
+        <Icon glyph={faRocket} className="text-module-content size-7" aria-hidden />
       </span>
       <h2 className="text-2xl font-semibold tracking-tight">You are live</h2>
       <Text className="max-w-prose">
@@ -241,7 +250,7 @@ function LaunchSuccess({ slug, host }: { slug: string; host: string }) {
       <Button
         color="module"
         variant="link"
-        iconEnd={<ExternalLink className="size-3.5" aria-hidden />}
+        iconEnd={<Icon glyph={faArrowUpRightFromSquare} className="size-3.5" aria-hidden />}
         render={
           <a
             href={storefrontPreviewUrl(slug)}

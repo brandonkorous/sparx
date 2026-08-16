@@ -1,50 +1,25 @@
 'use client';
 
-// The shared chrome both onboarding flows render into.
+// The two-column body both onboarding flows render into.
 //
-// Two parts, kept separate so the flows work in BOTH homes they have:
-//   • OnboardingHeader — the wordmark + "Save & exit". The GATE renders this above
-//     the flow when onboarding owns the whole viewport at first run. A reopened
-//     PANE does not — it already has a pane toolbar — so the header is the gate's,
-//     never the flow's.
-//   • OnboardingLayout — the two-column body (work pane + the persistent summary).
-//     Every flow renders this. It is an @container, so the columns collapse by the
-//     width of whatever holds it — the full viewport in the gate, the pane width
-//     when reopened — never by the viewport (the workbench's responsive rule).
+// Every flow renders this. It is an @container, so the columns collapse by the
+// width of whatever holds it — the pane width — never by the viewport (the
+// workbench's responsive rule).
+//
+// There is deliberately NO header here. Signup-time onboarding belongs to
+// getpiggles.com (piggles/CLAUDE.md, "The three surfaces"), so the console never
+// owns the whole viewport for it and never needs a wordmark bar above it. These
+// flows exist in the console only as REOPENABLE panes — resume a story, redo a
+// step — and a pane already has a toolbar.
 
 import type { ReactNode } from 'react';
-import { Check } from 'lucide-react';
-import { Wordmark } from '@sparx/brand/react';
-import { signOut } from '@sparx/auth/client';
+import { faCheck } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 
 /** Local class-name join — silicaui-react does not export `cn`, and the workbench
  *  has no shared helper, so this tiny filter keeps the shell dependency-free. */
 function cn(...classes: (string | false | null | undefined)[]): string {
   return classes.filter(Boolean).join(' ');
-}
-
-export function OnboardingHeader({ right }: { right?: ReactNode }) {
-  return (
-    <header className="bg-base-100 border-base-300 flex h-14 shrink-0 items-center justify-between border-b px-4 @[48rem]:px-6">
-      <Wordmark size={38} aria-label="sparx" />
-      <div className="flex items-center gap-4">
-        {right}
-        <button
-          type="button"
-          className="text-base-content/70 hover:text-sm"
-          onClick={() => {
-            // Onboarding persists every step as it goes, so leaving loses nothing —
-            // "Save & exit" is an honest label, not a promise we then break.
-            void signOut().finally(() => {
-              window.location.href = '/sign-in';
-            });
-          }}
-        >
-          Save &amp; exit
-        </button>
-      </div>
-    </header>
-  );
 }
 
 export interface StepMark {
@@ -68,7 +43,9 @@ export function StepRail({ steps }: { steps: StepMark[] }) {
               step.status === 'upcoming' && 'text-base-content/40'
             )}
           >
-            {step.status === 'done' ? <Check className="text-module size-3.5" aria-hidden /> : null}
+            {step.status === 'done' ? (
+              <Icon glyph={faCheck} className="text-module size-3.5" aria-hidden />
+            ) : null}
             {step.label}
           </span>
           {i < steps.length - 1 ? (

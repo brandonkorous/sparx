@@ -29,7 +29,8 @@ import {
   Table,
   ToolbarSeparator,
 } from '@wizeworks/silicaui-react';
-import { ArrowDown, ArrowUp, FileText, Plus } from 'lucide-react';
+import { faArrowDown, faArrowUp, faFileText, faPlus } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { ListEmptyState } from '../../components/list-empty-state';
@@ -165,9 +166,9 @@ export function InvoiceListSurface({ ctx }: { ctx: SurfaceContext }) {
         {label}
         {sort.key === key ? (
           sort.dir === 'asc' ? (
-            <ArrowUp className="size-3" aria-hidden />
+            <Icon glyph={faArrowUp} className="size-3" aria-hidden />
           ) : (
-            <ArrowDown className="size-3" aria-hidden />
+            <Icon glyph={faArrowDown} className="size-3" aria-hidden />
           )
         ) : null}
       </button>
@@ -246,7 +247,7 @@ export function InvoiceListSurface({ ctx }: { ctx: SurfaceContext }) {
             ctx.open('invoicing.invoice.edit', { id: 'new' }, { target: targetFor(event) });
           }}
         >
-          <Plus className="size-4" aria-hidden />
+          <Icon glyph={faPlus} className="size-4" aria-hidden />
           <span className="hidden @lg:inline">New invoice</span>
         </Button>
 
@@ -280,7 +281,7 @@ export function InvoiceListSurface({ ctx }: { ctx: SurfaceContext }) {
           <ListEmptyState
             filtered={Boolean(search) || activeStatus !== 'all'}
             noResults={{
-              icon: <FileText className="size-6" aria-hidden />,
+              icon: <Icon glyph={faFileText} className="size-6" aria-hidden />,
               title: 'Nothing matches those filters',
               description: 'Try a different word, or switch back to All.',
             }}

@@ -17,7 +17,8 @@ import { useEffect } from 'react';
 import { PaneWaiting } from '../../components/pane-waiting';
 import { PaneLoadError } from '../../components/pane-load-error';
 import { Badge, Button, Card, Heading, Text, useToast } from '@wizeworks/silicaui-react';
-import { Database, FlaskConical, Trash2 } from 'lucide-react';
+import { faDatabase, faFlask, faTrashCan } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { useConfirm } from '../../lib/confirm';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
@@ -181,7 +182,7 @@ export function SampleDataSurface({ ctx }: { ctx: SurfaceContext }) {
             void onLoad();
           }}
         >
-          <Database className="size-4" aria-hidden />
+          <Icon glyph={faDatabase} className="size-4" aria-hidden />
           {load.isPending
             ? loaded
               ? 'Replacing…'
@@ -288,7 +289,7 @@ export function SampleDataSurface({ ctx }: { ctx: SurfaceContext }) {
                     void onClear();
                   }}
                 >
-                  <Trash2 className="size-4" aria-hidden />
+                  <Icon glyph={faTrashCan} className="size-4" aria-hidden />
                   Remove sample data
                 </Button>
               </div>
@@ -298,7 +299,7 @@ export function SampleDataSurface({ ctx }: { ctx: SurfaceContext }) {
       </div>
 
       <p className="shrink-0 px-1 text-xs">
-        <FlaskConical className="mr-1 inline size-3 align-[-2px]" aria-hidden />
+        <Icon glyph={faFlask} className="mr-1 inline size-3 align-[-2px]" aria-hidden />
         Sample records are marked behind the scenes, so removing them never catches your real data.
       </p>
     </div>

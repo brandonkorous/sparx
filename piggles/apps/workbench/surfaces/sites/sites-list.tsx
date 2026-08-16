@@ -12,7 +12,8 @@ import { PaneEmpty } from '../../components/pane-empty';
 import { PaneWaiting } from '../../components/pane-waiting';
 import { Badge, Button, Card, SearchInput, Table } from '@wizeworks/silicaui-react';
 import { useConfirm } from '../../lib/confirm';
-import { ExternalLink, Globe, Plus } from 'lucide-react';
+import { faArrowUpRightFromSquare, faGlobe, faPlus } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { ListPagination, type PageSize } from '../../components/list-pagination';
 import { useWorkbench } from '../../lib/workbench/context';
 import { RefreshButton } from '../../components/refresh-button';
@@ -104,7 +105,7 @@ export function SitesListSurface({ ctx }: { ctx: SurfaceContext }) {
     return (
       <Card className="min-h-0 flex-1 items-center justify-center">
         <PaneEmpty
-          icon={<Globe className="size-6" aria-hidden />}
+          icon={<Icon glyph={faGlobe} className="size-6" aria-hidden />}
           title="Could not load your sites"
           description="This is a problem reaching the server, not a problem with your sites."
           actions={
@@ -206,7 +207,7 @@ export function SitesListSurface({ ctx }: { ctx: SurfaceContext }) {
             ctx.open('platform.settings.site', { id: 'new' }, { target: targetFor(event) });
           }}
         >
-          <Plus className="size-4" aria-hidden />
+          <Icon glyph={faPlus} className="size-4" aria-hidden />
           New site
         </Button>
         {/* ALWAYS the last child of a list toolbar — see RefreshButton. */}
@@ -237,7 +238,7 @@ export function SitesListSurface({ ctx }: { ctx: SurfaceContext }) {
           <ListEmptyState
             filtered={Boolean(needle)}
             noResults={{
-              icon: <Globe className="size-6" aria-hidden />,
+              icon: <Icon glyph={faGlobe} className="size-6" aria-hidden />,
               // Quote the search back rather than describing it — someone who
               // mistyped sees the typo next to the word they typed, not in a
               // sentence. Same treatment as the team roster. Only this case gets
@@ -314,7 +315,7 @@ export function SitesListSurface({ ctx }: { ctx: SurfaceContext }) {
                           }}
                         >
                           {host}
-                          <ExternalLink className="size-3" aria-hidden />
+                          <Icon glyph={faArrowUpRightFromSquare} className="size-3" aria-hidden />
                         </a>
                       ) : (
                         <span className="text-sm">Not published yet</span>

@@ -36,7 +36,8 @@ import {
   Tooltip,
   useToast,
 } from '@wizeworks/silicaui-react';
-import { CalendarSync, Inbox, PackageSearch } from 'lucide-react';
+import { faBoxMagnifyingGlass, faCalendarArrowUp, faInbox } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { useState } from 'react';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
@@ -88,7 +89,7 @@ export function BackordersSurface({ ctx }: { ctx: SurfaceContext }) {
     if (list.isError) {
       return (
         <EmptyState
-          icon={<PackageSearch className="size-6" aria-hidden />}
+          icon={<Icon glyph={faBoxMagnifyingGlass} className="size-6" aria-hidden />}
           title="Could not load the queue"
           description="This is a problem reaching the server, not a finding about your commitments. Try again in a moment."
         />
@@ -100,7 +101,7 @@ export function BackordersSurface({ ctx }: { ctx: SurfaceContext }) {
     if (rows.length === 0) {
       return (
         <EmptyState
-          icon={<Inbox className="size-6" aria-hidden />}
+          icon={<Icon glyph={faInbox} className="size-6" aria-hidden />}
           title={
             lens === 'undated'
               ? 'Every commitment has a date'
@@ -264,7 +265,7 @@ export function BackordersSurface({ ctx }: { ctx: SurfaceContext }) {
             });
           }}
         >
-          <CalendarSync className="size-4" aria-hidden />
+          <Icon glyph={faCalendarArrowUp} className="size-4" aria-hidden />
           {refresh.isPending ? 'Checking…' : 'Re-check dates'}
         </Button>
 

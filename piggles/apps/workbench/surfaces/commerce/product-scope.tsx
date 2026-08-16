@@ -95,7 +95,8 @@
 
 import { useCallback, useEffect, useRef, useSyncExternalStore } from 'react';
 import { Button, EmptyState, Heading, Text } from '@wizeworks/silicaui-react';
-import { Package, PackageX, Search, ServerCrash } from 'lucide-react';
+import { faBox, faBoxOpen, faMagnifyingGlass, faServer } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { useWorkbench } from '../../lib/workbench/context';
 import { usePaneId } from '../../lib/workbench/dirty';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
@@ -398,7 +399,7 @@ function ScopeMessage({
   if (scope.state === 'none') {
     return (
       <EmptyState
-        icon={<Search className="size-6" aria-hidden />}
+        icon={<Icon glyph={faMagnifyingGlass} className="size-6" aria-hidden />}
         title="Choose a product first"
         description={`This panel shows ${label.toLowerCase()} for one product at a time. Open a product and it will follow along — or open this from a product to keep it fixed on that one.`}
         actions={
@@ -411,7 +412,7 @@ function ScopeMessage({
               });
             }}
           >
-            <Package className="size-4" aria-hidden />
+            <Icon glyph={faBox} className="size-4" aria-hidden />
             Browse products
           </Button>
         }
@@ -426,7 +427,7 @@ function ScopeMessage({
   if (scope.state === 'missing') {
     return (
       <EmptyState
-        icon={<PackageX className="size-6" aria-hidden />}
+        icon={<Icon glyph={faBoxOpen} className="size-6" aria-hidden />}
         title="That product is no longer here"
         description="It has been deleted, or it belongs to a different site from the one you are working in. Nothing shown here applies to it any more."
         actions={
@@ -460,7 +461,7 @@ function ScopeMessage({
 
   return (
     <EmptyState
-      icon={<ServerCrash className="size-6" aria-hidden />}
+      icon={<Icon glyph={faServer} className="size-6" aria-hidden />}
       title={`Could not load ${label.toLowerCase()}`}
       description="This is a problem reaching the server. Nothing about the product has changed — it just could not be read just now."
       actions={

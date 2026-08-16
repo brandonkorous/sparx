@@ -30,7 +30,12 @@ import {
 } from '@wizeworks/silicaui-react';
 import { authClient } from '@sparx/auth/client';
 import { PaneWaiting } from '../../components/pane-waiting';
-import { LogOut, MonitorSmartphone, ShieldOff } from 'lucide-react';
+import {
+  faLaptopMobile,
+  faRightFromBracket,
+  faShieldSlash,
+} from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { useConfirm } from '../../lib/confirm';
 import { FormSection } from '../../components/form-section';
 import {
@@ -134,7 +139,7 @@ export function SessionsCard({ sessions, isPending, isError, refetch }: Sessions
               void signOutOthers();
             }}
           >
-            <ShieldOff className="size-4" aria-hidden />
+            <Icon glyph={faShieldSlash} className="size-4" aria-hidden />
             Sign out all others
           </Button>
         ) : null
@@ -165,7 +170,7 @@ export function SessionsCard({ sessions, isPending, isError, refetch }: Sessions
         <PaneWaiting label="Loading your devices…" />
       ) : rows.length === 0 ? (
         <EmptyState
-          icon={<MonitorSmartphone className="size-6" aria-hidden />}
+          icon={<Icon glyph={faLaptopMobile} className="size-6" aria-hidden />}
           title="No signed-in devices"
           description="Nothing is signed in to your account right now."
         />
@@ -179,7 +184,7 @@ export function SessionsCard({ sessions, isPending, isError, refetch }: Sessions
                 key={row.token}
                 className="border-base-300 flex flex-wrap items-center gap-x-3 gap-y-2 rounded-lg border p-3"
               >
-                <MonitorSmartphone className="size-5 shrink-0" aria-hidden />
+                <Icon glyph={faLaptopMobile} className="size-5 shrink-0" aria-hidden />
                 <div className="flex min-w-0 flex-1 flex-col">
                   <div className="flex flex-wrap items-center gap-2">
                     <span className="font-medium">{device}</span>
@@ -209,7 +214,7 @@ export function SessionsCard({ sessions, isPending, isError, refetch }: Sessions
                         void signOut(row);
                       }}
                     >
-                      <LogOut className="size-4" aria-hidden />
+                      <Icon glyph={faRightFromBracket} className="size-4" aria-hidden />
                     </Button>
                   </Tooltip>
                 )}

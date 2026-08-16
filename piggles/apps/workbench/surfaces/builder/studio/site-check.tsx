@@ -102,16 +102,17 @@ import {
 import { StatusItem, useEditor } from '@wizeworks/silicaui-builder/react';
 import type { Node } from '@wizeworks/silicaui-html';
 import {
-  CheckCircle2,
-  ChevronDown,
-  ChevronRight,
-  CircleAlert,
-  Gauge,
-  Lightbulb,
-  RefreshCw,
-  ShieldCheck,
-  TriangleAlert,
-} from 'lucide-react';
+  faArrowsRotate,
+  faChevronDown,
+  faChevronRight,
+  faCircleCheck,
+  faCircleExclamation,
+  faExclamationTriangle,
+  faGauge,
+  faLightbulb,
+  faShieldCheck,
+} from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { PaneScope } from '../../../lib/dock/window-boundary';
 import {
   builderErrorMessage,
@@ -128,7 +129,7 @@ interface SeverityMeta {
   /** Plural heading for the group. */
   heading: string;
   color: 'error' | 'warning' | 'info';
-  icon: typeof CircleAlert;
+  icon: typeof faCircleExclamation;
   /** One line saying what this group MEANS, so the ranking is not just colour. ONE per
    *  GROUP — three sentences in the whole panel, never one per finding. */
   meaning: string;
@@ -141,21 +142,21 @@ const SEVERITY: Record<CheckSeverity, SeverityMeta> = {
   error: {
     heading: 'Broken for visitors',
     color: 'error',
-    icon: CircleAlert,
+    icon: faCircleExclamation,
     meaning: 'Someone visiting your site right now would hit this and it would not work.',
     dot: 'bg-error',
   },
   warning: {
     heading: 'Worth fixing',
     color: 'warning',
-    icon: TriangleAlert,
+    icon: faExclamationTriangle,
     meaning: 'The page still works, but it is harder to use, harder to read, or harder to find.',
     dot: 'bg-warning',
   },
   suggestion: {
     heading: 'Suggestions',
     color: 'info',
-    icon: Lightbulb,
+    icon: faLightbulb,
     meaning: 'Nothing is wrong. These are the things that make a good site a bit better.',
     dot: 'bg-info',
   },
@@ -244,7 +245,7 @@ function CheckLabel({ report, stale }: { report: SiteCheckReport | null; stale: 
   if (!counts || (counts.error === 0 && counts.warning === 0)) {
     return (
       <span className="flex items-center gap-1.5">
-        <ShieldCheck className="size-3.5 shrink-0" aria-hidden />
+        <Icon glyph={faShieldCheck} className="size-3.5 shrink-0" aria-hidden />
         Check
       </span>
     );
@@ -492,7 +493,7 @@ export function SiteCheck({ open, onOpenChange, report, stale, running, error, o
           <div className="border-base-300 flex items-center justify-between gap-3 border-b px-4 py-3">
             <h2 className="text-lg font-semibold">Check before you publish</h2>
             <Button size="sm" variant="outline" color="neutral" onClick={onRun} disabled={running}>
-              <RefreshCw className="size-4" aria-hidden />
+              <Icon glyph={faArrowsRotate} className="size-4" aria-hidden />
               {running ? 'Checking…' : report ? 'Check again' : 'Run check'}
             </Button>
           </div>
@@ -534,7 +535,8 @@ export function SiteCheck({ open, onOpenChange, report, stale, running, error, o
                   <Alert color="success" variant="soft">
                     <AlertContent>
                       <AlertTitle>
-                        <CheckCircle2 className="size-4" aria-hidden /> Nothing to flag
+                        <Icon glyph={faCircleCheck} className="size-4" aria-hidden /> Nothing to
+                        flag
                       </AlertTitle>
                       <AlertDescription>
                         All {report.pagesChecked} page{report.pagesChecked === 1 ? '' : 's'} came
@@ -587,11 +589,11 @@ function FindingGroups({
         const group = report.findings.filter((f) => f.severity === severity);
         if (group.length === 0) return null;
         const meta = SEVERITY[severity];
-        const Icon = meta.icon;
+        const glyph = meta.icon;
         return (
           <section key={severity} className="flex flex-col gap-2">
             <h3 className="flex items-center gap-2 text-base font-semibold">
-              <Icon className="size-4" aria-hidden />
+              <Icon glyph={glyph} className="size-4" aria-hidden />
               {meta.heading}
               <Badge color={meta.color} variant="soft" size="sm">
                 {group.length}
@@ -646,7 +648,7 @@ function FindingRow({
   // nothing to open, so it does not pretend to be a button.
   const canOpen = finding.location.nodeId !== null || finding.location.scope === 'page';
   const meta = SEVERITY[finding.severity];
-  const Chevron = openDetail ? ChevronDown : ChevronRight;
+  const Chevron = openDetail ? faChevronDown : faChevronRight;
 
   return (
     <li className="flex flex-col">
@@ -694,7 +696,7 @@ function FindingRow({
           aria-label={openDetail ? 'Hide the explanation' : 'What does this mean?'}
           className="hover:bg-base-200 shrink-0 rounded p-1"
         >
-          <Chevron className="size-4" aria-hidden />
+          <Icon glyph={Chevron} className="size-4" aria-hidden />
         </button>
       </div>
       {openDetail ? (
@@ -746,7 +748,7 @@ function PageWeights({
 }) {
   const [open, setOpen] = useState(false);
   if (budget.pages.length === 0) return null;
-  const Chevron = open ? ChevronDown : ChevronRight;
+  const Chevron = open ? faChevronDown : faChevronRight;
 
   return (
     <section className="border-base-300 flex flex-col gap-3 border-t pt-4">
@@ -756,8 +758,8 @@ function PageWeights({
         aria-expanded={open}
         className="hover:bg-base-200 -mx-1 flex items-center gap-2 rounded px-1 py-1 text-left"
       >
-        <Chevron className="size-4 shrink-0" aria-hidden />
-        <Gauge className="size-4 shrink-0" aria-hidden />
+        <Icon glyph={Chevron} className="size-4 shrink-0" aria-hidden />
+        <Icon glyph={faGauge} className="size-4 shrink-0" aria-hidden />
         <span className="text-base font-semibold">How much each page weighs</span>
       </button>
 

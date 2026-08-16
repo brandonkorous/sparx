@@ -22,7 +22,7 @@
 // resolves to the platform's own component.
 
 import { registerSurfaces } from '@/lib/surfaces/registry';
-import { Home } from 'lucide-react';
+import { faHouse } from '@fortawesome/pro-solid-svg-icons';
 import { PigglesHomeSurface } from '@/surfaces/home';
 
 registerSurfaces([
@@ -34,7 +34,7 @@ registerSurfaces([
     key: 'piggles.home',
     title: 'Home',
     module: 'platform',
-    icon: Home,
+    icon: faHouse,
     component: PigglesHomeSurface,
     // One workspace, one Home — a second copy shows the same five numbers.
     singleton: true,

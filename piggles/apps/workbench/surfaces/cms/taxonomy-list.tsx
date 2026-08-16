@@ -15,7 +15,8 @@ import { useMemo, useState } from 'react';
 import { PaneEmpty } from '../../components/pane-empty';
 import { PaneWaiting } from '../../components/pane-waiting';
 import { Badge, Button, Card, SearchInput, Table } from '@wizeworks/silicaui-react';
-import { Plus, Tags } from 'lucide-react';
+import { faPlus, faTags } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { ListEmptyState } from '../../components/list-empty-state';
 import { RefreshButton } from '../../components/refresh-button';
@@ -60,7 +61,7 @@ export function TaxonomyListSurface({ ctx }: { ctx: SurfaceContext }) {
     return (
       <Card className="min-h-0 flex-1 items-center justify-center">
         <PaneEmpty
-          icon={<Tags className="size-6" aria-hidden />}
+          icon={<Icon glyph={faTags} className="size-6" aria-hidden />}
           title="Could not load your tags and topics"
           description="This is a problem reaching the server. None of your labels are affected."
           actions={
@@ -108,7 +109,7 @@ export function TaxonomyListSurface({ ctx }: { ctx: SurfaceContext }) {
           title="Add a way to file content — hold Shift to open alongside, Alt for a new window"
           onClick={create}
         >
-          <Plus className="size-4" aria-hidden />
+          <Icon glyph={faPlus} className="size-4" aria-hidden />
           <span className="hidden @2xl:inline">New</span>
         </Button>
         {/* ALWAYS the last child of a list toolbar — see RefreshButton. */}
@@ -128,7 +129,7 @@ export function TaxonomyListSurface({ ctx }: { ctx: SurfaceContext }) {
           <ListEmptyState
             filtered={Boolean(needle)}
             noResults={{
-              icon: <Tags className="size-6" aria-hidden />,
+              icon: <Icon glyph={faTags} className="size-6" aria-hidden />,
               title: 'Nothing matches that',
               description: 'Try part of the name — or clear the search to see them all.',
             }}
@@ -144,7 +145,7 @@ export function TaxonomyListSurface({ ctx }: { ctx: SurfaceContext }) {
                     create({ shiftKey: false, altKey: false });
                   }}
                 >
-                  <Plus className="size-4" aria-hidden />
+                  <Icon glyph={faPlus} className="size-4" aria-hidden />
                   Add one
                 </Button>
               ),

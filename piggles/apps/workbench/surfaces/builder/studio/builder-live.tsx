@@ -55,7 +55,8 @@ import type { Site } from '@wizeworks/silicaui-html';
 import { useEffect, useMemo, useRef, useState, type MutableRefObject } from 'react';
 import { io, type Socket } from 'socket.io-client';
 import { Badge, Button } from '@wizeworks/silicaui-react';
-import { RefreshCw, Sparkles, Users } from 'lucide-react';
+import { faArrowsRotate, faSparkles, faUsers } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { getTokenState, peekToken } from '../../../lib/api/token';
 import { getSiteSeq } from './data';
 
@@ -441,13 +442,13 @@ export function BuilderLiveSync({
       {others.length > 0 ? (
         <span title={others.map((p) => p.name).join(', ')}>
           <Badge color="neutral" variant="soft" size="sm">
-            <Users className="size-3.5" aria-hidden /> {others.length} editing
+            <Icon glyph={faUsers} className="size-3.5" aria-hidden /> {others.length} editing
           </Badge>
         </span>
       ) : null}
       {agentActive ? (
         <Badge color="module" variant="soft" size="sm">
-          <Sparkles className="size-3.5" aria-hidden /> An assistant is editing
+          <Icon glyph={faSparkles} className="size-3.5" aria-hidden /> An assistant is editing
         </Badge>
       ) : null}
     </div>
@@ -474,7 +475,7 @@ export function BuilderReloadNotice({
   const frameOnly = hints.length === 1 && hints[0] === 'frame';
   return (
     <Button size="sm" variant="soft" color="warning" onClick={onReload}>
-      <RefreshCw className="size-4" aria-hidden />
+      <Icon glyph={faArrowsRotate} className="size-4" aria-hidden />
       Reload to see {frameOnly ? 'the header/footer' : 'the update'}
     </Button>
   );

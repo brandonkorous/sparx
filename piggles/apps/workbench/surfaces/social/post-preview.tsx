@@ -24,7 +24,8 @@
 
 import Image from 'next/image';
 import { Badge, Text } from '@wizeworks/silicaui-react';
-import { ImageOff, Link2, Play, Video } from 'lucide-react';
+import { faImageSlash, faLink, faPlay, faVideo } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import type { MediaAsset } from '../cms/media';
 import type { PlatformConstraints, SocialPlatform } from './data';
 
@@ -185,7 +186,7 @@ export function PostPreview({
         <div
           className={`border-error/40 bg-error/5 text-error m-3 flex flex-col items-center justify-center gap-1.5 rounded-lg border-2 border-dashed ${aspect}`}
         >
-          <ImageOff className="size-6" aria-hidden />
+          <Icon glyph={faImageSlash} className="size-6" aria-hidden />
           <Text className="text-error px-4 text-center text-sm font-medium">
             {platformLabel} will not post without a picture or video.
           </Text>
@@ -194,7 +195,7 @@ export function PostPreview({
         <div className={`bg-base-200 relative w-full ${aspect}`}>
           {isVideo(lead) ? (
             <span className="flex h-full flex-col items-center justify-center gap-1.5">
-              <Video className="size-7" aria-hidden />
+              <Icon glyph={faVideo} className="size-7" aria-hidden />
               <span className="text-sm font-medium">{lead.filename}</span>
             </span>
           ) : lead.url ? (
@@ -209,7 +210,7 @@ export function PostPreview({
               />
               {media.some(isVideo) && !isVideo(lead) ? (
                 <span className="bg-base-100/90 absolute bottom-2 left-2 flex items-center gap-1 rounded-full px-2 py-0.5 text-sm">
-                  <Play className="size-3.5" aria-hidden />
+                  <Icon glyph={faPlay} className="size-3.5" aria-hidden />
                 </span>
               ) : null}
             </>
@@ -246,7 +247,7 @@ export function PostPreview({
 
         {link && treatment === 'card' ? (
           <span className="border-base-300 bg-base-200 flex items-center gap-2 rounded-lg border px-3 py-2">
-            <Link2 className="size-4 shrink-0" aria-hidden />
+            <Icon glyph={faLink} className="size-4 shrink-0" aria-hidden />
             <span className="min-w-0 flex-1 truncate text-sm font-medium">{hostOf(link)}</span>
           </span>
         ) : null}

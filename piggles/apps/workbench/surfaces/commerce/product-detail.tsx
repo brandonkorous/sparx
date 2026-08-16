@@ -65,7 +65,8 @@ import {
   useToast,
 } from '@wizeworks/silicaui-react';
 import { useConfirm } from '../../lib/confirm';
-import { ExternalLink, Share2 } from 'lucide-react';
+import { faArrowUpRightFromSquare, faShareNodes } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { ModuleScope } from '../../components/module-scope';
 import { useActiveSiteId } from '../../lib/api/shell-data';
 import { useDirtySource } from '../../lib/workbench/dirty';
@@ -537,7 +538,7 @@ function ManageProduct({ ctx, id }: { ctx: SurfaceContext; id: string }) {
             render={<a href={productUrl} target="_blank" rel="noreferrer" />}
           >
             <span className="hidden @2xl:inline">View</span>
-            <ExternalLink className="size-4" aria-hidden />
+            <Icon glyph={faArrowUpRightFromSquare} className="size-4" aria-hidden />
           </Button>
         ) : null}
 
@@ -561,7 +562,7 @@ function ManageProduct({ ctx, id }: { ctx: SurfaceContext; id: string }) {
                 );
               }}
             >
-              <Share2 className="size-4" aria-hidden />
+              <Icon glyph={faShareNodes} className="size-4" aria-hidden />
               <span className="hidden @2xl:inline">Share</span>
             </Button>
           </ModuleScope>

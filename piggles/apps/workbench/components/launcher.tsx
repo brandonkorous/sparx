@@ -22,8 +22,9 @@
 // seam to feed live server results through. Brandon approved the composition.
 
 import { useEffect, useMemo, useRef, useState, type KeyboardEvent } from 'react';
+import { Icon } from '@piggles/ui';
 import { Dialog, DialogContent, DialogTitle, Kbd, SearchInput } from '@wizeworks/silicaui-react';
-import type { LucideIcon } from 'lucide-react';
+import type { PigglesIcon } from '@piggles/ui';
 import { useFavorites } from '../lib/api/shell-data';
 import { useDebouncedValue, useRecordSearch } from '../lib/api/search';
 import {
@@ -68,7 +69,7 @@ interface Entry {
   group: string;
   label: string;
   subtitle?: string;
-  icon?: LucideIcon;
+  icon?: PigglesIcon;
   /** Terms the local filter matches surfaces on. Records are pre-filtered by the server. */
   keywords?: string[];
   /** Whose app this belongs to, so the row's glyph can wear that app's hue. */
@@ -358,7 +359,7 @@ export function Launcher({
                   <div className="px-3 pt-2 pb-1 text-sm font-semibold">{group}</div>
                   {rows.map(({ entry, index }) => {
                     const isActive = index === activeIndex;
-                    const Icon = entry.icon;
+                    const glyph = entry.icon;
                     return (
                       <button
                         key={entry.id}
@@ -385,7 +386,9 @@ export function Launcher({
                           select(index, { shiftKey: event.shiftKey, altKey: event.altKey })
                         }
                       >
-                        {Icon ? <Icon className="text-module size-4 shrink-0" aria-hidden /> : null}
+                        {glyph ? (
+                          <Icon glyph={glyph} className="text-module size-4 shrink-0" aria-hidden />
+                        ) : null}
                         <span className="min-w-0 flex-1 truncate text-base font-medium">
                           {entry.label}
                         </span>

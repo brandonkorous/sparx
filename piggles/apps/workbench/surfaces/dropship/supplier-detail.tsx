@@ -39,7 +39,14 @@ import {
   useToast,
 } from '@wizeworks/silicaui-react';
 import { useConfirm } from '../../lib/confirm';
-import { ExternalLink, PackageSearch, Plug, RefreshCw, Unplug } from 'lucide-react';
+import {
+  faArrowUpRightFromSquare,
+  faArrowsRotate,
+  faBoxMagnifyingGlass,
+  faPlug,
+  faPlugCircleXmark,
+} from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import { afterPaneChange } from '../../lib/defer';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
@@ -481,7 +488,7 @@ function SupplierEditor({
                 );
               }}
             >
-              <PackageSearch className="size-4" aria-hidden />
+              <Icon glyph={faBoxMagnifyingGlass} className="size-4" aria-hidden />
               Browse products
             </Button>
             <Button
@@ -498,7 +505,7 @@ function SupplierEditor({
               }
               onClick={onSync}
             >
-              <RefreshCw className="size-4" aria-hidden />
+              <Icon glyph={faArrowsRotate} className="size-4" aria-hidden />
               Sync now
             </Button>
           </>
@@ -514,7 +521,7 @@ function SupplierEditor({
         >
           {isNew ? (
             <>
-              <Plug className="size-4" aria-hidden />
+              <Icon glyph={faPlug} className="size-4" aria-hidden />
               Connect
             </>
           ) : (
@@ -656,7 +663,7 @@ function SupplierEditor({
                         className="link inline-flex items-center gap-1"
                       >
                         {vendor.label}’s guide
-                        <ExternalLink className="size-3" aria-hidden />
+                        <Icon glyph={faArrowUpRightFromSquare} className="size-3" aria-hidden />
                       </a>
                     </Text>
                   ) : null}
@@ -823,7 +830,7 @@ function SupplierEditor({
                       void onDisconnect();
                     }}
                   >
-                    <Unplug className="size-4" aria-hidden />
+                    <Icon glyph={faPlugCircleXmark} className="size-4" aria-hidden />
                     Disconnect
                   </Button>
                 </div>

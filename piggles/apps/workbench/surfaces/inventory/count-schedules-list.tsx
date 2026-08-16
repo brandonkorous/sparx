@@ -41,7 +41,13 @@ import {
   Timestamp,
   useToast,
 } from '@wizeworks/silicaui-react';
-import { CalendarClock, ClipboardCheck, Play, PlusCircle } from 'lucide-react';
+import {
+  faCalendarClock,
+  faCirclePlus,
+  faClipboardCheck,
+  faPlay,
+} from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
@@ -114,7 +120,7 @@ export function CountSchedulesListSurface({ ctx }: { ctx: SurfaceContext }) {
     if (schedules.isError) {
       return (
         <EmptyState
-          icon={<ClipboardCheck className="size-6" aria-hidden />}
+          icon={<Icon glyph={faClipboardCheck} className="size-6" aria-hidden />}
           title="Could not load your counting schedules"
           description="This is a problem reaching the server. Nothing has changed — the list just could not be read right now."
         />
@@ -126,7 +132,7 @@ export function CountSchedulesListSurface({ ctx }: { ctx: SurfaceContext }) {
     if (rows.length === 0) {
       return (
         <EmptyState
-          icon={<CalendarClock className="size-6" aria-hidden />}
+          icon={<Icon glyph={faCalendarClock} className="size-6" aria-hidden />}
           title="No counting schedules yet"
           description="A schedule is what turns counting from something you mean to do into something that happens. The usual setup is three: your top-value stock every month, the middle every quarter, and the long tail once a year — between them they cover everything for a fraction of the effort of a full stocktake."
           actions={
@@ -136,7 +142,7 @@ export function CountSchedulesListSurface({ ctx }: { ctx: SurfaceContext }) {
                 ctx.open('inventory.count-schedules.detail', { id: 'new' });
               }}
             >
-              <PlusCircle className="size-4" aria-hidden />
+              <Icon glyph={faCirclePlus} className="size-4" aria-hidden />
               Set one up
             </Button>
           }
@@ -231,7 +237,7 @@ export function CountSchedulesListSurface({ ctx }: { ctx: SurfaceContext }) {
                       onRun(row);
                     }}
                   >
-                    <Play className="size-4" aria-hidden />
+                    <Icon glyph={faPlay} className="size-4" aria-hidden />
                     Count now
                   </Button>
                 </td>
@@ -271,7 +277,7 @@ export function CountSchedulesListSurface({ ctx }: { ctx: SurfaceContext }) {
             ctx.open('inventory.count-schedules.detail', { id: 'new' });
           }}
         >
-          <PlusCircle className="size-4" aria-hidden />
+          <Icon glyph={faCirclePlus} className="size-4" aria-hidden />
           New schedule
         </Button>
         <RefreshButton

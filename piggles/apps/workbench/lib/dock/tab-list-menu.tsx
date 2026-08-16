@@ -43,7 +43,8 @@
 import { useEffect, useReducer, useRef, useState } from 'react';
 import type { KeyboardEvent } from 'react';
 import type { IDockviewPanel } from 'dockview';
-import { ChevronDown, X } from 'lucide-react';
+import { faChevronDown, faXmark } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import {
   Button,
   Popover,
@@ -128,7 +129,7 @@ export function TabListMenu({ panels, activePanel }: TabListMenuProps) {
       <Tooltip content={label}>
         <PopoverTrigger>
           <Button color="neutral" variant="ghost" size="xs" className="gap-1" aria-label={label}>
-            <ChevronDown className="size-3.5" aria-hidden />
+            <Icon glyph={faChevronDown} className="size-3.5" aria-hidden />
             <span className="tabular-nums">{panels.length}</span>
           </Button>
         </PopoverTrigger>
@@ -228,7 +229,7 @@ function TabListRow({ panel, active, onActivate, onClosed, onNavigate }: TabList
   const { controller } = useWorkbench();
   const descriptor = controller.getDescriptor(panel.id);
   const definition = descriptor ? getSurface(descriptor.surface) : undefined;
-  const Icon = definition?.icon;
+  const glyph = definition?.icon;
   const dirty = usePaneDirty(panel.id);
   const title = panel.title ?? 'Panel';
 
@@ -251,8 +252,9 @@ function TabListRow({ panel, active, onActivate, onClosed, onNavigate }: TabList
         {/* On the active row the variant has already resolved a module ink, so
             the glyph inherits it; elsewhere it carries the hue itself. Same pair
             the tab strip uses — see pane-tab.tsx. */}
-        {Icon ? (
+        {glyph ? (
           <Icon
+            glyph={glyph}
             className={active ? 'size-4 shrink-0' : 'text-module size-4 shrink-0'}
             aria-hidden
           />
@@ -286,7 +288,7 @@ function TabListRow({ panel, active, onActivate, onClosed, onNavigate }: TabList
           void controller.requestClose(panel.id).then(onClosed);
         }}
       >
-        <X className="size-4" aria-hidden />
+        <Icon glyph={faXmark} className="size-4" aria-hidden />
       </Button>
     </li>
   );

@@ -26,7 +26,8 @@ import {
   Table,
   ToolbarSeparator,
 } from '@wizeworks/silicaui-react';
-import { ArrowDown, ArrowUp, Wallet } from 'lucide-react';
+import { faArrowDown, faArrowUp, faWallet } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
@@ -175,9 +176,9 @@ export function PaymentsListSurface({ ctx }: { ctx: SurfaceContext }) {
         {label}
         {sort.key === key ? (
           sort.dir === 'asc' ? (
-            <ArrowUp className="size-3" aria-hidden />
+            <Icon glyph={faArrowUp} className="size-3" aria-hidden />
           ) : (
-            <ArrowDown className="size-3" aria-hidden />
+            <Icon glyph={faArrowDown} className="size-3" aria-hidden />
           )
         ) : null}
       </button>
@@ -237,7 +238,7 @@ export function PaymentsListSurface({ ctx }: { ctx: SurfaceContext }) {
       <Card className="min-h-0 flex-1 overflow-y-auto">
         {error ? (
           <EmptyState
-            icon={<Wallet className="size-6" aria-hidden />}
+            icon={<Icon glyph={faWallet} className="size-6" aria-hidden />}
             title="Could not load payments"
             description="Something went wrong reaching the server. Your payments are unaffected — try again in a moment."
           />
@@ -245,7 +246,7 @@ export function PaymentsListSurface({ ctx }: { ctx: SurfaceContext }) {
           <PaneWaiting label="Loading payments…" />
         ) : rows.length === 0 ? (
           <EmptyState
-            icon={<Wallet className="size-6" aria-hidden />}
+            icon={<Icon glyph={faWallet} className="size-6" aria-hidden />}
             title={
               search || status !== 'all' ? 'No payments match those filters' : 'No payments yet'
             }

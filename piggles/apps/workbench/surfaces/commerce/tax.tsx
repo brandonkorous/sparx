@@ -14,7 +14,8 @@
 // actually add one.
 
 import { Badge, Button, EmptyState, Heading, Text } from '@wizeworks/silicaui-react';
-import { Banknote, Plus, ServerCrash } from 'lucide-react';
+import { faMoneyBill, faPlus, faServer } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import { FormSection } from '../../components/form-section';
@@ -93,7 +94,7 @@ export function TaxSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar label="Tax controls">
-        <Banknote className="size-4 shrink-0" aria-hidden />
+        <Icon glyph={faMoneyBill} className="size-4 shrink-0" aria-hidden />
         <Heading level={2} className="min-w-0 truncate text-base font-semibold">
           Tax
         </Heading>
@@ -117,7 +118,7 @@ export function TaxSurface({ ctx }: { ctx: SurfaceContext }) {
         <div className="mx-auto flex w-full max-w-3xl flex-col gap-4">
           {zones.isError ? (
             <EmptyState
-              icon={<ServerCrash className="size-6" aria-hidden />}
+              icon={<Icon glyph={faServer} className="size-6" aria-hidden />}
               title="Could not load your tax settings"
               description={taxErrorMessage(
                 zones.error,
@@ -159,7 +160,7 @@ export function TaxSurface({ ctx }: { ctx: SurfaceContext }) {
                       open('new', event);
                     }}
                   >
-                    <Plus className="size-4" aria-hidden />
+                    <Icon glyph={faPlus} className="size-4" aria-hidden />
                     Add a place
                   </Button>
                 }
@@ -171,7 +172,7 @@ export function TaxSurface({ ctx }: { ctx: SurfaceContext }) {
                 ) : rows.length === 0 ? (
                   <EmptyState
                     size="sm"
-                    icon={<Banknote className="size-6" aria-hidden />}
+                    icon={<Icon glyph={faMoneyBill} className="size-6" aria-hidden />}
                     title="No places set up yet"
                     description="Add the first place you collect tax — usually your own country or state — then set its rate and switch it on."
                   />

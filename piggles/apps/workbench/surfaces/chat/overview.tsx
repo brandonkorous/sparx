@@ -29,7 +29,8 @@ import {
   Text,
   Timestamp,
 } from '@wizeworks/silicaui-react';
-import { MessageCircle, Sparkles, UserRound } from 'lucide-react';
+import { faComment, faSparkles, faUser } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
@@ -134,11 +135,11 @@ function ActivityRow({
       >
         <span className="mt-0.5 shrink-0">
           {isAi ? (
-            <Sparkles className="text-info size-4" aria-hidden />
+            <Icon glyph={faSparkles} className="text-info size-4" aria-hidden />
           ) : isCustomer ? (
-            <MessageCircle className="text-module size-4" aria-hidden />
+            <Icon glyph={faComment} className="text-module size-4" aria-hidden />
           ) : (
-            <UserRound className="size-4" aria-hidden />
+            <Icon glyph={faUser} className="size-4" aria-hidden />
           )}
         </span>
         <span className="flex min-w-0 flex-1 flex-col">
@@ -189,7 +190,7 @@ export function ChatOverviewSurface({ ctx }: { ctx: SurfaceContext }) {
       return (
         <Card className="min-h-0 flex-1 items-center justify-center">
           <PaneEmpty
-            icon={<MessageCircle className="size-6" aria-hidden />}
+            icon={<Icon glyph={faComment} className="size-6" aria-hidden />}
             title="Could not load your chat report"
             description="This is a problem reaching the server. Your conversations are unaffected."
             actions={
@@ -216,7 +217,7 @@ export function ChatOverviewSurface({ ctx }: { ctx: SurfaceContext }) {
       return (
         <Card className="min-h-0 flex-1 items-center justify-center">
           <PaneEmpty
-            icon={<MessageCircle className="size-6" aria-hidden />}
+            icon={<Icon glyph={faComment} className="size-6" aria-hidden />}
             title="No conversations to report on yet"
             description="Once people start chatting on your site, this page fills in with how many conversations you get, how fast you reply, and who is handling them."
             actions={
@@ -387,7 +388,7 @@ export function ChatOverviewSurface({ ctx }: { ctx: SurfaceContext }) {
                       <span className="flex items-center gap-2">
                         {agent.kind === 'ai' ? (
                           <Badge color="info" variant="soft" size="sm">
-                            <Sparkles className="size-3" aria-hidden />
+                            <Icon glyph={faSparkles} className="size-3" aria-hidden />
                             AI
                           </Badge>
                         ) : null}

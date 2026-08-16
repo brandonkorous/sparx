@@ -28,7 +28,8 @@ import {
   Text,
 } from '@wizeworks/silicaui-react';
 import { Chart, type EChartsOption } from '@wizeworks/silicaui-charts';
-import { ArrowUpRight, BarChart3 } from 'lucide-react';
+import { faArrowUpRight, faChartColumn } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
@@ -193,7 +194,7 @@ function PanelLink({
       }}
     >
       {label}
-      <ArrowUpRight className="size-3.5" aria-hidden />
+      <Icon glyph={faArrowUpRight} className="size-3.5" aria-hidden />
     </Button>
   );
 }
@@ -322,7 +323,7 @@ export function CrmReportsSurface({ ctx }: { ctx: SurfaceContext }) {
           {/* KPI strip */}
           {snapshot.isError ? (
             <EmptyState
-              icon={<BarChart3 className="size-6" aria-hidden />}
+              icon={<Icon glyph={faChartColumn} className="size-6" aria-hidden />}
               title="Could not load your figures"
               description="Something went wrong reaching the server. Try again in a moment."
               actions={

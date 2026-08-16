@@ -53,16 +53,17 @@ import {
   useToast,
 } from '@wizeworks/silicaui-react';
 import {
-  ArrowRight,
-  Check,
-  Copy,
-  ExternalLink,
-  KeyRound,
-  Link2,
-  Plus,
-  RefreshCw,
-  Trash2,
-} from 'lucide-react';
+  faArrowRight,
+  faArrowUpRightFromSquare,
+  faArrowsRotate,
+  faCheck,
+  faCopy,
+  faKey,
+  faLink,
+  faPlus,
+  faTrashCan,
+} from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { useQueryClient } from '@sparx/query';
 import { useConfirm } from '../../lib/confirm';
 import { useDirtySource } from '../../lib/workbench/dirty';
@@ -173,9 +174,9 @@ function CopyValue({ value, label }: { value: string; label: string }) {
         }}
       >
         {copied ? (
-          <Check className="size-4" aria-hidden />
+          <Icon glyph={faCheck} className="size-4" aria-hidden />
         ) : (
-          <Copy className="size-4" aria-hidden />
+          <Icon glyph={faCopy} className="size-4" aria-hidden />
         )}
       </Button>
     </div>
@@ -209,7 +210,7 @@ function CrossPointer({
           {detail}
         </Text>
       </span>
-      <ArrowRight className="text-module mt-1 size-4 shrink-0" aria-hidden />
+      <Icon glyph={faArrowRight} className="text-module mt-1 size-4 shrink-0" aria-hidden />
     </button>
   );
 }
@@ -298,7 +299,7 @@ function KeyForm({
           store it encrypted. It is never shown again, only its last few characters.{' '}
           <a href={help.url} target="_blank" rel="noreferrer" className="link">
             Open {providerLabel(provider)}
-            <ExternalLink className="ml-0.5 inline size-3" aria-hidden />
+            <Icon glyph={faArrowUpRightFromSquare} className="ml-0.5 inline size-3" aria-hidden />
           </a>
         </FieldDescription>
       </Field>
@@ -311,7 +312,7 @@ function KeyForm({
           disabled={trimmed === ''}
           onClick={submit}
         >
-          <Link2 className="size-4" aria-hidden />
+          <Icon glyph={faLink} className="size-4" aria-hidden />
           {submitLabel}
         </Button>
         {onCancel ? (
@@ -443,7 +444,7 @@ function AiAccountSection({
         <>
           <div className="flex flex-col gap-1">
             <div className="flex items-center gap-2">
-              <KeyRound className="text-module size-5 shrink-0" aria-hidden />
+              <Icon glyph={faKey} className="text-module size-5 shrink-0" aria-hidden />
               <Heading level={3} className="text-lg font-semibold">
                 Connected to {providerLabel(credential.provider)}
               </Heading>
@@ -495,7 +496,7 @@ function AiAccountSection({
             ) : (
               <div className="flex flex-wrap items-center gap-2">
                 <Button size="sm" color="module" loading={test.isPending} onClick={onCheck}>
-                  <RefreshCw className="size-4" aria-hidden />
+                  <Icon glyph={faArrowsRotate} className="size-4" aria-hidden />
                   Check now
                 </Button>
                 <Button
@@ -517,7 +518,7 @@ function AiAccountSection({
                     void onDisconnect();
                   }}
                 >
-                  <Trash2 className="size-4" aria-hidden />
+                  <Icon glyph={faTrashCan} className="size-4" aria-hidden />
                   Disconnect
                 </Button>
               </div>
@@ -603,7 +604,7 @@ function ConnectionRow({
       </div>
       {canManage ? (
         <Button size="sm" variant="ghost" color="danger" loading={revoking} onClick={onRevoke}>
-          <Trash2 className="size-4" aria-hidden />
+          <Icon glyph={faTrashCan} className="size-4" aria-hidden />
           Remove
         </Button>
       ) : null}
@@ -823,7 +824,7 @@ function KeyReveal({ issued, onDone }: { issued: IssuedKey; onDone: () => void }
       <CopyValue value={issued.plaintext} label="new API key" />
       <div>
         <Button color="module" size="sm" onClick={onDone}>
-          <Check className="size-4" aria-hidden />
+          <Icon glyph={faCheck} className="size-4" aria-hidden />
           I&apos;ve saved it
         </Button>
       </div>
@@ -865,7 +866,7 @@ function KeyRow({
       </div>
       {canManage && state.active ? (
         <Button size="sm" variant="ghost" color="danger" loading={revoking} onClick={onRevoke}>
-          <Trash2 className="size-4" aria-hidden />
+          <Icon glyph={faTrashCan} className="size-4" aria-hidden />
           Revoke
         </Button>
       ) : null}
@@ -976,7 +977,7 @@ function ApiKeysSection({
           setCreating(true);
         }}
       >
-        <Plus className="size-4" aria-hidden />
+        <Icon glyph={faPlus} className="size-4" aria-hidden />
         New key
       </Button>
     ) : undefined;
@@ -1087,7 +1088,7 @@ function ApiKeysSection({
               disabled={trimmedName === '' || scopes.size === 0}
               onClick={onIssue}
             >
-              <KeyRound className="size-4" aria-hidden />
+              <Icon glyph={faKey} className="size-4" aria-hidden />
               Create key
             </Button>
             <Button
@@ -1137,7 +1138,7 @@ function ApiKeysSection({
               setCreating(true);
             }}
           >
-            <Plus className="size-4" aria-hidden />
+            <Icon glyph={faPlus} className="size-4" aria-hidden />
             Create your first key
           </Button>
         </div>

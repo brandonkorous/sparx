@@ -56,7 +56,8 @@ import {
   useToast,
 } from '@wizeworks/silicaui-react';
 import { useConfirm } from '../../lib/confirm';
-import { Plus, Tags, Trash2 } from 'lucide-react';
+import { faPlus, faTags, faTrashCan } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { FormSection } from '../../components/form-section';
 import { MoneyInput } from '../invoicing/money-input';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
@@ -362,7 +363,7 @@ export function ProductPricingTab({ product }: { ctx: SurfaceContext; product: P
   if (variants.length === 0) {
     return (
       <EmptyState
-        icon={<Tags className="size-6" aria-hidden />}
+        icon={<Icon glyph={faTags} className="size-6" aria-hidden />}
         title="This product has no versions to price"
         description="Every product is sold as at least one version, and that is what carries a price. Add one on the Variants tab and its price will appear here."
       />
@@ -976,7 +977,7 @@ function BulkTiers({
                           void onDelete(tier, variant);
                         }}
                       >
-                        <Trash2 className="size-4" aria-hidden />
+                        <Icon glyph={faTrashCan} className="size-4" aria-hidden />
                       </Button>
                     </li>
                   ))}
@@ -1062,7 +1063,7 @@ function BulkTiers({
             disabled={!target || quantity < 2 || unitPrice <= 0}
             onClick={onAdd}
           >
-            <Plus className="size-4" aria-hidden />
+            <Icon glyph={faPlus} className="size-4" aria-hidden />
             Add
           </Button>
         </div>

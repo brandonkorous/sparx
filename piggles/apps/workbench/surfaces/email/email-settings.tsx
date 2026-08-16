@@ -31,7 +31,8 @@ import {
   Textarea,
   useToast,
 } from '@wizeworks/silicaui-react';
-import { Save, TriangleAlert } from 'lucide-react';
+import { faExclamationTriangle, faFloppyDisk } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { FormSection } from '../../components/form-section';
 import { useDirtySource } from '../../lib/workbench/dirty';
@@ -229,7 +230,7 @@ export function EmailSettingsSurface({ ctx }: { ctx: SurfaceContext }) {
     return (
       <div className="flex h-full flex-col items-center justify-center p-8">
         <Alert color="error" variant="soft" className="max-w-md">
-          <TriangleAlert />
+          <Icon glyph={faExclamationTriangle} />
           <AlertContent>
             <AlertTitle>Could not load your email settings</AlertTitle>
             <AlertDescription>
@@ -264,7 +265,7 @@ export function EmailSettingsSurface({ ctx }: { ctx: SurfaceContext }) {
           disabled={!dirty || hasFormatError || settings.isPending || save.isPending}
           onClick={onSave}
         >
-          <Save className="size-4" aria-hidden />
+          <Icon glyph={faFloppyDisk} className="size-4" aria-hidden />
           {save.isPending ? 'Saving…' : 'Save'}
         </Button>
       </PaneToolbar>

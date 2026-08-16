@@ -29,7 +29,8 @@ import {
   Timestamp,
   ToolbarSeparator,
 } from '@wizeworks/silicaui-react';
-import { Plus, Send } from 'lucide-react';
+import { faPaperPlane, faPlus } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { RefreshButton } from '../../components/refresh-button';
 import { ListEmptyState } from '../../components/list-empty-state';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
@@ -140,7 +141,7 @@ export function BroadcastsListSurface({ ctx }: { ctx: SurfaceContext }) {
             ctx.open(DETAIL_KEY, { id: 'new' }, { target: targetFor(event) });
           }}
         >
-          <Plus className="size-4" aria-hidden />
+          <Icon glyph={faPlus} className="size-4" aria-hidden />
           <span className="hidden @lg:inline">New broadcast</span>
         </Button>
 
@@ -156,7 +157,7 @@ export function BroadcastsListSurface({ ctx }: { ctx: SurfaceContext }) {
       <Card className="min-h-0 flex-1 overflow-y-auto">
         {isError ? (
           <EmptyState
-            icon={<Send className="size-6" aria-hidden />}
+            icon={<Icon glyph={faPaperPlane} className="size-6" aria-hidden />}
             title="Could not load your broadcasts"
             description="Something went wrong reaching the server. Anything already sent is unaffected — try again in a moment."
             actions={
@@ -177,7 +178,7 @@ export function BroadcastsListSurface({ ctx }: { ctx: SurfaceContext }) {
           <ListEmptyState
             filtered={filtering}
             noResults={{
-              icon: <Send className="size-6" aria-hidden />,
+              icon: <Icon glyph={faPaperPlane} className="size-6" aria-hidden />,
               title: 'No broadcasts match those filters',
               description: 'Try a different search, or switch the status back to Any.',
             }}
@@ -193,7 +194,7 @@ export function BroadcastsListSurface({ ctx }: { ctx: SurfaceContext }) {
                     ctx.open(DETAIL_KEY, { id: 'new' }, { target: targetFor(event) });
                   }}
                 >
-                  <Plus className="size-4" aria-hidden />
+                  <Icon glyph={faPlus} className="size-4" aria-hidden />
                   New broadcast
                 </Button>
               ),

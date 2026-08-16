@@ -47,7 +47,18 @@ import {
   Textarea,
   useToast,
 } from '@wizeworks/silicaui-react';
-import { Check, Download, Link2, LogIn, LogOut, Plug, Save, Trash2, Upload } from 'lucide-react';
+import {
+  faCheck,
+  faDownload,
+  faFloppyDisk,
+  faLink,
+  faPlug,
+  faRightFromBracket,
+  faRightToBracket,
+  faTrashCan,
+  faUpload,
+} from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import { FormSection } from '../../components/form-section';
@@ -281,7 +292,7 @@ function ExportPanel({
             loading={addRow.isPending}
             onClick={setUpCodes}
           >
-            <Save className="size-4" aria-hidden />
+            <Icon glyph={faFloppyDisk} className="size-4" aria-hidden />
             Set up account codes
           </Button>
         </div>
@@ -321,7 +332,7 @@ function ExportPanel({
 
       <div>
         <Button size="sm" color="module" loading={busy} onClick={() => void run()}>
-          <Download className="size-4" aria-hidden />
+          <Icon glyph={faDownload} className="size-4" aria-hidden />
           Download the file
         </Button>
       </div>
@@ -559,7 +570,7 @@ function ImportPanel({ categories }: { categories: { id: string; name: string }[
               loading={preview.isPending}
               onClick={runPreview}
             >
-              <Upload className="size-4" aria-hidden />
+              <Icon glyph={faUpload} className="size-4" aria-hidden />
               Check the file
             </Button>
             {result ? (
@@ -570,7 +581,7 @@ function ImportPanel({ categories }: { categories: { id: string; name: string }[
                 loading={commit.isPending}
                 onClick={runCommit}
               >
-                <Check className="size-4" aria-hidden />
+                <Icon glyph={faCheck} className="size-4" aria-hidden />
                 Import {String(result.validCount)} {result.validCount === 1 ? 'cost' : 'costs'}
               </Button>
             ) : null}
@@ -654,7 +665,7 @@ function ImportPanel({ categories }: { categories: { id: string; name: string }[
 
 /** The shape `app/finance/accounting/callback` posts back through `window.opener`. */
 interface CallbackMessage {
-  source: 'sparx-accounting';
+  source: 'piggles-accounting';
   code?: string;
   state?: string;
   error?: string;
@@ -665,7 +676,7 @@ function isCallbackMessage(value: unknown): value is CallbackMessage {
   return (
     typeof value === 'object' &&
     value !== null &&
-    (value as { source?: unknown }).source === 'sparx-accounting'
+    (value as { source?: unknown }).source === 'piggles-accounting'
   );
 }
 
@@ -769,7 +780,7 @@ function useAccountingConnect() {
       setFailure(null);
       setPendingProvider(input.provider);
 
-      const popup = window.open('', 'sparx-accounting-connect', 'width=620,height=760');
+      const popup = window.open('', 'piggles-accounting-connect', 'width=620,height=760');
       if (!popup) {
         setPendingProvider(null);
         setFailure(
@@ -960,7 +971,7 @@ function MappingTable({ connectionId }: { connectionId: string }) {
           loading={saveMappings.isPending}
           onClick={onSave}
         >
-          <Save className="size-4" aria-hidden />
+          <Icon glyph={faFloppyDisk} className="size-4" aria-hidden />
           Save the mapping
         </Button>
       </div>
@@ -1133,12 +1144,12 @@ function ConnectionCard({
                   void onSignOut();
                 }}
               >
-                <LogOut className="size-4" aria-hidden />
+                <Icon glyph={faRightFromBracket} className="size-4" aria-hidden />
                 Sign out
               </Button>
             ) : (
               <Button size="sm" color="module" loading={signingIn} onClick={onSignIn}>
-                <LogIn className="size-4" aria-hidden />
+                <Icon glyph={faRightToBracket} className="size-4" aria-hidden />
                 Sign in
               </Button>
             )
@@ -1154,7 +1165,7 @@ function ConnectionCard({
               void onRemove();
             }}
           >
-            <Trash2 className="size-4" aria-hidden />
+            <Icon glyph={faTrashCan} className="size-4" aria-hidden />
           </Button>
         </div>
       </div>
@@ -1278,7 +1289,7 @@ export function AccountingSurface() {
     <div className={PANE_SHELL}>
       <PaneToolbar label="Accounting controls">
         <span className="inline-flex items-center gap-1.5">
-          <Plug className="size-4" aria-hidden />
+          <Icon glyph={faPlug} className="size-4" aria-hidden />
           <Text as="span" className="text-sm font-medium">
             Your accounting package
           </Text>
@@ -1455,9 +1466,9 @@ export function AccountingSurface() {
                           }}
                         >
                           {signedIn ? (
-                            <Check className="size-4" aria-hidden />
+                            <Icon glyph={faCheck} className="size-4" aria-hidden />
                           ) : (
-                            <Link2 className="size-4" aria-hidden />
+                            <Icon glyph={faLink} className="size-4" aria-hidden />
                           )}
                           {label}
                         </Button>

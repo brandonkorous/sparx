@@ -61,7 +61,14 @@ import {
   useToast,
 } from '@wizeworks/silicaui-react';
 import { useConfirm } from '../../lib/confirm';
-import { Building2, Camera, Loader2, Plus, Trash2 } from 'lucide-react';
+import {
+  faBuilding,
+  faCamera,
+  faPlus,
+  faSpinner,
+  faTrashCan,
+} from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import { afterPaneChange } from '../../lib/defer';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
@@ -754,7 +761,7 @@ function CustomerEditor({
               void onDelete();
             }}
           >
-            <Trash2 className="size-4" aria-hidden />
+            <Icon glyph={faTrashCan} className="size-4" aria-hidden />
             Remove this customer
           </Button>
         </div>
@@ -790,7 +797,7 @@ function CustomerEditor({
               );
             }}
           >
-            <Plus className="size-4" aria-hidden />
+            <Icon glyph={faPlus} className="size-4" aria-hidden />
             <span className="hidden @md:inline">Deal</span>
           </Button>
           <Button
@@ -807,7 +814,7 @@ function CustomerEditor({
               );
             }}
           >
-            <Plus className="size-4" aria-hidden />
+            <Icon glyph={faPlus} className="size-4" aria-hidden />
             <span className="hidden @md:inline">Task</span>
           </Button>
         </>
@@ -1088,9 +1095,9 @@ function IdentityRail({
                 new photo uploads. Absolute chrome on the avatar, not a control. */}
             <span className="border-base-100 bg-module text-module-content absolute right-0 bottom-0 flex size-7 items-center justify-center rounded-full border-2">
               {photoBusy ? (
-                <Loader2 className="size-3.5 animate-spin" aria-hidden />
+                <Icon glyph={faSpinner} className="size-3.5 animate-spin" aria-hidden />
               ) : (
-                <Camera className="size-3.5" aria-hidden />
+                <Icon glyph={faCamera} className="size-3.5" aria-hidden />
               )}
             </span>
           </button>
@@ -1120,7 +1127,7 @@ function IdentityRail({
                   );
                 }}
               >
-                <Building2 className="size-3.5" aria-hidden />
+                <Icon glyph={faBuilding} className="size-3.5" aria-hidden />
                 {filedUnder}
               </Button>
             ) : typedCompany !== null ? (

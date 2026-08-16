@@ -64,15 +64,16 @@
 import { useMemo } from 'react';
 import { Button, Card, CardBody, Heading, Skeleton, Text } from '@wizeworks/silicaui-react';
 import {
-  CalendarCheck,
-  ChevronRight,
-  FileWarning,
-  MessageCircle,
-  PackageSearch,
-  Plus,
-  ShoppingBag,
-  type LucideIcon,
-} from 'lucide-react';
+  faBagShopping,
+  faBoxMagnifyingGlass,
+  faCalendarCheck,
+  faChevronRight,
+  faComment,
+  faFileExclamation,
+  faPlus,
+} from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
+import type { PigglesIcon } from '@piggles/ui';
 import { PigglesMascot } from '@piggles/mascot/react';
 import type { SurfaceContext } from '@/lib/surfaces/registry';
 import { ModuleScope } from '@/components/module-scope';
@@ -88,7 +89,7 @@ import {
 
 interface Signal {
   key: AttentionKey;
-  icon: LucideIcon;
+  icon: PigglesIcon;
   /** The app this belongs to, so the row wears that app's hue. */
   module: string;
   surface: string;
@@ -106,7 +107,7 @@ interface Signal {
 const SIGNALS: Signal[] = [
   {
     key: 'orders',
-    icon: ShoppingBag,
+    icon: faBagShopping,
     module: 'commerce',
     surface: 'commerce.orders.list',
     one: 'order is waiting to go out',
@@ -116,7 +117,7 @@ const SIGNALS: Signal[] = [
   },
   {
     key: 'messages',
-    icon: MessageCircle,
+    icon: faComment,
     module: 'chat',
     surface: 'chat.inbox',
     one: 'person is waiting to hear back',
@@ -126,7 +127,7 @@ const SIGNALS: Signal[] = [
   },
   {
     key: 'bookings',
-    icon: CalendarCheck,
+    icon: faCalendarCheck,
     module: 'scheduling',
     surface: 'scheduling.calendar',
     one: 'booking needs confirming',
@@ -136,7 +137,7 @@ const SIGNALS: Signal[] = [
   },
   {
     key: 'invoices',
-    icon: FileWarning,
+    icon: faFileExclamation,
     module: 'invoicing',
     surface: 'invoicing.invoices.list',
     one: 'invoice is overdue',
@@ -146,7 +147,7 @@ const SIGNALS: Signal[] = [
   },
   {
     key: 'stock',
-    icon: PackageSearch,
+    icon: faBoxMagnifyingGlass,
     module: 'inventory',
     surface: 'inventory.stock.list',
     one: 'product is running low',
@@ -304,7 +305,7 @@ export function PigglesHomeSurface({ ctx }: { ctx: SurfaceContext }) {
                     ctx.open(action.surface, action.params);
                   }}
                 >
-                  <Plus className="size-5" aria-hidden />
+                  <Icon glyph={faPlus} className="size-5" aria-hidden />
                   {action.label}
                 </Button>
               </ModuleScope>
@@ -361,7 +362,7 @@ function SignalRow({
   count: AttentionCount;
   ctx: SurfaceContext;
 }) {
-  const Icon = signal.icon;
+  const glyph = signal.icon;
   const open = () => {
     ctx.open(signal.surface);
   };
@@ -375,12 +376,12 @@ function SignalRow({
           className="hover:bg-module hover:bg-soft flex w-full items-center gap-4 p-5 text-left transition-colors"
         >
           <span className="bg-module bg-soft text-module flex size-11 shrink-0 items-center justify-center rounded-full">
-            <Icon className="size-5" aria-hidden />
+            <Icon glyph={glyph} className="size-5" aria-hidden />
           </span>
           <span className="min-w-0 flex-1">
             <RowSentence signal={signal} count={count} />
           </span>
-          <ChevronRight className="size-5 shrink-0" aria-hidden />
+          <Icon glyph={faChevronRight} className="size-5 shrink-0" aria-hidden />
         </button>
       </li>
     </ModuleScope>

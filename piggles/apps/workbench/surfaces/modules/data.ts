@@ -18,24 +18,25 @@
 import { useMutation, useQuery, useQueryClient } from '@sparx/query';
 import { productCopy } from '../../lib/product';
 import { ApiError } from '@sparx/api-client';
-import type { LucideIcon } from 'lucide-react';
 import {
-  Boxes,
-  CalendarClock,
-  ContactRound,
-  CreditCard,
-  FileText,
-  Handshake,
-  LayoutTemplate,
-  Mail,
-  MessagesSquare,
-  ReceiptText,
-  Share2,
-  ShoppingBag,
-  Sparkles,
-  Truck,
-  Users,
-} from 'lucide-react';
+  faAddressBook,
+  faBagShopping,
+  faBoxes,
+  faCalendarClock,
+  faCreditCard,
+  faEnvelope,
+  faFileText,
+  faHandshake,
+  faMessages,
+  faReceipt,
+  faShareNodes,
+  faSparkles,
+  faTableLayout,
+  faTruck,
+  faUsers,
+} from '@fortawesome/pro-solid-svg-icons';
+import type { PigglesIcon } from '@piggles/ui';
+
 import { api } from '../../lib/api/client';
 import type { WorkbenchModule } from '../../components/module-scope';
 
@@ -69,7 +70,7 @@ export interface ModuleMeta {
   slug: string;
   name: string;
   hue: WorkbenchModule;
-  icon: LucideIcon;
+  icon: PigglesIcon;
   /** One plain-language line: what this actually does for the business. */
   blurb: string;
   /** Monthly list price in whole dollars — hand-synced from packages/billing
@@ -98,7 +99,7 @@ export const MODULE_META: ModuleMeta[] = [
     slug: 'builder',
     name: 'Website',
     hue: 'builder',
-    icon: LayoutTemplate,
+    icon: faTableLayout,
     blurb: productCopy(
       'modules.builder.blurb',
       'Build and host your website with sparx — its pages, layout and your own look, all served for you.'
@@ -110,7 +111,7 @@ export const MODULE_META: ModuleMeta[] = [
     slug: 'commerce',
     name: 'Online store',
     hue: 'commerce',
-    icon: ShoppingBag,
+    icon: faBagShopping,
     blurb: 'Sell products online, with a catalogue, a shopping cart, checkout and card payments.',
     price: 49,
     requires: [],
@@ -119,7 +120,7 @@ export const MODULE_META: ModuleMeta[] = [
     slug: 'cms',
     name: 'Content',
     hue: 'cms',
-    icon: FileText,
+    icon: faFileText,
     blurb:
       'Write and publish articles and pages, and manage the words and pictures across your site.',
     price: 49,
@@ -129,7 +130,7 @@ export const MODULE_META: ModuleMeta[] = [
     slug: 'crm',
     name: 'Customers',
     hue: 'crm',
-    icon: Users,
+    icon: faUsers,
     blurb:
       'Keep a record of the people and businesses you deal with, the work in progress with each, and your follow-ups.',
     price: 49,
@@ -139,7 +140,7 @@ export const MODULE_META: ModuleMeta[] = [
     slug: 'email',
     name: 'Email',
     hue: 'email',
-    icon: Mail,
+    icon: faEnvelope,
     blurb: 'Send newsletters and automatic messages to your customers from your own address.',
     price: 29,
     requires: [],
@@ -148,7 +149,7 @@ export const MODULE_META: ModuleMeta[] = [
     slug: 'scheduling',
     name: 'Bookings',
     hue: 'scheduling',
-    icon: CalendarClock,
+    icon: faCalendarClock,
     blurb: 'Let customers book appointments or services around your availability and calendar.',
     price: 29,
     requires: [],
@@ -157,7 +158,7 @@ export const MODULE_META: ModuleMeta[] = [
     slug: 'chat',
     name: 'Live chat',
     hue: 'chat',
-    icon: MessagesSquare,
+    icon: faMessages,
     blurb:
       'Talk with visitors on your site as they browse, with saved answers for the questions you get most.',
     price: 19,
@@ -167,7 +168,7 @@ export const MODULE_META: ModuleMeta[] = [
     slug: 'invoicing',
     name: 'Invoicing',
     hue: 'invoicing',
-    icon: ReceiptText,
+    icon: faReceipt,
     blurb: 'Send bills and quotes, and take payment against them.',
     price: 19,
     requires: [],
@@ -176,7 +177,7 @@ export const MODULE_META: ModuleMeta[] = [
     slug: 'finance',
     name: 'Finance',
     hue: 'finance',
-    icon: CreditCard,
+    icon: faCreditCard,
     blurb:
       'Track what you spend — parts, wages, rent, subscriptions — against what came in, and see which jobs actually made money.',
     price: 29,
@@ -188,7 +189,7 @@ export const MODULE_META: ModuleMeta[] = [
     slug: 'staff',
     name: 'Your team',
     hue: 'staff',
-    icon: ContactRound,
+    icon: faAddressBook,
     // Says what it is NOT, because someone reading "team" and "pay rates" will
     // otherwise buy this expecting payroll and find out after they have paid.
     blurb: productCopy(
@@ -202,7 +203,7 @@ export const MODULE_META: ModuleMeta[] = [
     slug: 'inventory',
     name: 'Stock',
     hue: 'inventory',
-    icon: Boxes,
+    icon: faBoxes,
     blurb:
       'Track how much of each product you have across your locations, and get a nudge when something runs low.',
     price: 29,
@@ -212,7 +213,7 @@ export const MODULE_META: ModuleMeta[] = [
     slug: 'b2b',
     name: 'Wholesale',
     hue: 'b2b',
-    icon: Handshake,
+    icon: faHandshake,
     blurb:
       'Sell to other businesses with account pricing, agreed payment terms and order approvals.',
     price: 99,
@@ -222,7 +223,7 @@ export const MODULE_META: ModuleMeta[] = [
     slug: 'dropship',
     name: 'Dropshipping',
     hue: 'dropship',
-    icon: Truck,
+    icon: faTruck,
     blurb:
       'Offer products a supplier ships straight to your customer, so you never hold the stock yourself.',
     price: 29,
@@ -232,7 +233,7 @@ export const MODULE_META: ModuleMeta[] = [
     slug: 'ai',
     name: 'AI features',
     hue: 'ai',
-    icon: Sparkles,
+    icon: faSparkles,
     blurb: productCopy(
       'modules.ai.blurb',
       'Turn on the AI-assisted tools throughout sparx. They run on an AI account you connect yourself.'
@@ -244,7 +245,7 @@ export const MODULE_META: ModuleMeta[] = [
     slug: 'social',
     name: 'Social posts',
     hue: 'social',
-    icon: Share2,
+    icon: faShareNodes,
     blurb:
       'Connect your Facebook, Instagram, Google and other social accounts and post to all of them from one place — on a schedule, or automatically.',
     price: 0,

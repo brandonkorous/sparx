@@ -17,7 +17,15 @@
 // on a phone in a stockroom is the normal case for this product, not the edge.
 
 import { useEffect, useRef, useState, useSyncExternalStore } from 'react';
-import { ChevronLeft, ChevronRight, Grid2x2Plus, Menu, Search, Share2 } from 'lucide-react';
+import {
+  faBars,
+  faChevronLeft,
+  faChevronRight,
+  faGrid2Plus,
+  faMagnifyingGlass,
+  faShareNodes,
+} from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import {
   Button,
   Drawer,
@@ -108,7 +116,7 @@ export function CompactConsole({
               onNavOpenChange(true);
             }}
           >
-            <Menu className="size-5" aria-hidden />
+            <Icon glyph={faBars} className="size-5" aria-hidden />
           </Button>
 
           {/* The title is what you are looking at — on one column that IS your
@@ -136,7 +144,7 @@ export function CompactConsole({
             aria-label="Search everything"
             onClick={onOpenLauncher}
           >
-            <Search className="size-5" aria-hidden />
+            <Icon glyph={faMagnifyingGlass} className="size-5" aria-hidden />
           </Button>
 
           <DropdownMenu>
@@ -285,7 +293,7 @@ function AppDrawer({
                   setAppId(null);
                 }}
               >
-                <ChevronLeft className="size-4" aria-hidden />
+                <Icon glyph={faChevronLeft} className="size-4" aria-hidden />
                 All apps
               </Button>
             </DrawerHeader>
@@ -325,8 +333,10 @@ function AppDrawer({
                         // desktop density is a mouse affordance and would be a
                         // mis-tap generator here.
                         className="min-h-11"
-                        icon={<candidate.icon className="text-module size-5" aria-hidden />}
-                        trailing={<ChevronRight className="size-4" aria-hidden />}
+                        icon={
+                          <Icon glyph={candidate.icon} className="text-module size-5" aria-hidden />
+                        }
+                        trailing={<Icon glyph={faChevronRight} className="size-4" aria-hidden />}
                         onClick={() => {
                           setAppId(candidate.app.id);
                         }}
@@ -342,7 +352,7 @@ function AppDrawer({
                 <SidebarGroup>
                   <SidebarItem
                     className="min-h-11"
-                    icon={<Grid2x2Plus className="size-5" aria-hidden />}
+                    icon={<Icon glyph={faGrid2Plus} className="size-5" aria-hidden />}
                     onClick={() => {
                       setAllAppsOpen(true);
                     }}
@@ -396,7 +406,7 @@ function SharePanelButton({ paneId }: { paneId: string | null }) {
         void copyLink(link);
       }}
     >
-      <Share2 className="size-5" aria-hidden />
+      <Icon glyph={faShareNodes} className="size-5" aria-hidden />
     </Button>
   );
 }

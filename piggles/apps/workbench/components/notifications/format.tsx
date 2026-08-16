@@ -8,7 +8,9 @@
 // splitting them is how the bell and the inbox end up disagreeing about what
 // the same notification is.
 
-import { MessageSquare, Bell, type LucideIcon } from 'lucide-react';
+import { faBell, faMessage } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
+import type { PigglesIcon } from '@piggles/ui';
 import { routeAcceptsId, routeForEntity } from '@sparx/links';
 import type { AppNotification } from '../../lib/api/notifications';
 import { moduleIcon } from '../../lib/surfaces/nav';
@@ -53,9 +55,9 @@ export function moduleOf(notification: AppNotification): WorkbenchModule {
  * `entityType` overrides it where a module icon would actively mislead: a reply
  * from the sparx team is correspondence, not a workbench dashboard.
  */
-export function iconFor(notification: AppNotification): LucideIcon {
-  if (notification.entityType === 'feedback') return MessageSquare;
-  return moduleIcon(moduleOf(notification)) ?? Bell;
+export function iconFor(notification: AppNotification): PigglesIcon {
+  if (notification.entityType === 'feedback') return faMessage;
+  return moduleIcon(moduleOf(notification)) ?? faBell;
 }
 
 /**
@@ -99,11 +101,11 @@ export function destinationFor(
  * token cascade rather than a colour table in here.
  */
 export function NotificationIcon({ notification }: { notification: AppNotification }) {
-  const Icon = iconFor(notification);
+  const glyph = iconFor(notification);
   return (
     <ModuleScope module={moduleOf(notification)} className="shrink-0">
       <span className="bg-module bg-soft text-module flex size-7 items-center justify-center rounded">
-        <Icon className="size-3.5" aria-hidden />
+        <Icon glyph={glyph} className="size-3.5" aria-hidden />
       </span>
     </ModuleScope>
   );

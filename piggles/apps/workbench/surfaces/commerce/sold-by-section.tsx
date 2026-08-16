@@ -25,7 +25,8 @@
 
 import { useState } from 'react';
 import { Button, Select, Text, useToast } from '@wizeworks/silicaui-react';
-import { HandCoins, X } from 'lucide-react';
+import { faHandHoldingDollar, faXmark } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 
 import { FormSection } from '../../components/form-section';
 import { ModuleScope } from '../../components/module-scope';
@@ -168,7 +169,7 @@ export function SoldBySection({
             />
             {current ? (
               <Button size="sm" variant="ghost" color="danger" loading={pending} onClick={remove}>
-                <X className="size-4" aria-hidden />
+                <Icon glyph={faXmark} className="size-4" aria-hidden />
                 Remove
               </Button>
             ) : null}
@@ -182,7 +183,7 @@ export function SoldBySection({
 
           {current ? (
             <div className="flex items-center gap-2">
-              <HandCoins className="text-module size-4" aria-hidden />
+              <Icon glyph={faHandHoldingDollar} className="text-module size-4" aria-hidden />
               <Text className="text-base">
                 Credited to {current.staffMemberName ?? 'someone no longer on the team'}.
               </Text>

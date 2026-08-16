@@ -37,17 +37,19 @@ import {
   useToast,
 } from '@wizeworks/silicaui-react';
 import {
-  CircleAlert,
-  CircleCheck,
-  Download,
-  FileUp,
-  Loader2,
-  Play,
-  Plug,
-  RotateCcw,
-  TriangleAlert,
-  Upload,
-} from 'lucide-react';
+  faCheckCircle,
+  faCircleExclamation,
+  faDownload,
+  faExclamationTriangle,
+  faFileArrowUp,
+  faPlay,
+  faPlug,
+  faRotate,
+  faSpinner,
+  faUpload,
+} from '@fortawesome/pro-solid-svg-icons';
+
+import { Icon } from '@piggles/ui';
 import {
   summarize,
   type CanonicalEntity,
@@ -290,9 +292,9 @@ function RunProgress({ runId }: { runId: string }) {
                 {entityLabel(entity.entity)}
               </Heading>
               {entity.done ? (
-                <CircleCheck className="text-success size-4" aria-hidden />
+                <Icon glyph={faCheckCircle} className="text-success size-4" aria-hidden />
               ) : (
-                <Loader2 className="size-4 animate-spin" aria-hidden />
+                <Icon glyph={faSpinner} className="size-4 animate-spin" aria-hidden />
               )}
             </div>
             <Text className="text-2xl font-semibold tabular-nums">
@@ -320,7 +322,7 @@ function RunProgress({ runId }: { runId: string }) {
                 downloadText(`skipped-rows-${runId.slice(0, 8)}.csv`, problemsCsv(problems))
               }
             >
-              <Download className="size-4" aria-hidden />
+              <Icon glyph={faDownload} className="size-4" aria-hidden />
               Download this list
             </Button>
           </div>
@@ -489,7 +491,7 @@ export function MigrationRunSurface({ ctx }: { ctx: SurfaceContext }) {
       <PaneToolbar label="Migration run controls">
         {runId !== null ? (
           <Button variant="ghost" size="sm" onClick={reset}>
-            <RotateCcw className="size-4" aria-hidden />
+            <Icon glyph={faRotate} className="size-4" aria-hidden />
             Move something else
           </Button>
         ) : null}
@@ -501,7 +503,7 @@ export function MigrationRunSurface({ ctx }: { ctx: SurfaceContext }) {
               disabled={importable.length === 0 || start.isPending}
               onClick={() => void begin(true)}
             >
-              <Play className="size-4" aria-hidden />
+              <Icon glyph={faPlay} className="size-4" aria-hidden />
               Practice run
             </Button>
             <Button
@@ -510,7 +512,7 @@ export function MigrationRunSurface({ ctx }: { ctx: SurfaceContext }) {
               disabled={importable.length === 0 || start.isPending}
               onClick={() => void begin(false)}
             >
-              <Upload className="size-4" aria-hidden />
+              <Icon glyph={faUpload} className="size-4" aria-hidden />
               Bring in {totalReady.toLocaleString()}
             </Button>
           </>
@@ -572,7 +574,7 @@ export function MigrationRunSurface({ ctx }: { ctx: SurfaceContext }) {
                       setConnecting(true);
                     }}
                   >
-                    <Plug className="size-4" aria-hidden />
+                    <Icon glyph={faPlug} className="size-4" aria-hidden />
                     Connect to {vendor.name}
                   </Button>
                 </div>
@@ -580,7 +582,7 @@ export function MigrationRunSurface({ ctx }: { ctx: SurfaceContext }) {
             )}
 
             <label className="border-base-300 hover:border-primary flex cursor-pointer flex-col items-center gap-3 rounded-xl border-2 border-dashed p-10 text-center transition-colors">
-              <FileUp className="size-8" aria-hidden />
+              <Icon glyph={faFileArrowUp} className="size-8" aria-hidden />
               <span className="flex flex-col gap-1">
                 <Text className="font-medium">Choose a file, or drop one here</Text>
                 <Text className="text-sm">CSV, XML or JSON — whatever your platform gave you.</Text>
@@ -599,7 +601,7 @@ export function MigrationRunSurface({ ctx }: { ctx: SurfaceContext }) {
 
             {reading ? (
               <Text>
-                <Loader2 className="mr-2 inline size-4 animate-spin" aria-hidden />
+                <Icon glyph={faSpinner} className="mr-2 inline size-4 animate-spin" aria-hidden />
                 Reading it…
               </Text>
             ) : null}
@@ -638,7 +640,7 @@ export function MigrationRunSurface({ ctx }: { ctx: SurfaceContext }) {
                   : 'Read live, nothing stored'}
               </Badge>
               <Button variant="ghost" size="sm" onClick={reset} className="ml-auto">
-                <RotateCcw className="size-4" aria-hidden />
+                <Icon glyph={faRotate} className="size-4" aria-hidden />
                 {live === null ? 'Use a different file' : 'Start again'}
               </Button>
             </div>
@@ -668,7 +670,7 @@ export function MigrationRunSurface({ ctx }: { ctx: SurfaceContext }) {
               <Alert color="danger" variant="soft">
                 <AlertContent>
                   <AlertTitle>
-                    <CircleAlert className="mr-2 inline size-4" aria-hidden />
+                    <Icon glyph={faCircleExclamation} className="mr-2 inline size-4" aria-hidden />
                     {live === null
                       ? 'Nothing in this file can come across yet'
                       : 'Nothing we found can come across yet'}
@@ -684,7 +686,11 @@ export function MigrationRunSurface({ ctx }: { ctx: SurfaceContext }) {
               <Alert color="info" variant="soft">
                 <AlertContent>
                   <AlertTitle>
-                    <TriangleAlert className="mr-2 inline size-4" aria-hidden />
+                    <Icon
+                      glyph={faExclamationTriangle}
+                      className="mr-2 inline size-4"
+                      aria-hidden
+                    />
                     Try a practice run first
                   </AlertTitle>
                   <AlertDescription>

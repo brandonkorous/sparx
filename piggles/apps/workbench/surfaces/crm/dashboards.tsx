@@ -44,7 +44,16 @@ import {
   Textarea,
   useToast,
 } from '@wizeworks/silicaui-react';
-import { Check, ChevronDown, LayoutDashboard, Pencil, Plus, Star, Trash2 } from 'lucide-react';
+import {
+  faCheck,
+  faChevronDown,
+  faGauge,
+  faPencil,
+  faPlus,
+  faStar,
+  faTrashCan,
+} from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
@@ -391,7 +400,7 @@ export function DashboardsSurface({ ctx }: { ctx: SurfaceContext }) {
       <div className={PANE_SHELL}>
         <div className="flex flex-1 items-center justify-center p-6">
           <EmptyState
-            icon={<LayoutDashboard className="size-6" aria-hidden />}
+            icon={<Icon glyph={faGauge} className="size-6" aria-hidden />}
             title="No dashboard yet"
             description="A dashboard puts the reports you check often on one screen, kept up to date automatically."
             actions={
@@ -415,9 +424,9 @@ export function DashboardsSurface({ ctx }: { ctx: SurfaceContext }) {
         <DropdownMenu>
           <DropdownMenuTrigger>
             <Button color="module" variant="soft" size="sm" className="min-w-0 gap-1.5">
-              <LayoutDashboard className="size-4 shrink-0" aria-hidden />
+              <Icon glyph={faGauge} className="size-4 shrink-0" aria-hidden />
               <span className="truncate">{board?.name ?? 'Dashboards'}</span>
-              <ChevronDown className="size-3 shrink-0" aria-hidden />
+              <Icon glyph={faChevronDown} className="size-3 shrink-0" aria-hidden />
             </Button>
           </DropdownMenuTrigger>
 
@@ -434,10 +443,10 @@ export function DashboardsSurface({ ctx }: { ctx: SurfaceContext }) {
                   <span className="flex w-full items-center gap-2">
                     <span className="min-w-0 flex-1 truncate">{option.name}</span>
                     {option.isDefault ? (
-                      <Star className="size-3.5 shrink-0" aria-label="Opens first" />
+                      <Icon glyph={faStar} className="size-3.5 shrink-0" aria-label="Opens first" />
                     ) : null}
                     {option.id === activeId ? (
-                      <Check className="size-4 shrink-0" aria-hidden />
+                      <Icon glyph={faCheck} className="size-4 shrink-0" aria-hidden />
                     ) : null}
                   </span>
                 </DropdownMenuItem>
@@ -449,13 +458,13 @@ export function DashboardsSurface({ ctx }: { ctx: SurfaceContext }) {
             <DropdownMenuGroup>
               <DropdownMenuItem onClick={startNewBoard}>
                 <span className="flex w-full items-center gap-2">
-                  <Plus className="size-4 shrink-0" aria-hidden />
+                  <Icon glyph={faPlus} className="size-4 shrink-0" aria-hidden />
                   <span className="flex-1">Another board</span>
                 </span>
               </DropdownMenuItem>
               <DropdownMenuItem onClick={startEditBoard}>
                 <span className="flex w-full items-center gap-2">
-                  <Pencil className="size-4 shrink-0" aria-hidden />
+                  <Icon glyph={faPencil} className="size-4 shrink-0" aria-hidden />
                   <span className="flex-1">Rename or share this one</span>
                 </span>
               </DropdownMenuItem>
@@ -466,7 +475,7 @@ export function DashboardsSurface({ ctx }: { ctx: SurfaceContext }) {
                   }}
                 >
                   <span className="flex w-full items-center gap-2">
-                    <Trash2 className="size-4 shrink-0" aria-hidden />
+                    <Icon glyph={faTrashCan} className="size-4 shrink-0" aria-hidden />
                     <span className="flex-1">Delete “{board.name}”</span>
                   </span>
                 </DropdownMenuItem>
@@ -486,7 +495,7 @@ export function DashboardsSurface({ ctx }: { ctx: SurfaceContext }) {
               setWidgetDraft({ mode: 'add', reportId: '', title: '' });
             }}
           >
-            <Plus className="size-4" aria-hidden /> Add a report
+            <Icon glyph={faPlus} className="size-4" aria-hidden /> Add a report
           </Button>
           <RefreshButton isFetching={isFetching} onRefresh={() => void refetch()} />
         </div>
@@ -495,7 +504,7 @@ export function DashboardsSurface({ ctx }: { ctx: SurfaceContext }) {
       <div className="overflow-auto p-6">
         {widgets.length === 0 ? (
           <EmptyState
-            icon={<LayoutDashboard className="size-6" aria-hidden />}
+            icon={<Icon glyph={faGauge} className="size-6" aria-hidden />}
             title="Nothing on this board yet"
             description="Add a report and it will appear here, running live every time you open it."
             actions={

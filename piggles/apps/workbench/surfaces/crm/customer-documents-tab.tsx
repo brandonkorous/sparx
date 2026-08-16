@@ -13,7 +13,8 @@
 import { useMemo, useRef } from 'react';
 import { PaneWaiting } from '../../components/pane-waiting';
 import { Button, Card, EmptyState, Text, useToast } from '@wizeworks/silicaui-react';
-import { Download, FileText, Trash2, Upload } from 'lucide-react';
+import { faDownload, faFileText, faTrashCan, faUpload } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { useConfirm } from '../../lib/confirm';
 import {
   customerErrorMessage,
@@ -56,7 +57,7 @@ function DocumentRow({
 
   return (
     <div className="flex items-center gap-3 py-2">
-      <FileText className="text-module size-5 shrink-0" aria-hidden />
+      <Icon glyph={faFileText} className="text-module size-5 shrink-0" aria-hidden />
       <div className="flex min-w-0 flex-1 flex-col">
         <span className="truncate font-medium">{name}</span>
         <span className="text-sm">
@@ -78,7 +79,7 @@ function DocumentRow({
             window.open(asset.url ?? '', '_blank', 'noopener,noreferrer');
           }}
         >
-          <Download className="size-4" aria-hidden />
+          <Icon glyph={faDownload} className="size-4" aria-hidden />
           Open
         </Button>
       )}
@@ -90,7 +91,7 @@ function DocumentRow({
         onClick={onDelete}
         aria-label={`Remove ${name}`}
       >
-        <Trash2 className="size-4" aria-hidden />
+        <Icon glyph={faTrashCan} className="size-4" aria-hidden />
       </Button>
     </div>
   );
@@ -186,7 +187,7 @@ export function CustomerDocumentsTab({ customerId }: { customerId: string }) {
             fileRef.current?.click();
           }}
         >
-          <Upload className="size-4" aria-hidden />
+          <Icon glyph={faUpload} className="size-4" aria-hidden />
           Upload a file
         </Button>
       </div>
@@ -194,7 +195,7 @@ export function CustomerDocumentsTab({ customerId }: { customerId: string }) {
       <Card className="overflow-hidden">
         {isError ? (
           <EmptyState
-            icon={<FileText className="size-6" aria-hidden />}
+            icon={<Icon glyph={faFileText} className="size-6" aria-hidden />}
             title="Could not load documents"
             description="Something went wrong reaching the server. It may be a temporary problem — try again in a moment."
           />
@@ -202,7 +203,7 @@ export function CustomerDocumentsTab({ customerId }: { customerId: string }) {
           <PaneWaiting />
         ) : rows.length === 0 ? (
           <EmptyState
-            icon={<FileText className="size-6" aria-hidden />}
+            icon={<Icon glyph={faFileText} className="size-6" aria-hidden />}
             title="No documents yet"
             description="Attach a signed contract, an ID scan, or any PDF or image with “Upload a file” above. Only your team can see them."
           />

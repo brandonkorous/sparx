@@ -45,7 +45,8 @@ import {
   Tooltip,
 } from '@wizeworks/silicaui-react';
 import { barcodeSvg, encodeBarcode } from '@sparx/commerce-schemas';
-import { Barcode as BarcodeIcon, Printer, Sparkles } from 'lucide-react';
+import { faBarcode, faPrint, faSparkles } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { PrintSheet } from '../../components/print-sheet';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
@@ -248,7 +249,7 @@ export function ProductLabelsSurface({ ctx }: { ctx: SurfaceContext }) {
             window.print();
           }}
         >
-          <Printer className="size-4" aria-hidden />
+          <Icon glyph={faPrint} className="size-4" aria-hidden />
           Print {rows.length > 0 ? plural(rows.length, 'label', 'labels') : 'labels'}
         </Button>
 
@@ -325,7 +326,7 @@ export function ProductLabelsSurface({ ctx }: { ctx: SurfaceContext }) {
           <PaneWaiting label="Loading codes…" />
         ) : rows.length === 0 ? (
           <EmptyState
-            icon={<BarcodeIcon className="size-6" aria-hidden />}
+            icon={<Icon glyph={faBarcode} className="size-6" aria-hidden />}
             title={search.trim() ? 'Nothing matches that' : 'No barcodes to print'}
             description={
               search.trim()
@@ -343,7 +344,7 @@ export function ProductLabelsSurface({ ctx }: { ctx: SurfaceContext }) {
                     ctx.open('inventory.stock.list', {}, { target: 'tab' });
                   }}
                 >
-                  <Sparkles className="size-4" aria-hidden />
+                  <Icon glyph={faSparkles} className="size-4" aria-hidden />
                   Pick items to create codes for
                 </Button>
               )
@@ -423,7 +424,7 @@ export function GenerateBarcodesButton({
           );
         }}
       >
-        <Sparkles className="size-4" aria-hidden />
+        <Icon glyph={faSparkles} className="size-4" aria-hidden />
         {generate.isPending
           ? 'Creating…'
           : `Create ${plural(variantIds.length, 'barcode', 'barcodes')}`}

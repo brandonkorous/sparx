@@ -24,7 +24,8 @@ import {
   Table,
   ToolbarSeparator,
 } from '@wizeworks/silicaui-react';
-import { ArrowDown, ArrowUp, Percent, Plus } from 'lucide-react';
+import { faArrowDown, faArrowUp, faPercent, faPlus } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
@@ -135,9 +136,9 @@ export function DiscountsListSurface({ ctx }: { ctx: SurfaceContext }) {
         {label}
         {sort.key === key ? (
           sort.dir === 'asc' ? (
-            <ArrowUp className="size-3" aria-hidden />
+            <Icon glyph={faArrowUp} className="size-3" aria-hidden />
           ) : (
-            <ArrowDown className="size-3" aria-hidden />
+            <Icon glyph={faArrowDown} className="size-3" aria-hidden />
           )
         ) : null}
       </button>
@@ -193,7 +194,7 @@ export function DiscountsListSurface({ ctx }: { ctx: SurfaceContext }) {
             ctx.open('commerce.discount.detail', { id: 'new' }, { target: targetFor(event) });
           }}
         >
-          <Plus className="size-4" aria-hidden />
+          <Icon glyph={faPlus} className="size-4" aria-hidden />
           <span className="hidden @lg:inline">Add a discount</span>
         </Button>
 
@@ -209,7 +210,7 @@ export function DiscountsListSurface({ ctx }: { ctx: SurfaceContext }) {
       <Card className="min-h-0 flex-1 overflow-y-auto">
         {error ? (
           <EmptyState
-            icon={<Percent className="size-6" aria-hidden />}
+            icon={<Icon glyph={faPercent} className="size-6" aria-hidden />}
             title="Could not load your discounts"
             description="Something went wrong reaching the server. It may be temporary — try again in a moment."
           />
@@ -219,7 +220,7 @@ export function DiscountsListSurface({ ctx }: { ctx: SurfaceContext }) {
           <ListEmptyState
             filtered={anyFilter}
             noResults={{
-              icon: <Percent className="size-6" aria-hidden />,
+              icon: <Icon glyph={faPercent} className="size-6" aria-hidden />,
               title: 'Nothing matches those filters',
               description: 'Try a different word, or switch the filters back to All.',
             }}

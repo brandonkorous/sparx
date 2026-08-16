@@ -40,7 +40,8 @@ import {
   Textarea,
   useToast,
 } from '@wizeworks/silicaui-react';
-import { Bot, Plus, Save, Trash2 } from 'lucide-react';
+import { faFloppyDisk, faPlus, faRobot, faTrashCan } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { useConfirm } from '../../lib/confirm';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import { afterPaneChange } from '../../lib/defer';
@@ -391,12 +392,12 @@ function InstructionEditor({
         >
           {isNew ? (
             <>
-              <Save className="size-4" aria-hidden />
+              <Icon glyph={faFloppyDisk} className="size-4" aria-hidden />
               Save instruction
             </>
           ) : (
             <>
-              <Save className="size-4" aria-hidden />
+              <Icon glyph={faFloppyDisk} className="size-4" aria-hidden />
               Save
             </>
           )}
@@ -471,7 +472,7 @@ function InstructionEditor({
 
             {draft.category === 'persona' ? (
               <Alert color="info" variant="soft">
-                <Bot className="size-5" aria-hidden />
+                <Icon glyph={faRobot} className="size-5" aria-hidden />
                 <AlertContent>
                   <AlertTitle>This is your live chat’s personality</AlertTitle>
                   <AlertDescription>
@@ -606,7 +607,7 @@ function InstructionEditor({
             action={
               canEdit ? (
                 <Button size="sm" variant="outline" color="module" onClick={addVariable}>
-                  <Plus className="size-4" aria-hidden />
+                  <Icon glyph={faPlus} className="size-4" aria-hidden />
                   Add
                 </Button>
               ) : undefined
@@ -695,7 +696,7 @@ function InstructionEditor({
                             removeVariable(index);
                           }}
                         >
-                          <Trash2 className="size-4" aria-hidden />
+                          <Icon glyph={faTrashCan} className="size-4" aria-hidden />
                         </Button>
                       ) : null}
                     </div>
@@ -771,7 +772,7 @@ function InstructionEditor({
                   void onDelete();
                 }}
               >
-                <Trash2 className="size-4" aria-hidden />
+                <Icon glyph={faTrashCan} className="size-4" aria-hidden />
                 Delete
               </Button>
             </div>

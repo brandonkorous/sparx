@@ -41,7 +41,8 @@ import {
   useToast,
 } from '@wizeworks/silicaui-react';
 import { useConfirm } from '../../lib/confirm';
-import { Tag, Trash2 } from 'lucide-react';
+import { faTag, faTrashCan } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { api } from '../../lib/api/client';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import { afterPaneChange } from '../../lib/defer';
@@ -899,7 +900,7 @@ function PriceListEditor({
                             removeEntry(entry.variantId);
                           }}
                         >
-                          <Trash2 className="size-4" aria-hidden />
+                          <Icon glyph={faTrashCan} className="size-4" aria-hidden />
                         </Button>
                       </div>
 
@@ -1003,7 +1004,7 @@ function PriceListEditor({
                     void onArchive();
                   }}
                 >
-                  <Tag className="size-4" aria-hidden />
+                  <Icon glyph={faTag} className="size-4" aria-hidden />
                   Retire this price list
                 </Button>
               </div>

@@ -9,7 +9,8 @@
 
 import { useState } from 'react';
 import { Badge, Button, Card, EmptyState, Input, Text } from '@wizeworks/silicaui-react';
-import { BarChart3, Copy, Trash2 } from 'lucide-react';
+import { faChartColumn, faCopy, faTrashCan } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
@@ -131,7 +132,7 @@ export function ReportsLibrarySurface({ ctx }: { ctx: SurfaceContext }) {
                 .then((copy) => ctx.open('crm.report.builder', { id: copy.id }, { target: 'tab' }));
             }}
           >
-            <Copy className="size-4" aria-hidden />
+            <Icon glyph={faCopy} className="size-4" aria-hidden />
           </Button>
           {report.builtinSlug ? null : (
             <Button
@@ -144,7 +145,7 @@ export function ReportsLibrarySurface({ ctx }: { ctx: SurfaceContext }) {
                 void remove(report);
               }}
             >
-              <Trash2 className="size-4" aria-hidden />
+              <Icon glyph={faTrashCan} className="size-4" aria-hidden />
             </Button>
           )}
         </div>
@@ -188,7 +189,7 @@ export function ReportsLibrarySurface({ ctx }: { ctx: SurfaceContext }) {
           <div className="skeleton h-40 w-full" />
         ) : rows.length === 0 ? (
           <EmptyState
-            icon={<BarChart3 className="size-6" aria-hidden />}
+            icon={<Icon glyph={faChartColumn} className="size-6" aria-hidden />}
             title={needle ? 'Nothing matches that' : 'No reports yet'}
             description={
               needle

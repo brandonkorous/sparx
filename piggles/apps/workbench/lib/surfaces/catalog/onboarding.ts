@@ -8,7 +8,7 @@
 //
 // Keys are persisted in saved layouts and deep links, so they are stable forever.
 
-import { ListChecks, PenLine, Rocket } from 'lucide-react';
+import { faListCheck, faPenLine, faRocket } from '@fortawesome/pro-solid-svg-icons';
 import type { SurfaceDefinition } from '../registry';
 import { WelcomeSurface } from '../../../surfaces/onboarding/welcome/welcome-checklist';
 import {
@@ -23,7 +23,7 @@ export const ONBOARDING_SURFACES: SurfaceDefinition[] = [
     key: 'workbench.welcome',
     title: 'Get set up',
     module: 'platform',
-    icon: ListChecks,
+    icon: faListCheck,
     component: WelcomeSurface,
     // One checklist per account — a second copy shows the same derived progress.
     singleton: true,
@@ -34,7 +34,7 @@ export const ONBOARDING_SURFACES: SurfaceDefinition[] = [
     key: 'workbench.onboarding.story',
     title: 'Describe your business',
     module: 'platform',
-    icon: PenLine,
+    icon: faPenLine,
     component: OnboardingStorySurface,
     section: 'Set up',
     // One setup at a time — a second copy would be two flows writing the same state.
@@ -46,7 +46,7 @@ export const ONBOARDING_SURFACES: SurfaceDefinition[] = [
     key: 'workbench.onboarding',
     title: 'Set up step by step',
     module: 'platform',
-    icon: Rocket,
+    icon: faRocket,
     component: OnboardingWizardSurface,
     section: 'Set up',
     singleton: true,

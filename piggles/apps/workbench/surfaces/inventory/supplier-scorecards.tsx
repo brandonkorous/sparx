@@ -38,7 +38,8 @@ import {
   Tooltip,
   useToast,
 } from '@wizeworks/silicaui-react';
-import { Calculator, Truck } from 'lucide-react';
+import { faCalculator, faTruck } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import { afterCommit } from '../../lib/defer';
@@ -110,7 +111,7 @@ export function SupplierScorecardsSurface({ ctx }: { ctx: SurfaceContext }) {
     if (report.isError) {
       return (
         <EmptyState
-          icon={<Truck className="size-6" aria-hidden />}
+          icon={<Icon glyph={faTruck} className="size-6" aria-hidden />}
           title="Could not load your suppliers’ figures"
           description="This is a problem reaching the server, not a finding about anybody you buy from. Try again in a moment."
         />
@@ -124,19 +125,19 @@ export function SupplierScorecardsSurface({ ctx }: { ctx: SurfaceContext }) {
       // pressing a button.
       return measuredAt === null ? (
         <EmptyState
-          icon={<Calculator className="size-6" aria-hidden />}
+          icon={<Icon glyph={faCalculator} className="size-6" aria-hidden />}
           title="Nobody has been measured yet"
           description="This is empty because no pass has been made over your orders and deliveries — not because your suppliers are perfect. Press “Measure now” above to find out which."
           actions={
             <Button color="module" loading={recompute.isPending} onClick={onRecompute}>
-              <Calculator className="size-4" aria-hidden />
+              <Icon glyph={faCalculator} className="size-4" aria-hidden />
               Measure now
             </Button>
           }
         />
       ) : (
         <EmptyState
-          icon={<Truck className="size-6" aria-hidden />}
+          icon={<Icon glyph={faTruck} className="size-6" aria-hidden />}
           title={scoredOnly ? 'Nobody can be graded yet' : 'No suppliers on file'}
           description={
             scoredOnly
@@ -275,7 +276,7 @@ export function SupplierScorecardsSurface({ ctx }: { ctx: SurfaceContext }) {
           loading={recompute.isPending}
           onClick={onRecompute}
         >
-          <Calculator className="size-4" aria-hidden />
+          <Icon glyph={faCalculator} className="size-4" aria-hidden />
           Measure now
         </Button>
         <RefreshButton

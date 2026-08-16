@@ -47,15 +47,16 @@ import {
 } from '@wizeworks/silicaui-react';
 import { useConfirm } from '../../lib/confirm';
 import {
-  Boxes,
-  CalendarClock,
-  Factory,
-  Layers,
-  MapPin,
-  ShieldAlert,
-  ShieldCheck,
-  Truck,
-} from 'lucide-react';
+  faBoxes,
+  faCalendarClock,
+  faIndustry,
+  faLayerGroup,
+  faLocationDot,
+  faShieldCheck,
+  faShieldExclamation,
+  faTruck,
+} from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
@@ -331,7 +332,7 @@ export function LotDetailSurface({ ctx }: { ctx: SurfaceContext }) {
       <div className={PANE_SHELL}>
         <Card className="min-h-0 flex-1 items-center justify-center">
           <PaneEmpty
-            icon={<Layers className="size-6" aria-hidden />}
+            icon={<Icon glyph={faLayerGroup} className="size-6" aria-hidden />}
             title="No batch was chosen"
             description="This pane traces one batch. Open it from the Lots & serials list by clicking a row."
             actions={
@@ -436,7 +437,7 @@ export function LotDetailSurface({ ctx }: { ctx: SurfaceContext }) {
             );
           }}
         >
-          <Boxes className="size-4" aria-hidden />
+          <Icon glyph={faBoxes} className="size-4" aria-hidden />
           <span className="hidden @xl:inline">Item stock</span>
         </Button>
 
@@ -454,7 +455,7 @@ export function LotDetailSurface({ ctx }: { ctx: SurfaceContext }) {
           {/* Identity first: the batch code, then the product it is a batch of. */}
           <section className="card bg-base-100 flex flex-col gap-3 p-4">
             <div className="flex min-w-0 items-start gap-3">
-              <Layers className="text-module mt-1 size-6 shrink-0" aria-hidden />
+              <Icon glyph={faLayerGroup} className="text-module mt-1 size-6 shrink-0" aria-hidden />
               <div className="flex min-w-0 flex-col gap-0.5">
                 <Heading level={1} className="min-w-0 font-mono text-2xl font-semibold break-all">
                   {data.lotNumber}
@@ -494,7 +495,7 @@ export function LotDetailSurface({ ctx }: { ctx: SurfaceContext }) {
                   void doClearRecall();
                 }}
               >
-                <ShieldCheck className="size-4" aria-hidden />
+                <Icon glyph={faShieldCheck} className="size-4" aria-hidden />
                 Clear recall
               </Button>
             </Alert>
@@ -520,7 +521,10 @@ export function LotDetailSurface({ ctx }: { ctx: SurfaceContext }) {
             </Heading>
 
             <div className="grid gap-4 @md:grid-cols-2">
-              <Fact icon={<Layers className="size-4" aria-hidden />} label="Units in this batch">
+              <Fact
+                icon={<Icon glyph={faLayerGroup} className="size-4" aria-hidden />}
+                label="Units in this batch"
+              >
                 <span className="text-xl font-semibold tabular-nums">{data.quantity}</span>
                 <Text className="text-sm">
                   How many the batch held. What a shopper can buy is the item’s live stock, not
@@ -528,11 +532,17 @@ export function LotDetailSurface({ ctx }: { ctx: SurfaceContext }) {
                 </Text>
               </Fact>
 
-              <Fact icon={<MapPin className="size-4" aria-hidden />} label="Where it is kept">
+              <Fact
+                icon={<Icon glyph={faLocationDot} className="size-4" aria-hidden />}
+                label="Where it is kept"
+              >
                 {lotLocationLabel(data)}
               </Fact>
 
-              <Fact icon={<CalendarClock className="size-4" aria-hidden />} label="Expiry">
+              <Fact
+                icon={<Icon glyph={faCalendarClock} className="size-4" aria-hidden />}
+                label="Expiry"
+              >
                 {expiry ? (
                   <span className="inline-flex items-center gap-2">
                     {data.expiresAt ? <Timestamp value={data.expiresAt} format="absolute" /> : null}
@@ -545,7 +555,10 @@ export function LotDetailSurface({ ctx }: { ctx: SurfaceContext }) {
                 )}
               </Fact>
 
-              <Fact icon={<Factory className="size-4" aria-hidden />} label="When it was made">
+              <Fact
+                icon={<Icon glyph={faIndustry} className="size-4" aria-hidden />}
+                label="When it was made"
+              >
                 {data.manufacturedAt ? (
                   <Timestamp value={data.manufacturedAt} format="absolute" />
                 ) : (
@@ -554,7 +567,7 @@ export function LotDetailSurface({ ctx }: { ctx: SurfaceContext }) {
               </Fact>
 
               <Fact
-                icon={<Truck className="size-4" aria-hidden />}
+                icon={<Icon glyph={faTruck} className="size-4" aria-hidden />}
                 label="Supplier’s batch reference"
               >
                 {data.supplierBatchRef ? (
@@ -567,14 +580,20 @@ export function LotDetailSurface({ ctx }: { ctx: SurfaceContext }) {
               </Fact>
 
               {hazard ? (
-                <Fact icon={<ShieldAlert className="size-4" aria-hidden />} label="Handling">
+                <Fact
+                  icon={<Icon glyph={faShieldExclamation} className="size-4" aria-hidden />}
+                  label="Handling"
+                >
                   <Badge color="warning" variant="soft" size="sm">
                     {hazard}
                   </Badge>
                 </Fact>
               ) : null}
 
-              <Fact icon={<CalendarClock className="size-4" aria-hidden />} label="Added">
+              <Fact
+                icon={<Icon glyph={faCalendarClock} className="size-4" aria-hidden />}
+                label="Added"
+              >
                 <Timestamp value={data.createdAt} format="absolute" />
               </Fact>
             </div>

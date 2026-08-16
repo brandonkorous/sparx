@@ -39,7 +39,8 @@ import {
   Timestamp,
   useToast,
 } from '@wizeworks/silicaui-react';
-import { Check, ShieldCheck, X } from 'lucide-react';
+import { faCheck, faShieldCheck, faXmark } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import { afterCommit } from '../../lib/defer';
@@ -138,7 +139,7 @@ export function PoApprovalsSurface({ ctx }: { ctx: SurfaceContext }) {
     if (queue.isError) {
       return (
         <EmptyState
-          icon={<ShieldCheck className="size-6" aria-hidden />}
+          icon={<Icon glyph={faShieldCheck} className="size-6" aria-hidden />}
           title="Could not load the approvals"
           description="This is a problem reaching the server, not a statement about what is waiting. Try again in a moment."
         />
@@ -150,7 +151,7 @@ export function PoApprovalsSurface({ ctx }: { ctx: SurfaceContext }) {
     if (rows.length === 0) {
       return (
         <EmptyState
-          icon={<ShieldCheck className="size-6" aria-hidden />}
+          icon={<Icon glyph={faShieldCheck} className="size-6" aria-hidden />}
           title={status === 'pending' ? 'Nothing is waiting on you' : 'Nothing here'}
           description={
             status === 'pending'
@@ -255,7 +256,7 @@ export function PoApprovalsSurface({ ctx }: { ctx: SurfaceContext }) {
                         onApprove(row);
                       }}
                     >
-                      <Check className="size-4" aria-hidden />
+                      <Icon glyph={faCheck} className="size-4" aria-hidden />
                       Approve
                     </Button>
                     <Button
@@ -267,7 +268,7 @@ export function PoApprovalsSurface({ ctx }: { ctx: SurfaceContext }) {
                         setReason('');
                       }}
                     >
-                      <X className="size-4" aria-hidden />
+                      <Icon glyph={faXmark} className="size-4" aria-hidden />
                       Send back
                     </Button>
                   </span>

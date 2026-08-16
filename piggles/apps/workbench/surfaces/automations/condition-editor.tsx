@@ -13,7 +13,8 @@
 // natural entry like `order.total ≥ 100` stores a real number.
 
 import { Autocomplete, Button, Input, Select } from '@wizeworks/silicaui-react';
-import { FolderPlus, Plus, Trash2 } from 'lucide-react';
+import { faFolderPlus, faPlus, faTrashCan } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import {
   MAX_CONDITION_DEPTH,
   isConditionGroup,
@@ -125,7 +126,7 @@ function ConditionRow({
         aria-label="Remove this condition"
         onClick={onRemove}
       >
-        <Trash2 className="size-4" aria-hidden />
+        <Icon glyph={faTrashCan} className="size-4" aria-hidden />
       </Button>
     </div>
   );
@@ -191,7 +192,7 @@ export function ConditionEditor({
             aria-label="Remove this group"
             onClick={onRemove}
           >
-            <Trash2 className="size-4" aria-hidden />
+            <Icon glyph={faTrashCan} className="size-4" aria-hidden />
           </Button>
         ) : null}
       </div>
@@ -245,7 +246,7 @@ export function ConditionEditor({
             onChange({ ...value, conditions: [...value.conditions, emptyCondition()] });
           }}
         >
-          <Plus className="size-4" aria-hidden />
+          <Icon glyph={faPlus} className="size-4" aria-hidden />
           Add a condition
         </Button>
         {canNest ? (
@@ -257,7 +258,7 @@ export function ConditionEditor({
               onChange({ ...value, conditions: [...value.conditions, emptyGroup()] });
             }}
           >
-            <FolderPlus className="size-4" aria-hidden />
+            <Icon glyph={faFolderPlus} className="size-4" aria-hidden />
             Add a group
           </Button>
         ) : null}

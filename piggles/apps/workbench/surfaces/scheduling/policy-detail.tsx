@@ -33,7 +33,8 @@ import {
   useToast,
 } from '@wizeworks/silicaui-react';
 import { useConfirm } from '../../lib/confirm';
-import { Save, ShieldCheck, Trash2 } from 'lucide-react';
+import { faFloppyDisk, faShieldCheck, faTrashCan } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { FormSection } from '../../components/form-section';
 import { useDirtySource } from '../../lib/workbench/dirty';
@@ -370,7 +371,7 @@ function PolicyEditor({
           loading={busy}
           onClick={submit}
         >
-          <Save className="size-4" aria-hidden />
+          <Icon glyph={faFloppyDisk} className="size-4" aria-hidden />
           {isNew ? 'Create rule set' : 'Save'}
         </Button>
       </PaneToolbar>
@@ -380,7 +381,7 @@ function PolicyEditor({
           {existing ? (
             <div className="flex flex-col gap-1">
               <Heading level={1} className="flex min-w-0 items-center gap-2 text-2xl font-semibold">
-                <ShieldCheck className="size-5 shrink-0" aria-hidden />
+                <Icon glyph={faShieldCheck} className="size-5 shrink-0" aria-hidden />
                 <span className="min-w-0 break-words">{existing.name}</span>
               </Heading>
             </div>
@@ -610,7 +611,7 @@ function PolicyEditor({
                   void onRemove();
                 }}
               >
-                <Trash2 className="size-4" aria-hidden />
+                <Icon glyph={faTrashCan} className="size-4" aria-hidden />
                 {remove.isPending ? 'Deleting…' : 'Delete'}
               </Button>
             </div>

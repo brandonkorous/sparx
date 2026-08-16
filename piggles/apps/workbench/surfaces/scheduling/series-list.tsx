@@ -18,7 +18,8 @@ import {
   SearchInput,
   Table,
 } from '@wizeworks/silicaui-react';
-import { Plus, Repeat } from 'lucide-react';
+import { faPlus, faRepeat } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { ListEmptyState } from '../../components/list-empty-state';
@@ -98,7 +99,7 @@ export function SeriesListSurface({ ctx }: { ctx: SurfaceContext }) {
             ctx.open('scheduling.series.detail', { id: 'new' }, { target: targetFor(event) });
           }}
         >
-          <Plus className="size-4" aria-hidden />
+          <Icon glyph={faPlus} className="size-4" aria-hidden />
           Repeating booking
         </Button>
 
@@ -114,7 +115,7 @@ export function SeriesListSurface({ ctx }: { ctx: SurfaceContext }) {
       <Card className="min-h-0 flex-1 overflow-y-auto">
         {error ? (
           <EmptyState
-            icon={<Repeat className="size-6" aria-hidden />}
+            icon={<Icon glyph={faRepeat} className="size-6" aria-hidden />}
             title="Could not load your repeating bookings"
             description="Something went wrong reaching the server. Try refreshing in a moment."
           />
@@ -124,7 +125,7 @@ export function SeriesListSurface({ ctx }: { ctx: SurfaceContext }) {
           <ListEmptyState
             filtered={hasFilters}
             noResults={{
-              icon: <Repeat className="size-6" aria-hidden />,
+              icon: <Icon glyph={faRepeat} className="size-6" aria-hidden />,
               title: 'Nothing matches those filters',
               description:
                 'Try a different search, or widen the filter to see finished and stopped ones.',
@@ -145,7 +146,7 @@ export function SeriesListSurface({ ctx }: { ctx: SurfaceContext }) {
                     );
                   }}
                 >
-                  <Plus className="size-4" aria-hidden />
+                  <Icon glyph={faPlus} className="size-4" aria-hidden />
                   Repeating booking
                 </Button>
               ),

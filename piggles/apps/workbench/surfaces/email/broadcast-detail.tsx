@@ -37,7 +37,15 @@ import {
   Text,
   useToast,
 } from '@wizeworks/silicaui-react';
-import { CalendarClock, Mail, Save, Send, Settings, X } from 'lucide-react';
+import {
+  faCalendarClock,
+  faEnvelope,
+  faFloppyDisk,
+  faGear,
+  faPaperPlane,
+  faXmark,
+} from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { useConfirm } from '../../lib/confirm';
 import { afterPaneChange } from '../../lib/defer';
 import { useDirtySource } from '../../lib/workbench/dirty';
@@ -334,7 +342,7 @@ function BroadcastComposer({ ctx, broadcast }: { ctx: SurfaceContext; broadcast?
             void onSaveDraft();
           }}
         >
-          <Save className="size-4" aria-hidden />
+          <Icon glyph={faFloppyDisk} className="size-4" aria-hidden />
           Save draft
         </Button>
 
@@ -349,7 +357,7 @@ function BroadcastComposer({ ctx, broadcast }: { ctx: SurfaceContext; broadcast?
               void onSend();
             }}
           >
-            <Send className="size-4" aria-hidden />
+            <Icon glyph={faPaperPlane} className="size-4" aria-hidden />
             Send now
           </Button>
         ) : (
@@ -363,7 +371,7 @@ function BroadcastComposer({ ctx, broadcast }: { ctx: SurfaceContext; broadcast?
               void onSchedule();
             }}
           >
-            <CalendarClock className="size-4" aria-hidden />
+            <Icon glyph={faCalendarClock} className="size-4" aria-hidden />
             Schedule
           </Button>
         )}
@@ -514,7 +522,7 @@ function BroadcastComposer({ ctx, broadcast }: { ctx: SurfaceContext; broadcast?
                   ctx.open(EMAIL_DESIGNER_KEY, {}, { target: 'beside' });
                 }}
               >
-                <Mail className="size-4" aria-hidden />
+                <Icon glyph={faEnvelope} className="size-4" aria-hidden />
                 Design emails
               </Button>
             }
@@ -574,13 +582,13 @@ function BroadcastComposer({ ctx, broadcast }: { ctx: SurfaceContext; broadcast?
                   ctx.open(SETTINGS_KEY, {}, { target: 'beside' });
                 }}
               >
-                <Settings className="size-4" aria-hidden />
+                <Icon glyph={faGear} className="size-4" aria-hidden />
                 Change
               </Button>
             }
           >
             <div className="border-base-300 flex items-center gap-3 rounded-lg border p-3">
-              <Mail className="size-5 shrink-0" aria-hidden />
+              <Icon glyph={faEnvelope} className="size-5 shrink-0" aria-hidden />
               <Text className="min-w-0 font-medium break-all">
                 {settings.isPending ? 'Loading…' : senderDisplay(settings.data)}
               </Text>
@@ -721,7 +729,7 @@ function BroadcastReview({ ctx, broadcast }: { ctx: SurfaceContext; broadcast: B
               void onCancel();
             }}
           >
-            <X className="size-4" aria-hidden />
+            <Icon glyph={faXmark} className="size-4" aria-hidden />
             Cancel send
           </Button>
         ) : null}

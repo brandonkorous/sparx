@@ -39,7 +39,8 @@ import {
   TagInput,
   Text,
 } from '@wizeworks/silicaui-react';
-import { Plus, Trash2 } from 'lucide-react';
+import { faPlus, faTrashCan } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { MoneyInput } from '../invoicing/money-input';
 import { useProductFacets } from './products-data';
 import type { CollectionPredicate, CollectionRuleSet } from './collections-data';
@@ -231,7 +232,7 @@ export function CollectionRulesEditor({
               addPredicate(field);
             }}
           >
-            <Plus className="size-4" aria-hidden />
+            <Icon glyph={faPlus} className="size-4" aria-hidden />
             {FIELD_LABELS[field]}
           </Button>
         ))}
@@ -267,7 +268,7 @@ export function CollectionRulesEditor({
                     removePredicate(entry.index);
                   }}
                 >
-                  <Trash2 className="size-3.5" aria-hidden />
+                  <Icon glyph={faTrashCan} className="size-3.5" aria-hidden />
                   Remove
                 </Button>
               </li>
@@ -365,7 +366,7 @@ function PredicateRow({
         className="shrink-0"
         onClick={onRemove}
       >
-        <Trash2 className="size-4" aria-hidden />
+        <Icon glyph={faTrashCan} className="size-4" aria-hidden />
       </Button>
     </div>
   );

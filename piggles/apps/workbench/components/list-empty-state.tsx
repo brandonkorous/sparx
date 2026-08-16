@@ -107,7 +107,7 @@ export function ListEmptyState({
  *
  * Decided here rather than at the call site because there are a hundred call
  * sites: they pass the glyph, this decides what each state looks like, and
- * changing that is one edit. Wrapping is how the tone lands at all — lucide
+ * changing that is one edit. Wrapping is how the tone lands at all — the icon
  * strokes `currentColor`, and silica's chip exposes no prop to reach it, so
  * re-skinning it from outside would be the RULE #1 violation this avoids.
  */

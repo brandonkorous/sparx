@@ -24,7 +24,8 @@ import {
   Table,
   Text,
 } from '@wizeworks/silicaui-react';
-import { Plus, Tag } from 'lucide-react';
+import { faPlus, faTag } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { useQuery } from '@sparx/query';
 import { api } from '../../lib/api/client';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
@@ -104,7 +105,7 @@ export function PriceListsListSurface({ ctx }: { ctx: SurfaceContext }) {
             ctx.open('commerce.pricelist.detail', { id: 'new' }, { target: targetFor(event) });
           }}
         >
-          <Plus className="size-4" aria-hidden />
+          <Icon glyph={faPlus} className="size-4" aria-hidden />
           Add a price list
         </Button>
         <RefreshButton
@@ -119,7 +120,7 @@ export function PriceListsListSurface({ ctx }: { ctx: SurfaceContext }) {
       <Card className="min-h-0 flex-1 overflow-y-auto">
         {isError ? (
           <EmptyState
-            icon={<Tag className="size-6" aria-hidden />}
+            icon={<Icon glyph={faTag} className="size-6" aria-hidden />}
             title="Could not load your price lists"
             description="This is a problem reaching the server. Your price lists are unaffected — nothing has been lost."
           />
@@ -129,7 +130,7 @@ export function PriceListsListSurface({ ctx }: { ctx: SurfaceContext }) {
           <ListEmptyState
             filtered={narrowed}
             noResults={{
-              icon: <Tag className="size-6" aria-hidden />,
+              icon: <Icon glyph={faTag} className="size-6" aria-hidden />,
               title: 'Nothing matches those filters',
               description: 'Try a different word, or clear the filters to see everything.',
             }}

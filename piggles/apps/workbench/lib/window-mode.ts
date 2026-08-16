@@ -4,6 +4,7 @@ import type { DockviewApi, SerializedDockview } from 'dockview';
 import type { WorkbenchController } from '@/lib/workbench/controller';
 import type { PaneDescriptor } from '@/lib/surfaces/descriptor';
 import { loadModeLayout, saveModeLayout } from './mode-layouts';
+import { boxAtPoint, cascadeBox, type FloatPoint } from './window-placement';
 
 // Windows or tabs — how the console presents what you have open.
 //
@@ -54,64 +55,6 @@ export function writeWindowMode(mode: WindowMode): void {
   }
 }
 
-// ── HOW BIG A FLOATING WINDOW IS ────────────────────────────────────────────
-//
-// A FRACTION of the workspace, never a fixed pixel size. The fixed 720×520 this
-// started as looked deliberate on the laptop it was chosen on and looked like a
-// mistake everywhere else: on a 2286px-wide canvas it is a small box marooned in
-// the corner of an enormous empty ground, which reads as something that failed
-// to size itself rather than as a window somebody placed.
-//
-// The floors matter as much as the ratios. Below roughly 520×380 a pane stops
-// being a workspace and becomes a peephole — the shared surfaces put a toolbar,
-// a filter row and a table in there — so on a small canvas a window is allowed
-// to take nearly all of it rather than shrink into uselessness.
-const FLOAT_WIDTH_RATIO = 0.62;
-const FLOAT_HEIGHT_RATIO = 0.72;
-const FLOAT_MIN_WIDTH = 520;
-const FLOAT_MIN_HEIGHT = 380;
-
-/** Where a newly floated window is placed, so a screenful of them cascades
- *  rather than landing in one pile. */
-const CASCADE_STEP = 32;
-const CASCADE_ORIGIN = 24;
-/** Restart the cascade after this many, so the fifth window is not off-screen. */
-const CASCADE_WRAP = 6;
-
-interface FloatBox {
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-}
-
-/**
- * Where the `index`-th floated window goes, in the space actually available.
- *
- * Clamped on both axes, so the last window of a long cascade is still fully on
- * screen — a window whose title bar is below the fold cannot be moved, which
- * makes it unclosable by anything except the tab strip somebody has just been
- * taught not to use.
- */
-function floatBox(api: DockviewApi, index: number): FloatBox {
-  const canvasWidth = Math.max(api.width, FLOAT_MIN_WIDTH);
-  const canvasHeight = Math.max(api.height, FLOAT_MIN_HEIGHT);
-
-  const width = Math.min(canvasWidth, Math.max(FLOAT_MIN_WIDTH, canvasWidth * FLOAT_WIDTH_RATIO));
-  const height = Math.min(
-    canvasHeight,
-    Math.max(FLOAT_MIN_HEIGHT, canvasHeight * FLOAT_HEIGHT_RATIO)
-  );
-
-  const offset = CASCADE_ORIGIN + (index % CASCADE_WRAP) * CASCADE_STEP;
-  return {
-    x: Math.max(0, Math.min(offset, canvasWidth - width)),
-    y: Math.max(0, Math.min(offset, canvasHeight - height)),
-    width: Math.round(width),
-    height: Math.round(height),
-  };
-}
-
 /**
  * Put every open group into the requested presentation.
  *
@@ -125,27 +68,45 @@ function floatBox(api: DockviewApi, index: number): FloatBox {
  * flipped would be the console reaching into another window and closing it.
  */
 export function applyWindowMode(api: DockviewApi, mode: WindowMode): void {
-  // Snapshot first — floating a group mutates the collection being iterated.
-  const groups = [...api.groups];
-
   if (mode === 'windows') {
-    // Count the groups ALREADY floating, so a newcomer joining a screenful of
-    // windows continues the cascade instead of landing under the first one.
-    let index = groups.filter((group) => group.api.location.type === 'floating').length;
-    for (const group of groups) {
-      if (group.api.location.type !== 'grid') continue;
-      api.addFloatingGroup(group, floatBox(api, index));
-      index += 1;
-    }
+    evictFromGrid(api, null);
     return;
   }
 
-  for (const group of groups) {
+  // Snapshot first — moving a group mutates the collection being iterated.
+  for (const group of [...api.groups]) {
     if (group.api.location.type !== 'floating') continue;
     // No target group + a position docks it against the grid's edge — the same
     // call the tear-off control uses to bring a popout back, so a window
     // returning to the grid behaves identically however it left.
     group.api.moveTo({ position: 'right' });
+  }
+}
+
+/**
+ * WINDOWS MODE HAS NO GRID, so anything that lands in one is lifted straight
+ * back out — this is the invariant, not a tidy-up.
+ *
+ * Dropping a tab into empty space is dockview's way of asking for a new group,
+ * and the group it makes is a GRID one: a full-bleed docked pane sitting behind
+ * every floating window, which reads as the drag having failed. Passing `at`
+ * puts that window where the drag was released; everything else cascades.
+ */
+export function evictFromGrid(api: DockviewApi, at: FloatPoint | null): void {
+  const stranded = [...api.groups].filter(
+    (group) => group.api.location.type === 'grid' && group.panels.length > 0
+  );
+  if (stranded.length === 0) return;
+
+  // Count what is ALREADY floating, so a newcomer joining a screenful of windows
+  // continues the cascade instead of landing under the first one.
+  let index = api.groups.filter((group) => group.api.location.type === 'floating').length;
+  for (const group of stranded) {
+    // The drop point describes ONE window. If a sweep found several (a stale
+    // layout, a mode switch), only a cascade can place them all.
+    const box = at && stranded.length === 1 ? boxAtPoint(api, at) : cascadeBox(api, index);
+    api.addFloatingGroup(group, box);
+    index += 1;
   }
 }
 

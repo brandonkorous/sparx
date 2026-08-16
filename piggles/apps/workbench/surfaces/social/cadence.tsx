@@ -36,7 +36,14 @@ import {
   Textarea,
   useToast,
 } from '@wizeworks/silicaui-react';
-import { CalendarClock, Hash, Plus, Trash2, Upload } from 'lucide-react';
+import {
+  faCalendarClock,
+  faHashtag,
+  faPlus,
+  faTrashCan,
+  faUpload,
+} from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { useConfirm } from '../../lib/confirm';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { FormSection } from '../../components/form-section';
@@ -100,7 +107,7 @@ function SlotRow({
       )}
       {canManage ? (
         <Button size="sm" variant="ghost" color="danger" loading={deleting} onClick={onDelete}>
-          <Trash2 className="size-4" aria-hidden />
+          <Icon glyph={faTrashCan} className="size-4" aria-hidden />
           Remove
         </Button>
       ) : null}
@@ -287,7 +294,7 @@ function HashtagSetRow({
       </div>
       {canManage ? (
         <Button size="sm" variant="ghost" color="danger" loading={deleting} onClick={onDelete}>
-          <Trash2 className="size-4" aria-hidden />
+          <Icon glyph={faTrashCan} className="size-4" aria-hidden />
           Remove
         </Button>
       ) : null}
@@ -534,7 +541,7 @@ function ImportPanel({ destinations }: { destinations: { id: string; name: strin
           loading={run.isPending}
           onClick={doImport}
         >
-          <Upload className="size-4" aria-hidden />
+          <Icon glyph={faUpload} className="size-4" aria-hidden />
           Import these posts
         </Button>
       </div>
@@ -616,7 +623,7 @@ export function SocialCadenceSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar label="Cadence controls">
-        <CalendarClock className="size-4 shrink-0" aria-hidden />
+        <Icon glyph={faCalendarClock} className="size-4 shrink-0" aria-hidden />
         <Heading level={2} className="min-w-0 truncate text-base font-semibold">
           Cadence
         </Heading>
@@ -648,7 +655,7 @@ export function SocialCadenceSurface({ ctx }: { ctx: SurfaceContext }) {
                     setAddingSlot(true);
                   }}
                 >
-                  <Plus className="size-4" aria-hidden />
+                  <Icon glyph={faPlus} className="size-4" aria-hidden />
                   Add a time
                 </Button>
               ) : undefined
@@ -667,7 +674,7 @@ export function SocialCadenceSurface({ ctx }: { ctx: SurfaceContext }) {
             ) : (slots.data ?? []).length === 0 && !addingSlot ? (
               <EmptyState
                 size="sm"
-                icon={<CalendarClock className="size-6" aria-hidden />}
+                icon={<Icon glyph={faCalendarClock} className="size-6" aria-hidden />}
                 title="No posting times yet"
                 description="Businesses that post on a rhythm get seen more than ones that post when they remember. Add the times you mean to post and the calendar will show you the gaps."
               />
@@ -704,7 +711,7 @@ export function SocialCadenceSurface({ ctx }: { ctx: SurfaceContext }) {
                     setAddingSet(true);
                   }}
                 >
-                  <Plus className="size-4" aria-hidden />
+                  <Icon glyph={faPlus} className="size-4" aria-hidden />
                   New set
                 </Button>
               ) : undefined
@@ -722,7 +729,7 @@ export function SocialCadenceSurface({ ctx }: { ctx: SurfaceContext }) {
             ) : (sets.data ?? []).length === 0 && !addingSet ? (
               <EmptyState
                 size="sm"
-                icon={<Hash className="size-6" aria-hidden />}
+                icon={<Icon glyph={faHashtag} className="size-6" aria-hidden />}
                 title="No saved hashtags yet"
                 description="Save the tags you use every time so you stop retyping them — and stop getting one of them slightly wrong."
               />

@@ -30,7 +30,13 @@ import {
   Timestamp,
   useToast,
 } from '@wizeworks/silicaui-react';
-import { PackageCheck, ShieldAlert, Trash2, Wrench } from 'lucide-react';
+import {
+  faBoxCheck,
+  faShieldExclamation,
+  faTrashCan,
+  faWrench,
+} from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { PaneWaiting } from '../../components/pane-waiting';
 import { useState } from 'react';
 import { FormSection } from '../../components/form-section';
@@ -44,10 +50,15 @@ import {
 } from './returns-data';
 
 const CHOICES = [
-  { value: 'restock', label: 'Back on sale', icon: PackageCheck, color: 'success' as const },
-  { value: 'quarantine', label: 'Quarantine', icon: ShieldAlert, color: 'warning' as const },
-  { value: 'repair', label: 'Repair', icon: Wrench, color: 'info' as const },
-  { value: 'scrap', label: 'Scrap', icon: Trash2, color: 'danger' as const },
+  { value: 'restock', label: 'Back on sale', icon: faBoxCheck, color: 'success' as const },
+  {
+    value: 'quarantine',
+    label: 'Quarantine',
+    icon: faShieldExclamation,
+    color: 'warning' as const,
+  },
+  { value: 'repair', label: 'Repair', icon: faWrench, color: 'info' as const },
+  { value: 'scrap', label: 'Scrap', icon: faTrashCan, color: 'danger' as const },
 ];
 
 export function ReturnDispositionPanel({ returnId }: { returnId: string }) {
@@ -121,7 +132,7 @@ export function ReturnDispositionPanel({ returnId }: { returnId: string }) {
           <PaneWaiting label="Loading the inspection…" />
         ) : rows.length === 0 ? (
           <EmptyState
-            icon={<PackageCheck className="size-6" aria-hidden />}
+            icon={<Icon glyph={faBoxCheck} className="size-6" aria-hidden />}
             title="Nothing inspected yet"
             description="Record an inspection first. Deciding where goods go before anybody has looked at them is how a damaged item ends up back on the shelf."
           />
@@ -186,7 +197,7 @@ export function ReturnDispositionPanel({ returnId }: { returnId: string }) {
                                 decide(row, choice.value);
                               }}
                             >
-                              <choice.icon className="size-3.5" aria-hidden />
+                              <Icon glyph={choice.icon} className="size-3.5" aria-hidden />
                               {choice.label}
                             </Button>
                           ))}

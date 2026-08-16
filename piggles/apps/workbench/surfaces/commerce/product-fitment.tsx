@@ -71,7 +71,15 @@ import {
   useToast,
 } from '@wizeworks/silicaui-react';
 import { useConfirm } from '../../lib/confirm';
-import { ChevronRight, CornerDownLeft, Layers, Plus, Puzzle, Trash2 } from 'lucide-react';
+import {
+  faChevronRight,
+  faDownLeft,
+  faLayerGroup,
+  faPlus,
+  faPuzzlePiece,
+  faTrashCan,
+} from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { PaneScope } from '../../lib/dock/window-boundary';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
@@ -291,7 +299,7 @@ function FitmentPicker({
               </Button>
               {path.map((step, index) => (
                 <span key={step.id} className="flex items-center gap-1">
-                  <ChevronRight className="size-3 shrink-0" aria-hidden />
+                  <Icon glyph={faChevronRight} className="size-3 shrink-0" aria-hidden />
                   <Button
                     size="sm"
                     variant="ghost"
@@ -310,7 +318,7 @@ function FitmentPicker({
             {/* Stopping here is a first-class answer, so it is a real button at
                 every depth rather than something you discover by not clicking. */}
             <Button size="sm" color="module" variant="soft" loading={saving} onClick={commit}>
-              <CornerDownLeft className="size-4" aria-hidden />
+              <Icon glyph={faDownLeft} className="size-4" aria-hidden />
               It fits {here}
             </Button>
 
@@ -358,7 +366,7 @@ function FitmentPicker({
                       >
                         <span className="min-w-0 truncate">{node.name}</span>
                         {node.childCount > 0 ? (
-                          <ChevronRight className="size-4 shrink-0" aria-hidden />
+                          <Icon glyph={faChevronRight} className="size-4 shrink-0" aria-hidden />
                         ) : null}
                       </button>
                     </li>
@@ -460,7 +468,7 @@ function FitmentPicker({
               Cancel
             </Button>
             <Button size="sm" color="module" loading={saving} onClick={commit}>
-              <Plus className="size-4" aria-hidden />
+              <Icon glyph={faPlus} className="size-4" aria-hidden />
               Add it
             </Button>
           </DialogFooter>
@@ -613,7 +621,7 @@ function FitmentBody({
     if (domains.length === 0) {
       return (
         <EmptyState
-          icon={<Layers className="size-6" aria-hidden />}
+          icon={<Icon glyph={faLayerGroup} className="size-6" aria-hidden />}
           title="There is nothing to match against yet"
           description="Before a product can be marked as fitting something, your catalog needs a list of what those things ARE — a list of vehicles, of machine models, of printers. Add one and every product can then be matched against it."
           actions={
@@ -636,7 +644,7 @@ function FitmentBody({
     if (rules.length === 0) {
       return (
         <EmptyState
-          icon={<Puzzle className="size-6" aria-hidden />}
+          icon={<Icon glyph={faPuzzlePiece} className="size-6" aria-hidden />}
           title="This product is not matched to anything"
           description="Shoppers using “does this fit what I own?” on your website will never be shown this product. Add what it fits and it starts appearing for the right people."
           actions={
@@ -647,7 +655,7 @@ function FitmentBody({
                 setPicking(true);
               }}
             >
-              <Plus className="size-4" aria-hidden />
+              <Icon glyph={faPlus} className="size-4" aria-hidden />
               Add what it fits
             </Button>
           }
@@ -713,7 +721,7 @@ function FitmentBody({
                         void onRemove(rule);
                       }}
                     >
-                      <Trash2 className="size-4" aria-hidden />
+                      <Icon glyph={faTrashCan} className="size-4" aria-hidden />
                     </Button>
                   </li>
                 ))}
@@ -728,7 +736,7 @@ function FitmentBody({
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar label="Fitment actions">
-        <Puzzle className="size-4 shrink-0" aria-hidden />
+        <Icon glyph={faPuzzlePiece} className="size-4 shrink-0" aria-hidden />
         <Heading level={2} className="min-w-0 truncate text-base font-semibold">
           {scope.product.title}
         </Heading>
@@ -751,7 +759,7 @@ function FitmentBody({
               setPicking(true);
             }}
           >
-            <Plus className="size-4" aria-hidden />
+            <Icon glyph={faPlus} className="size-4" aria-hidden />
             <span className="hidden @md:inline">Add what it fits</span>
           </Button>
         ) : null}

@@ -47,7 +47,8 @@ import {
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { GripVertical, Plus, Workflow } from 'lucide-react';
+import { faDiagramProject, faGripDots, faPlus } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { Badge } from '@wizeworks/silicaui-react';
 import type { StageDraft } from './workflow-data';
 import { stageTone } from './types';
@@ -176,7 +177,7 @@ function SettingsNode({
       rail="first"
       marker={
         <Marker selected={selected}>
-          <Workflow className="size-4" aria-hidden />
+          <Icon glyph={faDiagramProject} className="size-4" aria-hidden />
         </Marker>
       }
     >
@@ -266,7 +267,11 @@ function StageNode({
             </span>
             <span className="text-sm">{effectSummary(stage)}</span>
           </NodeBody>
-          <GripVertical className="text-base-content/40 ml-auto size-4 shrink-0" aria-hidden />
+          <Icon
+            glyph={faGripDots}
+            className="text-base-content/40 ml-auto size-4 shrink-0"
+            aria-hidden
+          />
         </div>
       </StepRow>
     </div>
@@ -285,7 +290,11 @@ function DragCard({ stage }: { stage: StageDraft }) {
           </Badge>
         </span>
       </NodeBody>
-      <GripVertical className="text-base-content/40 ml-auto size-4 shrink-0" aria-hidden />
+      <Icon
+        glyph={faGripDots}
+        className="text-base-content/40 ml-auto size-4 shrink-0"
+        aria-hidden
+      />
     </div>
   );
 }
@@ -314,7 +323,7 @@ function InsertRow({
               : `Insert a stage before stage ${String(atIndex + 1)}`
           }
         >
-          <Plus className="size-3" aria-hidden />
+          <Icon glyph={faPlus} className="size-3" aria-hidden />
         </button>
       </div>
     </div>
@@ -327,7 +336,7 @@ function AddStageRow({ onClick, hasStages }: { onClick: () => void; hasStages: b
       rail="last"
       marker={
         <div className="bg-base-100 border-base-300 relative z-10 flex size-8 shrink-0 items-center justify-center rounded-lg border border-dashed">
-          <Plus className="size-4" aria-hidden />
+          <Icon glyph={faPlus} className="size-4" aria-hidden />
         </div>
       }
     >
@@ -338,7 +347,11 @@ function AddStageRow({ onClick, hasStages }: { onClick: () => void; hasStages: b
         }`}
         onClick={onClick}
       >
-        <Plus className={`size-4 shrink-0 ${hasStages ? '' : 'mt-0.5'}`} aria-hidden />
+        <Icon
+          glyph={faPlus}
+          className={`size-4 shrink-0 ${hasStages ? '' : 'mt-0.5'}`}
+          aria-hidden
+        />
         {hasStages ? (
           <span className="text-sm font-medium">Add a stage</span>
         ) : (

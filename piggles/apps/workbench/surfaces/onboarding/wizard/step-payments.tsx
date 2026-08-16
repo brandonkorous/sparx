@@ -7,7 +7,8 @@
 // story flow's "get paid" chapter; this is just the wizard's presentation of it.
 
 import { Badge, Button, FieldStatus } from '@wizeworks/silicaui-react';
-import { CheckCircle, CreditCard, Info } from 'lucide-react';
+import { faCheckCircle, faCircleInfo, faCreditCard } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import type { OnboardingActions } from '../../../lib/onboarding/api';
 import { useStripeConnect } from '../../../lib/onboarding/use-stripe-connect';
 
@@ -29,9 +30,9 @@ export function StepPayments({
           <div className="flex min-w-0 items-center gap-3">
             <span className="bg-base-200 flex size-11 items-center justify-center rounded-lg">
               {connected ? (
-                <CheckCircle className="text-success size-5" aria-hidden />
+                <Icon glyph={faCheckCircle} className="text-success size-5" aria-hidden />
               ) : (
-                <CreditCard className="size-5" aria-hidden />
+                <Icon glyph={faCreditCard} className="size-5" aria-hidden />
               )}
             </span>
             <div className="min-w-0">
@@ -64,7 +65,7 @@ export function StepPayments({
         </div>
 
         <div className="border-base-300 mt-4 flex items-start gap-2.5 border-t pt-4">
-          <Info className="mt-0.5 size-4 shrink-0" aria-hidden />
+          <Icon glyph={faCircleInfo} className="mt-0.5 size-4 shrink-0" aria-hidden />
           <p className="text-sm">
             This is the account that{' '}
             <span className="font-medium">receives money from your customers</span> — separate from

@@ -32,7 +32,8 @@ import {
   useToast,
 } from '@wizeworks/silicaui-react';
 import { useConfirm } from '../../lib/confirm';
-import { Plus, Trash2, X } from 'lucide-react';
+import { faPlus, faTrashCan, faXmark } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import type { CreateShippingRateInput } from '@sparx/commerce-schemas';
 import { MoneyInput } from '../invoicing/money-input';
 import {
@@ -214,7 +215,7 @@ function RateComposer({
           aria-label="Cancel"
           onClick={onDone}
         >
-          <X className="size-4" aria-hidden />
+          <Icon glyph={faXmark} className="size-4" aria-hidden />
         </Button>
       </div>
 
@@ -400,7 +401,7 @@ function RateComposer({
                     );
                   }}
                 >
-                  <Trash2 className="size-4" aria-hidden />
+                  <Icon glyph={faTrashCan} className="size-4" aria-hidden />
                 </Button>
               ) : null}
             </div>
@@ -414,7 +415,7 @@ function RateComposer({
                 set('bands', [...draft.bands, { min: 0, max: '', amountDollars: 0 }]);
               }}
             >
-              <Plus className="size-4" aria-hidden />
+              <Icon glyph={faPlus} className="size-4" aria-hidden />
               Add a price step
             </Button>
           </div>
@@ -604,7 +605,7 @@ export function ZoneRatesEditor({ zoneId }: { zoneId: string }) {
                   onDelete(rate);
                 }}
               >
-                <Trash2 className="size-4" aria-hidden />
+                <Icon glyph={faTrashCan} className="size-4" aria-hidden />
               </Button>
             </div>
           ))}
@@ -641,7 +642,7 @@ export function ZoneRatesEditor({ zoneId }: { zoneId: string }) {
               setAdding(true);
             }}
           >
-            <Plus className="size-4" aria-hidden />
+            <Icon glyph={faPlus} className="size-4" aria-hidden />
             Add a delivery option
           </Button>
         </div>

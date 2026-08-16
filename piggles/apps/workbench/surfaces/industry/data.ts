@@ -10,18 +10,19 @@
 // never removes anything the business has already made.
 
 import { useMutation, useQuery, useQueryClient } from '@sparx/query';
-import type { LucideIcon } from 'lucide-react';
 import {
-  Briefcase,
-  Car,
-  Cpu,
-  Dumbbell,
-  Scissors,
-  Shirt,
-  Store,
-  Utensils,
-  Warehouse,
-} from 'lucide-react';
+  faBriefcase,
+  faCar,
+  faDumbbell,
+  faMicrochip,
+  faScissors,
+  faShirt,
+  faShop,
+  faUtensils,
+  faWarehouse,
+} from '@fortawesome/pro-solid-svg-icons';
+import type { PigglesIcon } from '@piggles/ui';
+
 import { api } from '../../lib/api/client';
 import type { WorkbenchModule } from '../../components/module-scope';
 
@@ -75,21 +76,21 @@ export function useApplyIndustry() {
   });
 }
 
-/** lucide icon for each starter's `iconKey`, resolved client-side (the wire
+/** Icon for each starter's `iconKey`, resolved client-side (the wire
  *  carries a key, never a component). A missing key falls back to a storefront. */
-const ICONS: Record<string, LucideIcon> = {
-  shirt: Shirt,
-  utensils: Utensils,
-  cpu: Cpu,
-  car: Car,
-  scissors: Scissors,
-  dumbbell: Dumbbell,
-  briefcase: Briefcase,
-  warehouse: Warehouse,
+const ICONS: Record<string, PigglesIcon> = {
+  shirt: faShirt,
+  utensils: faUtensils,
+  cpu: faMicrochip,
+  car: faCar,
+  scissors: faScissors,
+  dumbbell: faDumbbell,
+  briefcase: faBriefcase,
+  warehouse: faWarehouse,
 };
 
-export function iconForStarter(iconKey: string): LucideIcon {
-  return ICONS[iconKey] ?? Store;
+export function iconForStarter(iconKey: string): PigglesIcon {
+  return ICONS[iconKey] ?? faShop;
 }
 
 /** Plain-language name for a module slug, plus the hue it carries. A business

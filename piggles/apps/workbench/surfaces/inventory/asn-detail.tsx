@@ -36,7 +36,8 @@ import {
   Timestamp,
   useToast,
 } from '@wizeworks/silicaui-react';
-import { PackageCheck, PackageSearch, Ban } from 'lucide-react';
+import { faBan, faBoxCheck, faBoxMagnifyingGlass } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { PaneWaiting } from '../../components/pane-waiting';
 import { PANE_SHELL } from '../../components/pane-toolbar';
 import { useConfirm } from '../../lib/confirm';
@@ -96,7 +97,7 @@ export function AsnDetailSurface({ ctx }: { ctx: SurfaceContext }) {
     return (
       <div className={PANE_SHELL}>
         <EmptyState
-          icon={<PackageSearch className="size-6" aria-hidden />}
+          icon={<Icon glyph={faBoxMagnifyingGlass} className="size-6" aria-hidden />}
           title="Could not load that shipment"
           description="This is a problem reaching the server, not a statement that the shipment is gone. Try again in a moment."
         />
@@ -135,7 +136,7 @@ export function AsnDetailSurface({ ctx }: { ctx: SurfaceContext }) {
                 void onCancel();
               }}
             >
-              <Ban className="size-4" aria-hidden />
+              <Icon glyph={faBan} className="size-4" aria-hidden />
               Not coming
             </Button>
           ) : null}
@@ -266,7 +267,7 @@ export function AsnDetailSurface({ ctx }: { ctx: SurfaceContext }) {
               });
             }}
           >
-            <PackageCheck className="size-4" aria-hidden />
+            <Icon glyph={faBoxCheck} className="size-4" aria-hidden />
             Book this delivery in
           </Button>
           <Text className="text-sm">

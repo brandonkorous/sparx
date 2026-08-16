@@ -43,7 +43,8 @@ import {
   Table,
   Text,
 } from '@wizeworks/silicaui-react';
-import { Scale } from 'lucide-react';
+import { faScaleBalanced } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
@@ -95,7 +96,7 @@ export function CostVarianceSurface({ ctx }: { ctx: SurfaceContext }) {
     if (report.isError) {
       return (
         <EmptyState
-          icon={<Scale className="size-6" aria-hidden />}
+          icon={<Icon glyph={faScaleBalanced} className="size-6" aria-hidden />}
           title="Could not work out your costs against plan"
           description="This is a problem reaching the server. Your deliveries and their costs are unaffected — the comparison just could not be worked out."
         />
@@ -111,7 +112,7 @@ export function CostVarianceSurface({ ctx }: { ctx: SurfaceContext }) {
     if (data.totalUnits === 0) {
       return (
         <EmptyState
-          icon={<Scale className="size-6" aria-hidden />}
+          icon={<Icon glyph={faScaleBalanced} className="size-6" aria-hidden />}
           title="Nothing arrived in this period"
           description="This compares what you planned to pay with what you actually paid, delivery by delivery. Book a delivery in against a purchase order and the comparison appears here."
         />

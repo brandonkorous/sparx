@@ -31,7 +31,13 @@ import {
   Text,
   ToolbarSeparator,
 } from '@wizeworks/silicaui-react';
-import { BarChart3, Gauge, ScanLine, TriangleAlert } from 'lucide-react';
+import {
+  faBarcodeRead,
+  faChartColumn,
+  faExclamationTriangle,
+  faGauge,
+} from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
@@ -81,7 +87,7 @@ export function PickThroughputSurface({ ctx: _ctx }: { ctx: SurfaceContext }) {
     if (isError) {
       return (
         <EmptyState
-          icon={<BarChart3 className="size-6" aria-hidden />}
+          icon={<Icon glyph={faChartColumn} className="size-6" aria-hidden />}
           title="Could not load the numbers"
           description="This is a problem reaching the server. Nothing on the floor is affected."
         />
@@ -93,7 +99,7 @@ export function PickThroughputSurface({ ctx: _ctx }: { ctx: SurfaceContext }) {
     if (data.totals.linesPicked === 0 && data.totals.linesShort === 0) {
       return (
         <EmptyState
-          icon={<Gauge className="size-6" aria-hidden />}
+          icon={<Icon glyph={faGauge} className="size-6" aria-hidden />}
           title="Nothing has been picked in this period"
           description="Generate a walk from an order and work it, and this fills in — how fast, how accurately, and which shelves keep coming up empty."
         />
@@ -173,7 +179,7 @@ export function PickThroughputSurface({ ctx: _ctx }: { ctx: SurfaceContext }) {
                     </td>
                     <td className="hidden text-right whitespace-nowrap @xl:table-cell">
                       <Badge color={verifiedTone(picker.scanVerifiedRate)} variant="soft" size="sm">
-                        <ScanLine className="size-3" aria-hidden />
+                        <Icon glyph={faBarcodeRead} className="size-3" aria-hidden />
                         {picker.scanVerifiedRate.toFixed(0)}%
                       </Badge>
                     </td>
@@ -193,7 +199,7 @@ export function PickThroughputSurface({ ctx: _ctx }: { ctx: SurfaceContext }) {
         {data.bins.length > 0 ? (
           <Card>
             <div className="border-base-300 flex items-center gap-2 border-b p-3">
-              <TriangleAlert className="size-4" aria-hidden />
+              <Icon glyph={faExclamationTriangle} className="size-4" aria-hidden />
               <span className="font-medium">Shelves that keep coming up empty</span>
             </div>
             <Table size="sm">

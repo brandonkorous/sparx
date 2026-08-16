@@ -31,7 +31,14 @@ import {
   Timestamp,
   ToolbarSeparator,
 } from '@wizeworks/silicaui-react';
-import { Cable, FileSpreadsheet, Link2, Plus, Server } from 'lucide-react';
+import {
+  faCableCar,
+  faFileSpreadsheet,
+  faLink,
+  faPlus,
+  faServer,
+} from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { ListEmptyState } from '../../components/list-empty-state';
@@ -58,8 +65,8 @@ function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
 
 /** The mark for each kind of connection. */
 function TypeIcon({ type }: { type: SourceType }) {
-  const Icon = type === 'csv' ? FileSpreadsheet : type === 'api' ? Cable : Server;
-  return <Icon className="text-module size-5 shrink-0" aria-hidden />;
+  const glyph = type === 'csv' ? faFileSpreadsheet : type === 'api' ? faCableCar : faServer;
+  return <Icon glyph={glyph} className="text-module size-5 shrink-0" aria-hidden />;
 }
 
 /**
@@ -122,7 +129,7 @@ export function SourcesListSurface({ ctx }: { ctx: SurfaceContext }) {
     if (isError) {
       return (
         <EmptyState
-          icon={<Link2 className="size-6" aria-hidden />}
+          icon={<Icon glyph={faLink} className="size-6" aria-hidden />}
           title="Could not load your stock sources"
           description="This is a problem reaching the server. Your connections are unaffected — they just could not be listed just now."
         />
@@ -138,7 +145,7 @@ export function SourcesListSurface({ ctx }: { ctx: SurfaceContext }) {
         <ListEmptyState
           filtered={narrowed}
           noResults={{
-            icon: <Link2 className="size-6" aria-hidden />,
+            icon: <Icon glyph={faLink} className="size-6" aria-hidden />,
             title: 'Nothing matches that',
             description: 'Try part of a source’s name, or switch the status back to “Any status”.',
           }}
@@ -150,7 +157,7 @@ export function SourcesListSurface({ ctx }: { ctx: SurfaceContext }) {
             ),
             actions: (
               <Button size="sm" color="module" onClick={addSource}>
-                <Plus className="size-4" aria-hidden />
+                <Icon glyph={faPlus} className="size-4" aria-hidden />
                 Add a source
               </Button>
             ),
@@ -277,7 +284,7 @@ export function SourcesListSurface({ ctx }: { ctx: SurfaceContext }) {
         </NativeSelect>
 
         <Button size="sm" color="module" className="ml-auto shrink-0" onClick={addSource}>
-          <Plus className="size-4" aria-hidden />
+          <Icon glyph={faPlus} className="size-4" aria-hidden />
           <span className="hidden @sm:inline">Add a source</span>
         </Button>
 

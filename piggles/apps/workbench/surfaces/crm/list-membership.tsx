@@ -30,7 +30,8 @@ import {
   Timestamp,
   useToast,
 } from '@wizeworks/silicaui-react';
-import { UserMinus, UserPlus } from 'lucide-react';
+import { faUserMinus, faUserPlus } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { useConfirm } from '../../lib/confirm';
 import { customerName, useCustomers } from './customers-data';
 import {
@@ -134,7 +135,7 @@ function Members({ segmentId, segmentName }: { segmentId: string; segmentName: s
 
       {(memberPage?.items ?? []).length === 0 ? (
         <div className="flex flex-col items-start gap-2 py-4">
-          <UserPlus className="size-5" aria-hidden />
+          <Icon glyph={faUserPlus} className="size-5" aria-hidden />
           <Text className="text-base">
             Nobody is on this list yet. Search above to put somebody on it — or have an automation
             do it, which is how most lists fill up.
@@ -167,7 +168,7 @@ function Members({ segmentId, segmentName }: { segmentId: string; segmentName: s
                         void onRemove(m.customerId, customerName(m.customer));
                       }}
                     >
-                      <UserMinus className="size-4" aria-hidden />
+                      <Icon glyph={faUserMinus} className="size-4" aria-hidden />
                     </Button>
                   </td>
                 </tr>

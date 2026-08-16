@@ -38,7 +38,13 @@ import {
   Text,
   Tooltip,
 } from '@wizeworks/silicaui-react';
-import { Boxes, Gauge, PackageX, TriangleAlert } from 'lucide-react';
+import {
+  faBoxOpen,
+  faBoxes,
+  faExclamationTriangle,
+  faGauge,
+} from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { formatCents, plural } from './data';
 import {
@@ -85,7 +91,7 @@ function RiskPanel({ ctx, locationId }: { ctx: SurfaceContext; locationId: strin
   if (risk.isError) {
     return (
       <EmptyState
-        icon={<PackageX className="size-6" aria-hidden />}
+        icon={<Icon glyph={faBoxOpen} className="size-6" aria-hidden />}
         title="Could not work out what is at risk"
         description="This is a problem reaching the server. Your stock is unaffected — the figures just could not be read right now."
       />
@@ -143,13 +149,13 @@ function RiskPanel({ ctx, locationId }: { ctx: SurfaceContext; locationId: strin
         // most damaging sentence on the screen.
         measured ? (
           <EmptyState
-            icon={<Boxes className="size-6" aria-hidden />}
+            icon={<Icon glyph={faBoxes} className="size-6" aria-hidden />}
             title="Nothing is at risk"
             description="Every item that sells has enough stock, or enough on its way, to last until a replacement could arrive. This is the good version of an empty list."
           />
         ) : (
           <EmptyState
-            icon={<Gauge className="size-6" aria-hidden />}
+            icon={<Icon glyph={faGauge} className="size-6" aria-hidden />}
             title="Nothing has been checked yet"
             description="This list is empty because no pass has been made over your sales and deliveries — not because everything is fine. Press “Work it out now” above to find out which it is."
           />
@@ -229,7 +235,11 @@ function RiskPanel({ ctx, locationId }: { ctx: SurfaceContext; locationId: strin
 
       {rows.length > 0 ? (
         <Text className="px-1 text-sm">
-          <TriangleAlert className="mr-1 inline size-4 align-text-bottom" aria-hidden />
+          <Icon
+            glyph={faExclamationTriangle}
+            className="mr-1 inline size-4 align-text-bottom"
+            aria-hidden
+          />
           Click a row to see exactly how its figures were worked out · shift-click alongside
         </Text>
       ) : null}

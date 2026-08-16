@@ -36,7 +36,8 @@ import {
   Text,
   useToast,
 } from '@wizeworks/silicaui-react';
-import { Check, PackagePlus } from 'lucide-react';
+import { faBoxOpen, faCheck } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { PaneScope } from '../../lib/dock/window-boundary';
 import { resolveFitmentIcon } from './fitment-icons';
 import {
@@ -134,7 +135,7 @@ export function FitmentDictionaryPicker({
               <PaneWaiting />
             ) : matches.length === 0 ? (
               <EmptyState
-                icon={<PackagePlus className="size-6" aria-hidden />}
+                icon={<Icon glyph={faBoxOpen} className="size-6" aria-hidden />}
                 title={needle ? 'Nothing matches that' : 'No ready-made lists available'}
                 description={
                   needle
@@ -145,14 +146,14 @@ export function FitmentDictionaryPicker({
             ) : (
               <ul className="flex flex-col gap-2">
                 {matches.map((option) => {
-                  const Icon = resolveFitmentIcon(option.iconKey);
+                  const glyph = resolveFitmentIcon(option.iconKey);
                   const installing = install.isPending && install.variables === option.slug;
                   return (
                     <li
                       key={option.slug}
                       className="border-base-300 flex items-start gap-3 rounded border p-3"
                     >
-                      <Icon className="size-6 shrink-0" aria-hidden />
+                      <Icon glyph={glyph} className="size-6 shrink-0" aria-hidden />
                       <div className="flex min-w-0 flex-1 flex-col gap-1">
                         <Heading level={3} className="text-base font-semibold">
                           {option.name}
@@ -176,7 +177,7 @@ export function FitmentDictionaryPicker({
                       <div className="shrink-0 self-center">
                         {option.installed ? (
                           <Badge color="success" variant="soft" size="sm">
-                            <Check className="size-3.5" aria-hidden />
+                            <Icon glyph={faCheck} className="size-3.5" aria-hidden />
                             Installed
                           </Badge>
                         ) : (

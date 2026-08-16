@@ -23,7 +23,8 @@ import {
   ToggleGroup,
   ToggleGroupItem,
 } from '@wizeworks/silicaui-react';
-import { EyeOff, MapPin, Plus } from 'lucide-react';
+import { faEyeSlash, faLocationDot, faPlus } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { ListEmptyState } from '../../components/list-empty-state';
 import { RefreshButton } from '../../components/refresh-button';
@@ -68,7 +69,7 @@ export function LocationsListSurface({ ctx }: { ctx: SurfaceContext }) {
     if (isError) {
       return (
         <EmptyState
-          icon={<MapPin className="size-6" aria-hidden />}
+          icon={<Icon glyph={faLocationDot} className="size-6" aria-hidden />}
           title="Could not load your places"
           description="This is a problem reaching the server. Nothing is affected — the list just could not be read just now."
           actions={
@@ -95,7 +96,7 @@ export function LocationsListSurface({ ctx }: { ctx: SurfaceContext }) {
         <ListEmptyState
           filtered={activeOnly}
           noResults={{
-            icon: <MapPin className="size-6" aria-hidden />,
+            icon: <Icon glyph={faLocationDot} className="size-6" aria-hidden />,
             title: 'Nothing matches that',
             description: 'You are only seeing places that are switched on.',
           }}
@@ -111,7 +112,7 @@ export function LocationsListSurface({ ctx }: { ctx: SurfaceContext }) {
                   openNew({ shiftKey: false, altKey: false });
                 }}
               >
-                <Plus className="size-4" aria-hidden />
+                <Icon glyph={faPlus} className="size-4" aria-hidden />
                 Add a place
               </Button>
             ),
@@ -195,7 +196,7 @@ export function LocationsListSurface({ ctx }: { ctx: SurfaceContext }) {
             aria-label="Hide switched-off ones"
             title="Hide switched-off ones"
           >
-            <EyeOff className="size-4" aria-hidden />
+            <Icon glyph={faEyeSlash} className="size-4" aria-hidden />
             <span className="hidden @2xl:inline">In use only</span>
           </ToggleGroupItem>
         </ToggleGroup>
@@ -207,7 +208,7 @@ export function LocationsListSurface({ ctx }: { ctx: SurfaceContext }) {
           title="Add a place — hold Shift to open alongside, Alt for a new window"
           onClick={openNew}
         >
-          <Plus className="size-4" aria-hidden />
+          <Icon glyph={faPlus} className="size-4" aria-hidden />
           <span className="hidden @lg:inline">Add a place</span>
         </Button>
 

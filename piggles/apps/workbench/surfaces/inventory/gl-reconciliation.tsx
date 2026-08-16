@@ -42,7 +42,8 @@ import {
   Timestamp,
   useToast,
 } from '@wizeworks/silicaui-react';
-import { Scale } from 'lucide-react';
+import { faScaleBalanced } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { FormSection } from '../../components/form-section';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
@@ -150,7 +151,7 @@ export function GlReconciliationSurface(_props: { ctx: SurfaceContext }) {
         <div className="mx-auto flex w-full max-w-3xl flex-col gap-4">
           <div className="flex flex-col gap-1">
             <Heading level={1} className="flex items-center gap-2 text-2xl font-semibold">
-              <Scale className="size-5" aria-hidden />
+              <Icon glyph={faScaleBalanced} className="size-5" aria-hidden />
               Stock versus your books
             </Heading>
             <Text>

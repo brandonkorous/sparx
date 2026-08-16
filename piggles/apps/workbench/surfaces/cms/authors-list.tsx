@@ -13,7 +13,8 @@ import { useMemo, useState } from 'react';
 import { PaneWaiting } from '../../components/pane-waiting';
 import Image from 'next/image';
 import { Button, Card, SearchInput, Table } from '@wizeworks/silicaui-react';
-import { Plus, User, UserPlus } from 'lucide-react';
+import { faPlus, faUser, faUserPlus } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { ListEmptyState } from '../../components/list-empty-state';
 import { PaneLoadError } from '../../components/pane-load-error';
@@ -50,7 +51,7 @@ function AuthorPhoto({ asset }: { asset: MediaAsset | undefined }) {
         />
       ) : (
         <span className="flex h-full items-center justify-center">
-          <User className="size-5" aria-hidden />
+          <Icon glyph={faUser} className="size-5" aria-hidden />
         </span>
       )}
     </span>
@@ -168,7 +169,7 @@ export function AuthorsListSurface({ ctx }: { ctx: SurfaceContext }) {
           title="Add an author — hold Shift to open alongside, Alt for a new window"
           onClick={create}
         >
-          <Plus className="size-4" aria-hidden />
+          <Icon glyph={faPlus} className="size-4" aria-hidden />
           <span className="hidden @sm:inline">New author</span>
         </Button>
         {/* ALWAYS the last child of a list toolbar — see RefreshButton. */}
@@ -188,7 +189,7 @@ export function AuthorsListSurface({ ctx }: { ctx: SurfaceContext }) {
             still counts, and still adds an author. */}
         {isError ? (
           <PaneLoadError
-            icon={<User className="size-6" aria-hidden />}
+            icon={<Icon glyph={faUser} className="size-6" aria-hidden />}
             title="Could not load your authors"
             description="This is a problem reaching the server. None of your authors have been lost."
             onRetry={() => {
@@ -201,7 +202,7 @@ export function AuthorsListSurface({ ctx }: { ctx: SurfaceContext }) {
           <ListEmptyState
             filtered={Boolean(needle)}
             noResults={{
-              icon: <UserPlus className="size-6" aria-hidden />,
+              icon: <Icon glyph={faUserPlus} className="size-6" aria-hidden />,
               title: 'No authors match that',
               description: 'Try part of the name, or clear the search to see everyone.',
             }}
@@ -217,7 +218,7 @@ export function AuthorsListSurface({ ctx }: { ctx: SurfaceContext }) {
                     create({ shiftKey: false, altKey: false });
                   }}
                 >
-                  <Plus className="size-4" aria-hidden />
+                  <Icon glyph={faPlus} className="size-4" aria-hidden />
                   Add an author
                 </Button>
               ),

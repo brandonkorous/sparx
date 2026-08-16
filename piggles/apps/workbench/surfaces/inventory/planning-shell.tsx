@@ -32,7 +32,8 @@ import {
   ToolbarSeparator,
   useToast,
 } from '@wizeworks/silicaui-react';
-import { Calculator } from 'lucide-react';
+import { faCalculator } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import { afterCommit } from '../../lib/defer';
@@ -170,7 +171,7 @@ export function PlanningShell({
           loading={recompute.isPending}
           onClick={onRecompute}
         >
-          <Calculator className="size-4" aria-hidden />
+          <Icon glyph={faCalculator} className="size-4" aria-hidden />
           Work it out now
         </Button>
         <RefreshButton isFetching={isFetching} updatedAt={updatedAt} onRefresh={onRefresh} />

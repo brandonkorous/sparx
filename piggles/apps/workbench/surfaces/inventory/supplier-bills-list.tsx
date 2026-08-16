@@ -28,7 +28,8 @@ import {
   Text,
   Timestamp,
 } from '@wizeworks/silicaui-react';
-import { FileText, Receipt } from 'lucide-react';
+import { faFileText, faReceipt } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
@@ -87,7 +88,7 @@ export function SupplierBillsListSurface({ ctx }: { ctx: SurfaceContext }) {
     if (report.isError) {
       return (
         <EmptyState
-          icon={<Receipt className="size-6" aria-hidden />}
+          icon={<Icon glyph={faReceipt} className="size-6" aria-hidden />}
           title="Could not load your bills"
           description="This is a problem reaching the server, not a statement that you owe nothing. Try again in a moment."
         />
@@ -99,7 +100,7 @@ export function SupplierBillsListSurface({ ctx }: { ctx: SurfaceContext }) {
     if (rows.length === 0) {
       return (
         <EmptyState
-          icon={<FileText className="size-6" aria-hidden />}
+          icon={<Icon glyph={faFileText} className="size-6" aria-hidden />}
           title={view === 'all' ? 'No supplier bills entered' : 'Nothing here'}
           description={
             view === 'all'

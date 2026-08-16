@@ -57,18 +57,19 @@ import {
 } from '@wizeworks/silicaui-react';
 import { useConfirm } from '../../lib/confirm';
 import {
-  Ban,
-  CheckCircle2,
-  ClipboardList,
-  PackageCheck,
-  Pencil,
-  Plus,
-  Printer,
-  Save,
-  ScanLine,
-  Send,
-  Trash2,
-} from 'lucide-react';
+  faBan,
+  faBarcodeRead,
+  faBoxCheck,
+  faCircleCheck,
+  faClipboardList,
+  faFloppyDisk,
+  faPaperPlane,
+  faPencil,
+  faPlus,
+  faPrint,
+  faTrashCan,
+} from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import { PurchaseOrderProcurement } from './purchase-order-procurement';
@@ -668,7 +669,7 @@ function OrderChargesSection({
               setAdding(true);
             }}
           >
-            <Plus className="size-4" aria-hidden />
+            <Icon glyph={faPlus} className="size-4" aria-hidden />
             Add an expected cost
           </Button>
         )
@@ -746,7 +747,7 @@ function OrderChargesSection({
                           );
                         }}
                       >
-                        <Trash2 className="size-4" aria-hidden />
+                        <Icon glyph={faTrashCan} className="size-4" aria-hidden />
                       </Button>
                     </td>
                   </tr>
@@ -1179,7 +1180,7 @@ export function PurchaseOrderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
           </Badge>
         ) : (
           <span className="inline-flex items-center gap-1.5">
-            <ClipboardList className="size-4" aria-hidden />
+            <Icon glyph={faClipboardList} className="size-4" aria-hidden />
             <Text as="span" className="text-sm font-medium">
               New order
             </Text>
@@ -1197,7 +1198,7 @@ export function PurchaseOrderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
               void doSave();
             }}
           >
-            <Save className="size-4" aria-hidden />
+            <Icon glyph={faFloppyDisk} className="size-4" aria-hidden />
             {isNew ? 'Save draft' : 'Save'}
           </Button>
         ) : (
@@ -1215,14 +1216,14 @@ export function PurchaseOrderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
               void onPlace();
             }}
           >
-            <Send className="size-4" aria-hidden />
+            <Icon glyph={faPaperPlane} className="size-4" aria-hidden />
             Place order
           </Button>
         ) : null}
 
         {canReceive ? (
           <Button size="sm" color="module" className="shrink-0" onClick={onReceive}>
-            <PackageCheck className="size-4" aria-hidden />
+            <Icon glyph={faBoxCheck} className="size-4" aria-hidden />
             Receive
           </Button>
         ) : null}
@@ -1243,7 +1244,7 @@ export function PurchaseOrderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
                 ctx.open('inventory.receiving.scan', { id: detail.id }, { target: 'tab' });
               }}
             >
-              <ScanLine className="size-4" aria-hidden />
+              <Icon glyph={faBarcodeRead} className="size-4" aria-hidden />
               Scan it in
             </Button>
           </Tooltip>
@@ -1272,7 +1273,7 @@ export function PurchaseOrderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
                 );
               }}
             >
-              <Printer className="size-4" aria-hidden />
+              <Icon glyph={faPrint} className="size-4" aria-hidden />
             </Button>
           </Tooltip>
         ) : null}
@@ -1288,7 +1289,7 @@ export function PurchaseOrderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
               void onClose();
             }}
           >
-            <CheckCircle2 className="size-4" aria-hidden />
+            <Icon glyph={faCircleCheck} className="size-4" aria-hidden />
             Close
           </Button>
         ) : null}
@@ -1305,7 +1306,7 @@ export function PurchaseOrderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
               void onCancel();
             }}
           >
-            <Ban className="size-4" aria-hidden />
+            <Icon glyph={faBan} className="size-4" aria-hidden />
             Cancel
           </Button>
         ) : null}
@@ -1323,7 +1324,7 @@ export function PurchaseOrderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
               void onDelete();
             }}
           >
-            <Trash2 className="size-4" aria-hidden />
+            <Icon glyph={faTrashCan} className="size-4" aria-hidden />
           </Button>
         ) : null}
 
@@ -1533,7 +1534,7 @@ export function PurchaseOrderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
                     setEditing({ line: null });
                   }}
                 >
-                  <Plus className="size-4" aria-hidden />
+                  <Icon glyph={faPlus} className="size-4" aria-hidden />
                   Add a line
                 </Button>
               ) : null
@@ -1610,7 +1611,7 @@ export function PurchaseOrderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
                                   setEditing({ line });
                                 }}
                               >
-                                <Pencil className="size-4" aria-hidden />
+                                <Icon glyph={faPencil} className="size-4" aria-hidden />
                               </Button>
                               <Button
                                 size="sm"
@@ -1622,7 +1623,7 @@ export function PurchaseOrderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
                                   removeLine(line);
                                 }}
                               >
-                                <Trash2 className="size-4" aria-hidden />
+                                <Icon glyph={faTrashCan} className="size-4" aria-hidden />
                               </Button>
                             </div>
                           </td>

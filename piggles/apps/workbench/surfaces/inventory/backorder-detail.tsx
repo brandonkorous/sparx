@@ -32,7 +32,13 @@ import {
   Timestamp,
   useToast,
 } from '@wizeworks/silicaui-react';
-import { CalendarOff, MailCheck, PackageSearch, Trash2 } from 'lucide-react';
+import {
+  faBoxMagnifyingGlass,
+  faCalendarXmark,
+  faEnvelopeCircleCheck,
+  faTrashCan,
+} from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { PaneWaiting } from '../../components/pane-waiting';
 import { useEffect, useState } from 'react';
 import { FormSection } from '../../components/form-section';
@@ -88,7 +94,7 @@ export function BackorderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
     return (
       <div className={PANE_SHELL}>
         <EmptyState
-          icon={<PackageSearch className="size-6" aria-hidden />}
+          icon={<Icon glyph={faBoxMagnifyingGlass} className="size-6" aria-hidden />}
           title="Could not load that commitment"
           description="It may have been cancelled, or the server is unreachable. Try the queue again."
         />
@@ -170,7 +176,7 @@ export function BackorderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
             });
           }}
         >
-          <MailCheck className="size-4" aria-hidden />
+          <Icon glyph={faEnvelopeCircleCheck} className="size-4" aria-hidden />
           Mark as told
         </Button>
 
@@ -200,7 +206,7 @@ export function BackorderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
               });
             }}
           >
-            <Trash2 className="size-4" aria-hidden />
+            <Icon glyph={faTrashCan} className="size-4" aria-hidden />
             Drop
           </Button>
         ) : null}
@@ -340,7 +346,7 @@ export function BackorderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
                     );
                   }}
                 >
-                  <CalendarOff className="size-4" aria-hidden />
+                  <Icon glyph={faCalendarXmark} className="size-4" aria-hidden />
                   Clear the date
                 </Button>
               ) : null}
@@ -353,7 +359,7 @@ export function BackorderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
           <div className="p-0">
             {data.allocations.length === 0 ? (
               <EmptyState
-                icon={<PackageSearch className="size-6" aria-hidden />}
+                icon={<Icon glyph={faBoxMagnifyingGlass} className="size-6" aria-hidden />}
                 title="Nothing has arrived yet"
                 description="When a delivery or a transfer lands, whatever it covers is recorded here — in queue order, so the split is never decided at the receiving desk."
               />

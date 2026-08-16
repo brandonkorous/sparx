@@ -11,7 +11,8 @@
 import { useState } from 'react';
 import { PaneWaiting } from '../../components/pane-waiting';
 import { Badge, Button, Card, EmptyState, Table, Text } from '@wizeworks/silicaui-react';
-import { FileText, X } from 'lucide-react';
+import { faFileText, faXmark } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
@@ -83,7 +84,7 @@ export function QuotesListSurface({ ctx }: { ctx: SurfaceContext }) {
               ctx.open('b2b.quotes.list', {}, { target: 'replace' });
             }}
           >
-            <X className="size-4" aria-hidden />
+            <Icon glyph={faXmark} className="size-4" aria-hidden />
             Show all quotes
           </Button>
         </div>
@@ -92,7 +93,7 @@ export function QuotesListSurface({ ctx }: { ctx: SurfaceContext }) {
       <Card className="min-h-0 flex-1 overflow-y-auto">
         {isError ? (
           <EmptyState
-            icon={<FileText className="size-6" aria-hidden />}
+            icon={<Icon glyph={faFileText} className="size-6" aria-hidden />}
             title="Could not load your quotes"
             description="This is a problem reaching the server. Your quotes are unaffected — nothing has been lost."
           />
@@ -100,7 +101,7 @@ export function QuotesListSurface({ ctx }: { ctx: SurfaceContext }) {
           <PaneWaiting label="Loading quotes…" />
         ) : rows.length === 0 ? (
           <EmptyState
-            icon={<FileText className="size-6" aria-hidden />}
+            icon={<Icon glyph={faFileText} className="size-6" aria-hidden />}
             title="No quotes yet"
             description={
               accountName

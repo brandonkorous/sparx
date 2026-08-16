@@ -36,7 +36,13 @@ import {
   useToast,
 } from '@wizeworks/silicaui-react';
 import { useConfirm } from '../../lib/confirm';
-import { CalendarPlus, Link2, RefreshCw, Trash2 } from 'lucide-react';
+import {
+  faArrowsRotate,
+  faCalendarPlus,
+  faLink,
+  faTrashCan,
+} from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import { FormSection } from '../../components/form-section';
@@ -258,7 +264,7 @@ export function CalendarConnectionsSurface(_props: { ctx: SurfaceContext }) {
                   disabled={!canAdd}
                   onClick={onAdd}
                 >
-                  <CalendarPlus className="size-4" aria-hidden />
+                  <Icon glyph={faCalendarPlus} className="size-4" aria-hidden />
                   Link calendar
                 </Button>
               </div>
@@ -278,7 +284,7 @@ export function CalendarConnectionsSurface(_props: { ctx: SurfaceContext }) {
             <PaneWaiting />
           ) : grouped.length === 0 ? (
             <EmptyState
-              icon={<Link2 className="size-6" aria-hidden />}
+              icon={<Icon glyph={faLink} className="size-6" aria-hidden />}
               title="No calendars linked yet"
               description="Once you link a calendar above, the times its owner is busy elsewhere will show as unavailable in your diary."
             />
@@ -345,7 +351,7 @@ function ConnectionRow({
       </div>
       <div className="flex items-center gap-1">
         <Button size="sm" variant="outline" color="neutral" loading={syncing} onClick={onSync}>
-          <RefreshCw className="size-4" aria-hidden />
+          <Icon glyph={faArrowsRotate} className="size-4" aria-hidden />
           Refresh
         </Button>
         <Button
@@ -358,7 +364,7 @@ function ConnectionRow({
           loading={removing}
           onClick={onRemove}
         >
-          <Trash2 className="size-4" aria-hidden />
+          <Icon glyph={faTrashCan} className="size-4" aria-hidden />
         </Button>
       </div>
     </div>

@@ -55,16 +55,17 @@ import {
 } from '@wizeworks/silicaui-react';
 import { useConfirm } from '../../lib/confirm';
 import {
-  ClipboardCheck,
-  ClipboardList,
-  Plus,
-  Printer,
-  Save,
-  ShieldCheck,
-  Trash2,
-  Warehouse,
-  X,
-} from 'lucide-react';
+  faClipboardCheck,
+  faClipboardList,
+  faFloppyDisk,
+  faPlus,
+  faPrint,
+  faShieldCheck,
+  faTrashCan,
+  faWarehouse,
+  faXmark,
+} from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import { useDirtySource } from '../../lib/workbench/dirty';
@@ -179,7 +180,7 @@ function StartCount({ ctx }: { ctx: SurfaceContext }) {
           loading={create.isPending}
           onClick={submit}
         >
-          <ClipboardCheck className="size-4" aria-hidden />
+          <Icon glyph={faClipboardCheck} className="size-4" aria-hidden />
           Start counting
         </Button>
       </PaneToolbar>
@@ -190,7 +191,7 @@ function StartCount({ ctx }: { ctx: SurfaceContext }) {
             <PaneWaiting label="Loading your locations…" />
           ) : locations.length === 0 ? (
             <EmptyState
-              icon={<Warehouse className="size-6" aria-hidden />}
+              icon={<Icon glyph={faWarehouse} className="size-6" aria-hidden />}
               title="You have nowhere to count yet"
               description="A count is always tied to one place — a shop, a warehouse, a van. Set up at least one location and you can start counting what is on its shelves."
               actions={
@@ -375,7 +376,7 @@ function AddItems({
                   addOne(level.variantId, level.sku ?? level.productTitle ?? 'item');
                 }}
               >
-                <Plus className="size-4" aria-hidden />
+                <Icon glyph={faPlus} className="size-4" aria-hidden />
                 Add
               </Button>
             </li>
@@ -525,7 +526,7 @@ function LinesCard({
                         onRemove(line);
                       }}
                     >
-                      <Trash2 className="size-4" aria-hidden />
+                      <Icon glyph={faTrashCan} className="size-4" aria-hidden />
                     </Button>
                   </td>
                 ) : null}
@@ -836,7 +837,7 @@ function CountSession({
               );
             }}
           >
-            <Printer className="size-4" aria-hidden />
+            <Icon glyph={faPrint} className="size-4" aria-hidden />
           </Button>
         </Tooltip>
 
@@ -853,7 +854,7 @@ function CountSession({
                   void doSave();
                 }}
               >
-                <Save className="size-4" aria-hidden />
+                <Icon glyph={faFloppyDisk} className="size-4" aria-hidden />
                 Save
               </Button>
             ) : null}
@@ -870,7 +871,7 @@ function CountSession({
                 void doFinish();
               }}
             >
-              <ClipboardCheck className="size-4" aria-hidden />
+              <Icon glyph={faClipboardCheck} className="size-4" aria-hidden />
               Finish counting
             </Button>
           </>
@@ -886,7 +887,7 @@ function CountSession({
               void doApprove();
             }}
           >
-            <ShieldCheck className="size-4" aria-hidden />
+            <Icon glyph={faShieldCheck} className="size-4" aria-hidden />
             Approve
           </Button>
         ) : null}
@@ -901,7 +902,7 @@ function CountSession({
               void doApply();
             }}
           >
-            <ClipboardCheck className="size-4" aria-hidden />
+            <Icon glyph={faClipboardCheck} className="size-4" aria-hidden />
             Apply corrections
           </Button>
         ) : null}
@@ -969,7 +970,7 @@ function CountSession({
 
           {count.lineCount === 0 ? (
             <EmptyState
-              icon={<ClipboardList className="size-6" aria-hidden />}
+              icon={<Icon glyph={faClipboardList} className="size-6" aria-hidden />}
               title="No items on this count yet"
               description={
                 editable
@@ -1004,7 +1005,7 @@ function CountSession({
                   void doDiscard();
                 }}
               >
-                <X className="size-4" aria-hidden />
+                <Icon glyph={faXmark} className="size-4" aria-hidden />
                 Discard this count
               </Button>
             </div>
@@ -1079,7 +1080,7 @@ function LoadedCount({ ctx, id }: { ctx: SurfaceContext; id: string }) {
       <div className={PANE_SHELL}>
         <Card className="min-h-0 flex-1 items-center justify-center">
           <PaneEmpty
-            icon={<ClipboardList className="size-6" aria-hidden />}
+            icon={<Icon glyph={faClipboardList} className="size-6" aria-hidden />}
             title="No count was chosen"
             description="This pane shows one stock count. Open it from the Stock counts list, or start a new one."
             actions={

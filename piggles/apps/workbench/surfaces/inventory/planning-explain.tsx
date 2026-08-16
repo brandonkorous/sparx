@@ -51,7 +51,14 @@ import {
   Timestamp,
   useToast,
 } from '@wizeworks/silicaui-react';
-import { CircleAlert, Lightbulb, PackageX, Sigma, Wand2 } from 'lucide-react';
+import {
+  faBoxOpen,
+  faCircleExclamation,
+  faLightbulb,
+  faSigma,
+  faWandMagicSparkles,
+} from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { useConfirm } from '../../lib/confirm';
 import { PANE_SHELL } from '../../components/pane-toolbar';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
@@ -93,7 +100,7 @@ export function PlanningExplainSurface({ ctx }: { ctx: SurfaceContext }) {
     return (
       <div className={PANE_SHELL}>
         <EmptyState
-          icon={<PackageX className="size-6" aria-hidden />}
+          icon={<Icon glyph={faBoxOpen} className="size-6" aria-hidden />}
           title="Could not explain this number"
           description="Nothing has ever stocked this item at this location, or the server could not be reached. Either way there is no calculation to show."
         />
@@ -214,7 +221,7 @@ export function PlanningExplainSurface({ ctx }: { ctx: SurfaceContext }) {
               void onApply();
             }}
           >
-            <Wand2 className="size-4" aria-hidden />
+            <Icon glyph={faWandMagicSparkles} className="size-4" aria-hidden />
             Use {data.computedReorderPoint}
           </Button>
         </Alert>
@@ -238,7 +245,7 @@ export function PlanningExplainSurface({ ctx }: { ctx: SurfaceContext }) {
               void onApply();
             }}
           >
-            <Wand2 className="size-4" aria-hidden />
+            <Icon glyph={faWandMagicSparkles} className="size-4" aria-hidden />
             Set it to {data.computedReorderPoint}
           </Button>
         </Alert>
@@ -290,7 +297,7 @@ export function PlanningExplainSurface({ ctx }: { ctx: SurfaceContext }) {
       {/* ── The arithmetic ── */}
       <Card className="flex flex-col gap-2 p-3">
         <Heading level={3} className="text-base">
-          <Sigma className="mr-1 inline size-4 align-text-bottom" aria-hidden />
+          <Icon glyph={faSigma} className="mr-1 inline size-4 align-text-bottom" aria-hidden />
           The arithmetic, with your numbers in it
         </Heading>
         <Text className="text-sm">
@@ -396,7 +403,11 @@ export function PlanningExplainSurface({ ctx }: { ctx: SurfaceContext }) {
       {data.improve.length > 0 ? (
         <Card className="flex flex-col gap-2 p-3">
           <Heading level={3} className="text-base">
-            <Lightbulb className="mr-1 inline size-4 align-text-bottom" aria-hidden />
+            <Icon
+              glyph={faLightbulb}
+              className="mr-1 inline size-4 align-text-bottom"
+              aria-hidden
+            />
             What would make this number better
           </Heading>
           <ul className="flex list-disc flex-col gap-1 pl-5">
@@ -410,7 +421,11 @@ export function PlanningExplainSurface({ ctx }: { ctx: SurfaceContext }) {
       ) : null}
 
       <Text className="px-1 text-sm">
-        <CircleAlert className="mr-1 inline size-4 align-text-bottom" aria-hidden />
+        <Icon
+          glyph={faCircleExclamation}
+          className="mr-1 inline size-4 align-text-bottom"
+          aria-hidden
+        />
         {data.computedAt ? (
           <>
             Worked out <Timestamp value={data.computedAt} format="relative" />. It is redone every

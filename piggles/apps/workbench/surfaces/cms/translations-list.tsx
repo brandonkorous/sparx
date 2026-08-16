@@ -31,7 +31,8 @@ import {
   Table,
   Text,
 } from '@wizeworks/silicaui-react';
-import { Languages } from 'lucide-react';
+import { faLanguage } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
@@ -155,7 +156,7 @@ export function TranslationsListSurface({ ctx }: { ctx: SurfaceContext }) {
           // A failed load REPLACES the table — "no products yet" over a
           // connection failure is a lie about their catalogue.
           <EmptyState
-            icon={<Languages className="size-6" aria-hidden />}
+            icon={<Icon glyph={faLanguage} className="size-6" aria-hidden />}
             title="Could not load your products"
             description="This is a problem reaching the server. Nothing you have written or translated is affected — none of it has been lost."
             actions={
@@ -174,7 +175,7 @@ export function TranslationsListSurface({ ctx }: { ctx: SurfaceContext }) {
           <PaneWaiting />
         ) : rows.length === 0 ? (
           <EmptyState
-            icon={<Languages className="size-6" aria-hidden />}
+            icon={<Icon glyph={faLanguage} className="size-6" aria-hidden />}
             title={narrowed ? 'Nothing matches that' : 'No products to translate yet'}
             description={
               narrowed

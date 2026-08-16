@@ -21,7 +21,8 @@ import { useMemo, useState } from 'react';
 import { PaneEmpty } from '../../components/pane-empty';
 import { PaneWaiting } from '../../components/pane-waiting';
 import { Badge, Button, Card, Heading, SearchInput, Text } from '@wizeworks/silicaui-react';
-import { Component, Pencil } from 'lucide-react';
+import { faCube, faPencil } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { ListEmptyState } from '../../components/list-empty-state';
 import { RefreshButton } from '../../components/refresh-button';
@@ -118,7 +119,7 @@ export function SavedPiecesListSurface({ ctx }: { ctx: SurfaceContext }) {
     return (
       <Card className="min-h-0 flex-1 items-center justify-center">
         <PaneEmpty
-          icon={<Component className="size-6" aria-hidden />}
+          icon={<Icon glyph={faCube} className="size-6" aria-hidden />}
           title="Could not load your saved pieces"
           description="This is a problem reaching the server. None of your pieces are affected — nothing has been lost."
           actions={
@@ -167,7 +168,7 @@ export function SavedPiecesListSurface({ ctx }: { ctx: SurfaceContext }) {
           title="Open the editor — hold Shift to open alongside, Alt for a new window"
           onClick={openEditor}
         >
-          <Pencil className="size-4" aria-hidden />
+          <Icon glyph={faPencil} className="size-4" aria-hidden />
           <span className="hidden @2xl:inline">Open the editor</span>
         </Button>
         {/* ALWAYS the last child of a list toolbar — see RefreshButton. */}
@@ -187,7 +188,7 @@ export function SavedPiecesListSurface({ ctx }: { ctx: SurfaceContext }) {
           <ListEmptyState
             filtered={Boolean(needle)}
             noResults={{
-              icon: <Component className="size-6" aria-hidden />,
+              icon: <Icon glyph={faCube} className="size-6" aria-hidden />,
               title: 'No pieces match that',
               description:
                 'Try part of the name or what it is for — or clear the search to see them all.',
@@ -204,7 +205,7 @@ export function SavedPiecesListSurface({ ctx }: { ctx: SurfaceContext }) {
                     openEditor({ shiftKey: false, altKey: false });
                   }}
                 >
-                  <Pencil className="size-4" aria-hidden />
+                  <Icon glyph={faPencil} className="size-4" aria-hidden />
                   Open the editor
                 </Button>
               ),

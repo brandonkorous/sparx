@@ -22,7 +22,8 @@ import {
   Text,
   useToast,
 } from '@wizeworks/silicaui-react';
-import { Banknote, Coins } from 'lucide-react';
+import { faCoins, faMoneyBill } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import { FormSection } from '../../components/form-section';
@@ -125,7 +126,7 @@ function PayoutSetup({ connected }: { connected: boolean }) {
         loading={connect.isPending}
         onClick={start}
       >
-        <Banknote className="size-4" aria-hidden />
+        <Icon glyph={faMoneyBill} className="size-4" aria-hidden />
         Set up payouts
       </Button>
     </div>
@@ -192,7 +193,7 @@ export function CommissionsSurface(_props: { ctx: SurfaceContext }) {
     <div className={PANE_SHELL}>
       <PaneToolbar label="Commissions controls">
         <span className="inline-flex items-center gap-1.5">
-          <Coins className="size-4" aria-hidden />
+          <Icon glyph={faCoins} className="size-4" aria-hidden />
           <Text as="span" className="text-sm font-medium">
             Your earnings
           </Text>

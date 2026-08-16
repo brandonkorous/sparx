@@ -5,26 +5,26 @@
 // view "set up my business" is a single errand.
 
 import {
-  Activity,
-  Bell,
-  Compass,
-  FlaskConical,
-  Globe,
-  GlobeLock,
-  Handshake,
-  KeyRound,
-  Layers,
-  MessageSquare,
-  MessageSquarePlus,
-  PackagePlus,
-  Plug,
-  Settings,
-  Shield,
-  History,
-  Unlink,
-  UserRound,
-  Users,
-} from 'lucide-react';
+  faBell,
+  faBoxOpen,
+  faClockRotateLeft,
+  faCompass,
+  faEarthAmericas,
+  faFlask,
+  faGear,
+  faGlobe,
+  faHandshake,
+  faKey,
+  faLayerGroup,
+  faLinkSlash,
+  faMessage,
+  faMessagePlus,
+  faPlug,
+  faShield,
+  faUser,
+  faUsers,
+  faWavePulse,
+} from '@fortawesome/pro-solid-svg-icons';
 import type { SurfaceDefinition } from '../registry';
 import { PulseSurface } from '../../../surfaces/pulse';
 import { BusinessDetailsSurface } from '../../../surfaces/business-details';
@@ -57,7 +57,7 @@ export const PLATFORM_SURFACES: SurfaceDefinition[] = [
     key: 'platform.migrate',
     title: 'Move in',
     module: 'platform',
-    icon: PackagePlus,
+    icon: faBoxOpen,
     component: MigrationStartSurface,
     singleton: true,
     keywords: [
@@ -97,7 +97,7 @@ export const PLATFORM_SURFACES: SurfaceDefinition[] = [
           ? `Move in from ${String(params.vendor)}`
           : 'Move in',
     module: 'platform',
-    icon: PackagePlus,
+    icon: faBoxOpen,
     component: MigrationRunSurface,
     listed: false,
   },
@@ -105,7 +105,7 @@ export const PLATFORM_SURFACES: SurfaceDefinition[] = [
     key: 'platform.migrate.history',
     title: 'Past moves',
     module: 'platform',
-    icon: History,
+    icon: faClockRotateLeft,
     component: MigrationHistorySurface,
     singleton: true,
     listed: false,
@@ -136,7 +136,7 @@ export const PLATFORM_SURFACES: SurfaceDefinition[] = [
     key: 'platform.pulse',
     title: 'Pulse',
     module: 'platform',
-    icon: Activity,
+    icon: faWavePulse,
     component: PulseSurface,
     // A second copy of a live feed shows the same thing twice.
     singleton: true,
@@ -155,7 +155,7 @@ export const PLATFORM_SURFACES: SurfaceDefinition[] = [
     key: 'platform.feedback.list',
     title: 'Your feedback',
     module: 'platform',
-    icon: MessageSquarePlus,
+    icon: faMessagePlus,
     component: FeedbackListSurface,
     // Two copies of your own message list show the same thing twice.
     singleton: true,
@@ -180,7 +180,7 @@ export const PLATFORM_SURFACES: SurfaceDefinition[] = [
     key: 'platform.feedback.thread',
     title: 'Feedback',
     module: 'platform',
-    icon: MessageSquare,
+    icon: faMessage,
     component: FeedbackThreadSurface,
     listed: false,
   },
@@ -192,7 +192,7 @@ export const PLATFORM_SURFACES: SurfaceDefinition[] = [
     key: 'platform.link.unresolved',
     title: 'Link',
     module: 'platform',
-    icon: Unlink,
+    icon: faLinkSlash,
     component: LinkUnresolvedSurface,
     listed: false,
   },
@@ -202,7 +202,7 @@ export const PLATFORM_SURFACES: SurfaceDefinition[] = [
     key: 'platform.settings.general',
     title: 'Business details',
     module: 'platform',
-    icon: Settings,
+    icon: faGear,
     component: BusinessDetailsSurface,
     section: 'Your business',
     // One business per account — a second copy of this pane would be two
@@ -226,7 +226,7 @@ export const PLATFORM_SURFACES: SurfaceDefinition[] = [
     key: 'platform.settings.team',
     title: 'Team',
     module: 'platform',
-    icon: Users,
+    icon: faUsers,
     component: TeamSurface,
     section: 'Your business',
     // One roster. A second copy of the same list would show the same people,
@@ -245,7 +245,7 @@ export const PLATFORM_SURFACES: SurfaceDefinition[] = [
     // rather than a placeholder like "Member".
     title: 'Teammate',
     module: 'platform',
-    icon: UserRound,
+    icon: faUser,
     component: TeamMemberSurface,
     listed: false,
     // Emphatically NOT a singleton: comparing what two people can reach, side
@@ -256,7 +256,7 @@ export const PLATFORM_SURFACES: SurfaceDefinition[] = [
     key: 'platform.settings.sites',
     title: 'Sites',
     module: 'platform',
-    icon: Globe,
+    icon: faGlobe,
     component: SitesListSurface,
     section: 'Your business',
     // One list of every site — a second copy would just be the same list twice.
@@ -270,7 +270,7 @@ export const PLATFORM_SURFACES: SurfaceDefinition[] = [
     key: 'platform.settings.site',
     title: 'Site',
     module: 'platform',
-    icon: Globe,
+    icon: faGlobe,
     component: SiteDetailSurface,
     listed: false,
     // Deliberately NOT a singleton: comparing two sites side by side is the
@@ -281,7 +281,7 @@ export const PLATFORM_SURFACES: SurfaceDefinition[] = [
     key: 'platform.settings.domains',
     title: 'Domains',
     module: 'platform',
-    icon: GlobeLock,
+    icon: faEarthAmericas,
     component: DomainsListSurface,
     section: 'Your business',
     // One list of every address on the account — a second copy is the same list.
@@ -295,7 +295,7 @@ export const PLATFORM_SURFACES: SurfaceDefinition[] = [
     key: 'platform.settings.domain',
     title: 'Web address',
     module: 'platform',
-    icon: GlobeLock,
+    icon: faEarthAmericas,
     component: DomainDetailSurface,
     listed: false,
     // Not a singleton: setting up a new address while looking at the working one
@@ -306,7 +306,7 @@ export const PLATFORM_SURFACES: SurfaceDefinition[] = [
     key: 'platform.settings.notifications',
     title: 'Notifications',
     module: 'platform',
-    icon: Bell,
+    icon: faBell,
     component: NotificationsSurface,
     section: 'Your business',
     // One preferences record per account — a second copy is two editors racing
@@ -321,7 +321,7 @@ export const PLATFORM_SURFACES: SurfaceDefinition[] = [
     key: 'platform.settings.modules',
     title: 'Modules',
     module: 'platform',
-    icon: Layers,
+    icon: faLayerGroup,
     component: ModulesSurface,
     section: 'What sparx does',
     // One list of everything switched on — a second copy shows the same state.
@@ -333,7 +333,7 @@ export const PLATFORM_SURFACES: SurfaceDefinition[] = [
     key: 'platform.settings.industry',
     title: 'Industry',
     module: 'platform',
-    icon: Compass,
+    icon: faCompass,
     component: IndustrySurface,
     section: 'What sparx does',
     // One line of work per business — a second copy is the same choice twice.
@@ -345,7 +345,7 @@ export const PLATFORM_SURFACES: SurfaceDefinition[] = [
     key: 'platform.settings.sample-data',
     title: 'Sample data',
     module: 'platform',
-    icon: FlaskConical,
+    icon: faFlask,
     component: SampleDataSurface,
     section: 'What sparx does',
     // Account-wide status — a second copy shows the same counts and state.
@@ -358,7 +358,7 @@ export const PLATFORM_SURFACES: SurfaceDefinition[] = [
     key: 'platform.settings.integrations',
     title: 'Integrations',
     module: 'platform',
-    icon: Plug,
+    icon: faPlug,
     component: IntegrationsListSurface,
     section: 'Connections & access',
     // One list of every connected service — a second copy is the same list.
@@ -373,7 +373,7 @@ export const PLATFORM_SURFACES: SurfaceDefinition[] = [
     key: 'platform.settings.integration',
     title: 'Connection',
     module: 'platform',
-    icon: Plug,
+    icon: faPlug,
     component: IntegrationDetailSurface,
     listed: false,
     keywords: ['connect', 'integration', 'provider'],
@@ -382,7 +382,7 @@ export const PLATFORM_SURFACES: SurfaceDefinition[] = [
     key: 'platform.settings.ai',
     title: 'AI connections',
     module: 'platform',
-    icon: KeyRound,
+    icon: faKey,
     component: AiConnectionsSurface,
     section: 'Connections & access',
     // One set of AI credentials per account — a second copy shows the same keys.
@@ -394,7 +394,7 @@ export const PLATFORM_SURFACES: SurfaceDefinition[] = [
     key: 'platform.settings.partner',
     title: 'Partner access',
     module: 'platform',
-    icon: Handshake,
+    icon: faHandshake,
     component: PartnerAccessSurface,
     section: 'Connections & access',
     // One roster of who can reach the account — a second copy is the same list.
@@ -406,7 +406,7 @@ export const PLATFORM_SURFACES: SurfaceDefinition[] = [
     key: 'platform.settings.security',
     title: 'Security',
     module: 'platform',
-    icon: Shield,
+    icon: faShield,
     component: SecuritySurface,
     section: 'Connections & access',
     // One account's sign-in state — a second copy shows the same sessions.

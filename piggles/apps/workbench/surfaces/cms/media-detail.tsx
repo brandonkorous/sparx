@@ -40,7 +40,16 @@ import {
   useToast,
 } from '@wizeworks/silicaui-react';
 import { useConfirm } from '../../lib/confirm';
-import { File, FileText, Film, ImageOff, Music, Trash2 } from 'lucide-react';
+import {
+  faFile,
+  faFileText,
+  faFilm,
+  faImageSlash,
+  faMusic,
+  faTrashCan,
+} from '@fortawesome/pro-solid-svg-icons';
+
+import { Icon } from '@piggles/ui';
 import { afterPaneChange } from '../../lib/defer';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
@@ -123,15 +132,15 @@ export function MediaDetailSurface({ ctx }: { ctx: SurfaceContext }) {
 function kindIcon(kind: MediaKind, className: string) {
   switch (kind) {
     case 'video':
-      return <Film className={className} aria-hidden />;
+      return <Icon glyph={faFilm} className={className} aria-hidden />;
     case 'audio':
-      return <Music className={className} aria-hidden />;
+      return <Icon glyph={faMusic} className={className} aria-hidden />;
     case 'document':
-      return <FileText className={className} aria-hidden />;
+      return <Icon glyph={faFileText} className={className} aria-hidden />;
     case 'image':
-      return <ImageOff className={className} aria-hidden />;
+      return <Icon glyph={faImageSlash} className={className} aria-hidden />;
     default:
-      return <File className={className} aria-hidden />;
+      return <Icon glyph={faFile} className={className} aria-hidden />;
   }
 }
 
@@ -170,7 +179,7 @@ function Preview({ asset }: { asset: MediaAsset }) {
   if (asset.kind === 'audio' && url) {
     return (
       <div className="bg-base-200 rounded-box border-base-300 flex flex-col items-center gap-3 border p-6">
-        <Music className="size-8" aria-hidden />
+        <Icon glyph={faMusic} className="size-8" aria-hidden />
         {/* eslint-disable-next-line jsx-a11y/media-has-caption -- a tenant's own uploaded audio file has no caption track; controls let them play it to confirm it is the right file. */}
         <audio controls src={url} className="w-full max-w-md" />
       </div>
@@ -460,7 +469,7 @@ function ManageAsset({
                 void onDelete();
               }}
             >
-              <Trash2 className="size-4" aria-hidden />
+              <Icon glyph={faTrashCan} className="size-4" aria-hidden />
               Delete
             </Button>
           </div>

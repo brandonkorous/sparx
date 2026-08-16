@@ -37,7 +37,8 @@ import {
   NativeSelect,
   useToast,
 } from '@wizeworks/silicaui-react';
-import { Link2, Pencil, Plus, Star, Trash2 } from 'lucide-react';
+import { faLink, faPencil, faPlus, faStar, faTrashCan } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { FormSection } from '../../components/form-section';
 import { PaneScope } from '../../lib/dock/window-boundary';
 import { useConfirm } from '../../lib/confirm';
@@ -198,7 +199,7 @@ export function AssociationsPanel({
           setDialog('new');
         }}
       >
-        <Plus className="size-4" aria-hidden />
+        <Icon glyph={faPlus} className="size-4" aria-hidden />
         Link someone else
       </Button>
 
@@ -281,7 +282,7 @@ function AssociationRow({
         aria-label={`Change how ${other?.title ?? 'this record'} is connected`}
         onClick={onEdit}
       >
-        <Pencil className="size-4" aria-hidden />
+        <Icon glyph={faPencil} className="size-4" aria-hidden />
       </Button>
 
       {item.isPrimary ? null : (
@@ -294,7 +295,7 @@ function AssociationRow({
           aria-label={`Make ${other?.title ?? 'this'} the main one`}
           onClick={onMakePrimary}
         >
-          <Star className="size-4" aria-hidden />
+          <Icon glyph={faStar} className="size-4" aria-hidden />
         </Button>
       )}
       <Button
@@ -305,7 +306,7 @@ function AssociationRow({
         aria-label={`Unlink ${other?.title ?? 'this record'}`}
         onClick={onUnrelate}
       >
-        <Trash2 className="size-4" aria-hidden />
+        <Icon glyph={faTrashCan} className="size-4" aria-hidden />
       </Button>
     </li>
   );
@@ -570,7 +571,7 @@ function RelateDialog({
               disabled={!editing && toId === ''}
               onClick={() => void submit()}
             >
-              {editing ? null : <Link2 className="size-4" aria-hidden />}
+              {editing ? null : <Icon glyph={faLink} className="size-4" aria-hidden />}
               {editing ? 'Save the change' : 'Link them'}
             </Button>
           </DialogFooter>

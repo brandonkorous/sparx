@@ -10,7 +10,7 @@
 
 import { useMemo } from 'react';
 import { productHidesSurface } from '../product';
-import { Boxes } from 'lucide-react';
+import { faBoxes } from '@fortawesome/pro-solid-svg-icons';
 import { buildNav, type NavModule } from './nav';
 import { getSurface, type SurfaceDefinition } from './registry';
 import { useModuleStates } from '../api/shell-data';
@@ -142,7 +142,7 @@ function useTenantRecordTypeRows(): SurfaceDefinition[] {
       .map((type) => ({
         ...base,
         title: type.labelPlural || type.label,
-        icon: Boxes,
+        icon: faBoxes,
         section: 'Your records',
         // After every built-in section, since these are additions to a CRM that
         // already works rather than the first thing anyone looks for.

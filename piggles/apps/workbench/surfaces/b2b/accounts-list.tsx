@@ -23,7 +23,8 @@ import {
   Table,
   Text,
 } from '@wizeworks/silicaui-react';
-import { Building2, Plus } from 'lucide-react';
+import { faBuilding, faPlus } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { ListEmptyState } from '../../components/list-empty-state';
@@ -114,7 +115,7 @@ export function AccountsListSurface({ ctx }: { ctx: SurfaceContext }) {
             ctx.open('b2b.account.detail', { id: 'new' }, { target: targetFor(event) });
           }}
         >
-          <Plus className="size-4" aria-hidden />
+          <Icon glyph={faPlus} className="size-4" aria-hidden />
           Add a trade account
         </Button>
         <RefreshButton
@@ -129,7 +130,7 @@ export function AccountsListSurface({ ctx }: { ctx: SurfaceContext }) {
       <Card className="min-h-0 flex-1 overflow-y-auto">
         {isError ? (
           <EmptyState
-            icon={<Building2 className="size-6" aria-hidden />}
+            icon={<Icon glyph={faBuilding} className="size-6" aria-hidden />}
             title="Could not load your trade accounts"
             description="This is a problem reaching the server. Your accounts are unaffected — nothing has been lost."
           />
@@ -139,7 +140,7 @@ export function AccountsListSurface({ ctx }: { ctx: SurfaceContext }) {
           <ListEmptyState
             filtered={narrowed}
             noResults={{
-              icon: <Building2 className="size-6" aria-hidden />,
+              icon: <Icon glyph={faBuilding} className="size-6" aria-hidden />,
               title: 'No accounts match that',
               description: 'Try a different word, or switch back to All to see every account.',
             }}

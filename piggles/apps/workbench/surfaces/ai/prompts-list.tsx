@@ -39,7 +39,8 @@ import {
   Text,
   useToast,
 } from '@wizeworks/silicaui-react';
-import { Bot, Plus, Sparkles } from 'lucide-react';
+import { faPlus, faRobot, faSparkles } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { useViewer } from '../../lib/api/shell-data';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
@@ -210,7 +211,7 @@ export function AiPromptsListSurface({ ctx }: { ctx: SurfaceContext }) {
             title="Write a new instruction — hold Shift to open alongside, Alt for a new window"
             onClick={openNew}
           >
-            <Plus className="size-4" aria-hidden />
+            <Icon glyph={faPlus} className="size-4" aria-hidden />
             New instruction
           </Button>
         ) : null}
@@ -264,7 +265,7 @@ export function AiPromptsListSurface({ ctx }: { ctx: SurfaceContext }) {
           {isError ? (
             <Card>
               <EmptyState
-                icon={<Bot className="size-6" aria-hidden />}
+                icon={<Icon glyph={faRobot} className="size-6" aria-hidden />}
                 title="Could not load your instructions"
                 description="This is a problem reaching the server. Your instructions are unaffected — nothing has been lost."
                 actions={
@@ -286,7 +287,7 @@ export function AiPromptsListSurface({ ctx }: { ctx: SurfaceContext }) {
           ) : prompts.length === 0 ? (
             <Card>
               <EmptyState
-                icon={<Bot className="size-6" aria-hidden />}
+                icon={<Icon glyph={faRobot} className="size-6" aria-hidden />}
                 title="No instructions yet"
                 description={
                   canInstall
@@ -310,17 +311,17 @@ export function AiPromptsListSurface({ ctx }: { ctx: SurfaceContext }) {
                         loading={install.isPending}
                         onClick={onInstall}
                       >
-                        <Sparkles className="size-4" aria-hidden />
+                        <Icon glyph={faSparkles} className="size-4" aria-hidden />
                         Add the starter set
                       </Button>
                       <Button size="sm" variant="outline" color="neutral" onClick={openNew}>
-                        <Plus className="size-4" aria-hidden />
+                        <Icon glyph={faPlus} className="size-4" aria-hidden />
                         Write one from scratch
                       </Button>
                     </div>
                   ) : canEdit ? (
                     <Button size="sm" color="module" onClick={openNew}>
-                      <Plus className="size-4" aria-hidden />
+                      <Icon glyph={faPlus} className="size-4" aria-hidden />
                       Write your first instruction
                     </Button>
                   ) : undefined
@@ -330,7 +331,7 @@ export function AiPromptsListSurface({ ctx }: { ctx: SurfaceContext }) {
           ) : groups.length === 0 ? (
             <Card>
               <EmptyState
-                icon={<Bot className="size-6" aria-hidden />}
+                icon={<Icon glyph={faRobot} className="size-6" aria-hidden />}
                 title="Nothing matches that"
                 description="No instruction matches your search or the kind you picked. Try different wording, or choose “Every kind”."
               />
@@ -341,7 +342,7 @@ export function AiPromptsListSurface({ ctx }: { ctx: SurfaceContext }) {
                   the assistant's live personality, which is not obvious from a name. */}
               {!isFiltering && groups.some((group) => group.category === 'persona') ? (
                 <Alert color="info" variant="soft">
-                  <Bot className="size-5" aria-hidden />
+                  <Icon glyph={faRobot} className="size-5" aria-hidden />
                   <AlertContent>
                     <AlertTitle>Your live chat uses a personality</AlertTitle>
                     <AlertDescription>

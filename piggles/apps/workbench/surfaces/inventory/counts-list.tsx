@@ -42,7 +42,8 @@ import {
   Timestamp,
   ToolbarSeparator,
 } from '@wizeworks/silicaui-react';
-import { ClipboardCheck, ClipboardList, Plus } from 'lucide-react';
+import { faClipboardCheck, faClipboardList, faPlus } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { ListEmptyState } from '../../components/list-empty-state';
@@ -135,7 +136,7 @@ export function CountsListSurface({ ctx }: { ctx: SurfaceContext }) {
     if (isError) {
       return (
         <EmptyState
-          icon={<ClipboardList className="size-6" aria-hidden />}
+          icon={<Icon glyph={faClipboardList} className="size-6" aria-hidden />}
           title="Could not load your counts"
           description="This is a problem reaching the server. Your counts are unaffected — the list just could not be read just now."
         />
@@ -151,7 +152,7 @@ export function CountsListSurface({ ctx }: { ctx: SurfaceContext }) {
         <ListEmptyState
           filtered={narrowed}
           noResults={{
-            icon: <ClipboardCheck className="size-6" aria-hidden />,
+            icon: <Icon glyph={faClipboardCheck} className="size-6" aria-hidden />,
             title: 'Nothing matches that',
             description: locationName
               ? `No counts match those filters at ${locationName}. Clear the status, or switch back to every location.`
@@ -169,7 +170,7 @@ export function CountsListSurface({ ctx }: { ctx: SurfaceContext }) {
                   ctx.open('inventory.counts.detail', { id: 'new' }, { target: 'tab' });
                 }}
               >
-                <Plus className="size-4" aria-hidden />
+                <Icon glyph={faPlus} className="size-4" aria-hidden />
                 Start a count
               </Button>
             ),
@@ -321,7 +322,7 @@ export function CountsListSurface({ ctx }: { ctx: SurfaceContext }) {
             );
           }}
         >
-          <Plus className="size-4" aria-hidden />
+          <Icon glyph={faPlus} className="size-4" aria-hidden />
           <span className="hidden @md:inline">New count</span>
         </Button>
 

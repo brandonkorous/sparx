@@ -34,7 +34,13 @@
 // and quoted at someone.
 
 import { Badge, Button, EmptyState, Heading, Text, Timestamp } from '@wizeworks/silicaui-react';
-import { CalendarClock, Repeat2, ServerCrash, ShoppingBag } from 'lucide-react';
+import {
+  faBagShopping,
+  faCalendarClock,
+  faRepeat,
+  faServer,
+} from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import { FormSection } from '../../components/form-section';
@@ -130,7 +136,7 @@ function SubscriptionsBody({ product, data }: { product: Product; data: ProductS
         <FormSection title="How people buy this">
           <EmptyState
             size="sm"
-            icon={<ShoppingBag className="size-6" aria-hidden />}
+            icon={<Icon glyph={faBagShopping} className="size-6" aria-hidden />}
             title="People buy this one at a time"
             description={`${product.title} is a normal one-off purchase — someone buys it, you send it, and that is the end of it. Nothing is missing here.`}
           />
@@ -147,7 +153,7 @@ function SubscriptionsBody({ product, data }: { product: Product; data: ProductS
         <FormSection title="How people buy this">
           <EmptyState
             size="sm"
-            icon={<CalendarClock className="size-6" aria-hidden />}
+            icon={<Icon glyph={faCalendarClock} className="size-6" aria-hidden />}
             title="Ready for repeat orders, but nobody has started one"
             description={`${product.title} is set up to be delivered on a schedule, and customers can choose that at checkout. Nobody has yet.`}
           />
@@ -235,7 +241,7 @@ export function ProductSubscriptionsSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar label={`${LABEL} actions`}>
-        <Repeat2 className="size-4 shrink-0" aria-hidden />
+        <Icon glyph={faRepeat} className="size-4 shrink-0" aria-hidden />
         <Heading level={2} className="min-w-0 truncate text-base font-semibold">
           {scope.product.title}
         </Heading>
@@ -265,7 +271,7 @@ export function ProductSubscriptionsSurface({ ctx }: { ctx: SurfaceContext }) {
 
           {subscriptions.isError ? (
             <EmptyState
-              icon={<ServerCrash className="size-6" aria-hidden />}
+              icon={<Icon glyph={faServer} className="size-6" aria-hidden />}
               title="Could not load repeat orders"
               description={productErrorMessage(
                 subscriptions.error,

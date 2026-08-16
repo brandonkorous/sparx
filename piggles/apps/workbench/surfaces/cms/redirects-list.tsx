@@ -45,7 +45,14 @@ import {
   useToast,
 } from '@wizeworks/silicaui-react';
 import { useConfirm } from '../../lib/confirm';
-import { ArrowRight, CornerUpRight, Plus, Trash2, Upload } from 'lucide-react';
+import {
+  faArrowRight,
+  faPlus,
+  faTrashCan,
+  faUpRight,
+  faUpload,
+} from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { ListEmptyState } from '../../components/list-empty-state';
 import { RefreshButton } from '../../components/refresh-button';
@@ -364,7 +371,7 @@ export function RedirectsListSurface({ ctx }: { ctx: SurfaceContext }) {
             setAdding(true);
           }}
         >
-          <Plus className="size-4" aria-hidden />
+          <Icon glyph={faPlus} className="size-4" aria-hidden />
           <span className="hidden @xl:inline">Add redirect</span>
         </Button>
 
@@ -376,7 +383,7 @@ export function RedirectsListSurface({ ctx }: { ctx: SurfaceContext }) {
           title="Import a list of redirects — hold Alt to open in a new window"
           onClick={openImport}
         >
-          <Upload className="size-4" aria-hidden />
+          <Icon glyph={faUpload} className="size-4" aria-hidden />
           <span className="hidden @2xl:inline">Bulk import</span>
         </Button>
 
@@ -426,7 +433,7 @@ export function RedirectsListSurface({ ctx }: { ctx: SurfaceContext }) {
 
         {error && !staleAfterFailure ? (
           <EmptyState
-            icon={<CornerUpRight className="size-6" aria-hidden />}
+            icon={<Icon glyph={faUpRight} className="size-6" aria-hidden />}
             title="Could not load your redirects"
             description="This is a problem reaching the server. None of your redirects have been lost — they are still sending visitors on as before."
             actions={
@@ -447,7 +454,7 @@ export function RedirectsListSurface({ ctx }: { ctx: SurfaceContext }) {
           <ListEmptyState
             filtered={narrowed}
             noResults={{
-              icon: <CornerUpRight className="size-6" aria-hidden />,
+              icon: <Icon glyph={faUpRight} className="size-6" aria-hidden />,
               title: 'Nothing matches that',
               description:
                 'No redirect matches what you searched or filtered for. Try part of an address, or switch the filter back to All.',
@@ -464,7 +471,7 @@ export function RedirectsListSurface({ ctx }: { ctx: SurfaceContext }) {
                     setAdding(true);
                   }}
                 >
-                  <Plus className="size-4" aria-hidden />
+                  <Icon glyph={faPlus} className="size-4" aria-hidden />
                   Add a redirect
                 </Button>
               ),
@@ -495,7 +502,7 @@ export function RedirectsListSurface({ ctx }: { ctx: SurfaceContext }) {
                           {row.from_path}
                         </span>
                         <span className="flex max-w-96 items-center gap-1 font-mono text-sm">
-                          <ArrowRight className="size-3.5 shrink-0" aria-hidden />
+                          <Icon glyph={faArrowRight} className="size-3.5 shrink-0" aria-hidden />
                           <span className="truncate">{row.to_path}</span>
                         </span>
                         {shared ? (
@@ -528,7 +535,7 @@ export function RedirectsListSurface({ ctx }: { ctx: SurfaceContext }) {
                           onDelete(row);
                         }}
                       >
-                        <Trash2 className="size-4" aria-hidden />
+                        <Icon glyph={faTrashCan} className="size-4" aria-hidden />
                       </Button>
                     </td>
                   </tr>

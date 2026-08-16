@@ -25,7 +25,8 @@ import {
   useToast,
 } from '@wizeworks/silicaui-react';
 import { useConfirm } from '../../lib/confirm';
-import { ShoppingCart } from 'lucide-react';
+import { faCartShopping } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { FormSection } from '../../components/form-section';
 import { ModuleScope } from '../../components/module-scope';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
@@ -112,7 +113,7 @@ export function CartDetailSurface({ ctx }: { ctx: SurfaceContext }) {
       <div className={PANE_SHELL}>
         <div className="flex min-h-0 flex-1 items-center justify-center">
           <EmptyState
-            icon={<ShoppingCart className="size-6" aria-hidden />}
+            icon={<Icon glyph={faCartShopping} className="size-6" aria-hidden />}
             title="This cart is no longer here"
             description="It may have been paid for and turned into an order, or cleared away after sitting untouched. Nothing is wrong — there is just nothing to show."
           />

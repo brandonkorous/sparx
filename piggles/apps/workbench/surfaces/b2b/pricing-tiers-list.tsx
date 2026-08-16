@@ -10,7 +10,8 @@
 import { useState } from 'react';
 import { PaneWaiting } from '../../components/pane-waiting';
 import { Badge, Button, Card, EmptyState, SearchInput, Text } from '@wizeworks/silicaui-react';
-import { DollarSign, Plus } from 'lucide-react';
+import { faDollarSign, faPlus } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { ListEmptyState } from '../../components/list-empty-state';
 import { RefreshButton } from '../../components/refresh-button';
@@ -60,7 +61,7 @@ export function PricingTiersListSurface({ ctx }: { ctx: SurfaceContext }) {
             ctx.open('b2b.pricing-tier.detail', { id: 'new' }, { target: targetFor(event) });
           }}
         >
-          <Plus className="size-4" aria-hidden />
+          <Icon glyph={faPlus} className="size-4" aria-hidden />
           Add a price tier
         </Button>
         <RefreshButton
@@ -75,7 +76,7 @@ export function PricingTiersListSurface({ ctx }: { ctx: SurfaceContext }) {
       <Card className="min-h-0 flex-1 overflow-y-auto p-2">
         {isError ? (
           <EmptyState
-            icon={<DollarSign className="size-6" aria-hidden />}
+            icon={<Icon glyph={faDollarSign} className="size-6" aria-hidden />}
             title="Could not load your price tiers"
             description="This is a problem reaching the server. Your tiers are unaffected — nothing has been lost."
           />
@@ -85,7 +86,7 @@ export function PricingTiersListSurface({ ctx }: { ctx: SurfaceContext }) {
           <ListEmptyState
             filtered={narrowed}
             noResults={{
-              icon: <DollarSign className="size-6" aria-hidden />,
+              icon: <Icon glyph={faDollarSign} className="size-6" aria-hidden />,
               title: 'No tiers match that',
               description: 'Try a different word, or clear the search to see every tier.',
             }}

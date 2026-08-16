@@ -30,15 +30,16 @@ import {
 } from '@wizeworks/silicaui-react';
 import { useConfirm } from '../../lib/confirm';
 import {
-  Check,
-  ChevronDown,
-  Copy,
-  ExternalLink,
-  MoreHorizontal,
-  PackageCheck,
-  Printer,
-  Trash2,
-} from 'lucide-react';
+  faArrowUpRightFromSquare,
+  faBoxCheck,
+  faCheck,
+  faChevronDown,
+  faCopy,
+  faEllipsis,
+  faPrint,
+  faTrashCan,
+} from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { api } from '../../lib/api/client';
 import { openServerHtml } from '../../lib/api/html-artifact';
 import { deferTick } from '../../lib/defer';
@@ -145,7 +146,7 @@ export function StageControl({ doc, stages }: StageControlProps) {
             disabled={advance.isPending}
           >
             {current.customerLabel}
-            <ChevronDown className="size-3" aria-hidden />
+            <Icon glyph={faChevronDown} className="size-3" aria-hidden />
           </Button>
         </DropdownMenuTrigger>
       </Tooltip>
@@ -175,7 +176,9 @@ export function StageControl({ doc, stages }: StageControlProps) {
                       <span className="text-sm">Will {joinClauses(effects)}</span>
                     ) : null}
                   </span>
-                  {isCurrent ? <Check className="size-4 shrink-0" aria-hidden /> : null}
+                  {isCurrent ? (
+                    <Icon glyph={faCheck} className="size-4 shrink-0" aria-hidden />
+                  ) : null}
                 </span>
               </DropdownMenuItem>
             );
@@ -276,7 +279,7 @@ export function DocumentActions({ doc, stage, ctx }: DocumentActionsProps) {
             shape="square"
             aria-label="More actions"
           >
-            <MoreHorizontal className="size-4" aria-hidden />
+            <Icon glyph={faEllipsis} className="size-4" aria-hidden />
           </Button>
         </DropdownMenuTrigger>
       </Tooltip>
@@ -296,7 +299,7 @@ export function DocumentActions({ doc, stage, ctx }: DocumentActionsProps) {
             });
           }}
         >
-          <Printer className="size-4" aria-hidden />
+          <Icon glyph={faPrint} className="size-4" aria-hidden />
           Print or save as PDF
         </DropdownMenuItem>
 
@@ -309,7 +312,7 @@ export function DocumentActions({ doc, stage, ctx }: DocumentActionsProps) {
               paymentLink.mutate();
             }}
           >
-            <Copy className="size-4" aria-hidden />
+            <Icon glyph={faCopy} className="size-4" aria-hidden />
             Copy payment link
           </DropdownMenuItem>
         ) : null}
@@ -321,14 +324,14 @@ export function DocumentActions({ doc, stage, ctx }: DocumentActionsProps) {
               convert.mutate();
             }}
           >
-            <PackageCheck className="size-4" aria-hidden />
+            <Icon glyph={faBoxCheck} className="size-4" aria-hidden />
             Convert to order
           </DropdownMenuItem>
         ) : null}
 
         {doc.convertedOrder ? (
           <DropdownMenuItem disabled>
-            <ExternalLink className="size-4" aria-hidden />
+            <Icon glyph={faArrowUpRightFromSquare} className="size-4" aria-hidden />
             Order {doc.convertedOrder.orderNumber} exists
           </DropdownMenuItem>
         ) : null}
@@ -358,7 +361,7 @@ export function DocumentActions({ doc, stage, ctx }: DocumentActionsProps) {
                   });
               }}
             >
-              <Trash2 className="size-4" aria-hidden />
+              <Icon glyph={faTrashCan} className="size-4" aria-hidden />
               Delete draft
             </DropdownMenuItem>
           </>

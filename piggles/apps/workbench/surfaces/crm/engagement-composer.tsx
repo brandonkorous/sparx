@@ -39,7 +39,14 @@ import {
   Textarea,
   useToast,
 } from '@wizeworks/silicaui-react';
-import { Mail, Phone, PhoneCall, Send, StickyNote } from 'lucide-react';
+import {
+  faEnvelope,
+  faNoteSticky,
+  faPaperPlane,
+  faPhone,
+  faPhoneVolume,
+} from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { useActiveSiteId } from '../../lib/api/shell-data';
 import { PaneScope } from '../../lib/dock/window-boundary';
 import { useDirtySource } from '../../lib/workbench/dirty';
@@ -66,9 +73,9 @@ import {
 import { productCopy } from '../../lib/product';
 
 const MODES = [
-  { value: 'note', label: 'Note', icon: StickyNote },
-  { value: 'email', label: 'Email', icon: Mail },
-  { value: 'call', label: 'Log a call', icon: Phone },
+  { value: 'note', label: 'Note', icon: faNoteSticky },
+  { value: 'email', label: 'Email', icon: faEnvelope },
+  { value: 'call', label: 'Log a call', icon: faPhone },
 ] as const;
 
 type Mode = (typeof MODES)[number]['value'];
@@ -347,7 +354,7 @@ export function EngagementComposer({
             setOpen(true);
           }}
         >
-          <entry.icon className="size-4" aria-hidden />
+          <Icon glyph={entry.icon} className="size-4" aria-hidden />
           {entry.label}
         </Button>
       ))}
@@ -537,7 +544,7 @@ export function EngagementComposer({
                           dial();
                         }}
                       >
-                        <PhoneCall className="size-4" aria-hidden />
+                        <Icon glyph={faPhoneVolume} className="size-4" aria-hidden />
                         Call them now
                       </Button>
                     </div>
@@ -637,7 +644,7 @@ export function EngagementComposer({
                 disabled={blocked}
                 onClick={() => void submit()}
               >
-                <Send className="size-4" aria-hidden />
+                <Icon glyph={faPaperPlane} className="size-4" aria-hidden />
                 {COPY[mode].action}
               </Button>
             </DialogFooter>

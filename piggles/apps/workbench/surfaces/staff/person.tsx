@@ -52,17 +52,17 @@ import {
   useToast,
 } from '@wizeworks/silicaui-react';
 import {
-  Archive,
-  ArchiveRestore,
-  Clock,
-  Coins,
-  FileText,
-  Pencil,
-  Plus,
-  Save,
-  ShieldCheck,
-  Trash2,
-} from 'lucide-react';
+  faBoxArchive,
+  faClock,
+  faCoins,
+  faFileText,
+  faFloppyDisk,
+  faPencil,
+  faPlus,
+  faShieldCheck,
+  faTrashCan,
+} from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import { FormSection } from '../../components/form-section';
@@ -312,7 +312,7 @@ function PaySection({ staffMemberId, canSeePay }: { staffMemberId: string; canSe
               setAdding(true);
             }}
           >
-            <Plus className="size-4" aria-hidden />
+            <Icon glyph={faPlus} className="size-4" aria-hidden />
             New rate
           </Button>
         )
@@ -514,7 +514,7 @@ function PaySection({ staffMemberId, canSeePay }: { staffMemberId: string; canSe
                       void drop(rate.id, rateAmountLabel(rate.basis, rate.amountCents));
                     }}
                   >
-                    <Trash2 className="size-4" aria-hidden />
+                    <Icon glyph={faTrashCan} className="size-4" aria-hidden />
                   </Button>
                 </td>
               </tr>
@@ -615,7 +615,7 @@ function CertificationsSection({ staffMemberId }: { staffMemberId: string }) {
               setAdding(true);
             }}
           >
-            <Plus className="size-4" aria-hidden />
+            <Icon glyph={faPlus} className="size-4" aria-hidden />
             Add
           </Button>
         )
@@ -744,7 +744,7 @@ function CertificationsSection({ staffMemberId }: { staffMemberId: string }) {
                   void drop(cert.id, cert.name);
                 }}
               >
-                <Trash2 className="size-4" aria-hidden />
+                <Icon glyph={faTrashCan} className="size-4" aria-hidden />
               </Button>
             </div>
           </div>
@@ -786,7 +786,7 @@ function DocumentsSection({
             className="border-base-300 rounded-box flex items-center justify-between gap-3 border p-3"
           >
             <div className="flex min-w-0 items-center gap-2">
-              <FileText className="size-4 shrink-0" aria-hidden />
+              <Icon glyph={faFileText} className="size-4 shrink-0" aria-hidden />
               <div className="min-w-0">
                 <div className="truncate font-medium">{doc.title}</div>
                 <Text className="text-sm">
@@ -1082,7 +1082,7 @@ function HoursSection({
                               openEdit(entry);
                             }}
                           >
-                            <Pencil className="size-3.5" aria-hidden />
+                            <Icon glyph={faPencil} className="size-3.5" aria-hidden />
                           </Button>
                           <Button
                             size="xs"
@@ -1093,7 +1093,7 @@ function HoursSection({
                               void drop(entry);
                             }}
                           >
-                            <Trash2 className="size-3.5" aria-hidden />
+                            <Icon glyph={faTrashCan} className="size-3.5" aria-hidden />
                           </Button>
                         </>
                       )}
@@ -1337,7 +1337,7 @@ export function PersonSurface({ ctx }: { ctx: SurfaceContext }) {
       <PaneToolbar label="Person actions" wrap>
         {isNew ? (
           <span className="inline-flex items-center gap-1.5">
-            <Coins className="size-4" aria-hidden />
+            <Icon glyph={faCoins} className="size-4" aria-hidden />
             <Text as="span" className="text-sm font-medium">
               New person
             </Text>
@@ -1350,7 +1350,7 @@ export function PersonSurface({ ctx }: { ctx: SurfaceContext }) {
 
         {running ? (
           <Badge color="info" size="sm">
-            <Clock className="size-3.5" aria-hidden />
+            <Icon glyph={faClock} className="size-3.5" aria-hidden />
             On the clock
           </Badge>
         ) : null}
@@ -1409,7 +1409,7 @@ export function PersonSurface({ ctx }: { ctx: SurfaceContext }) {
                 );
               }}
             >
-              <Clock className="size-4" aria-hidden />
+              <Icon glyph={faClock} className="size-4" aria-hidden />
               Clock in
             </Button>
           )
@@ -1423,7 +1423,7 @@ export function PersonSurface({ ctx }: { ctx: SurfaceContext }) {
           loading={save.isPending}
           onClick={onSave}
         >
-          <Save className="size-4" aria-hidden />
+          <Icon glyph={faFloppyDisk} className="size-4" aria-hidden />
           {isNew ? 'Add them' : 'Save'}
         </Button>
 
@@ -1441,9 +1441,9 @@ export function PersonSurface({ ctx }: { ctx: SurfaceContext }) {
               }}
             >
               {archived ? (
-                <ArchiveRestore className="size-4" aria-hidden />
+                <Icon glyph={faBoxArchive} className="size-4" aria-hidden />
               ) : (
-                <Archive className="size-4" aria-hidden />
+                <Icon glyph={faBoxArchive} className="size-4" aria-hidden />
               )}
             </Button>
             <Button
@@ -1456,7 +1456,7 @@ export function PersonSurface({ ctx }: { ctx: SurfaceContext }) {
                 void onDelete();
               }}
             >
-              <Trash2 className="size-4" aria-hidden />
+              <Icon glyph={faTrashCan} className="size-4" aria-hidden />
             </Button>
             <RefreshButton
               isFetching={person.isFetching}
@@ -1728,7 +1728,7 @@ export function PersonSurface({ ctx }: { ctx: SurfaceContext }) {
               </FormSection>
 
               <div className="flex items-center gap-2 px-1 pb-2">
-                <ShieldCheck className="size-4 shrink-0" aria-hidden />
+                <Icon glyph={faShieldCheck} className="size-4 shrink-0" aria-hidden />
                 <Text className="text-xs">
                   {productCopy(
                     'staff.notPayroll',

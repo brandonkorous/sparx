@@ -48,14 +48,15 @@ import {
 } from '@wizeworks/silicaui-react';
 import { useConfirm } from '../../lib/confirm';
 import {
-  Check,
-  EyeOff,
-  MessageSquare,
-  MessagesSquare,
-  Reply,
-  ServerCrash,
-  Trash2,
-} from 'lucide-react';
+  faCheck,
+  faEyeSlash,
+  faMessage,
+  faMessages,
+  faReply,
+  faServer,
+  faTrashCan,
+} from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import { FormSection } from '../../components/form-section';
@@ -283,7 +284,7 @@ function ReviewCard({
                 setStatus('rejected', 'Review hidden');
               }}
             >
-              <EyeOff className="size-4" aria-hidden />
+              <Icon glyph={faEyeSlash} className="size-4" aria-hidden />
               Hide it
             </Button>
           ) : (
@@ -295,7 +296,7 @@ function ReviewCard({
                 setStatus('approved', 'Review published');
               }}
             >
-              <Check className="size-4" aria-hidden />
+              <Icon glyph={faCheck} className="size-4" aria-hidden />
               Publish it
             </Button>
           )}
@@ -307,7 +308,7 @@ function ReviewCard({
               setReplying(true);
             }}
           >
-            <Reply className="size-4" aria-hidden />
+            <Icon glyph={faReply} className="size-4" aria-hidden />
             {review.response ? 'Edit your reply' : 'Reply'}
           </Button>
           {/* Deleting is rare and permanent, so it does not sit at the same
@@ -321,7 +322,7 @@ function ReviewCard({
             loading={remove.isPending}
             onClick={onDelete}
           >
-            <Trash2 className="size-4" aria-hidden />
+            <Icon glyph={faTrashCan} className="size-4" aria-hidden />
           </Button>
         </div>
       )}
@@ -413,7 +414,7 @@ function QuestionCard({ question, productId }: { question: ProductQuestion; prod
               setAnswering(true);
             }}
           >
-            <Reply className="size-4" aria-hidden />
+            <Icon glyph={faReply} className="size-4" aria-hidden />
             Answer it
           </Button>
           {question.status === 'published' ? (
@@ -434,7 +435,7 @@ function QuestionCard({ question, productId }: { question: ProductQuestion; prod
                 );
               }}
             >
-              <EyeOff className="size-4" aria-hidden />
+              <Icon glyph={faEyeSlash} className="size-4" aria-hidden />
               Hide it
             </Button>
           ) : (
@@ -455,7 +456,7 @@ function QuestionCard({ question, productId }: { question: ProductQuestion; prod
                 );
               }}
             >
-              <Check className="size-4" aria-hidden />
+              <Icon glyph={faCheck} className="size-4" aria-hidden />
               Show it on the page
             </Button>
           )}
@@ -504,7 +505,7 @@ export function ProductReviewsSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar label={`${LABEL} actions`}>
-        <MessageSquare className="size-4 shrink-0" aria-hidden />
+        <Icon glyph={faMessage} className="size-4 shrink-0" aria-hidden />
         <Heading level={2} className="min-w-0 truncate text-base font-semibold">
           {scope.product.title}
         </Heading>
@@ -546,7 +547,7 @@ export function ProductReviewsSurface({ ctx }: { ctx: SurfaceContext }) {
 
           {failedToLoad ? (
             <EmptyState
-              icon={<ServerCrash className="size-6" aria-hidden />}
+              icon={<Icon glyph={faServer} className="size-6" aria-hidden />}
               title="Could not load what customers said"
               description={productErrorMessage(
                 reviews.error ?? questions.error,
@@ -684,7 +685,7 @@ export function ProductReviewsSurface({ ctx }: { ctx: SurfaceContext }) {
                     ) : (
                       <EmptyState
                         size="sm"
-                        icon={<MessagesSquare className="size-6" aria-hidden />}
+                        icon={<Icon glyph={faMessages} className="size-6" aria-hidden />}
                         title="No questions yet"
                         description={`Nobody has asked anything about ${scope.product.title}. When they do, the question appears here for you to answer before it goes on the page.`}
                       />

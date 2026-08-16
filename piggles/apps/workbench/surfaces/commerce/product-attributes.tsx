@@ -35,7 +35,8 @@ import {
   Text,
   Textarea,
 } from '@wizeworks/silicaui-react';
-import { Plus, Shapes, Trash2 } from 'lucide-react';
+import { faPlus, faShapes, faTrashCan } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { ContentBlockEditor } from '@sparx/cms-editor/editor';
 import { FormSection } from '../../components/form-section';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
@@ -259,7 +260,7 @@ export function ProductAttributesTab({ ctx, product }: { ctx: SurfaceContext; pr
                   ctx.open('commerce.product-types.detail', { key: 'new' }, { target: 'beside' });
                 }}
               >
-                <Plus className="size-4" aria-hidden />
+                <Icon glyph={faPlus} className="size-4" aria-hidden />
                 New product type
               </Button>
             </Alert>
@@ -270,7 +271,7 @@ export function ProductAttributesTab({ ctx, product }: { ctx: SurfaceContext; pr
           <AttributeForm type={selectedType} value={attributes} onFieldChange={setField} />
         ) : typeKey === '' && !isPending ? (
           <div className="border-base-300 flex flex-col items-center gap-2 rounded-lg border border-dashed p-8 text-center">
-            <Shapes className="size-6" aria-hidden />
+            <Icon glyph={faShapes} className="size-6" aria-hidden />
             <Text className="text-sm">
               Pick a kind of product above to describe it in more detail. Without one, this product
               is sold on its name, price and photos alone — which is perfectly fine.
@@ -707,7 +708,7 @@ function RepeaterField({
                     remove(index);
                   }}
                 >
-                  <Trash2 className="size-4" aria-hidden />
+                  <Icon glyph={faTrashCan} className="size-4" aria-hidden />
                 </Button>
               </div>
               <BodyFields
@@ -731,7 +732,7 @@ function RepeaterField({
           disabled={atMax || Boolean(disabled)}
           onClick={add}
         >
-          <Plus className="size-4" aria-hidden />
+          <Icon glyph={faPlus} className="size-4" aria-hidden />
           Add {itemNoun}
         </Button>
         {atMax ? (

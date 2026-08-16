@@ -14,6 +14,7 @@
 // see the draft store below — so closing this costs nothing.
 
 import { useEffect, useMemo, useState } from 'react';
+import { Icon } from '@piggles/ui';
 import {
   Button,
   Collapsible,
@@ -199,7 +200,7 @@ export function FeedbackCompose({
 
       <div role="group" aria-label="What kind of feedback" className="flex flex-wrap gap-2">
         {FEEDBACK_CATEGORIES.map((option) => {
-          const Icon = CATEGORY_ICON[option.value];
+          const glyph = CATEGORY_ICON[option.value];
           const selected = category === option.value;
           return (
             <Button
@@ -216,7 +217,7 @@ export function FeedbackCompose({
                 setCategory(option.value);
               }}
             >
-              <Icon className="size-4" aria-hidden />
+              <Icon glyph={glyph} className="size-4" aria-hidden />
               {option.label}
             </Button>
           );

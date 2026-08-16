@@ -53,7 +53,16 @@ import {
   useToast,
 } from '@wizeworks/silicaui-react';
 import { useConfirm } from '../../lib/confirm';
-import { ClipboardList, Coins, PackageCheck, PackageX, Plus, Printer, Trash2 } from 'lucide-react';
+import {
+  faBoxCheck,
+  faBoxOpen,
+  faClipboardList,
+  faCoins,
+  faPlus,
+  faPrint,
+  faTrashCan,
+} from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import { FormSection } from '../../components/form-section';
@@ -351,7 +360,7 @@ function BookDelivery({ ctx, preTargetPoId }: { ctx: SurfaceContext; preTargetPo
     <div className={PANE_SHELL}>
       <PaneToolbar label="Receive a delivery actions">
         <span className="inline-flex items-center gap-1.5">
-          <PackageCheck className="size-4" aria-hidden />
+          <Icon glyph={faBoxCheck} className="size-4" aria-hidden />
           <Text as="span" className="text-sm font-medium">
             Receive a delivery
           </Text>
@@ -367,7 +376,7 @@ function BookDelivery({ ctx, preTargetPoId }: { ctx: SurfaceContext; preTargetPo
             void post();
           }}
         >
-          <PackageCheck className="size-4" aria-hidden />
+          <Icon glyph={faBoxCheck} className="size-4" aria-hidden />
           Book it in
         </Button>
       </PaneToolbar>
@@ -430,7 +439,7 @@ function BookDelivery({ ctx, preTargetPoId }: { ctx: SurfaceContext; preTargetPo
             <>
               <div className="border-base-300 flex flex-wrap items-center justify-between gap-2 rounded-lg border p-3">
                 <div className="flex min-w-0 items-center gap-2">
-                  <ClipboardList className="size-4 shrink-0" aria-hidden />
+                  <Icon glyph={faClipboardList} className="size-4 shrink-0" aria-hidden />
                   <div className="flex min-w-0 flex-col">
                     <Text className="font-mono font-medium">{detail.number}</Text>
                     <Text className="text-sm">{detail.supplierName ?? 'No supplier'}</Text>
@@ -602,7 +611,7 @@ function BookDelivery({ ctx, preTargetPoId }: { ctx: SurfaceContext; preTargetPo
                       ]);
                     }}
                   >
-                    <Plus className="size-4" aria-hidden />
+                    <Icon glyph={faPlus} className="size-4" aria-hidden />
                     Add a cost
                   </Button>
                 }
@@ -677,7 +686,7 @@ function BookDelivery({ ctx, preTargetPoId }: { ctx: SurfaceContext; preTargetPo
                             setCharges((current) => current.filter((_, i) => i !== index));
                           }}
                         >
-                          <Trash2 className="size-4" aria-hidden />
+                          <Icon glyph={faTrashCan} className="size-4" aria-hidden />
                         </Button>
                       </div>
                     ))}
@@ -843,7 +852,7 @@ function LandedCostSection({ receipt }: { receipt: GoodsReceiptDetail }) {
               setAdding(true);
             }}
           >
-            <Plus className="size-4" aria-hidden />
+            <Icon glyph={faPlus} className="size-4" aria-hidden />
             Add a cost
           </Button>
         )
@@ -936,7 +945,7 @@ function LandedCostSection({ receipt }: { receipt: GoodsReceiptDetail }) {
                       );
                     }}
                   >
-                    <Trash2 className="size-4" aria-hidden />
+                    <Icon glyph={faTrashCan} className="size-4" aria-hidden />
                   </Button>
                 </td>
               </tr>
@@ -1015,7 +1024,7 @@ function LandedCostSection({ receipt }: { receipt: GoodsReceiptDetail }) {
               loading={addCharge.isPending}
               onClick={save}
             >
-              <Coins className="size-4" aria-hidden />
+              <Icon glyph={faCoins} className="size-4" aria-hidden />
               Add it
             </Button>
             <Button
@@ -1106,7 +1115,7 @@ function ViewReceipt({ ctx, id }: { ctx: SurfaceContext; id: string }) {
               );
             }}
           >
-            <Printer className="size-4" aria-hidden />
+            <Icon glyph={faPrint} className="size-4" aria-hidden />
           </Button>
         </Tooltip>
         {data.purchaseOrderId ? (
@@ -1123,7 +1132,7 @@ function ViewReceipt({ ctx, id }: { ctx: SurfaceContext; id: string }) {
               );
             }}
           >
-            <ClipboardList className="size-4" aria-hidden />
+            <Icon glyph={faClipboardList} className="size-4" aria-hidden />
             <span className="hidden @lg:inline">Open the order</span>
           </Button>
         ) : (
@@ -1267,7 +1276,7 @@ export function ReceiptDetailSurface({ ctx }: { ctx: SurfaceContext }) {
       <div className={PANE_SHELL}>
         <div className="flex h-full items-center justify-center p-8">
           <div className="flex flex-col items-center gap-3 text-center">
-            <PackageX className="size-6" aria-hidden />
+            <Icon glyph={faBoxOpen} className="size-6" aria-hidden />
             <Text>No delivery was chosen. Open one from the Receiving list.</Text>
           </div>
         </div>

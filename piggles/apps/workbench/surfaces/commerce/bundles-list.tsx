@@ -15,7 +15,8 @@
 import { useState } from 'react';
 import { PaneWaiting } from '../../components/pane-waiting';
 import { Button, Card, EmptyState, SearchInput, Table } from '@wizeworks/silicaui-react';
-import { ArrowDown, ArrowUp, Blocks, Plus } from 'lucide-react';
+import { faArrowDown, faArrowUp, faCubes, faPlus } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { ListEmptyState } from '../../components/list-empty-state';
@@ -100,9 +101,9 @@ export function BundlesListSurface({ ctx }: { ctx: SurfaceContext }) {
         {label}
         {sort.key === key ? (
           sort.dir === 'asc' ? (
-            <ArrowUp className="size-3" aria-hidden />
+            <Icon glyph={faArrowUp} className="size-3" aria-hidden />
           ) : (
-            <ArrowDown className="size-3" aria-hidden />
+            <Icon glyph={faArrowDown} className="size-3" aria-hidden />
           )
         ) : null}
       </button>
@@ -137,7 +138,7 @@ export function BundlesListSurface({ ctx }: { ctx: SurfaceContext }) {
             ctx.open('commerce.bundle.detail', { id: 'new' }, { target: targetFor(event) });
           }}
         >
-          <Plus className="size-4" aria-hidden />
+          <Icon glyph={faPlus} className="size-4" aria-hidden />
           <span className="hidden @lg:inline">Add a bundle</span>
         </Button>
         <RefreshButton
@@ -161,7 +162,7 @@ export function BundlesListSurface({ ctx }: { ctx: SurfaceContext }) {
           <ListEmptyState
             filtered={Boolean(search.trim())}
             noResults={{
-              icon: <Blocks className="size-6" aria-hidden />,
+              icon: <Icon glyph={faCubes} className="size-6" aria-hidden />,
               title: 'Nothing matches that search',
               description: 'Try a different word, or clear the search box to see everything.',
             }}

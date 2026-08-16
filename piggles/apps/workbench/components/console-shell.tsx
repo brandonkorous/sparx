@@ -31,6 +31,7 @@ import { SidebarProvider } from '@wizeworks/silicaui-react';
 import { mintWindowId, openBus, type BusMessage } from '@/lib/bus';
 import { useActiveSiteId, useSites } from '@/lib/api/shell-data';
 import { WorkbenchProvider } from '@/lib/workbench/context';
+import { StudioSessionProvider } from '@/lib/studio/provider';
 import { BackNavigation } from '@/lib/workbench/nav-history';
 import { readDeepLink, tidyLegacyParams } from '@/lib/workbench/deep-link';
 import { loadNavState, saveNavState } from '@/lib/workbench/persistence';
@@ -58,7 +59,9 @@ import '@/lib/surfaces/piggles-catalog';
 import { applyThemeToDocument, readTheme, THEME_STORAGE_KEY, type Theme } from '@/lib/theme';
 import { readRailExpanded, writeRailExpanded } from '@/lib/rail-preference';
 import { readWindowMode, writeWindowMode, type WindowMode } from '@/lib/window-mode';
-import { useConsoleNav, useUnclaimedModules } from '@/lib/console/nav';
+import { useUnclaimedModules } from '@/lib/console/nav';
+import { useRailNav } from '@/lib/console/apps';
+import { useModuleReconcile } from '@/lib/console/reconcile';
 import { AppPanel } from './app-panel';
 import { AppRail } from './app-rail';
 import { CompactConsole } from './compact-console';
@@ -124,8 +127,13 @@ export function ConsoleShell({
   const postRef = useRef<((message: BusMessage) => void) | null>(null);
   const isCompact = useIsCompact();
 
-  const nav = useConsoleNav();
+  // The rail, not the catalogue: every app this person can reach, minus the ones
+  // the business put away. All apps is where the rest stays visible.
+  const nav = useRailNav();
   const unclaimed = useUnclaimedModules();
+  // Every app is included, so a module left off is a gap to close rather than a
+  // choice to respect. See lib/console/reconcile.ts.
+  useModuleReconcile();
 
   // Capture the address this page load arrived with, HERE, in the outermost
   // render — before anything downstream can rewrite it. The history bridge
@@ -294,41 +302,46 @@ export function ConsoleShell({
     return (
       <WorkbenchProvider windowId={windowId} role="main">
         <FeedbackProvider theme={theme} activeSite={activeSite}>
-          <CompactConsole
-            nav={nav}
-            userName={userName}
-            userEmail={userEmail}
-            theme={theme}
-            siteKey={siteKey}
-            accountOrigin={accountOrigin}
-            navOpen={navOpen}
-            onNavOpenChange={setNavOpen}
-            onToggleTheme={toggleTheme}
-            onOpenLauncher={openLauncher}
-          />
-          <ChromeBoundary region="launcher" whatStopped="Search has stopped working." silent>
-            <Launcher open={launcherOpen} onOpenChange={setLauncherOpen} />
-          </ChromeBoundary>
-          {/* Teaches the browser Back button to walk the compact shell's own
+          {/* ABOVE the pane host, in both presentations. A session held inside a
+              pane would be one session per pane — two drafts of one document, which
+              is the arrangement the per-document editor exists to replace. */}
+          <StudioSessionProvider>
+            <CompactConsole
+              nav={nav}
+              userName={userName}
+              userEmail={userEmail}
+              theme={theme}
+              siteKey={siteKey}
+              accountOrigin={accountOrigin}
+              navOpen={navOpen}
+              onNavOpenChange={setNavOpen}
+              onToggleTheme={toggleTheme}
+              onOpenLauncher={openLauncher}
+            />
+            <ChromeBoundary region="launcher" whatStopped="Search has stopped working." silent>
+              <Launcher open={launcherOpen} onOpenChange={setLauncherOpen} />
+            </ChromeBoundary>
+            {/* Teaches the browser Back button to walk the compact shell's own
               navigation — the drawer and launcher close first, then focus steps
               back through the stack — instead of leaving the app. */}
-          <BackNavigation
-            launcher={launcherOpen}
-            module={null}
-            nav={navOpen}
-            siteSlug={siteSlug}
-            onApply={(overlays) => {
-              setLauncherOpen(overlays.launcher);
-              setNavOpen(overlays.nav);
-            }}
-          />
-          {/* Opens whatever the address bar asked for, once the stack is up.
+            <BackNavigation
+              launcher={launcherOpen}
+              module={null}
+              nav={navOpen}
+              siteSlug={siteSlug}
+              onApply={(overlays) => {
+                setLauncherOpen(overlays.launcher);
+                setNavOpen(overlays.nav);
+              }}
+            />
+            {/* Opens whatever the address bar asked for, once the stack is up.
               Identical on both shells — a link has to work the same on a phone. */}
-          <DeepLinkArrival siteKey={siteKey} />
-          {/* Inside the provider: the notifier asks the controller what would be
+            <DeepLinkArrival siteKey={siteKey} />
+            {/* Inside the provider: the notifier asks the controller what would be
               lost before it offers to reload. */}
-          <UpdateNotifier />
-          <RecentsRecorder />
+            <UpdateNotifier />
+            <RecentsRecorder />
+          </StudioSessionProvider>
         </FeedbackProvider>
       </WorkbenchProvider>
     );
@@ -337,68 +350,69 @@ export function ConsoleShell({
   return (
     <WorkbenchProvider windowId={windowId} role="main">
       <FeedbackProvider theme={theme} activeSite={activeSite}>
-        <div className="bg-base-300 flex h-dvh w-full flex-col overflow-hidden">
-          {/* Every chrome region is crash-isolated from the panels and from each
+        <StudioSessionProvider>
+          <div className="bg-base-300 flex h-dvh w-full flex-col overflow-hidden">
+            {/* Every chrome region is crash-isolated from the panels and from each
               other. The panels hold the unsaved work; nothing up here is allowed
               to take that down. */}
-          <ChromeBoundary
-            region="topbar"
-            whatStopped="Search and your account menu have stopped working."
-          >
-            {/* The chrome renders IMMEDIATELY, even before the site key resolves
+            <ChromeBoundary
+              region="topbar"
+              whatStopped="Search and your account menu have stopped working."
+            >
+              {/* The chrome renders IMMEDIATELY, even before the site key resolves
                 — a present bar that fills in its business name a beat later
                 reads as loading; an absent one reads as broken. */}
-            <Topbar
-              userName={userName}
-              userEmail={userEmail}
-              theme={theme}
-              siteKey={siteKey ?? 'default'}
-              accountOrigin={accountOrigin}
-              windowMode={windowMode ?? 'tabs'}
-              onChangeWindowMode={onChangeWindowMode}
-              onToggleTheme={toggleTheme}
-              onOpenLauncher={openLauncher}
-            />
-          </ChromeBoundary>
+              <Topbar
+                userName={userName}
+                userEmail={userEmail}
+                theme={theme}
+                siteKey={siteKey ?? 'default'}
+                accountOrigin={accountOrigin}
+                windowMode={windowMode ?? 'tabs'}
+                onChangeWindowMode={onChangeWindowMode}
+                onToggleTheme={toggleTheme}
+                onOpenLauncher={openLauncher}
+              />
+            </ChromeBoundary>
 
-          <div className="relative flex min-h-0 flex-1">
-            <SidebarProvider
-              collapsed={!railExpanded}
-              onCollapsedChange={(collapsed) => {
-                setRailExpanded(!collapsed);
-              }}
-            >
-              {/* `relative` anchors the rail's own absolutely-positioned bits
+            <div className="relative flex min-h-0 flex-1">
+              <SidebarProvider
+                collapsed={!railExpanded}
+                onCollapsedChange={(collapsed) => {
+                  setRailExpanded(!collapsed);
+                }}
+              >
+                {/* `relative` anchors the rail's own absolutely-positioned bits
                   (active indicator, tooltips) — but NO positive z-index: one
                   here lifts the rail above body-portalled popovers, so the site
                   switcher's dropdown paints BEHIND it. The panel and dock are
                   static and sit below the rail regardless; the dropdown,
                   portalled later in the DOM at the same stacking level, wins. */}
-              <div className="bg-base-200 relative flex rounded-r-lg p-1">
-                {/* `compact`: collapsed, the rail is a 48px column with no room
+                <div className="bg-base-200 relative flex rounded-r-lg p-1">
+                  {/* `compact`: collapsed, the rail is a 48px column with no room
                     for a sentence, so the fallback is the icon and a tooltip. */}
-                <ChromeBoundary
-                  region="app-rail"
-                  whatStopped="The menu down the side has stopped working."
-                  compact
-                >
-                  <AppRail
-                    nav={nav}
-                    browsing={browsing}
-                    siteKey={siteKey ?? 'default'}
-                    expanded={railExpanded}
-                    accountOrigin={accountOrigin}
-                    onBrowse={(appId) => {
-                      // Clicking the app you are already browsing closes the
-                      // panel — the same toggle every icon rail teaches.
-                      setBrowsing((current) => (current === appId ? null : appId));
-                    }}
-                  />
-                </ChromeBoundary>
-              </div>
-            </SidebarProvider>
+                  <ChromeBoundary
+                    region="app-rail"
+                    whatStopped="The menu down the side has stopped working."
+                    compact
+                  >
+                    <AppRail
+                      nav={nav}
+                      browsing={browsing}
+                      siteKey={siteKey ?? 'default'}
+                      expanded={railExpanded}
+                      accountOrigin={accountOrigin}
+                      onBrowse={(appId) => {
+                        // Clicking the app you are already browsing closes the
+                        // panel — the same toggle every icon rail teaches.
+                        setBrowsing((current) => (current === appId ? null : appId));
+                      }}
+                    />
+                  </ChromeBoundary>
+                </div>
+              </SidebarProvider>
 
-            {/* The app panel sits in NORMAL FLOW, so opening it pushes the
+              {/* The app panel sits in NORMAL FLOW, so opening it pushes the
                 panels right exactly as expanding the rail does — it never covers
                 the work. (No overlay means no stacking context and no shadow.)
 
@@ -410,100 +424,104 @@ export function ConsoleShell({
                 fully clipped), which is what makes the close animate too — and
                 why it must be `inert` when shut, or its rows would still be
                 reachable by keyboard from inside a zero-width box. */}
-            <div
-              inert={browsing === null}
-              aria-hidden={browsing === null}
-              // 20rem, not silica's 16. Two reasons compounding, both of them
-              // Piggles' own choices:
-              //
-              //   • Piggles names screens by what you are DOING rather than by
-              //     category, so the labels are longer than sparx's — "Reviews
-              //     and questions" against "Reviews".
-              //   • Nav rows are 16px here rather than 14, because a rail is not
-              //     a caption (@piggles/brand's theme.css).
-              //
-              // At 18rem the longer names still ended in an ellipsis, and a nav
-              // row nobody can read is worse than a wide panel. Widening is the
-              // fix rather than shortening the names back into category nouns —
-              // and it agrees with the brief: this app is meant to feel
-              // spacious.
-              className={`bg-base-200 shrink-0 overflow-hidden rounded-r-xl transition-[width] duration-200 ease-in-out motion-reduce:transition-none ${
-                browsing ? 'w-80' : 'w-0'
-              }`}
-            >
-              <ChromeBoundary region="app-panel" whatStopped="This app's menu has stopped working.">
-                {panelEntry ? (
-                  <AppPanel
-                    // Holds the LAST browsed app so the panel keeps its contents
-                    // while animating shut rather than blanking.
-                    entry={panelEntry}
-                    pinned={pinned}
-                    onTogglePin={() => {
-                      setPinned((value) => !value);
-                    }}
-                    onDismiss={() => {
-                      setBrowsing(null);
-                    }}
-                  />
-                ) : null}
-              </ChromeBoundary>
-            </div>
+              <div
+                inert={browsing === null}
+                aria-hidden={browsing === null}
+                // 20rem, not silica's 16. Two reasons compounding, both of them
+                // Piggles' own choices:
+                //
+                //   • Piggles names screens by what you are DOING rather than by
+                //     category, so the labels are longer than sparx's — "Reviews
+                //     and questions" against "Reviews".
+                //   • Nav rows are 16px here rather than 14, because a rail is not
+                //     a caption (@piggles/brand's theme.css).
+                //
+                // At 18rem the longer names still ended in an ellipsis, and a nav
+                // row nobody can read is worse than a wide panel. Widening is the
+                // fix rather than shortening the names back into category nouns —
+                // and it agrees with the brief: this app is meant to feel
+                // spacious.
+                className={`bg-base-200 shrink-0 overflow-hidden rounded-r-xl transition-[width] duration-200 ease-in-out motion-reduce:transition-none ${
+                  browsing ? 'w-80' : 'w-0'
+                }`}
+              >
+                <ChromeBoundary
+                  region="app-panel"
+                  whatStopped="This app's menu has stopped working."
+                >
+                  {panelEntry ? (
+                    <AppPanel
+                      // Holds the LAST browsed app so the panel keeps its contents
+                      // while animating shut rather than blanking.
+                      entry={panelEntry}
+                      pinned={pinned}
+                      onTogglePin={() => {
+                        setPinned((value) => !value);
+                      }}
+                      onDismiss={() => {
+                        setBrowsing(null);
+                      }}
+                    />
+                  ) : null}
+                </ChromeBoundary>
+              </div>
 
-            <main className="piggles-dock-host min-w-0 flex-1 p-1">
-              {/* The dock waits for the site key — restoring Site A's
+              <main className="piggles-dock-host min-w-0 flex-1 p-1">
+                {/* The dock waits for the site key — restoring Site A's
                   arrangement and then discovering we are on Site B would strand
                   panels. With the cookie handed down at SSR this is resolved on
                   the first paint for everyone returning; only a genuine first
                   visit lands here, and it gets the brand's loading mark rather
                   than an empty void, so the shell reads as loading its work
                   rather than as broken chrome. */}
-              {siteKey ? (
-                <ConsoleDock siteKey={siteKey} mode={windowMode} />
-              ) : (
-                <PaneWaiting label="Getting your things" />
-              )}
-            </main>
+                {siteKey ? (
+                  <ConsoleDock siteKey={siteKey} mode={windowMode} />
+                ) : (
+                  <PaneWaiting label="Getting your things" />
+                )}
+              </main>
 
-            {/* The launcher is an overlay, so a crash in it renders NOTHING
+              {/* The launcher is an overlay, so a crash in it renders NOTHING
                 rather than a strip — a warning bar floating over the work with
                 no way to dismiss it would be worse than the missing palette,
                 which ⌘K simply stops opening. */}
-            <ChromeBoundary region="launcher" whatStopped="Search has stopped working." silent>
-              <Launcher open={launcherOpen} onOpenChange={setLauncherOpen} />
-            </ChromeBoundary>
-          </div>
+              <ChromeBoundary region="launcher" whatStopped="Search has stopped working." silent>
+                <Launcher open={launcherOpen} onOpenChange={setLauncherOpen} />
+              </ChromeBoundary>
+            </div>
 
-          {/* The live signal strip — connection, activity, unsaved work. Signals
+            {/* The live signal strip — connection, activity, unsaved work. Signals
               only; identity stays in the top bar. */}
-          <ChromeBoundary region="status-bar" whatStopped="Live updates have stopped showing.">
-            <StatusBar />
-          </ChromeBoundary>
+            <ChromeBoundary region="status-bar" whatStopped="Live updates have stopped showing.">
+              <StatusBar />
+            </ChromeBoundary>
 
-          {/* Teaches the browser Back button to walk the console's own
+            {/* Teaches the browser Back button to walk the console's own
               navigation — an open launcher or app panel closes first, then focus
               steps back through the panels you were looking at — instead of
               walking straight out of the app. */}
-          <BackNavigation
-            launcher={launcherOpen}
-            module={browsing}
-            nav={false}
-            siteSlug={siteSlug}
-            onApply={(overlays) => {
-              setLauncherOpen(overlays.launcher);
-              setBrowsing(overlays.module ?? null);
-            }}
-          />
+            <BackNavigation
+              launcher={launcherOpen}
+              module={browsing}
+              nav={false}
+              siteSlug={siteSlug}
+              onApply={(overlays) => {
+                setLauncherOpen(overlays.launcher);
+                setBrowsing(overlays.module ?? null);
+              }}
+            />
 
-          {/* Opens whatever the address bar asked for, once the dock is up and
+            {/* Opens whatever the address bar asked for, once the dock is up and
               the site gate has answered. */}
-          <DeepLinkArrival siteKey={siteKey} />
+            <DeepLinkArrival siteKey={siteKey} />
 
-          {/* Inside the provider: the notifier asks the controller what would be
+            {/* Inside the provider: the notifier asks the controller what would be
               lost before it offers to reload. */}
-          <UpdateNotifier />
-          {/* Listens for controller visits and records them to /v1/me/recents. */}
-          <RecentsRecorder />
-        </div>
+            <UpdateNotifier />
+            {/* Listens for controller visits and records them to /v1/me/recents. */}
+            <RecentsRecorder />
+          </div>
+        </StudioSessionProvider>
       </FeedbackProvider>
     </WorkbenchProvider>
   );

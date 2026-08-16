@@ -12,7 +12,8 @@
 
 import { Badge, Button, Card, EmptyState, Table, useToast } from '@wizeworks/silicaui-react';
 import { PaneWaiting } from '../../components/pane-waiting';
-import { Mailbox, Plus, RefreshCw, Trash2 } from 'lucide-react';
+import { faArrowsRotate, faMailbox, faPlus, faTrashCan } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { useConfirm } from '../../lib/confirm';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
@@ -112,7 +113,7 @@ export function MailboxesListSurface({ ctx }: { ctx: SurfaceContext }) {
           title="Connect a mailbox — hold Shift to open alongside, Alt for a new window"
           onClick={connectMailbox}
         >
-          <Plus className="size-4" aria-hidden />
+          <Icon glyph={faPlus} className="size-4" aria-hidden />
           Connect a mailbox
         </Button>
         <RefreshButton
@@ -129,13 +130,13 @@ export function MailboxesListSurface({ ctx }: { ctx: SurfaceContext }) {
         <Card className="min-h-0 flex-1">
           {moduleOff ? (
             <EmptyState
-              icon={<Mailbox className="size-6" aria-hidden />}
+              icon={<Icon glyph={faMailbox} className="size-6" aria-hidden />}
               title="Turn on Customers to connect a mailbox"
               description="Connecting a mailbox puts the emails you exchange with a customer onto their record, so anyone on your team can see the conversation."
             />
           ) : isError ? (
             <EmptyState
-              icon={<Mailbox className="size-6" aria-hidden />}
+              icon={<Icon glyph={faMailbox} className="size-6" aria-hidden />}
               title="Could not load your mailboxes"
               description="Something went wrong reaching the server. It may be temporary — try again in a moment."
               actions={
@@ -154,7 +155,7 @@ export function MailboxesListSurface({ ctx }: { ctx: SurfaceContext }) {
             <PaneWaiting />
           ) : rows.length === 0 ? (
             <EmptyState
-              icon={<Mailbox className="size-6" aria-hidden />}
+              icon={<Icon glyph={faMailbox} className="size-6" aria-hidden />}
               title="No mailbox connected yet"
               description="Connect the email account you write to customers from. Their replies will appear on their record, so the next person to pick up the conversation can see what was already said."
               actions={
@@ -222,7 +223,7 @@ export function MailboxesListSurface({ ctx }: { ctx: SurfaceContext }) {
                             runSync(row.id);
                           }}
                         >
-                          <RefreshCw className="size-4" aria-hidden />
+                          <Icon glyph={faArrowsRotate} className="size-4" aria-hidden />
                           <span className="sr-only">Check for new mail</span>
                         </Button>
                         <Button
@@ -234,7 +235,7 @@ export function MailboxesListSurface({ ctx }: { ctx: SurfaceContext }) {
                             void remove(row.id, row.emailAddress);
                           }}
                         >
-                          <Trash2 className="size-4" aria-hidden />
+                          <Icon glyph={faTrashCan} className="size-4" aria-hidden />
                           <span className="sr-only">Disconnect</span>
                         </Button>
                       </div>

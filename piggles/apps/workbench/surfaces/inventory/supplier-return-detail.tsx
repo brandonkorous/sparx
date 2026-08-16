@@ -48,7 +48,15 @@ import {
   Timestamp,
   useToast,
 } from '@wizeworks/silicaui-react';
-import { Ban, Banknote, PackageX, PlusCircle, Send, Trash2 } from 'lucide-react';
+import {
+  faBan,
+  faBoxOpen,
+  faCirclePlus,
+  faMoneyBill,
+  faPaperPlane,
+  faTrashCan,
+} from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { FormSection } from '../../components/form-section';
 import { PANE_SHELL } from '../../components/pane-toolbar';
 import { useConfirm } from '../../lib/confirm';
@@ -98,7 +106,7 @@ export function SupplierReturnDetailSurface({ ctx }: { ctx: SurfaceContext }) {
     return (
       <div className={PANE_SHELL}>
         <EmptyState
-          icon={<PackageX className="size-6" aria-hidden />}
+          icon={<Icon glyph={faBoxOpen} className="size-6" aria-hidden />}
           title="Could not load that return"
           description="This is a problem reaching the server, not a statement that the return is gone. Try again in a moment."
         />
@@ -366,7 +374,7 @@ function NewReturn({ ctx }: { ctx: SurfaceContext }) {
               />
             </Field>
             <Button color="module" loading={lookup.isPending} onClick={addLine}>
-              <PlusCircle className="size-4" aria-hidden />
+              <Icon glyph={faCirclePlus} className="size-4" aria-hidden />
               Add
             </Button>
           </div>
@@ -443,7 +451,7 @@ function NewReturn({ ctx }: { ctx: SurfaceContext }) {
                           setLines((current) => current.filter((_, i) => i !== index));
                         }}
                       >
-                        <Trash2 className="size-4" aria-hidden />
+                        <Icon glyph={faTrashCan} className="size-4" aria-hidden />
                       </Button>
                     </td>
                   </tr>
@@ -717,7 +725,7 @@ function ExistingReturn({ ctx, id }: { ctx: SurfaceContext; id: string }) {
               void onSend();
             }}
           >
-            <Send className="size-4" aria-hidden />
+            <Icon glyph={faPaperPlane} className="size-4" aria-hidden />
             It has gone back
           </Button>
           <Button
@@ -729,7 +737,7 @@ function ExistingReturn({ ctx, id }: { ctx: SurfaceContext; id: string }) {
               void onCancel();
             }}
           >
-            <Ban className="size-4" aria-hidden />
+            <Icon glyph={faBan} className="size-4" aria-hidden />
             Abandon
           </Button>
         </div>
@@ -759,7 +767,7 @@ function ExistingReturn({ ctx, id }: { ctx: SurfaceContext; id: string }) {
               />
             </Field>
             <Button color="success" loading={credit.isPending} onClick={onCredit}>
-              <Banknote className="size-4" aria-hidden />
+              <Icon glyph={faMoneyBill} className="size-4" aria-hidden />
               Record the credit
             </Button>
             <Button

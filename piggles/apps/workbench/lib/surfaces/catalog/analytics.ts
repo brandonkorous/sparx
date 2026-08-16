@@ -8,7 +8,7 @@
 // the ones the design doc names, so saved layouts and deep links are stable from
 // the first commit.
 
-import { LayoutDashboard } from 'lucide-react';
+import { faGauge } from '@fortawesome/pro-solid-svg-icons';
 import type { SurfaceDefinition } from '../registry';
 import { DashboardsListSurface } from '../../../surfaces/analytics/dashboards-list';
 import { DashboardViewSurface } from '../../../surfaces/analytics/dashboard-view';
@@ -20,7 +20,7 @@ export const ANALYTICS_SURFACES: SurfaceDefinition[] = [
     key: 'analytics.dashboards.list',
     title: 'Dashboards',
     module: 'platform',
-    icon: LayoutDashboard,
+    icon: faGauge,
     component: DashboardsListSurface,
     // One picker — a second copy shows the same list.
     singleton: true,
@@ -34,7 +34,7 @@ export const ANALYTICS_SURFACES: SurfaceDefinition[] = [
     key: 'analytics.dashboard.view',
     title: 'Dashboard',
     module: 'platform',
-    icon: LayoutDashboard,
+    icon: faGauge,
     component: DashboardViewSurface,
     listed: false,
     keywords: ['dashboard', 'analytics', 'traffic'],

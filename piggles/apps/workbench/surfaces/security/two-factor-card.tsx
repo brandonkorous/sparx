@@ -33,7 +33,14 @@ import {
   Text,
   useToast,
 } from '@wizeworks/silicaui-react';
-import { Copy, Download, ShieldCheck, ShieldOff, Smartphone } from 'lucide-react';
+import {
+  faCopy,
+  faDownload,
+  faMobile,
+  faShieldCheck,
+  faShieldSlash,
+} from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import QRCode from 'qrcode';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import { useConfirm } from '../../lib/confirm';
@@ -124,7 +131,7 @@ function BackupCodes({ codes }: { codes: string[] }) {
             );
           }}
         >
-          <Copy className="size-4" aria-hidden />
+          <Icon glyph={faCopy} className="size-4" aria-hidden />
           Copy
         </Button>
         <Button
@@ -149,7 +156,7 @@ function BackupCodes({ codes }: { codes: string[] }) {
             URL.revokeObjectURL(url);
           }}
         >
-          <Download className="size-4" aria-hidden />
+          <Icon glyph={faDownload} className="size-4" aria-hidden />
           Download
         </Button>
       </div>
@@ -348,7 +355,7 @@ export function TwoFactorCard({ enabled }: { enabled: boolean }) {
       {step === 'off' ? (
         <div className="flex flex-col gap-4">
           <div className="flex items-start gap-3">
-            <Smartphone className="mt-0.5 size-5 shrink-0" aria-hidden />
+            <Icon glyph={faMobile} className="mt-0.5 size-5 shrink-0" aria-hidden />
             <Text className="text-sm">
               {productCopy(
                 'security.twoFactor.needApp',
@@ -366,7 +373,7 @@ export function TwoFactorCard({ enabled }: { enabled: boolean }) {
                 setStep('password');
               }}
             >
-              <ShieldCheck className="size-4" aria-hidden />
+              <Icon glyph={faShieldCheck} className="size-4" aria-hidden />
               Turn on two-step verification
             </Button>
           </div>
@@ -521,7 +528,11 @@ export function TwoFactorCard({ enabled }: { enabled: boolean }) {
       {step === 'on' ? (
         <div className="flex flex-col gap-4">
           <div className="flex items-start gap-3">
-            <ShieldCheck className="text-success mt-0.5 size-5 shrink-0" aria-hidden />
+            <Icon
+              glyph={faShieldCheck}
+              className="text-success mt-0.5 size-5 shrink-0"
+              aria-hidden
+            />
             <Text className="text-sm">
               Signing in asks for a code from your authenticator app as well as your password. If
               you lose your phone, one of your backup codes gets you back in.
@@ -550,7 +561,7 @@ export function TwoFactorCard({ enabled }: { enabled: boolean }) {
               loading={disable.isPending}
               onClick={() => void turnOff()}
             >
-              <ShieldOff className="size-4" aria-hidden />
+              <Icon glyph={faShieldSlash} className="size-4" aria-hidden />
               Turn off
             </Button>
           </div>

@@ -37,7 +37,14 @@ import {
   ToolbarSeparator,
   Tooltip,
 } from '@wizeworks/silicaui-react';
-import { Barcode, CircleAlert, Printer, Search, Sparkles } from 'lucide-react';
+import {
+  faBarcode,
+  faCircleExclamation,
+  faMagnifyingGlass,
+  faPrint,
+  faSparkles,
+} from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
@@ -112,7 +119,7 @@ export function BarcodesListSurface({ ctx }: { ctx: SurfaceContext }) {
     if (isError) {
       return (
         <EmptyState
-          icon={<Barcode className="size-6" aria-hidden />}
+          icon={<Icon glyph={faBarcode} className="size-6" aria-hidden />}
           title="Could not load your barcodes"
           description="This is a problem reaching the server. Nothing about your codes has changed — they just could not be read right now."
         />
@@ -126,9 +133,9 @@ export function BarcodesListSurface({ ctx }: { ctx: SurfaceContext }) {
         <EmptyState
           icon={
             narrowed ? (
-              <Search className="size-6" aria-hidden />
+              <Icon glyph={faMagnifyingGlass} className="size-6" aria-hidden />
             ) : (
-              <Barcode className="size-6" aria-hidden />
+              <Icon glyph={faBarcode} className="size-6" aria-hidden />
             )
           }
           title={narrowed ? 'Nothing matches that' : 'No barcodes registered yet'}
@@ -148,7 +155,7 @@ export function BarcodesListSurface({ ctx }: { ctx: SurfaceContext }) {
                   ctx.open('inventory.barcodes.labels', {}, { target: 'beside' });
                 }}
               >
-                <Sparkles className="size-4" aria-hidden />
+                <Icon glyph={faSparkles} className="size-4" aria-hidden />
                 Create codes and print labels
               </Button>
             )
@@ -281,7 +288,7 @@ export function BarcodesListSurface({ ctx }: { ctx: SurfaceContext }) {
             ctx.open('inventory.barcodes.labels', {}, { target: 'beside' });
           }}
         >
-          <Printer className="size-4" aria-hidden />
+          <Icon glyph={faPrint} className="size-4" aria-hidden />
           Labels
         </Button>
 
@@ -324,7 +331,7 @@ export function BarcodesListSurface({ ctx }: { ctx: SurfaceContext }) {
           space to say what it means. */}
       {conflictCount > 0 ? (
         <Alert color="danger" variant="soft">
-          <CircleAlert className="size-5 shrink-0" aria-hidden />
+          <Icon glyph={faCircleExclamation} className="size-5 shrink-0" aria-hidden />
           <AlertContent>
             <AlertTitle>
               {plural(conflictCount, 'item is', 'items are')} sharing a barcode with something else

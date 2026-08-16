@@ -10,7 +10,8 @@
 
 import { useState } from 'react';
 import { Badge, EmptyState, Text } from '@wizeworks/silicaui-react';
-import { Activity } from 'lucide-react';
+import { faWavePulse } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { FormSection } from '../../components/form-section';
 import { ListPagination, type PageSize } from '../../components/list-pagination';
 import { describeAgo, useActivity, type ActivityItem } from '../../lib/api/activity';
@@ -143,7 +144,7 @@ export function ActivityFeed({ hasJobs }: { hasJobs: boolean }) {
     return (
       <FormSection title="What's happened">
         <EmptyState
-          icon={<Activity className="size-6" aria-hidden />}
+          icon={<Icon glyph={faWavePulse} className="size-6" aria-hidden />}
           title="Nothing has happened yet"
           description={
             hasJobs

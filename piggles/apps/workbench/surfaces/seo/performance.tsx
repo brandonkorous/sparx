@@ -34,7 +34,14 @@ import {
   Timestamp,
   useToast,
 } from '@wizeworks/silicaui-react';
-import { Gauge, LineChart, Link2, RefreshCw, Search } from 'lucide-react';
+import {
+  faArrowsRotate,
+  faChartLine,
+  faGauge,
+  faLink,
+  faMagnifyingGlass,
+} from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
@@ -81,7 +88,7 @@ function ConnectPrompt({ configured, onOpen }: { configured: boolean; onOpen: ()
   return (
     <div className="border-base-300 flex flex-col items-start gap-2 rounded-lg border border-dashed p-4">
       <div className="flex items-center gap-2">
-        <Link2 className="text-module size-5" aria-hidden />
+        <Icon glyph={faLink} className="text-module size-5" aria-hidden />
         <Heading level={3} className="text-base font-semibold">
           {configured ? 'Connect Google to see this' : 'Coming soon'}
         </Heading>
@@ -92,7 +99,7 @@ function ConnectPrompt({ configured, onOpen }: { configured: boolean; onOpen: ()
           : 'Real search numbers from Google will appear here once this connection is switched on for your account.'}
       </Text>
       <Button size="sm" color="module" variant="outline" onClick={onOpen}>
-        <Link2 className="size-4" aria-hidden />
+        <Icon glyph={faLink} className="size-4" aria-hidden />
         {configured ? 'Connect Search Console' : 'About Search Console'}
       </Button>
     </div>
@@ -215,7 +222,7 @@ export function PerformanceSurface({ ctx }: { ctx: SurfaceContext }) {
       return (
         <Card className="min-h-0 flex-1 items-center justify-center">
           <PaneEmpty
-            icon={<Gauge className="size-6" aria-hidden />}
+            icon={<Icon glyph={faGauge} className="size-6" aria-hidden />}
             title="Could not load your search performance"
             description="This is a problem reaching the server. Your site and its scores are unaffected."
             actions={
@@ -242,12 +249,12 @@ export function PerformanceSurface({ ctx }: { ctx: SurfaceContext }) {
       return (
         <Card className="min-h-0 flex-1 items-center justify-center">
           <PaneEmpty
-            icon={<Gauge className="size-6" aria-hidden />}
+            icon={<Icon glyph={faGauge} className="size-6" aria-hidden />}
             title="Let’s see how findable your site is"
             description="Run a quick scan to score every page for how easily people can find it on a search engine. You’ll get a clear list of what to fix first — no jargon."
             actions={
               <Button size="sm" color="module" loading={reindex.isPending} onClick={rescan}>
-                <RefreshCw className="size-4" aria-hidden />
+                <Icon glyph={faArrowsRotate} className="size-4" aria-hidden />
                 Scan now
               </Button>
             }
@@ -312,7 +319,7 @@ export function PerformanceSurface({ ctx }: { ctx: SurfaceContext }) {
         <section className="card bg-base-100 flex flex-col gap-3 p-4">
           <div className="border-base-300 flex flex-col gap-0.5 border-b pb-2">
             <Heading level={2} className="flex items-center gap-2 text-lg font-semibold">
-              <LineChart className="size-4" aria-hidden />
+              <Icon glyph={faChartLine} className="size-4" aria-hidden />
               Visits from search
             </Heading>
             <Text className="text-sm">How many people reached your site from a search engine.</Text>
@@ -490,7 +497,7 @@ export function PerformanceSurface({ ctx }: { ctx: SurfaceContext }) {
           loading={reindex.isPending}
           onClick={rescan}
         >
-          <Search className="size-4" aria-hidden />
+          <Icon glyph={faMagnifyingGlass} className="size-4" aria-hidden />
           <span className="hidden @lg:inline">Rescan the site</span>
         </Button>
         <RefreshButton

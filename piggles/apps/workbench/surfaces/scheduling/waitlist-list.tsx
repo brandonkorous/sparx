@@ -45,7 +45,15 @@ import {
   useToast,
 } from '@wizeworks/silicaui-react';
 import { useConfirm } from '../../lib/confirm';
-import { CalendarPlus, Hourglass, Plus, Send, UserMinus, X } from 'lucide-react';
+import {
+  faCalendarPlus,
+  faHourglass,
+  faPaperPlane,
+  faPlus,
+  faUserMinus,
+  faXmark,
+} from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
@@ -194,7 +202,7 @@ export function WaitlistSurface({ ctx }: { ctx: SurfaceContext }) {
             setAdding(true);
           }}
         >
-          <Plus className="size-4" aria-hidden />
+          <Icon glyph={faPlus} className="size-4" aria-hidden />
           Add someone
         </Button>
 
@@ -210,7 +218,7 @@ export function WaitlistSurface({ ctx }: { ctx: SurfaceContext }) {
       <div className="min-h-0 flex-1 overflow-y-auto">
         {error ? (
           <EmptyState
-            icon={<Hourglass className="size-6" aria-hidden />}
+            icon={<Icon glyph={faHourglass} className="size-6" aria-hidden />}
             title="Could not load the waiting list"
             description="Something went wrong reaching the server. Try refreshing in a moment."
           />
@@ -218,7 +226,7 @@ export function WaitlistSurface({ ctx }: { ctx: SurfaceContext }) {
           <PaneWaiting />
         ) : rows.length === 0 ? (
           <EmptyState
-            icon={<Hourglass className="size-6" aria-hidden />}
+            icon={<Icon glyph={faHourglass} className="size-6" aria-hidden />}
             title={narrowed ? 'No one matches that' : 'No one is waiting'}
             description={
               narrowed
@@ -234,7 +242,7 @@ export function WaitlistSurface({ ctx }: { ctx: SurfaceContext }) {
                     setAdding(true);
                   }}
                 >
-                  <Plus className="size-4" aria-hidden />
+                  <Icon glyph={faPlus} className="size-4" aria-hidden />
                   Add someone
                 </Button>
               )
@@ -441,7 +449,7 @@ function WaitlistRow({ ctx, entry }: { ctx: SurfaceContext; entry: WaitlistEntry
                     void onOffer();
                   }}
                 >
-                  <Send className="size-4" aria-hidden />
+                  <Icon glyph={faPaperPlane} className="size-4" aria-hidden />
                   Offer a slot
                 </Button>
               ) : null}
@@ -454,7 +462,7 @@ function WaitlistRow({ ctx, entry }: { ctx: SurfaceContext; entry: WaitlistEntry
                     setBooking((open) => !open);
                   }}
                 >
-                  <CalendarPlus className="size-4" aria-hidden />
+                  <Icon glyph={faCalendarPlus} className="size-4" aria-hidden />
                   Book them in
                 </Button>
               ) : null}
@@ -468,7 +476,7 @@ function WaitlistRow({ ctx, entry }: { ctx: SurfaceContext; entry: WaitlistEntry
                   void onRemove();
                 }}
               >
-                <UserMinus className="size-4" aria-hidden />
+                <Icon glyph={faUserMinus} className="size-4" aria-hidden />
               </Button>
             </div>
           ) : null}
@@ -527,7 +535,7 @@ function WaitlistRow({ ctx, entry }: { ctx: SurfaceContext; entry: WaitlistEntry
                       setBooking(false);
                     }}
                   >
-                    <X className="size-4" aria-hidden />
+                    <Icon glyph={faXmark} className="size-4" aria-hidden />
                     Cancel
                   </Button>
                 </div>

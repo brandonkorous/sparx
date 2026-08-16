@@ -53,7 +53,13 @@ import {
   Timestamp,
   useToast,
 } from '@wizeworks/silicaui-react';
-import { Download, FileSpreadsheet, Undo2, Upload } from 'lucide-react';
+import {
+  faDownload,
+  faFileSpreadsheet,
+  faRotateLeft,
+  faUpload,
+} from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { FormSection } from '../../components/form-section';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
@@ -587,7 +593,7 @@ export function StockImportSurface(_props: { ctx: SurfaceContext }) {
           size="sm"
           render={
             <a href={importTemplatePath(warehouseId === '' ? undefined : warehouseId)} download>
-              <Download className="size-4" aria-hidden />
+              <Icon glyph={faDownload} className="size-4" aria-hidden />
               Download what you have
             </a>
           }
@@ -602,7 +608,7 @@ export function StockImportSurface(_props: { ctx: SurfaceContext }) {
             fileInput.current?.click();
           }}
         >
-          <Upload className="size-4" aria-hidden />
+          <Icon glyph={faUpload} className="size-4" aria-hidden />
           Upload a file
         </Button>
 
@@ -974,7 +980,7 @@ export function StockImportSurface(_props: { ctx: SurfaceContext }) {
           >
             {history.length === 0 ? (
               <EmptyState
-                icon={<FileSpreadsheet className="size-6" aria-hidden />}
+                icon={<Icon glyph={faFileSpreadsheet} className="size-6" aria-hidden />}
                 title="Nothing imported yet"
                 description="Download what you have, count the shelves, and upload it back. The differences become stock movements you can trace and undo."
               />
@@ -1071,7 +1077,7 @@ export function StockImportSurface(_props: { ctx: SurfaceContext }) {
                               })();
                             }}
                           >
-                            <Undo2 className="size-4" aria-hidden />
+                            <Icon glyph={faRotateLeft} className="size-4" aria-hidden />
                             Undo
                           </Button>
                         ) : null}

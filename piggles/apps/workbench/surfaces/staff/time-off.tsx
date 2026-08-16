@@ -38,7 +38,8 @@ import {
   Textarea,
   useToast,
 } from '@wizeworks/silicaui-react';
-import { CalendarOff, CheckCircle2, Plus, X } from 'lucide-react';
+import { faCalendarXmark, faCircleCheck, faPlus, faXmark } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import { useConfirm } from '../../lib/confirm';
@@ -215,7 +216,7 @@ export function TimeOffSurface({ ctx }: { ctx: SurfaceContext }) {
             setComposing(true);
           }}
         >
-          <Plus className="size-4" aria-hidden />
+          <Icon glyph={faPlus} className="size-4" aria-hidden />
           <span className="hidden @lg:inline">Log time off</span>
         </Button>
 
@@ -231,7 +232,7 @@ export function TimeOffSurface({ ctx }: { ctx: SurfaceContext }) {
       <div className="min-h-0 flex-1 overflow-y-auto">
         {requests.isError ? (
           <EmptyState
-            icon={<CalendarOff className="size-6" aria-hidden />}
+            icon={<Icon glyph={faCalendarXmark} className="size-6" aria-hidden />}
             title="Could not load requests"
             description="The server could not be reached. Nothing already agreed is affected."
             actions={
@@ -251,7 +252,7 @@ export function TimeOffSurface({ ctx }: { ctx: SurfaceContext }) {
         ) : items.length === 0 ? (
           <Card className="min-h-0 flex-1 items-center justify-center">
             <PaneEmpty
-              icon={<CheckCircle2 className="size-6" aria-hidden />}
+              icon={<Icon glyph={faCircleCheck} className="size-6" aria-hidden />}
               title={filter === 'requested' ? 'Nothing waiting on you' : 'No requests yet'}
               description={
                 filter === 'requested'
@@ -360,7 +361,7 @@ export function TimeOffSurface({ ctx }: { ctx: SurfaceContext }) {
                                   respond(request, 'denied');
                                 }}
                               >
-                                <X className="size-4" aria-hidden />
+                                <Icon glyph={faXmark} className="size-4" aria-hidden />
                               </Button>
                             </div>
                           ) : request.status === 'approved' ? (

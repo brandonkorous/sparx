@@ -24,7 +24,13 @@ import {
   ToggleGroup,
   ToggleGroupItem,
 } from '@wizeworks/silicaui-react';
-import { BarChart3, Clock, ExternalLink, ServerCrash } from 'lucide-react';
+import {
+  faArrowUpRightFromSquare,
+  faChartColumn,
+  faClock,
+  faServer,
+} from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
@@ -157,7 +163,7 @@ function TopPostRow({
             className="text-module inline-flex items-center gap-0.5 text-sm underline"
           >
             View on {post.targetName}
-            <ExternalLink className="size-3.5" aria-hidden />
+            <Icon glyph={faArrowUpRightFromSquare} className="size-3.5" aria-hidden />
           </a>
         </div>
       ) : null}
@@ -197,7 +203,7 @@ function BestTimePanel() {
   return (
     <section className="card bg-base-100 overflow-hidden">
       <header className="border-base-300 flex flex-wrap items-center gap-2 border-b px-4 py-3">
-        <Clock className="size-4 shrink-0" aria-hidden />
+        <Icon glyph={faClock} className="size-4 shrink-0" aria-hidden />
         <Heading level={2} className="text-base font-semibold">
           When to post
         </Heading>
@@ -261,7 +267,7 @@ export function SocialInsightsSurface({ ctx }: { ctx: SurfaceContext }) {
       <div className={PANE_SHELL}>
         <Card className="min-h-0 flex-1 items-center justify-center">
           <PaneEmpty
-            icon={<ServerCrash className="size-6" aria-hidden />}
+            icon={<Icon glyph={faServer} className="size-6" aria-hidden />}
             title="Could not load your numbers"
             description={socialErrorMessage(
               insights.error,
@@ -321,7 +327,7 @@ export function SocialInsightsSurface({ ctx }: { ctx: SurfaceContext }) {
         ) : isEmpty ? (
           <Card className="min-h-0 flex-1 items-center justify-center">
             <PaneEmpty
-              icon={<BarChart3 className="size-6" aria-hidden />}
+              icon={<Icon glyph={faChartColumn} className="size-6" aria-hidden />}
               title="No numbers yet"
               description="Performance shows up here once your posts have been live for a while and the accounts report back. Open a post you have already sent and hit “Refresh numbers” to pull the latest."
             />

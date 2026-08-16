@@ -23,7 +23,8 @@
 
 import { useState } from 'react';
 import { Button, Tooltip, useToast } from '@wizeworks/silicaui-react';
-import { Check, Link2 } from 'lucide-react';
+import { faCheck, faLink } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { useActiveSiteSlug } from '../lib/api/shell-data';
 import { useWorkbench } from '../lib/workbench/context';
 import { usePaneId } from '../lib/workbench/pane-identity';
@@ -103,9 +104,9 @@ export function CopyPaneLink() {
         }}
       >
         {copied ? (
-          <Check className="size-4" aria-hidden />
+          <Icon glyph={faCheck} className="size-4" aria-hidden />
         ) : (
-          <Link2 className="size-4" aria-hidden />
+          <Icon glyph={faLink} className="size-4" aria-hidden />
         )}
       </Button>
     </Tooltip>

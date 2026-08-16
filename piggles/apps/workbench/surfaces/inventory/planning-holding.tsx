@@ -30,7 +30,8 @@ import {
   Text,
   Tooltip,
 } from '@wizeworks/silicaui-react';
-import { Coins, PackageX } from 'lucide-react';
+import { faBoxOpen, faCoins } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { formatCents } from './data';
 import { abcLabel, abcTone, useHoldingCost } from './planning-data';
 import { PlanningShell } from './planning-shell';
@@ -63,7 +64,7 @@ function CostPanel({ locationId }: { locationId: string }) {
   if (report.isError) {
     return (
       <EmptyState
-        icon={<PackageX className="size-6" aria-hidden />}
+        icon={<Icon glyph={faBoxOpen} className="size-6" aria-hidden />}
         title="Could not work out what your stock costs to keep"
         description="This is a problem reaching the server, not a finding about your stock. Try again in a moment."
       />
@@ -75,7 +76,7 @@ function CostPanel({ locationId }: { locationId: string }) {
   if (!data) {
     return (
       <EmptyState
-        icon={<Coins className="size-6" aria-hidden />}
+        icon={<Icon glyph={faCoins} className="size-6" aria-hidden />}
         title="Nothing to cost yet"
         description="There is no stock on hand to work this out from."
       />

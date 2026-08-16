@@ -41,7 +41,8 @@ import {
   DropdownMenuTrigger,
   useToast,
 } from '@wizeworks/silicaui-react';
-import { Archive, MoreHorizontal, Save } from 'lucide-react';
+import { faBoxArchive, faEllipsis, faFloppyDisk } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { useConfirm } from '../../lib/confirm';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { useDirtySource } from '../../lib/workbench/dirty';
@@ -270,7 +271,7 @@ export function WorkflowEditorSurface({ ctx }: { ctx: SurfaceContext }) {
                 className="ml-auto shrink-0"
                 aria-label="More actions"
               >
-                <MoreHorizontal className="size-4" aria-hidden />
+                <Icon glyph={faEllipsis} className="size-4" aria-hidden />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent>
@@ -279,7 +280,7 @@ export function WorkflowEditorSurface({ ctx }: { ctx: SurfaceContext }) {
                   void onArchive();
                 }}
               >
-                <Archive className="size-4" aria-hidden />
+                <Icon glyph={faBoxArchive} className="size-4" aria-hidden />
                 Archive workflow
               </DropdownMenuItem>
             </DropdownMenuContent>
@@ -295,7 +296,7 @@ export function WorkflowEditorSurface({ ctx }: { ctx: SurfaceContext }) {
             save.mutate();
           }}
         >
-          <Save className="size-4" aria-hidden />
+          <Icon glyph={faFloppyDisk} className="size-4" aria-hidden />
           Save
         </Button>
       </PaneToolbar>

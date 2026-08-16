@@ -32,7 +32,8 @@ import {
   Text,
   useToast,
 } from '@wizeworks/silicaui-react';
-import { Save, TriangleAlert } from 'lucide-react';
+import { faExclamationTriangle, faFloppyDisk } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { api } from '../lib/api/client';
 import { useDirtySource } from '../lib/workbench/dirty';
 import { timezoneOptions, type TimezoneOption } from '../lib/timezones';
@@ -256,7 +257,7 @@ export function BusinessDetailsSurface({ ctx }: { ctx: SurfaceContext }) {
     return (
       <div className="flex h-full flex-col items-center justify-center p-8">
         <Alert color="error" variant="soft" className="max-w-md">
-          <TriangleAlert />
+          <Icon glyph={faExclamationTriangle} />
           <AlertContent>
             <AlertTitle>Could not load your business details</AlertTitle>
             <AlertDescription>
@@ -297,7 +298,7 @@ export function BusinessDetailsSurface({ ctx }: { ctx: SurfaceContext }) {
             save.mutate();
           }}
         >
-          <Save className="size-4" aria-hidden />
+          <Icon glyph={faFloppyDisk} className="size-4" aria-hidden />
           {save.isPending ? 'Saving…' : 'Save'}
         </Button>
       </PaneToolbar>

@@ -25,7 +25,8 @@ import {
   SearchInput,
   Table,
 } from '@wizeworks/silicaui-react';
-import { Gauge, PackageX } from 'lucide-react';
+import { faBoxOpen, faGauge } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { formatCents } from './data';
 import {
@@ -172,7 +173,7 @@ function ClassesPanel({
           the catalogue, and all three messages below would read as one. */}
       {classifications.isError ? (
         <EmptyState
-          icon={<PackageX className="size-6" aria-hidden />}
+          icon={<Icon glyph={faBoxOpen} className="size-6" aria-hidden />}
           title="Could not rank your stock"
           description="This is a problem reaching the server, not a finding about what you hold. Try again in a moment."
         />
@@ -184,19 +185,19 @@ function ClassesPanel({
         // to rank. Only the middle one is fixed by pressing a button.
         filtered ? (
           <EmptyState
-            icon={<Gauge className="size-6" aria-hidden />}
+            icon={<Icon glyph={faGauge} className="size-6" aria-hidden />}
             title="No items match those filters"
             description="Widen the value or demand filter, or clear the search, to see the rest of your stock."
           />
         ) : measured ? (
           <EmptyState
-            icon={<Gauge className="size-6" aria-hidden />}
+            icon={<Icon glyph={faGauge} className="size-6" aria-hidden />}
             title="Nothing has been used yet"
             description="Ranking works from what you have actually consumed. Once items start selling or being built into something, they will appear here in order of what they are worth to you."
           />
         ) : (
           <EmptyState
-            icon={<Gauge className="size-6" aria-hidden />}
+            icon={<Icon glyph={faGauge} className="size-6" aria-hidden />}
             title="Nothing ranked yet"
             description="Ranking needs a pass over what you have used. It runs overnight, or press “Work it out now” above."
           />

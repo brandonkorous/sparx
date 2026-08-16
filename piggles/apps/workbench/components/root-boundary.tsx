@@ -24,7 +24,8 @@
 // workbench is still usable underneath.
 
 import { Component, type ErrorInfo, type ReactNode } from 'react';
-import { AlertTriangle } from 'lucide-react';
+import { faExclamationTriangle } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { Button } from '@wizeworks/silicaui-react';
 import { isChunkLoadError, reloadOnceForStaleBuild } from '@sparx/app-kit';
 import { reportCrash } from '../lib/analytics';
@@ -51,7 +52,7 @@ export class RootBoundary extends Component<{ children: ReactNode }, { failed: b
     return (
       <div className="bg-base-300 flex h-dvh w-full items-center justify-center p-6">
         <div className="bg-base-100 border-base-300 flex max-w-md flex-col items-center gap-4 rounded-xl border p-8 text-center">
-          <AlertTriangle className="text-warning size-7" aria-hidden />
+          <Icon glyph={faExclamationTriangle} className="text-warning size-7" aria-hidden />
           <div>
             <h1 className="text-lg font-semibold">{productName()} needs to start again</h1>
             {/* Names the one real cost up front. Panel ARRANGEMENT is persisted

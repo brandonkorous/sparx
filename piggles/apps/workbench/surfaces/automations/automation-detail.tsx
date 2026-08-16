@@ -24,7 +24,8 @@ import {
   Text,
   useToast,
 } from '@wizeworks/silicaui-react';
-import { CopyPlus, ListChecks } from 'lucide-react';
+import { faClone, faListCheck } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { afterPaneChange } from '../../lib/defer';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { FormSection } from '../../components/form-section';
@@ -142,7 +143,7 @@ function LockedAutomation({ ctx, automation }: { ctx: SurfaceContext; automation
             );
           }}
         >
-          <ListChecks className="size-4" aria-hidden />
+          <Icon glyph={faListCheck} className="size-4" aria-hidden />
           Runs
         </Button>
         <Button
@@ -152,7 +153,7 @@ function LockedAutomation({ ctx, automation }: { ctx: SurfaceContext; automation
           loading={clone.isPending}
           onClick={onClone}
         >
-          <CopyPlus className="size-4" aria-hidden />
+          <Icon glyph={faClone} className="size-4" aria-hidden />
           Duplicate to edit
         </Button>
       </PaneToolbar>

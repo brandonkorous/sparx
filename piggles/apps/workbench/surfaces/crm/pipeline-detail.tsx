@@ -36,7 +36,14 @@ import {
   useToast,
 } from '@wizeworks/silicaui-react';
 import { useConfirm } from '../../lib/confirm';
-import { Archive, ChevronDown, ChevronUp, Plus, Trash2 } from 'lucide-react';
+import {
+  faBoxArchive,
+  faChevronDown,
+  faChevronUp,
+  faPlus,
+  faTrashCan,
+} from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import { afterPaneChange } from '../../lib/defer';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
@@ -381,7 +388,7 @@ function PipelineEditor({
                   loading={addStage.isPending}
                   onClick={onAddStage}
                 >
-                  <Plus className="size-4" aria-hidden />
+                  <Icon glyph={faPlus} className="size-4" aria-hidden />
                   Add a stage
                 </Button>
               }
@@ -434,7 +441,7 @@ function PipelineEditor({
                   void onArchive();
                 }}
               >
-                <Archive className="size-4" aria-hidden />
+                <Icon glyph={faBoxArchive} className="size-4" aria-hidden />
                 Archive this pipeline
               </Button>
             </div>
@@ -575,7 +582,7 @@ function StageRow({
             disabled={isFirst || reordering}
             onClick={onMoveUp}
           >
-            <ChevronUp className="size-4" aria-hidden />
+            <Icon glyph={faChevronUp} className="size-4" aria-hidden />
           </Button>
           <Button
             size="sm"
@@ -587,7 +594,7 @@ function StageRow({
             disabled={isLast || reordering}
             onClick={onMoveDown}
           >
-            <ChevronDown className="size-4" aria-hidden />
+            <Icon glyph={faChevronDown} className="size-4" aria-hidden />
           </Button>
         </div>
 
@@ -657,7 +664,7 @@ function StageRow({
             setRemoving((cur) => !cur);
           }}
         >
-          <Trash2 className="size-4" aria-hidden />
+          <Icon glyph={faTrashCan} className="size-4" aria-hidden />
         </Button>
       </div>
 
@@ -686,7 +693,7 @@ function StageRow({
               void onConfirmRemove();
             }}
           >
-            <Trash2 className="size-4" aria-hidden />
+            <Icon glyph={faTrashCan} className="size-4" aria-hidden />
             Remove stage
           </Button>
           <Button

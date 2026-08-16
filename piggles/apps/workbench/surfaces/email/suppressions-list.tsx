@@ -38,7 +38,13 @@ import {
   Tooltip,
   useToast,
 } from '@wizeworks/silicaui-react';
-import { Plus, ShieldOff, Trash2, TriangleAlert } from 'lucide-react';
+import {
+  faExclamationTriangle,
+  faPlus,
+  faShieldSlash,
+  faTrashCan,
+} from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { useConfirm } from '../../lib/confirm';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
@@ -124,7 +130,7 @@ export function SuppressionsListSurface(_props: { ctx: SurfaceContext }) {
     return (
       <div className="flex h-full flex-col items-center justify-center p-8">
         <Alert color="error" variant="soft" className="max-w-md">
-          <TriangleAlert />
+          <Icon glyph={faExclamationTriangle} />
           <AlertContent>
             <AlertTitle>Could not load your do-not-email list</AlertTitle>
             <AlertDescription>
@@ -187,7 +193,7 @@ export function SuppressionsListSurface(_props: { ctx: SurfaceContext }) {
             setAdding(true);
           }}
         >
-          <Plus className="size-4" aria-hidden />
+          <Icon glyph={faPlus} className="size-4" aria-hidden />
           Add an address
         </Button>
         {/* ALWAYS the last child of a list toolbar. */}
@@ -219,7 +225,7 @@ export function SuppressionsListSurface(_props: { ctx: SurfaceContext }) {
               // never share a message, or an owner with hundreds of held-back
               // addresses who mistyped one concludes the list is empty.
               <EmptyState
-                icon={<ShieldOff className="size-6" aria-hidden />}
+                icon={<Icon glyph={faShieldSlash} className="size-6" aria-hidden />}
                 title={`No addresses match "${search.trim()}"`}
                 description="Try part of the email address, or clear the search to see the whole list."
                 actions={
@@ -237,7 +243,7 @@ export function SuppressionsListSurface(_props: { ctx: SurfaceContext }) {
               />
             ) : (
               <EmptyState
-                icon={<ShieldOff className="size-6" aria-hidden />}
+                icon={<Icon glyph={faShieldSlash} className="size-6" aria-hidden />}
                 title="Nobody is blocked from your emails"
                 description={productCopy(
                   'email.suppressions.firstRun',
@@ -251,7 +257,7 @@ export function SuppressionsListSurface(_props: { ctx: SurfaceContext }) {
                       setAdding(true);
                     }}
                   >
-                    <Plus className="size-4" aria-hidden />
+                    <Icon glyph={faPlus} className="size-4" aria-hidden />
                     Add an address
                   </Button>
                 }
@@ -309,7 +315,7 @@ export function SuppressionsListSurface(_props: { ctx: SurfaceContext }) {
                               removeRow(row);
                             }}
                           >
-                            <Trash2 className="size-4" aria-hidden />
+                            <Icon glyph={faTrashCan} className="size-4" aria-hidden />
                           </Button>
                         </Tooltip>
                       </td>

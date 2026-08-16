@@ -20,7 +20,8 @@ import {
   Select,
   Text,
 } from '@wizeworks/silicaui-react';
-import { FolderPlus, Plus, Trash2, X } from 'lucide-react';
+import { faFolderPlus, faPlus, faTrashCan, faXmark } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import {
   fieldMeta,
   fieldOptionsIncluding,
@@ -280,7 +281,7 @@ function PredicateEditor({
           title="Remove this condition"
           onClick={onRemove}
         >
-          <X className="size-4" aria-hidden />
+          <Icon glyph={faXmark} className="size-4" aria-hidden />
         </Button>
       </div>
 
@@ -373,7 +374,7 @@ export function RuleGroupEditor({
             title="Remove this group"
             onClick={onRemove}
           >
-            <Trash2 className="size-4" aria-hidden />
+            <Icon glyph={faTrashCan} className="size-4" aria-hidden />
           </Button>
         ) : null}
       </div>
@@ -426,7 +427,7 @@ export function RuleGroupEditor({
             onChange({ ...node, children: [...node.children, newPredicate()] });
           }}
         >
-          <Plus className="size-4" aria-hidden />
+          <Icon glyph={faPlus} className="size-4" aria-hidden />
           Add a condition
         </Button>
         {depth < MAX_DEPTH ? (
@@ -441,7 +442,7 @@ export function RuleGroupEditor({
               });
             }}
           >
-            <FolderPlus className="size-4" aria-hidden />
+            <Icon glyph={faFolderPlus} className="size-4" aria-hidden />
             Add a group
           </Button>
         ) : null}
