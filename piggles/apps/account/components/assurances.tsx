@@ -1,4 +1,11 @@
-import { CloudUpload, Download, EyeOff, ShieldCheck, type LucideIcon } from 'lucide-react';
+import {
+  faCloudUpload,
+  faDownload,
+  faEyeSlash,
+  faShieldCheck,
+} from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
+import type { PigglesIcon } from '@piggles/ui';
 import { PRODUCT } from '@piggles/config';
 
 // The band along the foot of every credential screen.
@@ -33,24 +40,24 @@ import { PRODUCT } from '@piggles/config';
 // between items is a hairline rather than a border on four boxes — one band, four
 // facts, not four panels.
 
-const ASSURANCES: { icon: LucideIcon; title: string; body: string }[] = [
+const ASSURANCES: { icon: PigglesIcon; title: string; body: string }[] = [
   {
-    icon: ShieldCheck,
+    icon: faShieldCheck,
     title: 'Kept separate',
     body: 'Enforced by the database, not just the app.',
   },
   {
-    icon: CloudUpload,
+    icon: faCloudUpload,
     title: 'Backed up continuously',
     body: 'Somewhere other than the live system.',
   },
   {
-    icon: Download,
+    icon: faDownload,
     title: 'Yours to take with you',
     body: 'Export the lot, whenever you like.',
   },
   {
-    icon: EyeOff,
+    icon: faEyeSlash,
     title: 'Never used to train AI',
     body: 'Not a model, not anonymised, not ever.',
   },
@@ -64,13 +71,13 @@ export function Assurances() {
             horizontal lines between rows, which reads as four separate things
             again rather than one band. */}
         <ul className="sm:divide-base-300 grid gap-8 sm:grid-cols-2 sm:gap-0 sm:divide-x lg:grid-cols-4">
-          {ASSURANCES.map(({ icon: Icon, title, body }) => (
+          {ASSURANCES.map(({ icon, title, body }) => (
             <li key={title} className="flex items-start gap-3 sm:px-6 sm:first:pl-0 sm:last:pr-0">
               {/* Brand pink, and the only colour in the band. These four are one
                   category — trust — so a different hue each would be colour
                   applied as decoration rather than as meaning (root RULE #4).
                   `shrink-0` because a two-line title must not squeeze the glyph. */}
-              <Icon className="text-primary mt-0.5 size-6 shrink-0" aria-hidden />
+              <Icon glyph={icon} className="text-primary mt-0.5 size-6 shrink-0" aria-hidden />
               <div>
                 <h2 className="text-base font-bold">{title}</h2>
                 <p className="mt-0.5 text-base">{body}</p>

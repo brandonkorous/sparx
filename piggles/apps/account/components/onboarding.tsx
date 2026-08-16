@@ -213,12 +213,21 @@ export function Onboarding({
 
           {/* Two columns from `sm` up. Five rows in one column is a scroll for
               something that should be taken in at a glance — the whole question is
-              "which of these are you", which needs them side by side to compare. */}
+              "which of these are you", which needs them side by side to compare.
+
+              Five into two leaves a hole, and a hole beside the last option reads
+              as a sixth choice that failed to load. So the last one spans the
+              row. There is no sixth option to add instead: `does` is validated as
+              a PigglesGroup and stored as `railGroups`, and the only group not
+              already here is `home` — which is on the rail whatever anybody ticks
+              (see RailPreview), so a row for it would be a checkbox that cannot
+              change anything. If the option list ever becomes even, drop the span. */}
           <ul className="mt-4 grid gap-3 sm:grid-cols-2">
-            {OPTIONS.map((o) => {
+            {OPTIONS.map((o, i) => {
               const on = picked.includes(o.group);
+              const last = i === OPTIONS.length - 1;
               return (
-                <li key={o.group} data-group={o.group}>
+                <li key={o.group} data-group={o.group} className={last ? 'sm:col-span-2' : ''}>
                   {/* A label bound to a real checkbox: the whole row is the hit
                       target, keyboard focus and the space bar work with no
                       handlers of ours, and it is announced as a checkbox because

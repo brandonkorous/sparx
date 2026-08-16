@@ -1,6 +1,7 @@
 'use client';
 
 import { APPS, appIcon } from '@piggles/config';
+import { Icon } from '@piggles/ui';
 import type { PigglesGroup } from '@piggles/brand';
 
 // The panel beside onboarding: what your Piggles looks like, updating as you
@@ -54,7 +55,7 @@ export function RailPreview({ picked }: { picked: PigglesGroup[] }) {
       <ul className="mt-5 flex flex-col gap-1">
         {apps.map((app) => {
           const on = isOn(app.group);
-          const Icon = appIcon(app.id);
+          const glyph = appIcon(app.id);
 
           return (
             // `data-group` repoints `--color-module` for this row via the bridge
@@ -66,7 +67,7 @@ export function RailPreview({ picked }: { picked: PigglesGroup[] }) {
                   on ? 'bg-module text-module-content' : 'bg-base-200 border-base-300 border'
                 }`}
               >
-                <Icon className="size-4.5" aria-hidden />
+                <Icon glyph={glyph} className="size-4.5" aria-hidden />
               </span>
               <span className={`text-base ${on ? 'font-bold' : ''}`}>{app.label}</span>
             </li>

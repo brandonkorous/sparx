@@ -4,6 +4,7 @@ import { redirect } from 'next/navigation';
 import { requireSession } from '@sparx/auth';
 import { withTenant } from '@sparx/db';
 import { PIGGLES_GROUPS, type PigglesGroup } from '@piggles/brand';
+import { APPS } from '@piggles/config';
 import { furnishTenant } from '@/lib/furnish';
 import { isKnownTrade } from '@/lib/trades';
 import { text, textAll } from '@/lib/form';
@@ -63,6 +64,20 @@ import { text, textAll } from '@/lib/form';
 
 export interface OnboardingState {
   error: string | null;
+}
+
+/**
+ * The rail this answer earns: every app in a group they ticked, plus the ones
+ * that start on every rail.
+ *
+ * Ticking NOTHING must still leave a usable product, which is why the
+ * `defaultEnabled` half is unconditional — the practical test at the top of this
+ * file is that a business who answers nothing is still three taps from selling.
+ */
+function railApps(groups: PigglesGroup[]): string[] {
+  return APPS.filter((app) => app.defaultEnabled || groups.includes(app.group)).map(
+    (app) => app.id
+  );
 }
 
 export async function completeOnboarding(
@@ -139,11 +154,22 @@ export async function completeOnboarding(
             // would mark the trade as chosen before its setup existed — and the
             // workbench reads exactly that key to decide the question is
             // answered, so the setup would then never be offered.
+            // What the rail shows on day one, RESOLVED to app ids here because
+            // this is the only side that holds the app registry — api-rest
+            // stores the list and hands it back, and holding a copy of another
+            // product's ids is how it would drift.
+            //
+            // A WORKSPACE PREFERENCE and nothing more: every app stays included,
+            // working, and one tap away under All apps. Modules are not touched
+            // — this used to switch on only the ticked ones, which made the
+            // unticked apps locked doors on a screen promising the opposite.
+            rail: {
+              ...((settings.rail as Record<string, unknown> | undefined) ?? {}),
+              apps: railApps(does),
+            },
             piggles: {
               ...((settings.piggles as Record<string, unknown> | undefined) ?? {}),
-              // What the rail shows on day one. A WORKSPACE PREFERENCE, and the
-              // console must read it as nothing more — every app stays entitled
-              // and reachable from the launcher whatever is in here.
+              // The RAW answer, kept because the WizeWorks board segments on it.
               railGroups: does,
               onboardedAt: new Date().toISOString(),
             },

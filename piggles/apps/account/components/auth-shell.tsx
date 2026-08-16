@@ -98,9 +98,8 @@ export function AuthShell({
             <Card>
               <CardBody>
                 <div>
-                  {/* 900, matching the promise beside it. Nunito ships the
-                      weight and the brand board asks for it; 800 reads as heavy
-                      body copy rather than as display type. */}
+                  {/* Matches the promise beside it. Fredoka's axis stops at
+                      700, so `font-black` renders there. */}
                   <h1 className="text-3xl font-black sm:text-4xl">{heading}</h1>
                   {lede ? <p className="mt-2 text-lg">{lede}</p> : null}
                 </div>

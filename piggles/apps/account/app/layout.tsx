@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { Inter, Nunito } from 'next/font/google';
+import { Fredoka, Inter } from 'next/font/google';
 import { PRODUCT } from '@piggles/config';
 import './globals.css';
 
@@ -25,12 +25,8 @@ import './globals.css';
 // "Pricing" and "Trust" is an invitation to leave in the middle of it.
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter', display: 'swap' });
-const nunito = Nunito({
-  subsets: ['latin'],
-  weight: ['600', '700', '800', '900'],
-  variable: '--font-nunito',
-  display: 'swap',
-});
+// Variable, not a weight list: Fredoka's wght axis stops at 700.
+const fredoka = Fredoka({ subsets: ['latin'], variable: '--font-fredoka', display: 'swap' });
 
 export const metadata: Metadata = {
   metadataBase: new URL(`https://${PRODUCT.hosts.account}`),
@@ -46,7 +42,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" data-theme="light" className={`${inter.variable} ${nunito.variable}`}>
+    <html lang="en" data-theme="light" className={`${inter.variable} ${fredoka.variable}`}>
       <body>{children}</body>
     </html>
   );

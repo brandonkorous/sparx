@@ -1,4 +1,6 @@
-import { CircleCheck, Clock, LayoutGrid, type LucideIcon } from 'lucide-react';
+import { faCheckCircle, faClock, faGrid } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
+import type { PigglesIcon } from '@piggles/ui';
 import { ProductGlimpse } from './product-glimpse';
 
 // The column beside the form on the credential screens.
@@ -36,10 +38,10 @@ import { ProductGlimpse } from './product-glimpse';
 // claiming she is already a customer. When there are real customers willing to
 // be named, that line is the right place for them — and only then.
 
-const POINTS: { icon: LucideIcon; title: string; body: string }[] = [
-  { icon: CircleCheck, title: 'Everything included', body: 'All fifteen apps, one price.' },
-  { icon: Clock, title: 'Ready in minutes', body: 'Two questions and you are in.' },
-  { icon: LayoutGrid, title: 'One place for all of it', body: 'Site, customers, stock, invoices.' },
+const POINTS: { icon: PigglesIcon; title: string; body: string }[] = [
+  { icon: faCheckCircle, title: 'Everything included', body: 'All fifteen apps, one price.' },
+  { icon: faClock, title: 'Ready in minutes', body: 'Two questions and you are in.' },
+  { icon: faGrid, title: 'One place for all of it', body: 'Site, customers, stock, invoices.' },
 ];
 
 export function BrandPanel({
@@ -63,12 +65,8 @@ export function BrandPanel({
           ELEMENT picks up the display face from a rule in globals.css, and a
           `<p>` can only get it from this utility. That utility did not exist
           until the `@theme` block was added there — see its comment — so this
-          line rendered in the body face while every real heading beside it was
-          in Nunito.
-
-          `font-black` is 900, the weight Nunito ships for display and the one
-          the brand board asks for. 800 is a hair too light at this size and
-          reads as a paragraph that got big rather than as a headline. */}
+          line rendered in the body face while every real heading beside it wore
+          the display face. */}
       <p className="font-heading text-4xl leading-tight font-black sm:text-5xl">
         {lead}
         <br />
@@ -76,14 +74,14 @@ export function BrandPanel({
       </p>
 
       <ul className="mt-8 flex flex-col gap-4">
-        {POINTS.map(({ icon: Icon, title, body }) => (
+        {POINTS.map(({ icon, title, body }) => (
           <li key={title} className="flex items-start gap-3">
             {/* Brand pink, no container. These three are one category — what you
                 get — so a different hue each would be colour used as decoration
                 rather than as meaning (root RULE #4). The same treatment as the
                 assurance band at the foot of the page, so the two icon sets read
                 as one system rather than two. */}
-            <Icon className="text-primary mt-0.5 size-6 shrink-0" aria-hidden />
+            <Icon glyph={icon} className="text-primary mt-0.5 size-6 shrink-0" aria-hidden />
             <div>
               <h2 className="text-lg font-bold">{title}</h2>
               <p className="text-base">{body}</p>

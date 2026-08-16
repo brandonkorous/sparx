@@ -66,6 +66,11 @@
  * anywhere reports a problem. */
 @source '../../../packages/mascot/src/**/*.{ts,tsx}';
 
+/* @piggles/ui ships className strings (Section's padding and max-width), so the
+ * same rule applies: unscanned, the panel renders with no layout and nothing
+ * reports it. See packages/ui/CLAUDE.md. */
+@source '../../../packages/ui/src/**/*.{ts,tsx}';
+
 /* Bridge the brand's font tokens into the Tailwind v4 theme, so `font-heading`
  * and `font-sans` EXIST as utilities.
  *
@@ -76,12 +81,10 @@
  * compiles, typechecks, lints, and generates NO CSS AT ALL, so the element
  * silently inherits the body face.
  *
- * That is exactly what happened: the biggest type on the sign-in page — the
- * promise beside the form — rendered in Inter while every real `<h1>` beside it
- * rendered in Nunito, because headings get the display face from the element
- * rule below and a `<p>` can only get it from a utility that did not exist. It
- * was found by reading `getComputedStyle` on the live page; nothing else can see
- * it. The console's globals.css has carried this block from the start.
+ * That is exactly what happened: the promise beside the sign-in form rendered in
+ * Inter while every real `<h1>` beside it wore the display face, because a `<p>`
+ * can only get it from a utility that did not exist. Only `getComputedStyle` on
+ * the live page can see this — no check in the repo can.
  *
  * The values are self-referential on purpose: the utility resolves
  * `var(--font-heading)` at paint time, so it picks up whatever the cascade says
@@ -90,20 +93,19 @@
   --font-sans: var(--font-sans);
   --font-heading: var(--font-heading);
   --font-mono: var(--font-mono);
+
+  /* `rounded-section` — board radiusXl, used by <Section> from @piggles/ui.
+   * Declared inside [data-theme], which @theme cannot read, so it is bridged
+   * per app or the utility does not exist and panels ship square. */
+  --radius-section: var(--radius-section);
 }
 
-/* Fonts. theme.css declares the INTENT with literal family names ('Nunito',
- * 'Inter'), which is what a consumer loading those fonts by name would resolve.
- * next/font hashes the family, so the app re-points the two tokens at the
- * variables `next/font` generates on <html>.
- *
- * Targets `[data-theme]` rather than `:root` deliberately: theme.css sets these
- * inside `[data-theme='light'], [data-theme='dark']`, so matching the specificity
- * and coming later in source order is what makes this win — on the root AND
- * inside any nested theme island. */
+/* Fonts. theme.css names the families literally ('Fredoka', 'Inter'); next/font
+ * hashes them, so the app re-points the tokens at its generated variables.
+ * `[data-theme]`, not `:root` — it matches theme.css's own specificity. */
 [data-theme] {
   --font-sans: var(--font-inter), system-ui, sans-serif;
-  --font-heading: var(--font-nunito), var(--font-inter), system-ui, sans-serif;
+  --font-heading: var(--font-fredoka), var(--font-inter), system-ui, sans-serif;
 }
 
 /* The canvas — `base-300`, the GROUND, and everything else lifts off it.

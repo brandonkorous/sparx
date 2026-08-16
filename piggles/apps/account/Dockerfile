@@ -29,7 +29,7 @@ WORKDIR /repo
 # ----- Install + build -----
 FROM base AS builder
 
-COPY pnpm-workspace.yaml pnpm-lock.yaml package.json tsconfig.base.json ./
+COPY pnpm-workspace.yaml pnpm-lock.yaml package.json tsconfig.base.json .npmrc ./
 # Hashed before resolution — needed whatever the filter excludes. See the note in
 # piggles/apps/web/Dockerfile.
 COPY patches ./patches
@@ -40,12 +40,17 @@ COPY piggles/packages/auth-handoff/package.json piggles/packages/auth-handoff/
 COPY piggles/packages/brand/package.json piggles/packages/brand/
 COPY piggles/packages/config/package.json piggles/packages/config/
 COPY piggles/packages/mascot/package.json piggles/packages/mascot/
+COPY piggles/packages/ui/package.json piggles/packages/ui/
 
 # The platform account spine and everything it drags in. `@sparx/auth` re-exports
 # server.ts → tenant-events.ts, which pulls legal seeding; `@sparx/email` pulls
 # the template packages; onboarding's blueprint step pulls the schema family.
 COPY packages/attribution/package.json packages/attribution/
 COPY packages/auth/package.json packages/auth/
+# The address table. The invite + consent pages build absolute links
+# through it (accountOrigin/appOrigin), during the SERVER render.
+COPY packages/links/package.json packages/links/
+COPY packages/silica-corrections/package.json packages/silica-corrections/
 COPY packages/automation-schemas/package.json packages/automation-schemas/
 COPY packages/blueprints/package.json packages/blueprints/
 COPY packages/brand/package.json packages/brand/
@@ -74,7 +79,11 @@ COPY packages/ui/package.json packages/ui/
 COPY packages/db/prisma packages/db/prisma
 COPY packages/db/prisma.config.ts packages/db/prisma.config.ts
 
+# The Font Awesome Pro token reaches pnpm as an env var for one command, read
+# from a BuildKit secret mount. It is never COPYed and never lands in a layer.
 RUN --mount=type=cache,id=pnpm,target=/root/.local/share/pnpm/store \
+    --mount=type=secret,id=fontawesome_npm_token \
+    FONTAWESOME_NPM_TOKEN="$(cat /run/secrets/fontawesome_npm_token 2>/dev/null || true)" \
     pnpm install --frozen-lockfile --filter @piggles/account...
 
 # Source for every workspace dep + the app itself.
@@ -82,8 +91,11 @@ COPY piggles/packages/auth-handoff piggles/packages/auth-handoff
 COPY piggles/packages/brand piggles/packages/brand
 COPY piggles/packages/config piggles/packages/config
 COPY piggles/packages/mascot piggles/packages/mascot
+COPY piggles/packages/ui piggles/packages/ui
 COPY packages/attribution packages/attribution
 COPY packages/auth packages/auth
+COPY packages/links packages/links
+COPY packages/silica-corrections packages/silica-corrections
 COPY packages/automation-schemas packages/automation-schemas
 COPY packages/blueprints packages/blueprints
 COPY packages/brand packages/brand
