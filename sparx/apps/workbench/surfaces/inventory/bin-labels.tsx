@@ -236,7 +236,7 @@ export function BinLabelsSurface({ ctx }: { ctx: SurfaceContext }) {
         <ToggleGroup
           value={[size]}
           onValueChange={(value) => {
-            const next = (value as string[])[0];
+            const next = value[0];
             if (next) setSize(next as SizeKey);
           }}
         >
