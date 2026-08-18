@@ -456,10 +456,22 @@ const EXCEPTIONS = [
     why: 'the Piggles app catalog, rail grouping and lexicon — the counterpart to sparx’s module catalog, which sits in @wizeworks/modules because sparx sells those modules separately.',
   },
   {
+    axis: 'components',
+    only: 'piggles',
+    path: 'components/panel/shortcut-panel',
+    why: 'Favourites and Recent, as a panel. Both consoles carry both lists; they differ in WHERE, and that follows from the rail. sparx keeps them in the rail itself (components/rail.tsx, useFavorites/useRecents). A collapsed Piggles rail cannot show either — five nameless icons above fifteen more is where people lose their place — so each becomes a row that opens its list in the panel. Same capability, two placements; see lib/rail-preference for the same split.',
+  },
+  {
     axis: 'lib',
     only: 'piggles',
     path: 'lib/rail-preference',
     why: 'Piggles defaults the rail to labelled and sparx to icons-only; a shared key would have to pick one default, and "no preference expressed" means different things to the two products.',
+  },
+  {
+    axis: 'lib',
+    only: 'piggles',
+    path: 'lib/tour/anchor',
+    why: 'TEMPORARY — delete this with the driver.js removal. The ring, and which side of it the card sits on, hand-rolled because Piggles dropped driver.js (its guide refuses the spotlight: no dimming, no cut-out, no keyboard trap). sparx still runs driver.js, which supplies both natively via TourStep.side, so this is one capability under two runtimes rather than a missing screen. It is not a resting state: sparx pays for that runtime with 249 lines of tour.css whose stated job is "driver.js dressed as a native silica surface" — a third-party control being re-skinned, which RULE #1 exists to stop.',
   },
   {
     axis: 'lib',
