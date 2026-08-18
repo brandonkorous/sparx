@@ -263,8 +263,15 @@ function wrapBase(css: string): string {
  * utilities and upgrades every component from the approximation to the measured ink
  * — closing a canvas-vs-site divergence in the same pass.
  *
- * Scoped deliberately to CUSTOM roles: the semantic eight are the storefront theme's
- * existing contract and are left exactly as authored.
+ * EVERY role, not only the invented ones. The semantic eight reach the same dead
+ * `.text-primary-content` utility and the same last-resort approximation when a
+ * theme leaves their pair unset, and a theme editor that reports one ink while the
+ * page paints another is reporting nothing. An authored value still wins outright —
+ * this only ever fills a gap, and says nothing where the theme has spoken.
+ *
+ * (This paragraph read "scoped deliberately to CUSTOM roles" while the caller was
+ * already passing `rolesOf`, which is all of them. The prose was left behind by the
+ * change, not the behaviour.)
  */
 function contentVars(
   theme: Theme,
@@ -272,13 +279,25 @@ function contentVars(
   mode: 'light' | 'dark'
 ): Record<string, string> {
   const resolved = resolveThemeTokens(theme, mode);
-  const authored = mode === 'dark' ? { ...theme.tokens, ...theme.dark } : theme.tokens;
+  // What the theme's OWN stylesheet already puts in force for this mode, which is
+  // the only thing worth comparing against — this block is emitted after it and
+  // at the same specificity, so a var it repeats verbatim is dead weight and a
+  // var it omits leaves whatever was there.
+  const inForce = mode === 'dark' ? { ...theme.tokens, ...theme.dark } : theme.tokens;
   const out: Record<string, string> = {};
   for (const role of roles) {
     const key = `--color-${role}-content`;
-    if (authored[key]) continue;
-    const derived = resolved[key];
-    if (derived) out[key] = derived;
+    const value = resolved[key];
+    // Compared, never merely tested for presence. `if (authored[key]) continue`
+    // read the merged map, so a theme that authored its ink in LIGHT and only
+    // re-pointed the color in DARK — the ordinary shape, because the ink usually
+    // needs no thought — was treated as having authored the dark ink too, and no
+    // override was emitted. `resolveThemeTokens` had already re-derived it (a
+    // light ink is stale the moment the dark bag moves the color under it); we
+    // threw that answer away and painted the light ink on the dark fill. Measured
+    // on a #1d4ed8 → #bfdbfe primary: 1.42:1 where silica resolves 13.84:1.
+    if (!value || inForce[key] === value) continue;
+    out[key] = value;
   }
   return out;
 }

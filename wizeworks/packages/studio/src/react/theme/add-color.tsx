@@ -38,7 +38,7 @@ const MAX_NAME = 48;
 
 export function AddColor() {
   const doc = useDoc<ThemeDoc>();
-  const { editable, setToken } = useThemeEdit();
+  const { editable, addToken } = useThemeEdit();
   const [open, setOpen] = useState(false);
   const [name, setName] = useState('');
   const [value, setValue] = useState('oklch(0.7 0.15 250)');
@@ -50,7 +50,11 @@ export function AddColor() {
 
   const add = () => {
     if (problem) return;
-    setToken(`--color-${slug}`, value, `Add ${slug}`);
+    // The BASE bag, whichever mode is on screen. A color invented while Dark was
+    // selected went into the dark delta alone: it had no light value, so the swatch
+    // was blank in Light, `bg-sale` resolved to nothing there, and the site painted
+    // it only for visitors whose device happened to be set to dark.
+    addToken(`--color-${slug}`, value, `Add ${slug}`);
     setName('');
     setOpen(false);
   };

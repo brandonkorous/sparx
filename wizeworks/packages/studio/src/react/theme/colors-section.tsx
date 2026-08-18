@@ -14,7 +14,7 @@
 import { useMemo } from 'react';
 import { rolesOf } from '@wizeworks/silicaui-html';
 import type { ThemeDoc } from '../../documents/types';
-import { useApply, useDoc } from '../context';
+import { useDoc } from '../context';
 import { AddColor } from './add-color';
 import { ColorGuide } from './color-guide';
 import { ColorSwatch } from './color-swatch';
@@ -88,28 +88,21 @@ function useExtraRoles(doc: ThemeDoc): ColorRole[] {
 }
 
 /**
- * Take an invented color back out — both halves, in ONE batch.
+ * Take an invented color back out — both halves, in BOTH modes, in ONE batch.
  *
  * A stranded `--color-sale-content` generates a rule for a color that no longer
  * exists, and a role that is half-present is exactly the state nothing downstream
- * checks for. One batch, so putting it back is one action.
+ * checks for. Both modes for the same reason one level up: clearing only the bag
+ * on screen left the other one still declaring the color, so Remove pressed in
+ * Dark took the swatch off the grid and left `bg-sale` painting on the site.
+ * One batch, so putting it back is one action.
  */
 function useRemoveColor(): (role: ColorRole) => void {
-  const apply = useApply();
-  const { mode } = useThemeEdit();
+  const { clearToken } = useThemeEdit();
   return (role) => {
-    apply(`Remove ${role.label}`, [
-      { kind: 'theme.setToken', mode, token: role.token, value: undefined },
-      ...(role.contentToken
-        ? [
-            {
-              kind: 'theme.setToken' as const,
-              mode,
-              token: role.contentToken,
-              value: undefined,
-            },
-          ]
-        : []),
-    ]);
+    clearToken(
+      role.contentToken ? [role.token, role.contentToken] : [role.token],
+      `Remove ${role.label}`
+    );
   };
 }

@@ -6,6 +6,7 @@ import { SPARX_RESIDUAL_COLOR_ROLES } from './resolve-sparx-theme';
 import {
   SPARX_REGISTERED_COLOR_ROLES,
   buildCustomColorCss,
+  buildDerivedContentCss,
   customColorRoles,
   customColorRuleCss,
 } from './custom-colors';
@@ -191,5 +192,60 @@ describe('buildCustomColorCss', () => {
     // which only reference the var by name, still ship.
     expect(css).not.toContain('display:none');
     expect(css).toContain('.btn-sunset{');
+  });
+});
+
+describe('buildDerivedContentCss across light and dark', () => {
+  /** The ordinary shape: the ink is decided once in light, and only the COLOR is
+   *  restated for dark. */
+  const inkInLightColorInDark: Theme = {
+    name: 'probe',
+    tokens: {
+      '--color-base-100': '#ffffff',
+      '--color-base-content': '#111111',
+      '--color-primary': '#1d4ed8',
+      '--color-primary-content': '#ffffff',
+    },
+    dark: {
+      '--color-base-100': '#111111',
+      '--color-base-content': '#eeeeee',
+      '--color-primary': '#bfdbfe',
+    },
+  };
+
+  it('re-derives an ink the dark bag has moved the color out from under', () => {
+    const css = buildDerivedContentCss(inkInLightColorInDark);
+    const dark = css.slice(css.indexOf(':root[data-theme="dark"]'));
+
+    // White on #bfdbfe measures 1.42:1. Emitting nothing here left exactly that
+    // on every filled surface in the theme.
+    expect(dark).toContain('--color-primary-content:');
+    expect(dark).not.toContain('#ffffff');
+  });
+
+  it('leaves the light ink exactly as authored', () => {
+    const css = buildDerivedContentCss(inkInLightColorInDark);
+    const light = css.slice(0, css.indexOf(':root[data-theme="dark"]'));
+    expect(light).not.toContain('--color-primary-content:');
+  });
+
+  it('says nothing in dark for a role the dark bag does not touch', () => {
+    const css = buildDerivedContentCss({
+      name: 'probe',
+      tokens: { '--color-primary': '#1d4ed8', '--color-success': '#15803d' },
+      dark: { '--color-primary': '#bfdbfe' },
+    });
+    const dark = css.slice(css.indexOf(':root[data-theme="dark"]'));
+    expect(dark).toContain('--color-primary-content:');
+    expect(dark).not.toContain('--color-success-content:');
+  });
+
+  it('is silent where the theme authored the pair in both modes', () => {
+    const css = buildDerivedContentCss({
+      name: 'probe',
+      tokens: { '--color-primary': '#1d4ed8', '--color-primary-content': '#ffffff' },
+      dark: { '--color-primary': '#bfdbfe', '--color-primary-content': '#0b1220' },
+    });
+    expect(css).toBe('');
   });
 });

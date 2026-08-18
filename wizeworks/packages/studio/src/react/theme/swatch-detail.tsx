@@ -31,25 +31,29 @@ export function SwatchDetail({
   recommended: string | undefined;
   onRemove?: () => void;
 }) {
-  const { mode, values, own, editable, setToken } = useThemeEdit();
+  const { mode, values, own, resolved, editable, setToken } = useThemeEdit();
 
   const stored = values[tile.token];
   const chosen = own[tile.token] !== undefined;
-  // An ink tile with nothing stored is showing silica's recommendation, so the
-  // picker opens ON it — a first nudge then starts from what is on screen instead
-  // of from black.
-  const value = tile.ink ? (stored ?? recommended) : stored;
+  // An ink tile shows the ink that is really ON the color — silica's, when the
+  // theme names none, and silica's AGAIN when the one the theme named has been
+  // set aside as unreadable. Opening the picker on the stored value instead would
+  // hand back a color the page is not using, and write it on the first nudge.
+  const painted = tile.ink ? (resolved[tile.token] ?? stored ?? recommended) : stored;
+  const setAside = tile.ink && stored !== undefined && resolved[tile.token] !== stored;
 
   return (
     <div className="flex flex-col gap-3">
       <div>
         <p className="text-base-content text-base font-semibold">{tile.label}</p>
-        <p className="text-base-content text-sm">{describe(tile, mode, chosen, stored)}</p>
+        <p className="text-base-content text-sm">
+          {describe(tile, mode, chosen, stored, setAside)}
+        </p>
       </div>
 
       <ColorValue
         label={tile.label}
-        value={value}
+        value={painted}
         disabled={!editable}
         onChange={(next) => setToken(tile.token, next, `Set ${tile.label}`)}
       />
@@ -89,8 +93,14 @@ function describe(
   tile: SwatchTile,
   mode: string,
   chosen: boolean,
-  stored: string | undefined
+  stored: string | undefined,
+  setAside: boolean
 ): string {
+  // Said before anything else, because it is the one case where what is on screen
+  // is not what the theme says — and the author is owed the reason.
+  if (setAside) {
+    return 'Your light-mode text color cannot be read on this, so we picked one that can. Set it here to choose your own.';
+  }
   if (mode === 'dark' && !chosen && stored !== undefined) {
     return 'Same as the light version, until you change it here.';
   }

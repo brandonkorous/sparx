@@ -29,12 +29,12 @@ import { SwatchDetail } from './swatch-detail';
 import type { SwatchTile } from './tokens';
 
 export function ColorSwatch({ tile, onRemove }: { tile: SwatchTile; onRemove?: () => void }) {
-  const { mode, values } = useThemeEdit();
+  const { mode, values, resolved } = useThemeEdit();
   const role = tile.role;
 
   // Always measured on the ROLE, never on the tile: a `-content` token has no
   // contrast of its own, only against the color it sits on.
-  const reading = readContrast(role.token, values[role.token], values, role.contentToken);
+  const reading = readContrast(role.token, values[role.token], resolved, role.contentToken);
 
   // The warning belongs to the pair, so it is shown once — on the ink tile, which
   // is the tile about readability. A surface has no ink tile beside it, so it

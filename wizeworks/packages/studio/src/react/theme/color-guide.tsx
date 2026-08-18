@@ -66,8 +66,8 @@ function GuideGroup({ label, hint, roles }: { label: string; hint: string; roles
 }
 
 function GuideRow({ role }: { role: ColorRole }) {
-  const { mode, values } = useThemeEdit();
-  const reading = readContrast(role.token, values[role.token], values, role.contentToken);
+  const { mode, values, resolved } = useThemeEdit();
+  const reading = readContrast(role.token, values[role.token], resolved, role.contentToken);
 
   return (
     <li className="flex items-center gap-3">

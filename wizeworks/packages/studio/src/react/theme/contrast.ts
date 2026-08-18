@@ -30,29 +30,46 @@ export interface ContrastReading {
  * a value still being typed, or a `color-mix()` no measurement can parse.
  *
  * Surfaces are measured against the theme's ink, because that is the pair a
- * visitor actually reads. A role is measured against its own `-content` when the
- * theme sets one, and against silica's derivation when it does not.
+ * visitor actually reads. A role is measured against the ink that will really be
+ * ON it.
+ *
+ * `resolved` must be silica's RESOLVED map for the mode on screen, never the raw
+ * light-plus-dark merge. The two part company on the ordinary dark theme: an ink
+ * authored in light stays in the merged map after the dark bag re-points the
+ * color under it, so a reading taken there measured a pair the page had already
+ * stopped painting — and reported a comfortable number for a button nobody could
+ * read. A reading that does not measure what is on screen is worse than no
+ * reading, because it is believed.
  */
 export function readContrast(
   token: string,
   value: string | undefined,
-  values: Record<string, string>,
+  resolved: Record<string, string>,
   contentToken?: string
 ): ContrastReading | undefined {
   if (!value) return undefined;
 
   if (token === '--color-base-content') {
-    return againstSurface(values['--color-base-100'], value, true);
+    return againstSurface(resolved['--color-base-100'], value, true);
   }
 
   if (isSurfaceToken(token)) {
-    return againstSurface(value, values['--color-base-content'], true);
+    return againstSurface(value, resolved['--color-base-content'], true);
   }
 
-  const authoredInk = contentToken ? values[contentToken] : undefined;
-  if (authoredInk) {
-    const reading = againstSurface(value, authoredInk, true);
-    return reading ? { ...reading, advice: reading.passes ? undefined : inkAdvice } : undefined;
+  const ink = contentToken ? resolved[contentToken] : undefined;
+  if (ink) {
+    const reading = againstSurface(value, ink, true);
+    if (!reading) return undefined;
+    // Which advice depends on whose ink failed. Told to move one of two colors
+    // apart, an author who never chose an ink has nothing to move — for them the
+    // fill itself is the problem, because no ink at all reads on it.
+    const authored = authoredInk(resolved, contentToken, ink);
+    return {
+      ...reading,
+      authored,
+      advice: reading.passes ? undefined : authored ? inkAdvice : NO_INK_READS,
+    };
   }
 
   const derived = deriveContent(value);
@@ -61,10 +78,25 @@ export function readContrast(
     ratio: derived.ratio,
     passes: derived.passesAA,
     authored: false,
-    advice: derived.passesAA
-      ? undefined
-      : 'Neither black nor white text reads clearly on this. Try it darker or lighter, or set the text color yourself.',
+    advice: derived.passesAA ? undefined : NO_INK_READS,
   };
+}
+
+const NO_INK_READS =
+  'Neither black nor white text reads clearly on this. Try it darker or lighter, or set the text color yourself.';
+
+/** True when the ink in force is one silica would not have derived — i.e. the
+ *  author chose it, and is therefore the person who can move it. */
+function authoredInk(
+  resolved: Record<string, string>,
+  contentToken: string | undefined,
+  ink: string
+): boolean {
+  if (!contentToken) return false;
+  const role = contentToken.replace(/-content$/, '');
+  const fill = resolved[role];
+  if (!fill) return true;
+  return deriveContent(fill)?.value !== ink;
 }
 
 const inkAdvice =
