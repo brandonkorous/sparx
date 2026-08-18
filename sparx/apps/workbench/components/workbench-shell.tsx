@@ -55,6 +55,7 @@ export function WorkbenchShell({
   userName,
   userEmail,
   initialSiteKey,
+  initialCompact,
   arrivalAddress,
 }: {
   userName: string;
@@ -63,6 +64,9 @@ export function WorkbenchShell({
    *  so the dock mounts without waiting on the token fetch. Null on a first
    *  visit (no cookie), where boot falls back to the token + sites resolution. */
   initialSiteKey: string | null;
+  /** The server's read of whether this is a stack-shaped device, so the first
+   *  paint is already the right presentation. See lib/compact.ts. */
+  initialCompact: boolean;
   /** The address the SERVER matched for this render — the one authority on what
    *  this page load is asking for. See app/workbench-entry.tsx. */
   arrivalAddress: string;
@@ -86,7 +90,7 @@ export function WorkbenchShell({
   const [pinned, setPinned] = useState(false);
   const [railExpanded, setRailExpanded] = useState(false);
   const [navOpen, setNavOpen] = useState(false);
-  const isCompact = useIsCompact();
+  const isCompact = useIsCompact(initialCompact);
 
   // Capture the address this page load arrived with, HERE, in the outermost
   // render — before anything downstream can rewrite it. The history bridge

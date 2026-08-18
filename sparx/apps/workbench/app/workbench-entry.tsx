@@ -1,6 +1,7 @@
-import { cookies } from 'next/headers';
+import { cookies, headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { getSession } from '@wizeworks/auth';
+import { COMPACT_COOKIE, guessCompact } from '../lib/compact';
 import { WorkbenchShell } from '../components/workbench-shell';
 
 // The one way into the workbench, shared by `/` and by every address under it.
@@ -44,11 +45,22 @@ export async function WorkbenchEntry({ address }: { address: string }) {
   const cookieStore = await cookies();
   const initialSiteKey = cookieStore.get('sparx_active_property')?.value ?? null;
 
+  // Which presentation this device gets, answered HERE so the markup that ships
+  // is already the right one. Guessing desktop and correcting after hydration is
+  // a phone painting the rail and the dock before swapping them (lib/compact.ts).
+  const requestHeaders = await headers();
+  const initialCompact = guessCompact({
+    cookie: cookieStore.get(COMPACT_COOKIE)?.value,
+    chMobile: requestHeaders.get('sec-ch-ua-mobile'),
+    userAgent: requestHeaders.get('user-agent'),
+  });
+
   return (
     <WorkbenchShell
       userName={displayName(session.user.name, session.user.email)}
       userEmail={session.user.email}
       initialSiteKey={initialSiteKey}
+      initialCompact={initialCompact}
       arrivalAddress={address}
     />
   );
