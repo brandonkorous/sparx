@@ -176,6 +176,18 @@ const COLLAPSE = [
   },
   {
     side: 'piggles',
+    path: 'components/panel/shortcut-panel-host',
+    into: 'components/~app-panel',
+    why: 'which shortcut list the panel is showing, lifted out under the 250-line rule',
+  },
+  {
+    side: 'piggles',
+    path: 'components/rail/surface-row',
+    into: 'components/~app-rail',
+    why: 'one row shared by the rail and the shortcut panel, lifted out under the 250-line rule',
+  },
+  {
+    side: 'piggles',
     path: 'components/panel/panel-header',
     into: 'components/~app-panel',
     why: 'the panel’s header, lifted out under the 250-line rule',
@@ -450,6 +462,18 @@ const EXCEPTIONS = [
     only: 'piggles',
     path: 'components/desktop-shell',
     why: 'the desktop presentation, lifted out of console-shell.tsx under the 250-line rule. sparx has no line ceiling (CLAUDE.md: cohesion is the only rule), so workbench-shell.tsx keeps both presentations and the boot it owns in one piece. Same two presentations, one file boundary apart.',
+  },
+  {
+    axis: 'components',
+    only: 'piggles',
+    path: 'components/compact-shell',
+    why: 'the other half of that same split — the compact presentation assembled, wrapping compact-console.tsx the way desktop-shell wraps the desktop chrome. sparx keeps both in workbench-shell.tsx.',
+  },
+  {
+    axis: 'components',
+    only: 'piggles',
+    path: 'components/chrome-column',
+    why: 'the rail-and-panel column, lifted out of the desktop shell under the same 250-line rule. sparx composes the two directly in workbench-shell.tsx.',
   },
   {
     axis: 'lib',

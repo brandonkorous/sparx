@@ -44,12 +44,11 @@
      ends when the canvas does is not a frame. What DOES move is where the pair
      sits on the ladder: a step lighter here, a step darker under `dark`, so the
      chrome keeps the same distance from the work either way.
-
-     One ladder, ~11 L* a rung: #52454f · #3a2e37 · #241c22 · #150f14. */
-  --color-neutral: #52454f;
+*/
+  --color-neutral: #51474f;
   --color-neutral-content: #ffffff;
 
-  --color-neutral-dark: #3a2e37;
+  --color-neutral-dark: #3e353d;
   --color-neutral-dark-content: #ffffff;
 
   /* Bases */
@@ -94,9 +93,11 @@
 
   /* Chrome — the same two rungs as light, moved one step DOWN the ladder. Still
      dark, still rail-above-panel; it just sinks with the canvas. */
-  --color-neutral: #241c22;
+
+  --color-neutral: #27232a;
   --color-neutral-content: #ffffff;
-  --color-neutral-dark: #150f14;
+
+  --color-neutral-dark: #211e24;
   --color-neutral-dark-content: #ffffff;
 
   /* Surface hierarchy */
