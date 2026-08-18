@@ -244,6 +244,14 @@ jobs:
       - name: Check Dockerfile dependency closure
         run: node scripts/check-dockerfile-deps.mjs
 
+      # The sibling question, and the one nothing asked until the tree move
+      # broke seven images: not "does this image include what it imports" but
+      # "do its paths still point at anything". Two of those seven built GREEN
+      # and would have crashlooped, because a build says nothing about where a
+      # file ended up.
+      - name: Check Dockerfile paths resolve
+        run: node scripts/check-dockerfile-paths.mjs
+
   brand-isolation:
     name: Brand isolation
     runs-on: ubuntu-latest

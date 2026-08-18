@@ -19,8 +19,8 @@ COPY tsconfig.base.json ./
 # Root `patchedDependencies` is hashed before resolution, so the patch files are
 # needed even when this filter excludes the package they patch.
 COPY patches ./patches
-COPY wizeworks/packages/db ./packages/db
-COPY wizeworks/services/cache-revalidation-worker ./services/cache-revalidation-worker
+COPY wizeworks/packages/db ./wizeworks/packages/db
+COPY wizeworks/services/cache-revalidation-worker ./wizeworks/services/cache-revalidation-worker
 
 # Filtered install pulls only @wizeworks/cache-revalidation-worker + transitive
 # workspace deps; --prod=false keeps tsx + @types/* for the `tsx src/index.ts`

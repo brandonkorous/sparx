@@ -21,6 +21,7 @@
     "check:events": "node scripts/check-event-topics.mjs",
     "check:routes": "node scripts/check-surface-routes.mjs",
     "check:docker": "node scripts/check-dockerfile-deps.mjs",
+    "check:docker-paths": "node scripts/check-dockerfile-paths.mjs",
     "check:piggles-nav": "node piggles/scripts/check-nav-vocabulary.mjs",
     "check:piggles-toolbars": "node piggles/scripts/check-toolbar-primary.mjs",
     "check:webhooks": "node scripts/check-webhook-events.mjs",
