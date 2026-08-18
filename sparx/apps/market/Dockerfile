@@ -23,9 +23,6 @@ FROM base AS builder
 
 # Workspace metadata first — maximises layer cache reuse across source changes.
 COPY pnpm-workspace.yaml pnpm-lock.yaml package.json tsconfig.base.json ./
-# Root `patchedDependencies` is hashed before resolution, so the patch files are
-# needed even when this filter excludes the package they patch.
-COPY patches ./patches
 COPY sparx/apps/market/package.json sparx/apps/market/
 # @sparx/brand (the silicaui theme — globals.css @imports @sparx/brand/theme.css),
 # @wizeworks/commerce-schemas (pure-zod: MARKET_CATEGORIES + the category taxonomy) and

@@ -36,9 +36,6 @@ WORKDIR /repo
 FROM base AS builder
 
 COPY pnpm-workspace.yaml pnpm-lock.yaml package.json tsconfig.base.json .npmrc ./
-# Hashed before resolution — needed whatever the filter excludes. The console is
-# the app that actually consumes it: silicaui-react sits on Base UI.
-COPY patches ./patches
 COPY piggles/apps/workbench/package.json piggles/apps/workbench/
 
 # Piggles' own.

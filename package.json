@@ -53,10 +53,5 @@
     "turbo": "^2.3.0",
     "typescript": "^6.0.3",
     "typescript-eslint": "^8.20.0"
-  },
-  "pnpm": {
-    "patchedDependencies": {
-      "@base-ui-components/react@1.0.0-rc.0": "patches/@base-ui-components__react@1.0.0-rc.0.patch"
-    }
   }
 }

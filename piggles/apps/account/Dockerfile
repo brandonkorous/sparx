@@ -30,9 +30,6 @@ WORKDIR /repo
 FROM base AS builder
 
 COPY pnpm-workspace.yaml pnpm-lock.yaml package.json tsconfig.base.json .npmrc ./
-# Hashed before resolution — needed whatever the filter excludes. See the note in
-# piggles/apps/web/Dockerfile.
-COPY patches ./patches
 COPY piggles/apps/account/package.json piggles/apps/account/
 
 # Piggles' own: the handoff (both halves), the tokens, the app registry, the art.

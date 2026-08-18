@@ -28,10 +28,6 @@ FROM base AS builder
 
 # Workspace metadata first — maximises layer cache reuse across source changes.
 COPY pnpm-workspace.yaml pnpm-lock.yaml package.json tsconfig.base.json .npmrc ./
-# Root `patchedDependencies` is hashed BEFORE resolution, so pnpm opens every
-# patch file even under a filter that excludes the package being patched. Absent,
-# the install dies with ENOENT on a package this app does not use.
-COPY patches ./patches
 COPY piggles/apps/web/package.json piggles/apps/web/
 # The whole closure, and it is three packages.
 COPY wizeworks/packages/attribution/package.json wizeworks/packages/attribution/

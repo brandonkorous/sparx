@@ -18,9 +18,6 @@ FROM base AS builder
 
 # Workspace metadata first — maximises layer cache reuse across source changes.
 COPY pnpm-workspace.yaml pnpm-lock.yaml package.json tsconfig.base.json ./
-# Root `patchedDependencies` is hashed before resolution, so the patch files are
-# needed even when this filter excludes the package they patch.
-COPY patches ./patches
 COPY wizeworks/apps/site/package.json wizeworks/apps/site/
 COPY wizeworks/packages/app-kit/package.json wizeworks/packages/app-kit/
 COPY wizeworks/packages/brand-core/package.json wizeworks/packages/brand-core/
