@@ -30,7 +30,7 @@
     "clean": "rm -rf .turbo dist coverage *.tsbuildinfo"
   },
   "dependencies": {
-    "@base-ui-components/react": "1.0.0-rc.0",
+    "@base-ui/react": "^1.7.0",
     "@radix-ui/react-slot": "^1.1.1",
     "@radix-ui/react-tooltip": "^1.2.8",
     "@wizeworks/silica-corrections": "workspace:*",

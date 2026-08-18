@@ -4,28 +4,25 @@ import { render, screen } from '@testing-library/react';
 import { Toaster, toast } from './toast';
 
 /**
- * A REGRESSION GUARD FOR A PATCHED DEPENDENCY, not a test of our own code.
+ * A REGRESSION GUARD FOR A DEPENDENCY, not a test of our own code.
  *
- * `@base-ui-components/react@1.0.0-rc.0` calls `ReactDOM.flushSync` inside
- * `ToastRoot`'s `recalculateHeight`, and two of that function's call sites are
- * layout effects. React is already in the commit phase there, so it refuses to
- * flush and logs an error for EVERY toast, on every render — a console full of
- * noise that real errors then hide in.
+ * `@base-ui-components/react@1.0.0-rc.0` called `ReactDOM.flushSync` inside
+ * `ToastRoot`'s `recalculateHeight`, and two of that function's call sites were
+ * layout effects. React is already in the commit phase there, so it refused to
+ * flush and logged an error for EVERY toast, on every render — a console full of
+ * noise that real errors then hide in. We carried a pnpm patch for it.
  *
- * We patch it: `patches/@base-ui-components__react@1.0.0-rc.0.patch` marks the
- * two layout-effect paths and skips the flush on them (the flush is redundant
- * there — a setState in a layout effect already re-renders synchronously before
- * paint) while keeping it on the ResizeObserver / MutationObserver paths, which
- * run after paint and genuinely need it.
+ * Fixed upstream, and better than the patch did it: `@base-ui/react@1.7.0` gives
+ * `recalculateHeight` an explicit `flushSync?: boolean`, calls it bare from the
+ * layout effect and `recalculateHeight(true)` from the ResizeObserver /
+ * MutationObserver paths, which run after paint and genuinely need the flush.
+ * The patch and `pnpm.patchedDependencies` were removed on 2026-08-18 with the
+ * move to `@base-ui/react` (silicaui 0.55 switched to it).
  *
- * A patch is invisible until it silently stops applying — a dependency bump, a
- * lockfile regeneration, a merge that drops `pnpm.patchedDependencies`. This
- * test is the thing that notices. **If it fails, check the patch still applies
- * before touching anything here**: `pnpm why @base-ui-components/react` should
- * show a `_patch_hash=` segment in the store path.
- *
- * Delete both the patch and this file when the fix lands upstream. rc.0 was the
- * newest published version on 2026-08-13.
+ * These tests stay. They never really tested the patch — they test that firing a
+ * toast from outside React renders it and logs nothing, which is the behaviour
+ * we care about under any version, and the cheapest way to notice if a future
+ * bump puts the flush back.
  */
 
 const FLUSH_SYNC_MESSAGE = 'flushSync';

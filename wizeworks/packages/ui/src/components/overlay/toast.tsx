@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { Toast } from '@base-ui-components/react/toast';
+import { Toast } from '@base-ui/react/toast';
 import { ToastProvider } from '@wizeworks/silicaui-react';
 
 // Wraps silicaui's Toast (Base UI underneath) with a sonner-shaped API so the
