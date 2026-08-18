@@ -34,6 +34,7 @@ export class DocumentStore<D extends StudioDoc = StudioDoc> {
   private selection: string[] = [];
   private mark = 0;
   private savedMark = 0;
+  private coalesceKey: string | undefined;
   private snapshot: DocSnapshot<D>;
 
   constructor(doc: D) {
@@ -72,11 +73,23 @@ export class DocumentStore<D extends StudioDoc = StudioDoc> {
    *
    * Returns false when the batch was refused, so a caller can say so rather than
    * leaving the author staring at a canvas that did not move.
+   *
+   * `coalesce` folds a CONTINUOUS action into one undo step. Repeat the same key
+   * — one per control, e.g. `theme.setToken:light:--color-primary` — and the
+   * previous batch is undone before these ops are applied, so what lands on the
+   * stack still describes a single step from where the drag began. Without it a
+   * colour drag would push a batch per frame and push real work off the 200-deep
+   * stack; with a key per control, moving to a DIFFERENT one starts a new step.
    */
-  apply(label: string, ops: StudioOp[]): boolean {
+  apply(label: string, ops: StudioOp[], coalesce?: string): boolean {
     if (!ops.length) return false;
 
-    let next: StudioDoc = this.doc;
+    const top = this.history.peekUndo();
+    const folding = top !== undefined && coalesce !== undefined && coalesce === this.coalesceKey;
+
+    let next = folding && top ? this.run(top.inverse) : this.doc;
+    if (!next) return false;
+
     const inverse: StudioOp[] = [];
     for (const op of ops) {
       const result = applyOp(next, op);
@@ -88,8 +101,12 @@ export class DocumentStore<D extends StudioDoc = StudioDoc> {
     }
 
     this.doc = next as D;
-    this.history.record({ label, ops, inverse });
-    this.mark += 1;
+    if (folding) this.history.replaceTop({ label, ops, inverse });
+    else {
+      this.history.record({ label, ops, inverse });
+      this.mark += 1;
+    }
+    this.coalesceKey = coalesce;
     this.emit();
     return true;
   }
@@ -107,6 +124,7 @@ export class DocumentStore<D extends StudioDoc = StudioDoc> {
     this.doc = next as D;
     this.history.pushRedo(batch);
     this.mark -= 1;
+    this.coalesceKey = undefined;
     this.emit();
     return true;
   }
@@ -122,13 +140,14 @@ export class DocumentStore<D extends StudioDoc = StudioDoc> {
     this.doc = next as D;
     this.history.pushUndo(batch);
     this.mark += 1;
+    this.coalesceKey = undefined;
     this.emit();
     return true;
   }
 
   /** Apply a whole list against a scratch document, or nothing at all. */
-  private run(ops: readonly StudioOp[]): StudioDoc | undefined {
-    let next: StudioDoc = this.doc;
+  private run(ops: readonly StudioOp[], from: StudioDoc = this.doc): StudioDoc | undefined {
+    let next: StudioDoc = from;
     for (const op of ops) {
       const result = applyOp(next, op);
       if (!result) return undefined;
@@ -146,6 +165,7 @@ export class DocumentStore<D extends StudioDoc = StudioDoc> {
       unpublished,
     };
     this.savedMark = this.mark;
+    this.coalesceKey = undefined;
     this.emit();
   }
 
@@ -165,6 +185,7 @@ export class DocumentStore<D extends StudioDoc = StudioDoc> {
     this.selection = [];
     this.mark = 0;
     this.savedMark = 0;
+    this.coalesceKey = undefined;
     this.emit();
   }
 

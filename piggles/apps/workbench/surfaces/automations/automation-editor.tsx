@@ -37,7 +37,7 @@ import {
 } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import type { Action, ConditionGroup, Trigger } from '@wizeworks/automation-schemas';
-import { useActiveSiteId, useModuleStates, useSites } from '../../lib/api/shell-data';
+import { useActivePropertyId, useModuleStates, useSites } from '../../lib/api/shell-data';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import { useConfirm } from '../../lib/confirm';
 import { afterPaneChange } from '../../lib/defer';
@@ -186,14 +186,13 @@ export function AutomationEditor({
   const confirm = useConfirm();
 
   const { data: sites } = useSites();
-  const { data: active } = useActiveSiteId();
+  const defaultSite = useActivePropertyId();
   const { data: moduleStates } = useModuleStates();
   const enabledModules = useMemo(
     () =>
       moduleStates ? moduleStates.filter((m) => m.enabled).map((m) => m.slug) : FALLBACK_MODULES,
     [moduleStates]
   );
-  const defaultSite = active?.propertyId ?? sites?.find((s) => s.isPrimary)?.id ?? null;
 
   const create = useCreateAutomation();
   const update = useUpdateAutomation(automation?.id ?? 'new');

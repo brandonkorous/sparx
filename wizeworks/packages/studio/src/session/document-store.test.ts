@@ -118,3 +118,93 @@ describe('selection', () => {
     expect(listener).toHaveBeenCalledTimes(2);
   });
 });
+
+describe('coalescing a continuous edit', () => {
+  const set = (value: string) => [
+    { kind: 'theme.setToken' as const, mode: 'light' as const, token: '--color-primary', value },
+  ];
+  /** What the fixture's look starts on — what undo has to land back on. */
+  const START = themeDoc().theme.tokens['--color-primary'];
+
+  it('folds every frame of one drag into a single undo step', () => {
+    // Without this, dragging a colour picker pushes a batch per frame and the
+    // 200-deep stack throws away the work the author actually wants back.
+    const store = new DocumentStore(themeDoc());
+    const key = 'theme.setToken:light:--color-primary';
+
+    store.apply('Set main color', set('#111111'), key);
+    store.apply('Set main color', set('#222222'), key);
+    store.apply('Set main color', set('#333333'), key);
+
+    expect(store.current.theme.tokens['--color-primary']).toBe('#333333');
+    expect(store.dirty).toBe(true);
+
+    store.undo();
+    // Back to where the drag STARTED, not to the previous frame of it.
+    expect(store.current.theme.tokens['--color-primary']).toBe(START);
+    expect(store.dirty).toBe(false);
+    expect(store.getSnapshot().canUndo).toBe(false);
+  });
+
+  it('redoes the folded step to where the drag ended', () => {
+    const store = new DocumentStore(themeDoc());
+    const key = 'theme.setToken:light:--color-primary';
+    store.apply('Set main color', set('#111111'), key);
+    store.apply('Set main color', set('#222222'), key);
+
+    store.undo();
+    store.redo();
+    expect(store.current.theme.tokens['--color-primary']).toBe('#222222');
+  });
+
+  it('starts a new step for a different control', () => {
+    const store = new DocumentStore(themeDoc());
+    store.apply('Set main color', set('#111111'), 'theme.setToken:light:--color-primary');
+    store.apply(
+      'Set corners',
+      [{ kind: 'theme.setToken', mode: 'light', token: '--radius-box', value: '1rem' }],
+      'theme.setToken:light:--radius-box'
+    );
+
+    store.undo();
+    expect(store.current.theme.tokens['--radius-box']).toBe(
+      themeDoc().theme.tokens['--radius-box']
+    );
+    // The colour edit is its own step and survives.
+    expect(store.current.theme.tokens['--color-primary']).toBe('#111111');
+  });
+
+  it('does not fold an edit that arrives after an undo', () => {
+    // The batch on top after an undo is a DIFFERENT lineage; folding into it
+    // would rewrite a step the author had already taken back.
+    const store = new DocumentStore(themeDoc());
+    const key = 'theme.setToken:light:--color-primary';
+    store.apply('Set main color', set('#111111'), key);
+    store.undo();
+    store.apply('Set main color', set('#222222'), key);
+
+    store.undo();
+    expect(store.current.theme.tokens['--color-primary']).toBe(START);
+    expect(store.getSnapshot().canUndo).toBe(false);
+  });
+
+  it('does not fold across a save, so dirty flips again', () => {
+    const store = new DocumentStore(themeDoc());
+    const key = 'theme.setToken:light:--color-primary';
+    store.apply('Set main color', set('#111111'), key);
+    store.markSaved(2);
+    expect(store.dirty).toBe(false);
+
+    store.apply('Set main color', set('#222222'), key);
+    expect(store.dirty).toBe(true);
+  });
+
+  it('leaves an uncoalesced apply as its own step', () => {
+    const store = new DocumentStore(themeDoc());
+    store.apply('Set main color', set('#111111'));
+    store.apply('Set main color', set('#222222'));
+
+    store.undo();
+    expect(store.current.theme.tokens['--color-primary']).toBe('#111111');
+  });
+});

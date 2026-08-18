@@ -342,3 +342,46 @@ export function buildCustomColorCss(theme: Theme, opts: BuildCustomColorCssOptio
   out.push(customColorRuleCss(roles, theme));
   return out.join('');
 }
+
+/**
+ * The MEASURED foreground for EVERY role a theme leaves unset — the semantic ones
+ * as well as the custom ones.
+ *
+ * Without this, silicaui's CSS resolves `var(--color-<role>-content, oklch(from …))`
+ * through its documented LAST RESORT: a lightness-threshold approximation. On a
+ * mid-tone brand colour the approximation and the measurement disagree — a theme
+ * editor that reports the measured ink ("we would put near-black on this orange")
+ * while the page paints the approximated one (white) is describing a site that
+ * does not exist.
+ *
+ * Emitted as tokens rather than baked into the stored `Theme` on purpose: a stored
+ * pair goes stale the moment the author edits the role colour, and nothing in the
+ * schema records whether it was authored or derived. An AUTHORED `-content` always
+ * wins — this only fills gaps.
+ */
+export function buildDerivedContentCss(theme: Theme, opts: { rootSelector?: string } = {}): string {
+  const roles = rolesOf(theme);
+  if (roles.length === 0) return '';
+
+  const root = opts.rootSelector ?? ':root';
+  const out: string[] = [];
+
+  const lightVars = contentVars(theme, roles, 'light');
+  const light = declBlock(lightVars);
+  if (light) out.push(`${root}{${light}}`);
+
+  if (theme.dark && Object.keys(theme.dark).length > 0) {
+    // Only the inks that actually MOVE in dark mode; a role the author did not
+    // restate keeps its light value and its derivation is identical.
+    const darkVars = Object.fromEntries(
+      Object.entries(contentVars(theme, roles, 'dark')).filter(([k, v]) => lightVars[k] !== v)
+    );
+    const dark = declBlock(darkVars);
+    if (dark) {
+      out.push(`${root}[data-theme="dark"]{${dark}}`);
+      out.push(`@media (prefers-color-scheme:dark){${root}:not([data-theme="light"]){${dark}}}`);
+    }
+  }
+
+  return out.join('');
+}

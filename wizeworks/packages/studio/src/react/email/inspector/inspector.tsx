@@ -38,7 +38,7 @@ export function EmailInspector() {
   const node = id ? findEmailNode(doc.document.root, id) : undefined;
 
   return (
-    <div className="min-h-0 flex-1 overflow-auto p-3">
+    <div className="h-full min-h-0 overflow-auto p-3">
       <div className="flex flex-col gap-4">
         {node ? (
           <>

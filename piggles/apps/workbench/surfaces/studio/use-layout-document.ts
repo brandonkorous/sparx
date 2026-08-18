@@ -17,7 +17,7 @@ import {
   useSaveLayout,
   type LayoutRow,
 } from '../../lib/studio/layout-data';
-import { useActiveSiteId } from '../../lib/api/shell-data';
+import { useActivePropertyId } from '../../lib/api/shell-data';
 
 /** The one store this layout lives in, however many panes are looking at it. */
 function useOpenLayout(row: LayoutRow | null, propertyId: string | null) {
@@ -94,12 +94,12 @@ export interface LayoutDocumentState extends LayoutWrites {
 }
 
 export function useLayoutDocument(): LayoutDocumentState {
-  const { data: siteState } = useActiveSiteId();
+  const propertyId = useActivePropertyId();
   const layout = useLayout();
   const [saved, setSaved] = useState(false);
   const onStored = useCallback(() => setSaved(true), []);
 
-  const store = useOpenLayout(layout.data ?? null, siteState?.propertyId ?? null);
+  const store = useOpenLayout(layout.data ?? null, propertyId);
   const writes = useLayoutWrites(store, saved || Boolean(layout.data?.stored), onStored);
 
   return {

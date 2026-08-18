@@ -11,7 +11,7 @@ import { Badge, Button, useToast } from '@wizeworks/silicaui-react';
 import { faColumns, faCodeBranch, faTrash } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { useConfirm } from '../../lib/confirm';
-import { useActiveSiteId } from '../../lib/api/shell-data';
+import { useActivePropertyId } from '../../lib/api/shell-data';
 import {
   useCustomiseForSite,
   useDeleteEmail,
@@ -89,12 +89,11 @@ function CustomiseButton({
   email: EmailSummary;
   onOpen: (emailId: string) => void;
 }) {
-  const { data: siteState } = useActiveSiteId();
+  const propertyId = useActivePropertyId();
   const customise = useCustomiseForSite();
   const toast = useToast();
 
   const key = email.key;
-  const propertyId = siteState?.propertyId;
   if (!key || email.scope === 'site' || !propertyId) return null;
 
   const fork = async () => {

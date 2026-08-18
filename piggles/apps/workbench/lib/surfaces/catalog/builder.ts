@@ -1,14 +1,14 @@
 // Site — designing what visitors actually see.
 //
-// The builders lead, in the order someone works: a Page, the Header & footer that
-// wraps every page, the Look & feel underneath both, then Email designs. Each is
-// ONE document in its own pane, so several can be open at once — a page beside the
-// header it wears, or two pages side by side.
+// The builders lead, in the order someone works: name the site, then its Look &
+// feel, the Header & footer every page wears, one Page, then Email designs. Each
+// is ONE document in its own pane, so several can be open at once — a page beside
+// the header it wears, or two pages side by side.
 //
 // The old whole-site editor is GONE — one surface that owned every document at once,
 // replaced by these. Its keyword set moved onto the panes that now answer for it:
 // 'header'/'footer'/'menu' land on Header & footer, 'design'/'edit site' on Page.
-// Then the design assets (Site · Blueprints · Saved pieces), and the Forms inbox.
+// Then the design assets (Blueprints · Saved pieces), and the Forms inbox.
 
 import {
   faChartColumn,
@@ -43,9 +43,22 @@ import { PageResultsSurface } from '../../../surfaces/builder/page-results';
 
 export const BUILDER_SURFACES: SurfaceDefinition[] = [
   /* ── Lead group ───────────────────────────────────────────────────────── */
-  // No section, so these sit above the divider and never fold. Widest scope
-  // first: a theme repaints every page, the chrome every page wears, then one
-  // page, then one piece.
+  // No section, so these sit above the divider and never fold. Identity first,
+  // then widest scope down: a theme repaints every page, the chrome every page
+  // wears, then one page, then one piece.
+  {
+    key: 'builder.site',
+    title: 'Site',
+    module: 'builder',
+    icon: faGlobe,
+    order: 1,
+    keywords: ['identity', 'name', 'tagline', 'logo', 'favicon', 'social', 'brand'],
+    // The active site's IDENTITY: name, tagline, logo, favicon, social links —
+    // per-site (a non-primary site edits its own override). FIRST, because it is
+    // the first thing anybody fills in: everything below it dresses a site that
+    // has to be named before it can be designed.
+    component: SiteIdentitySurface,
+  },
   {
     key: 'builder.theme',
     title: 'Look & feel',
@@ -145,18 +158,6 @@ export const BUILDER_SURFACES: SurfaceDefinition[] = [
   },
 
   /* ── Design ────────────────────────────────────────────────────────────── */
-  {
-    key: 'builder.site',
-    title: 'Site',
-    module: 'builder',
-    icon: faGlobe,
-    section: 'Design',
-    order: 10,
-    keywords: ['identity', 'name', 'tagline', 'logo', 'favicon', 'social', 'brand'],
-    // The active site's IDENTITY: name, tagline, logo, favicon, social links —
-    // per-site (a non-primary site edits its own override).
-    component: SiteIdentitySurface,
-  },
   {
     key: 'builder.blueprints',
     title: 'Blueprints',

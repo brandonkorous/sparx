@@ -14,7 +14,7 @@
 // website".
 
 import { useEffect } from 'react';
-import type { DocumentKind, DocumentRef, StudioDoc } from '@wizeworks/studio';
+import type { DocumentKind, DocumentRef, StudioDoc, StudioSession } from '@wizeworks/studio';
 import { useSessionSnapshot } from '@wizeworks/studio/react';
 import { PaneWaiting } from '../../components/pane-waiting';
 import { PaneLoadError } from '../../components/pane-load-error';
@@ -38,14 +38,7 @@ function refFrom(params: SurfaceContext['params']): DocumentRef | null {
 
 export function HistoryPaneSurface({ ctx }: { ctx: SurfaceContext }) {
   const { session } = useStudioBinding();
-  // Subscribed, so this picks the document up as its own pane finishes opening it.
-  useSessionSnapshot();
   const ref = refFrom(ctx.params);
-  const doc = ref && session ? session.store(ref)?.current : undefined;
-
-  useEffect(() => {
-    ctx.setTitle(doc ? `History — ${doc.name}` : 'History');
-  }, [ctx, doc]);
 
   if (!ref) {
     return (
@@ -58,14 +51,42 @@ export function HistoryPaneSurface({ ctx }: { ctx: SurfaceContext }) {
     );
   }
 
-  // The document has to be OPEN for its history to be readable: history is about a
-  // document, and this pane has no loader of its own on purpose — two loaders for one
-  // document is how a pane ends up showing a version of it nobody is editing.
-  if (!session || !doc) {
+  // Split at the session, because the half below SUBSCRIBES to it and
+  // `useSessionSnapshot` throws outright with no `<StudioProvider>` above it. The
+  // provider does not exist until the site resolves, so a pane opened during boot
+  // has to wait here rather than reach for a session that is not there yet.
+  if (!session) {
     return <PaneWaiting label="Open the page, header, piece or email first…" />;
   }
 
-  return <DocumentHistory doc={doc} ref_={ref} />;
+  return <HistoryForDocument ctx={ctx} session={session} ref_={ref} />;
+}
+
+function HistoryForDocument({
+  ctx,
+  session,
+  ref_,
+}: {
+  ctx: SurfaceContext;
+  session: StudioSession;
+  ref_: DocumentRef;
+}) {
+  // Subscribed, so this picks the document up as its own pane finishes opening it.
+  useSessionSnapshot();
+  const doc = session.store(ref_)?.current;
+
+  useEffect(() => {
+    ctx.setTitle(doc ? `History — ${doc.name}` : 'History');
+  }, [ctx, doc]);
+
+  // The document has to be OPEN for its history to be readable: history is about a
+  // document, and this pane has no loader of its own on purpose — two loaders for one
+  // document is how a pane ends up showing a version of it nobody is editing.
+  if (!doc) {
+    return <PaneWaiting label="Open the page, header, piece or email first…" />;
+  }
+
+  return <DocumentHistory doc={doc} ref_={ref_} />;
 }
 
 function DocumentHistory({ doc, ref_ }: { doc: StudioDoc; ref_: DocumentRef }) {

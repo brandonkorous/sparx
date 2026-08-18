@@ -18,7 +18,7 @@ import {
   type PageRow,
   type PageSettingsPatch,
 } from '../../lib/studio/page-data';
-import { useActiveSiteId } from '../../lib/api/shell-data';
+import { useActivePropertyId } from '../../lib/api/shell-data';
 
 /** A stored row as the engine's document. Exported so a restore can rebuild the
  *  document from the server and hand it to whatever pane is holding it. */
@@ -130,7 +130,7 @@ export interface PageDocumentState extends PageWrites {
 }
 
 export function usePageDocument(pageId: string | null): PageDocumentState {
-  const { data: siteState } = useActiveSiteId();
+  const propertyId = useActivePropertyId();
   const page = usePage(pageId);
   const [saved, setSaved] = useState(false);
   const onStored = useCallback(() => setSaved(true), []);
@@ -139,7 +139,7 @@ export function usePageDocument(pageId: string | null): PageDocumentState {
   // last one says nothing about this one.
   useEffect(() => setSaved(false), [pageId]);
 
-  const store = useOpenPage(page.data ?? null, siteState?.propertyId ?? null);
+  const store = useOpenPage(page.data ?? null, propertyId);
   const stored = saved || Boolean(page.data?.stored);
   const writes = usePageWrites(store, stored, onStored);
 

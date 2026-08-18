@@ -12,7 +12,7 @@
 // one button, because from where the author stands it is one question.
 
 import { useEffect } from 'react';
-import type { DocumentKind, DocumentRef, StudioDoc } from '@wizeworks/studio';
+import type { DocumentKind, DocumentRef, StudioDoc, StudioSession } from '@wizeworks/studio';
 import { useSessionSnapshot } from '@wizeworks/studio/react';
 import { PaneWaiting } from '../../components/pane-waiting';
 import { useStudioBinding } from '../../lib/studio/provider';
@@ -30,14 +30,7 @@ function refFrom(params: SurfaceContext['params']): DocumentRef | null {
 
 export function PreviewPaneSurface({ ctx }: { ctx: SurfaceContext }) {
   const { session } = useStudioBinding();
-  // Subscribed, so this picks the document up as its own pane finishes opening it.
-  useSessionSnapshot();
   const ref = refFrom(ctx.params);
-  const doc: StudioDoc | undefined = ref && session ? session.store(ref)?.current : undefined;
-
-  useEffect(() => {
-    ctx.setTitle(doc ? `Preview — ${doc.name}` : 'Preview');
-  }, [ctx, doc]);
 
   if (!ref) {
     return (
@@ -50,9 +43,37 @@ export function PreviewPaneSurface({ ctx }: { ctx: SurfaceContext }) {
     );
   }
 
+  // Split at the session, because the half below SUBSCRIBES to it and
+  // `useSessionSnapshot` throws outright with no `<StudioProvider>` above it. The
+  // provider does not exist until the site resolves, so a pane opened during boot
+  // has to wait here rather than reach for a session that is not there yet.
+  if (!session) {
+    return <PaneWaiting label="Open the page, header, piece or email first…" />;
+  }
+
+  return <PreviewForDocument ctx={ctx} session={session} ref_={ref} />;
+}
+
+function PreviewForDocument({
+  ctx,
+  session,
+  ref_,
+}: {
+  ctx: SurfaceContext;
+  session: StudioSession;
+  ref_: DocumentRef;
+}) {
+  // Subscribed, so this picks the document up as its own pane finishes opening it.
+  useSessionSnapshot();
+  const doc: StudioDoc | undefined = session.store(ref_)?.current;
+
+  useEffect(() => {
+    ctx.setTitle(doc ? `Preview — ${doc.name}` : 'Preview');
+  }, [ctx, doc]);
+
   // The document has to be OPEN: a preview is about a document, and giving this pane
   // a loader of its own is how it ends up previewing something nobody is editing.
-  if (!session || !doc) {
+  if (!doc) {
     return <PaneWaiting label="Open the page, header, piece or email first…" />;
   }
 

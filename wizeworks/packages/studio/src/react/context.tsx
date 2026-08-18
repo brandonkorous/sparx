@@ -119,10 +119,17 @@ export function useDirty(): boolean {
  *
  * Handed back as a stable callback so a canvas can pass it to hundreds of nodes
  * without re-minting a handler per render.
+ *
+ * Pass `coalesce` — one key per control — to fold a continuous edit (a slider
+ * drag, a color picked by eye) into a single undo step.
  */
-export function useApply(): (label: string, ops: Parameters<DocumentStore['apply']>[1]) => boolean {
+export function useApply(): (
+  label: string,
+  ops: Parameters<DocumentStore['apply']>[1],
+  coalesce?: string
+) => boolean {
   const store = useDocumentStore();
-  return useCallback((label, ops) => store.apply(label, ops), [store]);
+  return useCallback((label, ops, coalesce) => store.apply(label, ops, coalesce), [store]);
 }
 
 export function useSelect(): (ids: readonly string[]) => void {

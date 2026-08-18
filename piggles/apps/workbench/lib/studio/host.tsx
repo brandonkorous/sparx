@@ -19,7 +19,7 @@ import { applyBrandOverride, tenantTheme, type BrandColumns } from './brand-them
 import { makeRenderHostNode } from './host-cores';
 import { useActiveProperty } from './site-data';
 import { useMediaPicker } from '../../surfaces/cms/media-picker';
-import { useActiveSiteId } from '../api/shell-data';
+import { useActivePropertyId } from '../api/shell-data';
 import { PageSettingsPanel } from '../../surfaces/studio/page-settings-panel';
 import { PieceSettingsPanel } from '../../surfaces/studio/piece-settings-panel';
 import { EmailTagsPanel } from '../../surfaces/studio/email-tags-panel';
@@ -56,8 +56,7 @@ const EMPTY_BRAND: BrandColumns = {
 export function useStudioHostConfig(): StudioHost | null {
   const brand = useBrand();
   const config = useSiteConfig();
-  const { data: siteState } = useActiveSiteId();
-  const property = useActiveProperty(siteState?.propertyId ?? null);
+  const property = useActiveProperty(useActivePropertyId());
   const preview = useCanvasPreview();
   const emailPreview = useEmailPreview();
   const emailColors = useEmailColors();
@@ -109,6 +108,10 @@ function buildHost({
   const drawHostNode = makeRenderHostNode(preview.root);
   return {
     fallbackTheme,
+    // The same identity the header draws, so a preview that names the business
+    // names THIS one — the theme pane's board is otherwise the only surface in the
+    // console that shows somebody else's shop.
+    siteName: preview.resolve('site.identity.name'),
     catalog: catalogFor,
     renderHostNode: (node) => drawHostNode(node, { preview: true }),
     resolveBinding: (ref) => preview.resolve(ref),

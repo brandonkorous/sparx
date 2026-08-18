@@ -74,6 +74,16 @@ export interface StudioHost {
   fallbackTheme: Theme;
 
   /**
+   * The business this site belongs to, as a visitor would see it.
+   *
+   * Used wherever a preview would otherwise invent one. A brand board showing a
+   * made-up bakery answers "what do these colors do"; the same board showing the
+   * owner's own name answers "is this MY site", which is the only question they
+   * are actually asking.
+   */
+  siteName?: string;
+
+  /**
    * What this document may insert.
    *
    * Asked per KIND, because a layout and a page are offered different things: a

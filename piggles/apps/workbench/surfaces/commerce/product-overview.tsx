@@ -47,7 +47,7 @@ import {
 import { useConfirm } from '../../lib/confirm';
 import { faBox, faTrashCan } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
-import { useActiveSiteId } from '../../lib/api/shell-data';
+import { useActivePropertyId } from '../../lib/api/shell-data';
 import { afterPaneChange } from '../../lib/defer';
 import { useTabSave } from './product-tab-save';
 import { ProductFilingSections } from './product-filing';
@@ -154,7 +154,7 @@ export function ProductOverviewTab({ ctx, product }: { ctx: SurfaceContext; prod
   const confirm = useConfirm();
   const { data: facets } = useProductFacets();
   const { data: sites } = useSites();
-  const { data: activeSite } = useActiveSiteId();
+  const activeSiteId = useActivePropertyId();
 
   const update = useUpdateProduct(product.id);
   const archive = useArchiveProduct(product.id);
@@ -417,14 +417,7 @@ export function ProductOverviewTab({ ctx, product }: { ctx: SurfaceContext; prod
                     // switch off has to seed something, or the product would
                     // silently stay everywhere while the UI showed otherwise —
                     // so it seeds the site being worked in.
-                    set(
-                      'propertyIds',
-                      next
-                        ? []
-                        : activeSite?.propertyId
-                          ? [activeSite.propertyId]
-                          : [(sites ?? [])[0]?.id ?? '']
-                    );
+                    set('propertyIds', next ? [] : [activeSiteId ?? (sites ?? [])[0]?.id ?? '']);
                   }}
                 />
               }

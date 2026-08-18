@@ -70,7 +70,7 @@ import {
   faEyeSlash,
   faShareNodes,
 } from '@fortawesome/pro-solid-svg-icons';
-import { useActiveSiteId } from '../../lib/api/shell-data';
+import { useActivePropertyId } from '../../lib/api/shell-data';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import { afterPaneChange } from '../../lib/defer';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
@@ -414,7 +414,7 @@ function ManageProduct({ ctx, id }: { ctx: SurfaceContext; id: string }) {
   const confirm = useConfirm();
   const { data: product, isPending, isError, isFetching, dataUpdatedAt, refetch } = useProduct(id);
   const { data: domains } = useDomains();
-  const { data: activeSite } = useActiveSiteId();
+  const propertyId = useActivePropertyId();
   const publish = usePublishProduct(id);
   const [tab, setTab] = useState('overview');
 
@@ -466,7 +466,6 @@ function ManageProduct({ ctx, id }: { ctx: SurfaceContext; id: string }) {
   // The address a shopper would reach this product at, on the site being worked
   // in. Every site has at least its sparx.zone address, so this is normally
   // present.
-  const propertyId = activeSite?.propertyId ?? null;
   const mine = (domains ?? []).filter(
     (domain) =>
       domain.status !== 'removed' && (propertyId ? domain.propertyId === propertyId : true)

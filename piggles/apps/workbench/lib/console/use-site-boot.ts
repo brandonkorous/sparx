@@ -13,7 +13,7 @@
 // chrome together.
 
 import { useMemo } from 'react';
-import { useActiveSiteId, useSites } from '@/lib/api/shell-data';
+import { useActivePropertyId, useActiveSiteId, useSites } from '@/lib/api/shell-data';
 
 export interface SiteBoot {
   /** The storage key every arrangement hangs off. Null while still resolving. */
@@ -27,6 +27,7 @@ export interface SiteBoot {
 export function useSiteBoot(initialSiteKey: string | null): SiteBoot {
   const { data: tokenState } = useActiveSiteId();
   const { data: sites, isError: sitesFailed } = useSites();
+  const resolved = useActivePropertyId();
 
   // The cookie names a site, or nothing. Nothing means api-rest scopes to the
   // primary site, so the primary's id IS the honest key for that state — using
@@ -40,9 +41,12 @@ export function useSiteBoot(initialSiteKey: string | null): SiteBoot {
     const cookieSite = tokenState?.propertyId ?? initialSiteKey;
     if (cookieSite) return cookieSite;
     if (tokenState === undefined) return null; // still booting, and no cookie hint
-    if (sites) return sites.find((site) => site.isPrimary)?.id ?? sites[0]?.id ?? 'default';
+    // No cookie: `useActivePropertyId` is where "then it is the primary" lives —
+    // the same answer the studio stamps its documents with, so an arrangement and
+    // the documents inside it can never end up under two different keys.
+    if (resolved) return resolved;
     return sitesFailed ? 'default' : null; // sites still loading (or unreachable)
-  }, [tokenState, sites, sitesFailed, initialSiteKey]);
+  }, [tokenState, resolved, sitesFailed, initialSiteKey]);
 
   // Resolved here rather than inside the feedback provider so it rides the same
   // sites query the top bar already holds, instead of a second fetch for a name.

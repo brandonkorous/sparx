@@ -49,7 +49,7 @@ import {
 } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { CopyValue } from '../../components/copy-value';
-import { useActiveSiteId } from '../../lib/api/shell-data';
+import { useActivePropertyId } from '../../lib/api/shell-data';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
@@ -116,7 +116,7 @@ function RecordBlock({
 function ConnectDomain({ ctx }: { ctx: SurfaceContext }) {
   const toast = useToast();
   const { data: sites } = useSites();
-  const { data: active } = useActiveSiteId();
+  const activeSiteId = useActivePropertyId();
   const connect = useConnectDomain();
 
   const [host, setHost] = useState('');
@@ -129,7 +129,7 @@ function ConnectDomain({ ctx }: { ctx: SurfaceContext }) {
   // Defaults to the site being worked in, which is nearly always the one meant —
   // but it stays a visible, changeable choice, because pointing an address at
   // the wrong site is both easy to do and confusing to undo.
-  const fallbackSite = active?.propertyId ?? sites?.find((site) => site.isPrimary)?.id ?? '';
+  const fallbackSite = activeSiteId ?? '';
   const chosenSite = propertyId || fallbackSite;
 
   const siteItems = useMemo(() => {

@@ -13,7 +13,7 @@
 
 import { useEffect, type RefObject } from 'react';
 import { defaultMakeId, stampTree } from '@wizeworks/silicaui-html';
-import type { TreeDoc } from '../../documents/types';
+import type { StudioDoc, TreeDoc } from '../../documents/types';
 import type { DocumentStore } from '../../session/document-store';
 import { containsOutlet, findNode, findPlace, isAddressable } from '../../tree/walk';
 
@@ -39,9 +39,16 @@ export function canRemove(doc: TreeDoc, id: string): boolean {
   return true;
 }
 
-export function useBuilderShortcuts(
+/**
+ * Undo and redo, for ANY document.
+ *
+ * Separate from the tree shortcuts below because a theme has no nodes to delete
+ * or duplicate but has exactly the same undo stack — and a pane that can be
+ * edited and not undone is worse than one that cannot be edited.
+ */
+export function useUndoShortcuts(
   ref: RefObject<HTMLElement | null>,
-  store: DocumentStore<TreeDoc>
+  store: DocumentStore<never> | DocumentStore<StudioDoc> | DocumentStore<TreeDoc>
 ): void {
   useEffect(() => {
     const element = ref.current;
@@ -50,8 +57,6 @@ export function useBuilderShortcuts(
     const onKeyDown = (event: KeyboardEvent): void => {
       if (isTyping(event.target)) return;
       const mod = event.metaKey || event.ctrlKey;
-      const doc = store.current;
-      const id = store.selectedIds[0];
 
       if (mod && event.key.toLowerCase() === 'z') {
         event.preventDefault();
@@ -63,8 +68,29 @@ export function useBuilderShortcuts(
       if (mod && event.key.toLowerCase() === 'y') {
         event.preventDefault();
         store.redo();
-        return;
       }
+    };
+
+    element.addEventListener('keydown', onKeyDown);
+    return () => element.removeEventListener('keydown', onKeyDown);
+  }, [ref, store]);
+}
+
+export function useBuilderShortcuts(
+  ref: RefObject<HTMLElement | null>,
+  store: DocumentStore<TreeDoc>
+): void {
+  useUndoShortcuts(ref, store);
+
+  useEffect(() => {
+    const element = ref.current;
+    if (!element) return;
+
+    const onKeyDown = (event: KeyboardEvent): void => {
+      if (isTyping(event.target)) return;
+      const mod = event.metaKey || event.ctrlKey;
+      const doc = store.current;
+      const id = store.selectedIds[0];
 
       if (event.key === 'Escape') {
         store.select([]);

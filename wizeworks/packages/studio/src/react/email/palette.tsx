@@ -61,8 +61,10 @@ export function EmailPalette() {
 
   const extras = host.emailCatalog?.() ?? [];
 
+  // `h-full` rather than `flex-1`, so this scrolls wherever it is mounted rather
+  // than only inside a flex column — the same shape the other rails use.
   return (
-    <div className="min-h-0 flex-1 overflow-auto p-2">
+    <div className="h-full min-h-0 overflow-auto p-2">
       <PaletteSection label="Blocks" items={EMAIL_PALETTE} onInsert={insert} onBuild={build} />
       {extras.length ? (
         <PaletteSection label="Ready-made" items={extras} onInsert={insert} onBuild={build} />

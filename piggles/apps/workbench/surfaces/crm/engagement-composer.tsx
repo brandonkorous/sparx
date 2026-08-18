@@ -47,7 +47,7 @@ import {
   faPhoneVolume,
 } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
-import { useActiveSiteId } from '../../lib/api/shell-data';
+import { useActivePropertyId } from '../../lib/api/shell-data';
 import { PaneScope } from '../../lib/dock/window-boundary';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import {
@@ -148,8 +148,7 @@ export function EngagementComposer({
   const { data: snippetData } = useSalesSnippets();
 
   const { data: voiceData } = useVoiceConnections();
-  const { data: siteState } = useActiveSiteId();
-  const activeSiteId = siteState?.propertyId ?? null;
+  const activeSiteId = useActivePropertyId();
   const placeCall = usePlaceCall();
 
   const sendEmail = useSendEngagementEmail();

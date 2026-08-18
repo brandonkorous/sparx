@@ -49,7 +49,7 @@ import {
 } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import type { SequenceStep } from '@wizeworks/email-sequences/schemas';
-import { useActiveSiteId, useSites } from '../../lib/api/shell-data';
+import { useActivePropertyId, useSites } from '../../lib/api/shell-data';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import { useConfirm } from '../../lib/confirm';
 import { afterPaneChange } from '../../lib/defer';
@@ -229,9 +229,8 @@ function SequenceEditor({
   const confirm = useConfirm();
 
   const { data: sites } = useSites();
-  const { data: active } = useActiveSiteId();
   const builderEmails = useBuilderEmails();
-  const defaultSite = active?.propertyId ?? sites?.find((s) => s.isPrimary)?.id ?? null;
+  const defaultSite = useActivePropertyId();
 
   const create = useCreateSequence();
   const update = useUpdateSequence(sequence?.id ?? 'new');

@@ -18,7 +18,7 @@
 // desktop-only, and the whole platform's rule is that it isn't.
 
 import { useRef, useState, type ReactNode } from 'react';
-import { Button, Tabs, TabsList, TabsPanel, TabsTab } from '@wizeworks/silicaui-react';
+import { Button, TabsList, TabsTab } from '@wizeworks/silicaui-react';
 import type { TreeDoc } from '../../documents/types';
 import { useDocSnapshot, useDocumentStore } from '../context';
 import { Canvas, type CanvasDevice } from '../canvas/canvas';
@@ -26,6 +26,7 @@ import { Inspector } from '../inspector/inspector';
 import { Navigator } from '../navigator/navigator';
 import { Palette } from '../palette/palette';
 import { StudioIcon } from '../icon';
+import { FillTabs, FillTabsPanel } from '../fill-tabs';
 import { useBuilderShortcuts } from './shortcuts';
 
 const DEVICES: { value: CanvasDevice; label: string; icon: string }[] = [
@@ -122,18 +123,18 @@ export function TreeBuilder({
             'border-base-300 w-full shrink-0 flex-col lg:flex lg:w-64 lg:border-r'
           )}
         >
-          <Tabs value={rail} onValueChange={setRail} variant="pills" className="min-h-0 flex-1">
+          <FillTabs value={rail} onValueChange={setRail}>
             <TabsList className="px-2 pt-2">
               <TabsTab value="layers">Layers</TabsTab>
               <TabsTab value="insert">Insert</TabsTab>
             </TabsList>
-            <TabsPanel value="layers" className="min-h-0 flex-1">
+            <FillTabsPanel value="layers">
               <Navigator />
-            </TabsPanel>
-            <TabsPanel value="insert" className="min-h-0 flex-1">
+            </FillTabsPanel>
+            <FillTabsPanel value="insert">
               <Palette />
-            </TabsPanel>
-          </Tabs>
+            </FillTabsPanel>
+          </FillTabs>
         </aside>
 
         <main className={column(view === 'canvas', 'min-h-0 min-w-0 flex-1 flex-col lg:flex')}>

@@ -34,7 +34,7 @@ import {
   faPlus,
 } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
-import { useActiveSiteId } from '../../lib/api/shell-data';
+import { useActivePropertyId } from '../../lib/api/shell-data';
 import { RefreshButton } from '../../components/refresh-button';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { useSites } from '../sites/data';
@@ -109,10 +109,8 @@ function AddressRow({
 export function DomainsListSurface({ ctx }: { ctx: SurfaceContext }) {
   const { data: domains, isPending, isError, isFetching, dataUpdatedAt, refetch } = useDomains();
   const { data: sites } = useSites();
-  const { data: active } = useActiveSiteId();
+  const activeId = useActivePropertyId();
   const [search, setSearch] = useState('');
-
-  const activeId = active?.propertyId ?? sites?.find((site) => site.isPrimary)?.id ?? null;
 
   // A disconnected domain is kept as a row so history survives, but it is not an
   // address anyone can reach — showing it here would be listing something that

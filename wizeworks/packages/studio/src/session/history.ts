@@ -40,6 +40,25 @@ export class History {
     return this.redoStack.at(-1)?.label;
   }
 
+  /** What a coalescing caller would fold into, without taking it off the stack. */
+  peekUndo(): OpBatch | undefined {
+    return this.undoStack.at(-1);
+  }
+
+  /**
+   * Replace the batch on top — one continuous action that kept going.
+   *
+   * The store re-derives `batch` against the state the top batch STARTED from, so
+   * this is a replacement rather than a merge and the stack never holds a batch
+   * whose ops and inverse describe different steps.
+   */
+  replaceTop(batch: OpBatch): boolean {
+    if (!this.undoStack.length) return false;
+    this.undoStack[this.undoStack.length - 1] = batch;
+    this.redoStack.length = 0;
+    return true;
+  }
+
   /** A new authored action. Clears redo — the branch it described no longer exists. */
   record(batch: OpBatch): void {
     this.undoStack.push(batch);

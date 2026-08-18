@@ -11,10 +11,11 @@
 // does not know is that they are supposed to click the page first.
 
 import { useState } from 'react';
-import { Tabs, TabsList, TabsPanel, TabsTab } from '@wizeworks/silicaui-react';
+import { TabsList, TabsTab } from '@wizeworks/silicaui-react';
 import { useSelectedNode } from '../context';
 import type { CanvasDevice } from '../canvas/canvas';
 import { rowLabel } from '../navigator/layer-tree';
+import { FillTabs, FillTabsPanel } from '../fill-tabs';
 import { DesignTab } from './design-tab';
 import { SettingsTab } from './settings-tab';
 
@@ -38,18 +39,18 @@ export function Inspector({ device }: { device: CanvasDevice }) {
         <p className="text-base-content truncate text-sm font-medium">{rowLabel(node)}</p>
       </div>
       {/* Pills: a filled shape says "you are here" before the label is read. */}
-      <Tabs value={tab} onValueChange={setTab} variant="pills" className="min-h-0 flex-1">
+      <FillTabs value={tab} onValueChange={setTab}>
         <TabsList className="px-3 pt-2">
           <TabsTab value="design">Design</TabsTab>
           <TabsTab value="settings">Settings</TabsTab>
         </TabsList>
-        <TabsPanel value="design" className="min-h-0 flex-1 overflow-auto">
+        <FillTabsPanel value="design" scrolls>
           <DesignTab node={node} device={device} />
-        </TabsPanel>
-        <TabsPanel value="settings" className="min-h-0 flex-1 overflow-auto">
+        </FillTabsPanel>
+        <FillTabsPanel value="settings" scrolls>
           <SettingsTab node={node} />
-        </TabsPanel>
-      </Tabs>
+        </FillTabsPanel>
+      </FillTabs>
     </div>
   );
 }

@@ -57,7 +57,7 @@ import { Icon } from '@piggles/ui';
 import { PANE_SHELL, PaneToolbar } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import { FormSection } from '../../components/form-section';
-import { useActiveSiteId } from '../../lib/api/shell-data';
+import { useActivePropertyId } from '../../lib/api/shell-data';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { MediaPickerProvider, useMediaPicker } from '../cms/media-picker';
@@ -89,8 +89,7 @@ function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
 }
 
 export function SiteIdentitySurface({ ctx }: { ctx: SurfaceContext }) {
-  const { data: active } = useActiveSiteId();
-  const propertyId = active?.propertyId ?? undefined;
+  const propertyId = useActivePropertyId() ?? undefined;
 
   const brandQuery = useBrand();
   const propertyQuery = useSiteProperty(propertyId);

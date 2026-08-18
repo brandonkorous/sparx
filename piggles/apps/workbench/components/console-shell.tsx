@@ -40,6 +40,7 @@ export function ConsoleShell({
   userName,
   userEmail,
   initialSiteKey,
+  initialCompact,
   arrivalAddress,
   accountOrigin,
 }: {
@@ -49,6 +50,9 @@ export function ConsoleShell({
    *  so the dock mounts without waiting on the token fetch. Null on a first
    *  visit, where boot falls back to the token + sites resolution. */
   initialSiteKey: string | null;
+  /** The server's read of whether this is a stack-shaped device, so the first
+   *  paint is already the right presentation. See lib/compact.ts. */
+  initialCompact: boolean;
   /** The address the SERVER matched for this render — the one authority on what
    *  this page load is asking for. See app/console-entry.tsx. */
   arrivalAddress: string;
@@ -83,7 +87,7 @@ export function ConsoleShell({
   // the compact shell used to hold its own copy beside this and the two raced —
   // a tap opened a sheet and the sync effect shut it again.
   const [navTab, setNavTab] = useState<NavTab | null>(null);
-  const isCompact = useIsCompact();
+  const isCompact = useIsCompact(initialCompact);
 
   // The rail, not the catalogue — All apps is where the rest stays visible.
   const nav = useRailNav();

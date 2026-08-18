@@ -1,5 +1,6 @@
-import { cookies } from 'next/headers';
+import { cookies, headers } from 'next/headers';
 import { accountOrigin } from '@piggles/auth-handoff';
+import { COMPACT_COOKIE, guessCompact } from '@/lib/compact';
 import { requireConsoleSession } from '@/lib/session';
 import { ConsoleShell } from '@/components/console-shell';
 
@@ -34,11 +35,22 @@ export async function ConsoleEntry({ address }: { address: string }) {
   const cookieStore = await cookies();
   const initialSiteKey = cookieStore.get('piggles_active_property')?.value ?? null;
 
+  // Which presentation this device gets, answered HERE so the markup that ships
+  // is already the right one. Guessing desktop and correcting after hydration is
+  // a phone painting the rail and the dock before swapping them (lib/compact.ts).
+  const requestHeaders = await headers();
+  const initialCompact = guessCompact({
+    cookie: cookieStore.get(COMPACT_COOKIE)?.value,
+    chMobile: requestHeaders.get('sec-ch-ua-mobile'),
+    userAgent: requestHeaders.get('user-agent'),
+  });
+
   return (
     <ConsoleShell
       userName={displayName(session.user.name, session.user.email)}
       userEmail={session.user.email}
       initialSiteKey={initialSiteKey}
+      initialCompact={initialCompact}
       arrivalAddress={address}
       // Resolved on the SERVER and handed down. `PIGGLES_ACCOUNT_ORIGIN` is not
       // a `NEXT_PUBLIC_` variable and the helper that reads it imports

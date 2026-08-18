@@ -40,7 +40,11 @@ import {
   brandFontHref,
   themeFontFamilies,
 } from '@wizeworks/site-themes';
-import { BASE_SILICA_THEME, buildCustomColorCss } from '@wizeworks/silica-catalog';
+import {
+  BASE_SILICA_THEME,
+  buildCustomColorCss,
+  buildDerivedContentCss,
+} from '@wizeworks/silica-catalog';
 import { getLegalFooterLinks, type LegalLink } from '@/lib/legal';
 import { getPublishedBuilderStyles } from '@/lib/builder';
 import { ConsentManager } from '@/components/consent/consent-manager';
@@ -324,6 +328,15 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   // theme, so this costs one token scan on the normal path.
   const silicaCustomColorCss = silicaFrame.theme ? buildCustomColorCss(silicaFrame.theme) : '';
 
+  // The MEASURED ink for every role the theme leaves unset — the semantic eight as
+  // well as the invented ones. Without it silicaui falls through to the last-resort
+  // lightness approximation it documents as "should never be reached by anything a
+  // build step could measure", and on a mid-tone brand color the approximation and
+  // the measurement disagree: the theme editor reports near-black on an orange
+  // primary while the served page paints white. An AUTHORED `-content` still wins —
+  // this only fills gaps, so a deliberate cream-on-green survives untouched.
+  const silicaDerivedInkCss = buildDerivedContentCss(silicaFrame.theme ?? BASE_SILICA_THEME);
+
   // The theme driving the chrome OUTSIDE the frame (chat accent, OG, web fonts).
   // Authored theme wins, else BASE — the SAME resolution `silicaThemeCss` uses above,
   // so the chrome can never diverge from what the frame was painted with.
@@ -442,6 +455,14 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         ) : null}
         {silicaThemeCss ? (
           <style data-silica-theme dangerouslySetInnerHTML={{ __html: silicaThemeCss }} />
+        ) : null}
+        {/* After the theme block, which declares the colors these inks are measured
+            from, and before the custom-color rules that consume them. */}
+        {silicaDerivedInkCss ? (
+          <style
+            data-silica-derived-ink
+            dangerouslySetInnerHTML={{ __html: silicaDerivedInkCss }}
+          />
         ) : null}
         {silicaCustomColorCss ? (
           <style

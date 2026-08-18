@@ -17,7 +17,7 @@ import { faArrowsRotate } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import type { StudioDoc } from '@wizeworks/studio';
 import { PaneWaiting } from '../../components/pane-waiting';
-import { useActiveSiteId } from '../../lib/api/shell-data';
+import { useActivePropertyId } from '../../lib/api/shell-data';
 import { useRecordSamplePaths, useSiteOrigin } from '../../lib/studio/site-data';
 import {
   previewPath,
@@ -73,8 +73,7 @@ function usePreviewAddress(target: SitePreviewTarget | null, path: string) {
 }
 
 export function PreviewSite({ doc }: { doc: StudioDoc }) {
-  const { data: siteState } = useActiveSiteId();
-  const target = useSiteOrigin(siteState?.propertyId ?? null);
+  const target = useSiteOrigin(useActivePropertyId());
   const samples = useRecordSamplePaths();
   const [width, setWidth] = useState<PreviewWidth>('full');
 

@@ -37,6 +37,7 @@ export {
 } from './context';
 
 export { StudioIcon } from './icon';
+export { FillTabs, FillTabsPanel } from './fill-tabs';
 
 export { Canvas, NODE_DRAG_TYPE, type CanvasDevice } from './canvas/canvas';
 export {
@@ -86,6 +87,8 @@ export { useEmailShortcuts } from './email/shortcuts';
 
 export { TreeBuilder } from './builders/tree-builder';
 export { EmailBuilder } from './builders/email-builder';
-export { ThemeBuilder } from './builders/theme-builder';
-export { ThemePreview } from './builders/theme-preview';
+export { ThemeBuilder } from './theme/theme-builder';
+export { ThemeBoard } from './theme/board/board';
+export { ThemeIsland, ThemeStylesheet } from './theme/island';
+export type { ThemeMode } from './theme/edit-context';
 export { canRemove, useBuilderShortcuts } from './builders/shortcuts';

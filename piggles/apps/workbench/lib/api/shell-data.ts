@@ -44,7 +44,10 @@ export function useSites() {
 }
 
 /** The active property id, resolved once at boot from the token route (which
- *  reads the same cookie switchSite() writes). Also the layout's site key. */
+ *  reads the same cookie switchSite() writes). Also the layout's site key.
+ *
+ *  RAW — null until someone has actually used the site switcher. Almost nothing
+ *  wants that; reach for `useActivePropertyId()` below instead. */
 export function useActiveSiteId() {
   return useQuery({
     queryKey: ['token-state'],
@@ -54,6 +57,37 @@ export function useActiveSiteId() {
     },
     staleTime: Infinity,
   });
+}
+
+/**
+ * The site this window is operating under, as an id.
+ *
+ * THE COOKIE IS A PREFERENCE, AND MOST PEOPLE HAVE NEVER SET ONE. It is written
+ * only by `switchSite()`, so an account with one site — or any operator who has
+ * simply never opened the switcher — has no cookie at all, and `/api/token`
+ * honestly reports `propertyId: null`. api-rest then scopes every read to the
+ * tenant's PRIMARY site, so the primary's id is what that null actually means:
+ * the same rule `useSiteBoot` keys arrangements with.
+ *
+ * Reading the raw token value instead is not a smaller version of this answer,
+ * it is a wrong one, and it fails in the quietest possible way. A hook that
+ * takes `propertyId: string | null` and returns early on null renders as a
+ * spinner that never resolves — which is how the whole site builder (Look &
+ * feel, Header & footer, Page, Saved pieces, Site identity) went dark for every
+ * account that had never touched the site switcher: no error, no failed
+ * request, just a studio session that was never created.
+ *
+ * `/v1/properties` is already scoped to the sites this member may reach, so the
+ * primary here is the primary they are allowed to see.
+ *
+ * Null only while those reads are in flight.
+ */
+export function useActivePropertyId(): string | null {
+  const { data: tokenState } = useActiveSiteId();
+  const { data: sites } = useSites();
+  if (tokenState?.propertyId) return tokenState.propertyId;
+  if (!sites) return null;
+  return sites.find((site) => site.isPrimary)?.id ?? sites[0]?.id ?? null;
 }
 
 /**
@@ -130,14 +164,10 @@ export interface ModuleState {
  * upgrades in place the moment the list lands.
  */
 export function useActiveSiteSlug(): string | undefined {
-  const { data: tokenState } = useActiveSiteId();
+  const activeId = useActivePropertyId();
   const { data: sites } = useSites();
-  if (!sites) return undefined;
-  const activeId = tokenState?.propertyId;
-  const site = activeId
-    ? sites.find((candidate) => candidate.id === activeId)
-    : sites.find((candidate) => candidate.isPrimary);
-  return site?.slug;
+  if (!sites || !activeId) return undefined;
+  return sites.find((candidate) => candidate.id === activeId)?.slug;
 }
 
 /** Which modules this tenant has turned on — drives the rail and the pulse.

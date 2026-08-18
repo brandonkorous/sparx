@@ -18,7 +18,7 @@ import { StudioProvider, type StudioHost } from '@wizeworks/studio/react';
 import { MediaPickerProvider } from '../../surfaces/cms/media-picker';
 import { useSilicaPieces } from './site-data';
 import { tenantSymbolId } from './saved-pieces';
-import { useActiveSiteId } from '../api/shell-data';
+import { useActivePropertyId } from '../api/shell-data';
 import { useStudioHostConfig } from './host';
 import { toLayoutDoc, useLayout } from './layout-data';
 import { useSiteSymbols } from './piece-data';
@@ -51,8 +51,10 @@ export function StudioSessionProvider({ children }: { children: ReactNode }) {
 }
 
 function StudioBinding({ children }: { children: ReactNode }) {
-  const { data: siteState } = useActiveSiteId();
-  const propertyId = siteState?.propertyId ?? null;
+  // The RESOLVED site, not the raw cookie. Without a session there is no
+  // `<StudioProvider>`, and without that every builder pane waits forever on a
+  // document that will never open — so a null here is the whole studio, dark.
+  const propertyId = useActivePropertyId();
   const host = useStudioHostConfig();
 
   const sessionRef = useRef<{ propertyId: string | null; session: StudioSession } | null>(null);
@@ -70,9 +72,19 @@ function StudioBinding({ children }: { children: ReactNode }) {
   // A document can be unsaved with no pane open — the pane guards cannot see that.
   useStudioUnloadGuard(session);
 
-  const binding = useMemo<StudioBinding>(() => ({ session, host }), [session, host]);
+  // ALL OR NOTHING, and the `host &&` is the load-bearing half. A pane asks this
+  // context one question — "is there a session?" — and answers it by rendering
+  // either a waiting state or something that reads the session through
+  // `useSessionSnapshot`, which THROWS with no `<StudioProvider>` above it. The
+  // provider needs BOTH halves, so handing out a session while the host is still
+  // resolving hands every pane a yes to a question it is really asking about the
+  // provider. Below, the two states are the same state.
+  const binding = useMemo<StudioBinding>(
+    () => (session && host ? { session, host } : { session: null, host: null }),
+    [session, host]
+  );
 
-  if (!session || !host) {
+  if (!binding.session || !binding.host) {
     // Nothing to provide yet — the panes below render their own waiting state, and
     // an empty provider would make `useStudioSession()` throw inside them.
     return (
@@ -82,14 +94,20 @@ function StudioBinding({ children }: { children: ReactNode }) {
 
   return (
     <StudioBindingContext.Provider value={binding}>
-      <StudioProvider session={session} host={host}>
+      <StudioProvider session={binding.session} host={binding.host}>
         {children}
       </StudioProvider>
     </StudioBindingContext.Provider>
   );
 }
 
-/** The session, or null while the active site is still resolving. */
+/**
+ * The session and host, or two nulls.
+ *
+ * Never one of each: a non-null `session` here means `<StudioProvider>` is mounted,
+ * which is the only thing that makes `useSessionSnapshot`/`useDocSnapshot` safe to
+ * call. Every pane gates on it for exactly that reason.
+ */
 export function useStudioBinding(): StudioBinding {
   return useContext(StudioBindingContext);
 }

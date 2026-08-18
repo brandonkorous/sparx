@@ -347,6 +347,18 @@ fork, and the reason this is safe to do at all. Root RULE #0 is the check.
 - [x] 9.3 RULE #0.5 across the studio: no file over 250 lines, no function over 50.
       Fourteen were over — the fix was mostly pulling a row, a toolbar or a write out
       of a component that had quietly become three things
+- [~] 9.4a **First browser defect, and it was a whole class of one.** The Layers rail
+  did not scroll — it ran off the bottom of the pane, clipped by the host's
+  `overflow-hidden`, with no scrollbar. Cause: silica's `.tabs` root is
+  `display: block` (deliberately — "just a flow container"), so a `<TabsPanel>`
+  is not a flex item and `flex-1` on it is INERT. Nothing below it is ever
+  height-constrained, so the `overflow-auto` further down has no bounded box to
+  scroll inside. It looks correct until there is more content than fits.
+  Three tab sets had it — the site rail, the email rail, and the Inspector's own
+  Design/Settings — so the fix is one `FillTabs` composition in the studio package
+  rather than four sprinklings of the same classes, with the gotcha written down
+  where the next rail will read it. The two email rails also assumed they were
+  already flex items; they are `h-full` now and scroll wherever they are mounted
 - [ ] 9.4 Drive it as a business owner: build a site end to end — theme, layout,
       three pages, a component, an email — and publish it. Click it, do not
       `fetch` it.

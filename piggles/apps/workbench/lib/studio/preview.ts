@@ -21,7 +21,7 @@ import {
 } from '@wizeworks/builder-schemas';
 import { useActiveProperty, useBindingCatalog, useSitePreview } from './site-data';
 import { buildPreviewRoot } from './preview-data';
-import { useActiveSiteId, useTenant } from '../api/shell-data';
+import { useActivePropertyId, useTenant } from '../api/shell-data';
 
 export interface CanvasPreview {
   /** The data root the brand core draws the tenant's real mark from. */
@@ -40,8 +40,7 @@ export interface CanvasPreview {
 export function useCanvasPreview(): CanvasPreview {
   const catalog = useBindingCatalog();
   const tenant = useTenant();
-  const { data: siteState } = useActiveSiteId();
-  const property = useActiveProperty(siteState?.propertyId ?? null);
+  const property = useActiveProperty(useActivePropertyId());
   const site = useSitePreview(tenant.data?.slug ?? null, property.data?.slug ?? null);
 
   return useMemo(() => {

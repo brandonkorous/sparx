@@ -28,6 +28,13 @@ export function PiecePaneSurface({ ctx }: { ctx: SurfaceContext }) {
   const pieceId = typeof ctx.params.pieceId === 'string' ? ctx.params.pieceId : null;
   const state = usePieceDocument(pieceId);
 
+  // Before the picker, not after it: `PiecesList` subscribes to the session, and
+  // `useSessionSnapshot` throws outright when `<StudioProvider>` is not mounted.
+  // A pane that renders while the site is still resolving must WAIT, not crash.
+  if (!session) {
+    return <PaneWaiting label="Opening your saved pieces…" />;
+  }
+
   if (!pieceId) {
     return (
       <PiecesList
@@ -50,7 +57,7 @@ export function PiecePaneSurface({ ctx }: { ctx: SurfaceContext }) {
     );
   }
 
-  if (!session || state.loading || !state.store) {
+  if (state.loading || !state.store) {
     return <PaneWaiting label="Opening your saved piece…" />;
   }
 
