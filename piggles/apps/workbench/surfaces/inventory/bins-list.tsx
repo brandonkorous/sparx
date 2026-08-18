@@ -332,7 +332,7 @@ export function BinsListSurface({ ctx }: { ctx: SurfaceContext }) {
             <ToggleGroup
               value={nonEmptyOnly ? ['non-empty'] : []}
               onValueChange={(value) => {
-                setNonEmptyOnly((value as string[]).includes('non-empty'));
+                setNonEmptyOnly(value.includes('non-empty'));
                 resetWindow();
               }}
             >

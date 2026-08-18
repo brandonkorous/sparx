@@ -315,7 +315,7 @@ export function BarcodesListSurface({ ctx }: { ctx: SurfaceContext }) {
             <ToggleGroup
               value={includeInactive ? ['retired'] : []}
               onValueChange={(value) => {
-                setIncludeInactive((value as string[]).includes('retired'));
+                setIncludeInactive(value.includes('retired'));
                 resetWindow();
               }}
             >
