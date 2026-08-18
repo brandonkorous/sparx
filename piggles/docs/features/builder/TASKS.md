@@ -1,8 +1,8 @@
 # Piggles builders — tasks
 
-**Version:** 1.9
+**Version:** 1.10
 **Author:** Brandon Korous
-**Last Updated:** 2026-08-17
+**Last Updated:** 2026-08-18
 
 Progress for the plan in [README.md](README.md). One line per task. Tick a box
 only when the thing is built to production quality — not stubbed, not "wired but
@@ -376,6 +376,50 @@ fork, and the reason this is safe to do at all. Root RULE #0 is the check.
 - [ ] 9.6b Update [STATUS.md](../../../STATUS.md) again after 9.4 — the drive-through
       is what turns "built" into "verified", and this file says so in its own header
       [FOLLOW_UPS.md](../../FOLLOW_UPS.md)
+
+## Phase 10 — a builder you can use with a thumb
+
+Plan and findings: [MOBILE.md](MOBILE.md). Ordered so that verbs land before
+layout — after 10.1–10.3 a phone can already build a page inside today's
+columns, which is not true today. All of it is `@wizeworks/studio`; sparx
+inherits every fix when it cuts over.
+
+- [ ] 10.1 A **node action bar** in the Inspector header — move up, move down,
+      move in, move out, duplicate, delete — over the ops that already exist
+      (`node.move`, `node.insert`, `node.remove`). Shown on every width, not
+      only narrow: three of these six are reachable today only by mouse-drag or
+      keystroke, which is a keyboard-access hole as much as a touch one.
+- [ ] 10.2 **Tap to place** from the palette, with a stated rule — inside the
+      selection when it can hold children, otherwise straight after it — and the
+      new node selected and scrolled into view, so where it landed is visible
+      rather than guessed.
+- [ ] 10.3 **Move here** in Layers: a move control per row turns the tree's gaps
+      into tappable targets, resolved through the same `resolveDropTarget` the
+      drag path uses so the two can never disagree.
+- [ ] 10.4 `lg:` out, `@container` in, across `tree-builder.tsx` and
+      `email-builder.tsx` — the last two viewport queries in the package. Three
+      tiers: three columns at 64rem, canvas + Inspector at 40rem, canvas alone
+      below.
+- [ ] 10.5 Rails become **edge drawers** below 40rem — silicaui `<Drawer>`,
+      Layers/Insert from the left, the Inspector from the bottom at about half
+      height so the selected block stays visible above it.
+- [ ] 10.6 The narrow bottom bar is **deleted**, not restyled. The shell floats
+      its nav bar on that edge and reserves 80px for it; two stacked bars is what
+      the status strip was already dropped for. Triggers, devices, undo/redo and
+      Save/Publish all move to the top bar; Preview, History and Save as piece
+      fold into an overflow menu; the status line becomes a word beside Save.
+- [ ] 10.7 The device switcher **scales** a real 390/834/1440 frame instead of
+      clamping it with `max-w-full`, so Computer on a phone shows a desktop
+      layout rather than a phone layout wearing the word Computer.
+- [ ] 10.8 Theme builder: board as canvas, rail as a left drawer below 40rem,
+      `max-h-96` gone.
+- [ ] 10.9 Every control in the five builders clears the 44px tap floor the nav
+      bar already sets.
+- [ ] 10.10 Drive all five builders on a real phone and a real tablet — add a
+      section, move it, restyle it, delete it, save, publish — and on a desktop
+      pane dragged narrow, which is the same code path and the case no phone
+      will ever exercise. No spec files; this is the 9.4 kind of verification and
+      the only one that can find what a green check cannot.
 
 ---
 
