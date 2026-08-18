@@ -15,6 +15,14 @@ export interface ColorRole {
   /** The CSS custom property the theme stores. */
   token: string;
   label: string;
+  /**
+   * One word for the tile under a swatch.
+   *
+   * Separate from `label` because a grid cell is 82px: "Went through" wraps to two
+   * lines and "Background" broke mid-word. The full name and the sentence both
+   * still exist — in the popover and in the guide, where there is room to read.
+   */
+  short: string;
   /** What this color actually turns up on, so the choice can be made on purpose. */
   hint: string;
   /** Literal classes that paint a live sample: the fill and its legible ink. */
@@ -49,6 +57,7 @@ export const COLOR_GROUPS: ColorGroup[] = [
       {
         token: '--color-primary',
         label: 'Main color',
+        short: 'Main',
         hint: 'Buttons, links, the thing you want clicked.',
         sample: 'bg-primary text-primary-content',
         contentToken: '--color-primary-content',
@@ -56,6 +65,7 @@ export const COLOR_GROUPS: ColorGroup[] = [
       {
         token: '--color-secondary',
         label: 'Second color',
+        short: 'Second',
         hint: 'The supporting action next to the main one.',
         sample: 'bg-secondary text-secondary-content',
         contentToken: '--color-secondary-content',
@@ -63,6 +73,7 @@ export const COLOR_GROUPS: ColorGroup[] = [
       {
         token: '--color-accent',
         label: 'Highlight',
+        short: 'Highlight',
         hint: 'Used sparingly, to make one thing jump.',
         sample: 'bg-accent text-accent-content',
         contentToken: '--color-accent-content',
@@ -78,24 +89,28 @@ export const COLOR_GROUPS: ColorGroup[] = [
       {
         token: '--color-base-100',
         label: 'Main surface',
+        short: 'Surface',
         hint: 'The highest layer — the page and the cards on it.',
         sample: 'bg-base-100 text-base-content',
       },
       {
         token: '--color-base-200',
         label: 'Second layer',
+        short: 'Behind',
         hint: 'Behind the main surface — sunken panels and shading.',
         sample: 'bg-base-200 text-base-content',
       },
       {
         token: '--color-base-300',
         label: 'Background',
+        short: 'Backdrop',
         hint: 'The deepest layer, furthest behind everything.',
         sample: 'bg-base-300 text-base-content',
       },
       {
         token: '--color-base-content',
         label: 'Text',
+        short: 'Text',
         hint: 'Every word that is meant to be read, on all three layers.',
         sample: 'bg-base-100 text-base-content',
       },
@@ -108,6 +123,7 @@ export const COLOR_GROUPS: ColorGroup[] = [
       {
         token: '--color-info',
         label: 'Information',
+        short: 'Info',
         hint: 'Something worth knowing, nothing to do.',
         sample: 'bg-info text-info-content',
         contentToken: '--color-info-content',
@@ -115,6 +131,7 @@ export const COLOR_GROUPS: ColorGroup[] = [
       {
         token: '--color-success',
         label: 'Went through',
+        short: 'Good',
         hint: 'Paid, sent, saved, in stock.',
         sample: 'bg-success text-success-content',
         contentToken: '--color-success-content',
@@ -122,6 +139,7 @@ export const COLOR_GROUPS: ColorGroup[] = [
       {
         token: '--color-warning',
         label: 'Needs a look',
+        short: 'Careful',
         hint: 'Running low, waiting on you, nearly due.',
         sample: 'bg-warning text-warning-content',
         contentToken: '--color-warning-content',
@@ -129,6 +147,7 @@ export const COLOR_GROUPS: ColorGroup[] = [
       {
         token: '--color-error',
         label: 'Went wrong',
+        short: 'Problem',
         hint: 'Declined, failed, out of stock.',
         sample: 'bg-error text-error-content',
         contentToken: '--color-error-content',
@@ -142,6 +161,7 @@ export const COLOR_GROUPS: ColorGroup[] = [
       {
         token: '--color-neutral',
         label: 'Neutral',
+        short: 'Neutral',
         hint: 'Chrome and furniture that carries no meaning.',
         sample: 'bg-neutral text-neutral-content',
         contentToken: '--color-neutral-content',
@@ -277,3 +297,90 @@ export const CORNER_STEPS: { value: string; label: string; shape: string }[] = [
   { value: '1rem', label: 'Very round', shape: 'rounded-tl-2xl' },
   { value: '2rem', label: 'Fully round', shape: 'rounded-tl-full' },
 ];
+
+/**
+ * The two tiles a color turns into: the color itself, and the words that sit on
+ * it.
+ *
+ * A pair is what silica actually ships — `--color-primary` and
+ * `--color-primary-content` are one decision made twice — and showing it as one
+ * tile hid half of it. Two blocks, side by side, is how the pair reads: the fill
+ * on the left, "Aa" in its own ink on the right, and the second tile is the only
+ * honest place to see whether that ink can be read.
+ *
+ * Surfaces are the exception in both directions. `base-100/200/300` are layers
+ * with no ink of their own, and `base-content` is the ink for all three — so the
+ * three fills and the one ink are four tiles rather than three pairs, which is
+ * exactly how silica lays them out too.
+ */
+export interface SwatchTile {
+  /** The token THIS tile edits — the role, or its `-content` half. */
+  token: string;
+  /** Full name, for the popover heading and the label a screen reader reads. */
+  label: string;
+  /** One or two words under the tile. */
+  short: string;
+  hint: string;
+  /** Literal classes painting the tile: a fill, or a fill wearing its ink. */
+  sample: string;
+  /** True when the tile is about the words rather than the color. */
+  ink: boolean;
+  /** The pair this tile belongs to — what the contrast reading measures. */
+  role: ColorRole;
+}
+
+const INK_HINT =
+  'The words that sit on this color. We pick one that reads clearly — change it if you want something else.';
+
+/**
+ * Just the fill, for the tile that is about the color rather than the words.
+ *
+ * Split off the sample rather than stored a second time: the literal `bg-primary`
+ * already appears in the table above, which is the whole of what Tailwind's
+ * scanner needs, and a duplicated pair of class strings is a pair that drifts.
+ */
+function fillOf(role: ColorRole): string {
+  return role.sample.split(' ')[0] ?? '';
+}
+
+export function tilesOf(role: ColorRole): SwatchTile[] {
+  const base = { hint: role.hint, role };
+
+  // `base-content` IS the ink half, standing alone — there is no `--color-base`
+  // for it to sit beside, so it renders as one ink tile over the main surface.
+  if (role.token.endsWith('-content')) {
+    return [
+      {
+        ...base,
+        token: role.token,
+        label: role.label,
+        short: role.short,
+        sample: role.sample,
+        ink: true,
+      },
+    ];
+  }
+
+  const fill: SwatchTile = {
+    ...base,
+    token: role.token,
+    label: role.label,
+    short: role.short,
+    sample: fillOf(role),
+    ink: false,
+  };
+  if (!role.contentToken) return [fill];
+
+  return [
+    fill,
+    {
+      token: role.contentToken,
+      label: `${role.label} — the words on it`,
+      short: `${role.short} text`,
+      hint: INK_HINT,
+      sample: role.sample,
+      ink: true,
+      role,
+    },
+  ];
+}

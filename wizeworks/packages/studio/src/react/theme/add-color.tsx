@@ -8,6 +8,9 @@
 // editor has to offer it — a theme system whose palette is closed is just eight
 // colors with extra steps.
 //
+// A tile in the grid rather than a button below it, because that is where the
+// other colors are and the shape of the thing being added is a swatch.
+//
 // The name becomes a CSS SELECTOR, so it is validated here rather than trusted.
 // A color called `x{}body{display:none}` is not a color.
 
@@ -19,13 +22,16 @@ import {
   FieldError,
   FieldLabel,
   Input,
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
 } from '@wizeworks/silicaui-react';
 import { rolesOf, SURFACE_TOKENS } from '@wizeworks/silicaui-html';
 import type { ThemeDoc } from '../../documents/types';
 import { useDoc } from '../context';
 import { StudioIcon } from '../icon';
-import { ColorValue } from './color-tile';
 import { useThemeEdit } from './edit-context';
+import { ColorValue } from './swatch-detail';
 
 const NAME_RE = /^[a-z][a-z0-9-]*$/;
 const MAX_NAME = 48;
@@ -49,49 +55,58 @@ export function AddColor() {
     setOpen(false);
   };
 
-  if (!open) {
-    return (
-      <Button size="sm" color="primary" variant="soft" onClick={() => setOpen(true)}>
-        <StudioIcon name="plus" className="text-base" />
-        Add a color
-      </Button>
-    );
-  }
-
   return (
-    <div className="border-base-300 rounded-box border p-3">
-      <Field>
-        <FieldLabel className="text-base">What is it called?</FieldLabel>
-        <div className="flex items-center gap-2">
-          <ColorValue label="The new color" value={value} disabled={false} onChange={setValue} />
-          <Input
-            value={name}
-            placeholder="sale"
-            maxLength={MAX_NAME}
-            onChange={(event) => setName(event.currentTarget.value)}
-            onKeyDown={(event) => {
-              if (event.key === 'Enter') add();
-              if (event.key === 'Escape') setOpen(false);
-            }}
-          />
-        </div>
-        {problem && name ? (
-          <FieldError>{problem}</FieldError>
-        ) : (
-          <FieldDescription>
-            One word, lowercase. It works everywhere the built-in colors do — buttons, badges,
-            alerts and the rest.
-          </FieldDescription>
-        )}
-      </Field>
-      <div className="mt-3 flex gap-2">
-        <Button size="sm" color="primary" disabled={Boolean(problem)} onClick={add}>
-          Add it
-        </Button>
-        <Button size="sm" onClick={() => setOpen(false)}>
-          Cancel
-        </Button>
-      </div>
+    <div className="min-w-0">
+      <Popover open={open} onOpenChange={setOpen}>
+        <PopoverTrigger>
+          <button
+            type="button"
+            className="border-base-300 text-base-content hover:border-primary focus-visible:outline-primary flex aspect-square w-full items-center justify-center rounded-lg border border-dashed focus-visible:outline-2 focus-visible:outline-offset-2"
+            aria-label="Add a color"
+          >
+            <StudioIcon name="plus" className="text-xl" />
+          </button>
+        </PopoverTrigger>
+        <PopoverContent className="w-72">
+          <Field>
+            <FieldLabel className="text-base">What is it called?</FieldLabel>
+            <div className="flex items-center gap-2">
+              <ColorValue
+                label="The new color"
+                value={value}
+                disabled={false}
+                onChange={setValue}
+              />
+              <Input
+                value={name}
+                placeholder="sale"
+                maxLength={MAX_NAME}
+                onChange={(event) => setName(event.currentTarget.value)}
+                onKeyDown={(event) => {
+                  if (event.key === 'Enter') add();
+                }}
+              />
+            </div>
+            {problem && name ? (
+              <FieldError>{problem}</FieldError>
+            ) : (
+              <FieldDescription>
+                One word, lowercase. It works everywhere the built-in colors do — buttons, badges,
+                alerts and the rest.
+              </FieldDescription>
+            )}
+          </Field>
+          <div className="mt-3 flex gap-2">
+            <Button size="sm" color="primary" disabled={Boolean(problem)} onClick={add}>
+              Add it
+            </Button>
+            <Button size="sm" onClick={() => setOpen(false)}>
+              Cancel
+            </Button>
+          </div>
+        </PopoverContent>
+      </Popover>
+      <p className="text-base-content mt-1 text-center text-sm">Add</p>
     </div>
   );
 }

@@ -30,6 +30,7 @@ export function PaletteTile() {
     .map((token) => ({
       token,
       label: roleOf(token),
+      short: roleOf(token),
       hint: '',
       sample: customRoleSample(roleOf(token)),
     }));

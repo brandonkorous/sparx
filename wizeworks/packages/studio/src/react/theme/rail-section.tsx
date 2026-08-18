@@ -12,19 +12,25 @@ export function RailSection({
   icon,
   title,
   hint,
+  action,
   children,
 }: {
   icon: string;
   title: string;
   hint?: string;
+  /** One control belonging to the whole section, on the heading's own line. */
+  action?: ReactNode;
   children: ReactNode;
 }) {
   return (
     <section className="border-base-300 border-b px-4 py-5 last:border-b-0">
-      <h3 className="text-base-content flex items-center gap-2 text-lg font-semibold">
-        <StudioIcon name={icon} className="text-primary text-xl" />
-        {title}
-      </h3>
+      <div className="flex items-center gap-2">
+        <h3 className="text-base-content flex flex-1 items-center gap-2 text-lg font-semibold">
+          <StudioIcon name={icon} className="text-primary text-xl" />
+          {title}
+        </h3>
+        {action}
+      </div>
       {hint ? <p className="text-base-content mt-1 mb-4 text-sm">{hint}</p> : null}
       <div className={hint ? '' : 'mt-3'}>{children}</div>
     </section>
